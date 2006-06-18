@@ -1,9 +1,7 @@
-package org.adtpro.utilities;
-
 /*
- * AppleCommander - An Apple ][ image utility.
- * Copyright (C) 2002-2004 by Robert Greene
- * robgreene at users.sourceforge.net
+ * ADTPro - Apple Disk Transfer ProDOS
+ * Copyright (C) 2006 by David Schmidt
+ * david__schmidt at users.sourceforge.net
  *
  * This program is free software; you can redistribute it and/or modify it 
  * under the terms of the GNU General Public License as published by the 
@@ -11,7 +9,7 @@ package org.adtpro.utilities;
  * option) any later version.
  *
  * This program is distributed in the hope that it will be useful, but 
- * WITHOUT````` ANY WARRANTY; without even the implied warranty of MERCHANTABILITY 
+ * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY 
  * or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License 
  * for more details.
  *
@@ -19,6 +17,8 @@ package org.adtpro.utilities;
  * with this program; if not, write to the Free Software Foundation, Inc., 
  * 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
+
+package org.adtpro.utilities;
 
 import java.io.IOException;
 import java.io.InputStream;
