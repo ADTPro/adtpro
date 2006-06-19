@@ -26,6 +26,8 @@ package org.adtpro.transport;
 import java.io.*;
 import java.util.*;
 
+import org.adtpro.resources.Messages;
+
 import gnu.io.*;
 
 public class SerialTransport
@@ -60,17 +62,17 @@ public class SerialTransport
   public SerialTransport(String portName, String speed) throws Exception
   {
     int portSpeed = Integer.parseInt(speed);
-    System.out.println("SerialTransport opening port named " + portName + " at speed " + speed + ".");
+    System.out.println("SerialTransport opening port named " + portName + " at speed " + speed + "."); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
     this.portName = portName;
     connected = false;
     portId = CommPortIdentifier.getPortIdentifier(portName);
-    port = (SerialPort) portId.open("ADTProSerial", 100);
+    port = (SerialPort) portId.open(Messages.getString("SerialTransport.3"), 100); //$NON-NLS-1$
     port.setSerialPortParams(Integer.parseInt(speed), 8, 1, 0);
     port.setFlowControlMode(3);
     inputStream = new DataInputStream(port.getInputStream());
     outputStream = new DataOutputStream(port.getOutputStream());
     connected = true;
-    System.out.println("SerialTransport initialized.");
+    System.out.println("SerialTransport initialized."); //$NON-NLS-1$
   }
 
   /**
@@ -84,6 +86,7 @@ public class SerialTransport
   {
     if (connected)
     {
+      port.notifyAll();
       inputStream.skip(inputStream.available());
       inputStream.close();
       outputStream.close();
@@ -113,20 +116,6 @@ public class SerialTransport
   }
 
   /**
-   * Returns the name of this Transport Interface. This method will return a
-   * string containing the name of this transport interface. This is used when
-   * searching for and selecting from one of many available transport interfaces
-   * that are installed on the system.
-   * 
-   * @return the name of this transport interface.
-   */
-
-  public static String getName()
-  {
-    return "Sun Java Communications API Bridge Class by Brad Barclay";
-  }
-
-  /**
    * Returns an array of Strings representing the names of available ports. This
    * method will return to the caller an array of strings representing the
    * serial ports available on this system.
@@ -145,7 +134,7 @@ public class SerialTransport
     }
     catch (NoClassDefFoundError ex)
     {
-      System.out.println("Unable to find class \"CommPortIdentifier\"");
+      System.out.println(Messages.getString("SerialTransport.2")); //$NON-NLS-1$
       return null;
     }
 
@@ -177,7 +166,7 @@ public class SerialTransport
     }
     else
     {
-      port = (SerialPort) portId.open("ADTProSerial", 100);
+      port = (SerialPort) portId.open(Messages.getString("SerialTransport.7"), 100); //$NON-NLS-1$
       port.setSerialPortParams(115200, 8, 1, 0);
       port.setFlowControlMode(3);
       inputStream = new DataInputStream(port.getInputStream());
@@ -195,11 +184,9 @@ public class SerialTransport
 
   public byte readByte() throws IOException
   {
-    // System.out.println("SERIAL READ BYTE STUBBED OUT");
     boolean hasData = false;
     byte oneByte = 0;
-
-    while (hasData == false)
+    while ((hasData == false) && (connected))
     {
       try
       {
@@ -246,21 +233,21 @@ public class SerialTransport
 
   public void writeBytes(String str)
   {
-    writeBytes(str.getBytes(), "");
+    writeBytes(str.getBytes(), ""); //$NON-NLS-1$
   }
 
   public void writeByte(int datum)
   {
     byte data[] =
     { (byte) (datum & 0xff) };
-    writeBytes(data, "");
+    writeBytes(data, ""); //$NON-NLS-1$
   }
 
   public void writeByte(byte datum)
   {
     byte data[] =
     { datum };
-    writeBytes(data, "");
+    writeBytes(data, ""); //$NON-NLS-1$
   }
 
   public void writeByte(byte datum, String str)
