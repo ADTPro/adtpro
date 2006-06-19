@@ -334,7 +334,7 @@ public final class Gui extends JFrame implements ActionListener
       }
       commsThread = new CommsThread(this, transport);
       commsThread.start();
-      setMainText(Messages.getString("Gui.17")); //$NON-NLS-1$
+      setMainText(Messages.getString("Gui.12")); //$NON-NLS-1$
       setSecondaryText(Messages.getString("Gui.18")); //$NON-NLS-1$
     }
   }
