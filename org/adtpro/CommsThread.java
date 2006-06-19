@@ -25,6 +25,7 @@ import java.io.*;
 import org.adtpro.resources.Messages;
 import org.adtpro.transport.SerialTransport;
 
+import org.adtpro.disk.Disk;
 import org.adtpro.gui.Gui;
 import org.adtpro.utilities.UnsignedByte;
 
@@ -86,7 +87,7 @@ public class CommsThread extends Thread
           receiveDisk();
           break;
         case (byte) 199: // Get (Receive)
-          _parent.setMainText(Messages.getString("CommsThread.11")); //$NON-NLS-1$
+          _parent.setMainText(Messages.getString("CommsThread.3")); //$NON-NLS-1$
           _parent.setSecondaryText(""); //$NON-NLS-1$
           System.out.println("Get/Receive..."); //$NON-NLS-1$
           sendDisk();
@@ -98,7 +99,7 @@ public class CommsThread extends Thread
           queryFileSize();
           break;
         case (byte) 210: // Receive (Legacy ADT style)
-          _parent.setMainText(Messages.getString("CommsThread.0")); //$NON-NLS-1$
+          _parent.setMainText(Messages.getString("CommsThread.11")); //$NON-NLS-1$
           _parent.setSecondaryText(""); //$NON-NLS-1$
           System.out.println("Legacy receive..."); //$NON-NLS-1$
           send140kDisk();
@@ -184,44 +185,32 @@ public class CommsThread extends Thread
   {
     long length;
     byte sizeLo = 0, sizeHi = 0, rc = (byte) 0xff;
-    File requestedFile;
     String requestedFileName = receiveName();
 
-    requestedFile = new File(requestedFileName);
-    if (!requestedFile.canRead())
+    try
     {
-      System.out.println("can't read file: " + requestedFileName + "; checking absolute path."); //$NON-NLS-1$ //$NON-NLS-2$
-      requestedFileName = _parent.getWorkingDirectory() + File.separator + requestedFileName;
-      requestedFile = new File(requestedFileName);
-    }
-    if (requestedFile.isFile())
-    {
+      Disk disk = new Disk(requestedFileName);
       System.out.println("queryFileSize found file " + requestedFileName); //$NON-NLS-1$
-      length = requestedFile.length();
-      if (length / 512 > 65535)
+      if (disk.getImageOrder() != null)
+      {
+        length = disk.getImageOrder().getBlocksOnDevice();
+        sizeLo = UnsignedByte.loByte(length);
+        System.out.println("loByte of " + requestedFileName + " is: " + UnsignedByte.intValue(sizeLo)); //$NON-NLS-1$ //$NON-NLS-2$
+        sizeHi = UnsignedByte.hiByte(length);
+        System.out.println("hiByte of " + requestedFileName + " is: " + UnsignedByte.intValue(sizeHi)); //$NON-NLS-1$ //$NON-NLS-2$
+        rc = 0;
+      }
+      else
       {
         rc = 0x4a; // Unrecognized file format
       }
-      else
-        if ((length % 512) > 0)
-        {
-          System.out.println("queryFileSize not a ProDOS file size."); //$NON-NLS-1$
-          rc = 0x4a;
-        }
-        else
-        {
-          sizeLo = UnsignedByte.loByte(length / 512);
-          System.out.println("loByte of " + requestedFileName + " is: " + UnsignedByte.intValue(sizeLo)); //$NON-NLS-1$ //$NON-NLS-2$
-          sizeHi = UnsignedByte.hiByte(length / 512);
-          System.out.println("hiByte of " + requestedFileName + " is: " + UnsignedByte.intValue(sizeHi)); //$NON-NLS-1$ //$NON-NLS-2$
-          rc = 0;
-        }
     }
-    else
+    catch (IOException e)
     {
       System.out.println("can't read file: " + requestedFileName + "."); //$NON-NLS-1$ //$NON-NLS-2$
       rc = 0x46; // Unable to open file
     }
+
     System.out.println("queryFileSize lo:" + UnsignedByte.toString(sizeLo) + " hi:" + UnsignedByte.toString(sizeHi)); //$NON-NLS-1$ //$NON-NLS-2$
     _transport.writeByte(sizeLo);
     _transport.writeByte(sizeHi);
@@ -251,7 +240,7 @@ public class CommsThread extends Thread
     byte[] buffer = new byte[20480];
     int part, length;
     byte report, sizelo, sizehi;
-    boolean receiveSuccess = false, isDosOrder = false;
+    boolean receiveSuccess = false;
     int halfBlock;
     int blocksDone = 0;
 
@@ -301,7 +290,6 @@ public class CommsThread extends Thread
           }
           if (receiveSuccess)
           {
-            if (isDosOrder) buffer = makeProDosOrder(buffer);
             System.out.println("Writing part " + (part + 1) + " of " + numParts + "."); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
             fos.write(buffer);
           }
@@ -362,96 +350,48 @@ public class CommsThread extends Thread
   }
 
   public void sendDisk()
+  /* Main send routine - Host -> Apple (Host sends) */
   {
-    int bufSize = 20480;
-    byte[] buffer = new byte[bufSize]; // 40 (*512b) ProDOS blocks
-    int rc = 0, halfBlock, charsRead, blocksDone = 0;
-    FileInputStream fis = null;
+    byte[] buffer = new byte[Disk.BLOCK_SIZE];
+    int halfBlock, blocksDone = 0;
     byte ack, report;
+    int length;
+    boolean sendSuccess = false;
     /*
      * ADT PROTOCOL: receive the requested file name
      */
     String name = receiveName();
-    File f = new File(name);
-    long length;
-    boolean isDosOrder = false, sendSuccess = false;
 
-    if (!f.isFile())
+    try
     {
-      f = new File(_parent.getWorkingDirectory() + File.separator + name);
-      if (!f.isFile())
+      Disk disk = new Disk(name);
+      if (disk.getImageOrder() != null)
       {
-        // New ADT protocol - can't open the file
-        _transport.writeByte(0x46);
-        rc = -1;
-      }
-    }
-    if (rc == 0)
-    {
-      if (f.exists())
-      {
-        /*
-         * ADT PROTOCOL: send trigger
-         */
         // If the file exists, then...
         _transport.writeByte(0x00); // Tell Apple ][ we're ready to go
-
-        /*
-         * ADT PROTOCOL: receive acknowledgement for "previous" sector
-         */
         ack = waitForData();
         System.out.println("Received initial reply from Apple: " + ack); //$NON-NLS-1$
         if (ack == 0x06)
         {
-          try
+          length = disk.getImageOrder().getBlocksOnDevice();
+          _parent.setProgressMaximum(length * 2); // Half-blocks
+          System.out.println("Length is " + length + " blocks."); //$NON-NLS-1$ //$NON-NLS-2$
+          for (int block = 0; block < length; block++)
           {
-            fis = new FileInputStream(f);
-            length = f.length() / 512; // measured in blocks, not bytes
-            _parent.setProgressMaximum((int) length * 2); // Half-blocks
-            int numParts = (int) length / 40;
-            int remainder = (int) length % 40;
-            System.out
-                .println("Length is " + length + ".  There are " + (numParts + 1) + " buffers, and " + remainder + " blocks in the remainder."); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
-            for (int part = 0; part < numParts; part++)
+            buffer = disk.readBlock(block);
+            for (halfBlock = 0; halfBlock < 2; halfBlock++)
             {
-              System.out.print("Reading part " + (part + 1) + " of " + numParts); //$NON-NLS-1$ //$NON-NLS-2$
-              charsRead = fis.read(buffer);
-              System.out.println(" ... read " + charsRead + " chars."); //$NON-NLS-1$ //$NON-NLS-2$
-              if (isDosOrder) buffer = makeProDosOrder(buffer);
-              for (halfBlock = 0; halfBlock < 80; halfBlock++)
+              sendSuccess = sendPacket(buffer, halfBlock * 256);
+              if (sendSuccess)
               {
-                sendSuccess = sendPacket(buffer, halfBlock * 256);
-                if (sendSuccess)
-                {
-                  blocksDone++;
-                  _parent.setProgressValue(blocksDone);
-                }
-                else
-                  break;
+                blocksDone++;
+                _parent.setProgressValue(blocksDone);
               }
-              if (!sendSuccess) break;
+              else
+                break;
             }
-            if (sendSuccess && (remainder > 0))
-            {
-              System.out.print("Reading remainder - " + remainder + " blocks"); //$NON-NLS-1$ //$NON-NLS-2$
-              charsRead = fis.read(buffer, 0, remainder * 512);
-              System.out.println(" ... read " + charsRead + " chars."); //$NON-NLS-1$ //$NON-NLS-2$
-              for (halfBlock = 0; halfBlock < (remainder * 2); halfBlock++)
-              {
-                sendSuccess = sendPacket(buffer, halfBlock * 256);
-                if (sendSuccess)
-                {
-                  blocksDone++;
-                  _parent.setProgressValue(blocksDone);
-                }
-                else
-                  break;
-              }
-            }
-            fis.close();
+            if (!sendSuccess) break;
           }
-          catch (IOException ex)
-          {}
           if (sendSuccess)
           {
             report = waitForData();
@@ -467,13 +407,31 @@ public class CommsThread extends Thread
             }
           }
           else
+          {
             _parent.setSecondaryText(Messages.getString("CommsThread.21"));
+            _parent.clearProgress();
+          }
         }
         else
+        {
           System.out.print("No ACK received from the Apple..."); //$NON-NLS-1$
+          _parent.setSecondaryText(Messages.getString("CommsThread.21"));
+          _parent.clearProgress();
+        }
+      }
+      else
+      {
+        // New ADT protocol - can't open the file
+        _transport.writeByte(0x46);
       }
     }
+    catch (IOException e)
+    {
+      // New ADT protocol - can't open the file
+      _transport.writeByte(0x46);
+    }
   }
+
 
   /**
    * send140kDisk - legacy ADT protocol send 140k disk function
@@ -871,36 +829,6 @@ public class CommsThread extends Thread
       }
       CRCTABLE[oneByte] = crc;
     }
-  }
-
-  byte[] makeProDosOrder(byte[] inputBuf)
-  {
-    /*
-     * This function will really only be necessary for 140k diskette images -
-     * nobody else puts stuff in DOS order. So, our division by 4096 should
-     * always have zero remainder.
-     */
-    byte[] outputBuf;
-    /*
-     * Mapping from DOS sectors to ProDOS half-tracks
-     */
-    int dosSectorMap[] =
-    { 0, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 15 };
-    outputBuf = new byte[inputBuf.length];
-    // For each track... should be 35 of them
-    for (int track = 0; track < inputBuf.length; track += 4096)
-    {
-      // Swizzle the sectors
-      for (int sector = 0; sector < 16; sector++)
-      {
-        // Copy the sector bytes
-        for (int i = 0; i < 256; i++)
-        {
-          outputBuf[track + (sector * 256) + i] = inputBuf[track + (dosSectorMap[sector] * 256) + i];
-        }
-      }
-    }
-    return outputBuf;
   }
 
   public void requestStop()

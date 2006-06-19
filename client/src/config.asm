@@ -1,5 +1,5 @@
 *---------------------------------------------------------
-* CONFIG - DDX CONFIGURATION
+* CONFIG - ADTPro Configuration
 *---------------------------------------------------------
 CONFIG
 	jsr HOME	Clear screen
@@ -17,7 +17,7 @@ SAVPARM	lda PARMS,Y	in case of abort
 	sta <CH
 	lda #$00	Row
 	jsr TABV
-	ldy #PMSG24	'CONFIGURE DDX PARAMETERS'
+	ldy #PMSG24	'CONFIGURE ADTPRO PARAMETERS'
 	jsr SHOWMSG
 
 	lda #$0a	Column
