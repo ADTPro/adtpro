@@ -205,8 +205,7 @@ public final class Gui extends JFrame implements ActionListener
     byte rc = 0x48; // Unable to change directory message at Apple
     File baseDirFile = new File(cwd);
     String tempWorkingDirectory = baseDirFile.getAbsolutePath();
-    // System.out.println("Absolute path of "+cwd+":
-    // ["+tempWorkingDirectory+"]");
+    // System.out.println("Absolute path of "+cwd+": ["+tempWorkingDirectory+"]");
     File[] dummy = new File(tempWorkingDirectory).listFiles();
     if (dummy != null)
     {
@@ -215,9 +214,11 @@ public final class Gui extends JFrame implements ActionListener
     }
     else
     {
-      tempWorkingDirectory = getWorkingDirectory() + cwd;
+      tempWorkingDirectory = getWorkingDirectory() + File.separatorChar + cwd;
+      System.out.println("tempWorkingDirectory now :"+tempWorkingDirectory);
       baseDirFile = new File(tempWorkingDirectory);
       tempWorkingDirectory = baseDirFile.getAbsolutePath();
+      System.out.println("tempWorkingDirectory now :"+tempWorkingDirectory);
       dummy = new File(tempWorkingDirectory).listFiles();
       if (dummy != null)
       {
@@ -261,7 +262,10 @@ public final class Gui extends JFrame implements ActionListener
   public void setSecondaryText(String text)
   {
     if (!text.equals(""))
+    {
       labelSubProgress.setText(text);
+      labelSubProgress.setForeground(labelMainProgress.getForeground());
+    }
     else
     {
       /*
