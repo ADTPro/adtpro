@@ -72,7 +72,7 @@ public final class Gui extends JFrame implements ActionListener
   public Gui(java.lang.String[] args)
   {
     addWindowListener(new WindowCloseMonitor());
-    setTitle(Messages.getString("Gui.0")); //$NON-NLS-1$
+    setTitle(Messages.getString("Gui.0")+" "+Messages.getString("Version.0")); //$NON-NLS-1$ //$NON-NLS-2$
 
     JMenuBar menuBar = new JMenuBar();
     JPanel mainPanel = new JPanel(new GridBagLayout());

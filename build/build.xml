@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="ADTPro" default="jar" basedir="..">
+	<property name="versionString" value="0.01" />
+	<property name="distName" value="ADTPro-${versionString}" />
+	<target name="jar">
+		<!-- jar up the source, object and properties files -->
+		<jar jarfile="build/${distName}.jar" manifest="build/manifest.mf" basedir="." includes="org/**/*.class org/**/*.java org/**/*.properties LICENSE" />
+		<zip destfile="build/${distName}.zip" basedir="build" includes="${distName}.jar ${distName}.dsk rxtx/rxtx-2.1-7-bins-r2.zip LICENSE README" />
+	</target>
+</project>

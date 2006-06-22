@@ -21,6 +21,7 @@
 package org.adtpro;
 
 import org.adtpro.gui.Gui;
+import org.adtpro.resources.Messages;
 
 /** The main class for launching the ADTPro client graphical user interface.
  * @author File Created By: David Schmidt &lt;david@attglobal.net&gt;
@@ -30,6 +31,10 @@ public class ADTPro
 
   public static void main(java.lang.String[] args)
   {
+    System.out.print(Messages.getString("Gui.0")); //$NON-NLS-1$
+    System.out.println(Messages.getString("Version.0")); //$NON-NLS-1$
+    System.out.println(""); //$NON-NLS-1$
+    System.out.print(Messages.getString("Gui.RXTX")); //$NON-NLS-1$
     new Gui(args);
   }
 }
