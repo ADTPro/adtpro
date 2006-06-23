@@ -23,6 +23,7 @@ package org.adtpro.gui;
 import java.awt.BorderLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.Toolkit;
 import java.awt.Window;
 import java.awt.event.*;
 import java.io.File;
@@ -73,6 +74,13 @@ public final class Gui extends JFrame implements ActionListener
   {
     addWindowListener(new WindowCloseMonitor());
     setTitle(Messages.getString("Gui.0")+" "+Messages.getString("Version.0")); //$NON-NLS-1$ //$NON-NLS-2$
+    try
+    {
+      setIconImage(Toolkit.getDefaultToolkit().getImage(
+        getClass().getResource("/org/adtpro/resources/ADTPro.png")));
+    }
+    catch (Throwable ex)
+    {}
 
     JMenuBar menuBar = new JMenuBar();
     JPanel mainPanel = new JPanel(new GridBagLayout());
