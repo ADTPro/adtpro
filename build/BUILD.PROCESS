@@ -1,0 +1,20 @@
+The assembler I started with is the 'SB Assembler' from
+http://www.sbprojects.com.  I like it because it satisfies
+a couple of requirements I have:
+  1) it lets you imbed/include files so code doesn't
+     have to be monolithic
+  2) it puts out object code that can be imported into
+     a virtual floppy image (with massaging from 
+     AppleCommander (http://applecommander.sourceforge.net)
+The big downside to the SB Assembler is that it's DOS only.
+That gets us through the Windows and OS/2 families of 
+operating systems, but doesn't help much beyond that.  If
+there is another cross-assembler that runs on more
+platforms that can be integrated into the build system
+(i.e. we end up with a .dsk with the object code on it)
+I'm all for it.
+
+Places where version number is encoded:
+	build/build.xml: <property name="versionString" value="v.r.m" />
+	client/src/print.asm: MSG01 .as -'v.r.m'
+	org/adtpro/resources/messages.properties: Version.0=v.r.m

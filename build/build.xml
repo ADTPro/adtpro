@@ -1,7 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project name="ADTPro" default="jar" basedir="..">
-	<property name="versionString" value="0.01" />
+<project name="ADTPro" default="assemble" basedir="..">
+	<property name="versionString" value="0.02" />
 	<property name="distName" value="ADTPro-${versionString}" />
+	<target name="assemble">
+		<exec dir="${basedir}/client/src" executable="${basedir}/build/makeClient.bat">
+			<arg line="${distName}"/>
+		</exec>
+	</target>
 	<target name="jar">
 		<!-- jar up the source, object and properties files -->
 		<jar jarfile="build/${distName}.jar" manifest="build/manifest.mf" basedir="." includes="org/**/*.class org/**/*.java org/**/*.properties LICENSE" />
