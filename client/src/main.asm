@@ -82,7 +82,7 @@ MOD0	bit $C088	CLEAR SSC INPUT REGISTER
 	jsr SHOWMSG
 
 	jsr CROUT
-    	lda #$13
+    	lda #$12
 	sta <CH
 	ldy #PMSG01	Version number
 	jsr SHOWMSG

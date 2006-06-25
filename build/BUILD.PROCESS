@@ -18,3 +18,5 @@ Places where version number is encoded:
 	build/build.xml: <property name="versionString" value="v.r.m" />
 	client/src/print.asm: MSG01 .as -'v.r.m'
 	org/adtpro/resources/messages.properties: Version.0=v.r.m
+	org/adtpro/resources/messages.properties: Gui.7=Apple Disk Transfer ProDOS (ADTPro) v.r.m
+

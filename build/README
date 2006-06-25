@@ -9,11 +9,12 @@ rxtx directory that is part of this distribution.  You will read
 where you will need to place a dll (Windows) or library (*nix).
 
 When you run the ADTPro server from the command line:
-java -jar ADTPro-0.01.jar
-you should see the following information echoed back on your 
+java -jar ADTPro-v.r.m.jar
+(where v.r.m represents the release number of ADTPro).
+You should see the following information echoed back on your 
 console as the GUI is coming up:
 
-	ADTPro Server version 0.01
+	ADTPro Server version v.r.m
 
 	RXTX Library: Stable Library
 	=========================================
@@ -26,7 +27,7 @@ You should see the following two new lines on the console:
 	SerialTransport opening port named COMx at speed 115200.
 	SerialTransport initialized.
 
-Transfer the ADTPro-0.01.dsk file to your apple with the original
+Transfer the ADTPro-v.r.m.dsk file to your apple with the original
 ADT client (you can use the ADTPro server to send it) and reboot
 with the ADTPro client diskette in the Apple's drive.  You're ready
 to go!
