@@ -44,7 +44,7 @@ O.CLEAN	sta CAPBLKS,X	Clear out capacity-in-blocks table
 	.da PARMBUF
 	BNE O.ERROR
 
-	ldx #$00	Index into device table
+	ldx #$00	X is our index into the device table
 loop.1	lda devices,x
 	cmp #$00
 	beq done
@@ -77,11 +77,7 @@ OL.3	cmp #$2F	Empty (typical of slot 5)
 	jsr DEVMSG3
 
 skip
-	ldy #$00
-	cpx #$00
-	bne sk.2
-	ldy #$01
-sk.2	jsr prt1vol
+	jsr prt1vol
 	inc LASTVOL
 	txa
 	clc
@@ -97,83 +93,60 @@ O.ERROR	sta parmbuf
 	RTS
 abt	brk
 
+* DEVMSG - Add a message to the "Volume name" area of the device
+DEVMSG
+	txa		Preserve X
+	pha
+
+	clc
+	adc #DEVICES
+	sta <UTILPTR
+	lda /DEVICES
+	sta <UTILPTR+1	UTILPTR now holds DEVICES + X
+	
+	ldy #$00
+DMLOOP
+	lda MNONAME,Y
+	cmp #$00
+	beq DMDONE
+	iny
+	sta (UTILPTR),Y
+	jmp DMLOOP
+DMDONE
+	tya
+	ldy #$00
+	ora (UTILPTR),Y
+	sta (UTILPTR),Y
+
+	pla
+	tax
+	rts
+
 * DEVMSG1 - Add "<NO NAME>" to the "Volume name"
 DEVMSG1
-	lda #$BC
-	sta devices+1,x
-
-	lda #$CE	"N"
-	sta devices+2,x
-	lda #$CF	"O"
-	sta devices+3,x
-	lda #$A0	" "
-	sta devices+4,x
-	lda #$CE	"N"
-	sta devices+5,x
-	lda #$C1	"A"
-	sta devices+6,x
-	lda #$CD	"M"
-	sta devices+7,x
-	lda #$C5	"E"
-	sta devices+8,x
-	lda #$BE
-	sta devices+9,x
-	lda devices,x
-	ora #$09
-	sta devices,x
+	lda #MNONAME
+	sta DMLOOP+1
+	lda /MNONAME
+	sta DMLOOP+2
+	jsr DEVMSG
 	rts
 
 * DEVMSG2 - Add "<I/O ERROR>" to the "Volume name"
 DEVMSG2
-	lda #$BC	"<"
-	sta devices+1,x
-	lda #$C9	"I"
-	sta devices+2,x
-	lda #$AF	"/"
-	sta devices+3,x
-	lda #$CF	"O"
-	sta devices+4,x
-	lda #$A0	" "
-	sta devices+5,x
-	lda #$C5	"E"
-	sta devices+6,x
-	lda #$D2	"R"
-	sta devices+7,x
-	sta devices+8,x
-	lda #$CF	"O"
-	sta devices+9,x
-	lda #$D2	"R"
-	sta devices+10,x
-	lda #$BE	">"
-	sta devices+11,x
-	lda devices,x
-	ora #$0B
-	sta devices,x
+	lda #MIOERR
+	sta DMLOOP+1
+	lda /MIOERR
+	sta DMLOOP+2
+	jsr DEVMSG
 	rts
 
 * DEVMSG3 - Add "<NO DISK>" to the "Volume name"
 DEVMSG3
-	lda #$BC
-	sta devices+1,x
-	lda #$CE
-	sta devices+2,x
-	lda #$CF
-	sta devices+3,x
-	lda #$A0
-	sta devices+4,x
-	lda #$C4
-	sta devices+5,x
-	lda #$C9
-	sta devices+6,x
-	lda #$D3
-	sta devices+7,x
-	lda #$CB
-	sta devices+8,x
-	lda #$BE
-	sta devices+9,x
-	lda devices,x
-	ora #$09
-	sta devices,x
+	lda #MNODISK
+	sta DMLOOP+1
+	lda /MNODISK
+	sta DMLOOP+2
+	jsr DEVMSG
 	rts
 
 *---------------------------------------------------------
@@ -563,8 +536,17 @@ H2.EXIT
 	rts
 
 
-volname .db $00,'/LONGESTVOLUMENM                            '
-	.db '                               '
+*volname .db $00,'/LONGESTVOLUMENM                            '
+*	.db '                               '
+volname .db $00,'/LONGESTVOLUMENM '
+* < = BC
+* > = BE
+MNODISK	.as -'<NO DISK>'
+		.db $00
+MIOERR	.as -'<I/O ERROR>'
+		.db $00
+MNONAME	.as -'<NO NAME>'
+		.db $00
 
 LASTVOL	.db $00
 onlineUnit	.db $00
@@ -575,10 +557,8 @@ SPCount   .db $03
 SPUnitNo  .db $00
 SPListPtr .da DSB
 SPCode    .db $03
-DSB	.db $00,$00,$00,$00,$00,$00,$00,$00  Probably way too much space, but...
+DSB	.db $00,$00,$00,$00,$00,$00,$00,$00  Probably way too much space, but you never know...
 	.db $00,$00,$00,$00,$00,$00,$00,$00
 	.db $00,$00,$00,$00,$00,$00,$00,$00
 	.db $00,$00,$00,$00,$00,$00,$00,$00
 	.db $00,$00,$00,$00,$00,$00,$00,$00
-
-
