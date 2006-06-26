@@ -61,7 +61,6 @@ public class SerialTransport
 
   public SerialTransport(String portName, String speed) throws Exception
   {
-    int portSpeed = Integer.parseInt(speed);
     System.out.println("SerialTransport opening port named " + portName + " at speed " + speed + "."); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
     this.portName = portName;
     connected = false;

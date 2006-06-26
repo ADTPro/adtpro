@@ -539,14 +539,6 @@ H2.EXIT
 *volname .db $00,'/LONGESTVOLUMENM                            '
 *	.db '                               '
 volname .db $00,'/LONGESTVOLUMENM '
-* < = BC
-* > = BE
-MNODISK	.as -'<NO DISK>'
-		.db $00
-MIOERR	.as -'<I/O ERROR>'
-		.db $00
-MNONAME	.as -'<NO NAME>'
-		.db $00
 
 LASTVOL	.db $00
 onlineUnit	.db $00

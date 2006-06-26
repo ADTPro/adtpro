@@ -27,7 +27,10 @@
 * DIR - GET DIRECTORY FROM THE PC AND PRINT IT
 * PC SENDS 0,1 AFTER PAGES 1..N-1, 0,0 AFTER LAST PAGE
 *---------------------------------------------------------
-DIR	jsr HOME	Clear screen
+DIR
+	ldy #PMWAIT
+	jsr SHOWM1
+
 	lda #"D"	Send "DIR" command to PC
 	jsr PUTC
 
@@ -38,13 +41,15 @@ DIR	jsr HOME	Clear screen
 	lda /BIGBUF	Get buffer pointer high byte
 	sta <BLKPTR+1	Set block buffer pointer
 	ldy #$00	Counter
-DIRBUFF	jsr GETC	Get character from serial port
+DIRBUFF
+	jsr GETC	Get character from serial port
 	php		Save flags
 	sta (BLKPTR),Y	Store byte
 	iny		Bump counter
 	bne DIRNEXT	Skip
 	inc <BLKPTR+1	Next 256 bytes
-DIRNEXT	plp		Restore flags
+DIRNEXT
+	plp		Restore flags
 	bne DIRBUFF	Loop until zero
 
 	jsr GETC	Get continuation character
@@ -53,18 +58,23 @@ DIRNEXT	plp		Restore flags
 	lda /BIGBUF	Get buffer pointer high byte
 	sta <BLKPTR+1	Set block buffer pointer
 	ldy #0		Reset counter
-DIRDISP	lda (BLKPTR),Y	Get byte from buffer
+	jsr HOME	Clear screen
+
+DIRDISP
+	lda (BLKPTR),Y	Get byte from buffer
 	php		Save flags
 	iny		Bump
 	bne DIRMORE	Skip
 	inc <BLKPTR+1	Next 256 bytes
-DIRMORE	plp		Restore flags
+DIRMORE
+	plp		Restore flags
 	beq DIRPAGE	Page or dir end?
 	ora #$80
 	jsr COUT1	Display
 	jmp DIRDISP	Loop back around
 
-DIRPAGE	lda (BLKPTR),Y	Get byte from buffer
+DIRPAGE
+	lda (BLKPTR),Y	Get byte from buffer
 	bne DIRCONT
 
 	ldy #PMSG30	No more files, wait for a key
@@ -88,19 +98,21 @@ DIRSTOP
 	jsr RDKEY
 	rts
 
-DIRCONT	ldy #PMSG29	"space to continue, esc to stop"
+DIRCONT
+	ldy #PMSG29	"space to continue, esc to stop"
 	jsr SHOWMSG
 	jsr RDKEY
 	eor #CHR_ESC	NOT ESCAPE, CONTINUE NORMALLY
 	bne DIR		BY SENDING A "D" TO PC
 	jmp PUTC	ESCAPE, SEND 00 AND RETURN
 
+
 *---------------------------------------------------------
 * CD - Change directory
 *---------------------------------------------------------
 
 CD
-	jsr GETFN
+	jsr GETFN1
 	bne CD.START
 	jmp CD.DONE
 
@@ -108,9 +120,13 @@ CD.START
 	lda #CHR_C	Ask host to Change Directory
 	jsr PUTC
 	jsr SENDFN	Send directory name
+	ldy #PMWAIT
+	jsr SHOWM1	Tell user to have patience
 	jsr GETC	Get response from host
 	bne CD.ERROR
-*	jsr DIR
+	ldy #PMSG14
+	jsr SHOWM1
+	jsr PAUSE
 
 CD.DONE
 	rts

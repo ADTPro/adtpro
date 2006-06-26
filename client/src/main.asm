@@ -120,7 +120,7 @@ KBDLUP
 KRECV	cmp #"R"	RECEIVE?
 	bne KDIR	NOPE, TRY DIR
 	lda #$09
-        ldx #$0e
+	ldx #$0e
 	ldy #$0e
 	jsr INVERSE
 	jsr RECEIVE
@@ -128,6 +128,10 @@ KRECV	cmp #"R"	RECEIVE?
 
 KDIR	cmp #"D"	DIR?
 	bne KCD		Nope, try CD
+	lda #$05
+	ldx #$18
+	ldy #$0e
+	jsr INVERSE
 	jsr DIR	  	Yes, do DIR routine
 	jmp MAINLUP
 

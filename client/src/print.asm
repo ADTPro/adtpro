@@ -347,12 +347,13 @@ INUM	.db $00
 * Messages
 *---------------------------------------------------------
 
-MSGTBL	.da MSG01,MSG02,MSG03,MSG04,MSG05,MSG06,MSG07,MSG08
+MSGTBL
+	.da MSG01,MSG02,MSG03,MSG04,MSG05,MSG06,MSG07,MSG08
 	.da MSG09,MSG10,MSG11,MSG12,MSG13,MSG14,MSG15,MSG16
 	.da MSG17,MSG18,MSG19,MSG20,MSG21,MSG22,MSG23,MSG24
-	.da MSG25,MSG26,MSG27,MSG28,MSG29,MSG30,MSG31,MSG32
-	.da MSG33,MSG34,MSG35,MSG36,MSG37,MSG38
-	.da MSG10a,MSG10b,MSG10c,MSG10d,MSG10e
+	.da MSG25,MSG26,MSG27,MSG28,MSG29,MSG30,MNONAME,MIOERR
+	.da MNODISK,MSG34,MSG35,MSG36,MSG37,MSG38
+	.da MSG10a,MSG10b,MSG10c,MSG10d,MSG10e,MWAIT,MCDIR
 
 MSG01	.as -'0.0.2'
 	.db $00
@@ -420,11 +421,11 @@ MSG29	.as -'SPACE TO CONTINUE, ESC TO STOP: '
 	.db $00
 MSG30	.as -'END OF DIRECTORY, TYPE SPACE: '
 	.db $00
-MSG31	.as -'<NO NAME>'
+MNONAME	.as -'<NO NAME>'
 	.db $00
-MSG32	.as -'<I/O ERROR>'
+MIOERR	.as -'<I/O ERROR>'
 	.db $00
-MSG33	.as -'<NO DISK>'
+MNODISK	.as -'<NO DISK>'
 	.db $00
 MSG34	.as -'FILE EXISTS'
 	.db $00
@@ -443,6 +444,10 @@ MSG10d	.db $20,$a0,$a0,$20,$a0,$20,$a0,$a0,$20,$a0,$a0,$a0,$20,$8d,$00
 MSG10e	.db $20,$a0,$a0,$20,$a0,$20,$20,$20,$a0,$a0,$a0,$a0,$20,$a0
 	.as -'PRO'
 	.db $8d,$00
+MWAIT	.as -'WAITING FOR ANSWER, ESC CANCELS'
+	.DB $00
+MCDIR	.as -'DIRECTORY: '
+	.DB $00
 
 *---------------------------------------------------------
 * Message equates
@@ -478,9 +483,9 @@ PMSG27	.eq $34
 PMSG28	.eq $36
 PMSG29	.eq $38
 PMSG30	.eq $3a
-PMSG31	.eq $3c
-PMSG32	.eq $3e
-PMSG33	.eq $40
+PMNONAME	.eq $3c
+PMIOERR	.eq $3e
+PMNODISK	.eq $40
 PMSG34	.eq $42
 PMSG35	.eq $44
 PMSG36	.eq $46
@@ -491,5 +496,6 @@ PMSG10b	.eq $4e
 PMSG10c	.eq $50
 PMSG10d	.eq $52
 PMSG10e	.eq $54
-
+PMWAIT	.eq $56
+PMCDIR	.eq $58
 

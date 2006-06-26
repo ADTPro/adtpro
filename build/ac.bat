@@ -1,1 +1,0 @@
-@java -jar AppleCommander-1.3.4-ac.jar %*

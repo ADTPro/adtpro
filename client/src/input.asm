@@ -22,15 +22,19 @@
 * GETFN - Get filename
 *---------------------------------------------------------
 GETFN
-    	lda #$00
+	ldy #PMSG13
+	jmp GETFN2
+GETFN1
+	ldy #PMCDIR
+GETFN2
+   	lda #$00
 	sta <CH
 	lda #$15
 	jsr TABV
-	ldy #PMSG13
 	jsr SHOWMSG
-	ldx #0		GET ANSWER AT $200
+	ldx #0		Get answer from $200
 	jsr NXTCHAR
-	lda #0		NULL-TERMINATE IT
+	lda #0		Null terminate it
 	sta $200,X
 	txa
 	rts
