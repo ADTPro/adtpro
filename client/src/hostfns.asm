@@ -133,6 +133,6 @@ CD.DONE
 
 CD.ERROR
 	tay
-	jsr SHOWMSG
+	jsr SHOWM1
 	jsr PAUSE
 	jmp ABORT

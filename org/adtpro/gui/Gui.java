@@ -27,6 +27,7 @@ import java.awt.Toolkit;
 import java.awt.Window;
 import java.awt.event.*;
 import java.io.File;
+import java.io.IOException;
 
 import javax.swing.*;
 
@@ -211,28 +212,48 @@ public final class Gui extends JFrame implements ActionListener
   public byte setWorkingDirectory(String cwd)
   {
     byte rc = 0x48; // Unable to change directory message at Apple
-    File baseDirFile = new File(cwd);
-    String tempWorkingDirectory = baseDirFile.getAbsolutePath();
-    // System.out.println("Absolute path of "+cwd+": ["+tempWorkingDirectory+"]");
-    File[] dummy = new File(tempWorkingDirectory).listFiles();
-    if (dummy != null)
+    System.out.println("cwd is :"+cwd);
+    File parentDir = new File(_workingDirectory);
+    File baseDirFile = new File(parentDir, cwd);
+    
+    String tempWorkingDirectory = null;
+    try
     {
-      _workingDirectory = tempWorkingDirectory;
-      rc = 0x00;
-    }
-    else
-    {
-      tempWorkingDirectory = getWorkingDirectory() + File.separatorChar + cwd;
-      System.out.println("tempWorkingDirectory now :"+tempWorkingDirectory);
+      tempWorkingDirectory = baseDirFile.getCanonicalPath();
       baseDirFile = new File(tempWorkingDirectory);
-      tempWorkingDirectory = baseDirFile.getAbsolutePath();
-      System.out.println("tempWorkingDirectory now :"+tempWorkingDirectory);
-      dummy = new File(tempWorkingDirectory).listFiles();
+      if (!baseDirFile.isDirectory())
+      {
+        tempWorkingDirectory = null;
+        baseDirFile = new File(cwd);
+        try
+        {
+          tempWorkingDirectory = baseDirFile.getCanonicalPath();
+          if (!baseDirFile.isDirectory())
+          {
+            tempWorkingDirectory = null;
+          }
+        }
+        catch (IOException io2)
+        {
+        }
+      }
+      System.out.println("1. tempWorkingDirectory now :"+tempWorkingDirectory);
+    }
+    catch (IOException io)
+    {
+    }
+    if (tempWorkingDirectory != null)
+    {
+      File[] dummy = new File(tempWorkingDirectory).listFiles();
       if (dummy != null)
       {
+        System.out.println("Working directory was: "+_workingDirectory);
         _workingDirectory = tempWorkingDirectory;
+        System.out.println("Working directory is : "+_workingDirectory);
         rc = 0x00;
       }
+      else
+        System.out.println("Well, we didn't get any files...");
     }
     return rc;
   }
