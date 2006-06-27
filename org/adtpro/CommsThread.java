@@ -43,11 +43,18 @@ public class CommsThread extends Thread
 
   private int _maxRetries = 3;
 
-  public CommsThread(Gui parent, SerialTransport transport)
+  public CommsThread(Gui parent, String one, String two)
   {
     // System.out.println("CommsThread constructor.");
     _parent = parent;
-    _transport = transport;
+    try
+    {
+      _transport = new SerialTransport(one, two);
+    }
+    catch (Exception ex)
+    {
+      System.out.println(ex);
+    }
   }
 
   public void run()
@@ -61,10 +68,10 @@ public class CommsThread extends Thread
     byte oneByte = (byte) 0x00;
     while (_shouldRun)
     {
-      // System.out.println("Command from Apple: "); //$NON-NLS-1$
+      //System.out.println("Waiting for command... "); //$NON-NLS-1$
       oneByte = waitForData();
       _parent.setProgressMaximum(0);
-      // System.out.println("Back from read... "); //$NON-NLS-1$
+      //System.out.println("Back from read... "); //$NON-NLS-1$
       switch (oneByte)
       {
         case (byte) 195: // CD
@@ -830,29 +837,23 @@ public class CommsThread extends Thread
     boolean readYet = false;
     while ((readYet == false) && (_shouldRun == true))
     {
-      // System.out.println("Top of waitForData while...");
       try
       {
-        // System.out.println(" waitForData try...");
         if (_transport != null)
         {
-          // System.out.println(" waitForData transport non-null...");
           oneByte = _transport.readByte();
-          // System.out.println(" waitForData back from readByte()...");
           readYet = true;
         }
         else
         {
-          // System.out.println(" waitForData else clause...");
           _shouldRun = false;
         }
-        // System.out.println(" waitForData bottom of try...");
       }
       catch (IOException ex)
       {
         System.out.println(ex);
       }
-      // System.out.println(" waitForData bottom of while...");
+      readYet = false;
     }
     return oneByte;
   }
@@ -912,6 +913,8 @@ public class CommsThread extends Thread
       _transport.close();
     }
     catch (Exception ex)
-    {}
+    {
+      System.out.println("CommsThread.requestStop exception: "+ex);
+    }
   }
 }

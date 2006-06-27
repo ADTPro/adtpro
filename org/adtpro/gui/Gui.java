@@ -63,7 +63,7 @@ public final class Gui extends JFrame implements ActionListener
 
   private CommsThread commsThread;
 
-  private SerialTransport transport;
+//  private SerialTransport transport;
 
   private String _workingDirectory = getWorkingDirectory();
 
@@ -118,7 +118,7 @@ public final class Gui extends JFrame implements ActionListener
     comboSpeed.addItem("57600"); //$NON-NLS-1$
     comboSpeed.addItem("115200"); //$NON-NLS-1$
     comboSpeed.setSelectedItem("115200"); //$NON-NLS-1$
-    buttonConnect = new JButton(Messages.getString("Gui.11")); //$NON-NLS-1$
+    buttonConnect = new JButton(Messages.getString("Gui.10")); //$NON-NLS-1$
     buttonConnect.addActionListener(this);
 
     labelMainProgress = new JLabel(Messages.getString("Gui.12")); //$NON-NLS-1$
@@ -153,7 +153,7 @@ public final class Gui extends JFrame implements ActionListener
         1, 1, // Grid width, height
         GridBagConstraints.HORIZONTAL, // Fill value
         GridBagConstraints.WEST, // Anchor value
-        0.0, 0.0, // Weight X, Y
+        1.0, 0.0, // Weight X, Y
         0, 0, 5, 5); // Top, left, bottom, right insets
     GridBagUtil.constrain(mainPanel, buttonConnect, 3, 2, // X, Y Coordinates
         1, 1, // Grid width, height
@@ -185,6 +185,8 @@ public final class Gui extends JFrame implements ActionListener
     _parent = this;
     this.pack();
     setBounds(FrameUtils.center(this.getSize()));
+    buttonConnect.setText(Messages.getString("Gui.11")); //$NON-NLS-1$
+    buttonConnect.requestFocus();
     this.show();
   }
 
@@ -344,27 +346,31 @@ public final class Gui extends JFrame implements ActionListener
       {
         commsThread.interrupt();
         commsThread.requestStop();
+        commsThread = null;
+        setMainText(Messages.getString("Gui.12")); //$NON-NLS-1$
+        setSecondaryText(Messages.getString("Gui.13")); //$NON-NLS-1$
+        buttonConnect.setText(Messages.getString("Gui.11")); //$NON-NLS-1$
       }
       catch (Throwable throwable)
       {
         System.out.println(throwable);
       }
     }
-    commsThread = null;
-    transport = null;
+    else
     {
       try
       {
-        transport = new SerialTransport((String) comboComPort.getSelectedItem(), (String) comboSpeed.getSelectedItem());
+        //transport = new SerialTransport((String) comboComPort.getSelectedItem(), (String) comboSpeed.getSelectedItem());
       }
       catch (Throwable throwable)
       {
         System.out.println(throwable);
       }
-      commsThread = new CommsThread(this, transport);
+      commsThread = new CommsThread(this, (String) comboComPort.getSelectedItem(), (String) comboSpeed.getSelectedItem());
       commsThread.start();
       setMainText(Messages.getString("Gui.12")); //$NON-NLS-1$
       setSecondaryText(Messages.getString("Gui.18")); //$NON-NLS-1$
+      buttonConnect.setText(Messages.getString("Gui.10")); //$NON-NLS-1$
     }
   }
 

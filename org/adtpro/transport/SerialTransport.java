@@ -34,7 +34,7 @@ public class SerialTransport
 {
   protected CommPortIdentifier portId;
 
-  protected SerialPort port;
+  protected RXTXPort port;
 
   protected DataInputStream inputStream;
 
@@ -61,17 +61,16 @@ public class SerialTransport
 
   public SerialTransport(String portName, String speed) throws Exception
   {
-    System.out.println("SerialTransport opening port named " + portName + " at speed " + speed + "."); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
     this.portName = portName;
     connected = false;
     portId = CommPortIdentifier.getPortIdentifier(portName);
-    port = (SerialPort) portId.open(Messages.getString("SerialTransport.3"), 100); //$NON-NLS-1$
+    port = (RXTXPort) portId.open(Messages.getString("SerialTransport.3"), 100); //$NON-NLS-1$
     port.setSerialPortParams(Integer.parseInt(speed), 8, 1, 0);
     port.setFlowControlMode(3);
     inputStream = new DataInputStream(port.getInputStream());
     outputStream = new DataOutputStream(port.getOutputStream());
     connected = true;
-    System.out.println("SerialTransport initialized."); //$NON-NLS-1$
+    System.out.println("SerialTransport opened port named " + portName + " at speed " + speed + "."); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
   }
 
   /**
@@ -85,18 +84,10 @@ public class SerialTransport
   {
     if (connected)
     {
-      port.notifyAll();
-      inputStream.skip(inputStream.available());
-      inputStream.close();
-      outputStream.close();
-      port.close();
       connected = false;
+      port.close();
+      System.out.println("SerialTransport closed port."); //$NON-NLS-1$
     }
-  }
-
-  protected void finalize() throws Throwable
-  {
-    close();
   }
 
   /**
@@ -165,7 +156,7 @@ public class SerialTransport
     }
     else
     {
-      port = (SerialPort) portId.open(Messages.getString("SerialTransport.7"), 100); //$NON-NLS-1$
+      port = (RXTXPort) portId.open(Messages.getString("SerialTransport.3"), 100); //$NON-NLS-1$
       port.setSerialPortParams(115200, 8, 1, 0);
       port.setFlowControlMode(3);
       inputStream = new DataInputStream(port.getInputStream());
@@ -185,7 +176,7 @@ public class SerialTransport
   {
     boolean hasData = false;
     byte oneByte = 0;
-    while ((hasData == false) && (connected))
+    while ((hasData == false) && (connected == true))
     {
       try
       {
@@ -193,7 +184,8 @@ public class SerialTransport
         hasData = true;
       }
       catch (java.io.IOException e)
-      {}
+      {
+      }
     }
     return oneByte;
   }
