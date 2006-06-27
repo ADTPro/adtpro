@@ -179,6 +179,9 @@ public class CommsThread extends Thread
     {
       System.out.println("sendDirectory exception:"); //$NON-NLS-1$
       System.out.println(t1);
+      _transport.writeBytes("NO FILES"); //$NON-NLS-1$
+      _transport.writeByte('\0');
+      _transport.writeByte('\0');
     }
   }
 

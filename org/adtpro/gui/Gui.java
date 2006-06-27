@@ -65,7 +65,7 @@ public final class Gui extends JFrame implements ActionListener
 
   private SerialTransport transport;
 
-  private String _workingDirectory = null;
+  private String _workingDirectory = getWorkingDirectory();
 
   private JProgressBar progressBar;
 
@@ -74,11 +74,10 @@ public final class Gui extends JFrame implements ActionListener
   public Gui(java.lang.String[] args)
   {
     addWindowListener(new WindowCloseMonitor());
-    setTitle(Messages.getString("Gui.0")+" "+Messages.getString("Version.0")); //$NON-NLS-1$ //$NON-NLS-2$
+    setTitle(Messages.getString("Gui.0") + " " + Messages.getString("Version.0")); //$NON-NLS-1$ //$NON-NLS-2$
     try
     {
-      setIconImage(Toolkit.getDefaultToolkit().getImage(
-        getClass().getResource("/org/adtpro/resources/ADTPro.png")));
+      setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getResource("/org/adtpro/resources/ADTPro.png")));
     }
     catch (Throwable ex)
     {}
@@ -163,7 +162,7 @@ public final class Gui extends JFrame implements ActionListener
         0.0, 0.0, // Weight X, Y
         0, 0, 5, 5); // Top, left, bottom, right insets
     GridBagUtil.constrain(mainPanel, labelMainProgress, 1, 3, // X, Y
-                                                              // Coordinates
+        // Coordinates
         3, 1, // Grid width, height
         GridBagConstraints.HORIZONTAL, // Fill value
         GridBagConstraints.WEST, // Anchor value
@@ -176,7 +175,7 @@ public final class Gui extends JFrame implements ActionListener
         0.0, 0.0, // Weight X, Y
         0, 5, 5, 5); // Top, left, bottom, right insets
     GridBagUtil.constrain(mainPanel, labelSubProgress, 1, 5, // X, Y
-                                                              // Coordinates
+        // Coordinates
         3, 1, // Grid width, height
         GridBagConstraints.HORIZONTAL, // Fill value
         GridBagConstraints.WEST, // Anchor value
@@ -212,10 +211,13 @@ public final class Gui extends JFrame implements ActionListener
   public byte setWorkingDirectory(String cwd)
   {
     byte rc = 0x48; // Unable to change directory message at Apple
-    System.out.println("cwd is :"+cwd);
-    File parentDir = new File(_workingDirectory);
+    cwd = cwd.trim();
+    File parentDir;
+    if (cwd.equals("/") || cwd.equals("\\")) parentDir = null;
+    else
+      parentDir = new File(_workingDirectory);
+
     File baseDirFile = new File(parentDir, cwd);
-    
     String tempWorkingDirectory = null;
     try
     {
@@ -224,36 +226,29 @@ public final class Gui extends JFrame implements ActionListener
       if (!baseDirFile.isDirectory())
       {
         tempWorkingDirectory = null;
-        baseDirFile = new File(cwd);
-        try
-        {
-          tempWorkingDirectory = baseDirFile.getCanonicalPath();
-          if (!baseDirFile.isDirectory())
-          {
-            tempWorkingDirectory = null;
-          }
-        }
-        catch (IOException io2)
-        {
-        }
       }
-      System.out.println("1. tempWorkingDirectory now :"+tempWorkingDirectory);
     }
     catch (IOException io)
     {
+      tempWorkingDirectory = null;
+      baseDirFile = new File(cwd);
+      try
+      {
+        tempWorkingDirectory = baseDirFile.getCanonicalPath();
+        if (!baseDirFile.isDirectory())
+        {
+          tempWorkingDirectory = null;
+        }
+      }
+      catch (IOException io2)
+      {
+        //System.out.println("boom...");
+      }
     }
     if (tempWorkingDirectory != null)
     {
-      File[] dummy = new File(tempWorkingDirectory).listFiles();
-      if (dummy != null)
-      {
-        System.out.println("Working directory was: "+_workingDirectory);
-        _workingDirectory = tempWorkingDirectory;
-        System.out.println("Working directory is : "+_workingDirectory);
-        rc = 0x00;
-      }
-      else
-        System.out.println("Well, we didn't get any files...");
+      _workingDirectory = tempWorkingDirectory;
+      rc = 0x00;
     }
     return rc;
   }
@@ -298,9 +293,8 @@ public final class Gui extends JFrame implements ActionListener
     else
     {
       /*
-       * If they want a blank label, we have to give it a
-       * little text and hide it by making it the same 
-       * color as the background.  Otherwise, things get
+       * If they want a blank label, we have to give it a little text and hide
+       * it by making it the same color as the background. Otherwise, things get
        * re-laid out and compressed strangely.
        */
       labelSubProgress.setText("I");
@@ -333,10 +327,12 @@ public final class Gui extends JFrame implements ActionListener
         _parent.dispose();
         System.exit(0);
       }
-      else if (e.getActionCommand().equals(Messages.getString("Gui.6"))) //$NON-NLS-1$
-      {
-        JOptionPane.showMessageDialog(null, Messages.getString("Gui.7"), Messages.getString("Gui.6"), JOptionPane.INFORMATION_MESSAGE);
-      }
+      else
+        if (e.getActionCommand().equals(Messages.getString("Gui.6"))) //$NON-NLS-1$
+        {
+          JOptionPane.showMessageDialog(null, Messages.getString("Gui.7"), Messages.getString("Gui.6"),
+              JOptionPane.INFORMATION_MESSAGE);
+        }
     }
   }
 
