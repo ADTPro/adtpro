@@ -36,7 +36,7 @@ DIR
 
 	lda PSPEED
 	cmp #6
-	bne DIRLOOP
+	bne DIRLOOP1
 
 	lda /BIGBUF	Get buffer pointer high byte
 	sta <BLKPTR+1	Set block buffer pointer
@@ -82,6 +82,8 @@ DIRPAGE
 	jsr RDKEY
 	rts
 
+DIRLOOP1
+	jsr HOME	Clear screen
 DIRLOOP
 	jsr GETC	Print PC output exactly as
 	beq DIRSTOP	it arrives (PC is responsible
