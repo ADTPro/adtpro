@@ -176,7 +176,7 @@ public class SerialTransport
   {
     boolean hasData = false;
     byte oneByte = 0;
-    while ((hasData == false) && (connected == true))
+    while ((hasData == false) && (connected))
     {
       try
       {

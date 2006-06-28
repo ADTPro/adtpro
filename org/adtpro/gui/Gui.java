@@ -43,7 +43,7 @@ import org.adtpro.CommsThread;
 public final class Gui extends JFrame implements ActionListener
 {
   /**
-   * 
+   *
    */
   private static final long serialVersionUID = 1L;
 
@@ -62,8 +62,6 @@ public final class Gui extends JFrame implements ActionListener
   private JButton buttonConnect = null;
 
   private CommsThread commsThread;
-
-//  private SerialTransport transport;
 
   private String _workingDirectory = getWorkingDirectory();
 
@@ -350,6 +348,7 @@ public final class Gui extends JFrame implements ActionListener
         setMainText(Messages.getString("Gui.12")); //$NON-NLS-1$
         setSecondaryText(Messages.getString("Gui.13")); //$NON-NLS-1$
         buttonConnect.setText(Messages.getString("Gui.11")); //$NON-NLS-1$
+        clearProgress();
       }
       catch (Throwable throwable)
       {
@@ -358,19 +357,12 @@ public final class Gui extends JFrame implements ActionListener
     }
     else
     {
-      try
-      {
-        //transport = new SerialTransport((String) comboComPort.getSelectedItem(), (String) comboSpeed.getSelectedItem());
-      }
-      catch (Throwable throwable)
-      {
-        System.out.println(throwable);
-      }
       commsThread = new CommsThread(this, (String) comboComPort.getSelectedItem(), (String) comboSpeed.getSelectedItem());
       commsThread.start();
       setMainText(Messages.getString("Gui.12")); //$NON-NLS-1$
       setSecondaryText(Messages.getString("Gui.18")); //$NON-NLS-1$
       buttonConnect.setText(Messages.getString("Gui.10")); //$NON-NLS-1$
+      clearProgress();
     }
   }
 

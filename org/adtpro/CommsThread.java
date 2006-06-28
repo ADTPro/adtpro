@@ -68,10 +68,9 @@ public class CommsThread extends Thread
     byte oneByte = (byte) 0x00;
     while (_shouldRun)
     {
-      //System.out.println("Waiting for command... "); //$NON-NLS-1$
+      //System.out.println("Waiting for command from Apple: "); //$NON-NLS-1$
       oneByte = waitForData();
       _parent.setProgressMaximum(0);
-      //System.out.println("Back from read... "); //$NON-NLS-1$
       switch (oneByte)
       {
         case (byte) 195: // CD
@@ -297,7 +296,7 @@ public class CommsThread extends Thread
         int remainder = (int) length % 40;
         for (part = 0; part < numParts; part++)
         {
-          System.out.print("Receiving part " + (part + 1) + " of " + numParts + "; "); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+          //System.out.print("Receiving part " + (part + 1) + " of " + numParts + "; "); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
           for (halfBlock = 0; halfBlock < 80; halfBlock++)
           {
             receiveSuccess = receivePacket(buffer, halfBlock * 256);
@@ -343,7 +342,6 @@ public class CommsThread extends Thread
         // System.out.println("Decided not to do a remainder."); //$NON-NLS-1$
         fos.close();
         // System.out.println("Hrm, not getting an ACK from the Apple...");
-        // //$NON-NLS-1$
       }
       else
       {
@@ -853,7 +851,6 @@ public class CommsThread extends Thread
       {
         System.out.println(ex);
       }
-      readYet = false;
     }
     return oneByte;
   }
