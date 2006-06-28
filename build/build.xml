@@ -2,9 +2,11 @@
 <project name="ADTPro" default="jar" basedir="..">
 	<property name="versionString" value="0.0.3" />
 	<property name="distName" value="ADTPro-${versionString}" />
+	<property name="volName" value="ADTPro.${versionString}" />
 	<property name="assemblerPath" value="c:/dev/xassm/sbasm/2.06" />
 	<property name="projdir" value="." />
 	<property name="builddir" value="${basedir}/build" />
+	<property name="acJar" value="AppleCommander-1.3.4a-ac.jar" />
 
 	<target name="clean">
 		<!--
@@ -38,7 +40,13 @@
 		Put the assembled ADTPRO program on the .dsk image
 		-->
 		<exec dir="${builddir}" executable="java" input="${builddir}/ADTPRO">
-			<arg line="-jar AppleCommander-1.3.4-ac.jar -p ADTPRO bin 2051 ${distName}.dsk"/>
+			<arg line="-jar ${acJar} -p ADTPRO bin 2051 ${distName}.dsk"/>
+		</exec>
+		<!--
+		Put a nice volume name on the .dsk image
+		-->
+		<exec dir="${builddir}" executable="java">
+			<arg line="-jar ${acJar} -v ${distName}.dsk ${volName}"/>
 		</exec>
 	</target>
 
