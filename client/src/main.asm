@@ -25,6 +25,7 @@
 *------------------------------------
 * Code
 *------------------------------------
+PBEGIN
 	cld
 
 	* Prepare the system for our expecations -
@@ -58,27 +59,27 @@ MOD0	bit $C088	CLEAR SSC INPUT REGISTER
 	lda #$03
 	jsr TABV
 
-	ldy #PMSG10a	Main title - Line 1
+	ldy #PMLOGO1	Main title - Line 1
 	jsr SHOWMSG
 
     	lda #$0d
 	sta <CH
-	ldy #PMSG10b	Main title - line 2
+	ldy #PMLOGO2	Main title - line 2
 	jsr SHOWMSG
 
     	lda #$0d
 	sta <CH
-	ldy #PMSG10c	Main title - line 3
+	ldy #PMLOGO3	Main title - line 3
 	jsr SHOWMSG
 
     	lda #$0d
 	sta <CH
-	ldy #PMSG10d	Main title - line 4
+	ldy #PMLOGO4	Main title - line 4
 	jsr SHOWMSG
 
     	lda #$0d
 	sta <CH
-	ldy #PMSG10e	Main title - line 5
+	ldy #PMLOGO5	Main title - line 5
 	jsr SHOWMSG
 
 	jsr CROUT
@@ -232,7 +233,8 @@ NOBEEP	rts
 	.in input.asm
 	.in config.asm
 	.in hostfns.asm
+	.in bsave.asm
 	.in vars.asm
 	.in const.asm
 
-
+PEND

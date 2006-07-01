@@ -52,9 +52,9 @@ CRC	.eq $1d		($02 bytes) Used by ONLINE, SEND and RECEIVE
 *---------------------------------------------------------
 * Configuration
 *---------------------------------------------------------
-PARMNUM	.eq $03		Number of configurable parms
+PARMNUM	.eq $04		Number of configurable parms
 *			Note - add bytes to OLDPARM if this is expanded.
-PARMSIZ	.db 7,7,2	Number of options for each parm
+PARMSIZ	.db 7,7,2,2	Number of options for each parm
 
 PARMTXT
 	.as -"1"
@@ -89,12 +89,17 @@ PARMTXT
 	.db 0
 	.as -"NO"
 	.db 0
+	.as -"YES"
+	.db 0
+	.as -"NO"
+	.db 0
 
 
 PARMS
 PSSC	.db 1		SSC SLOT (2)
 PSPEED	.db 6		SSC SPEED (115000)
 PSOUND	.db 0		SOUND AT END OF TRANSFER? (YES)
+PSAVE	.db 1		Save parms? (NO)
 SR_WR_C	.db $00		A place to save the send/receive/read/write character
 SLOWA	.db $00		A place to save the Accumulator, speed is not important
 SLOWX	.db $00		A place to save the X register, speed is not important

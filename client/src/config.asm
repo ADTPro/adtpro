@@ -24,9 +24,14 @@
 CONFIG
 	jsr HOME	Clear screen
 
+* No matter what, we put in the default value for 
+* 'save' - always turn it off when we start up.
+	lda #$01	Index for 'NO' save
+	sta PARMS+BSAVEP
 
 	ldy #PARMNUM-1	Save previous parameters
-SAVPARM	lda PARMS,Y	in case of abort
+SAVPARM
+	lda PARMS,Y	in case of abort
 	sta OLDPARM,Y
 	dey
 	bpl SAVPARM
@@ -59,6 +64,13 @@ SAVPARM	lda PARMS,Y	in case of abort
 	lda #$05	Row
 	jsr TABV
 	ldy #PMSG28	'ENABLE SOUND'
+	jsr SHOWMSG
+
+	lda #$0a	Column
+	sta <CH
+	lda #$06	Row
+	jsr TABV
+	ldy #PMSG28a	'SAVE CONFIGURATION'
 	jsr SHOWMSG
 
 	lda #$04	Column
@@ -197,13 +209,25 @@ PARMRST
 	sta PARMS,Y
 	dey
 	bpl PARMRST
+	jmp NOSAVE
 ENDCFG
+	lda PARMS+BSAVEP	Did they ask to save?
+	bne NOSAVE
+
+	ldy #PARMNUM-1	Save previous parameters
+SAVPARM2
+	lda PARMS,Y
+	sta DEFAULT,Y
+	dey
+	bpl SAVPARM2
+	jsr BSAVE
+NOSAVE
 	rts
 
 LINECNT  .db 00		CURRENT LINE NUMBER
 CURPARM  .db 00		ACTIVE PARAMETER
 CURVAL   .db 00		VALUE OF ACTIVE PARAMETER
-OLDPARM  .db $00,$00,$00	Should be PARMNUM bytes here...
+OLDPARM  .db $00,$00,$00,$00	Should be PARMNUM bytes here...
 
 
 *---------------------------------------------------------
@@ -240,12 +264,18 @@ PARMINT
 * PARMDFT - RESET PARAMETERS TO DEFAULT VALUES (USES AX)
 *---------------------------------------------------------
 PARMDFT	ldx #PARMNUM-1
-DFTLOOP	lda DEFAULT,X
+DFTLOOP
+	lda DEFAULT,X
 	sta PARMS,X
 	dex
 	bpl DFTLOOP
+* No matter what, we put in the default value for 
+* 'save' - always turn it off when we restore defaults.
+	lda #$01	Index for 'NO' save
+	sta PARMS+BSAVEP
 	rts
 
-DEFAULT	.db 1,6,0	Default parm indices
+DEFAULT	.db 1,6,0,1	Default parm indices
 BPSCTRL	.db $16,$18,$1A,$1C,$1E,$1F,$10
 YSAVE	.db $00
+BSAVEP	.eq $03	Index to the 'Save parameters' parameter

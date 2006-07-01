@@ -217,12 +217,12 @@ public class CommsThread extends Thread
       {
         // System.out.println("can't read file: " + requestedFileName + ".");
         // //$NON-NLS-1$ //$NON-NLS-2$
-        rc = 0x46; // Unable to open file
+        rc = 0x02; // Unable to open file
       }
     }
-    if (disk == null) rc = 0x46; // Unable to open file
+    if (disk == null) rc = 0x02; // Unable to open file
     else
-      if (disk.getImageOrder() == null) rc = 0x4a; // Unrecognized file format
+      if (disk.getImageOrder() == null) rc = 0x04; // Unrecognized file format
       else
       {
         length = disk.getImageOrder().getBlocksOnDevice();
@@ -247,7 +247,7 @@ public class CommsThread extends Thread
 
   public void changeDirectory()
   {
-    byte rc = 0x48;
+    byte rc = 0x06;
 
     String requestedDirectory = receiveName();
     if (_shouldRun)
@@ -368,11 +368,11 @@ public class CommsThread extends Thread
     }
     catch (FileNotFoundException ex)
     {
-      _transport.writeByte(0x46); // New ADT protocol - unable to write file
+      _transport.writeByte(0x02); // New ADT protocol - unable to write file
     }
     catch (IOException ex2)
     {
-      _transport.writeByte(0x46); // New ADT protocol - unable to write file
+      _transport.writeByte(0x02); // New ADT protocol - unable to write file
     }
     finally
     {
@@ -477,13 +477,13 @@ public class CommsThread extends Thread
       else
       {
         // New ADT protocol - can't open the file
-        _transport.writeByte(0x46);
+        _transport.writeByte(0x02);
       }
     }
     else
     {
       // New ADT protocol - can't open the file
-      _transport.writeByte(0x46);
+      _transport.writeByte(0x02);
     }
   }
 
@@ -512,7 +512,7 @@ public class CommsThread extends Thread
       f = new File(_parent.getWorkingDirectory() + File.separator + name);
       if (!f.isFile())
       {
-        _transport.writeByte(26); // can't open
+        _transport.writeByte(26); // ADT protocol - can't open
         rc = -1;
       }
     }
@@ -525,7 +525,7 @@ public class CommsThread extends Thread
          * ADT PROTOCOL: send error (message) number
          */
         // System.out.println("Not a 140k image"); //$NON-NLS-1$
-        _transport.writeByte(30); // not a 140k image
+        _transport.writeByte(30); // ADT protocol - not a 140k image
         rc = -1;
       }
       else
@@ -682,7 +682,7 @@ public class CommsThread extends Thread
     byte report;
     boolean receiveSuccess = false;
 
-    if (f.exists()) _transport.writeByte(0x1c); // File exists
+    if (f.exists()) _transport.writeByte(0x1c); // ADT protocol - file exists
     else
     {
       try
@@ -752,7 +752,7 @@ public class CommsThread extends Thread
         }
         catch (IOException ex2)
         {
-          _transport.writeByte(0x1a); // Unable to write file
+          _transport.writeByte(0x1a); // ADT protocol - unable to write file
         }
       }
     }

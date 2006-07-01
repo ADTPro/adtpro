@@ -46,6 +46,9 @@ SM.START
 	lda UNITNBR	Set up the unit number
 	sta PARMBUF+1
 
+	ldy #PMWAIT
+	jsr SHOWM1	Tell user to have patience
+
 	lda #CHR_P	Tell host we are Putting/Sending
 	jsr PUTC
 
@@ -123,12 +126,13 @@ SM.PARTIAL
 	jsr COMPLETE
 SM.DONE	rts
 
-PCERROR	pha
+PCERROR
+	pha
 	ldy #PMSG13
 	jsr SHOWM1
 	pla
 	tay
-	jsr SHOWMSG
+	jsr SHOWHMSG
 	jsr PAUSE
 	jmp BABORT
 
@@ -142,9 +146,13 @@ RECEIVE
 	jmp SR.DONE
 
 SR.START
+	ldy #PMWAIT
+	jsr SHOWM1	Tell user to have patience
+
 *			Validate the filename exists
 	lda #CHR_Z	Ask host for file size
 	jsr PUTC
+
 	jsr SENDFN	Send file name
 
 	jsr GETC	Get response from host: file size

@@ -216,7 +216,8 @@ HLINE.1	jsr COUT1
 * cursor location.
 * Call SHOWM1 to clear/print at message area.
 *---------------------------------------------------------
-SHOWM1	sty SLOWY
+SHOWM1
+	sty SLOWY
 	lda #$00
 	sta <CH
 	lda #$16
@@ -224,7 +225,8 @@ SHOWM1	sty SLOWY
 	jsr CLREOP
 	ldy SLOWY
 
-SHOWMSG	lda MSGTBL,Y
+SHOWMSG
+	lda MSGTBL,Y
 	sta <UTILPTR
 	lda MSGTBL+1,Y
 	sta <UTILPTR+1
@@ -236,6 +238,48 @@ MSGLOOP	lda (UTILPTR),Y
 	iny
 	bne MSGLOOP
 MSGEND	rts
+
+
+*---------------------------------------------------------
+* SHOWHMSG - Show null-terminated host message #Y at current
+* cursor location.  We further constrain messages to be
+* even and within the host message range.
+* Call SHOWHM1 to clear/print at message area.
+*---------------------------------------------------------
+SHOWHM1
+	sty SLOWY
+	lda #$00
+	sta <CH
+	lda #$16
+	jsr TABV
+	jsr CLREOP
+	ldy SLOWY
+
+SHOWHMSG
+	tya
+	and #$01	If it's odd, it's garbage
+	cmp #$01
+	beq HGARBAGE
+	tya
+	cmp PHMMAX If it's greater than max, it's garbage
+	bcs	HGARBAGE
+	jmp HMOK
+HGARBAGE
+	ldy #PHMGBG
+HMOK
+	lda HMSGTBL,Y
+	sta <UTILPTR
+	lda HMSGTBL+1,Y
+	sta <UTILPTR+1
+
+	ldy #$00
+HMSGLOOP
+	lda (UTILPTR),Y
+	beq HMSGEND
+	jsr COUT1
+	iny
+	bne HMSGLOOP
+HMSGEND	rts
 
 
 *---------------------------------------------------------
@@ -344,16 +388,42 @@ INUM	.db $00
 
 
 *---------------------------------------------------------
-* Messages
+* Host messages
+*---------------------------------------------------------
+
+HMSGTBL
+	.da HMGBG,HMFIL,HMFMT,HMDIR
+
+HMGBG	.as -'GARBAGE RECEIVED FROM HOST'
+	.DB $8d,$00
+HMFIL	.as -'UNABLE TO OPEN FILE'
+	.DB $8d,$00
+HMFMT	.as -'FILE FORMAT NOT RECOGNIZED'
+	.DB $8d,$00
+HMDIR	.as -'UNABLE TO CHANGE DIRECTORY'
+	.DB $8d,$00
+
+*---------------------------------------------------------
+* Host message equates
+*---------------------------------------------------------
+
+PHMGBG	.eq $00
+PHMFIL	.eq $02
+PHMFMT	.eq $04
+PHMDIR	.eq $06
+PHMMAX	.eq	$06	This must match the largest host message
+
+*---------------------------------------------------------
+* Client messages
 *---------------------------------------------------------
 
 MSGTBL
 	.da MSG01,MSG02,MSG03,MSG04,MSG05,MSG06,MSG07,MSG08
 	.da MSG09,MSG10,MSG11,MSG12,MSG13,MSG14,MSG15,MSG16
 	.da MSG17,MSG18,MSG19,MSG20,MSG21,MSG22,MSG23,MSG24
-	.da MSG25,MSG26,MSG27,MSG28,MSG29,MSG30,MNONAME,MIOERR
-	.da MNODISK,MSG34,MSG35,MSG36,MSG37,MSG38
-	.da MSG10a,MSG10b,MSG10c,MSG10d,MSG10e,MWAIT,MCDIR
+	.da MSG25,MSG26,MSG27,MSG28,MSG28a,MSG29,MSG30,MNONAME,MIOERR
+	.da MNODISK,MSG34,MSG35
+	.da MLOGO1,MLOGO2,MLOGO3,MLOGO4,MLOGO5,MWAIT,MCDIR
 
 MSG01	.as -'0.0.3'
 	.db $00
@@ -417,6 +487,8 @@ MSG27	.as -'BAUD RATE'
 	.db $00
 MSG28	.as -'ENABLE SOUND'
 	.db $00
+MSG28a	.as -'SAVE CONFIG'
+	.db $00
 MSG29	.as -'SPACE TO CONTINUE, ESC TO STOP: '
 	.db $00
 MSG30	.as -'END OF DIRECTORY, TYPE SPACE: '
@@ -431,20 +503,14 @@ MSG34	.as -'FILE EXISTS'
 	.db $00
 MSG35	.as -'IMAGE/DRIVE SIZE MISMATCH!'
 	.db $8d,$00
-MSG36	.as -'UNABLE TO OPEN FILE'
-	.DB $8d,$00
-MSG37	.as -'UNABLE TO CHANGE DIRECTORY'
-	.DB $8d,$00
-MSG38	.as -'FILE FORMAT NOT RECOGNIZED'
-	.DB $8d,$00
-MSG10a	.db $a0,$20,$20,$a0,$a0,$20,$20,$20,$a0,$a0,$20,$20,$20,$20,$20,$8d,$00
-MSG10b	.db $20,$a0,$a0,$20,$a0,$20,$a0,$a0,$20,$a0,$a0,$a0,$20,$8d,$00
-MSG10c	.db $20,$20,$20,$20,$a0,$20,$a0,$a0,$20,$a0,$a0,$a0,$20,$8d,$00
-MSG10d	.db $20,$a0,$a0,$20,$a0,$20,$a0,$a0,$20,$a0,$a0,$a0,$20,$8d,$00
-MSG10e	.db $20,$a0,$a0,$20,$a0,$20,$20,$20,$a0,$a0,$a0,$a0,$20,$a0
+MLOGO1	.db $a0,$20,$20,$a0,$a0,$20,$20,$20,$a0,$a0,$20,$20,$20,$20,$20,$8d,$00
+MLOGO2	.db $20,$a0,$a0,$20,$a0,$20,$a0,$a0,$20,$a0,$a0,$a0,$20,$8d,$00
+MLOGO3	.db $20,$20,$20,$20,$a0,$20,$a0,$a0,$20,$a0,$a0,$a0,$20,$8d,$00
+MLOGO4	.db $20,$a0,$a0,$20,$a0,$20,$a0,$a0,$20,$a0,$a0,$a0,$20,$8d,$00
+MLOGO5	.db $20,$a0,$a0,$20,$a0,$20,$20,$20,$a0,$a0,$a0,$a0,$20,$a0
 	.as -'PRO'
 	.db $8d,$00
-MWAIT	.as -'WAITING FOR ANSWER, ESC CANCELS'
+MWAIT	.as -'WAITING FOR HOST REPLY, ESC CANCELS'
 	.DB $00
 MCDIR	.as -'DIRECTORY: '
 	.DB $00
@@ -481,21 +547,19 @@ PMSG25	.eq $30
 PMSG26	.eq $32
 PMSG27	.eq $34
 PMSG28	.eq $36
-PMSG29	.eq $38
-PMSG30	.eq $3a
-PMNONAME	.eq $3c
-PMIOERR	.eq $3e
-PMNODISK	.eq $40
-PMSG34	.eq $42
-PMSG35	.eq $44
-PMSG36	.eq $46
-PMSG37	.eq $48
-PMSG38	.eq $4a
-PMSG10a	.eq $4c
-PMSG10b	.eq $4e
-PMSG10c	.eq $50
-PMSG10d	.eq $52
-PMSG10e	.eq $54
-PMWAIT	.eq $56
-PMCDIR	.eq $58
+PMSG28a	.eq $38
+PMSG29	.eq $3a
+PMSG30	.eq $3c
+PMNONAME	.eq $3e
+PMIOERR	.eq $40
+PMNODISK	.eq $42
+PMSG34	.eq $44
+PMSG35	.eq $46
+PMLOGO1	.eq $48
+PMLOGO2	.eq $4a
+PMLOGO3	.eq $4c
+PMLOGO4	.eq $4e
+PMLOGO5	.eq $50
+PMWAIT	.eq $52
+PMCDIR	.eq $54
 

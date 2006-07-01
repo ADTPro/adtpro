@@ -38,15 +38,15 @@ PD_INFO	.eq $C4
 ch	.eq $24		Character horizontal position
 cv	.eq $25		Character vertical position
 BASL	.eq $28		Base Line Address
-INVFLG	.eq $32		INVERSE FLAG
-CLREOL	.eq $FC9C	CLEAR TO END OF LINE
-CLREOP	.eq $FC42	CLEAR TO END OF SCREEN
-HOME	.eq $FC58	CLEAR WHOLE SCREEN
-TABV	.eq $FB5B	SET BASL FROM A
-RDKEY	.eq $FD0C	CHARACTER INPUT
-NXTCHAR	.eq $FD75	LINE INPUT
-COUT1	.eq $FDF0	CHARACTER OUTPUT
-CROUT	.eq $FD8E	OUTPUT RETURN
+INVFLG	.eq $32		Inverse flag
+CLREOL	.eq $FC9C	Clear to end of line
+CLREOP	.eq $FC42	Clear to end of screen
+HOME	.eq $FC58	Clear screen
+TABV	.eq $FB5B	Set BASL from Accumulator
+RDKEY	.eq $FD0C	Character input
+NXTCHAR	.eq $FD75	Line input
+COUT1	.eq $FDF0	Character output
+CROUT	.eq $FD8E	Output return character
 PRDEC   .eq $ED24	Print pointer as decimal
 
 *---------------------------------------------------------

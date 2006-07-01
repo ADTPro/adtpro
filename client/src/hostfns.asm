@@ -119,11 +119,11 @@ CD
 	jmp CD.DONE
 
 CD.START
+	ldy #PMWAIT
+	jsr SHOWM1	Tell user to have patience
 	lda #CHR_C	Ask host to Change Directory
 	jsr PUTC
 	jsr SENDFN	Send directory name
-	ldy #PMWAIT
-	jsr SHOWM1	Tell user to have patience
 	jsr GETC	Get response from host
 	bne CD.ERROR
 	ldy #PMSG14
@@ -135,6 +135,6 @@ CD.DONE
 
 CD.ERROR
 	tay
-	jsr SHOWM1
+	jsr SHOWHM1
 	jsr PAUSE
 	jmp ABORT
