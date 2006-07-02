@@ -23,6 +23,7 @@ package org.adtpro.gui;
 import java.awt.BorderLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.Rectangle;
 import java.awt.Toolkit;
 import java.awt.Window;
 import java.awt.event.*;
@@ -33,6 +34,7 @@ import javax.swing.*;
 
 import org.adtpro.resources.Messages;
 import org.adtpro.transport.SerialTransport;
+import org.adtpro.ADTProperties;
 import org.adtpro.CommsThread;
 
 /**
@@ -68,6 +70,8 @@ public final class Gui extends JFrame implements ActionListener
   private JProgressBar progressBar;
 
   private JLabel labelMainProgress, labelSubProgress;
+
+  private ADTProperties _properties = new ADTProperties(Messages.getString("PropertiesFileName"));
 
   public Gui(java.lang.String[] args)
   {
@@ -109,13 +113,15 @@ public final class Gui extends JFrame implements ActionListener
     }
     catch (Throwable t)
     {}
+    comboComPort.setSelectedItem(_properties.getProperty("CommPort","COM1")); //$NON-NLS-1$ //$NON-NLS-2$
+
     comboSpeed = new JComboBox();
     comboSpeed.addItem("9600"); //$NON-NLS-1$
     comboSpeed.addItem("19200"); //$NON-NLS-1$
     comboSpeed.addItem("38400"); //$NON-NLS-1$
     comboSpeed.addItem("57600"); //$NON-NLS-1$
     comboSpeed.addItem("115200"); //$NON-NLS-1$
-    comboSpeed.setSelectedItem("115200"); //$NON-NLS-1$
+    comboSpeed.setSelectedItem(_properties.getProperty("CommPortSpeed","115200")); //$NON-NLS-1$ //$NON-NLS-2$
     buttonConnect = new JButton(Messages.getString("Gui.10")); //$NON-NLS-1$
     buttonConnect.addActionListener(this);
 
@@ -363,6 +369,9 @@ public final class Gui extends JFrame implements ActionListener
       setSecondaryText(Messages.getString("Gui.18")); //$NON-NLS-1$
       buttonConnect.setText(Messages.getString("Gui.10")); //$NON-NLS-1$
       clearProgress();
+      _properties.setProperty("CommPort",(String) comboComPort.getSelectedItem());
+      _properties.setProperty("CommPortSpeed",(String) comboSpeed.getSelectedItem());
+      _properties.save();
     }
   }
 
