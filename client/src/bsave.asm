@@ -51,7 +51,7 @@ LEWP
 	lda COMMAND,X
 	sta $0200,X
 	inx
-	cpx LENGTH-COMMAND
+	cpx CMDEND-COMMAND
 	bne LEWP
 	jsr $BE03	Execute the input buffer
 
@@ -63,7 +63,7 @@ LEWP
 	lda $BE0F	Grab the error code out of ProDOS
 	beq BSAVEOK	If no problem - exit
 	jsr $BE0C	Print ProDOS error message
-	jmp	BSAVEDONE
+	jmp BSAVEDONE
 BSAVEOK
 	lda #$16
 	jsr TABV
@@ -73,7 +73,22 @@ BSAVEDONE
 	jsr PAUSE
 	rts
 
-COMMAND	.as -'BSAVE ADTPRO,A$0803,L$'
+*---------------------------------------------------------
+* DRVSLOT - Save initial drive/slot combination
+*---------------------------------------------------------
+
+DRVSLOT
+	lda $BE3C
+	ora #$B0
+	sta CMDSLOT
+	ora #$B0
+	lda $BE3D
+	sta CMDDRV
+	rts
+
+COMMAND	.as -'BSAVE ADTPRO,S'
+CMDSLOT	.as -'6,D'
+CMDDRV	.as	-'1,SA$0803,L$'
 NYBBLE1	.db $00
 NYBBLE2	.db $00
 NYBBLE3	.db $00
