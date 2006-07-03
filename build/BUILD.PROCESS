@@ -14,9 +14,12 @@ platforms that can be integrated into the build system
 (i.e. we end up with a .dsk with the object code on it)
 I'm all for it.
 
-Places where version number is encoded:
-	build/build.xml: <property name="versionString" value="v.r.m" />
-	client/src/print.asm: MSG01 .as -'v.r.m'
-	org/adtpro/resources/messages.properties: Version.0=v.r.m
-	org/adtpro/resources/messages.properties: Gui.7=Apple Disk Transfer ProDOS (ADTPro) v.r.m
+1. Make sure the version number is updated.  Places where 
+   the version number is encoded:
+	*	build/build.xml: <property name="versionString" value="v.r.m" />
+	*	client/src/print.asm: MSG01 .as -'v.r.m'
+	*	org/adtpro/resources/messages.properties: Version.0=v.r.m
+	*	org/adtpro/resources/messages.properties: Gui.7=Apple Disk Transfer ProDOS (ADTPro) v.r.m
 
+2. Tag adtpro project with the version number.  The
+    standard is: v[major]_[minor]_[service]
