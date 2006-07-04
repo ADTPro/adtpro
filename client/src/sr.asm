@@ -38,6 +38,7 @@ SEND
 SM.START
 
 
+	ldy #PMSGSOU	'SELECT SOURCE VOLUME'
 	jsr PICKVOL
 *			Accumulator now has the index into device table
 	bmi SM.DONE1
@@ -164,6 +165,7 @@ SR.START
 	jmp PCERROR
 
 SR.OK
+	ldy #PMSGDST	'SELECT DESTINATION VOLUME'
 	jsr PICKVOL
 *			Accumulator now has the index into device table
 * 			Validate size matches volume picked
@@ -178,9 +180,20 @@ SR.OK
 	bne SR.MISMATCH
 	jmp SR.OK2
 SR.MISMATCH
+	lda #$00
+	sta <CH
+	lda #$14
+	jsr TABV
+	jsr CLREOP
+
+	lda #$15
+	jsr TABV
 	ldy #PMSG35
-	jsr SHOWM1
-	jmp COMPLETE.1
+	jsr SHOWMSG
+	ldy #PMFORC
+	jsr YN
+	bne SR.OK2
+	jmp COMPLETE.2
 
 SR.OK2
 	lda UNITNBR
@@ -193,8 +206,8 @@ SR.OK2
 	beq SR.OK3
 	jmp PCERROR
 
-	* Here's where we set up a loop
-	* for all blocks to transfer.
+*			Here's where we set up a loop
+*			for all blocks to transfer.
 SR.OK3
 	ldx SLOWA
 	jsr PREPPRG
@@ -267,6 +280,7 @@ COMPLETE
 	jsr CROUT
 COMPLETE.1
 	jsr PAUSE
+COMPLETE.2
 	rts
 
 CURBLK	.db $00,$00

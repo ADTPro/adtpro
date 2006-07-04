@@ -19,12 +19,58 @@
 *
 
 *---------------------------------------------------------
+* SHOWLOGO
+* 
+* Prints the logo on the screen
+*---------------------------------------------------------
+SHOWLOGO
+	lda #$0d
+	sta <CH
+	lda #$03
+	jsr TABV
+
+	ldy #PMLOGO1	Main title - Line 1
+	jsr SHOWMSG
+
+    	lda #$0d
+	sta <CH
+	ldy #PMLOGO2	Main title - line 2
+	jsr SHOWMSG
+
+    	lda #$0d
+	sta <CH
+	ldy #PMLOGO3	Main title - line 3
+	jsr SHOWMSG
+
+    	lda #$0d
+	sta <CH
+	ldy #PMLOGO4	Main title - line 4
+	jsr SHOWMSG
+
+    	lda #$0d
+	sta <CH
+	ldy #PMLOGO5	Main title - line 5
+	jsr SHOWMSG
+
+	jsr CROUT
+    	lda #$12
+	sta <CH
+	ldy #PMSG01	Version number
+	jsr SHOWMSG
+	rts
+
+*---------------------------------------------------------
 * PRINTVOL
 * 
 * Prints on-line volume information 
+* Y holds pointer to top line message
 *---------------------------------------------------------
 PRINTVOL
-	JSR HOME	Clear screen
+	tya
+	pha
+	jsr HOME	Clear screen
+	pla
+	tay
 	jsr DRAWBDR
 	jsr ONLINE
 	rts
@@ -116,11 +162,10 @@ P.OFF	.db $00
 * Draws the volume picker decorative border
 *---------------------------------------------------------
 DRAWBDR
-	lda #$09
+	lda #$07
 	sta <CH
 	lda #$00
 	jsr TABV
-	ldy #PMSG18	'SELECT TRANSFER VOLUME'
 	jsr SHOWMSG
 
 	lda #$07	Column
@@ -174,6 +219,7 @@ DRAWBDR
 PREPPRG
 	stx SLOWX	Preserve X
 	jsr HOME
+	jsr SHOWLOGO
 	lda #H_NUM1	Column
 	sta <CH
 	lda #V_MSG	Row
@@ -420,10 +466,10 @@ PHMMAX	.eq	$06	This must match the largest host message
 MSGTBL
 	.da MSG01,MSG02,MSG03,MSG04,MSG05,MSG06,MSG07,MSG08
 	.da MSG09,MSG10,MSG11,MSG12,MSG13,MSG14,MSG15,MSG16
-	.da MSG17,MSG18,MSG19,MSG20,MSG21,MSG22,MSG23,MSG24
+	.da MSG17,MSGSOU,MSGDST,MSG19,MSG20,MSG21,MSG22,MSG23,MSG24
 	.da MSG25,MSG26,MSG27,MSG28,MSG28a,MSG29,MSG30,MNONAME,MIOERR
 	.da MNODISK,MSG34,MSG35
-	.da MLOGO1,MLOGO2,MLOGO3,MLOGO4,MLOGO5,MWAIT,MCDIR
+	.da MLOGO1,MLOGO2,MLOGO3,MLOGO4,MLOGO5,MWAIT,MCDIR,MFORC
 
 MSG01	.as -'0.0.4'
 	.db $00
@@ -463,9 +509,11 @@ MSG16	.as -'PRESS A KEY TO CONTINUE...'
 	.db $00
 MSG17	.as -"PRODOS VERSION AND ENHANCEMENTS BY DAVID"
 	.as -"SCHMIDT. BASED ON WORKS BY PAUL GUERTIN,"
-	.as -"MARK PERCIVAL, KNUT ROLL-LUND + OTHERS."
+	.as -"MARK PERCIVAL, KNUT ROLL-LUND & OTHERS."
 	.db $00
-MSG18	.as -'SELECT TRANSFER VOLUME'
+MSGSOU	.as -'   SELECT SOURCE VOLUME'
+	.db $00
+MSGDST	.as -'SELECT DESTINATION VOLUME'
 	.db $00
 MSG19	.as -'VOLUMES CURRENTLY ON-LINE:'
 	.db $00
@@ -489,9 +537,9 @@ MSG28	.as -'ENABLE SOUND'
 	.db $00
 MSG28a	.as -'SAVE CONFIG'
 	.db $00
-MSG29	.as -'SPACE TO CONTINUE, ESC TO STOP: '
+MSG29	.as -'KEY TO CONTINUE, ESC TO STOP: '
 	.db $00
-MSG30	.as -'END OF DIRECTORY, TYPE SPACE: '
+MSG30	.as -'END OF DIRECTORY.  HIT A KEY: '
 	.db $00
 MNONAME	.as -'<NO NAME>'
 	.db $00
@@ -511,9 +559,11 @@ MLOGO5	.db $20,$a0,$a0,$20,$a0,$20,$20,$20,$a0,$a0,$a0,$a0,$20,$a0
 	.as -'PRO'
 	.db $8d,$00
 MWAIT	.as -'WAITING FOR HOST REPLY, ESC CANCELS'
-	.DB $00
+	.db $00
 MCDIR	.as -'DIRECTORY: '
-	.DB $00
+	.db $00
+MFORC	.as -'COPY IMAGE DATA ANYWAY? (Y/N):'
+	.db $00
 
 *---------------------------------------------------------
 * Message equates
@@ -536,30 +586,31 @@ PMSG14	.eq $1a
 PMSG15	.eq $1c
 PMSG16	.eq $1e
 PMSG17	.eq $20
-PMSG18	.eq $22
-PMSG19	.eq $24
-PMSG20	.eq $26
-PMSG21	.eq $28
-PMSG22	.eq $2a
-PMSG23	.eq $2c
-PMSG24	.eq $2e
-PMSG25	.eq $30
-PMSG26	.eq $32
-PMSG27	.eq $34
-PMSG28	.eq $36
-PMSG28a	.eq $38
-PMSG29	.eq $3a
-PMSG30	.eq $3c
-PMNONAME	.eq $3e
-PMIOERR	.eq $40
-PMNODISK	.eq $42
-PMSG34	.eq $44
-PMSG35	.eq $46
-PMLOGO1	.eq $48
-PMLOGO2	.eq $4a
-PMLOGO3	.eq $4c
-PMLOGO4	.eq $4e
-PMLOGO5	.eq $50
-PMWAIT	.eq $52
-PMCDIR	.eq $54
-
+PMSGSOU	.eq $22
+PMSGDST	.eq $24
+PMSG19	.eq $26
+PMSG20	.eq $28
+PMSG21	.eq $2a
+PMSG22	.eq $2c
+PMSG23	.eq $2e
+PMSG24	.eq $30
+PMSG25	.eq $32
+PMSG26	.eq $34
+PMSG27	.eq $36
+PMSG28	.eq $38
+PMSG28a	.eq $3a
+PMSG29	.eq $3c
+PMSG30	.eq $3e
+PMNONAME	.eq $40
+PMIOERR	.eq $42
+PMNODISK	.eq $44
+PMSG34	.eq $46
+PMSG35	.eq $48
+PMLOGO1	.eq $4a
+PMLOGO2	.eq $4c
+PMLOGO3	.eq $4e
+PMLOGO4	.eq $50
+PMLOGO5	.eq $52
+PMWAIT	.eq $54
+PMCDIR	.eq $56
+PMFORC	.eq $58

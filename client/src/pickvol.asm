@@ -24,6 +24,7 @@
 * Returns:
 *   Index into the device table in A
 *   $FF in A if escape was hit
+*   Y holds the pointer to the top line message
 *---------------------------------------------------------
 PICKVOL
 	jsr PRINTVOL
@@ -45,7 +46,7 @@ VOLLOOP	lda #$23	Column
 	JSR TABV
 
 	jsr rdkey
-	AND #$DF	CONVERT TO UPPERCASE
+	AND #$DF	Convert to upper case
 
 vKEYDN	cmp #$8a
 	bne VKEYR

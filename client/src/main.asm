@@ -22,9 +22,9 @@
 	.cr 6502
 	.tf adtpro,bin
 
-*------------------------------------
+*---------------------------------------------------------
 * Code
-*------------------------------------
+*---------------------------------------------------------
 PBEGIN
 	cld
 
@@ -47,49 +47,17 @@ PBEGIN
 	rts
 
 
-*------------------------------------
+*---------------------------------------------------------
 * Main loop
-*------------------------------------
+*---------------------------------------------------------
 MAINLUP
 	jsr HOME	Clear screen
 MAINL
 MOD0	bit $C088	CLEAR SSC INPUT REGISTER
 
-	lda #$0d
-	sta <CH
-	lda #$03
-	jsr TABV
+	jsr	SHOWLOGO
 
-	ldy #PMLOGO1	Main title - Line 1
-	jsr SHOWMSG
-
-    	lda #$0d
-	sta <CH
-	ldy #PMLOGO2	Main title - line 2
-	jsr SHOWMSG
-
-    	lda #$0d
-	sta <CH
-	ldy #PMLOGO3	Main title - line 3
-	jsr SHOWMSG
-
-    	lda #$0d
-	sta <CH
-	ldy #PMLOGO4	Main title - line 4
-	jsr SHOWMSG
-
-    	lda #$0d
-	sta <CH
-	ldy #PMLOGO5	Main title - line 5
-	jsr SHOWMSG
-
-	jsr CROUT
-    	lda #$12
-	sta <CH
-	ldy #PMSG01	Version number
-	jsr SHOWMSG
-
-    	lda #$07
+   	lda #$07
 	sta <CH
 	lda #$0e
 	jsr TABV
@@ -101,14 +69,14 @@ MOD0	bit $C088	CLEAR SSC INPUT REGISTER
 	ldy #PMSG03	Prompt line 2
 	jsr SHOWMSG
 
-*------------------------------------
+*---------------------------------------------------------
 * KBDLUP
 *
 * Keyboard handler, dispatcher
-*------------------------------------
+*---------------------------------------------------------
 KBDLUP
 	jsr RDKEY	GET ANSWER
-	AND #$DF	CONVERT TO UPPERCASE
+	and #$DF	Conver to upper case
 
 	cmp #"S"	SEND?
 	bne KRECV	NOPE, TRY RECEIVE
@@ -169,6 +137,7 @@ KABOUT	cmp #$9F	ABOUT MESSAGE? ("?" KEY)
 
 KVOLUMS	cmp #"V"	Volumes online?
 	bne KQUIT1	NOPE, TRY Escape
+	ldy #PMSGSOU	'SELECT SOURCE VOLUME'
 	jsr PICKVOL	Pick a volume - A has index into DEVICES table
 	jmp MAINLUP
 
@@ -184,9 +153,9 @@ KQUIT	cmp #"Q"	Quit?
 
 FORWARD	jmp MAINL
 
-*------------------------------------
+*---------------------------------------------------------
 * Final message, cleanup
-*------------------------------------
+*---------------------------------------------------------
 CLEANUP
 	jsr home
 	ldy #PMSG04	Goodbye, and thanks for all the fish!
@@ -222,9 +191,9 @@ NOBEEP	rts
 
 
 
-*------------------------------------
+*---------------------------------------------------------
 * Pull in all the rest of the code
-*------------------------------------
+*---------------------------------------------------------
 	.in online.asm
 	.in print.asm
 	.in rw.asm

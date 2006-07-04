@@ -52,3 +52,33 @@ PAUSE
 	jsr SHOWMSG
 	jsr RDKEY
 	rts
+
+*---------------------------------------------------------
+* YN - print a prompt message, wait for Y/N
+* A 'Y' response leaves a 1 in the accumulator
+* A 'N' response leaves a 0 in the accumulator
+*---------------------------------------------------------
+YN
+	lda #$00
+	sta <CH
+	lda #$16
+	jsr TABV
+	jsr CLREOP
+	ldy #PMFORC
+	jsr SHOWM1
+YNLOOP	jsr RDKEY
+	and #$DF	Convert to upper case
+	cmp #"Y"
+	beq YNYES
+	cmp #"N"
+	beq YNNO
+	cmp #CHR_ESC	ESCAPE = No
+	beq YNNO
+	jmp YNLOOP
+YNYES
+	lda #$01
+	jmp YNDONE
+YNNO
+	lda #$00
+YNDONE	
+	rts
