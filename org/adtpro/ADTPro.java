@@ -31,8 +31,8 @@ public class ADTPro
 
   public static void main(java.lang.String[] args)
   {
-    System.out.print(Messages.getString("Gui.0")); //$NON-NLS-1$
-    System.out.println(Messages.getString("Version.0")); //$NON-NLS-1$
+    System.out.print(Messages.getString("Gui.Title")); //$NON-NLS-1$
+    System.out.println(" " + Messages.getString("Version.Number")); //$NON-NLS-1$
     System.out.println(""); //$NON-NLS-1$
     System.out.print(Messages.getString("Gui.RXTX")); //$NON-NLS-1$
     new Gui(args);

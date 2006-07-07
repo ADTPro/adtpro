@@ -91,7 +91,13 @@ public class CommsThread extends Thread
           _parent.setMainText(Messages.getString("CommsThread.16")); //$NON-NLS-1$
           _parent.setSecondaryText(""); //$NON-NLS-1$
           // System.out.println("Put/Send..."); //$NON-NLS-1$
-          receiveDisk();
+          receiveDisk(false);
+          break;
+        case (byte) 209: // Put (Send), forced
+          _parent.setMainText(Messages.getString("CommsThread.16")); //$NON-NLS-1$
+          _parent.setSecondaryText(""); //$NON-NLS-1$
+          // System.out.println("Put/Send..."); //$NON-NLS-1$
+          receiveDisk(true);
           break;
         case (byte) 199: // Get (Receive)
           _parent.setMainText(Messages.getString("CommsThread.3")); //$NON-NLS-1$
@@ -257,7 +263,7 @@ public class CommsThread extends Thread
     }
   }
 
-  public void receiveDisk()
+  public void receiveDisk(boolean force)
   /* Main receive routine - Host <- Apple (Apple sends) */
   {
     // System.out.print("Waiting for name..."); //$NON-NLS-1$
@@ -282,6 +288,8 @@ public class CommsThread extends Thread
     // System.out.println(" received sizeHi: " + UnsignedByte.intValue(sizehi));
     // //$NON-NLS-1$
     length = UnsignedByte.intValue(sizelo, sizehi);
+    if (f.isFile() && (force == false))
+      _transport.writeByte(0x08); // New ADT protocol: HMFEX, 'FILE ALREADY EXISTS AT HOST.'
     _parent.setProgressMaximum(length);
     try
     {
@@ -368,11 +376,11 @@ public class CommsThread extends Thread
     }
     catch (FileNotFoundException ex)
     {
-      _transport.writeByte(0x02); // New ADT protocol - unable to write file
+      _transport.writeByte(0x02); // New ADT protocol: HMFIL - unable to write file
     }
     catch (IOException ex2)
     {
-      _transport.writeByte(0x02); // New ADT protocol - unable to write file
+      _transport.writeByte(0x02); // New ADT protocol: HMFIL - unable to write file
     }
     finally
     {
@@ -394,7 +402,7 @@ public class CommsThread extends Thread
     int length;
     boolean sendSuccess = false;
     /*
-     * ADT PROTOCOL: receive the requested file name
+     * ADT protocol: receive the requested file name
      */
     String name = receiveName();
 
@@ -476,13 +484,13 @@ public class CommsThread extends Thread
       }
       else
       {
-        // New ADT protocol - can't open the file
+        // New ADT protocol: HMFIL - can't open the file
         _transport.writeByte(0x02);
       }
     }
     else
     {
-      // New ADT protocol - can't open the file
+      // New ADT protocol: HMFIL - can't open the file
       _transport.writeByte(0x02);
     }
   }
@@ -495,7 +503,7 @@ public class CommsThread extends Thread
   public void send140kDisk()
   {
     /*
-     * ADT PROTOCOL: receive the requested file name
+     * ADT protocol: receive the requested file name
      */
     String name = receiveName();
     byte ack;
@@ -522,7 +530,7 @@ public class CommsThread extends Thread
       if (length != (long) 143360)
       {
         /*
-         * ADT PROTOCOL: send error (message) number
+         * ADT protocol: send error (message) number
          */
         // System.out.println("Not a 140k image"); //$NON-NLS-1$
         _transport.writeByte(30); // ADT protocol - not a 140k image
@@ -531,7 +539,7 @@ public class CommsThread extends Thread
       else
       {
         /*
-         * ADT PROTOCOL: send trigger
+         * ADT protocol: send trigger
          */
         _parent.setSecondaryText(name);
         // If the file exists, is pristine, etc., then...
@@ -539,7 +547,7 @@ public class CommsThread extends Thread
         try
         {
           /*
-           * ADT PROTOCOL: receive acknowledgement for "previous" sector
+           * ADT protocol: receive acknowledgement for "previous" sector
            */
           ack = waitForData();
           if (ack == 0x06)
@@ -571,7 +579,7 @@ public class CommsThread extends Thread
             if (sendSuccess)
             {
               /*
-               * ADT PROTOCOL: receive final error report
+               * ADT protocol: receive final error report
                */
               byte report = waitForData();
               if (report == 0x00)

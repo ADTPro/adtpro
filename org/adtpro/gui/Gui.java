@@ -23,7 +23,6 @@ package org.adtpro.gui;
 import java.awt.BorderLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
-import java.awt.Rectangle;
 import java.awt.Toolkit;
 import java.awt.Window;
 import java.awt.event.*;
@@ -76,30 +75,35 @@ public final class Gui extends JFrame implements ActionListener
   public Gui(java.lang.String[] args)
   {
     addWindowListener(new WindowCloseMonitor());
-    setTitle(Messages.getString("Gui.0") + " " + Messages.getString("Version.0")); //$NON-NLS-1$ //$NON-NLS-2$
+    setTitle(Messages.getString("Gui.Title") + " " + Messages.getString("Version.Number")); //$NON-NLS-1$ //$NON-NLS-2$
     try
     {
       setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getResource("/org/adtpro/resources/ADTPro.png")));
     }
     catch (Throwable ex)
     {}
+    String tempDir = _properties.getProperty("WorkingDirectory",null); //$NON-NLS-1$
+    if (tempDir != null)
+      setWorkingDirectory(tempDir);
 
     JMenuBar menuBar = new JMenuBar();
     JPanel mainPanel = new JPanel(new GridBagLayout());
     this.getContentPane().add(mainPanel, BorderLayout.CENTER);
 
-    JMenu menuFile = new JMenu(Messages.getString("Gui.1")); //$NON-NLS-1$
-    MenuAction quitAction = new MenuAction(Messages.getString("Gui.2")); //$NON-NLS-1$
+    JMenu menuFile = new JMenu(Messages.getString("Gui.File")); //$NON-NLS-1$
+    MenuAction cdAction = new MenuAction(Messages.getString("Gui.CD")); //$NON-NLS-1$
+    menuFile.add(cdAction);
+    MenuAction quitAction = new MenuAction(Messages.getString("Gui.Quit")); //$NON-NLS-1$
     menuFile.add(quitAction);
     menuBar.add(menuFile);
-    JMenu menuHelp = new JMenu(Messages.getString("Gui.5")); //$NON-NLS-1$
-    MenuAction aboutAction = new MenuAction(Messages.getString("Gui.6")); //$NON-NLS-1$
+    JMenu menuHelp = new JMenu(Messages.getString("Gui.Help")); //$NON-NLS-1$
+    MenuAction aboutAction = new MenuAction(Messages.getString("Gui.About")); //$NON-NLS-1$
     menuHelp.add(aboutAction);
     menuBar.add(menuHelp);
     this.setJMenuBar(menuBar);
 
-    labelComPort = new JLabel(Messages.getString("Gui.3"), SwingConstants.LEFT); //$NON-NLS-1$
-    labelSpeed = new JLabel(Messages.getString("Gui.4"), SwingConstants.LEFT); //$NON-NLS-1$
+    labelComPort = new JLabel(Messages.getString("Gui.Port"), SwingConstants.LEFT); //$NON-NLS-1$
+    labelSpeed = new JLabel(Messages.getString("Gui.Speed"), SwingConstants.LEFT); //$NON-NLS-1$
     comboComPort = new JComboBox();
     try
     {
@@ -122,11 +126,11 @@ public final class Gui extends JFrame implements ActionListener
     comboSpeed.addItem("57600"); //$NON-NLS-1$
     comboSpeed.addItem("115200"); //$NON-NLS-1$
     comboSpeed.setSelectedItem(_properties.getProperty("CommPortSpeed","115200")); //$NON-NLS-1$ //$NON-NLS-2$
-    buttonConnect = new JButton(Messages.getString("Gui.10")); //$NON-NLS-1$
+    buttonConnect = new JButton(Messages.getString("Gui.Disconnect")); //$NON-NLS-1$
     buttonConnect.addActionListener(this);
 
-    labelMainProgress = new JLabel(Messages.getString("Gui.12")); //$NON-NLS-1$
-    labelSubProgress = new JLabel(Messages.getString("Gui.13")); //$NON-NLS-1$
+    labelMainProgress = new JLabel(Messages.getString("Gui.Quiesced")); //$NON-NLS-1$
+    labelSubProgress = new JLabel(Messages.getString("Gui.Disconnected")); //$NON-NLS-1$
     progressBar = new JProgressBar();
     progressBar.setString(""); //$NON-NLS-1$
     progressBar.setMaximum(280);
@@ -189,7 +193,7 @@ public final class Gui extends JFrame implements ActionListener
     _parent = this;
     this.pack();
     setBounds(FrameUtils.center(this.getSize()));
-    buttonConnect.setText(Messages.getString("Gui.11")); //$NON-NLS-1$
+    buttonConnect.setText(Messages.getString("Gui.Connect")); //$NON-NLS-1$
     buttonConnect.requestFocus();
     this.show();
   }
@@ -254,6 +258,7 @@ public final class Gui extends JFrame implements ActionListener
     if (tempWorkingDirectory != null)
     {
       _workingDirectory = tempWorkingDirectory;
+      saveProperties();
       rc = 0x00;
     }
     return rc;
@@ -327,18 +332,37 @@ public final class Gui extends JFrame implements ActionListener
 
     public void actionPerformed(ActionEvent e)
     {
-      if (e.getActionCommand().equals(Messages.getString("Gui.2"))) //$NON-NLS-1$
+      if (e.getActionCommand().equals(Messages.getString("Gui.Quit"))) //$NON-NLS-1$
       {
         _parent.setVisible(false);
         _parent.dispose();
         System.exit(0);
       }
       else
-        if (e.getActionCommand().equals(Messages.getString("Gui.6"))) //$NON-NLS-1$
+        if (e.getActionCommand().equals(Messages.getString("Gui.About"))) //$NON-NLS-1$
         {
-          JOptionPane.showMessageDialog(null, Messages.getString("Gui.7"), Messages.getString("Gui.6"),
+          JOptionPane.showMessageDialog(null, Messages.getString("Gui.AboutText"), Messages.getString("Gui.About"),
               JOptionPane.INFORMATION_MESSAGE);
         }
+        else
+          if (e.getActionCommand().equals(Messages.getString("Gui.CD"))) //$NON-NLS-1$
+          {
+            JFileChooser jc = new JFileChooser();
+            jc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+            jc.setCurrentDirectory(new File(_parent.getWorkingDirectory()));
+            int rc = jc.showDialog(_parent,Messages.getString("Gui.CDSet"));
+            if (rc == 0)
+            {
+              if (jc.getSelectedFile().isDirectory())
+              {
+                _parent.setWorkingDirectory(jc.getSelectedFile().toString());
+                _parent.setSecondaryText(jc.getSelectedFile().toString());
+                saveProperties();
+              }
+              else
+                _parent.setSecondaryText(Messages.getString("Gui.InvalidCD"));
+            }
+          }
     }
   }
 
@@ -351,9 +375,9 @@ public final class Gui extends JFrame implements ActionListener
         commsThread.interrupt();
         commsThread.requestStop();
         commsThread = null;
-        setMainText(Messages.getString("Gui.12")); //$NON-NLS-1$
-        setSecondaryText(Messages.getString("Gui.13")); //$NON-NLS-1$
-        buttonConnect.setText(Messages.getString("Gui.11")); //$NON-NLS-1$
+        setMainText(Messages.getString("Gui.Quiesced")); //$NON-NLS-1$
+        setSecondaryText(Messages.getString("Gui.Disconnected")); //$NON-NLS-1$
+        buttonConnect.setText(Messages.getString("Gui.Connect")); //$NON-NLS-1$
         clearProgress();
       }
       catch (Throwable throwable)
@@ -365,15 +389,24 @@ public final class Gui extends JFrame implements ActionListener
     {
       commsThread = new CommsThread(this, (String) comboComPort.getSelectedItem(), (String) comboSpeed.getSelectedItem());
       commsThread.start();
-      setMainText(Messages.getString("Gui.12")); //$NON-NLS-1$
-      setSecondaryText(Messages.getString("Gui.18")); //$NON-NLS-1$
-      buttonConnect.setText(Messages.getString("Gui.10")); //$NON-NLS-1$
+      setMainText(Messages.getString("Gui.Quiesced")); //$NON-NLS-1$
+      setSecondaryText(Messages.getString("Gui.Connected")); //$NON-NLS-1$
+      buttonConnect.setText(Messages.getString("Gui.Disconnect")); //$NON-NLS-1$
       clearProgress();
-      _properties.setProperty("CommPort",(String) comboComPort.getSelectedItem());
-      _properties.setProperty("CommPortSpeed",(String) comboSpeed.getSelectedItem());
-      _properties.save();
+      saveProperties();
     }
   }
+
+  public void saveProperties()
+  {
+    if (comboComPort != null)
+      _properties.setProperty("CommPort",(String) comboComPort.getSelectedItem());
+    if (comboSpeed != null)
+      _properties.setProperty("CommPortSpeed",(String) comboSpeed.getSelectedItem());
+    _properties.setProperty("WorkingDirectory",getWorkingDirectory());
+    _properties.save();
+  }
+
 
   public static class WindowCloseMonitor extends WindowAdapter
   {

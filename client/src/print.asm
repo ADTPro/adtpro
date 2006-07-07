@@ -308,7 +308,7 @@ SHOWHMSG
 	beq HGARBAGE
 	tya
 	cmp PHMMAX If it's greater than max, it's garbage
-	bcs	HGARBAGE
+	bcs HGARBAGE
 	jmp HMOK
 HGARBAGE
 	ldy #PHMGBG
@@ -438,16 +438,18 @@ INUM	.db $00
 *---------------------------------------------------------
 
 HMSGTBL
-	.da HMGBG,HMFIL,HMFMT,HMDIR
+	.da HMGBG,HMFIL,HMFMT,HMDIR,HMFEX
 
 HMGBG	.as -'GARBAGE RECEIVED FROM HOST'
-	.DB $8d,$00
+	.db $8d,$00
 HMFIL	.as -'UNABLE TO OPEN FILE'
-	.DB $8d,$00
+	.db $8d,$00
 HMFMT	.as -'FILE FORMAT NOT RECOGNIZED'
-	.DB $8d,$00
+	.db $8d,$00
 HMDIR	.as -'UNABLE TO CHANGE DIRECTORY'
-	.DB $8d,$00
+	.db $8d,$00
+HMFEX	.as -'FILE ALREADY EXISTS AT HOST.'
+	.db $00
 
 *---------------------------------------------------------
 * Host message equates
@@ -457,7 +459,8 @@ PHMGBG	.eq $00
 PHMFIL	.eq $02
 PHMFMT	.eq $04
 PHMDIR	.eq $06
-PHMMAX	.eq	$06	This must match the largest host message
+PHMFEX	.eq $08
+PHMMAX	.eq $08	This must match the largest host message
 
 *---------------------------------------------------------
 * Client messages
@@ -472,6 +475,7 @@ MSGTBL
 	.da MLOGO1,MLOGO2,MLOGO3,MLOGO4,MLOGO5,MWAIT,MCDIR,MFORC
 
 MSG01	.as -'0.0.4'
+*MSG01	.as -'v.r.m'
 	.db $00
 MSG02	.as -'(S)END (R)ECEIVE (D)IR (C)D'
 	.db $8d,$8d,$00

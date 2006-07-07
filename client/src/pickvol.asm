@@ -48,7 +48,11 @@ VOLLOOP	lda #$23	Column
 	jsr rdkey
 	AND #$DF	Convert to upper case
 
-vKEYDN	cmp #$8a
+VKEYDN	cmp #$8a
+	bne VKSPACE
+	jmp VKEYD
+
+VKSPACE	cmp #$80
 	bne VKEYR
 	jmp VKEYD
 
@@ -57,9 +61,16 @@ VKEYR	cmp #$95
 
 VKEYD	lda VCURROW
 	cmp LASTVOL
-	beq VOLLOOP	NOP if hit down on the bottom row
+	beq LOOPUP	Loop around to the top again
 	jsr INVROW
 	inc VCURROW
+	jsr INVROW
+	jmp VOLLOOP
+
+LOOPUP
+	jsr INVROW
+	lda #$00
+	sta VCURROW
 	jsr INVROW
 	jmp VOLLOOP
 
@@ -71,9 +82,16 @@ VKEYL	cmp #$88
 	bne VENTER
 
 VKEYU	lda VCURROW
-	beq VOLLOOP	NOP if hit up on the top row
+	beq LOOPDN	Loop around to bottom again
 	jsr INVROW
 	dec VCURROW
+	jsr INVROW
+	jmp VOLLOOP
+
+LOOPDN
+	jsr INVROW
+	lda LASTVOL
+	sta VCURROW
 	jsr INVROW
 	jmp VOLLOOP
 
@@ -97,7 +115,9 @@ VENTER	cmp #$8d	Process enter
 	rts
 
 VESC	cmp #$9B
-	bne VOLLOOP	No, it was an unknown key - loop back around
+	beq ESCAPE
+	jmp VOLLOOP	No, it was an unknown key - loop back around
+ESCAPE
 	lda #$FF	Set accumulator negative - no choice made
 	rts		Back out to caller
 

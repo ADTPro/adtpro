@@ -35,9 +35,8 @@ SEND
 	bne SM.START
 	jmp SM.DONE
 	* Validate the filename won't overwite
+
 SM.START
-
-
 	ldy #PMSGSOU	'SELECT SOURCE VOLUME'
 	jsr PICKVOL
 *			Accumulator now has the index into device table
@@ -46,6 +45,12 @@ SM.START
 
 	lda UNITNBR	Set up the unit number
 	sta PARMBUF+1
+
+	lda #$00
+	sta <CH
+	lda #$14
+	jsr TABV
+	jsr CLREOP
 
 	ldy #PMWAIT
 	jsr SHOWM1	Tell user to have patience
@@ -62,7 +67,22 @@ SM.START
 
 	jsr GETC	Get response from host
 	beq PCOK
-	jmp PCERROR
+	cmp #PHMFEX	Does the file already exist?
+	bne PCERROR	We only expect 0 or 8 for return codes.
+	jsr SHOWHMSG
+	ldy #PMFORC
+	jsr YN		Ask to overwrite
+	beq PCOK
+
+PCERROR
+	pha
+	ldy #PMSG13
+	jsr SHOWM1
+	pla
+	tay
+	jsr SHOWHMSG
+	jsr PAUSE
+	jmp BABORT
 
 SM.DONE1
 	rts
@@ -126,17 +146,6 @@ SM.PARTIAL
 
 	jsr COMPLETE
 SM.DONE	rts
-
-PCERROR
-	pha
-	ldy #PMSG13
-	jsr SHOWM1
-	pla
-	tay
-	jsr SHOWHMSG
-	jsr PAUSE
-	jmp BABORT
-
 
 *---------------------------------------------------------
 * RECEIVE
@@ -260,10 +269,10 @@ SR.PARTIAL
 	cmp NUMBLKS	Compare low-order num blocks byte
 	bcc SR.MORE
 
-	lda #CHR_ACK	SEND LAST ACK
+	lda #CHR_ACK	Send last ACK
 	jsr PUTC
 	lda #$00	Should be errors...
-	jsr PUTC	SEND ERROR FLAG TO PC
+	jsr PUTC	Send error flag to host
 
 	jsr COMPLETE
 SR.DONE	rts
@@ -537,19 +546,19 @@ RECVERR
 * CRC is computed and stored
 *---------------------------------------------------------
 RECVHBLK
-	ldy #0		START AT BEGINNING OF BUFFER
+	ldy #00		Start at beginning of buffer
 RC1
-	jsr GETC	GET DIFFERENCE
-	beq RC2		IF ZERO, GET NEW INDEX
-	sta (BLKPTR),Y	ELSE PUT CHAR IN BUFFER
-	iny		AND INCREMENT INDEX
-	bne RC1		LOOP IF NOT AT BUFFER END
-	rts		ELSE RETURN
+	jsr GETC	Get difference
+	beq RC2		If zero, get new index
+	sta (BLKPTR),Y	else put char in buffer
+	iny		...and increment index
+	bne RC1		Loop if not at end of buffer
+	rts		...else return
 RC2
-	jsr GETC	GET NEW INDEX
-	tay		IN Y REGISTER
-	bne RC1		LOOP IF INDEX <> 0
-	rts		ELSE RETURN
+	jsr GETC	Get new index
+	tay		in the Y register
+	bne RC1		Loop if index <> 0
+	rts		...else return
 
 
 *---------------------------------------------------------
@@ -574,17 +583,24 @@ UDLOOP	lda (BLKPTR),Y	Get new difference
 * PUTC - Send accumulator out the serial line
 *---------------------------------------------------------
 PUTC
+*	pha		UNIT TESTING - remove
+*	lda $C000	UNIT TESTING - remove
+*	cmp #CHR_ESC	UNIT TESTING - remove
+*	beq PABORT	UNIT TESTING - remove
+*	pla		UNIT TESTING - remove
+*	rts		UNIT TESTING - remove
+
 	pha		Push A onto the stack
 PUTC1	lda $C000
-	cmp #CHR_ESC	ESCAPE = ABORT
+	cmp #CHR_ESC	Escape = abort
 	beq PABORT
 
-MOD1	lda $C089	CHECK STATUS BITS
+MOD1	lda $C089	Check status bits
 	and #$70
 	cmp #$10
-	bne PUTC1	OUTPUT REG FULL, LOOP
+	bne PUTC1	Output register is full, so loop
 	pla
-MOD2	sta $C088	PUT CHARACTER
+MOD2	sta $C088	Put character
 	rts
 
 
@@ -592,14 +608,17 @@ MOD2	sta $C088	PUT CHARACTER
 * GETC - GET A CHARACTER FROM SERIAL LINE (XY UNCHANGED)
 *---------------------------------------------------------
 GETC
+*	lda #$00	UNIT TESTING - remove
+*	rts		UNIT TESTING - remove
+
 	lda $C000
-	cmp #CHR_ESC	ESCAPE = ABORT
+	cmp #CHR_ESC	Escape = abort
 	beq PABORT
-MOD3	lda $C089	CHECK STATUS BITS
+MOD3	lda $C089	Check status bits
 	and #$68
 	cmp #$8
-	bne GETC	INPUT REG EMPTY, LOOP
-MOD4	lda $C088	GET CHARACTER
+	bne GETC	Input register empty, loop
+MOD4	lda $C088	Get character
 	rts
 
 PABORT	jmp BABORT
