@@ -131,7 +131,10 @@ RWDIR	.db PD_READ
 	lda RWCHROK
 	jsr COUT1
 	jmp RWOK
-RWBAD	lda #CHR_X
+RWBAD
+	lda #$01
+	sta ECOUNT
+	lda #CHR_X
 	jsr COUT1
 RWOK	inc PARMBUF+3	Advance buffer $100 bytes
 	inc PARMBUF+3	Advance buffer another $100 bytes

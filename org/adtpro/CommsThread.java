@@ -91,13 +91,7 @@ public class CommsThread extends Thread
           _parent.setMainText(Messages.getString("CommsThread.16")); //$NON-NLS-1$
           _parent.setSecondaryText(""); //$NON-NLS-1$
           // System.out.println("Put/Send..."); //$NON-NLS-1$
-          receiveDisk(false);
-          break;
-        case (byte) 209: // Put (Send), forced
-          _parent.setMainText(Messages.getString("CommsThread.16")); //$NON-NLS-1$
-          _parent.setSecondaryText(""); //$NON-NLS-1$
-          // System.out.println("Put/Send..."); //$NON-NLS-1$
-          receiveDisk(true);
+          receiveDisk();
           break;
         case (byte) 199: // Get (Receive)
           _parent.setMainText(Messages.getString("CommsThread.3")); //$NON-NLS-1$
@@ -263,7 +257,7 @@ public class CommsThread extends Thread
     }
   }
 
-  public void receiveDisk(boolean force)
+  public void receiveDisk()
   /* Main receive routine - Host <- Apple (Apple sends) */
   {
     // System.out.print("Waiting for name..."); //$NON-NLS-1$
@@ -288,8 +282,6 @@ public class CommsThread extends Thread
     // System.out.println(" received sizeHi: " + UnsignedByte.intValue(sizehi));
     // //$NON-NLS-1$
     length = UnsignedByte.intValue(sizelo, sizehi);
-    if (f.isFile() && (force == false))
-      _transport.writeByte(0x08); // New ADT protocol: HMFEX, 'FILE ALREADY EXISTS AT HOST.'
     _parent.setProgressMaximum(length);
     try
     {

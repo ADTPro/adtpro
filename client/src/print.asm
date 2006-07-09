@@ -220,7 +220,7 @@ PREPPRG
 	stx SLOWX	Preserve X
 	jsr HOME
 	jsr SHOWLOGO
-	lda #H_NUM1	Column
+	lda #H_BLK	Column
 	sta <CH
 	lda #V_MSG	Row
 	JSR TABV
@@ -307,8 +307,9 @@ SHOWHMSG
 	cmp #$01
 	beq HGARBAGE
 	tya
-	cmp PHMMAX If it's greater than max, it's garbage
-	bcs HGARBAGE
+	clc
+	cmp PHMMAX
+	bcs HGARBAGE	If it's greater than max, it's garbage
 	jmp HMOK
 HGARBAGE
 	ldy #PHMGBG
@@ -438,7 +439,7 @@ INUM	.db $00
 *---------------------------------------------------------
 
 HMSGTBL
-	.da HMGBG,HMFIL,HMFMT,HMDIR,HMFEX
+	.da HMGBG,HMFIL,HMFMT,HMDIR
 
 HMGBG	.as -'GARBAGE RECEIVED FROM HOST'
 	.db $8d,$00
@@ -448,8 +449,6 @@ HMFMT	.as -'FILE FORMAT NOT RECOGNIZED'
 	.db $8d,$00
 HMDIR	.as -'UNABLE TO CHANGE DIRECTORY'
 	.db $8d,$00
-HMFEX	.as -'FILE ALREADY EXISTS AT HOST.'
-	.db $00
 
 *---------------------------------------------------------
 * Host message equates
@@ -459,8 +458,7 @@ PHMGBG	.eq $00
 PHMFIL	.eq $02
 PHMFMT	.eq $04
 PHMDIR	.eq $06
-PHMFEX	.eq $08
-PHMMAX	.eq $08	This must match the largest host message
+PHMMAX	.eq $07	This must be one greater than the largest host message
 
 *---------------------------------------------------------
 * Client messages
@@ -472,7 +470,7 @@ MSGTBL
 	.da MSG17,MSGSOU,MSGDST,MSG19,MSG20,MSG21,MSG22,MSG23,MSG24
 	.da MSG25,MSG26,MSG27,MSG28,MSG28a,MSG29,MSG30,MNONAME,MIOERR
 	.da MNODISK,MSG34,MSG35
-	.da MLOGO1,MLOGO2,MLOGO3,MLOGO4,MLOGO5,MWAIT,MCDIR,MFORC
+	.da MLOGO1,MLOGO2,MLOGO3,MLOGO4,MLOGO5,MWAIT,MCDIR,MFORC,MFEX
 
 MSG01	.as -'0.0.4'
 *MSG01	.as -'v.r.m'
@@ -492,7 +490,7 @@ MSG07	.as -'  READING'
 	.db $00
 MSG08	.as -'  WRITING'
 	.db $00
-MSG09	.as -"00000 OF"
+MSG09	.as -"BLOCK 00000 OF"
 	.db $00
 MSG10	.db $20,$20,$20,$A0,$A0,$20,$20,$20
 	.db $A0,$A0,$20,$A0,$A0,$A0,$20,$8D
@@ -568,6 +566,9 @@ MCDIR	.as -'DIRECTORY: '
 	.db $00
 MFORC	.as -'COPY IMAGE DATA ANYWAY? (Y/N):'
 	.db $00
+MFEX	.as -'FILE ALREADY EXISTS AT HOST.'
+	.db $00
+
 
 *---------------------------------------------------------
 * Message equates
@@ -618,3 +619,4 @@ PMLOGO5	.eq $52
 PMWAIT	.eq $54
 PMCDIR	.eq $56
 PMFORC	.eq $58
+PMFEX	.eq $5a

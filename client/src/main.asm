@@ -39,7 +39,6 @@ PBEGIN
 	jsr MAKETBL	Prepare our CRC tables
 	jsr PARMDFT	RESET PARAMETERS TO DEFAULTS
 	jsr PARMINT	INTERPRET PARAMETERS
-	jsr DRVSLOT	Save initial drive/slot combination for later config BSAVEing
 
 	* And off we go!
 

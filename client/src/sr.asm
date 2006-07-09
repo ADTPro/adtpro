@@ -28,13 +28,50 @@
 *---------------------------------------------------------
 
 *---------------------------------------------------------
+* QUERYFN
+*---------------------------------------------------------
+QUERYFN
+	ldy #PMWAIT
+	jsr SHOWM1	Tell user to have patience
+
+	lda #CHR_Z	Ask host for file size
+	jsr PUTC
+
+	jsr SENDFN	Send file name
+
+	jsr GETC	Get response from host: file size
+	sta HOSTBLX
+	jsr GETC
+	sta HOSTBLX+1
+	jsr GETC	Get response from host: return code/message
+	rts
+
+*---------------------------------------------------------
 * SEND
 *---------------------------------------------------------
 SEND
+	lda #$00
+	sta ECOUNT	Clear error flag
 	jsr GETFN
-	bne SM.START
+	bne SM.VALID
 	jmp SM.DONE
+SM.VALID
 	* Validate the filename won't overwite
+	jsr QUERYFN
+	cmp #$02	File doesn't exist - so everything's ok
+	beq SM.START
+	lda #$00
+	sta <CH
+	lda #$15
+	jsr TABV
+	jsr CLREOP
+	ldy #PMFEX
+	jsr SHOWMSG
+	ldy #PMFORC
+	jsr YN		Ask to overwrite
+	cmp #$01
+	beq SM.START
+	rts
 
 SM.START
 	ldy #PMSGSOU	'SELECT SOURCE VOLUME'
@@ -64,28 +101,18 @@ SM.START
 	jsr PUTC
 	lda NUMBLKS+1
 	jsr PUTC
-
 	jsr GETC	Get response from host
 	beq PCOK
-	cmp #PHMFEX	Does the file already exist?
-	bne PCERROR	We only expect 0 or 8 for return codes.
-	jsr SHOWHMSG
-	ldy #PMFORC
-	jsr YN		Ask to overwrite
-	beq PCOK
-
-PCERROR
-	pha
-	ldy #PMSG13
-	jsr SHOWM1
-	pla
-	tay
-	jsr SHOWHMSG
-	jsr PAUSE
-	jmp BABORT
+	jmp PCERROR
 
 SM.DONE1
 	rts
+
+PCERROR
+	tay
+	jsr SHOWHM1
+	jsr PAUSE
+	jmp BABORT
 
 PCOK
 	* Here's where we set up a loop
@@ -141,8 +168,8 @@ SM.PARTIAL
 	cmp NUMBLKS	Compare low-order num blocks byte
 	bcc SM.MORE
 
-	lda #$00	TODO: This should count errors...
-	jsr PUTC	SEND ERROR FLAG TO PC
+	lda ECOUNT	Errors during send?
+	jsr PUTC	Send error flag to host
 
 	jsr COMPLETE
 SM.DONE	rts
@@ -151,28 +178,17 @@ SM.DONE	rts
 * RECEIVE
 *---------------------------------------------------------
 RECEIVE	
+	lda #$00
+	sta ECOUNT	Clear error flag
 	jsr GETFN
 	bne SR.START
 	jmp SR.DONE
 
 SR.START
-	ldy #PMWAIT
-	jsr SHOWM1	Tell user to have patience
-
-*			Validate the filename exists
-	lda #CHR_Z	Ask host for file size
-	jsr PUTC
-
-	jsr SENDFN	Send file name
-
-	jsr GETC	Get response from host: file size
-	sta HOSTBLX
-	jsr GETC
-	sta HOSTBLX+1
-	jsr GETC	Get response from host: return code/message
+	jsr QUERYFN
+	cmp #$00
 	beq SR.OK
 	jmp PCERROR
-
 SR.OK
 	ldy #PMSGDST	'SELECT DESTINATION VOLUME'
 	jsr PICKVOL
@@ -271,19 +287,24 @@ SR.PARTIAL
 
 	lda #CHR_ACK	Send last ACK
 	jsr PUTC
-	lda #$00	Should be errors...
+	lda ECOUNT	Errors during send?
 	jsr PUTC	Send error flag to host
 
 	jsr COMPLETE
 SR.DONE	rts
 
 COMPLETE
-	lda #$00	Reposition cursor to previous
-	sta <CH		buffer row
-	lda #$16
-	jsr TABV
+*	lda #$00	Reposition cursor to previous
+*	sta <CH		buffer row
+*	lda #$16
+*	jsr TABV
 	ldy #PMSG14
+	jsr SHOWM1
+	lda ECOUNT
+	beq CNOERR
+	ldy #PMSG15
 	jsr SHOWMSG
+CNOERR
 	lda #$a1
 	jsr COUT1
 	jsr CROUT
@@ -404,7 +425,10 @@ SRCOMN
 	lda SRCHROK
 	jmp SROK
 
-SRBAD	lda #CHR_X
+SRBAD
+	lda #$01
+	sta ECOUNT
+	lda #CHR_X
 SROK	jsr COUT1
 	inc BLKLO
 	bne SRNOB
@@ -413,7 +437,8 @@ SRNOB	dec SRBCNT
 	beq SRB.DONE
 	jmp SRCALL
 
-SRB.DONE	rts
+SRB.DONE
+	rts
 
 SRBCNT	.db $00
 
@@ -624,4 +649,5 @@ MOD4	lda $C088	Get character
 PABORT	jmp BABORT
 
 SCOUNT	.db $00
+ECOUNT	.db $00
 

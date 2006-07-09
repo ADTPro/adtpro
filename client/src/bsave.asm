@@ -103,22 +103,7 @@ BSAVEDONE
 	jsr PAUSE
 	rts
 
-*---------------------------------------------------------
-* DRVSLOT - Save initial drive/slot combination
-*---------------------------------------------------------
 
-DRVSLOT
-	lda $BE3C
-	ora #$B0
-*	sta CMDSLOT
-	lda $BE3D
-	ora #$B0
-*	sta CMDDRV
-	rts
-
-*COMMAND	.as -'BSAVE ADTPRO,S'
-*CMDSLOT	.as -'6,D'
-*CMDDRV	.as -'1,A$0803,L$'
 COMMAND	.as -'BSAVE ADTPRO,A$0803,L$'
 NYBBLE1	.db $00
 NYBBLE2	.db $00

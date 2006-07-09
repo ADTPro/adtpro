@@ -59,12 +59,6 @@ PAUSE
 * A 'N' response leaves a 0 in the accumulator
 *---------------------------------------------------------
 YN
-	lda #$00
-	sta <CH
-	lda #$16
-	jsr TABV
-	jsr CLREOP
-	ldy #PMFORC
 	jsr SHOWM1
 YNLOOP	jsr RDKEY
 	and #$DF	Convert to upper case
