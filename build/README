@@ -3,13 +3,11 @@ Welcome to ADTPro!
 
 You'll need a couple of things to run the server.
 
-First, you will need a Java you can call from the command line 
+First, you will need a Java you can call from the command line
 (i.e. "java -version" from the command line ought to produce 
-something besides complaints).  You may use downloadable Java
-distributions from Sun Microsystems:
+something besides complaints). One place to get a downloadable
+Java distribution is from Sun Microsystems here:
 http://java.sun.com/j2se/1.5.0/download.jsp
-or from IBM:
-(http://www-307.ibm.com/pc/support/site.wss/license.do?filename=thinkvantage_en/ibm-java2-jre-ibmpc-142.exe).
 
 Second, you will need an installation of the rxtx library where
 your java lives.  That means the location of your Java jre/jdk
@@ -35,7 +33,7 @@ console as the GUI is coming up:
 	Java lib Version   = RXTX-2.1-7
 
 Set your port name, set the speed, and click the "Connect" button.
-You should see the following two new lines on the console:
+You should see the following line on the console:
 
 	SerialTransport opening port named COMx at speed 115200.
 
