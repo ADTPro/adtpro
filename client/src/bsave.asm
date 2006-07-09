@@ -27,11 +27,25 @@ BSAVE
 	lsr
 	lsr
 	lsr
+	clc
+	cmp #$09
+	bcc BS.1	A is greater than 9
+	adc #$B6
+	jmp BS.2
+BS.1
 	ora #$B0
+BS.2
 	sta NYBBLE1
 	lda LENGTH+1
 	and #$0F
+	clc
+	cmp #$09
+	bcc BS.3	A is greater than 9
+	adc #$B6
+	jmp BS.4
+BS.3
 	ora #$B0
+BS.4
 	sta NYBBLE2
 
 	lda LENGTH
@@ -39,11 +53,25 @@ BSAVE
 	lsr
 	lsr
 	lsr
+	clc
+	cmp #$09
+	bcc BS.5	A is greater than 9
+	adc #$B6
+	jmp BS.6
+BS.5
 	ora #$B0
+BS.6
 	sta NYBBLE3
 	lda LENGTH
 	and #$0F
+	clc
+	cmp #$09
+	bcc BS.7	A is greater than 9
+	adc #$B6
+	jmp BS.8
+BS.7
 	ora #$B0
+BS.8
 	sta NYBBLE4
 
 	ldx #$00
@@ -53,6 +81,8 @@ LEWP
 	inx
 	cpx CMDEND-COMMAND
 	bne LEWP
+	lda #$00
+	sta $BE0F	Clear ProDOS error code
 	jsr $BE03	Execute the input buffer
 
 	lda #$00	Prepare to print ProDOS error message
@@ -80,15 +110,16 @@ BSAVEDONE
 DRVSLOT
 	lda $BE3C
 	ora #$B0
-	sta CMDSLOT
-	ora #$B0
+*	sta CMDSLOT
 	lda $BE3D
-	sta CMDDRV
+	ora #$B0
+*	sta CMDDRV
 	rts
 
-COMMAND	.as -'BSAVE ADTPRO,S'
-CMDSLOT	.as -'6,D'
-CMDDRV	.as	-'1,SA$0803,L$'
+*COMMAND	.as -'BSAVE ADTPRO,S'
+*CMDSLOT	.as -'6,D'
+*CMDDRV	.as -'1,A$0803,L$'
+COMMAND	.as -'BSAVE ADTPRO,A$0803,L$'
 NYBBLE1	.db $00
 NYBBLE2	.db $00
 NYBBLE3	.db $00
