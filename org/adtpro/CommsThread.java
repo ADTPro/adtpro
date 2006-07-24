@@ -21,6 +21,7 @@
 package org.adtpro;
 
 import java.io.*;
+import java.util.GregorianCalendar;
 
 import org.adtpro.resources.Messages;
 import org.adtpro.transport.SerialTransport;
@@ -43,6 +44,11 @@ public class CommsThread extends Thread
 
   private int _maxRetries = 3;
 
+  GregorianCalendar _startTime = null,
+                    _endTime = null;
+
+  private float _diffMillis;
+
   public CommsThread(Gui parent, String one, String two)
   {
     // System.out.println("CommsThread constructor.");
@@ -53,14 +59,20 @@ public class CommsThread extends Thread
     }
     catch (Exception ex)
     {
-      System.out.println(ex);
+      System.out.println("CommsThread constructor exception: "+ex);
+      _shouldRun = false;
     }
   }
 
   public void run()
   {
-    makeCrcTable();
-    commandLoop();
+    if (_shouldRun)
+    {
+      makeCrcTable();
+      commandLoop();
+    }
+    else
+      _parent.cancelCommsThread();
   }
 
   public void commandLoop()
@@ -260,6 +272,7 @@ public class CommsThread extends Thread
   public void receiveDisk()
   /* Main receive routine - Host <- Apple (Apple sends) */
   {
+    _startTime = new GregorianCalendar();
     // System.out.print("Waiting for name..."); //$NON-NLS-1$
     String name = _parent.getWorkingDirectory() + File.separator + receiveName();
     // System.out.println(" received name: " + name); //$NON-NLS-1$
@@ -348,19 +361,19 @@ public class CommsThread extends Thread
         receiveSuccess = false;
       }
       if (receiveSuccess)
-      {
+      {        
         report = waitForData();
+        _endTime = new GregorianCalendar();
+        _diffMillis = (float)(_endTime.getTimeInMillis() - _startTime.getTimeInMillis())/(float)1000;
         if (report == 0x00)
         {
-          _parent.setSecondaryText(Messages.getString("CommsThread.19"));
-          // System.out.println("Received disk image " + name + "
-          // successfully."); //$NON-NLS-1$ //$NON-NLS-2$
+          _parent.setSecondaryText(Messages.getString("CommsThread.19") + " in " + _diffMillis + " seconds.");
+          System.out.println("Apple sent disk image " + name + " successfully in "+(float)(_endTime.getTimeInMillis() - _startTime.getTimeInMillis())/(float)1000+" seconds.");
         }
         else
         {
-          _parent.setSecondaryText(Messages.getString("CommsThread.20"));
-          // System.out.println("Received disk image " + name + " with
-          // errors."); //$NON-NLS-1$ //$NON-NLS-2$
+          _parent.setSecondaryText(Messages.getString("CommsThread.20") + " in " + _diffMillis + " seconds.");
+          System.out.println("Apple sent disk image " + name + " with errors."); //$NON-NLS-1$ //$NON-NLS-2$
         }
       }
       else
@@ -393,6 +406,7 @@ public class CommsThread extends Thread
     byte ack, report;
     int length;
     boolean sendSuccess = false;
+    _startTime = new GregorianCalendar();
     /*
      * ADT protocol: receive the requested file name
      */
@@ -447,17 +461,17 @@ public class CommsThread extends Thread
           if (sendSuccess)
           {
             report = waitForData();
+            _endTime = new GregorianCalendar();
+            _diffMillis = (float)(_endTime.getTimeInMillis() - _startTime.getTimeInMillis())/(float)1000;
             if (report == 0x00)
             {
-              _parent.setSecondaryText(Messages.getString("CommsThread.17"));
-              // System.out.println("Send disk image " + name + "
-              // successfully."); //$NON-NLS-1$ //$NON-NLS-2$
+              _parent.setSecondaryText(Messages.getString("CommsThread.17") + " in " + _diffMillis + " seconds.");
+              System.out.println("Apple received disk image " + name + " successfully in "+(float)(_endTime.getTimeInMillis() - _startTime.getTimeInMillis())/(float)1000+" seconds."); //$NON-NLS-1$ //$NON-NLS-2$
             }
             else
             {
               _parent.setSecondaryText(Messages.getString("CommsThread.18"));
-              // System.out.println("Send disk image " + name + " with " +
-              // report + " errors."); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+              System.out.println("Apple received disk image " + name + " with " + report + " errors."); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
             }
           }
           else
@@ -494,6 +508,7 @@ public class CommsThread extends Thread
    */
   public void send140kDisk()
   {
+    _startTime = new GregorianCalendar();
     /*
      * ADT protocol: receive the requested file name
      */
@@ -574,17 +589,17 @@ public class CommsThread extends Thread
                * ADT protocol: receive final error report
                */
               byte report = waitForData();
+              _endTime = new GregorianCalendar();
+              _diffMillis = (float)(_endTime.getTimeInMillis() - _startTime.getTimeInMillis())/(float)1000;
               if (report == 0x00)
               {
-                _parent.setSecondaryText(Messages.getString("CommsThread.19"));
-                // System.out.println("Received disk image " + name + "
-                // successfully."); //$NON-NLS-1$ //$NON-NLS-2$
+                _parent.setSecondaryText(Messages.getString("CommsThread.19") + " in " + _diffMillis + " seconds.");
+                System.out.println("Apple sent disk image " + name + " successfully in "+(float)(_endTime.getTimeInMillis() - _startTime.getTimeInMillis())/(float)1000+" seconds."); //$NON-NLS-1$ //$NON-NLS-2$
               }
               else
               {
-                _parent.setSecondaryText(Messages.getString("CommsThread.20"));
-                // System.out.println("Received disk image " + name + " with
-                // errors."); //$NON-NLS-1$ //$NON-NLS-2$
+                _parent.setSecondaryText(Messages.getString("CommsThread.20") + " in " + _diffMillis + " seconds.");
+                System.out.println("Apple sent disk image " + name + " with errors."); //$NON-NLS-1$ //$NON-NLS-2$
               }
             }
             else
@@ -673,6 +688,7 @@ public class CommsThread extends Thread
 
   public void receive140kDisk()
   {
+    _startTime = new GregorianCalendar();
     String name = receiveName();
     File f = new File(name);
     FileOutputStream fos = null;
@@ -733,15 +749,16 @@ public class CommsThread extends Thread
           if (receiveSuccess)
           {
             report = waitForData();
+            _endTime = new GregorianCalendar();
+            _diffMillis = (float)(_endTime.getTimeInMillis() - _startTime.getTimeInMillis())/(float)1000;
             if (report == 0x00)
             {
-              _parent.setSecondaryText(Messages.getString("CommsThread.19"));
-              // System.out.println("Received disk image " + name + "
-              // successfully."); //$NON-NLS-1$ //$NON-NLS-2$
+              _parent.setSecondaryText(Messages.getString("CommsThread.19") + " in " + _diffMillis + " seconds.");
+              System.out.println("Apple sent disk image " + name + " successfully in "+(float)(_endTime.getTimeInMillis() - _startTime.getTimeInMillis())/(float)1000+" seconds."); //$NON-NLS-1$ //$NON-NLS-2$
             }
             else
             {
-              _parent.setSecondaryText(Messages.getString("CommsThread.20"));
+              _parent.setSecondaryText(Messages.getString("CommsThread.20") + " in " + _diffMillis + " seconds.");
               // System.out.println("Received disk image " + name + " with
               // errors."); //$NON-NLS-1$ //$NON-NLS-2$
             }
@@ -911,7 +928,7 @@ public class CommsThread extends Thread
     }
     catch (Exception ex)
     {
-      System.out.println("CommsThread.requestStop exception: "+ex);
+      System.out.println("CommsThread.requestStop() exception: "+ex);
     }
   }
 }

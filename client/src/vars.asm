@@ -83,7 +83,7 @@ PARMTXT
 	.db 0
 	.as -"19200"
 	.db 0
-	.as -"115000"
+	.as -"115200"
 	.db 0
 	.as -"YES"
 	.db 0
@@ -97,7 +97,7 @@ PARMTXT
 
 PARMS
 PSSC	.db 1		SSC SLOT (2)
-PSPEED	.db 6		SSC SPEED (115000)
+PSPEED	.db 6		SSC SPEED (115200)
 PSOUND	.db 0		SOUND AT END OF TRANSFER? (YES)
 PSAVE	.db 1		Save parms? (NO)
 SR_WR_C	.db $00		A place to save the send/receive/read/write character

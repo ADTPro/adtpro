@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project name="ADTPro" default="jar" basedir="..">
-	<property name="versionString" value="0.0.4" />
+	<property name="versionString" value="0.0.5" />
 	<property name="distName" value="ADTPro-${versionString}" />
 	<property name="volName" value="ADTPro.${versionString}" />
 	<property name="assemblerPath" value="c:/dev/xassm/sbasm/2.06" />
@@ -12,10 +12,10 @@
 		<!--
 		Clean up everything
 		-->
-		<delete file="${builddir}/ADTPRO"/>
-		<delete file="${builddir}/${distName}.dsk"/>
-		<delete file="${builddir}/${distName}.jar"/>
-		<delete file="${builddir}/${distName}.zip"/>
+		<delete file="${builddir}/ADTPRO" />
+		<delete file="${builddir}/${distName}.dsk" />
+		<delete file="${builddir}/${distName}.jar" />
+		<delete file="${builddir}/${distName}.zip" />
 	</target>
 
 	<target name="assemble" depends="clean">
@@ -23,30 +23,30 @@
 		Assemble the source
 		-->
 		<exec dir="${projdir}/client/src" executable="${assemblerPath}/sbasm.com">
-				<arg line="main.asm 2> asm.out"/>
+			<arg line="main.asm 2> asm.out" />
 		</exec>
 		<!--
 		Move the object code to the build directory
 		-->
-		<move file="${projdir}/client/src/ADTPRO" tofile="${builddir}/ADTPRO"/>
+		<move file="${projdir}/client/src/ADTPRO" tofile="${builddir}/ADTPRO" />
 	</target>
-		
+
 	<target name="builddsk" depends="assemble">
 		<!--
 		Start a .dsk image containing the release number
 		-->
-		<copy file="${builddir}/ADTProBase.dsk" tofile="${builddir}/${distName}.dsk"/>
+		<copy file="${builddir}/ADTProBase.dsk" tofile="${builddir}/${distName}.dsk" />
 		<!--
 		Put the assembled ADTPRO program on the .dsk image
 		-->
 		<exec dir="${builddir}" executable="java" input="${builddir}/ADTPRO">
-			<arg line="-jar ${acJar} -p ADTPRO bin 2051 ${distName}.dsk"/>
+			<arg line="-jar ${acJar} -p ADTPRO bin 2051 ${distName}.dsk" />
 		</exec>
 		<!--
 		Put a nice volume name on the .dsk image
 		-->
 		<exec dir="${builddir}" executable="java">
-			<arg line="-jar ${acJar} -v ${distName}.dsk ${volName}"/>
+			<arg line="-jar ${acJar} -v ${distName}.dsk ${volName}" />
 		</exec>
 	</target>
 

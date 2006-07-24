@@ -374,11 +374,7 @@ public final class Gui extends JFrame implements ActionListener
       {
         commsThread.interrupt();
         commsThread.requestStop();
-        commsThread = null;
-        setMainText(Messages.getString("Gui.Quiesced")); //$NON-NLS-1$
-        setSecondaryText(Messages.getString("Gui.Disconnected")); //$NON-NLS-1$
-        buttonConnect.setText(Messages.getString("Gui.Connect")); //$NON-NLS-1$
-        clearProgress();
+        cleanupCommsThread();
       }
       catch (Throwable throwable)
       {
@@ -395,6 +391,22 @@ public final class Gui extends JFrame implements ActionListener
       clearProgress();
       saveProperties();
     }
+  }
+
+  public void cancelCommsThread()
+  {
+    // The comms thread complained the port was in use.
+    JOptionPane.showMessageDialog(this, Messages.getString("Gui.PortInUse"));
+    cleanupCommsThread();
+  }
+
+  public void cleanupCommsThread()
+  {
+    commsThread = null;
+    setMainText(Messages.getString("Gui.Quiesced")); //$NON-NLS-1$
+    setSecondaryText(Messages.getString("Gui.Disconnected")); //$NON-NLS-1$
+    buttonConnect.setText(Messages.getString("Gui.Connect")); //$NON-NLS-1$
+    clearProgress();
   }
 
   public void saveProperties()
