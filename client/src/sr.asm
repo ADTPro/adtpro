@@ -194,6 +194,7 @@ SR.OK
 	jsr PICKVOL
 *			Accumulator now has the index into device table
 * 			Validate size matches volume picked
+SR.REENTRY
 	bmi SM.DONE	Branch backwards... we just need an RTS close by
 	sta SLOWA	Hang on to the device table index
 
@@ -204,6 +205,7 @@ SR.OK
 	cmp NUMBLKS+1
 	bne SR.MISMATCH
 	jmp SR.OK2
+
 SR.MISMATCH
 	lda #$00
 	sta <CH
@@ -218,7 +220,9 @@ SR.MISMATCH
 	ldy #PMFORC
 	jsr YN
 	bne SR.OK2
-	jmp COMPLETE.2
+	ldy #PMSGDST	'SELECT DESTINATION VOLUME'
+	jsr PICKVOL2
+	jmp SR.REENTRY
 
 SR.OK2
 	lda UNITNBR

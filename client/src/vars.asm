@@ -105,4 +105,5 @@ SLOWA	.db $00		A place to save the Accumulator, speed is not important
 SLOWX	.db $00		A place to save the X register, speed is not important
 SLOWY	.db $00		A place to save the Y register, speed is not important
 PCCRC	.db $00,$00	CRC received from PC
-
+L0EF8	.db $05,$07,$09
+	.db $0B,$0D,$0E,$00,$00

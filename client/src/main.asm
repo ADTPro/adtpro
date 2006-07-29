@@ -77,7 +77,12 @@ KBDLUP
 	jsr RDKEY	GET ANSWER
 	and #$DF	Conver to upper case
 
-	cmp #"S"	SEND?
+	cmp #"I"	IIgs?
+	bne KSEND	NOPE, TRY SEND
+	jsr INITGS	YES, DO INITGS ROUTINE
+	jmp MAINLUP
+
+KSEND	cmp #"S"	SEND?
 	bne KRECV	NOPE, TRY RECEIVE
 	lda #$06
         ldx #$07
@@ -197,6 +202,7 @@ NOBEEP	rts
 	.in print.asm
 	.in rw.asm
 	.in sr.asm
+	.in iigs.asm
 	.in crc.asm
 	.in pickvol.asm
 	.in input.asm

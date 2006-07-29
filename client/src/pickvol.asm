@@ -121,6 +121,20 @@ ESCAPE
 	lda #$FF	Set accumulator negative - no choice made
 	rts		Back out to caller
 
+*---------------------------------------------------------
+* PICKVOL2 - Re-entry to the volume screen; clears the 
+*            operator area and lets you pick again
+*---------------------------------------------------------
+PICKVOL2
+	sty SLOWY
+	lda #$00
+	sta <CH
+	lda #$16
+	jsr TABV
+	jsr CLREOP
+	ldy SLOWY
+	jsr DRAWBDR
+	jmp VOLLOOP
 
 *---------------------------------------------------------
 * INVROW - Inverts the current row
