@@ -45,28 +45,28 @@ SAVPARM
 	ldy #PMSG24	'CONFIGURE ADTPRO PARAMETERS'
 	jsr SHOWMSG
 
-	lda #$0a	Column
+	lda #$08	Column
 	sta <CH
 	lda #$03	Row
 	jsr TABV
-	ldy #PMSG26	'SSC SLOT'
+	ldy #PMSG26	'COMMS SLOT'
 	jsr SHOWMSG
 
-	lda #$0a	Column
+	lda #$08	Column
 	sta <CH
 	lda #$04	Row
 	jsr TABV
 	ldy #PMSG27	'BAUD RATE'
 	jsr SHOWMSG
 
-	lda #$0a	Column
+	lda #$08	Column
 	sta <CH
 	lda #$05	Row
 	jsr TABV
 	ldy #PMSG28	'ENABLE SOUND'
 	jsr SHOWMSG
 
-	lda #$0a	Column
+	lda #$08	Column
 	sta <CH
 	lda #$06	Row
 	jsr TABV
@@ -87,13 +87,23 @@ SAVPARM
 	ldy #PMSG23	'SELECT WITH RETURN, ESC CANCELS'
 	jsr SHOWMSG
 
-REFRESH	lda #3		FIRST PARAMETER IS ON LINE 3
+REFRESH
+	lda PARMS
+	cmp #$07
+	bmi REFOK
+	lda PARMS+1
+	cmp #$02
+	bne REFOK
+	lda #$01
+	sta PARMS+1
+REFOK
+	lda #3		FIRST PARAMETER IS ON LINE 3
 	jsr TABV
 	ldx #0		PARAMETER NUMBER
 	ldy #$FF	OFFSET INTO PARAMETER TEXT
 
 NXTLINE	stx LINECNT	SAVE CURRENT LINE
-	lda #$17	Start printig config parms here
+	lda #$15	Start printing config parms in this column
 	sta <CH
 	clc
 	lda PARMSIZ,X	GET CURRENT VALUE (NEGATIVE:
@@ -220,6 +230,8 @@ SAVPARM2
 	sta DEFAULT,Y
 	dey
 	bpl SAVPARM2
+	lda #$00
+	sta CURPARM
 	jsr BSAVE
 NOSAVE
 	rts
@@ -227,7 +239,7 @@ NOSAVE
 LINECNT  .db 00		CURRENT LINE NUMBER
 CURPARM  .db 00		ACTIVE PARAMETER
 CURVAL   .db 00		VALUE OF ACTIVE PARAMETER
-OLDPARM  .db $00,$00,$00,$00	Should be PARMNUM bytes here...
+OLDPARM  .db $00,$00,$00,$00	There must be PARMNUM bytes here...
 
 
 *---------------------------------------------------------
@@ -237,8 +249,11 @@ PARMINT
 	ldy PSSC	GET SSC SLOT# (0..6)
 	iny		NOW 1..7
 	tya
+	cmp #$08
+	bpl GSMODEM
 	ora #"0"	CONVERT TO ASCII AND PUT
          *STA MTSSC	INTO TITLE SCREEN
+	jsr PATCHII
 	tya
 	asl
 	asl
@@ -257,7 +272,12 @@ PARMINT
 	inx
 	stx MOD1+1	SELF-MODS FOR $C089+S0
 	stx MOD3+1	IN GETC AND PUTC
+	rts
 
+GSMODEM
+	lda #$02
+	sta PGSSLOT
+	jsr INITGS
 	rts
 
 *---------------------------------------------------------
@@ -275,7 +295,7 @@ DFTLOOP
 	sta PARMS+BSAVEP
 	rts
 
-DEFAULT	.db 1,6,0,1	Default parm indices
-BPSCTRL	.db $16,$18,$1A,$1C,$1E,$1F,$10
+DEFAULT	.db 1,2,0,1	Default parm indices
+BPSCTRL	.db $1E,$1F,$10
 YSAVE	.db $00
 BSAVEP	.eq $03	Index to the 'Save parameters' parameter

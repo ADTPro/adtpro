@@ -63,7 +63,7 @@ MOD0	bit $C088	CLEAR SSC INPUT REGISTER
 	ldy #PMSG02	Prompt line 1
 	jsr SHOWMSG
 
-    	lda #$08
+    	lda #$03
 	sta <CH
 	ldy #PMSG03	Prompt line 2
 	jsr SHOWMSG
@@ -76,11 +76,6 @@ MOD0	bit $C088	CLEAR SSC INPUT REGISTER
 KBDLUP
 	jsr RDKEY	GET ANSWER
 	and #$DF	Conver to upper case
-
-	cmp #"I"	IIgs?
-	bne KSEND	NOPE, TRY SEND
-	jsr INITGS	YES, DO INITGS ROUTINE
-	jmp MAINLUP
 
 KSEND	cmp #"S"	SEND?
 	bne KRECV	NOPE, TRY RECEIVE
@@ -127,7 +122,7 @@ KCONF	cmp #CHR_G	Configure?
 KABOUT	cmp #$9F	ABOUT MESSAGE? ("?" KEY)
 	bne KVOLUMS	NOPE, TRY VOLUMES
 	lda #$08
-        ldx #$11
+        ldx #$16
 	ldy #$10
 	jsr INVERSE
     	lda #$00
@@ -141,7 +136,7 @@ KABOUT	cmp #$9F	ABOUT MESSAGE? ("?" KEY)
 
 KVOLUMS	cmp #"V"	Volumes online?
 	bne KQUIT1	NOPE, TRY Escape
-	ldy #PMSGSOU	'SELECT SOURCE VOLUME'
+	ldy #PMNULL	No title line
 	jsr PICKVOL	Pick a volume - A has index into DEVICES table
 	jmp MAINLUP
 

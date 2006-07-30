@@ -91,3 +91,18 @@ CHR_ESC	.eq $9b
 CHR_ACK	.eq $06
 CHR_NAK	.eq $15
 
+*---------------------------------------------------------
+* Apple IIgs SCC Z8530 registers and constants
+*---------------------------------------------------------
+
+GSCMDB	.eq	$C038
+GSDATAB	.eq	$C03A
+
+GSCMDA	.eq	$C039
+GSDATAA	.eq	$C03B
+
+RESETA	.eq	%11010001	constant to reset Channel A
+RESETB	.eq	%01010001	constant to reset Channel B
+WR11A	.eq	%11010000	init wr11 in Ch A
+WR11B	.eq	%01010000	init wr11 in Ch B
+

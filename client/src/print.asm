@@ -160,51 +160,52 @@ P.OFF	.db $00
 * DRAWBDR
 * 
 * Draws the volume picker decorative border
+* Y holds the top line message number
 *---------------------------------------------------------
 DRAWBDR
 	lda #$07
 	sta <CH
 	lda #$00
 	jsr TABV
-	jsr SHOWMSG
+	jsr SHOWMSG	Y holds the top line message number
 
 	lda #$07	Column
 	sta <CH
 	lda #$02	Row
-	JSR TABV
+	jsr TABV
 	ldy #PMSG19	'VOLUMES CURRENTLY ON-LINE:'
 	jsr SHOWMSG
 
 	lda #H_SL	"Slot" starting column
 	sta <CH
 	lda #$03	Row
-	JSR TABV
+	jsr TABV
 	ldy #PMSG20	'SLOT  DRIVE  VOLUME NAME      BLOCKS'
 	jsr SHOWMSG
 
 	lda #H_SL	"Slot" starting column
 	sta <CH
 	lda #$04	Row
-	JSR TABV
+	jsr TABV
 	ldy #PMSG21	'----  -----  ---------------  ------'
 	jsr SHOWMSG
 
 	lda #$00	Column
 	sta <CH
 	lda #$14	Row
-	JSR TABV
+	jsr TABV
 	ldy #PMSG22	'CHANGE VOLUME/SLOT/DRIVE WITH ARROW KEYS'
 	jsr SHOWMSG
 
 	lda #$04	Column
 	sta <CH
 	lda #$15	Row
-	JSR TABV
+	jsr TABV
 	ldy #PMSG23	'SELECT WITH RETURN, ESC CANCELS'
 	jsr SHOWMSG
 
 	lda #$05	starting row for slot/drive entries
-	JSR TABV
+	jsr TABV
 	rts
 
 *---------------------------------------------------------
@@ -223,7 +224,7 @@ PREPPRG
 	lda #H_BLK	Column
 	sta <CH
 	lda #V_MSG	Row
-	JSR TABV
+	jsr TABV
 	ldy #PMSG09
 	jsr SHOWMSG
 	inc <CH		Space over one character
@@ -471,13 +472,14 @@ MSGTBL
 	.da MSG25,MSG26,MSG27,MSG28,MSG28a,MSG29,MSG30,MNONAME,MIOERR
 	.da MNODISK,MSG34,MSG35
 	.da MLOGO1,MLOGO2,MLOGO3,MLOGO4,MLOGO5,MWAIT,MCDIR,MFORC,MFEX
+	.da MNULL
 
 MSG01	.as -'0.0.5'
 *MSG01	.as -'v.r.m'
 	.db $00
 MSG02	.as -'(S)END (R)ECEIVE (D)IR (C)D'
 	.db $8d,$8d,$00
-MSG03	.as -'CONFI(G) (?)ABOUT (Q)UIT:'
+MSG03	.as -'(V)OLUMES CONFI(G) (?)ABOUT (Q)UIT:'
 	.db $00
 MSG04	.db $8d
 	.as -'GOODBYE - THANKS FOR USING ADTPRO!'
@@ -509,7 +511,7 @@ MSG15	.as -' - WITH ERRORS'
 	.db $00
 MSG16	.as -'PRESS A KEY TO CONTINUE...'
 	.db $00
-MSG17	.as -"ADTPRO BY DAVID SCHMIDT.  BASED ON WORKS"
+MSG17	.as -"ADTPRO BY DAVID SCHMIDT. BASED ON WORKS "
 	.as -"BY PAUL GUERTIN, MARK PERCIVAL, JOESEPH "
 	.as -"OSWOLD, KNUT ROLL-LUND AND OTHERS."
 	.db $00
@@ -531,7 +533,7 @@ MSG24	.as -'CONFIGURE ADTPRO PARAMETERS'
 	.db $00
 MSG25	.as -'CHANGE PARAMETERS WITH ARROW KEYS'
 	.db $00
-MSG26	.as -'SSC SLOT'
+MSG26	.as -'COMMS DEVICE'
 	.db $00
 MSG27	.as -'BAUD RATE'
 	.db $00
@@ -568,7 +570,7 @@ MFORC	.as -'COPY IMAGE DATA ANYWAY? (Y/N):'
 	.db $00
 MFEX	.as -'FILE ALREADY EXISTS AT HOST.'
 	.db $00
-
+MNULL	.db $00
 
 *---------------------------------------------------------
 * Message equates
@@ -620,3 +622,4 @@ PMWAIT	.eq $54
 PMCDIR	.eq $56
 PMFORC	.eq $58
 PMFEX	.eq $5a
+PMNULL	.eq $5c

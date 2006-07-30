@@ -34,10 +34,6 @@ DIR
 	lda #"D"	Send "DIR" command to PC
 	jsr PUTC
 
-	lda PSPEED
-	cmp #6
-	bne DIRLOOP1
-
 	lda /BIGBUF	Get buffer pointer high byte
 	sta <BLKPTR+1	Set block buffer pointer
 	ldy #$00	Counter

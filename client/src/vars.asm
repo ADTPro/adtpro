@@ -54,30 +54,24 @@ CRC	.eq $1d		($02 bytes) Used by ONLINE, SEND and RECEIVE
 *---------------------------------------------------------
 PARMNUM	.eq $04		Number of configurable parms
 *			Note - add bytes to OLDPARM if this is expanded.
-PARMSIZ	.db 7,7,2,2	Number of options for each parm
+PARMSIZ	.db 8,3,2,2	Number of options for each parm
 
 PARMTXT
-	.as -"1"
+	.as -"SSC SLOT 1"
 	.db 0
-	.as -"2"
+	.as -"SSC SLOT 2"
 	.db 0
-	.as -"3"
+	.as -"SSC SLOT 3"
 	.db 0
-	.as -"4"
+	.as -"SSC SLOT 4"
 	.db 0
-	.as -"5"
+	.as -"SSC SLOT 5"
 	.db 0
-	.as -"6"
+	.as -"SSC SLOT 6"
 	.db 0
-	.as -"7"
+	.as -"SSC SLOT 7"
 	.db 0
-	.as -"300"
-	.db 0
-	.as -"1200"
-	.db 0
-	.as -"2400"
-	.db 0
-	.as -"4800"
+	.as -"IIGS MODEM"
 	.db 0
 	.as -"9600"
 	.db 0
@@ -96,10 +90,11 @@ PARMTXT
 
 
 PARMS
-PSSC	.db 1		SSC SLOT (2)
-PSPEED	.db 6		SSC SPEED (115200)
-PSOUND	.db 0		SOUND AT END OF TRANSFER? (YES)
+PSSC	.db 1		Comms slot (2)
+PSPEED	.db 2		Comms speed (115200)
+PSOUND	.db 0		Sounds? (YES)
 PSAVE	.db 1		Save parms? (NO)
+PGSSLOT	.db 1		IIgs slot (2)
 SR_WR_C	.db $00		A place to save the send/receive/read/write character
 SLOWA	.db $00		A place to save the Accumulator, speed is not important
 SLOWX	.db $00		A place to save the X register, speed is not important
@@ -107,3 +102,10 @@ SLOWY	.db $00		A place to save the Y register, speed is not important
 PCCRC	.db $00,$00	CRC received from PC
 L0EF8	.db $05,$07,$09
 	.db $0B,$0D,$0E,$00,$00
+
+*---------------------------------------------------------
+* Default SCC baud rate
+*---------------------------------------------------------
+BAUD	.db 6	;1=300, 2=1200, 3=2400
+		;4=4800, 5=9600, 6=19200
+		;7=38400, 8=57600.
