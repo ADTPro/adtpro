@@ -221,9 +221,12 @@ public final class Gui extends JFrame implements ActionListener
     byte rc = 0x06; // Unable to change directory message at Apple
     cwd = cwd.trim();
     File parentDir;
-    if (cwd.equals("/") || cwd.equals("\\")) parentDir = null;
+    if (cwd.equals("/") || cwd.equals("\\"))
+      parentDir = null;
     else
       parentDir = new File(_workingDirectory);
+    if ((cwd.startsWith("/") || cwd.startsWith("\\")))
+      parentDir = null;
 
     File baseDirFile = new File(parentDir, cwd);
     String tempWorkingDirectory = null;
