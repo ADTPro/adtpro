@@ -409,14 +409,14 @@ SR.NEXT
 	sta PRTPTR+1
 	jsr PRTNUM	Print block number in decimial
 
-	lda <COL_SAV	Reposition cursor to previous
-	STA <CH		buffer row
+	lda <COL_SAV	Position cursor to next
+	sta <CH		  buffer row
 	lda #V_BUF
 	jsr TABV
 
-	lda SRCHR	Are we receiving?
-	cmp #CHR_V	  If so, load up our "R" character
-	beq SR.1	  and branch around the sending code
+	lda SRCHR
+	cmp #CHR_V	Are we receiving?
+	beq SR.1	  If so, branch around the sending code
 
 	jsr SENDBLK	Send the current block
 	jmp SRCOMN	Back to sending/receiving common
@@ -426,12 +426,16 @@ SR.1
 
 SRCOMN
 	bne SRBAD
+	lda <COL_SAV	Position cursor to next buffer row - 
+	sta <CH		  have to reassert this, as IIgs messes it up
 	lda SRCHROK
 	jmp SROK
 
 SRBAD
 	lda #$01
 	sta ECOUNT
+	lda <COL_SAV	Position cursor to next
+	sta <CH		  buffer row
 	lda #CHR_X
 SROK	jsr COUT1
 	inc BLKLO

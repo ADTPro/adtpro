@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project name="ADTPro" default="jar" basedir="..">
-	<property name="versionString" value="0.0.5" />
+	<property name="versionString" value="0.0.6" />
 	<property name="distName" value="ADTPro-${versionString}" />
 	<property name="volName" value="ADTPro.${versionString}" />
 	<property name="assemblerPath" value="c:/dev/xassm/sbasm/2.06" />
