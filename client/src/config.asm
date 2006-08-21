@@ -312,22 +312,6 @@ PARMDFTNEXT
 	sta PARMS+BSAVEP
 	rts
 
-*---------------------------------------------------------
-* PARMFACTORY - Reset parameters to factory values (uses A,X)
-*---------------------------------------------------------
-PARMFACTORY
-	ldx #PARMNUM-1
-FDFTLOOP
-	lda FACTORY,X
-	sta PARMS,X
-	dex
-	bpl FDFTLOOP
-* No matter what, we put in the default value for 
-* 'save' - always turn it off when we restore defaults.
-	lda #$01	Index for 'NO' save
-	sta PARMS+BSAVEP
-	rts
-
 DEFAULT	.db 1,2,0,1	Default parm indices
 FACTORY	.db 1,2,0,1	Factory default parm indices
 BPSCTRL	.db $1E,$1F,$10
