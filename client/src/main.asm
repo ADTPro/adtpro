@@ -26,6 +26,9 @@
 * Code
 *---------------------------------------------------------
 PBEGIN
+	lda #$00	In general - do a warm start
+	sta COLDSTART	i.e. don't load up factory defaults
+
 	cld
 
 	* Prepare the system for our expecations -
@@ -37,7 +40,9 @@ PBEGIN
 	jsr $FE89	INPUT FROM KEYBOARD
 	jsr $FE93	OUTPUT TO 40-COL SCREEN
 	jsr MAKETBL	Prepare our CRC tables
-	jsr PARMDFT	RESET PARAMETERS TO DEFAULTS
+
+	lda COLDSTART	Decide to cold or warm start
+	jsr PARMDFT	Set up parameters
 	jsr PARMINT	INTERPRET PARAMETERS
 
 	* And off we go!

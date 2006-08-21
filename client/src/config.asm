@@ -281,14 +281,47 @@ GSMODEM
 	rts
 
 *---------------------------------------------------------
-* PARMDFT - RESET PARAMETERS TO DEFAULT VALUES (USES AX)
+* PARMDFT - Set parameters to last saved values (uses A,X)
+* Called with the desired operation in A:
+*   00 - defaults last saved by user
+*   01 - defaults set at the factory
+* This becomes important when a user saves off a copy of
+* parms that are incompatible with a machine and (as once
+* happened in my case) it hangs during initialization.
 *---------------------------------------------------------
-PARMDFT	ldx #PARMNUM-1
+PARMDFT
+	bne FACTORYLOOP
+	ldx #PARMNUM-1
 DFTLOOP
 	lda DEFAULT,X
 	sta PARMS,X
 	dex
 	bpl DFTLOOP
+	jmp PARMDFTNEXT
+
+FACTORYLOOP
+	lda FACTORY,X
+	sta PARMS,X
+	dex
+	bpl FACTORYLOOP
+
+PARMDFTNEXT
+* No matter what, we put in the default value for 
+* 'save' - always turn it off when we restore defaults.
+	lda #$01	Index for 'NO' save
+	sta PARMS+BSAVEP
+	rts
+
+*---------------------------------------------------------
+* PARMFACTORY - Reset parameters to factory values (uses A,X)
+*---------------------------------------------------------
+PARMFACTORY
+	ldx #PARMNUM-1
+FDFTLOOP
+	lda FACTORY,X
+	sta PARMS,X
+	dex
+	bpl FDFTLOOP
 * No matter what, we put in the default value for 
 * 'save' - always turn it off when we restore defaults.
 	lda #$01	Index for 'NO' save
@@ -296,6 +329,7 @@ DFTLOOP
 	rts
 
 DEFAULT	.db 1,2,0,1	Default parm indices
+FACTORY	.db 1,2,0,1	Factory default parm indices
 BPSCTRL	.db $1E,$1F,$10
 YSAVE	.db $00
 BSAVEP	.eq $03	Index to the 'Save parameters' parameter
