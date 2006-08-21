@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project name="ADTPro" default="jar" basedir="..">
-	<property name="versionString" value="0.0.6" />
+	<property name="versionString" value="0.0.7" />
 	<property name="distName" value="ADTPro-${versionString}" />
 	<property name="volName" value="ADTPro.${versionString}" />
 	<property name="assemblerPath" value="c:/dev/xassm/sbasm/2.06" />
 	<property name="projdir" value="." />
 	<property name="builddir" value="${basedir}/build" />
-	<property name="acJar" value="AppleCommander-1.3.4a-ac.jar" />
+	<property name="acJar" value="AppleCommander-1.3.4b-ac.jar" />
 
 	<target name="clean">
 		<!--
@@ -37,10 +37,20 @@
 		-->
 		<copy file="${builddir}/ADTProBase.dsk" tofile="${builddir}/${distName}.dsk" />
 		<!--
-		Put the assembled ADTPRO program on the .dsk image
+		Put the assembled ADTPRO program on the .dsk image a couple of times
+		and lock the backup version
 		-->
 		<exec dir="${builddir}" executable="java" input="${builddir}/ADTPRO">
 			<arg line="-jar ${acJar} -p ADTPRO bin 2051 ${distName}.dsk" />
+		</exec>
+		<exec dir="${builddir}" executable="java" input="${builddir}/ADTPRO">
+			<arg line="-jar ${acJar} -p ADTPRO.BACKUP bin 2051 ${distName}.dsk" />
+		</exec>
+		<!--
+		Lock the backup version
+		-->
+		<exec dir="${builddir}" executable="java">
+			<arg line="-jar ${acJar} -k ADTPRO.BACKUP ${distName}.dsk" />
 		</exec>
 		<!--
 		Put a nice volume name on the .dsk image

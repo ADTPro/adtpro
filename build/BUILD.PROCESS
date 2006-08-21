@@ -22,7 +22,7 @@ I'm all for it.
 	*	org/adtpro/resources/messages.properties: Gui.7=Apple Disk Transfer ProDOS (ADTPro) v.r.m
 
 2. Tag adtpro project with the version number.  The
-    standard is:  v[major]_[minor]_[service]
+    standard is:  v_[major]_[minor]_[service]
 
 3. Perform a build
 
