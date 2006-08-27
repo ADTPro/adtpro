@@ -104,5 +104,6 @@ GSDATAA	.eq	$C03B
 RESETA	.eq	%11010001	constant to reset Channel A
 RESETB	.eq	%01010001	constant to reset Channel B
 WR11A	.eq	%11010000	init wr11 in Ch A
-WR11B	.eq	%01010000	init wr11 in Ch B
+WR11BXTAL	.eq	%00000000	init wr11 in Ch B - use external clock
+WR11BBRG	.eq	%01010000	init wr11 in Ch B - use baud rate generator
 

@@ -3,156 +3,71 @@
 *---------------------------------------------------------
 INITGS
 	sei		TURN OFF INTERRUPTS
-	jsr SELFMOD
-	jsr INITSLOT
-	jsr INITSEND	Probably redundant with INITSCC now...
 	jsr INITSCC
 	jsr PATCHGS
-	rts
-
-*---------------------------------------------------------
-* SELFMOD - Set up all self-modifying addresses
-*---------------------------------------------------------
-SELFMOD
-	cld
-
-	lda $C02D	IIgs slot ROM enable
-	sta SVC02D
-	and #$FB	Mask off bit 3: 4 decimal
-	sta $C02D
-	lda $C20D	PASCAL INIT ENTRY POINT
-	sta MODINIT+1	MOD CODE!!
-	iny
-	lda $C20E	PASCAL READ ENTRY POINT
-	sta MODREAD+1	MOD CODE!!
-	iny
-	lda $C20F	PASCAL WRITE ENTRY POINT
-	sta MODWRITE+1	MOD CODE!!
-	iny
-	lda $C210	PASCAL STATUS ENTRY POINT
-	sta MODSTAT1+1	MOD CODE!!
-	sta MODSTAT2+1	MOD CODE!!
-	iny
-	iny
-	lda $C212	PASCAL CONTROL ENTRY POINT
-	rts
-
-SVC02D	.db $84
-
-*---------------------------------------------------------
-* INITSLOT - Initialize the GS slot firmware
-*---------------------------------------------------------
-INITSLOT
-	ldx #$C2	$CN, N=SLOT
-	ldy #$20	$N0, N=SLOT
-	lda #0
-MODINIT
-	jsr $C245	PASCAL INIT ENTRY POINT
-	rts
-
-*---------------------------------------------------------
-* INITSEND - initialization string for serial port
-*---------------------------------------------------------
-* The IIgs serial port initially accepts control-commands
-* in its output stream. This means the port is not
-* fully 8-bit transparent. We must first send a
-* control sequence to prevent the firmware from
-* interpreting any of the binary data.
-*
-INITSTRING
-	.db $01,$d8,$c4	ctrl-A X D disable XON/XOFF
-	.db $01,$c3,$c4	ctrl-A C D disable auto CR
-	.db $01,$cb	ctrl-A K disable auto LF after CR
-	.db $01,$da	ctrl-A Z disable firmware control chars
-	.db $00		terminate string
-INITSEND
-	ldy #0
-SILOOP
-	lda INITSTRING,Y
-	BEQ SIDONE	ZERO terminates
-	jsr PUTCGS	preserves Y
-	iny
-	bne SILOOP
-SIDONE
-	rts
-
-*---------------------------------------------------------
-* GSSPD -- SET SPEED OF GS PORT
-* USES SOME 16-BIT CODE
-*---------------------------------------------------------
-GSSPD
-	clc
-	.db $FB           ; xce TO NATIVE MODE
-	.db $C2,$30       ; rep #$30 16 BIT M,X
-	.db $29,$FF,$00   ; and #$00FF
-	tax               ; $AA
-	lda L0EF8,X
-	.db $29,$FF,$00   ; and #$00FF
-	pha               ; $48 ; PARM 1 (2BYTE)
-	.db $A9,$12,$00   ; lda #$0012
-	pha               ; $48 ; PARM 2 (2BYTE)
-	.db $A2,$03,$0B   ; ldx #$0B03 FUNC $B IN TOOL $3
-	.db $22,$00,$00,$E1 ; jsl $E10000 ; DISPATCH
-	sec
-	.db $FB           ; xce TO EMULATION
 	rts
 
 *---------------------------------------------------------
 * PUTCGS - Send accumulator out the SCC serial port
 *---------------------------------------------------------
 PUTCGS
-	.db $DA           ; PHX
-	.db $5A           ; PHY
-	pha
-K8D8
-	lda $C000
-	cmp #CHR_ESC	Escape = abort
-	bne OK8E2
-	jmp PABORT
-OK8E2
-	ldx #$C2          ; $CN, N=SLOT
-	ldy #$20          ; $N0
-	lda #0            ; READY FOR OUTPUT?
-MODSTAT1
-	jsr $C248         ; PASCAL STATUS ENTRY POINT
-	bcc K8D8          ; CC MEANS NOT READY
-	ldx #$C2          ; $CN
-	ldy #$20          ; $N0
-	pla               ; RETRIEVE CHAR
-	pha               ; MUST SAVE FOR RETURN
-MODWRITE
-	jsr $C247         ; PASCAL WRITE ENTRY POINT
-	pla
-	.db $7A           ; PLY
-	.db $FA           ; PLX
-	and #$FF
-	rts
+	STA	:TEMPA
+	STX	:TEMPX
+
+:SEND	LDA	GSCMDB	;rr0
+
+	TAX
+	AND	#%00000100	;test bit 2 (hardware handshaking)
+	BEQ	:SEND
+	TXA
+	AND	#%00100000	;test bit 5 (ready to send?)
+	BEQ	:SEND
+
+:EXIT0	LDA	:TEMPA	;get char to send
+	STA	GSDATAB	;send the character
+
+:EXIT	LDX	:TEMPX
+	LDA	:TEMPA
+	RTS
+
+:TEMPA	.db	1
+:TEMPX	.db	1
+
 
 *---------------------------------------------------------
 * GETCGS - Get a character from the SCC serial port (XY unchanged)
 *---------------------------------------------------------
+
 GETCGS
-	.db $DA		PHX
-	.db $5A		PHY
-K902
+	LDA GSCMDB	; DUMMY READ TO RESET 8530 POINTER TO 0
+
+pollSCC
 	lda $C000
 	cmp #CHR_ESC	Escape = abort
-	bne OK90C
+	bne SCCNEXT
 	jmp PABORT
-OK90C
-	ldx #$C2	$CN, N=SLOT
-	ldy #$20	$N0
-	lda #1		INPUT READY?
-MODSTAT2
-	jsr $C248	PASCAL STATUS ENTRY POINT
-	bcc K902	CC MEANS NO INPUT READY
-	ldx #$C2	$CN
-	ldy #$20	$N0
-MODREAD
-	jsr $C246	PASCAL READ ENTRY POINT
-	.db $7A		PLY
-	.db $FA		PLX
-	and #$FF
+
+SCCNEXT	LDA GSCMDB	; READ 8530 READ REGISTER 0
+	AND #$01        ; BIT 0 MEANS RX CHAR AVAILABLE
+	cmp #$01
+	bne pollSCC
+
+			;  THERE'S A CHAR IN THE 8530 RX BUFFER
+pullIt
+	LDA #$01	;  SET 'POINTER' TO rr1
+	STA GSCMDB  
+	LDA GSCMDB	;  READ THE 8530 READ REGISTER 1
+	AND #$20	;  CHECK FOR bit 5=RX OVERRUN
+	BEQ itsOK
+	ldx #$30	; Clear Receive overrun
+	stx GSCMDB
+	ldx #$00
+	stx GSCMDB
+
+itsOK
+	LDA #$08	;  WE WANT TO READ rr8
+	STA GSCMDB	;  SET 'POINTER' TO rr8
+	LDA GSCMDB	;  READ rr8
 	rts
 
 *---------------------------------------------------------
@@ -164,8 +79,7 @@ INITSCC
 	SEI
 	clc
 	lda #$05
-	adc PSPEED	0 = 9600, 1=19200
-	cmp #$07
+	adc PSPEED	0 = 9600, 1=19200, 2=115200
 	sta BAUD
 
 	LDA	GSCMDB	;hit rr0 once to sync up
@@ -177,12 +91,6 @@ INITSCC
 	STA	GSCMDB
 	NOP		;SCC needs 11 pclck to recover
 
-	LDX	#4	;wr4
-	LDA	#%01000100	;X16 clock mode,
-	STX	GSCMDB	;1 stop bit, no parity
-	STA	GSCMDB	;could be 1.5 or 2 stop bits
-			;1.5 set bits 3,2 to 1,0
-			;2   set bits 3,2 to 1,1
 	LDX	#3	;wr3
 	LDA	#%11000000	;8 data bits, receiver disabled
 	STX	GSCMDB	;could be 7 or 6 or 5 data bits
@@ -192,25 +100,52 @@ INITSCC
 	LDA	#%01100010	;DTR enabled 0=/HIGH, 8 data bits
 	STX	GSCMDB	;no BRK, xmit disabled, no SDLC
 	STA	GSCMDB	;RTS *MUST* be disabled, no crc
-	LDX	#11	;wr11
-	LDA	#WR11B	;load constant to write
-			;use #WR11A for channel A
-	STX	GSCMDB
-	STA	GSCMDB
-	JSR	TIMECON	;set up wr12 and wr13
-			;to set baud rate.
+
 	LDX	#14	;wr14
 	LDA	#%00000000	;null cmd, no loopback
 	STX	GSCMDB	;no echo, /DTR follows wr5
 	STA	GSCMDB	;BRG source is XTAL or RTxC
 
-* Enables
+	lda PSPEED
+	cmp #$02
+	beq GOFAST
 
+	LDX	#4	;wr4
+	LDA	#%01000100	;X16 clock mode,
+	STX	GSCMDB	;1 stop bit, no parity
+	STA	GSCMDB	;could be 1.5 or 2 stop bits
+			;1.5 set bits 3,2 to 1,0
+			;2   set bits 3,2 to 1,1
+
+	LDX	#11	;wr11
+	LDA	#WR11BBRG	;load constant to write
+	STX	GSCMDB
+	STA	GSCMDB
+
+	JSR	TIMECON	;set up wr12 and wr13
+			;to set baud rate.
+
+* Enables
 	ORA	#%00000001	;enable baud rate gen
 	LDX	#14	;wr14
 	STX	GSCMDB
 	STA	GSCMDB	;write value
+	jmp INITCOMMON
 
+GOFAST
+	LDX	#4	;wr4
+	LDA	#%10000100	;X32 clock mode,
+	STX	GSCMDB	;1 stop bit, no parity
+	STA	GSCMDB	;could be 1.5 or 2 stop bits
+			;1.5 set bits 3,2 to 1,0
+			;2   set bits 3,2 to 1,1
+
+	LDX	#11	;wr11
+	LDA	#WR11BXTAL	;load constant to write
+	STX	GSCMDB
+	STA	GSCMDB
+
+INITCOMMON
 	LDA	#%11000001	;8 data bits, Rx enable
 	LDX	#3
 	STX	GSCMDB
@@ -253,23 +188,11 @@ INITSCC
 	STX	GSCMDB	;allow IRQs on Rx all & ext. stat
 	STA	GSCMDB	;No transmit interrupts (b1)
 
-*	LDX	#9	;re-write wr9
-*	LDA	#%00011001	;set Master Interrupt Enable
-*	STX	GSCMDB	;this value gives us vector
-*	STA	GSCMDB	;information with each irq,
-			;in vector bits 6-5-4,
-			;also including status.
-
-* The vector bits are not used by firmware and IIGS
-* TechNote #18. But they make irq handling easier.
-
-			;(See IRQIN routine.)
-
-                LDA GSCMDB   //READ TO RESET channelB POINTER TO 0
-                LDA #$09
-                STA GSCMDB //SET 'POINTER' TO wr9
-                LDA #$00
-                STA GSCMDB //Anti BluRry's syndrome medication 
+	LDA GSCMDB   //READ TO RESET channelB POINTER TO 0
+	LDA #$09
+	STA GSCMDB //SET 'POINTER' TO wr9
+	LDA #$00
+	STA GSCMDB //Anti BluRry's syndrome medication 
 
 	CLI
 	RTS		;we're done!
@@ -310,25 +233,6 @@ BAUDH	.db	1	;300 bps (1)
 	.db	0	;19200 (6)
 	.db	0	;38400 (7)
 	.db	0	;57600 (8)
-
-* DOBAUD: Set baud rate without resetting entire 8530
-* (Stop clock, set time constant, restart clock)
-
-DOBAUD	SEI
-	LDA	#0	;disable BRG (stop clock)
-	LDX	#14	;wr14
-	STX	GSCMDB
-	STA	GSCMDB	;write it
-
-	JSR	TIMECON	;set time constant bytes
-
-	LDA	#%00000001	;re-enable BRG
-	LDX	#14
-	STX	GSCMDB
-	STA	GSCMDB
-
-	CLI
-	RTS
 
 *---------------------------------------------------------
 * PATCHGS - Patch the entry point of PUTC and GETC over

@@ -88,15 +88,6 @@ SAVPARM
 	jsr SHOWMSG
 
 REFRESH
-	lda PARMS
-	cmp #$07
-	bmi REFOK
-	lda PARMS+1
-	cmp #$02
-	bne REFOK
-	lda #$01
-	sta PARMS+1
-REFOK
 	lda #3		FIRST PARAMETER IS ON LINE 3
 	jsr TABV
 	ldx #0		PARAMETER NUMBER
@@ -251,8 +242,6 @@ PARMINT
 	tya
 	cmp #$08
 	bpl GSMODEM
-	ora #"0"	CONVERT TO ASCII AND PUT
-         *STA MTSSC	INTO TITLE SCREEN
 	jsr PATCHII
 	tya
 	asl
