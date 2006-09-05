@@ -1,118 +1,120 @@
-*
-* ADTPro - Apple Disk Transfer ProDOS
-* Copyright (C) 2006 by David Schmidt
-* david__schmidt at users.sourceforge.net
-*
-* This program is free software; you can redistribute it and/or modify it 
-* under the terms of the GNU General Public License as published by the 
-* Free Software Foundation; either version 2 of the License, or (at your 
-* option) any later version.
-*
-* This program is distributed in the hope that it will be useful, but 
-* WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY 
-* or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License 
-* for more details.
-*
-* You should have received a copy of the GNU General Public License along 
-* with this program; if not, write to the Free Software Foundation, Inc., 
-* 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
-*
+;
+; ADTPro - Apple Disk Transfer ProDOS
+; Copyright (C) 2006 by David Schmidt
+; david__schmidt at users.sourceforge.net
+;
+; This program is free software; you can redistribute it and/or modify it 
+; under the terms of the GNU General Public License as published by the 
+; Free Software Foundation; either version 2 of the License, or (at your 
+; option) any later version.
+;
+; This program is distributed in the hope that it will be useful, but 
+; WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY 
+; or FITNESS FOR A PARTIULAR PURPOSE. See the GNU General Public License 
+; for more details.
+;
+; You should have received a copy of the GNU General Public License along 
+; with this program; if not, write to the Free Software Foundation, Inc., 
+; 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+;
 
-*---------------------------------------------------------
-* Code
-*---------------------------------------------------------
-ONLINE
+;---------------------------------------------------------
+; Code
+;---------------------------------------------------------
+ONLINE:
 	LDA #$00
 	sta LASTVOL
 
 	tax
-O.CLEAN	sta CAPBLKS,X	Clear out capacity-in-blocks table
+OCLEAN:
+	sta CAPBLKS,X	; Clear out capacity-in-blocks table
 	inx
 	cpx #$20
-	bne O.CLEAN
+	bne OCLEAN
 
-	LDA #$02	MLI call: ONLINE status
+	LDA #$02	; MLI call: ONLINE status
 	STA PARMBUF
 	LDA #$00
 	STA PARMBUF+1
-	LDA #DEVICES
+	LDA #<DEVICES
 	STA PARMBUF+2
-	LDA /DEVICES
+	LDA #>DEVICES
 	STA PARMBUF+3
 	JSR MLI
-	.db PD_ONL
-	.da PARMBUF
-	BNE O.ERROR
+	.byte PD_ONL
+	.addr PARMBUF
+	BNE OERROR
 
-	ldx #$00	X is our index into the device table
-loop.1	lda devices,x
+	ldx #$00	; X is our index into the device table
+OLLOOP:	lda DEVICES,x
 	cmp #$00
-	beq done
+	beq ODONE
 
-	and #$0F	Extract name length
-	beq OL.SK1	If zero - skip to HOWBIG
+	and #$0F	; Extract name length
+	beq @SK1	; If zero - skip to HOWBIG
 	jsr HOWBIG2
-	bcs OL.SK3	We found a size - skip to next step
-OL.SK1	lda devices,x
-	and #$F0	Extract unit number in the high nybble
+	bcs @SK3	; We found a size - skip to next step
+@SK1:	lda DEVICES,x
+	and #$F0	; Extract unit number in the high nybble
 	jsr HOWBIG
-OL.SK3	lda devices,x
-	and #$0F	Extract name length
+@SK3:	lda DEVICES,x
+	and #$0F	; Extract name length
 	bne skip
-OL.SK2	lda devices+1,x
-	cmp #$52	Not Pro-DOS
-	bne OL.1
+@SK2:	lda DEVICES+1,x
+	cmp #$52	; Not Pro-DOS
+	bne @1
 	jsr DEVMSG1
 	jmp skip
-OL.1	cmp #$27	I/O Error
-	bne OL.2
+@1:	cmp #$27	; I/O Error
+	bne @2
 	jsr DEVMSG2
 	jmp skip
-OL.2	cmp #$28	No device connected
-	bne OL.3
+@2:	cmp #$28	; No device connected
+	bne @3
 	jsr DEVMSG3
 	jmp skip
-OL.3	cmp #$2F	Empty (typical of slot 5)
+@3:	cmp #$2F	; Empty (typical of slot 5)
 	bne skip
 	jsr DEVMSG3
 
-skip
-	jsr prt1vol
+skip:
+	jsr PRT1VOL
 	inc LASTVOL
 	txa
 	clc
 	adc #$10
 	tax
-	bcc loop.1
-DONE	dec LASTVOL	Save off the last volume number (index)
+	bcc OLLOOP
+ODONE:	dec LASTVOL	; Save off the last volume number (index)
 	RTS
 
-O.ERROR	sta parmbuf
+OERROR:
+	sta PARMBUF
 	LDA #$FF
 	STA PARMBUF+1
 	RTS
-abt	brk
+abt:	brk
 
-* DEVMSG - Add a message to the "Volume name" area of the device
-DEVMSG
-	txa		Preserve X
+; DEVMSG - Add a message to the "Volume name" area of the device
+DEVMSG:
+	txa		; Preserve X
 	pha
 
 	clc
-	adc #DEVICES
-	sta <UTILPTR
-	lda /DEVICES
-	sta <UTILPTR+1	UTILPTR now holds DEVICES + X
+	adc #<DEVICES
+	sta UTILPTR
+	lda #>DEVICES
+	sta UTILPTR+1	; UTILPTR now holds DEVICES + X
 	
 	ldy #$00
-DMLOOP
+DMLOOP:
 	lda MNONAME,Y
 	cmp #$00
 	beq DMDONE
 	iny
 	sta (UTILPTR),Y
 	jmp DMLOOP
-DMDONE
+DMDONE:
 	tya
 	ldy #$00
 	ora (UTILPTR),Y
@@ -122,75 +124,76 @@ DMDONE
 	tax
 	rts
 
-* DEVMSG1 - Add "<NO NAME>" to the "Volume name"
-DEVMSG1
-	lda #MNONAME
+; DEVMSG1 - Add "<NO NAME>" to the "Volume name"
+DEVMSG1:
+	lda #<MNONAME
 	sta DMLOOP+1
-	lda /MNONAME
+	lda #>MNONAME
 	sta DMLOOP+2
 	jsr DEVMSG
 	rts
 
-* DEVMSG2 - Add "<I/O ERROR>" to the "Volume name"
-DEVMSG2
-	lda #MIOERR
+; DEVMSG2 - Add "<I/O ERROR>" to the "Volume name"
+DEVMSG2:
+	lda #<MIOERR
 	sta DMLOOP+1
-	lda /MIOERR
+	lda #>MIOERR
 	sta DMLOOP+2
 	jsr DEVMSG
 	rts
 
-* DEVMSG3 - Add "<NO DISK>" to the "Volume name"
-DEVMSG3
-	lda #MNODISK
+; DEVMSG3 - Add "<NO DISK>" to the "Volume name"
+DEVMSG3:
+	lda #<MNODISK
 	sta DMLOOP+1
-	lda /MNODISK
+	lda #>MNODISK
 	sta DMLOOP+2
 	jsr DEVMSG
 	rts
 
-*---------------------------------------------------------
-* WHATUNIT - Which unit number is this index?
-*
-* Input:
-*   A - index into the device table
-*
-* Returns:
-*   A - unit number
-*   X - unharmed
-*---------------------------------------------------------
-WHATUNIT
-	stx <ZP		Preserve X
-	beq WU.READY
-	tax		Send the index to the X register
-	lda #$00	Now clear A out - need it for some arithmatic
-WU.MORE	clc
+;---------------------------------------------------------
+; WHATUNIT - Which unit number is this index?
+;
+; Input:
+;   A - index into the device table
+;
+; Returns:
+;   A - unit number
+;   X - unharmed
+;---------------------------------------------------------
+WHATUNIT:
+	stx SLOWX	; Preserve X
+	beq @READY
+	tax		; Send the index to the X register
+	lda #$00	; Now clear A out - need it for some arithmatic
+@MORE:
+	clc
 	adc #$10
 	dex
 	cpx #$00
-	bne WU.MORE
-WU.READY
+	bne @MORE
+@READY:
 	tax
-	lda devices,x
-	and #$F0	Extract unit number
-	ldx <ZP		Restore X
+	lda DEVICES,x
+	and #$F0	; Extract unit number
+	ldx SLOWX	; Restore X
 	rts
 
-*---------------------------------------------------------
-* HOWBIG - How big is this volume?
-*
-* Input: 
-*   A holds first byte of device list
-*   X holds index into device list
-* 
-* Returns:
-*   X unharmed
-*   Updated capacity block table for index X/8
-*
-*---------------------------------------------------------
+;---------------------------------------------------------
+; HOWBIG - How big is this volume?
+;
+; Input: 
+;   A holds first byte of device list
+;   X holds index into device list
+; 
+; Returns:
+;   X unharmed
+;   Updated capacity block table for index X/8
+;
+;---------------------------------------------------------
 
-HOWBIG
-	stx <ZP		Preserve X
+HOWBIG:
+	stx SLOWX	; Preserve X
 
 	and #$F0
 	sta onlineUnit
@@ -202,7 +205,7 @@ HOWBIG
 	ora #$C0
 	sta BLKPTR+1
 
-	lda #$01	1st ID byte
+	lda #$01	; 1st ID byte
 	sta BLKPTR
 	ldx #$00
 	lda (BLKPTR,X)
@@ -210,16 +213,16 @@ HOWBIG
 	beq Ok1
 	jmp ProStatus
 
-Ok1
-	lda #$03	2nd ID byte
+Ok1:
+	lda #$03	; 2nd ID byte
 	sta BLKPTR
 	ldx #$00
 	lda (BLKPTR,X)
 	beq Ok2
 	jmp ProStatus
 
-Ok2
-	lda #$05	3rd ID byte
+Ok2:
+	lda #$05	; 3rd ID byte
 	sta BLKPTR
 	ldx #$00
 	lda (BLKPTR,X)
@@ -227,37 +230,37 @@ Ok2
 	beq BlockDev
 	jmp ProStatus
 
-* We have a block device of some sort here.
+; We have a block device of some sort here.
 
-BlockDev
+BlockDev:
 	lda #$FF
 	sta BLKPTR
 	ldx #$00
 	lda (BLKPTR,X)
 	bne NotDiskII
 
-* It's a Disk ][ so hard code its size to 280 ($0118) blocks.
+; It's a Disk ][ so hard code its size to 280 ($0118) blocks.
 
 	lda #$01
 	sta DevSize+1
 	lda #$18
 	sta DevSize
 	jsr SAVSIZE
-	jmp h.exit
+	jmp HOWEXIT
 
-NotDiskII 
+NotDiskII:
 
-	lda #$07	         4th ID byte
+	lda #$07	; 4th ID byte
 	sta BLKPTR
 	ldx #$00
 	lda (BLKPTR,X)
 	beq Smartport
 	jmp ProStatus
 
-Smartport 
+Smartport:
 
-* We have a Smartport device so get it's blocksize from $FC and $FD offset.
-* If this value is zeros then we must do a Smartport status call to get size.
+; We have a Smartport device so get it's blocksize from $FC and $FD offset.
+; If this value is zeros then we must do a Smartport status call to get size.
 
 	lda #$FC
 	sta BLKPTR
@@ -270,36 +273,36 @@ Smartport
 	sta DevSize+1
 	ora DevSize
 	bne GoodSize
-	jmp SmartStatus
+	jmp SMARTSTATUS
 
-GoodSize
+GoodSize:
 	jsr SAVSIZE
-	jmp h.exit
+	jmp HOWEXIT
 
-* Do a ProDOS driver status call to retrieve device block size.
+; Do a ProDOS driver status call to retrieve device block size.
 
-ProStatus
+ProStatus:
 
-	lda onlineUnit	Compute slot/drive offset by dividing
-	lsr a		unit number by 16.
+	lda onlineUnit	; Compute slot/drive offset by dividing
+	lsr a		; unit number by 16.
 	lsr a
 	lsr a
-	tax		Move offset to index.
+	tax		; Move offset to index.
 
-	lda MLIADDR,x	Get low byte of ProDOS driver address
+	lda MLIADDR,x	; Get low byte of ProDOS driver address
 	sta BLKPTR
 	inx
-	lda MLIADDR,x	Get high byte of ProDOS driver address
+	lda MLIADDR,x	; Get high byte of ProDOS driver address
 	sta BLKPTR+1
 
-	php		Save status
-	sei		Interrupts off
+	php		; Save status
+	sei		; Interrupts off
 
 	lda #0
-	sta $42		Status call
+	sta $42		; Status call
 
 	lda onlineUnit
-	sta $43		Unit number
+	sta $43		; Unit number
 	lda #$00
 	sta $44
 	lda #$00
@@ -309,54 +312,50 @@ ProStatus
 	sta $46
 	sta $47
 
-	lda $C08B	Read and write enable the language card
-	lda $C08B	with bank 1 on.
+	lda $C08B	; Read and write enable the language card
+	lda $C08B	; with bank 1 on.
 
-	jsr CallDriver	Call ProDOS driver.
+	jsr CallDriver	; Call ProDOS driver.
 
-	bit $C082	Put ROM back on-line
+	bit $C082	; Put ROM back on-line
 	bcs Error
 
-OkError
-
-	stx DevSize	Save device size.
+OKERROR:
+	stx DevSize	; Save device size.
 	sty DevSize+1
 
-NoMessage
-	plp		Restore status
+NoMessage:
+	plp		; Restore status
 	jsr SAVSIZE
-	jmp h.exit
+	jmp HOWEXIT
 
-CallDriver
-
+CallDriver:
 	jmp  (BLKPTR)
 
-Error
-
-	cmp #$2B	Write protect error is ok.
-	beq OKError
-	cmp #$2F	Disk offline error
-	beq OKError
+Error:
+	cmp #$2B	; Write protect error is ok.
+	beq OKERROR
+	cmp #$2F	; Disk offline error
+	beq OKERROR
 
 	lda #$00
-	sta DevSize	Unknown size
+	sta DevSize	; Unknown size
 	sta DevSize+1
 
-	cmp #$28	Device not connected error
-	beq NoMessage	(This error shouldn't happen here)
+	cmp #$28	; Device not connected error
+	beq NoMessage	; (This error shouldn't happen here)
 
-	plp		Restore status
+	plp		; Restore status
 
 	jsr SAVSIZE
-	jmp h.exit
+	jmp HOWEXIT
 
 	rts
 
-* Do a Smartport status call to retrieve device block size
+; Do a Smartport status call to retrieve device block size
 
-Smartstatus
-
-	lda #$FF	Setup Smartport dispatch address in BLKPTR
+SMARTSTATUS:
+	lda #$FF	; Setup Smartport dispatch address in BLKPTR
 	sta BLKPTR
 	ldx #$00
 	lda (BLKPTR,X)
@@ -367,24 +366,23 @@ Smartstatus
 	adc #3
 	sta BLKPTR
 
-	lda onlineUnit	Is this drive 1 or 2?
+	lda onlineUnit	; Is this drive 1 or 2?
 	bmi SPD2
 
-SPD1
+SPD1:
 	lda #1
 	sta SPUnitNo
 	jmp CallSP
 
-SPD2
+SPD2:
 	lda #2
 	sta SPUnitNo
 
-CallSP
-	jsr Dispatch	This dispatch call is what crashes kegswin...
+CallSP:
+	jsr Dispatch	; This dispatch call is what crashes kegswin...
 
-CmdNum     .db $00
-CmdList    .da SPParms
-
+CmdNum:		.byte $00
+CmdList:	.addr SPParms
 	bcs SPError
 	lda DSB+3
 	beq DSBSizeOk
@@ -393,49 +391,49 @@ CmdList    .da SPParms
 	sta DevSize
 	sta DevSize+1
 	jsr SAVSIZE
-	jmp h.exit
+	jmp HOWEXIT
 
-DSBSizeOk
-	lda DSB+1	Do we still have a zero byte device?
+DSBSizeOk:
+	lda DSB+1	; Do we still have a zero byte device?
 	ora DSB+2
-	beq CheckType	Yes, check device type for Disk3.5
+	beq CheckType	; Yes, check device type for Disk3.5
 
-	lda DSB+1	Save size.
+	lda DSB+1	; Save size.
 	sta DevSize
 	lda DSB+2
 	sta DevSize+1
 
 	jsr SAVSIZE
-	jmp h.exit
+	jmp HOWEXIT
 
-CheckType 
+CheckType:
 
-	lda DSB+21	If we have a 1 here then this is a
-	cmp #1		Disk 3.5 (or Unidisk) so set default
-	beq Disk35	value.
+	lda DSB+21	; If we have a 1 here then this is a
+	cmp #1		; Disk 3.5 (or Unidisk) so set default
+	beq Disk35	; value.
 
 	lda #$00
-	sta DevSize	Not a Disk35 so I don't know what type
-	sta DevSize+1	of device we have so set size to zero.
+	sta DevSize	; Not a Disk35 so I don't know what type
+	sta DevSize+1	; of device we have so set size to zero.
 
 	jsr SAVSIZE
-	jmp h.exit
+	jmp HOWEXIT
 
-Disk35    
+Disk35:  
 
-	lda #$40	Set Disk 3.5 default to 1600 ($0640)
-	sta DevSize	blocks.
+	lda #$40	; Set Disk 3.5 default to 1600 ($0640)
+	sta DevSize	; blocks.
 	lda #$06
 	sta DevSize+1
 
 	jsr SAVSIZE
-	jmp h.exit
+	jmp HOWEXIT
 
 
-Dispatch
+Dispatch:
 	jmp (BLKPTR)
 
-SPError
+SPError:
 
 	lda #$00
 	sta DevSize
@@ -448,109 +446,111 @@ SPError
 	lsr a
 	tax
 	jsr SAVSIZE
-	jmp h.exit
+	jmp HOWEXIT
 
-h.exit	ldx <ZP		Restore X
+HOWEXIT:	ldx SLOWX	; Restore X
 	rts
 
-SAVSIZE
-	lda <ZP		Grab the original X
-	beq s.next	Get ready to divide if not 0
-	lsr		\
-	lsr		 Divide by 8
-	lsr		/
-s.next	tax		X is now the index into blocks table
+SAVSIZE:
+	lda SLOWX	; Grab the original X
+	beq @SNEXT	; Get ready to divide if not 0
+	lsr		; \
+	lsr		;  Divide by 8
+	lsr		; /
+@SNEXT:	tax		; X is now the index into blocks table
 	lda DevSize
-	sta capblks,x
+	sta CAPBLKS,x
 	lda DevSize+1
-	sta capblks+1,x
+	sta CAPBLKS+1,x
 	rts
 
-*---------------------------------------------------------
-* HOWBIG2 - How big is this ProDOS volume?
-*
-* Input: 
-*   A holds first byte of device list
-*   X holds index into device list
-* 
-* Returns:
-*   X unharmed
-*   Updated capacity block table for index X/8
-*
-*---------------------------------------------------------
-HOWBIG2
+;---------------------------------------------------------
+; HOWBIG2 - How big is this ProDOS volume?
+;
+; Input: 
+;   A holds first byte of device list
+;   X holds index into device list
+; 
+; Returns:
+;   X unharmed
+;   Updated capacity block table for index X/8
+;
+;---------------------------------------------------------
+HOWBIG2:
 	clc
-	adc #$01	Add one for the leading "/"
+	adc #$01	; Add one for the leading "/"
 	and #$0f
-	sta volname	Store total name length
-	txa		Preserve X
-	pha		by pushing it onto the stack
-	lda #"/"
-	sta volname+1
+	sta VOLNAME	; Store total name length
+	txa		; Preserve X
+	pha		; by pushing it onto the stack
+	lda #'/'
+	sta VOLNAME+1
 	ldy #$01
-h2.loop	inx
+@H2LOOP:
+	inx
 	iny
-	lda devices,x
-	sta volname,y
-	cpy volname
-	bne h2.loop
+	lda DEVICES,x
+	sta VOLNAME,y
+	cpy VOLNAME
+	bne @H2LOOP
 
-h2.name	LDA #$0A	MLI call: FILE-INFO
+@H2NAME:
+	LDA #$0A	; MLI call: FILE-INFO
 	STA PARMBUF
-	LDA #VOLNAME
+	LDA #<VOLNAME
 	STA PARMBUF+1
-	LDA /VOLNAME
+	LDA #>VOLNAME
 	STA PARMBUF+2
 	JSR MLI
-	.db PD_INFO
-	.da PARMBUF
-	BNE h2.error
-	pla		Grab the original X
-	pha		back off the stack, put it in A
-	beq h2.next	Get ready to divide if not 0
-	lsr		\
-	lsr		 Divide by 8
-	lsr		/
-h2.next	tax		X is now the index into blocks table
-	lda parmbuf+5
-*	lda #$01	UNIT TESTING - remove me
-	sta capblks,x
-	lda parmbuf+6
-*	lda #$00	UNIT TESTING - remove me
-	sta capblks+1,x
+	.byte PD_INFO
+	.addr PARMBUF
+	BNE @H2ERROR
+	pla		; Grab the original X
+	pha		; back off the stack, put it in A
+	beq @next	; Get ready to divide if not 0
+	lsr		; \
+	lsr		;  Divide by 8
+	lsr		; /
+@next:	tax		; X is now the index into blocks table
+	lda PARMBUF+5
+;	lda #$01	; UNIT TESTING - remove me
+	sta CAPBLKS,x
+	lda PARMBUF+6
+;	lda #$00	; UNIT TESTING - remove me
+	sta CAPBLKS+1,x
 	sec
-	jmp H2.EXIT
+	jmp @H2EXIT
 
-h2.ERROR		* Add an indication?
-	sta parmbuf
+@H2ERROR:		; Add an indication?
+	sta PARMBUF
 	lda #$FF
 	sta PARMBUF+1
-	jmp H2.EXITNO
+	jmp @H2EXITNO
 
-H2.EXITNO
+@H2EXITNO:
 	clc
 
-H2.EXIT
+@H2EXIT:
 	pla
 	tax
 	rts
 
 
-*volname .db $00,'/LONGESTVOLUMENM                            '
-*	.db '                               '
-volname .db $00,'/LONGESTVOLUMENM '
+;VOLNAME .byte $00,'/LONGESTVOLUMENM                            '
+;	.byte '                               '
+VOLNAME:	.res 16,$00
 
-LASTVOL	.db $00
-onlineUnit	.db $00
-DevSize .dw $0000
+LASTVOL:	.byte $00
+onlineUnit:	.byte $00
+DevSize:	.word $0000
 
-SPParms
-SPCount   .db $03
-SPUnitNo  .db $00
-SPListPtr .da DSB
-SPCode    .db $03
-DSB	.db $00,$00,$00,$00,$00,$00,$00,$00  Probably way too much space, but you never know...
-	.db $00,$00,$00,$00,$00,$00,$00,$00
-	.db $00,$00,$00,$00,$00,$00,$00,$00
-	.db $00,$00,$00,$00,$00,$00,$00,$00
-	.db $00,$00,$00,$00,$00,$00,$00,$00
+SPParms:
+SPCount:	.byte $03
+SPUnitNo:	.byte $00
+SPListPtr:	.addr DSB
+SPCode:		.byte $03
+DSB:	.byte $00,$00,$00,$00,$00,$00,$00,$00  ; Probably way too much space, but you never know...
+	.byte $00,$00,$00,$00,$00,$00,$00,$00
+	.byte $00,$00,$00,$00,$00,$00,$00,$00
+	.byte $00,$00,$00,$00,$00,$00,$00,$00
+	.byte $00,$00,$00,$00,$00,$00,$00,$00

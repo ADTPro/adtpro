@@ -1,0 +1,10 @@
+Serial "driver design" for ADTPro:
+
+The idea is to have a common way of inserting support for a particular serial device.  Since we generallay have to maintain pretty tight timing control, this happens by patching some common entry points with self-modifying code.  Those entry points include:
+	INIT<driver> - the name of the driver entry point
+		- must be "known" by ADTPro source; called from parm setting routine
+		- provides initialization, baud-setting
+		- patches services for the following common entry points:
+	GETC - the character-getting routine
+	PUTC - the character-putting routine
+	RESETIO - the routine to reset the serial device each time the main menu is shown (i.e. may need to recover from aborts)

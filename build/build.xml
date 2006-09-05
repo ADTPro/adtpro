@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project name="ADTPro" default="jar" basedir="..">
-	<property name="versionString" value="0.0.7" />
+	<property name="versionString" value="0.0.8" />
 	<property name="distName" value="ADTPro-${versionString}" />
 	<property name="volName" value="ADTPro.${versionString}" />
-	<property name="assemblerPath" value="c:/dev/xassm/sbasm/2.06" />
+	<property name="assemblerPath" value="C:/dev/xassm/cc65/bin" />
 	<property name="projdir" value="." />
 	<property name="builddir" value="${basedir}/build" />
 	<property name="acJar" value="AppleCommander-1.3.4b-ac.jar" />
@@ -13,6 +13,7 @@
 		Clean up everything
 		-->
 		<delete file="${builddir}/ADTPRO" />
+		<delete file="${builddir}/main.o" />
 		<delete file="${builddir}/${distName}.dsk" />
 		<delete file="${builddir}/${distName}.jar" />
 		<delete file="${builddir}/${distName}.zip" />
@@ -22,8 +23,14 @@
 		<!--
 		Assemble the source
 		-->
-		<exec dir="${projdir}/client/src" executable="${assemblerPath}/sbasm.com">
-			<arg line="main.asm 2> asm.out" />
+		<exec dir="${projdir}/client/src" executable="${assemblerPath}/ca65">
+			<arg line="-l -t c64 main.asm" />
+		</exec>
+		<!--
+		Link the bits
+		-->
+		<exec dir="${projdir}/client/src" executable="${assemblerPath}/ld65">
+			<arg line="-m adtpro.map -C adtpro.cfg -o ADTPRO main.o" />
 		</exec>
 		<!--
 		Move the object code to the build directory
