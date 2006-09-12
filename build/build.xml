@@ -71,6 +71,6 @@
 		<!-- jar up the source, object and properties files -->
 		<jar jarfile="${builddir}/${distName}.jar" manifest="${builddir}/manifest.mf" basedir="${projdir}" includes="org/**/*.class org/**/*.java org/**/*.properties org/**/*.png LICENSE" />
 		<!-- zip up the whole sheebang -->
-		<zip destfile="${builddir}/${distName}.zip" basedir="${builddir}" includes="${distName}.jar ${distName}.dsk rxtx/rxtx-2.1-7-bins-r2.zip LICENSE README" />
+		<zip destfile="${builddir}/${distName}.zip" basedir="${builddir}" includes="${distName}.jar ${distName}.dsk rxtx/* LICENSE README" />
 	</target>
 </project>
