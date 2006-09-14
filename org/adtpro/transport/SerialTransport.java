@@ -67,6 +67,13 @@ public class SerialTransport
     port = (RXTXPort) portId.open(Messages.getString("SerialTransport.3"), 100); //$NON-NLS-1$
     port.setSerialPortParams(Integer.parseInt(speed), 8, 1, 0);
     port.setFlowControlMode(3);
+    /*
+     *  Unixen would never return from a port.close() because they
+     * locked hard on the outstanding port.read() request.
+     * Receive timeout gives us a chance to come up for air
+     * once in a while.
+     */
+    port.enableReceiveTimeout(500);
     inputStream = new DataInputStream(port.getInputStream());
     outputStream = new DataOutputStream(port.getOutputStream());
     connected = true;
@@ -185,6 +192,17 @@ public class SerialTransport
       }
       catch (java.io.IOException e)
       {
+    	  /*
+    	   * Here, we could increment a count to implement
+    	   * a timeout.  We'd need to only "count" if we
+    	   * were inside a protocol flow, though - there is
+    	   * an outstanding read() that happens in the 
+    	   * inbetween times to wait for some work from
+    	   * the Apple.  I suppose the way to implement it
+    	   * would be to send in a boolean that signifies 
+    	   * if we care about timeout or not.  Then, we'd
+    	   * throw a new exception if we did time out.
+    	   */
       }
     }
     return oneByte;
