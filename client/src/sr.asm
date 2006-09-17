@@ -31,6 +31,7 @@
 ; QUERYFN
 ;---------------------------------------------------------
 QUERYFN:
+	jsr PARMINT
 	ldy #PMWAIT
 	jsr SHOWM1	; Tell user to have patience
 
