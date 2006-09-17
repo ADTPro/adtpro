@@ -28,6 +28,7 @@
 ; PC SENDS 0,1 AFTER PAGES 1..N-1, 0,0 AFTER LAST PAGE
 ;---------------------------------------------------------
 DIR:
+	jsr PARMINT
 	ldy #PMWAIT
 	jsr SHOWM1
 
@@ -78,6 +79,7 @@ DIRCONT:
 ;---------------------------------------------------------
 
 CD:
+	jsr PARMINT
 	jsr GETFN1
 	bne CDSTART
 	jmp CDDONE

@@ -58,6 +58,7 @@ CDREQUEST:
 	lda #CHR_C	; Ask host to Change Directory
 	jsr PUTC
 	jsr SENDFN	; Send directory name
+	rts
 
 ;---------------------------------------------------------
 ; CDREPLY - Reply to current directory change
