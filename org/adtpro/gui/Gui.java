@@ -114,6 +114,7 @@ public final class Gui extends JFrame implements ActionListener
         if (nextName == null) continue;
         comboComPort.addItem(nextName);
       }
+      comboComPort.addItem(Messages.getString("Gui.Ethernet"));
     }
     catch (Throwable t)
     {}
@@ -369,7 +370,6 @@ public final class Gui extends JFrame implements ActionListener
 
   public void startComms()
   {
-    boolean connected = false;
     if (commsThread != null)
     {
       try
@@ -382,6 +382,8 @@ public final class Gui extends JFrame implements ActionListener
       {
         System.out.println(throwable);
       }
+      comboComPort.setEnabled(true);
+      comboSpeed.setEnabled(true);
     }
     else
     {
@@ -392,10 +394,9 @@ public final class Gui extends JFrame implements ActionListener
       buttonConnect.setText(Messages.getString("Gui.Disconnect")); //$NON-NLS-1$
       clearProgress();
       saveProperties();
-      connected = true;
+      comboComPort.setEnabled(false);
+      comboSpeed.setEnabled(false);
     }
-    comboComPort.setEnabled(!connected);
-    comboSpeed.setEnabled(!connected);
   }
 
   public void cancelCommsThread()
@@ -412,6 +413,8 @@ public final class Gui extends JFrame implements ActionListener
     setSecondaryText(Messages.getString("Gui.Disconnected")); //$NON-NLS-1$
     buttonConnect.setText(Messages.getString("Gui.Connect")); //$NON-NLS-1$
     clearProgress();
+    comboComPort.setEnabled(true);
+    comboSpeed.setEnabled(true);
   }
 
   public void saveProperties()
