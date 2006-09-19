@@ -335,8 +335,8 @@ public final class Gui extends JFrame implements ActionListener
     {
       if (e.getActionCommand().equals(Messages.getString("Gui.Quit"))) //$NON-NLS-1$
       {
-        _parent.setVisible(false);
-        _parent.dispose();
+        setVisible(false);
+        dispose();
         System.exit(0);
       }
       else
@@ -350,18 +350,18 @@ public final class Gui extends JFrame implements ActionListener
           {
             JFileChooser jc = new JFileChooser();
             jc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-            jc.setCurrentDirectory(new File(_parent.getWorkingDirectory()));
+            jc.setCurrentDirectory(new File(getWorkingDirectory()));
             int rc = jc.showDialog(_parent,Messages.getString("Gui.CDSet"));
             if (rc == 0)
             {
               if (jc.getSelectedFile().isDirectory())
               {
-                _parent.setWorkingDirectory(jc.getSelectedFile().toString());
-                _parent.setSecondaryText(jc.getSelectedFile().toString());
+                setWorkingDirectory(jc.getSelectedFile().toString());
+                setSecondaryText(jc.getSelectedFile().toString());
                 saveProperties();
               }
               else
-                _parent.setSecondaryText(Messages.getString("Gui.InvalidCD"));
+                setSecondaryText(Messages.getString("Gui.InvalidCD"));
             }
           }
     }
@@ -369,6 +369,7 @@ public final class Gui extends JFrame implements ActionListener
 
   public void startComms()
   {
+    boolean connected = false;
     if (commsThread != null)
     {
       try
@@ -391,7 +392,10 @@ public final class Gui extends JFrame implements ActionListener
       buttonConnect.setText(Messages.getString("Gui.Disconnect")); //$NON-NLS-1$
       clearProgress();
       saveProperties();
+      connected = true;
     }
+    comboComPort.setEnabled(!connected);
+    comboSpeed.setEnabled(!connected);
   }
 
   public void cancelCommsThread()
