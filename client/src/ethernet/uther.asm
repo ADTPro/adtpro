@@ -1,3 +1,23 @@
+;
+; ADTPro - Apple Disk Transfer ProDOS
+; Copyright (C) 2006 by David Schmidt
+; david__schmidt at users.sourceforge.net
+;
+; This program is free software; you can redistribute it and/or modify it 
+; under the terms of the GNU General Public License as published by the 
+; Free Software Foundation; either version 2 of the License, or (at your 
+; option) any later version.
+;
+; This program is distributed in the hope that it will be useful, but 
+; WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY 
+; or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License 
+; for more details.
+;
+; You should have received a copy of the GNU General Public License along 
+; with this program; if not, write to the Free Software Foundation, Inc., 
+; 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+;
+
 ;	.import ip65_init
 ;	.import ip65_process
 
@@ -45,7 +65,7 @@ udp_in:
 	cmp #10
 	bne :+
 	lda #13
-:	jsr putchar
+:	jsr COUT1
 	iny
 	cpy cnt
 	bne @print
@@ -98,25 +118,6 @@ PATCHUTHER:
 RESETUTHER:
 	jsr ip65_process
 	rts
-
-print:
-	sta UTILPTR
-	stx UTILPTR + 1
-	ldy #0
-:	lda (UTILPTR),y
-	beq :+
-	jsr putchar
-	iny
-	bne :-
-:	rts
-
-putchar:
-	cmp	#$60	; lowercase ?
-        bcc	:+
-        and	#$5F	; -> uppercase
-:	ora	#$80
-	jsr	COUT1
-  rts
 
 
 cnt:		.res 1
