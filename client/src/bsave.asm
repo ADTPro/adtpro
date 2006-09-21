@@ -103,11 +103,6 @@ BSAVEDONE:
 	jsr PAUSE
 	rts
 
-
-COMMAND:	.byte "BSAVE ADTPRO,A$0803,L$"
-NYBBLE1:	.byte $00
-NYBBLE2:	.byte $00
-NYBBLE3:	.byte $00
-NYBBLE4:	.byte $00
-CMDEND:	.byte $8D
-LENGTH:	.word PEND-PBEGIN
+; Note - the device-specific bsave routine is appended here, depending
+;        on what type of device we're talking to (serial vs. ethernet).
+; See: ethernet/ethbsave.asm, serial/serbsave.asm

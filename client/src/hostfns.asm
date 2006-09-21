@@ -28,18 +28,21 @@
 ; PC SENDS 0,1 AFTER PAGES 1..N-1, 0,0 AFTER LAST PAGE
 ;---------------------------------------------------------
 DIR:
-	jsr PARMINT
 	ldy #PMWAIT
 	jsr SHOWM1
 
 	jsr DIRREQUEST
 	lda #>BIGBUF	; Get buffer pointer high byte
 	sta BLKPTR+1	; Set block buffer pointer
+	lda #<BIGBUF	; Get buffer pointer low byte
+	sta BLKPTR	; Set block buffer pointer
 	ldy #$00	; Counter
 
 	jsr DIRREPLY
 	lda #>BIGBUF	; Get buffer pointer high byte
 	sta BLKPTR+1	; Set block buffer pointer
+	lda #<BIGBUF	; Get buffer pointer low byte
+	sta BLKPTR	; Set block buffer pointer
 	ldy #0		; Reset counter
 	jsr HOME	; Clear screen
 
@@ -79,7 +82,6 @@ DIRCONT:
 ;---------------------------------------------------------
 
 CD:
-	jsr PARMINT
 	jsr GETFN1
 	bne CDSTART
 	jmp CDDONE

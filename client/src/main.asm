@@ -19,6 +19,7 @@
 ;
 
 .include "const.i"
+.include "ip65/common.i"
 
 ;---------------------------------------------------------
 ; Code
@@ -46,19 +47,21 @@ PBEGIN:
 
 	lda COLDSTART	; Decide to cold or warm start
 	jsr PARMDFT	; Set up parameters
+	lda #$00
+	sta COLDSTART	; Reset coldstart in case we get bsaved
+	jsr HOME
 	jsr PARMINT	; INTERPRET PARAMETERS
 
 	; And off we go!
 
-	jsr MAINLUP
-	rts
-
+	jmp MAINL
 
 ;---------------------------------------------------------
 ; Main loop
 ;---------------------------------------------------------
 MAINLUP:
 	jsr HOME	; Clear screen
+
 MAINL:
 RESETIO:	jsr $0000	; Pseudo-indirect JSR to rest the IO device
 
@@ -75,6 +78,7 @@ RESETIO:	jsr $0000	; Pseudo-indirect JSR to rest the IO device
 	sta <CH
 	ldy #PMSG03	; Prompt line 2
 	jsr SHOWMSG
+
 
 ;---------------------------------------------------------
 ; KBDLUP
@@ -124,8 +128,9 @@ KCD:	cmp #'C'	; CD?
 KCONF:	cmp #CHR_G	; Configure?
 	bne KABOUT	; NOPE, TRY ABOUT
 	jsr CONFIG      ; YES, DO CONFIGURE ROUTINE
+	jsr HOME
 	jsr PARMINT     ; AND INTERPRET PARAMETERS
-	jmp MAINLUP
+	jmp MAINL
 
 KABOUT:	cmp #$9F	; ABOUT MESSAGE? ("?" KEY)
 	bne KVOLUMS	; NOPE, TRY VOLUMES
@@ -199,25 +204,3 @@ BEEP3:	dex
 	dey
 	bne BEEP2
 NOBEEP:	rts
-
-
-
-;---------------------------------------------------------
-; Pull in all the rest of the code
-;---------------------------------------------------------
-	.include "vars.asm"
-	.include "print.asm"
-	.include "online.asm"
-	.include "rw.asm"
-	.include "sr.asm"
-	.include "ssc.asm"
-	.include "iigsscc.asm"
-	.include "crc.asm"
-	.include "pickvol.asm"
-	.include "input.asm"
-	.include "config.asm"
-	.include "hostfns.asm"
-	.include "bsave.asm"
-	.include "serproto.asm"
-
-PEND:

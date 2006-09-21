@@ -286,6 +286,38 @@ PARMDFTNEXT:
 	lda #$01	; Index for 'NO' save
 	sta PARMS+BSAVEP
 	rts
+;---------------------------------------------------------
+; Configuration
+;---------------------------------------------------------
+
+PARMNUM	= $04		; Number of configurable parms
+;			; Note - add bytes to OLDPARM if this is expanded.
+PARMSIZ: .byte 8,3,2,2	; Number of options for each parm
+
+PARMTXT:
+	.asciiz "SSC SLOT 1"
+	.asciiz "SSC SLOT 2"
+	.asciiz "SSC SLOT 3"
+	.asciiz "SSC SLOT 4"
+	.asciiz "SSC SLOT 5"
+	.asciiz "SSC SLOT 6"
+	.asciiz "SSC SLOT 7"
+	.asciiz "IIGS MODEM"
+	.asciiz "9600"
+	.asciiz "19200"
+	.asciiz "115200"
+	.asciiz "YES"
+	.asciiz "NO"
+	.asciiz "YES"
+	.asciiz "NO"
+
+PARMS:
+PSSC:	.byte 1		; Comms slot (2)
+PSPEED:	.byte 2		; Comms speed (115200)
+PSOUND:	.byte 0		; Sounds? (YES)
+PSAVE:	.byte 1		; Save parms? (NO)
+PGSSLOT:
+	.byte 1		; IIgs slot (2)
 
 DEFAULT:	.byte 1,2,0,1	; Default parm indices
 FACTORY:	.byte 1,2,0,1	; Factory default parm indices

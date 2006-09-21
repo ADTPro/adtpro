@@ -22,7 +22,7 @@
 .global PMSG09, PMSG10, PMSG11, PMSG12, PMSG13, PMSG14, PMSG15, PMSG16
 .global PMSG17, PMSG18, PMSG19, PMSG20, PMSG21, PMSG22, PMSG23, PMSG24
 .global PMSG25, PMSG26, PMSG27, PMSG28, PMSG29, PMSG30, PMSG34, PMSG35
-.global MNONAME, MIOERR, MNODISK
+.global MNONAME, MIOERR, MNODISK, PMUTHBAD
 
 ;---------------------------------------------------------
 ; SHOWLOGO
@@ -329,15 +329,8 @@ HMOK:
 	sta UTILPTR+1
 
 	ldy #$00
-HMSGLOOP:
-	lda (UTILPTR),Y
-	beq HMSGEND
-	jsr COUT1
-	iny
-	bne HMSGLOOP
-HMSGEND:
-	rts
-
+	jmp MSGLOOP	; Call the regular message printer
+	
 
 ;---------------------------------------------------------
 ; PRTNUM
@@ -480,6 +473,7 @@ MSGTBL:
 	.addr MSG25,MSG26,MSG27,MSG28,MSG28a,MSG29,MSG30,MNONAME,MIOERR
 	.addr MNODISK,MSG34,MSG35
 	.addr MLOGO1,MLOGO2,MLOGO3,MLOGO4,MLOGO5,MWAIT,MCDIR,MFORC,MFEX
+	.addr MUTHBAD
 	.addr MNULL
 
 MSG01:	.asciiz "0.0.8"
@@ -521,7 +515,7 @@ MSG26:	.asciiz "COMMS DEVICE"
 MSG27:	.asciiz "BAUD RATE"
 MSG28:	.asciiz "ENABLE SOUND"
 MSG28a:	.asciiz "SAVE CONFIG"
-MSG29:	.asciiz "KEY TO CONTINUE, ESC TO STOP: "
+MSG29:	.asciiz "ANY KEY TO CONTINUE, ESC TO STOP: "
 MSG30:	.asciiz "END OF DIRECTORY.  HIT A KEY: "
 MNONAME:	.asciiz "<NO NAME>"
 MIOERR:	.asciiz "<I/O ERROR>"
@@ -538,6 +532,7 @@ MWAIT:	.asciiz "WAITING FOR HOST REPLY, ESC CANCELS"
 MCDIR:	.asciiz "DIRECTORY: "
 MFORC:	.asciiz "COPY IMAGE DATA ANYWAY? (Y/N):"
 MFEX:	.asciiz "FILE ALREADY EXISTS AT HOST."
+MUTHBAD:	.asciiz "UTHERNET INIT FAILED; PLEASE RUN CONFIG."
 MNULL:	.byte $00
 
 ;---------------------------------------------------------
@@ -590,4 +585,5 @@ PMWAIT	= $54
 PMCDIR	= $56
 PMFORC	= $58
 PMFEX	= $5a
-PMNULL	= $5c
+PMUTHBAD	= $5c
+PMNULL	= $5e

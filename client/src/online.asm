@@ -46,7 +46,12 @@ OCLEAN:
 	BNE OERROR
 
 	ldx #$00	; X is our index into the device table
-OLLOOP:	lda DEVICES,x
+OLLOOP:
+	lda $C000
+	cmp #CHR_ESC
+	bne :+
+	jmp ABORT
+:	lda DEVICES,x
 	cmp #$00
 	beq ODONE
 

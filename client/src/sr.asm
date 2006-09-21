@@ -28,37 +28,20 @@
 ;---------------------------------------------------------
 
 ;---------------------------------------------------------
-; QUERYFN
-;---------------------------------------------------------
-QUERYFN:
-	jsr PARMINT
-	ldy #PMWAIT
-	jsr SHOWM1	; Tell user to have patience
-
-	lda #CHR_Z	; Ask host for file size
-	jsr PUTC
-
-	jsr SENDFN	; Send file name
-
-	jsr GETC	; Get response from host: file size
-	sta HOSTBLX
-	jsr GETC
-	sta HOSTBLX+1
-	jsr GETC	; Get response from host: return code/message
-	rts
-
-;---------------------------------------------------------
 ; SEND
 ;---------------------------------------------------------
 SEND:
 	lda #$00
 	sta ECOUNT	; Clear error flag
 	jsr GETFN
-	bne SMVALID
+	bne @SendValid
 	jmp SMDONE
-SMVALID:
+@SendValid:
 	; Validate the filename won't overwite
-	jsr QUERYFN
+	ldy #PMWAIT
+	jsr SHOWM1	; Tell user to have patience
+	jsr QUERYFNREQUEST
+	jsr QUERYFNREPLY
 	cmp #$02	; File doesn't exist - so everything's ok
 	beq SMSTART
 	lda #$00
@@ -93,16 +76,8 @@ SMSTART:
 	ldy #PMWAIT
 	jsr SHOWM1	; Tell user to have patience
 
-	lda #CHR_P	; Tell host we are Putting/Sending
-	jsr PUTC
-
-	jsr SENDFN	; Send file name
-
-	lda NUMBLKS	; Send the total block size
-	jsr PUTC
-	lda NUMBLKS+1
-	jsr PUTC
-	jsr GETC	; Get response from host
+	jsr PUTREQUEST
+	jsr PUTREPLY
 	beq PCOK
 	jmp PCERROR
 
@@ -119,8 +94,7 @@ PCOK:
 	; Here's where we set up a loop
 	; for all blocks to transfer.
 	jsr PREPPRG	; Prepare the progress screen
-	lda #CHR_ACK
-	jsr PUTC
+	jsr PUTINITIALACK
 	lda #$00
 	sta CURBLK
 	sta CURBLK+1
@@ -169,8 +143,7 @@ SMPARTIAL:
 	cmp NUMBLKS	; Compare low-order num blocks byte
 	bcc SMMORE
 
-	lda ECOUNT	; Errors during send?
-	jsr PUTC	; Send error flag to host
+	jsr PUTFINALACK
 
 	jsr COMPLETE
 SMDONE:	rts
@@ -186,7 +159,8 @@ RECEIVE	:
 	jmp SRDONE
 
 SRSTART:
-	jsr QUERYFN
+	jsr QUERYFNREQUEST
+	jsr QUERYFNREPLY
 	cmp #$00
 	beq @Ok
 	jmp PCERROR
@@ -229,10 +203,8 @@ SROK2:
 	lda UNITNBR
 	sta PARMBUF+1
 
-	lda #CHR_G	; Tell host we are Getting/Receiving
-	jsr PUTC
-	jsr SENDFN	; Send file name
-	jsr GETC	; Get response from host: return code/message
+	jsr GETREQUEST
+	jsr GETREPLY
 	beq SROK3
 	jmp PCERROR
 
@@ -290,10 +262,7 @@ SRPARTIAL:
 	cmp NUMBLKS	; Compare low-order num blocks byte
 	bcc SRMORE
 
-	lda #CHR_ACK	; Send last ACK
-	jsr PUTC
-	lda ECOUNT	; Errors during send?
-	jsr PUTC	; Send error flag to host
+	jsr GETFINALACK
 
 	jsr COMPLETE
 SRDONE:
@@ -452,150 +421,6 @@ SRBDONE:
 SRBCNT:	.byte $00
 
 ;---------------------------------------------------------
-; SENDBLK - Send a block with RLE
-; CRC is sent to host
-; BLKPTR points to full block to send - updated here
-;---------------------------------------------------------
-SENDBLK:
-	lda #$02
-	sta <ZP
-
-SENDMORE:
-	jsr SENDHBLK
-	lda <CRC	; Send the CRC of that block
-	jsr PUTC
-	lda <CRC+1
-	jsr PUTC
-	jsr GETC	; Receive reply
-	cmp #CHR_ACK	; Is it ACK?  Loop back if NAK.
-	bne SENDMORE
-	inc <BLKPTR+1	; Get next 256 bytes
-	dec <ZP
-	bne SENDMORE
-	rts
-
-;---------------------------------------------------------
-; SENDHBLK - Send half a block with RLE
-; CRC is computed and stored
-; BLKPTR points to half block to send
-;---------------------------------------------------------
-SENDHBLK:
-	ldy #$00	; Start at first byte
-	sty <CRC	; Clean out CRC
-	sty <CRC+1
-	sty <RLEPREV
-
-SS1:	lda (BLKPTR),Y	; GET BYTE TO SEND
-	jsr UPDCRC	; UPDATE CRC
-	tax		; KEEP A COPY IN X
-	sec		; SUBTRACT FROM PREVIOUS
-	sbc <RLEPREV
-	stx <RLEPREV	; SAVE PREVIOUS BYTE
-	jsr PUTC	; SEND DIFFERENCE
-	beq SS3		; WAS IT A ZERO?
-	iny		; NO, DO NEXT BYTE
-	bne SS1		; LOOP IF MORE TO DO
-	rts		; ELSE RETURN
-
-SS2:	jsr UPDCRC
-SS3:	iny		; ANY MORE BYTES?
-	beq SS4		; NO, IT WAS 00 UP TO END
-	lda (BLKPTR),Y	; LOOK AT NEXT BYTE
-	cmp <RLEPREV
-	beq SS2		; SAME AS BEFORE, CONTINUE
-SS4:	tya		; DIFFERENCE NOT A ZERO
-	jsr PUTC	; SEND NEW ADDRESS
-	bne SS1		; AND GO BACK TO MAIN LOOP
-	rts		; OR RETURN IF NO MORE BYTES
-
-SRCHR:	.byte CHR_V
-SRCHROK:	.byte CHR_SP
-
-
-;---------------------------------------------------------
-; SENDFN - Send a file name
-;
-; Assumes input is at $0200
-;---------------------------------------------------------
-SENDFN:
-	ldx #$00	
-FNLOOP:	lda $0200,X
-	jsr PUTC
-	beq @Done
-	inx
-	bne FNLOOP
-@Done:
-	rts
-
-
-;---------------------------------------------------------
-; RECVBLK - Receive a block with RLE
-;
-; BLKPTR points to full block to receive - updated here
-;---------------------------------------------------------
-RECVBLK:
-	lda #$02
-	sta <ZP
-	lda #CHR_ACK
-
-RECVMORE:
-	tax
-	ldy #$00	; Clear out the new half-block
-	tya
-CLRLOOP:
-	sta (BLKPTR),Y
-	iny
-	bne CLRLOOP
-	txa
-	jsr PUTC	; Send ack/nak
-
-	jsr RECVHBLK
-	jsr GETC	; Receive reply
-	sta PCCRC	; Receive the CRC of that block
-	jsr GETC
-	sta PCCRC+1
-	jsr UNDIFF
-
-	lda <CRC
-	cmp PCCRC
-	bne RECVERR
-	lda <CRC+1
-	cmp PCCRC+1
-	bne RECVERR
-
-RECBRANCH:
-	lda #CHR_ACK
-	inc <BLKPTR+1	; Get next 256 bytes
-	dec <ZP
-RECOK:	bne RECVMORE
-	lda #$00
-	rts
-
-RECVERR:
-	lda #CHR_NAK	; CRC error, ask for a resend
-	jmp RECVMORE
-
-;---------------------------------------------------------
-; RECVHBLK - Receive half a block with RLE
-;
-; CRC is computed and stored
-;---------------------------------------------------------
-RECVHBLK:
-	ldy #00		; Start at beginning of buffer
-RC1:
-	jsr GETC	; Get difference
-	beq RC2		; If zero, get new index
-	sta (BLKPTR),Y	; else put char in buffer
-	iny		; ...and increment index
-	bne RC1		; Loop if not at end of buffer
-	rts		; ...else return
-RC2:
-	jsr GETC	; Get new index
-	tay		; in the Y register
-	bne RC1		; Loop if index <> 0
-	rts		; ...else return
-
-;---------------------------------------------------------
 ; UNDIFF -  Finish RLE decompression and update CRC
 ;---------------------------------------------------------
 UNDIFF:	ldy #0
@@ -612,11 +437,9 @@ UDLOOP:	lda (BLKPTR),Y	; Get new difference
 	bne UDLOOP 	; Repeat 256 times
 	rts
 
-PUTC:	jmp $0000	; Pseudo-indirect JSR - self-modified
-GETC:	jmp $0000	; Pseudo-indirect JSR - self-modified
-
 PABORT:	jmp BABORT
 
+SRCHR:		.byte CHR_V
+SRCHROK:	.byte CHR_SP
 SCOUNT:	.byte $00
 ECOUNT:	.byte $00
-

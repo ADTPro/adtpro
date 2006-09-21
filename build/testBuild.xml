@@ -38,6 +38,22 @@
 			<arg line="-l -t c64 ethernet/ethmain.asm" />
 		</exec>
 		<!--
+		Assemble, archive the IP stack
+		-->
+		<apply executable="${assemblerPath}/ca65" dest="${projdir}/client/src/ip65" dir="${projdir}/client/src/ip65" parallel="false">
+			<arg value="-l"/>
+			<srcfile/>
+			<arg value="-o"/>
+			<targetfile/>
+			<fileset dir="${projdir}/client/src/ip65" includes="*.s"/>
+			<mapper type="glob" from="*.s" to="*.o"/>
+		</apply>
+<!--
+		<exec dir="${projdir}/client/src/ip65" executable="${assemblerPath}/ar65">
+			<arg line="a ip65.lib copymem.o config.o timer.o tfe.o cs8900a.o eth.o arp.o ip.o icmp.o udp.o ip65.o" />
+		</exec>
+-->
+		<!--
 		Link the bits
 		-->
 		<exec dir="${projdir}/client/src" executable="${assemblerPath}/ld65">
@@ -46,9 +62,13 @@
 		<exec dir="${projdir}/client/src" executable="${assemblerPath}/ld65">
 			<arg line="-m adtproeth.map -C adtpro.cfg -o ADTPROETH ethernet/ethmain.o" />
 		</exec>
+		<exec dir="${projdir}/client/src" executable="${assemblerPath}/ld65">
+			<arg line="-m test.map -C adtpro.cfg -o TEST ethernet/test.o" />
+		</exec>
 		<!--
 		Move the object code to the build directory
 		-->
+		<move file="${projdir}/client/src/TEST" tofile="${builddir}/TEST" />
 		<move file="${projdir}/client/src/ADTPRO" tofile="${builddir}/ADTPRO" />
 		<move file="${projdir}/client/src/ADTPROETH" tofile="${builddir}/ADTPROETH" />
 	</target>
@@ -62,17 +82,18 @@
 		Put the assembled ADTPRO program on the .dsk image a couple of times
 		and lock the backup version
 		-->
+		<exec dir="${builddir}" executable="java" input="${builddir}/TEST">
+			<arg line="-jar ${acJar} -p TEST bin 2051 ${distName}.dsk" />
+		</exec>
 		<exec dir="${builddir}" executable="java" input="${builddir}/ADTPRO">
 			<arg line="-jar ${acJar} -p ADTPRO bin 2051 ${distName}.dsk" />
+		</exec>
+		<exec dir="${builddir}" executable="java" input="${builddir}/ADTPROETH">
+			<arg line="-jar ${acJar} -p ADTPROETH bin 2051 ${distName}.dsk" />
 		</exec>
 		<exec dir="${builddir}" executable="java" input="${builddir}/ADTPRO">
 			<arg line="-jar ${acJar} -p ADTPRO.BACKUP bin 2051 ${distName}.dsk" />
 		</exec>
-<!--
-		<exec dir="${builddir}" executable="java" input="${builddir}/ADTPROETH">
-			<arg line="-jar ${acJar} -p ADTPROETH bin 2051 ${distName}.dsk" />
-		</exec>
--->
 		<!--
 		Lock the backup version
 		-->
