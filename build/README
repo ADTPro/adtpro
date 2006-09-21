@@ -57,12 +57,15 @@ Windows
 RXTXcomm.jar goes in \jre\lib\ext (under java)
 rxtxSerial.dll goes in \jre\bin
 
-Mac OS X (x86 and ppc) (there is an Installer with the source)
+Mac OS X (x86 and ppc)
 
-RXTXcomm.jar goes in  /Library/Java/Extensions
-librxtxSerial.jnilib goes in /Library/Java/Extensions
-Run fixperm.sh thats in the directory.  Fix perms is in the Mac_OS_X
-subdirectory.
+Copy RXTXcomm.jar into /Library/Java/Extensions. Copy 
+librxtxSerial.jnilib into /Library/Java/Extensions. Run fixperm.sh
+that is in the Mac_OS_X directory. (Some distributions omitted this
+file; please extract the script from:
+http://adtpro.cvs.sourceforge.net/*checkout*/adtpro/adtpro/build/rxtx/fixperm.sh
+if it is missing from yours.)  Run it from the Terminal with the 
+command "sh fixperm.sh" (without the quotes).
 
 Linux (only x86, x86_64, ia64)
 
