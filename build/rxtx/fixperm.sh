@@ -1,4 +1,10 @@
 #!/bin/sh 
+
+#
+# Run this on OS X macines.  Bring up the Terminal and type:
+# sh fixperm.sh
+#
+
 curruser=`sudo id -p | grep 'login' | sed 's/login.//'` 
 echo $curruser 
  
