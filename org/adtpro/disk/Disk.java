@@ -113,8 +113,13 @@ public class Disk
     ByteArrayOutputStream diskImageByteArray = new ByteArrayOutputStream(diskSize);
     StreamUtil.copy(input, diskImageByteArray);
     byte[] diskImage = diskImageByteArray.toByteArray();
+    boolean is2img = false;
+    /* Does it have the 2IMG header? */
+    if ((diskImage[00] == 0x32) && (diskImage[01] == 0x49) && (diskImage[02] == 0x4D) && (diskImage[03])== 0x47)
+      is2img = true;
     int offset = UniversalDiskImageLayout.OFFSET;
-    if (diskImage.length == APPLE_800KB_DISK + offset || diskImage.length == APPLE_5MB_HARDDISK + offset
+    if (is2img == true
+        || diskImage.length == APPLE_800KB_DISK + offset || diskImage.length == APPLE_5MB_HARDDISK + offset
         || diskImage.length == APPLE_10MB_HARDDISK + offset || diskImage.length == APPLE_20MB_HARDDISK + offset
         || diskImage.length == APPLE_32MB_HARDDISK + offset)
     {

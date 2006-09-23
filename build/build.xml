@@ -29,9 +29,6 @@
 		Assemble the ADTPro source
 		-->
 		<exec dir="${projdir}/client/src" executable="${assemblerPath}/ca65">
-			<arg line="-l -t c64 ethernet/test.asm" />
-		</exec>
-		<exec dir="${projdir}/client/src" executable="${assemblerPath}/ca65">
 			<arg line="-l -t c64 serial/sermain.asm" />
 		</exec>
 		<exec dir="${projdir}/client/src" executable="${assemblerPath}/ca65">

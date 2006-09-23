@@ -114,7 +114,7 @@ public final class Gui extends JFrame implements ActionListener
         if (nextName == null) continue;
         comboComPort.addItem(nextName);
       }
-      comboComPort.addItem(Messages.getString("Gui.Ethernet"));
+      // comboComPort.addItem(Messages.getString("Gui.Ethernet"));
     }
     catch (Throwable t)
     {}
