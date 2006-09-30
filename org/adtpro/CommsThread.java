@@ -21,10 +21,13 @@
 package org.adtpro;
 
 import java.io.*;
+import java.net.SocketException;
 import java.util.GregorianCalendar;
 
 import org.adtpro.resources.Messages;
+import org.adtpro.transport.ATransport;
 import org.adtpro.transport.SerialTransport;
+import org.adtpro.transport.UDPTransport;
 
 import org.adtpro.disk.Disk;
 import org.adtpro.gui.Gui;
@@ -34,7 +37,7 @@ public class CommsThread extends Thread
 {
   private boolean _shouldRun = true;
 
-  private SerialTransport _transport;
+  private ATransport _transport;
 
   private Gui _parent;
 
@@ -55,7 +58,13 @@ public class CommsThread extends Thread
     _parent = parent;
     try
     {
-      _transport = new SerialTransport(one, two);
+      if (one.equals(Messages.getString("Gui.Ethernet")))
+      {
+        _transport = (ATransport)new UDPTransport("6502");
+        _transport.open();
+      }
+      else
+        _transport = (ATransport)new SerialTransport(one, two);
     }
     catch (Exception ex)
     {
@@ -80,8 +89,11 @@ public class CommsThread extends Thread
     byte oneByte = (byte) 0x00;
     while (_shouldRun)
     {
-      //System.out.println("Waiting for command from Apple: "); //$NON-NLS-1$
+      // System.out.println("DEBUG: CommsThread.commandLoop() Waiting for command from Apple: "); //$NON-NLS-1$
       oneByte = waitForData();
+      if (_shouldRun)
+      {
+      // System.out.println("DEBUG: CommsThread.commandLoop() Received a byte."); //$NON-NLS-1$
       _parent.setProgressMaximum(0);
       switch (oneByte)
       {
@@ -134,6 +146,7 @@ public class CommsThread extends Thread
           // UnsignedByte.toString(oneByte));
           break;
       }
+      }
     }
   }
 
@@ -168,13 +181,17 @@ public class CommsThread extends Thread
             line = 0;
             _transport.writeByte('\0');
             _transport.writeByte('\1');
+            _transport.pushBuffer();
             if (waitForData() == '\0') break;
           }
           line += (files[j].getName().length() / 40);
           i += (files[j].getName().length() % 40);
           _transport.writeBytes(files[j].getName());
           j++;
-          if (j + 1 > files.length) break;
+          if (j + 1 > files.length)
+          {
+            break;
+          }
           do
           {
             if (i == 40)
@@ -187,11 +204,13 @@ public class CommsThread extends Thread
           }
           while ((++i % 14) > 0);
         }
+        _transport.pushBuffer();
       }
       else
         _transport.writeBytes("NO FILES"); //$NON-NLS-1$
       _transport.writeByte('\0');
       _transport.writeByte('\0');
+      _transport.pushBuffer();
     }
     catch (Throwable t1)
     {
@@ -200,6 +219,7 @@ public class CommsThread extends Thread
       _transport.writeBytes("NO FILES"); //$NON-NLS-1$
       _transport.writeByte('\0');
       _transport.writeByte('\0');
+      _transport.pushBuffer();
     }
   }
 
@@ -255,6 +275,7 @@ public class CommsThread extends Thread
     _transport.writeByte(sizeLo);
     _transport.writeByte(sizeHi);
     _transport.writeByte(rc);
+    _transport.pushBuffer();
   }
 
   public void changeDirectory()
@@ -266,6 +287,7 @@ public class CommsThread extends Thread
     {
       rc = _parent.setWorkingDirectory(requestedDirectory);
       _transport.writeByte(rc);
+      _transport.pushBuffer();
     }
   }
 
@@ -301,6 +323,7 @@ public class CommsThread extends Thread
       fos = new FileOutputStream(f);
       // ready for transfer
       _transport.writeByte(0x00);
+      _transport.pushBuffer();
       if (waitForData() == ACK)
       {
         _parent.setProgressMaximum((int) length * 2); // Half-blocks
@@ -382,10 +405,12 @@ public class CommsThread extends Thread
     catch (FileNotFoundException ex)
     {
       _transport.writeByte(0x02); // New ADT protocol: HMFIL - unable to write file
+      _transport.pushBuffer();
     }
     catch (IOException ex2)
     {
       _transport.writeByte(0x02); // New ADT protocol: HMFIL - unable to write file
+      _transport.pushBuffer();
     }
     finally
     {
@@ -432,6 +457,7 @@ public class CommsThread extends Thread
       {
         // If the file exists, then...
         _transport.writeByte(0x00); // Tell Apple ][ we're ready to go
+        _transport.pushBuffer();
         ack = waitForData();
         // System.out.println("Received initial reply from Apple: " + ack);
         // //$NON-NLS-1$
@@ -492,12 +518,14 @@ public class CommsThread extends Thread
       {
         // New ADT protocol: HMFIL - can't open the file
         _transport.writeByte(0x02);
+        _transport.pushBuffer();
       }
     }
     else
     {
       // New ADT protocol: HMFIL - can't open the file
       _transport.writeByte(0x02);
+      _transport.pushBuffer();
     }
   }
 
@@ -528,6 +556,7 @@ public class CommsThread extends Thread
       if (!f.isFile())
       {
         _transport.writeByte(26); // ADT protocol - can't open
+        _transport.pushBuffer();
         rc = -1;
       }
     }
@@ -541,6 +570,7 @@ public class CommsThread extends Thread
          */
         // System.out.println("Not a 140k image"); //$NON-NLS-1$
         _transport.writeByte(30); // ADT protocol - not a 140k image
+        _transport.pushBuffer();
         rc = -1;
       }
       else
@@ -551,6 +581,7 @@ public class CommsThread extends Thread
         _parent.setSecondaryText(name);
         // If the file exists, is pristine, etc., then...
         _transport.writeByte(0x00);
+        _transport.pushBuffer();
         try
         {
           /*
@@ -651,6 +682,7 @@ public class CommsThread extends Thread
         data = (byte) (UnsignedByte.intValue(newprev) - UnsignedByte.intValue(prev));
         prev = newprev;
         _transport.writeByte(data);
+        _transport.pushBuffer();
         if (UnsignedByte.intValue(data) > 0) byteCount++;
         else
         {
@@ -659,6 +691,7 @@ public class CommsThread extends Thread
             byteCount++;
           }
           _transport.writeByte((byte) (byteCount & 0xFF)); // 256 becomes 0
+          _transport.pushBuffer();
         }
         if (!_shouldRun)
         {
@@ -671,6 +704,7 @@ public class CommsThread extends Thread
         crc = doCrc(buffer, offset, 256);
         _transport.writeByte((byte) (crc & 0xff));
         _transport.writeByte((byte) (((crc & 0xff00) >> 8) & 0xff));
+        _transport.pushBuffer();
         // System.out.println("");
         // System.out.println("Locally calculated CRC: " + (crc & 0xffff));
         // //$NON-NLS-1$
@@ -698,7 +732,11 @@ public class CommsThread extends Thread
     byte report;
     boolean receiveSuccess = false;
 
-    if (f.exists()) _transport.writeByte(0x1c); // ADT protocol - file exists
+    if (f.exists())
+    {
+      _transport.writeByte(0x1c); // ADT protocol - file exists
+      _transport.pushBuffer();
+    }
     else
     {
       try
@@ -720,6 +758,7 @@ public class CommsThread extends Thread
             fos.write(buffer);
           fos.close();
           _transport.writeByte(0x00); // File is now ready
+          _transport.pushBuffer();
           fos = new FileOutputStream(f);
           while (waitForData() != ACK)
           {
@@ -770,6 +809,7 @@ public class CommsThread extends Thread
         catch (IOException ex2)
         {
           _transport.writeByte(0x1a); // ADT protocol - unable to write file
+          _transport.pushBuffer();
         }
       }
     }
@@ -830,6 +870,7 @@ public class CommsThread extends Thread
           // System.out.println("Incorrect CRC. Computed: " + computed_crc + "
           // Received: " + received_crc); //$NON-NLS-1$ //$NON-NLS-2$
           _transport.writeByte(NAK);
+          _transport.pushBuffer();
         }
         else
         {
@@ -840,7 +881,11 @@ public class CommsThread extends Thread
       }
     }
     while ((received_crc != computed_crc) && (_shouldRun == true));
-    if (_shouldRun) _transport.writeByte(ACK);
+    if (_shouldRun)
+    {
+      _transport.writeByte(ACK);
+      _transport.pushBuffer();
+    }
     // System.out.println("receivePacket exit.");
 
     return rc;
@@ -864,9 +909,17 @@ public class CommsThread extends Thread
           _shouldRun = false;
         }
       }
+      catch (SocketException se)
+      {
+        _shouldRun = false;
+      }
       catch (IOException ex)
       {
-        System.out.println(ex);
+        ex.printStackTrace();
+      }
+      catch (Exception e)
+      {
+        e.printStackTrace();
       }
     }
     return oneByte;

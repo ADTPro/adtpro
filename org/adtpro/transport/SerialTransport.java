@@ -30,7 +30,7 @@ import org.adtpro.resources.Messages;
 
 import gnu.io.*;
 
-public class SerialTransport
+public class SerialTransport extends ATransport
 {
   protected CommPortIdentifier portId;
 
@@ -154,7 +154,6 @@ public class SerialTransport
    * @exception IOException
    *              thrown when a problem occurs with flushing the stream.
    */
-
   public void open() throws Exception
   {
     if (connected)
@@ -245,6 +244,13 @@ public class SerialTransport
     writeBytes(str.getBytes(), ""); //$NON-NLS-1$
   }
 
+  public void writeByte(char datum)
+  {
+    byte data[] =
+    { (byte) (datum) };
+    writeBytes(data, ""); //$NON-NLS-1$
+  }
+
   public void writeByte(int datum)
   {
     byte data[] =
@@ -264,5 +270,20 @@ public class SerialTransport
     byte data[] =
     { datum };
     writeBytes(data, str);
+  }
+
+  public void writeBytes(byte[] data)
+  {
+    // TODO Auto-generated method stub
+  }
+
+  public void pullBuffer()
+  {
+    // Serial port is byte-by-byte, no buffering
+  }
+
+  public void pushBuffer()
+  {
+    // Serial port is byte-by-byte, no buffering
   }
 }

@@ -41,37 +41,6 @@
 ;	.importzp ip_src
 ;	.import ip_inp
 
-udp_in:
-	lda udp_inp + udp_src_port + 1
-	sta replyport
-	lda udp_inp + udp_src_port
-	sta replyport + 1
-
-	ldx #3
-:	lda ip_inp + ip_src,x
-	sta replyaddr,x
-	dex
-	bpl :-
-
-	lda udp_inp + udp_len + 1
-	sec
-	sbc #8
-	sta cnt
-	ldax #udp_inp + udp_data
-	stax UTILPTR
-	ldy #0
-@print:
-	lda (UTILPTR),y
-	cmp #10
-	bne :+
-	lda #13
-:	jsr COUT1
-	iny
-	cpy cnt
-	bne @print
-
-	rts
-
 ;---------------------------------------------------------
 ; INITUTHER - Initialize Uther card
 ;---------------------------------------------------------
@@ -82,7 +51,7 @@ INITUTHER:
 	ldy #PMUTHBAD
 	jsr SHOWM1
 @UTHEROK:
-	ldax #udp_in
+	ldax #UDPDISPATCH
 	stax udp_callback
 	ldax #6502
 	jsr udp_add_listener
@@ -109,7 +78,6 @@ PATCHUTHER:
 	sta RESETIO+1
 	lda #>RESETUTHER
 	sta RESETIO+2
-
 	rts
 
 ;---------------------------------------------------------
@@ -123,9 +91,7 @@ RESETUTHER:
 cnt:		.res 1
 replyaddr:	.res 4
 replyport:	.res 2
-idle		= 1
-recv		= 2
-resend		= 3
+state:		.res 2
 
 serverip:
 ;	.byte 192, 168, 0, 2

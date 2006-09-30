@@ -476,7 +476,7 @@ MSGTBL:
 	.addr MUTHBAD
 	.addr MNULL
 
-MSG01:	.asciiz "0.0.9"
+MSG01:	.asciiz "0.1.1"
 ;MSG01	.asciiz "v.r.m"
 MSG02:	.byte "(S)END (R)ECEIVE (D)IR (C)D",$8d,$8d,$00
 MSG03:	.asciiz "(V)OLUMES CONFI(G) (?)ABOUT (Q)UIT:"

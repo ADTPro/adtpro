@@ -5,3 +5,7 @@ ADTPro-0.0.4.dsk
 ADTPro-0.0.4.jar
 ADTPro-0.0.4.zip
 ADTPro-0.01.zip
+*.dsk
+*.po
+ADTPro-*.zip
+ADTPro-*.jar

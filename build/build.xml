@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project name="ADTPro" default="jar" basedir="..">
-	<property name="versionString" value="0.0.9" />
+	<property name="versionString" value="0.1.1" />
 	<property name="distName" value="ADTPro-${versionString}" />
 	<property name="volName" value="ADTPro.${versionString}" />
 	<property name="assemblerPath" value="C:/dev/xassm/cc65/bin" />
@@ -65,11 +65,9 @@
 		<exec dir="${builddir}" executable="java" input="${builddir}/ADTPRO">
 			<arg line="-jar ${acJar} -p ADTPRO.BACKUP bin 2051 ${distName}.dsk" />
 		</exec>
-<!--
 		<exec dir="${builddir}" executable="java" input="${builddir}/ADTPROETH">
 			<arg line="-jar ${acJar} -p ADTPROETH bin 2051 ${distName}.dsk" />
 		</exec>
--->
 		<!--
 		Lock the backup version
 		-->

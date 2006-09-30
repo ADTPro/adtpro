@@ -151,7 +151,7 @@ SMDONE:	rts
 ;---------------------------------------------------------
 ; RECEIVE
 ;---------------------------------------------------------
-RECEIVE	:
+RECEIVE:
 	lda #$00
 	sta ECOUNT	; Clear error flag
 	jsr GETFN
@@ -159,6 +159,8 @@ RECEIVE	:
 	jmp SRDONE
 
 SRSTART:
+	ldy #PMWAIT
+	jsr SHOWM1	; Tell user to have patience
 	jsr QUERYFNREQUEST
 	jsr QUERYFNREPLY
 	cmp #$00
@@ -341,7 +343,7 @@ SR_COMN:
 ;---------------------------------------------------------
 ; SRBLOX
 ;
-; Read or write from zero to 40 ($28) blocks
+; Send or receive from zero to 40 ($28) blocks
 ; Starting from BIGBUF
 ;
 ; Input:

@@ -24,26 +24,17 @@
 ;---------------------------------------------------------
 
 ;---------------------------------------------------------
-; DIR - GET DIRECTORY FROM THE PC AND PRINT IT
-; PC SENDS 0,1 AFTER PAGES 1..N-1, 0,0 AFTER LAST PAGE
+; DIR - get directory from the host and print it
+; Host sends 0,1 after pages 1..N-1, 0,0 after last page
+; BLKPTR should be set to the beginning of the receive buffer
 ;---------------------------------------------------------
 DIR:
 	ldy #PMWAIT
 	jsr SHOWM1
 
 	jsr DIRREQUEST
-	lda #>BIGBUF	; Get buffer pointer high byte
-	sta BLKPTR+1	; Set block buffer pointer
-	lda #<BIGBUF	; Get buffer pointer low byte
-	sta BLKPTR	; Set block buffer pointer
-	ldy #$00	; Counter
-
 	jsr DIRREPLY
-	lda #>BIGBUF	; Get buffer pointer high byte
-	sta BLKPTR+1	; Set block buffer pointer
-	lda #<BIGBUF	; Get buffer pointer low byte
-	sta BLKPTR	; Set block buffer pointer
-	ldy #0		; Reset counter
+	ldy #$00	; Reset counter
 	jsr HOME	; Clear screen
 
 DIRDISP:
