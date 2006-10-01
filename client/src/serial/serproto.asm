@@ -31,7 +31,12 @@ DIRREQUEST:
 ; DIRREPLY - Reply to current directory contents
 ;---------------------------------------------------------
 DIRREPLY:
-	jsr GETC	; Get character from serial port
+	ldy #$00
+	lda #<BIGBUF	; Connect the block pointer to the
+	sta BLKPTR	; beginning of the Big Buffer(TM)
+	lda #>BIGBUF
+	sta BLKPTR+1
+:	jsr GETC	; Get character from serial port
 	php		; Save flags
 	sta (BLKPTR),Y	; Store byte
 	iny		; Bump counter
@@ -39,10 +44,14 @@ DIRREPLY:
 	inc <BLKPTR+1	; Next 256 bytes
 @NEXT:
 	plp		; Restore flags
-	bne DIRREPLY	; Loop until zero
+	bne :-		; Loop until zero
 
 	jsr GETC	; Get continuation character
 	sta (BLKPTR),Y 	; Store continuation byte too
+	lda #<BIGBUF	; Connect the block pointer to the
+	sta BLKPTR	; beginning of the Big Buffer(TM)
+	lda #>BIGBUF
+	sta BLKPTR+1
 	rts
 
 ;---------------------------------------------------------
@@ -120,12 +129,14 @@ GETREQUEST:
 	jsr SENDFN	; Send file name
 	rts
 
+
 ;---------------------------------------------------------
 ; GETREPLY - Reply from requesting an image be sent from the host
 ;---------------------------------------------------------
 GETREPLY:
 	jsr GETC	; Get response from host: return code/message
 	rts
+
 
 ;---------------------------------------------------------
 ; GETFINALACK - Send final ACK after a GETREQUEST/GETREPLY
@@ -136,6 +147,7 @@ GETFINALACK:
 	lda ECOUNT	; Errors during send?
 	jsr PUTC	; Send error flag to host
 	rts
+
 
 ;---------------------------------------------------------
 ; QUERYFNREQUEST/REPLY
@@ -154,6 +166,7 @@ QUERYFNREPLY:
 	sta HOSTBLX+1
 	jsr GETC	; Get response from host: return code/message
 	rts
+
 
 ;---------------------------------------------------------
 ; RECVBLK - Receive a block with RLE

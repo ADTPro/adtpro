@@ -1,3 +1,4 @@
+;
 ; ADTPro - Apple Disk Transfer ProDOS
 ; Copyright (C) 2006 by David Schmidt
 ; david__schmidt at users.sourceforge.net
@@ -56,7 +57,7 @@ UDPDISPATCH:
 :	cmp #STATE_PUT
 	bne :+
 	jmp PUTREPLY1
-			; Receiving a GET reply?
+			; Receiving a GET return code reply?
 :	cmp #STATE_GET
 	bne :+
 	jmp GETREPLY1
@@ -68,10 +69,13 @@ UDPDISPATCH:
 :	cmp #STATE_HBLK
 	bne :+
 	jmp RECVHBLK
+			; Receiving HBLK_2 data?
+:	cmp #STATE_HBLK_2
+	bne :+
+	jmp RECVBLK2
 			; fallthrough	
 @skip:
 	rts
-
 
 ;---------------------------------------------------------
 ; RECEIVE_LOOP - Wait for an incoming packet to come along
@@ -87,17 +91,15 @@ RECEIVE_LOOP:
 	bne RECEIVE_LOOP
 	rts
 
-
 ;---------------------------------------------------------
 ; DIRREQUEST - Request current directory contents
 ;---------------------------------------------------------
 DIRREQUEST:
 	lda #STATE_DIR
 	sta state
-	lda DIRMSG
+	lda #CHR_D
 	jsr PUTC
 	jmp RECEIVE_LOOP
-
 
 ;---------------------------------------------------------
 ; DIRREPLY - serial compatibility and UDP callback entry points
@@ -108,17 +110,13 @@ DIRREPLY1:
 DIRREPLY:
 	rts
 
-
 ;---------------------------------------------------------
 ; DIRABORT - Abort current directory contents
 ;---------------------------------------------------------
 DIRABORT:
-	ldax #ABORTEND-ABORTMSG
-	stax udp_send_len
-	ldax #ABORTMSG
-	jsr udp_send
+	lda #$00
+	jsr PUTC
 	rts
-
 
 ;---------------------------------------------------------
 ; CDREQUEST - Request current directory change
@@ -142,7 +140,6 @@ CDREQUEST:
 	jsr udp_send
 	jmp RECEIVE_LOOP
 
-
 ;---------------------------------------------------------
 ; CDREPLY - Reply to current directory change
 ; PUTREPLY - Reply from send an image to the host
@@ -159,7 +156,6 @@ PUTREPLY:
 GETREPLY:
 	lda QUERYRC
 	rts
-
 
 ;---------------------------------------------------------
 ; PUTREQUEST -
@@ -189,7 +185,6 @@ PUTREQUEST:
 	jsr udp_send
 	jmp RECEIVE_LOOP
 
-
 ;---------------------------------------------------------
 ; PUTINITIALACK -
 ;---------------------------------------------------------
@@ -199,7 +194,6 @@ PUTINITIALACK:
 	ldax #ACKMSG
 	jsr udp_send
 	rts
-
 
 ;---------------------------------------------------------
 ; PUTFINALACK -
@@ -212,7 +206,6 @@ PUTFINALACK:
 	jsr udp_send
 	rts
 
-
 ;---------------------------------------------------------
 ; GETREQUEST -
 ;---------------------------------------------------------
@@ -222,19 +215,18 @@ GETREQUEST:
 	lda #>BIGBUF
 	sta BLKPTR+1
 	ldy #$00
-	lda #CHR_G	; Ask host for file size
+	lda #CHR_G	; Ask host to send the file
 	sta (BLKPTR),Y
 	iny
 	jsr COPYINPUT
 	tya
 	ldx #$00
 	stax udp_send_len
-	lda #STATE_GET
+	lda #STATE_GET	; Set up for GETREPLY1 callback
 	sta state
 	ldax #BIGBUF
 	jsr udp_send
 	jmp RECEIVE_LOOP
-
 
 ;---------------------------------------------------------
 ; GETFINALACK -
@@ -274,12 +266,11 @@ QUERYFNREQUEST:
 	tya
 	ldx #$00
 	stax udp_send_len
-	lda #STATE_QUERY
+	lda #STATE_QUERY	; Set up for the QUERYFNREPLY callback
 	sta state
 	ldax #BIGBUF
 	jsr udp_send
 	jmp RECEIVE_LOOP
-
 
 ;---------------------------------------------------------
 ; QUERYFNREPLY -
@@ -295,14 +286,12 @@ QUERYFNREPLY:
 	lda QUERYRC
 	rts
 
-
 ;---------------------------------------------------------
 ; SENDBLK -
 ;---------------------------------------------------------
 SENDBLK:
 ; TODO
 	rts
-
 
 ;---------------------------------------------------------
 ; RECVBLK - Receive a block with RLE
@@ -313,6 +302,7 @@ RECVBLK:
 	lda #$02
 	sta <ZP
 	lda #CHR_ACK
+	sta ACK_CHAR
 
 RECVMORE:
 	tax
@@ -322,12 +312,13 @@ CLRLOOP:
 	sta (BLKPTR),Y
 	iny
 	bne CLRLOOP
-	txa
+	lda ACK_CHAR
 	jsr PUTC	; Send ack/nak
-	lda #STATE_HBLK
+
+	lda #STATE_HBLK	; Set up callback to RECVHBLK
 	sta state
-	jsr RECEIVE_LOOP
-	
+	jmp RECEIVE_LOOP
+
 RECVBLK2:
 	jsr UNDIFF
 	lda <CRC
@@ -339,6 +330,7 @@ RECVBLK2:
 
 RECBRANCH:
 	lda #CHR_ACK
+	sta ACK_CHAR
 	inc <BLKPTR+1	; Get next 256 bytes
 	dec <ZP
 RECOK:	bne RECVMORE
@@ -348,6 +340,8 @@ RECOK:	bne RECVMORE
 RECVERR:
 	lda #CHR_NAK	; CRC error, ask for a resend
 	jmp RECVMORE
+
+ACK_CHAR: .byte CHR_ACK
 
 ;---------------------------------------------------------
 ; RECVHBLK - Receive half a block with RLE
@@ -385,8 +379,9 @@ RCVEND:
 	inc UTILPTR+1	; Point at next 256 bytes
 :	lda (UTILPTR,X)	; Get next byte out of UDP packet buffer
 	sta PCCRC+1
-	rts
-
+	lda STATE_HBLK_2; Set up callback to RECVBLK2
+	sta state
+	jmp RECEIVE_LOOP
 
 ;---------------------------------------------------------
 ; PUTC - Send a single byte as a packet
@@ -424,9 +419,9 @@ STATE_DIR	= 1
 STATE_CD	= 2
 STATE_PUT	= 3
 STATE_GET	= 4
-STATE_QUERY	= 5
-STATE_ONEBYTE	= 6
-STATE_HBLK	= 7
+STATE_QUERY	= 6
+STATE_HBLK	= 8
+STATE_HBLK_2	= 9
 
 ;---------------------------------------------------------
 ; Variables
@@ -436,9 +431,6 @@ QUERYRC:
 PUTCMSG:
 	.byte $00
 PUTCMSGEND:
-DIRMSG:
-	.byte CHR_D		; Verb
-DIREND:
 ABORTMSG:
 	.byte $00
 ABORTEND:

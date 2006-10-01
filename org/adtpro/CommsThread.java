@@ -204,7 +204,6 @@ public class CommsThread extends Thread
           }
           while ((++i % 14) > 0);
         }
-        _transport.pushBuffer();
       }
       else
         _transport.writeBytes("NO FILES"); //$NON-NLS-1$
@@ -666,15 +665,16 @@ public class CommsThread extends Thread
     int byteCount, crc, ok = NAK, currentRetries = 0;
     byte data, prev, newprev;
 
-    // System.out.println("sendPacket entry; offset "+offset+".");
-    /*
-     * for (byteCount = 0; byteCount < 256;byteCount++) { if (byteCount % 32 ==
-     * 0) System.out.println("");
-     * System.out.print(UnsignedByte.toString(buffer[byteCount]) + " "); }
-     */
+    System.out.println("CommsThread.sendPacket() entry; offset "+offset+".");
+/*    
+    for (byteCount = 0; byteCount < 256;byteCount++) 
+    { 
+      if (byteCount % 32 == 0) System.out.println("");
+      System.out.print(UnsignedByte.toString(buffer[byteCount]) + " ");
+    }
+*/
     do
     {
-      // System.out.print(" top of sendPacket loop.");
       prev = 0;
       for (byteCount = 0; byteCount < 256;)
       {
@@ -682,7 +682,6 @@ public class CommsThread extends Thread
         data = (byte) (UnsignedByte.intValue(newprev) - UnsignedByte.intValue(prev));
         prev = newprev;
         _transport.writeByte(data);
-        _transport.pushBuffer();
         if (UnsignedByte.intValue(data) > 0) byteCount++;
         else
         {
@@ -691,7 +690,7 @@ public class CommsThread extends Thread
             byteCount++;
           }
           _transport.writeByte((byte) (byteCount & 0xFF)); // 256 becomes 0
-          _transport.pushBuffer();
+          //_transport.pushBuffer();
         }
         if (!_shouldRun)
         {
@@ -705,11 +704,10 @@ public class CommsThread extends Thread
         _transport.writeByte((byte) (crc & 0xff));
         _transport.writeByte((byte) (((crc & 0xff00) >> 8) & 0xff));
         _transport.pushBuffer();
-        // System.out.println("");
-        // System.out.println("Locally calculated CRC: " + (crc & 0xffff));
-        // //$NON-NLS-1$
+        System.out.println("");
+        System.out.println("Locally calculated CRC: " + (crc & 0xffff));
         ok = waitForData();
-        // System.out.println("ack from Apple: " + ok);
+        System.out.println("ack from Apple: " + ok);
         if (ok == ACK) rc = true;
         else
           currentRetries++;
@@ -717,6 +715,7 @@ public class CommsThread extends Thread
     }
     while ((ok != ACK) && (_shouldRun == true) && (currentRetries < _maxRetries));
 
+    System.out.println("CommsThread.sendPacket() exit, rc = "+rc);
     return rc;
   }
 

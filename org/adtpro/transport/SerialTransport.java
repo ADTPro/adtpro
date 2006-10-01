@@ -27,6 +27,7 @@ import java.io.*;
 import java.util.*;
 
 import org.adtpro.resources.Messages;
+import org.adtpro.utilities.UnsignedByte;
 
 import gnu.io.*;
 
@@ -233,6 +234,10 @@ public class SerialTransport extends ATransport
   {
     try
     {
+      for (int i = 0; i < data.length; i++)
+      {
+        System.out.print(UnsignedByte.toString(data[i]) + " "); 
+      }
       outputStream.write(data, 0, data.length);
     }
     catch (IOException ex)

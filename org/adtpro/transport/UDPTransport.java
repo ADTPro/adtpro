@@ -130,7 +130,7 @@ public class UDPTransport extends ATransport
     //System.out.println("DEBUG: UDPTransport.writeBytes() entry.");
     if ((1500 - _outPacketPtr) >= data.length)
     {
-      //System.out.println("DEBUG: UDPTransport.writeBytes() writing "+data.length+" bytes into packet starting from "+_outPacketPtr+".");
+      System.out.println("DEBUG: UDPTransport.writeBytes() writing "+data.length+" bytes into packet starting from "+_outPacketPtr+".");
       for (int i = 0; i < data.length; i++)
       {
         _sendBuffer[_outPacketPtr++] = data[i];
@@ -167,9 +167,19 @@ public class UDPTransport extends ATransport
   public void pushBuffer()
   {
     System.out.println("DEBUG: pushBuffer() entry.");
-    //System.out.println("  Sending:");
+
+    System.out.println("Data:");
+    for (int i = 0; i < _outPacketPtr; i++)
+    {
+      int j = _sendBuffer[i];
+      if (j < 0)
+        j += 256;
+      System.out.print(j+" ");
+    }
+    System.out.println("");
     //String fred = new String(_sendBuffer,0,_outPacketPtr);
-    //System.out.println(fred);
+    //System.out.println("Sending: "+fred);
+
     _packet.setData(_sendBuffer,0,_outPacketPtr);
     try
     {

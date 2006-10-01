@@ -207,6 +207,7 @@ SROK2:
 
 	jsr GETREQUEST
 	jsr GETREPLY
+	cmp #$00
 	beq SROK3
 	jmp PCERROR
 
