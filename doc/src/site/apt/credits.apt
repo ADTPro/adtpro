@@ -7,11 +7,11 @@
 ADTPro Credits
 
  ADTPro's client side borrows heavily from the original Apple Disk Transfer (ADT) base code from version 1.23.  
-ADT is currently maintained here: {{http://adt.berlios.de/}}
 The original ADT was written by Paul Guertin.
+ADT is currently maintained here: {{http://adt.berlios.de/}}
 
  The server side was very much a direct translation from the ADTWin's C++
-server code to Java.  The Win32 GUI code was written by Sean Gugler.  Sean's
+server code to Java.  The Win32 GUI code was written by Sean Gugler.  The
 ADTWin project is hosted here:
 {{http://www.apple2.org.za/gswv/a2zine/Sel/ADTWin.html}}
 
@@ -22,22 +22,23 @@ from his DiskMaker 8 program: {{http://www.syndicomm.com/~mark/DM8/}}
  The disk abstraction layer of ADTPro's server software was borrowed from the 
 AppleCommander project: {{http://applecommander.sourceforge.net/}}
 
- The serial communications layer conceps of the server software were borrowed
+ The serial communications layer conceps of ADTPros's server software were borrowed
 from the jSyncManager project: {{http://jsyncmanager.sourceforge.net/}}
 
- The Java serial communications subsystem for the host side is produced by
+ The Java serial communications subsystem of ADTPro's server software is produced by
 the rxtx organization: {{http://www.rxtx.org/}}.
 
  ProDOS assembly programming particulars were divined from the {{{ftp://ftp.a2central.com/pub/documents/beneathprodos.pdf}Beneath ProDOS}}
 book by Don Worth and Pieter Lechner, published by Quality Software in 1984.
 
- The original native IIgs serial port work was contributed by Joseph Oswold.  It was based
-on Pascal entry points and firmware stuff, so it was limited to
-19,200 baud.  The code to interface directly with the SCC chip was partly
-borrowed from the "Warp Six BBS" code:
+ The original native IIgs serial port work was contributed by Joseph Oswold.  
+It was based on Pascal entry points and firmware stuff, so it was limited to
+19,200 baud.  The code now interfaces directly with the SCC chip.  It was 
+partially borrowed from the "Warp Six BBS" code:
 {{http://www.apple2.org.za/gswv/a2zine/Utils/Z8530_SCCsamples_info.txt}}.
-Note that the current code is not nearly as nice to the system as the BBS
-code is.  I.e. it <<will>> break AppleTalk if it's running.
+Note that the current code is not nearly as nice to the system as either 
+Joseph's or the the BBS code is.  It <<will>> break AppleTalk if it's
+running.
 
 ADT Lineage
 
@@ -69,5 +70,5 @@ file names, and support for Windows NT and its progeny.
 ADTPro on June 21, 2006.
 Starting with the ADT base, he rewrote the client to run under ProDOS.
 This allowed the ability to transfer floppy disk, hard disk and ram disk
-images of arbitrary block length.  While he was at it, he rewrote the C++
+images of arbitrary length.  While he was at it, he rewrote the C++
 server code in Java to extend the server's reach beyond PC DOS and Windows.
