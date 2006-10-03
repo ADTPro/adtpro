@@ -1,0 +1,206 @@
+ -----
+ ADTPro Bootstrapping
+ -----
+ David Schmidt (david__schmidt at users dot souceforge dot net)
+ -----
+
+ADTPro Bootstrapping
+
+  If you already use the DOS version of ADT, you can use it to transfer the 
+virtual floppy containing ADTPro that comes with this project
+(ADTPro-v.r.m.dsk) to your Apple.  Reboot the Apple with the ADTPro floppy, and
+you're ready to go.
+
+  But if you have an Apple ][ with floppy drives but zero physical software, that's
+where the fun really begins.
+
+* Starting from bare metal - with a Super Serial Card
+
+  Bootstrapping a bare-metal Apple all the way into ProDOS is a fun little 
+project in and of itself.  
+You need a Super Serial card (if you have an IIgs but no Super Serial card - 
+see the {{{bootstrap.html#Starting from bare metal - with an Apple IIgs}IIgs section}} below),
+a host computer with a serial port, a serial cable to stretch between the two
+machines, and a single-sided, double-density 5.25" floppy or two.
+
+  The full process for any Super Serial Card-equipped Apple ][ looks like this:
+
+    [[1]] Connect the two computers through their serial ports - this
+initial step tends to work best at 300 baud.
+
+    [[1]] Configure the two serial ports to agree on baud rates, stop bits, etc.
+      On a PC, you can set the serial port speed with a <<<mode>>> command:\
+      <<<mode com>>><X><<<: baud=300 data=8 parity=n>>>\
+      Where <X> is <<<1>>> for COM1, and <X> is <<<2>>> for COM2.  Switch
+      settings for the Super Serial Card are <<<1001111-1101110>>>.  
+      {{{bootstrap.html#Super Serial specifics}More details}} are below.
+
+    [[1]] Tell the Apple to listen to its Super Serial Card.  The command is 
+      typically <<<IN#2>>>, but the number depends on which slot you have 
+      your Super Serial Card plugged into.
+
+    [[1]] Tell the host computer to send a special program out its serial port that
+      will send a bare-bones copy of Apple DOS 3.3 (actually EsDOS II) onto a 
+      floppy back on the Apple
+      (See: {{http://www.apple2.org.za/gswv/a2zine/Sel/dos33dmp.htm}}).
+      On a PC, the command is:\
+      <<<type dos33.dmp > com>>><X><<<:>>>
+
+    [[1]] You now have EsDOS II in <memory> on your apple.  Now you need to type the command:\
+      <<<INIT HELLO>>>\
+      after optionally typing in a little greeting program.  Once the <<<INIT>>> operation
+      completes, you now have a bootable DOS diskette.  Go ahead and reboot with
+      it now with a <<<PR#6>>> command.
+
+    [[1]] You might 'init' another floppy now to get a second floppy formatted, now
+      that you have a working version of DOS.
+
+    [[1]] Get a copy of {{{http://developer.berlios.de/project/showfiles.php?group_id=5617}DOS ADT}},
+      which comes with a "send the raw ADT program bits
+      over the serial line" version.  After unzipping DOS ADT, look for
+      <<<adtn_dmp_info.txt>>> and <<<adtn.dmp>>> files for instructions to get a copy
+      of DOS ADT written to your new DOS floppy.
+
+    [[1]] You probably want to copy-protect your new DOS ADT diskette by covering
+      the write notch with tape to be sure you don't ever have to send all that
+      stuff over the serial line again.
+
+    [[1]] Boot the DOS ADT floppy and BRUN ADT (this will run the Apple DOS version
+      of ADT).
+
+    [[1]] Start the ADTPro server on the host machine.
+
+    [[1]] Use DOS ADT to transfer ADTPro-v.r.m.dsk from the host to a blank floppy
+      (the second floppy you INITted earlier) on the Apple.
+
+    [[1]] Boot ADTPro's newly minted disk.
+
+    [[1]] Start transferring 5.25", 3.5", Ram drive, or hard drive images to your 
+      heart's content!
+
+* {Super Serial specifics}
+
+  The serial cable can either be straight-through or of the
+null modem variety; there is a jumper block on the Super Serial card that will take
+care of signal switching for you if you have one or the other and need to switch.
+
+  If you have a stright-through cable, set the super serial card's block to point
+downwards toward the word "Terminal," as in this picture:
+
+[images/ss1.jpg]
+
+  If you have a null-modem cable, set the super serial card's block to point
+upwards toward the word "Modem," as in this picture:
+
+[images/ss2.jpg]
+
+ Once ADT and ADTPro are up and running, they will set the card's configuration
+switches through software.  But for the initial bootstrap operation at 300 
+baud, you can set the swtiches like so:
+
++---
+SW1: 1001111  SW2: 1101110
++---
+
+  Where <<<0>>> means <<<off>>>, <<<down>>>, or <<<open>>>, and 
+<<<1>>> means <<<on>>>, <<<up>>>, or <<<closed>>>.
+Super Serial cards came with (at least) two different kinds of jumper blocks. 
+One had little rocker switches, and the other had little sliders.
+Here are two examples with switches in the correct position for 300 baud operation:
+
+[images/switch1.jpg]
+
+[images/switch2.jpg]
+
+  Strapped as a terminal (arrow on the jumper block pointing downwards
+on the SSC card), you can connect computers with a straight-through serial 
+cable like this:
+
+[images/superSerialCable.jpg]
+
+
+* {Starting from bare metal - with an Apple IIgs}
+
+  If all you have is an Apple IIgs and no Super Serial Card, ADTPro can work 
+using the IIgs' built-in serial port too.  You will need a serial cable setup
+that ultimately connects your IIgs' round, 8-pin mini-din modem connectcor to 
+the serial port of your host computer - and also performs a null-modem function 
+in between.
+
+  The full process for the IIgs looks like this:
+
+    [[1]] Connect the two computers through their serial ports, using the IIgs
+      modem port and a null-modem cable.
+
+    [[1]] Configure the two serial ports to agree on baud rates, stop bits, etc.
+      On a PC, you can set the serial port speed with a <<<mode>>> command:\
+      <<<mode com>>><X><<<: baud=300 data=8 parity=n>>>\
+      Where <X> is <<<1>>> for com1, and <X> is <<<2>>> for com2.
+
+    [[1]] Use the IIgs control panel to set slot 2 to <<<Modem>>>, which is the
+      default.  Default values have a little checkmark beside them in the
+      control panel.
+
+    [[1]] Use the IIgs control panel to set the Modem Port to all defaults except
+      for the baud rate, which should be set to <<<Baud: 300>>>.  
+      Remember, default values will have a little checkmark beside them in the
+      control panel.
+
+    [[1]] Tell the Apple to listen to its modem port (<<<IN#2>>>).
+
+    [[1]] Tell the host computer to send a special program out its serial port that
+      will send a bare-bones copy of Apple DOS 3.3 (actually EsDOS II) to the
+      Apple
+      (See: {{http://www.apple2.org.za/gswv/a2zine/Sel/dos33dmp.htm}}).
+      On a PC, the command is:\
+      <<<type dos33.dmp > com>>><X><<<:>>>
+
+    [[1]] Now you have EsDOS II in <memory> on your Apple.  Put your first blank 
+      floppy in the disk drive.  Type the command:\
+      <<<INIT HELLO>>>\
+      after optionally typing in a little greeting program.  Once the INIT operation
+      completes, you now have a bootable DOS diskette.  Go ahead and reboot with
+      it now with a <<<PR#6>>> command, or the key combination Control-OpenApple-Reset.
+
+    [[1]] You might 'init' another floppy now to get a second floppy formatted, now
+      that you have a working version of DOS.
+
+    [[1]] Get a copy of {{{http://developer.berlios.de/project/showfiles.php?group_id=5617}DOS ADT}},
+      which comes with a "send the raw ADTgs program bits
+      over the serial line" version.  After unzipping DOS ADT, look for
+      readme.txt and adtgs.dmp files for instructions to get a copy
+      of ADTgs written to your new DOS floppy.
+
+    [[1]] You probably want to copy-protect your new DOS ADT diskette by covering
+      the write notch with tape to be sure you don't ever have to send all that
+      stuff over the serial line again.
+
+    [[1]] Boot the DOS ADTgs floppy and BRUN ADT (this will run the Apple DOS
+      version of ADTgs).
+
+    [[1]] Start the ADTpro server on the host machine.
+
+    [[1]] Use DOS ADTgs to transfer ADTPro-v.r.m.dsk from the host to a blank floppy
+      (the second floppy you INITted earlier) on the Apple.
+
+    [[1]] Boot ADTPro's newly minted disk.
+
+    [[1]] Start transferring 5.25", 3.5", Ram drive, or hard drive images to your 
+      heart's content!
+
+* IIgs modem port specifics
+
+  One possible setup that connects a male DB9 serial port to the IIgs' 8-pin
+mini-din connector with a null modem in between looks like this:
+
+[images/nullModem.jpg]
+
+  The cables are getting harder to find in stores, but eBay, swap meets, Jameco, etc.
+will have what you need.
+
+  There are two 8-pin mini-din connectors on the back of the IIgs.  One has the
+icon of a telephone, the other has an icon of a printer.  Be sure you are 
+plugging into the telephone (modem) one, on the left as you look at the back.
+It looks like this:
+
+[images/iigsmodemport.jpg]

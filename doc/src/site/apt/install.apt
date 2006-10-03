@@ -1,0 +1,101 @@
+ -----
+ ADTPro Installation
+ -----
+ David Schmidt (david__schmidt at users dot souceforge dot net)
+ -----
+
+ADTPro Installation
+
+ Welcome to ADTPro!
+
+ First, you will need a Java you can call from the command line 
+(i.e. "java -version" from the command line ought to produce 
+something besides complaints).  One place to get a downloadable
+Java distribution is from Sun Microsystems:
+{{{http://java.sun.com/j2se/1.5.0/download.jsp}Sun JRE download}}.
+When you get there, look for a "Java Runtime Environment (JRE)"
+download for your platform.
+
+ Second, you will need an installation of the rxtx library where
+your java installation "lives."  That means the location of your Java jre/jdk
+installation; on Windows machines, it might be in a place like
+<<<c:\Program Files\Java\jre-version>>> or <<<C:\Program Files\IBM\Java142>>>.
+Please unzip the file 
+<<<rxtx-2.1-7-bins-r2.zip>>> in the rxtx distribution included with 
+ADTPro.  You will find full rxtx install instructions in the file
+named INSTALL when the zip file is unzipped and abbreviated 
+rxtx install instructions 
+{{{install.html#(Abbreviated) RXTX Install}below}}.
+
+ Start the ADTPro server from your host computer's command line:
+
++-------
+java -jar ADTPro-v.r.m.jar
++-------
+
+ (Where v.r.m represents the release number of ADTPro.)
+You should see the following information echoed back on your 
+console as the GUI is coming up:
+
++-------
+ADTPro Server version v.r.m
+
+RXTX: Stable Library
+=========================================
+Native lib Version = RXTX-2.1-7
+Java lib Version   = RXTX-2.1-7
++-------
+
+ Set your port name, set the speed, and click the "Connect" button.
+You should see the following new line on the console:
+
++-------
+SerialTransport opening port named COMx at speed 115200.
++-------
+
+ Transfer the ADTPro-v.r.m.dsk file to your apple with the original
+ADT client (you can use the ADTPro server to send it) and reboot
+your Apple with the new ADTPro client diskette in the disk drive.
+You're ready to go!
+
+ If you have an IIgs and no Super Serial Card, you may need to use 
+the original ADTgs (part of the 
+{{{http://developer.berlios.de/project/showfiles.php?group_id=5617}DOS ADT}}
+package) to get the ADTPro disk image transported to your IIgs for the first time.
+
+ Please report troubles, bugs, requests for help, etc. on the Help 
+forum for ADTPro at SourceForge:
+
+ {{https://sourceforge.net/forum/forum.php?forum_id=582337}}
+
+ Good luck!
+
+{(Abbreviated) RXTX Install}
+
+ Unzip the file <<<rxtx-2.1-7-bins-r2.zip>>> in the rxtx distribution included
+with ADTPro. You will find full rxtx install instructions in the file 
+named INSTALL.
+
+* Windows
+
+ Copy <<<RXTXcomm.jar>>> into <<<\jre\lib\ext>>> (under your java installation directory).
+Copy <<<rxtxSerial.dll>>> into <<<\jre\bin>>>.
+
+* Mac OS X (x86 and ppc)
+
+ Copy <<<RXTXcomm.jar>>> into <<</Library/Java/Extensions>>>. 
+Copy <<<librxtxSerial.jnilib>>> into <<</Library/Java/Extensions>>>.
+Run <<<fixperm.sh>>> that is in the Mac_OS_X directory.
+(Some distributions omitted this file; please extract the script
+from
+{{{http://adtpro.cvs.sourceforge.net/*checkout*/adtpro/adtpro/build/rxtx/fixperm.sh}here}}
+if it is missing from yours.  Run it from the Terminal with the command "<<<sh fixperm.sh>>>"
+(without the quotes).
+
+
+* Linux (only x86, x86_64, ia64)
+
+ Copy <<<RXTXcomm.jar>>> to <<</jre/lib/ext>>> (under your java installation directory).
+Copy <<<librxtxSerial.so>>> into <<</jre/lib/[machine type]>>> (<<<i386>>> for example).
+Make sure the user that will be running ADTPro is in the group <<<lock>>> or
+<<<uucp>>> so that lockfiles work.

@@ -1,0 +1,41 @@
+ -----
+ Starting ADTPro
+ -----
+ David Schmidt (david__schmidt at users dot souceforge dot net)
+ -----
+
+Starting Server and Client
+
+ Start the ADTPro server from your host computer's command line:
+
++-------
+java -jar ADTPro-v.r.m.jar
++-------
+
+ (Where v.r.m represents the release number of ADTPro).  The server program's
+GUI comes up:
+
+[images/serverInit.png]
+
+  Boot your Apple ][ from the ADTPro disk, or <<<BRUN ADTPRO>>> from wherever 
+you've copied the ADTPRO program.  
+
+  <<IIgs Note:>> users starting from a hard drive or 
+CFFA card are advised to hit the '8' key while booting if they are running GSOS.
+That has the effect of starting the IIgs in 8-bit ProDOS (BASIC) mode.  
+The less contention for the serial hardware, the better.
+
+  However you start it, the main screen comes up:
+
+[images/adtpro.png]
+
+ The best way to test communications is to hit the "D" key from the client to 
+ask for a directory listing at the host.  If the client "hangs" waiting for 
+a response from the host, or if garbled data comes back, it will be necessary
+to check the physical connections, port names and speeds on both host and
+client ends.
+
+ Sometimes, if you get data back from the directory listing but it is formatted
+strangely - a simple ctrl-reset and restart of ADTPro will fix the problem. 
+This has the effect of resetting the Super Serial card, and often cleans the 
+issue up.

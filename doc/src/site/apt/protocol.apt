@@ -1,0 +1,143 @@
+ -----
+ ADTPro Protocol
+ -----
+ David Schmidt (david__schmidt at users dot souceforge dot net)
+ -----
+
+ADTPro Protocol
+
+* Functions
+
+ ["C" - CD]   Change working directory
+
+ ["Z" - Size] Ask for file size (implies existence test)
+
+ ["G" - Get]  Initiate download
+
+ ["P" - Put]  Inititate upload (always overwrite)
+
+ ["D" - Dir]  DOS ADT compatible listing of the current directory
+
+ ["R" - Receive] DOS ADT compatible download 140k disk
+
+ ["S" - Send] DOS ADT compatible upload 140k disk
+
+* Change Directory
+
+-------------
+
+  Apple sends: One byte: "C"
+  Apple sends: Byte stream: directory name (null terminated)
+  Host sends: return code:
+    $00 = ok
+    $06 = Unable to change directory
+
+-------------
+
+* Get (Receive) disk (Host -> Apple ][)
+
+------------
+
+  Apple sends: One byte: "G"
+  Apple sends: Byte stream: file name (null terminated)
+
+  Host sends: return code:
+    $00 = ok
+    $02 = file not found
+
+  (Assuming zero return code... )
+
+  (parts = filesize /40, remainder = filesize % 40)
+
+  (loop: parts * 40 blocks + remainder * blocks)
+  Apple sends:
+      $06 = ACK (always ACK for the first half-block)
+      $15 = NAK
+
+    Host sends:
+      Next half-block, RLE encoded
+      two bytes:
+        CRC (lo)
+        CRC (hi)
+
+  (loop end)
+
+  Apple sends: One byte: number of errors encountered
+
+-------------
+
+* Put (Send) disk  (from Apple ][ to host)
+
+------------
+
+Apple sends: One byte: "P"
+Apple sends: Byte stream: file name (null terminated)
+Apple sends: Two bytes:
+  Number of blocks to follow (lo)
+  Number of blocks to follow (hi)
+
+Host sends: return code:
+  $00 = ok
+  $08 = File exists
+
+<documentation unfinished>
+------------
+
+
+ADT Compatibility
+
+* Receive 140k disk (from host to Apple ][)
+
+------------
+
+Apple sends: One byte: "R"
+Apple sends: Byte stream: file name (null terminated)
+
+Host sends: return code:
+  $00 = ok
+  $1a = file can't be opened (Old ADT message number)
+  $1e = not a 140k image (Old ADT message number)
+
+(Assuming zero return code... )
+(loop: 5 parts * 7 tracks * 16 sectors)
+  Apple sends:
+    $06 = ACK (always ACK for the first sector)
+    $15 = NAK
+  Host sends:
+    Next sector, RLE encoded
+    two bytes:
+      CRC (lo)
+      CRC (hi)
+(loop end)
+Apple sends: One byte: number of errors encountered
+
+------------
+
+* Send 140k disk (from Apple ][ to host)
+
+------------
+
+Apple sends: One byte: "S"
+
+Host sends: return code:
+  $00 = ok
+  $1c = File exists
+  $1a = Can't open
+  $1e = Disk full
+
+(Assuming zero return code... )
+Apple sends: 
+<documentation unfinished>
+
+------------
+
+* DIR
+
+------------
+
+Apple sends: One byte: "D"
+
+Host sends: 
+<documentation unfinished>
+
+------------

@@ -1,0 +1,143 @@
+ -----
+ ADTPro Release History
+ -----
+ David Schmidt (david__schmidt at users dot souceforge dot net)
+ -----
+
+ADTPro Release History
+
+* 0.0.9 - September 23, 2006
+
+ Bug fix:
+
+ * 2IMG images with optional headers/chunks failed to transfer properly - patch also supplied to the AppleCommander project where the bug originated
+
+ []
+
+* 0.0.8 - September 20, 2006
+
+ New functionality:
+
+ * You can interrupt the interminable volume scan with the escape key
+
+ []
+
+ Bug fixes:
+
+ * Cured Linux/OSX's "hang" when disconnecting
+
+ * Initiating any communication now resets the comms card - makes things much more
+   reliable with starting/stopping the host end at random intervals
+
+ * Greyed out the port/speed buttons on the server while connected to make it more clear
+   exactly what you can change and when
+
+ * Turn "cold start" back off again on the client once it's been invoked - to keep
+   from saving the cold start state when the user saves the configuration!
+
+ * Switched to cc65/ca65 compiler/assembler suite.  See: {{http://www.cc65.org/}}.
+   ca65 is compatible with lots more platforms than SB-Assembler, though it is slower.
+
+ * Refactored the code to make communications routines somewhat more "pluggable."
+   We aren't quite at the point of device drivers yet, but it's getting closer.
+   I long for the days of the simplicty of ADT's one-file assembly!  It used to 
+   be so elegant!
+
+ []
+
+* 0.0.7 - August 27, 2006
+
+ New functionality:
+
+ * Support for native IIgs serial (modem) port at a maximum rate of 115,200 BPS
+
+ * Ability to "cold start" by resetting configuration parameters back to "factory defaults"
+   (useful when a configuration as saved is incompatible with a particular machine:
+   <<<bload adtpro:poke 2052,1:call 2051>>>)
+
+ []
+
+* 0.0.6 - August 10, 2006
+
+ Bug fix:
+
+ * Cosmetic fix for IIgs native send progress indicator
+
+ []
+
+* 0.0.5 - July 30, 2006
+
+ New functionality:
+
+ * Support for native IIgs serial (modem) port at a maximum rate of 19,200 BPS
+
+ []
+
+ Bug fixes:
+
+ * Handle serial port-in-use exceptions at host end
+
+ * A few usability tweaks along the way
+
+* 0.0.4 - July 9, 2006
+
+ New functionality:
+
+ * Overwrite confirmation when an image already exists at the host
+
+ * Option to write mismatched image sizes (i.e. put a smaller image on a bigger disk)
+
+ * Host has the ability to change working directory via file dialog
+
+ []
+
+ Bug fixes:
+
+ * Client configuration-save function uses initial slot/drive combination to BSAVE itself
+
+ * Cosmetic changes for buffer send/receive/read/write screen
+
+
+* 0.0.3 - July 2, 2006
+
+ New functionality:
+
+ * Host saves its last known good configuration (ADTPro.properties in startup directory)
+
+ * Client saves configuration on demand (it really just BSAVEs itself)
+
+ []
+
+ Bug fixes:
+
+ * Isolated host messages from client messages to better separate valid messages vs. garbage coming back from the host
+
+ * Misc. updates to build process - have AppleCommander build a custom volume name, etc.
+
+
+* 0.0.2 - June 28, 2006
+
+ Bug fixes:
+
+ * Fixed ability to start/stop/restart communications on the host end
+
+ * Fixed some Change Directory semantics, particularly for changing relative directories
+
+ * Made some minor message improvements at the client end
+
+
+* 0.01 - June 21, 2006
+
+ First prototypical release on SourceForge.  Main functionality:
+
+ * Compatibility with Super Serial Card up to 115,200 BPS
+
+ * Compatibility with anything ProDOS can read
+
+ * Compatibility with any Apple ][ computer with 64k memory
+
+ * Compatibility with many diskette/disk image formats: .DSK, .PO, .NIB, 2IMG
+
+ * Ability to change working directory on the fly
+
+ * Server written in Java, compatible with DOS-based ADT and ADTPro

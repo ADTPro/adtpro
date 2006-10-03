@@ -1,0 +1,87 @@
+ -----
+ ADTPro Configuration
+ -----
+ David Schmidt (david__schmidt at users dot souceforge dot net)
+ -----
+
+Configuring ADTPro
+
+ Hitting the "G" key from the main menu brings up the ADTPro configuration screen:
+
+[images/config.png]
+
+ You can scroll between the selections with the up and down arrow keys.  If your
+Apple doesn't have up and down arrow keys, the space bar will cycle between the
+selections.
+
+ You can rotate through the options of a particular selection with the right and
+left arrow keys.  Your Apple has right and left arrow keys; trust me.
+
+* Comms Device
+
+ Select the slot your Super Serial card is in.
+
+[images/configSlot.png]
+
+ The most common slot is 2, but it 
+could be any one from 1 to 7.  Pull off your Apple's lid to check if you need to.
+If you have an IIgs and you are using a Super Serial card in it, ensure you select
+"Your Card" in the IIgs' control panel for the slot your SSC card is in,
+and select that same slot number here.
+
+ If you want to use the IIgs' native serial (modem) port, rotate through the 
+<<<COMMS DEVICE>>> selections until "IIGS MODEM" shows up.  You do not need to 
+make any changes in the control panel, but be warned that ADTPro will disrupt 
+AppleTalk communications to/from your Apple IIgs.
+
+[images/configIIgs.png]
+
+ Note that using the native serial port will kill things like AppleTalk.
+In fact, it's not particularly reliable to start up with GSOS and then use
+ADTPro.
+It's best to start up under ProDOS - the distribution diskette is 
+well suited to this.
+If you normally start with GSOS, you can hit the '8' key as the computer is displaying
+the initial "Apple IIgs" screen and it'll start 8-bit ProDOS and drop you into the
+BASIC interpreter, just like the old days.
+
+ The modem port (as opposed to the printer port) looks like this at the back
+of the IIgs:
+
+[images/iigsmodemport.jpg]
+
+ And it will require a "null modem" cable or adapter when connecting to the host
+computer.
+
+* Baud Rate
+
+ Select the highest baud rate that still works reliably.
+
+[images/configBaud.png]
+
+ 115200 is the absolute maximum that ADTPro supports through the Super Serial
+Card; thank Knut Roll-Lund for the code that bumps us to that rate.
+9600 will work as long as you have good wire between the two computers, and the
+two computers are less than a mile apart from one another.  If you can't get 9600 to
+work reliably, something else is wrong.
+
+* Enable Sound
+
+ The sound option is, of course, up to you.  
+
+[images/configSound.png]
+
+ ADTPro makes bleating sounds when
+things finish or abort.  I personally think computers should be seen and not
+heard, but not everyone feels that way.  Express your own personal feelings here.
+
+* Save Configuration
+
+ Hit the "Return" key to work with these parameters.  Once you get a 
+configuration that works for you, select "YES" for SAVE CONFIG and hit Return.
+
+[images/configSave.png]
+
+ This will save ADTPRO back out to the current slot/disk (volume).
+When you start ADTPRO again, it will come back with the configuration parameters you 
+saved last.

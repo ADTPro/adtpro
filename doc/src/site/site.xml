@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<project name="ADTPro">
+  <bannerLeft>
+    <name>Apple Disk Transfer ProDOS</name>
+  </bannerLeft>
+  <bannerRight>
+    <name></name>
+  </bannerRight>
+  <body>
+    <links>
+      <item name="Sourceforge Project Page" href="http://sourceforge.net/projects/adtpro"/>
+      <item name="Download" href="https://sourceforge.net/project/showfiles.php?group_id=170262"/>
+    </links>
+
+    <menu name="ADTPro">
+      <item name="Main" href="index.html"/>
+      <item name="Credits" href="credits.html"/>
+      <item name="Download" href="https://sourceforge.net/project/showfiles.php?group_id=170262"/>
+    </menu>
+
+    <menu name="Operation">
+      <item name="Installation" href="install.html"/>
+      <item name="Bootstrapping" href="bootstrap.html"/>
+      <item name="Starting" href="starting.html"/>
+      <item name="Configuration" href="config.html"/>
+      <item name="Sending" href="sending.html"/>
+      <item name="Receiving" href="receiving.html"/>
+      <item name="Misc. Functions" href="misc.html"/>
+      <item name="French Language Resources" href="http://site.voila.fr/ressources-apple2/adtpro/adtpro.html" target="_new"/>
+    </menu>
+
+    <menu name="Minutiae">
+      <item name="Protocol" href="protocol.html"/>
+      <item name="Release History" href="history.html"/>
+    </menu>
+
+  </body>
+</project>

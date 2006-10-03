@@ -1,0 +1,98 @@
+ -----
+ Receiving Disk Images
+ -----
+ David Schmidt (david__schmidt at users dot souceforge dot net)
+ -----
+
+Receiving Disk Images
+
+ Hitting the "R" key from the main menu lets you enter the name of the disk image
+you want to copy from the host to a disk on your Apple:
+
+[images/receive.png]
+
+ You can copy images in any of the following formats:
+
+ * .DSK (Often, but not always, DOS-order images)
+
+ * .DO (DOS order images)
+
+ * .PO (ProDOS order images)
+
+ * .NIB (Nybble-ized images - though ADTPro only writes normal in-track data)
+
+ * .2MG (2IMG images)
+
+[]
+
+ After hitting Return to specify the file name, ADTPro will present you with a
+screen to pick a "volume" (a slot/drive combination). The slot and drive
+numbers are the first two columns; if the volume happens to be formatted with
+ProDOS, its name will appear in the Volume Name column. You can use the arrow
+keys or the space bar to pick the volume to be sent to the host:
+
+[images/receivePick.png]
+
+ The "Blocks" column is the count of ProDOS blocks present on the disk.  Each 
+block contains 512 bytes of data.  So, typical disk sizes are:
+
+*-------*-----*
+| <<Blocks>> | <<Disk>> |
+*-------*-----*
+|   127 | 64k RAM disk (128k Apples) |
+*-------*-----*
+|   280 | 5-1/4" Floppy disk (140k) |
+*-------*-----*
+|  1600 | 3-1/2" Floppy disk (800k) |
+*-------*-----*
+| 65535 | 32MB Hard drive |
+*-------*-----*
+
+ Some messages may appear in the "Volume name" column to indicate various
+situations:
+
+*-------*-----*
+| <<Message>> | <<Meaning>> |
+*-------*-----*
+|  \<NO NAME\> | A DOS 3.3 disk is in the drive (which is ok) |
+*-------*-----*
+|  \<I/O ERROR\> | Can't read the disk in the drive |
+*-------*-----*
+|  \<NO DISK\> | No disk is found in the drive |
+*-------*-----*
+
+ Once you pick the volume to copy the image to by hitting Return, 
+an attempt is made to contact the host:
+
+[images/receiveInit.png]
+
+ If the image size from the host does not match the size of the destination 
+volume, you will be alerted to that fact.  You generally don't want to copy 
+a differently sized image to a disk drive, but if it happens that you really 
+do - you have the option to go ahead and do it anyway:
+
+[images/receiveMismatch.png]
+
+ It will generally be successful as long as the destination has more capacity
+than the source (i.e. the host image is smaller than the destination disk at
+the Apple).  Some space will be wasted, but it will be entirely usable.
+
+ Once contact is made with the host, the disk information starts receiving and 
+writing.  The line across the screen represents a 20k buffer that is alternately
+received from the host and written to the disk:
+
+[images/receiving.png]
+
+ When the image has finished receiving from the host, you will see a "Complete" message:
+
+[images/receiveDone.png]
+
+ Pressing any key brings you back to the main ADTPro menu.
+
+ If errors are encountered with receiving or writing blocks, you will see "X"
+characters instead of solid blocks:
+
+[images/sendError.png]
+
+ If an image contains at least one "bad" block, an error message will appear both
+at the Apple and at the host end.

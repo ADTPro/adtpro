@@ -1,0 +1,69 @@
+ -----
+ ADTPro Miscellaneous Functions
+ -----
+ David Schmidt (david__schmidt at users dot souceforge dot net)
+ -----
+
+Miscellaneous Functions
+
+* Change Working Directory
+
+ Whatever directory the host software starts in will be the "Current working
+directory" until changed to something else.  Disk images will be read from and
+written to this directory.  You can change the directory with the "C" key from
+the client:
+
+[images/cd.png]
+
+ You can enter any absolute or relative directory change from this screen.  For
+example, changing to a full directory specification:
+
+[images/cdDone.png]
+
+* Directory
+
+ Hitting the "D" key from the main menu will ask for a directory listing of the
+current working directory.  If the contents don't fit on one Apple screen, 
+you can hit a key to see the next screenful of information, until the last
+screenful is shown.  Hitting a key at that point will return you to the main
+menu.
+
+* Volumes
+
+ Hitting the "V" key from the main menu will bring up a list of all volumes that
+ProDOS can see:
+
+[images/miscVolume.png]
+
+  The leftmost two columns will show you the slot and drive 
+assignments of a particular volume.  The Volume Name column will show you
+what ProDOS thinks it's called.
+
+ The "Blocks" column is the count of ProDOS blocks present on the disk.  Each 
+block contains 512 bytes of data.  So, typical disk sizes are:
+
+*-------*-----*
+| <<Blocks>> | <<Disk>> |
+*-------*-----*
+|   127 | 64k RAM disk (128k Apples) |
+*-------*-----*
+|   280 | 5-1/4" Floppy disk (140k) |
+*-------*-----*
+|  1600 | 3-1/2" Floppy disk (800k) |
+*-------*-----*
+| 65535 | 32MB Hard drive |
+*-------*-----*
+
+ Some messages may appear in the "Volume name" column to indicate various
+situations:
+
+*-------*-----*
+| <<Message>> | <<Meaning>> |
+*-------*-----*
+|  \<NO NAME\> | A DOS 3.3 disk is in the drive (which is ok) |
+*-------*-----*
+|  \<I/O ERROR\> | Can't read the disk in the drive |
+*-------*-----*
+|  \<NO DISK\> | No disk is found in the drive |
+*-------*-----*
+

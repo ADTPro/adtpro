@@ -1,0 +1,73 @@
+ -----
+ ADTPro Credits
+ -----
+ David Schmidt (david__schmidt at users dot souceforge dot net)
+ -----
+
+ADTPro Credits
+
+ ADTPro's client side borrows heavily from the original Apple Disk Transfer (ADT) base code from version 1.23.  
+ADT is currently maintained here: {{http://adt.berlios.de/}}
+The original ADT was written by Paul Guertin.
+
+ The server side was very much a direct translation from the ADTWin's C++
+server code to Java.  The Win32 GUI code was written by Sean Gugler.  Sean's
+ADTWin project is hosted here:
+{{http://www.apple2.org.za/gswv/a2zine/Sel/ADTWin.html}}
+
+ The routine to decide what kind of block device a particular slot/drive 
+combination contains was generously donated by Mark Percival.  It originates
+from his DiskMaker 8 program: {{http://www.syndicomm.com/~mark/DM8/}}
+
+ The disk abstraction layer of ADTPro's server software was borrowed from the 
+AppleCommander project: {{http://applecommander.sourceforge.net/}}
+
+ The serial communications layer conceps of the server software were borrowed
+from the jSyncManager project: {{http://jsyncmanager.sourceforge.net/}}
+
+ The Java serial communications subsystem for the host side is produced by
+the rxtx organization: {{http://www.rxtx.org/}}.
+
+ ProDOS assembly programming particulars were divined from the {{{ftp://ftp.a2central.com/pub/documents/beneathprodos.pdf}Beneath ProDOS}}
+book by Don Worth and Pieter Lechner, published by Quality Software in 1984.
+
+ The original native IIgs serial port work was contributed by Joseph Oswold.  It was based
+on Pascal entry points and firmware stuff, so it was limited to
+19,200 baud.  The code to interface directly with the SCC chip was partly
+borrowed from the "Warp Six BBS" code:
+{{http://www.apple2.org.za/gswv/a2zine/Utils/Z8530_SCCsamples_info.txt}}.
+Note that the current code is not nearly as nice to the system as the BBS
+code is.  I.e. it <<will>> break AppleTalk if it's running.
+
+ADT Lineage
+
+ Rich Williamson (glitch at eskimo dot com) released SENDDISK on April 9, 1993.
+His Apple-side program read an entire disk with DOS' RWTS (Read Write
+Track Sector) routine, and transmitted the data through an Apple
+Super Serial Card in slot 1.  His PC-side program listened to COM1
+for such a data stream, and stored it in a .DSK file, in the format
+expected by the Apple II emulator "apl2em".
+
+ Paul Guerton (pg at sff dot net) released Apple Disk Transfer (ADT) on
+December 4th, 1995, and updated it July 14, 1999.  Starting with
+SENDDISK, Paul added a nice screen layout, configuration menus,
+error recovery, data stream compression, and the capability to
+receive .DSK images from the PC and write them back to an
+Apple II floppy disk.
+
+ Paul Schlyter (pausch at saaf dot se) released ADTcc on June 13, 2000.
+He modified ADT's Apple-side program to work with the older
+Apple Communications Card and compatibles.
+
+ Sean Gugler (gugler-sean at cs dot yale dot edu) released ADT Win32 Edition on
+December 1, 2000.  He replaced the older PC-side DOS program with
+a Windows 32-bit API program of otherwise identical functionality.
+That brought ADT into the world of background multi-tasking, long
+file names, and support for Windows NT and its progeny.
+
+ David Schmidt (david__schmidt at users dot sourceforge dot net) released 
+ADTPro on June 21, 2006.
+Starting with the ADT base, he rewrote the client to run under ProDOS.
+This allowed the ability to transfer floppy disk, hard disk and ram disk
+images of arbitrary block length.  While he was at it, he rewrote the C++
+server code in Java to extend the server's reach beyond PC DOS and Windows.
