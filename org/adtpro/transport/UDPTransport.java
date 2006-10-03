@@ -23,10 +23,8 @@
 
 package org.adtpro.transport;
 
-import java.io.*;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
-import java.util.*;
 
 import org.adtpro.resources.Messages;
 
@@ -200,6 +198,8 @@ public class UDPTransport extends ATransport
     _packet.setData(_receiveBuffer);
     _socket.receive(_packet);
     System.out.println("DEBUG: received packet.");
+    _socket.connect(_packet.getSocketAddress());
+    System.out.println("DEBUG: connected to socket.");
     _receiveBuffer = _packet.getData();
     _inPacketLen = _packet.getLength();
     _inPacketPtr = 0;

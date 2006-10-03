@@ -73,6 +73,7 @@ UDPDISPATCH:
 :	cmp #STATE_HBLK_2
 	bne :+
 	jmp RECVBLK2
+	brk
 			; fallthrough	
 @skip:
 	rts
@@ -95,7 +96,7 @@ RECEIVE_LOOP:
 ; DIRREQUEST - Request current directory contents
 ;---------------------------------------------------------
 DIRREQUEST:
-	lda #STATE_DIR
+	lda #STATE_DIR	; Set up for DIRREPLY1 callback
 	sta state
 	lda #CHR_D
 	jsr PUTC
@@ -305,9 +306,8 @@ RECVBLK:
 	sta ACK_CHAR
 
 RECVMORE:
-	tax
-	ldy #$00	; Clear out the new half-block
-	tya
+	lda #$00	; Clear out the new half-block
+	tay
 CLRLOOP:
 	sta (BLKPTR),Y
 	iny
