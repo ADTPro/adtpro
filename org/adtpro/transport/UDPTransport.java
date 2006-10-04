@@ -27,6 +27,7 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 
 import org.adtpro.resources.Messages;
+import org.adtpro.utilities.UnsignedByte;
 
 public class UDPTransport extends ATransport
 {
@@ -42,6 +43,7 @@ public class UDPTransport extends ATransport
 
   byte[] _receiveBuffer = null;
   byte[] _sendBuffer = null;
+  static byte _packetNum = 1;
 
   public UDPTransport(String port) throws Exception
   {
@@ -126,9 +128,15 @@ public class UDPTransport extends ATransport
   public void writeBytes(byte data[])
   {
     //System.out.println("DEBUG: UDPTransport.writeBytes() entry.");
-    if ((1500 - _outPacketPtr) >= data.length)
+    if ((1499 - _outPacketPtr) >= data.length)
     {
-      System.out.println("DEBUG: UDPTransport.writeBytes() writing "+data.length+" bytes into packet starting from "+_outPacketPtr+".");
+      //System.out.println("DEBUG: UDPTransport.writeBytes() writing "+data.length+" bytes into packet starting from "+_outPacketPtr+".");
+      if (_outPacketPtr == 0)
+      {
+        _packetNum++;
+        System.out.println("Setting sequence number to: "+UnsignedByte.intValue(_packetNum));
+        _sendBuffer[_outPacketPtr++] = _packetNum;
+      }
       for (int i = 0; i < data.length; i++)
       {
         _sendBuffer[_outPacketPtr++] = data[i];

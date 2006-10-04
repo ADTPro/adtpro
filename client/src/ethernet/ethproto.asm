@@ -29,6 +29,11 @@ UDPDISPATCH:
 	cmp #STATE_IDLE	; Do we care at all?
 	beq @skip
 
+	lda udp_inp + udp_data	; Grab the packet number
+	cmp PREVPACKET
+	beq RECEIVE_LOOP	; We received a duplicate packet.  Go back to RECEIVE_LOOP.
+	sta PREVPACKET
+
 	lda udp_inp + udp_src_port + 1
 	sta replyport
 	lda udp_inp + udp_src_port
@@ -69,11 +74,6 @@ UDPDISPATCH:
 :	cmp #STATE_HBLK
 	bne :+
 	jmp RECVHBLK
-			; Receiving HBLK_2 data?
-:	cmp #STATE_HBLK_2
-	bne :+
-	jmp RECVBLK2
-	brk
 			; fallthrough	
 @skip:
 	rts
@@ -100,13 +100,14 @@ DIRREQUEST:
 	sta state
 	lda #CHR_D
 	jsr PUTC
-	jmp RECEIVE_LOOP
+	jsr RECEIVE_LOOP
+	rts
 
 ;---------------------------------------------------------
 ; DIRREPLY - serial compatibility and UDP callback entry points
 ;---------------------------------------------------------
 DIRREPLY1:
-	ldax #udp_inp + udp_data
+	ldax #udp_inp + udp_data + 1	; Point BLKPTR at the UDP data buffer
 	stax BLKPTR
 DIRREPLY:
 	rts
@@ -139,7 +140,8 @@ CDREQUEST:
 	sta state
 	ldax #BIGBUF
 	jsr udp_send
-	jmp RECEIVE_LOOP
+	jsr RECEIVE_LOOP
+	rts
 
 ;---------------------------------------------------------
 ; CDREPLY - Reply to current directory change
@@ -150,7 +152,7 @@ CDREQUEST:
 CDREPLY1:
 PUTREPLY1:
 GETREPLY1:
-	lda udp_inp + udp_data	; Pick up the data byte
+	lda udp_inp + udp_data + 1	; Pick up the data byte
 	sta QUERYRC
 CDREPLY:
 PUTREPLY:
@@ -184,27 +186,23 @@ PUTREQUEST:
 	sta state
 	ldax #BIGBUF
 	jsr udp_send
-	jmp RECEIVE_LOOP
+	jsr RECEIVE_LOOP
+	rts
 
 ;---------------------------------------------------------
 ; PUTINITIALACK -
 ;---------------------------------------------------------
 PUTINITIALACK:
-	ldax #ACKEND-ACKMSG
-	stax udp_send_len
-	ldax #ACKMSG
-	jsr udp_send
+	lda ACKMSG
+	jsr PUTC
 	rts
 
 ;---------------------------------------------------------
 ; PUTFINALACK -
 ;---------------------------------------------------------
 PUTFINALACK:
-	lda #$00
-	ldx #$01
-	stax udp_send_len
-	ldax #ECOUNT	; Errors during send?
-	jsr udp_send
+	lda ECOUNT
+	jsr PUTC
 	rts
 
 ;---------------------------------------------------------
@@ -227,7 +225,8 @@ GETREQUEST:
 	sta state
 	ldax #BIGBUF
 	jsr udp_send
-	jmp RECEIVE_LOOP
+	jsr RECEIVE_LOOP
+	rts
 
 ;---------------------------------------------------------
 ; GETFINALACK -
@@ -271,17 +270,18 @@ QUERYFNREQUEST:
 	sta state
 	ldax #BIGBUF
 	jsr udp_send
-	jmp RECEIVE_LOOP
+	jsr RECEIVE_LOOP
+	rts
 
 ;---------------------------------------------------------
 ; QUERYFNREPLY -
 ;---------------------------------------------------------
 QUERYFNREPLY1:
-	lda udp_inp + udp_data		; File size lsb
+	lda udp_inp + udp_data + 1	; File size lsb
 	sta HOSTBLX
-	lda udp_inp + udp_data + 1	; File size msb
+	lda udp_inp + udp_data + 2	; File size msb
 	sta HOSTBLX+1
-	lda udp_inp + udp_data + 2	; Return code/message
+	lda udp_inp + udp_data + 3	; Return code/message
 	sta QUERYRC			; Just some temp storage
 QUERYFNREPLY:
 	lda QUERYRC
@@ -317,7 +317,7 @@ CLRLOOP:
 
 	lda #STATE_HBLK	; Set up callback to RECVHBLK
 	sta state
-	jmp RECEIVE_LOOP
+	jsr RECEIVE_LOOP
 
 RECVBLK2:
 	jsr UNDIFF
@@ -339,6 +339,7 @@ RECOK:	bne RECVMORE
 
 RECVERR:
 	lda #CHR_NAK	; CRC error, ask for a resend
+	sta ACK_CHAR
 	jmp RECVMORE
 
 ACK_CHAR: .byte CHR_ACK
@@ -349,7 +350,7 @@ ACK_CHAR: .byte CHR_ACK
 ; CRC is computed and stored
 ;---------------------------------------------------------
 RECVHBLK:
-	ldax #udp_inp + udp_data
+	ldax #udp_inp + udp_data + 1
 	stax UTILPTR	; Connect UTILPTR to UDP packet buffer
 	ldx #00		; Start input at beginning of UTILPTR buffer
 	ldy #00		; Start output at beginning of BLKPTR buffer
@@ -357,8 +358,8 @@ RC1:
 	lda (UTILPTR,X)	; Get next byte out of UDP packet buffer
 	beq RC2		; If zero, get new index
 	sta (BLKPTR),Y	; else put char in buffer
-	iny		; ...and increment index
 	inx		; ...and increment index
+	iny		; ...and increment index
 	bne RC1		; Loop if not at end of buffer
 	jmp RCVEND	; ...else done
 RC2:
@@ -379,9 +380,7 @@ RCVEND:
 	inc UTILPTR+1	; Point at next 256 bytes
 :	lda (UTILPTR,X)	; Get next byte out of UDP packet buffer
 	sta PCCRC+1
-	lda STATE_HBLK_2; Set up callback to RECVBLK2
-	sta state
-	jmp RECEIVE_LOOP
+	rts
 
 ;---------------------------------------------------------
 ; PUTC - Send a single byte as a packet
@@ -419,9 +418,8 @@ STATE_DIR	= 1
 STATE_CD	= 2
 STATE_PUT	= 3
 STATE_GET	= 4
-STATE_QUERY	= 6
-STATE_HBLK	= 8
-STATE_HBLK_2	= 9
+STATE_QUERY	= 5
+STATE_HBLK	= 6
 
 ;---------------------------------------------------------
 ; Variables
@@ -433,7 +431,7 @@ PUTCMSG:
 PUTCMSGEND:
 ABORTMSG:
 	.byte $00
-ABORTEND:
 ACKMSG:
 	.byte CHR_ACK
-ACKEND:
+PREVPACKET:
+	.byte $00
