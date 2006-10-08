@@ -26,12 +26,12 @@
 ;---------------------------------------------------------
 UDPDISPATCH:
 	lda state
-	cmp #STATE_IDLE	; Do we care at all?
+	cmp #STATE_IDLE		; Do we care at all?
 	beq @skip
 
 	lda udp_inp + udp_data	; Grab the packet number
 	cmp PREVPACKET
-	beq RECEIVE_LOOP	; We received a duplicate packet.  Go back to RECEIVE_LOOP.
+	beq @skip		; We received a duplicate packet.  Bail.
 	sta PREVPACKET
 
 	lda udp_inp + udp_src_port + 1
@@ -352,33 +352,54 @@ ACK_CHAR: .byte CHR_ACK
 RECVHBLK:
 	ldax #udp_inp + udp_data + 1
 	stax UTILPTR	; Connect UTILPTR to UDP packet buffer
-	ldx #00		; Start input at beginning of UTILPTR buffer
-	ldy #00		; Start output at beginning of BLKPTR buffer
+	lda #$00
+	sta RLEPREV		; Start output at beginning of BLKPTR buffer
+	sta UDPI	; Start input at beginning of UTILPTR buffer
 RC1:
-	lda (UTILPTR,X)	; Get next byte out of UDP packet buffer
-	beq RC2		; If zero, get new index
+	ldy UDPI
+	lda (UTILPTR),Y	; Get next byte out of UDP packet buffer
+	beq RC2		; If it's zero, get new index
+	iny
+	cpy #$00
+	bne :+
+	inc UTILPTR+1
+:	sty UDPI
+	ldy RLEPREV
 	sta (BLKPTR),Y	; else put char in buffer
-	inx		; ...and increment index
-	iny		; ...and increment index
+	iny		; ...and increment BLKPTR's index
+	sty RLEPREV
 	bne RC1		; Loop if not at end of buffer
 	jmp RCVEND	; ...else done
 RC2:
-	inx		; ...and increment index
-	lda (UTILPTR,X)	; Get next byte out of UDP packet buffer - the next index
-	tay		; in the Y register
+	iny		; Increment the UTILPTR index
+	sty UDPI
+	cpy #$00
+	bne :+
+	inc UTILPTR+1
+:	lda (UTILPTR),Y	; Get next byte out of UDP packet buffer - the next index
+	sta RLEPREV		; Save the new BLKPTR index
+	php
+	iny		; Increment the UTILPTR index
+	sty UDPI
+	cpy #$00
+	bne :+
+	inc UTILPTR+1
+:	plp
 	bne RC1		; Loop if index <> 0
 			; ...else done
 RCVEND:
-	cpx #$00
-	bne :+
-	inc UTILPTR+1	; Point at next 256 bytes
-:	lda (UTILPTR,X)	; Get next byte out of UDP packet buffer
+	ldy UDPI
+;	iny
+;	cpy #$00
+;	bne ;:+
+;	inc UTILPTR+1	; Point at next 256 bytes
+	lda (UTILPTR),Y	; Get next byte out of UDP packet buffer
 	sta PCCRC	; Receive the CRC of that block
-	inx
-	cpx #$00
+	iny
+	cpy #$00
 	bne :+
 	inc UTILPTR+1	; Point at next 256 bytes
-:	lda (UTILPTR,X)	; Get next byte out of UDP packet buffer
+:	lda (UTILPTR),Y	; Get next byte out of UDP packet buffer
 	sta PCCRC+1
 	rts
 

@@ -177,10 +177,10 @@ public class UDPTransport extends ATransport
     System.out.println("Data:");
     for (int i = 0; i < _outPacketPtr; i++)
     {
-      int j = _sendBuffer[i];
-      if (j < 0)
-        j += 256;
-      System.out.print(j+" ");
+      int j = i - 1;
+      if ((j % 32) == 0)
+        System.out.println("");
+      System.out.print(UnsignedByte.toString(_sendBuffer[i])+" ");
     }
     System.out.println("");
     //String fred = new String(_sendBuffer,0,_outPacketPtr);
