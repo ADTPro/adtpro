@@ -94,7 +94,7 @@ replyport:	.res 2
 state:		.res 2
 
 serverip:
-	.byte 192, 168, 0, 6
+	.byte 192, 168, 0, 3
 ;	.byte 192 ,168, 0, 15
 ;	.byte 192 ,168, 0, 42
 ;	.byte 127, 0, 0, 1

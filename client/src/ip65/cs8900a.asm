@@ -222,6 +222,7 @@ eth_tx:
 	sta cs_rxtx_data + 1
 	iny
 	bne @send256
+	inc eth_packet + 1	; DLS
 	dex
 	bne @send256
 

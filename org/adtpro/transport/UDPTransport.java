@@ -62,21 +62,21 @@ public class UDPTransport extends ATransport
 
   public byte readByte() throws Exception
   {
-    System.out.println("DEBUG: readByte() entry; _inPacketPtr = "+_inPacketPtr+"; _inPacketLen = "+_inPacketLen+".");
+    //System.out.println("DEBUG: readByte() entry; _inPacketPtr = "+_inPacketPtr+"; _inPacketLen = "+_inPacketLen+".");
     if (_receiveBuffer == null)
     {
-      System.out.println("DEBUG: readByte() needs to pull a buffer; buffer is null.");
+      //System.out.println("DEBUG: readByte() needs to pull a buffer; buffer is null.");
       pullBuffer();
     }
     if (_inPacketPtr + 1 > _inPacketLen)
     {
-      System.out.println("DEBUG: readByte() needs to pull a buffer; we're out of data.");
+      //System.out.println("DEBUG: readByte() needs to pull a buffer; we're out of data.");
       pullBuffer();
     }
     int myByte = _receiveBuffer[_inPacketPtr];
     if (myByte < 0)
       myByte += 256;
-    System.out.println("DEBUG: readByte() exit with " + myByte);
+    //System.out.println("DEBUG: readByte() exit with " + myByte);
     return _receiveBuffer[_inPacketPtr++];
   }
 
@@ -134,7 +134,7 @@ public class UDPTransport extends ATransport
       if (_outPacketPtr == 0)
       {
         _packetNum++;
-        System.out.println("Setting sequence number to: "+UnsignedByte.intValue(_packetNum));
+        //System.out.println("DEBUG: Setting sequence number to: "+UnsignedByte.intValue(_packetNum));
         _sendBuffer[_outPacketPtr++] = _packetNum;
       }
       for (int i = 0; i < data.length; i++)
@@ -143,8 +143,8 @@ public class UDPTransport extends ATransport
         //System.out.println("  data to buffer: "+data[i]);
       }
     }
-    else
-      System.out.println("DEBUG: UDPTransport.writeBytes() didn't have room!");
+    //else
+      //System.out.println("DEBUG: UDPTransport.writeBytes() didn't have room!");
   }
 
   public void writeBytes(String str)
@@ -172,8 +172,8 @@ public class UDPTransport extends ATransport
 
   public void pushBuffer()
   {
-    System.out.println("DEBUG: pushBuffer() entry.");
-
+    //System.out.println("DEBUG: pushBuffer() entry.");
+    /*
     System.out.println("Data:");
     for (int i = 0; i < _outPacketPtr; i++)
     {
@@ -183,6 +183,7 @@ public class UDPTransport extends ATransport
       System.out.print(UnsignedByte.toString(_sendBuffer[i])+" ");
     }
     System.out.println("");
+    */
     //String fred = new String(_sendBuffer,0,_outPacketPtr);
     //System.out.println("Sending: "+fred);
 
@@ -196,21 +197,32 @@ public class UDPTransport extends ATransport
       e.printStackTrace();
     }
     _outPacketPtr = 0;
-    System.out.println("DEBUG: pushBuffer() exit.");
+    //System.out.println("DEBUG: pushBuffer() exit.");
   }
 
   public void pullBuffer() throws Exception
   {
-    System.out.println("DEBUG: pullBuffer() entry.");
+    //System.out.println("DEBUG: pullBuffer() entry.");
     _receiveBuffer = new byte[1500];
     _packet.setData(_receiveBuffer);
     _socket.receive(_packet);
-    System.out.println("DEBUG: received packet.");
+    //System.out.println("DEBUG: received packet.");
     _socket.connect(_packet.getSocketAddress());
-    System.out.println("DEBUG: connected to socket.");
+    //System.out.println("DEBUG: connected to socket.");
     _receiveBuffer = _packet.getData();
     _inPacketLen = _packet.getLength();
     _inPacketPtr = 0;
+    //System.out.println("DEBUG: data: ["+new String (_receiveBuffer)+ "]");
+    /*
+    for (int i = 0; i < _inPacketLen; i++)
+    {
+      if ((i % 32) == 0)
+        System.out.println("");
+      System.out.print(UnsignedByte.toString(_receiveBuffer[i])+" ");
+    }
+    System.out.println("");
+
     System.out.println("DEBUG: pullBuffer() exit; _inPacketLen = "+_inPacketLen);
+    */
   }
 }

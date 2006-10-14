@@ -251,7 +251,16 @@ public class CommsThread extends Thread
         rc = 0x02; // Unable to open file
       }
     }
-    if (disk == null) rc = 0x02; // Unable to open file
+    catch (ArrayIndexOutOfBoundsException ix)
+    {
+      rc = 0x04; // Unrecognized file format
+    }
+    if (disk == null)
+    {
+      if (rc == (byte) 0xff)
+        rc = 0x02; // Unable to open file
+      // else let rc be whatever it was before
+    }
     else
       if (disk.getImageOrder() == null) rc = 0x04; // Unrecognized file format
       else
@@ -293,6 +302,7 @@ public class CommsThread extends Thread
   public void receiveDisk()
   /* Main receive routine - Host <- Apple (Apple sends) */
   {
+    //System.out.println("DEBUG: receiveDisk() entry.");
     _startTime = new GregorianCalendar();
     // System.out.print("Waiting for name..."); //$NON-NLS-1$
     String name = _parent.getWorkingDirectory() + File.separator + receiveName();
@@ -307,13 +317,13 @@ public class CommsThread extends Thread
     int blocksDone = 0;
 
     // New ADT protcol - file size to expect
-    // System.out.print("Waiting for sizeLo..."); //$NON-NLS-1$
+    //System.out.print("Waiting for sizeLo..."); //$NON-NLS-1$
     sizelo = waitForData();
-    // System.out.println(" received sizeLo: " + UnsignedByte.intValue(sizelo));
+    //System.out.println(" received sizeLo: " + UnsignedByte.intValue(sizelo));
     // //$NON-NLS-1$
-    // System.out.print("Waiting for sizeHi..."); //$NON-NLS-1$
+    //System.out.print("Waiting for sizeHi..."); //$NON-NLS-1$
     sizehi = waitForData();
-    // System.out.println(" received sizeHi: " + UnsignedByte.intValue(sizehi));
+    //System.out.println(" received sizeHi: " + UnsignedByte.intValue(sizehi));
     // //$NON-NLS-1$
     length = UnsignedByte.intValue(sizelo, sizehi);
     _parent.setProgressMaximum(length);
@@ -323,8 +333,10 @@ public class CommsThread extends Thread
       // ready for transfer
       _transport.writeByte(0x00);
       _transport.pushBuffer();
+      //System.out.println("DEBUG: receiveDisk() about to wait for ACK from apple...");
       if (waitForData() == ACK)
       {
+        //System.out.println("DEBUG: receiveDisk() received ACK from apple.");
         _parent.setProgressMaximum((int) length * 2); // Half-blocks
         _parent.setSecondaryText(name);
         int numParts = (int) length / 40;
@@ -420,11 +432,13 @@ public class CommsThread extends Thread
       }
       catch (IOException io) {}
     }
+    //System.out.println("DEBUG: receiveDisk() exit.");
   }
 
   public void sendDisk()
   /* Main send routine - Host -> Apple (Host sends) */
   {
+    //System.out.println("DEBUG: sendDisk() entry.");
     byte[] buffer = new byte[Disk.BLOCK_SIZE];
     int halfBlock, blocksDone = 0;
     byte ack, report;
@@ -457,15 +471,16 @@ public class CommsThread extends Thread
         // If the file exists, then...
         _transport.writeByte(0x00); // Tell Apple ][ we're ready to go
         _transport.pushBuffer();
+        //System.out.println("DEBUG: sendDisk() about to wait for initial ack.");
         ack = waitForData();
-        // System.out.println("Received initial reply from Apple: " + ack);
+        //System.out.println("Received initial reply from Apple: " + ack);
         // //$NON-NLS-1$
         if (ack == 0x06)
         {
           length = disk.getImageOrder().getBlocksOnDevice();
           _parent.setProgressMaximum(length * 2); // Half-blocks
           _parent.setSecondaryText(disk.getFilename());
-          // System.out.println("Length is " + length + " blocks.");
+          //System.out.println("Length is " + length + " blocks.");
           // //$NON-NLS-1$ //$NON-NLS-2$
           for (int block = 0; block < length; block++)
           {
@@ -526,6 +541,7 @@ public class CommsThread extends Thread
       _transport.writeByte(0x02);
       _transport.pushBuffer();
     }
+    //System.out.println("DEBUG: sendDisk() exit.");
   }
 
   /**
@@ -665,14 +681,14 @@ public class CommsThread extends Thread
     int byteCount, crc, ok = NAK, currentRetries = 0;
     byte data, prev, newprev;
 
-    System.out.println("CommsThread.sendPacket() entry; offset "+offset+".");
-/*    
+    //System.out.println("CommsThread.sendPacket() entry; offset "+offset+".");
+    /*
     for (byteCount = 0; byteCount < 256;byteCount++) 
     { 
       if (byteCount % 32 == 0) System.out.println("");
       System.out.print(UnsignedByte.toString(buffer[byteCount]) + " ");
     }
-*/
+    */
     do
     {
       prev = 0;
@@ -690,7 +706,6 @@ public class CommsThread extends Thread
             byteCount++;
           }
           _transport.writeByte((byte) (byteCount & 0xFF)); // 256 becomes 0
-          //_transport.pushBuffer();
         }
         if (!_shouldRun)
         {
@@ -715,7 +730,7 @@ public class CommsThread extends Thread
     }
     while ((ok != ACK) && (_shouldRun == true) && (currentRetries < _maxRetries));
 
-    System.out.println("CommsThread.sendPacket() exit, rc = "+rc);
+    //System.out.println("CommsThread.sendPacket() exit, rc = "+rc);
     return rc;
   }
 
@@ -822,7 +837,7 @@ public class CommsThread extends Thread
     byte data = 0x00, prev, crc1 = 0, crc2 = 0;
     boolean rc = false;
 
-    // System.out.println("receivePacket entry; offset "+offset+".");
+    //System.out.println("DEBUG: receivePacket() entry; offset "+offset+".");
     do
     {
       // System.out.print(" top of receivePacket loop.");
@@ -833,20 +848,18 @@ public class CommsThread extends Thread
         if (UnsignedByte.intValue(data) > 0)
         {
           prev += UnsignedByte.intValue(data);
-          // if (byteCount % 32 == 0) System.out.println("");
+          //if (byteCount % 32 == 0) System.out.println("");
           buffer[offset + byteCount++] = prev;
-          // System.out.print(UnsignedByte.toString(buffer[(offset + byteCount)
-          // -1]) + " ");
+          //System.out.print(UnsignedByte.toString(buffer[(offset + byteCount)-1]) + " ");
         }
         else
         {
           data = waitForData();
           do
           {
-            // if (byteCount % 32 == 0) System.out.println("");
+            //if (byteCount % 32 == 0) System.out.println("");
             buffer[offset + byteCount++] = prev;
-            // System.out.print(UnsignedByte.toString(buffer[offset + byteCount
-            // - 1]) + " ");
+            //System.out.print(UnsignedByte.toString(buffer[offset + byteCount - 1]) + " ");
           }
           while (_shouldRun && byteCount < 256 && byteCount != UnsignedByte.intValue(data));
         }
@@ -858,8 +871,8 @@ public class CommsThread extends Thread
       }
       if (_shouldRun)
       {
-        // System.out.println("");
-        // System.out.print("Receiving CRC bytes...");
+        //System.out.println("");
+        //System.out.print("Receiving CRC bytes...");
         crc1 = waitForData();
         crc2 = waitForData();
         received_crc = UnsignedByte.intValue(crc1, crc2);
@@ -885,7 +898,7 @@ public class CommsThread extends Thread
       _transport.writeByte(ACK);
       _transport.pushBuffer();
     }
-    // System.out.println("receivePacket exit.");
+    //System.out.println("DEBUG: receivePacket() exit.");
 
     return rc;
   }

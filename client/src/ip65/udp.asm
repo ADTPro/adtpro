@@ -229,6 +229,7 @@ udp_send:
 	ldax udp_send_len
 	jsr copymem
 
+udp_send_nocopy:
 	ldx #3				; copy virtual header addresses
 :	lda udp_send_dest,x
 	sta udp_vh + udp_vh_dest,x	; set virtual header destination

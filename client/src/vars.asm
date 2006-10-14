@@ -58,9 +58,10 @@ ZP	= $06		; ($01 byte)
 UTILPTR	= $07		; ($02 bytes) Used for printing messages
 COL_SAV	= $09		; ($01 byte)
 RLEPREV = $19		; ($01 byte)
-UDPI	= $1a		; ($01 byte)
+UDPI	= $1a		; ($01 byte) Used by UDP SEND and RECEIVE
 BLKPTR	= $1b		; ($02 bytes) Used by SEND and RECEIVE
 CRC	= $1d		; ($02 bytes) Used by ONLINE, SEND and RECEIVE
+CRCY	= $8a		; ($01 byte) Used by UDP SEND
 
 SR_WR_C:
 	.byte $00	; A place to save the send/receive/read/write character

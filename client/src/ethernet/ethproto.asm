@@ -71,7 +71,7 @@ UDPDISPATCH:
 	bne :+
 	jmp QUERYFNREPLY1
 			; Receiving HBLK data?
-:	cmp #STATE_HBLK
+:	cmp #STATE_RECVHBLK
 	bne :+
 	jmp RECVHBLK
 			; fallthrough	
@@ -173,12 +173,12 @@ PUTREQUEST:
 	sta (BLKPTR),Y
 	iny
 	jsr COPYINPUT
-	iny
 	lda NUMBLKS	; Send the total block size
 	sta (BLKPTR),Y
 	iny
 	lda NUMBLKS+1
 	sta (BLKPTR),Y
+	iny
 	tya
 	ldx #$00
 	stax udp_send_len
@@ -288,10 +288,93 @@ QUERYFNREPLY:
 	rts
 
 ;---------------------------------------------------------
-; SENDBLK -
+; SENDBLK - Send a block with RLE
+; CRC is sent to host
+; BLKPTR points to full block to send - updated here
 ;---------------------------------------------------------
 SENDBLK:
-; TODO
+	lda #$02
+	sta <ZP
+
+SENDMORE:
+	jsr SENDHBLK
+	lda #STATE_PUT
+	sta state
+	jsr RECEIVE_LOOP
+SENDMORE2:
+	lda QUERYRC
+	cmp #CHR_ACK	; Is it ACK?  Loop back if NAK.
+	bne SENDMORE
+	inc <BLKPTR+1	; Get next 256 bytes
+	dec <ZP
+	bne SENDMORE
+	rts
+
+;---------------------------------------------------------
+; SENDHBLK - Send half a block with RLE
+; CRC is computed and stored
+; BLKPTR points to half block to send
+;---------------------------------------------------------
+SENDHBLK:
+	ldy #$00	; Start at first byte
+	sty <CRC	; Clean out CRC
+	sty <CRC+1
+	sty <RLEPREV
+        sty udp_send_len
+        sty udp_send_len+1
+	ldax #udp_outp + udp_data
+	stax UTILPTR
+
+SS1:	lda (BLKPTR),Y	; GET BYTE TO SEND
+	jsr UPDCRC	; UPDATE CRC
+	tax		; KEEP A COPY IN X
+	sec		; SUBTRACT FROM PREVIOUS
+	sbc <RLEPREV
+	stx <RLEPREV	; SAVE PREVIOUS BYTE
+	jsr BUFBYTE	; SEND DIFFERENCE
+	beq SS3		; WAS IT A ZERO?
+	iny		; NO, DO NEXT BYTE
+	bne SS1		; LOOP IF MORE TO DO
+	jmp SENDHEND	; ELSE finish packet
+
+SS2:	jsr UPDCRC
+SS3:	iny		; ANY MORE BYTES?
+	beq SS4		; NO, IT WAS 00 UP TO END
+	lda (BLKPTR),Y	; LOOK AT NEXT BYTE
+	cmp <RLEPREV
+	beq SS2		; SAME AS BEFORE, CONTINUE
+SS4:	tya		; DIFFERENCE NOT A ZERO
+	jsr BUFBYTE	; SEND NEW ADDRESS
+	bne SS1		; AND GO BACK TO MAIN LOOP
+
+SENDHEND:
+	lda <CRC	; Send the CRC of that block
+	jsr BUFBYTE
+	lda <CRC+1
+	jsr BUFBYTE
+	;ldax #BLKPTR
+	;stax copy_src
+	jsr udp_send_nocopy
+	rts
+
+;---------------------------------------------------------
+; BUFBYTE
+; Add accumulator to the outgoing packet
+; UTILPTR points to the data we're going to save
+;---------------------------------------------------------
+BUFBYTE:
+	php
+	sty UDPI	; Store Y for safe keeping
+	ldy #$00
+	sta (UTILPTR),Y
+	inc UTILPTR
+	bne :+
+	inc UTILPTR+1
+:	inc udp_send_len
+	bne :+
+	inc udp_send_len+1
+:	ldy UDPI	; Restore Y
+	plp
 	rts
 
 ;---------------------------------------------------------
@@ -315,7 +398,7 @@ CLRLOOP:
 	lda ACK_CHAR
 	jsr PUTC	; Send ack/nak
 
-	lda #STATE_HBLK	; Set up callback to RECVHBLK
+	lda #STATE_RECVHBLK	; Set up callback to RECVHBLK
 	sta state
 	jsr RECEIVE_LOOP
 
@@ -417,7 +500,7 @@ PUTC:
 ;---------------------------------------------------------
 ; COPYINPUT - Copy data from input area to (BLKPTR);
 ; Y is assumed to point to the next available byte
-; after (BLKPTR)
+; after (BLKPTR); Y will point to the next byte on exit
 ;---------------------------------------------------------
 COPYINPUT:
 	ldx #$00
@@ -440,7 +523,8 @@ STATE_CD	= 2
 STATE_PUT	= 3
 STATE_GET	= 4
 STATE_QUERY	= 5
-STATE_HBLK	= 6
+STATE_RECVHBLK	= 6
+STATE_SENDHBLK	= 7
 
 ;---------------------------------------------------------
 ; Variables
