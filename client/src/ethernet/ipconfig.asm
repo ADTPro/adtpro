@@ -28,8 +28,11 @@ Ten = $0a
 
 ;---------------------------------------------------------
 ; EvaluateScreen
+; Call with carry set to divide evaluation by 10
+; Returns the current value in the accumulator
 ;---------------------------------------------------------
 EvaluateScreen:
+	php
 	lda #$00
 	sta current_value
 	lda ypos
@@ -41,6 +44,8 @@ EvaluateScreen:
 	bcc :+
 	inc $29
 :	ldy #$00
+	plp
+	bcs EvalTensOnly
 	lda ($28),Y
 	and #$4F	; Mask off B0
 	beq EvalTens
@@ -57,6 +62,7 @@ EvalTens:
 	bcc :+
 	inc $29
 :	ldy #$00
+EvalTensOnly:
 	lda ($28),Y
 	and #$4F
 	beq EvalOnes
@@ -79,12 +85,14 @@ EvalOnes:
 	adc current_value
 	sta current_value
 EvalDone:
+	lda current_value
 	rts
 
 ;---------------------------------------------------------
 ; PushDigit
 ;---------------------------------------------------------
 PushDigit:
+	clc
 	jsr EvaluateScreen
 	lda current_value
 	sta pushTemp
@@ -102,16 +110,24 @@ PushDigit:
 	bcs PushAbort
 DigitOK:
 	sta current_value
-	ldx xpos
-	stx CH
-	lda ypos
-	jsr TABV
-	lda #$00
-	sta PRTPTR+1
-	lda current_value
-	sta PRTPTR
-	jsr PRTNUMB
+	jsr RenderNumber
 PushAbort:
 	rts
 
 pushTemp:	.byte $00
+
+;---------------------------------------------------------
+; PullDigit
+;---------------------------------------------------------
+PullDigit:
+	; First, is it zero?
+	clc
+	jsr EvaluateScreen
+	beq PullAbort
+	; Ok, it's nonzero.  What if we divide by 10?
+	sec
+	jsr EvaluateScreen
+	sta current_value
+	jsr RenderNumber
+PullAbort:
+	rts
