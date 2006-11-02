@@ -10,7 +10,7 @@
 ;	.export cs_tx_len
 ;
 
-rr_ctl		= $c0b1
+;rr_ctl		= $c0b1
 
 cs_rxtx_data	= $c0b0
 cs_tx_cmd	= $c0b4

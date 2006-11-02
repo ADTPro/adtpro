@@ -66,8 +66,8 @@ eth_data	= 14		; packet data
 
 ; initialize, return clc on success
 eth_init:
+	jsr cs_self_modify
 	jsr cs_init
-
 	lda #0			; check magic signature
 	jsr cs_read_page
 	cpx #$0e
@@ -114,24 +114,24 @@ eth_init:
 ; receive a packet
 eth_rx:
 	lda #$24			; check rx status
-	sta cs_packet_page
+EMOD30:	sta cs_packet_page
 	lda #$01
-	sta cs_packet_page + 1
+EMOD34:	sta cs_packet_page + 1
 
-	lda cs_packet_data + 1
+EMOD43:	lda cs_packet_data + 1
 	and #$0d
-	bne :+
+	bne EMOD6
 
 	sec				; no packet ready
 	rts
 
-:	lda cs_rxtx_data + 1		; ignore status
-	lda cs_rxtx_data
+EMOD6:	lda cs_rxtx_data + 1		; ignore status
+EMOD0:	lda cs_rxtx_data
 
-	lda cs_rxtx_data + 1		; read packet length
+EMOD7:	lda cs_rxtx_data + 1		; read packet length
 	sta eth_inp_len + 1
 	tax				; save
-	lda cs_rxtx_data
+EMOD1:	lda cs_rxtx_data
 	sta eth_inp_len
 
 	lda #<eth_inp			; set packet pointer
@@ -141,38 +141,38 @@ eth_rx:
 
 	ldy #0
 	cpx #0				; < 256 bytes left?
-	beq @tail
+	beq cs_tail1
 
-@get256:
-	lda cs_rxtx_data
+cs_get256:
+EMOD2:	lda cs_rxtx_data
 	sta (eth_packet),y
 	iny
-	lda cs_rxtx_data + 1
+EMOD8:	lda cs_rxtx_data + 1
 	sta (eth_packet),y
 	iny
-	bne @get256
+	bne cs_get256
 	inc eth_packet + 1
 	dex
-	bne @get256
+	bne cs_get256
 
-@tail:
+cs_tail1:
 	lda eth_inp_len			; bytes left / 2, round up
 	lsr
 	adc #0
-	beq @done
+	beq cs_done1
 	tax
 
-@get:
-	lda cs_rxtx_data
+cs_get:
+EMOD3:	lda cs_rxtx_data
 	sta (eth_packet),y
 	iny
-	lda cs_rxtx_data + 1
+EMOD9:	lda cs_rxtx_data + 1
 	sta (eth_packet),y
 	iny
 	dex
-	bne @get
+	bne cs_get
 
-@done:
+cs_done1:
 	clc
 	rts
 
@@ -182,14 +182,14 @@ eth_tx:
 	;jsr dbg_dump_eth_header
 
 	lda #$c9			; ask for buffer space
-	sta cs_tx_cmd
+EMOD10:	sta cs_tx_cmd
 	lda #0
-	sta cs_tx_cmd + 1
+EMOD11:	sta cs_tx_cmd + 1
 
 	lda eth_outp_len		; set length
-	sta cs_tx_len
+EMOD20:	sta cs_tx_len
 	lda eth_outp_len + 1
-	sta cs_tx_len + 1
+EMOD21:	sta cs_tx_len + 1
 	and #$f8
 	beq :+
 
@@ -198,51 +198,51 @@ eth_tx:
 	rts
 
 :	lda #<pp_bus_status		; select bus status register
-	sta cs_packet_page
+EMOD31:	sta cs_packet_page
 	lda #>pp_bus_status
-	sta cs_packet_page + 1
+EMOD35:	sta cs_packet_page + 1
 
-:	lda cs_packet_data + 1		; wait for space
-	ldx cs_packet_data		; add timeout?
+EMOD44:	lda cs_packet_data + 1		; wait for space
+EMOD40:	ldx cs_packet_data		; add timeout?
 	lsr
-	bcc :-
+	bcc EMOD40
 
 	ldax #eth_outp			; send packet
 	stax eth_packet
 
 	ldy #0
 	ldx eth_outp_len + 1
-	beq @tail
+	beq cs_tail2
 
-@send256:
+cs_send256:
 	lda (eth_packet),y
-	sta cs_rxtx_data
+EMOD4:	sta cs_rxtx_data
 	iny
 	lda (eth_packet),y
-	sta cs_rxtx_data + 1
+EMODA:	sta cs_rxtx_data + 1
 	iny
-	bne @send256
+	bne cs_send256
 	inc eth_packet + 1	; DLS
 	dex
-	bne @send256
+	bne cs_send256
 
-@tail:
+cs_tail2:
 	ldx eth_outp_len
-	beq @done
+	beq cs_done2
 
-@send:
+cs_send:
 	lda (eth_packet),y
-	sta cs_rxtx_data
+EMOD5:	sta cs_rxtx_data
 	dex
-	beq @done
+	beq cs_done2
 	iny
 	lda (eth_packet),y
-	sta cs_rxtx_data + 1
+EMODB:	sta cs_rxtx_data + 1
 	iny
 	dex
-	bne @send
+	bne cs_send
 
-@done:
+cs_done2:
 	clc
 	rts
 
@@ -250,21 +250,91 @@ eth_tx:
 ; read X/Y from page A * 2
 cs_read_page:
 	asl
-	sta cs_packet_page
+EMOD32:	sta cs_packet_page
 	lda #0
 	rol
-	sta cs_packet_page + 1
-	ldx cs_packet_data
-	ldy cs_packet_data + 1
+EMOD36:	sta cs_packet_page + 1
+EMOD41:	ldx cs_packet_data
+EMOD45:	ldy cs_packet_data + 1
 	rts
 
 ; write X/Y to page A * 2
 cs_write_page:
 	asl
-	sta cs_packet_page
+EMOD33:	sta cs_packet_page
 	lda #0
 	rol
-	sta cs_packet_page + 1
-	stx cs_packet_data
-	sty cs_packet_data + 1
+EMOD37:	sta cs_packet_page + 1
+EMOD42:	stx cs_packet_data
+EMOD46:	sty cs_packet_data + 1
+	rts
+
+;
+; cs_self_modify - make all entry points variable so we can move the
+;   uther card around in the Apple
+;
+cs_self_modify:
+	ldy PSSC	; GET SLOT# (0..6)
+	iny		; NOW 1..7
+	tya
+	asl
+	asl
+	asl
+	asl
+	clc
+	adc #$80	; Now $80+S0 ($c0b0)
+; Save off all cs_rxtx_data mods
+	sta EMOD0+1
+	sta EMOD1+1
+	sta EMOD2+1
+	sta EMOD3+1
+	sta EMOD4+1
+	sta EMOD5+1
+	clc
+	adc #$01	; $c0b1
+	sta EMOD6+1
+	sta EMOD7+1
+	sta EMOD8+1
+	sta EMOD9+1
+	sta EMODA+1
+	sta EMODB+1
+; save off all cs_tx_cmd mods
+	clc
+	adc #$03	; $c0b4
+	sta EMOD10+1
+	clc
+	adc #$01	; $c0b5
+	sta EMOD11+1
+; save off all cs_tx_len mods
+	clc
+	adc #$01	; $c0b6
+	sta EMOD20+1
+	clc
+	adc #$01	; $c0b7
+	sta EMOD21+1
+; save off all cs_packet_page mods
+	clc
+	adc #$03	; $c0ba
+	sta EMOD30+1
+	sta EMOD31+1
+	sta EMOD32+1
+	sta EMOD33+1
+	clc
+	adc #$01	; $c0bb
+	sta EMOD34+1
+	sta EMOD35+1
+	sta EMOD36+1
+	sta EMOD37+1
+; save off all cs_packet_data mods
+	clc
+	adc #$01	; $c0bc
+	sta EMOD40+1
+	sta EMOD41+1
+	sta EMOD42+1
+	clc
+	adc #$01	; $c0bd
+	sta EMOD43+1
+	sta EMOD44+1
+	sta EMOD45+1
+	sta EMOD46+1
 	rts

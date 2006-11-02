@@ -22,10 +22,6 @@
 ; CONFIG - ADTPro Configuration
 ;---------------------------------------------------------
 CONFIG:
-
-	;jsr IPConfig
-	;rts
-
 	jsr HOME	; Clear screen
 
 ; No matter what, we put in the default value for 
@@ -119,12 +115,7 @@ SAVPARM:
 	ldy #PMSG23	; 'SELECT WITH RETURN, ESC CANCELS'
 	jsr SHOWMSG
 
-;*********************************************************
-; TODO: INTEGRATE THIS WITH THE REST OF THE CONFIG SCREEN
-;*********************************************************
 	jsr IPConfig	
-;	jmp NOSAVE
-;*********************************************************
 	jsr REFRESH
 
 ;--------------- SECOND PART: CHANGE VALUES --------------
@@ -210,6 +201,13 @@ PARMRST:
 	bpl PARMRST
 	jmp NOSAVE
 ENDCFG:
+	; Save off IP parms
+	ldy #ip_parms_temp-ip_parms-1
+:	lda ip_parms_temp,y
+	sta ip_parms,y
+	dey
+	bpl :-
+
 	lda PARMS+BSAVEP	; Did they ask to save?
 	bne NOSAVE
 

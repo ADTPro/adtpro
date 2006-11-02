@@ -30,6 +30,12 @@ cfg_ip:		.byte 192, 168,   0, 123
 cfg_netmask:	.byte 255, 255, 248,   0
 cfg_gateway:	.byte 192, 168,   0,   1
 cfg_dns:	.byte 192, 168,   0,   1
+ip_parms_temp:
+		.byte 192, 168,   0,  42
+		.byte 192, 168,   0, 123
+		.byte 255, 255, 248,   0
+		.byte 192, 168,   0,   1
+		.byte 192, 168,   0,   1
 		
 Hundred = $64
 Ten = $0a
@@ -40,9 +46,16 @@ Ten = $0a
 ; 
 ;---------------------------------------------------------
 IPConfig:
-	lda #<ip_parms
+	; Pull in IP parms
+	ldy #ip_parms_temp-ip_parms-1
+:	lda ip_parms,y
+	sta ip_parms_temp,y
+	dey
+	bpl :-
+
+	lda #<ip_parms_temp
 	sta UTILPTR
-	lda #>ip_parms
+	lda #>ip_parms_temp
 	sta UTILPTR+1
 
 	lda ypos
@@ -96,6 +109,7 @@ IPConfig:
 	sta raw_y
 	sta dirtyBit
 	rts
+
 IPConfigTopEntry:
 	lda #$00
 	sta raw_x
