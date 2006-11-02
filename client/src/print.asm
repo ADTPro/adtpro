@@ -338,14 +338,13 @@ HMOK:
 ; Prints a right-justified, zero-padded 5-digit number from
 ; a pointer in PRTPTR/PRTPTR+1 (lo/hi)
 ;---------------------------------------------------------
-PRTNUM:
-	lda #CHR_0
-	sta PADCHR
-	jmp PRTIT
 PRTNUMB:
 	lda #CHR_SP
 	sta PADCHR
-
+	jmp ByteEntry
+PRTNUM:
+	lda #CHR_0
+	sta PADCHR
 PRTIT:
 	lda PRTPTR+1
 	cmp #$27
@@ -373,6 +372,7 @@ PRTN4:	jmp PRTNUM1	; Number is >= $03e8
 
 OOXXX:	lda PADCHR
 	jsr COUT1
+ByteEntry:
 	lda PRTPTR+1
 	cmp #$00
 	bcs PRTN5

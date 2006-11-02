@@ -353,9 +353,10 @@ ip_calc_cksum:
 	bne :-
 
 @tail:
+
 	lda ip_cksum_len		; divide length by 2
 	lsr
-	php
+	php				; save carry for odd size
 	tax
 
 	jsr @calc
@@ -371,6 +372,7 @@ ip_calc_cksum:
 	inc cksum + 1
 	bne @done
 	inc cksum + 2
+
 
 @done:
 	lda cksum + 2			; add carries back in
@@ -397,9 +399,11 @@ ip_calc_cksum:
 	lda (ip_cksum_ptr),y
 	adc cksum + 1
 	sta cksum + 1
+
 	bcc :+
 	inc cksum + 2
 :	iny
 	dex
 	bne @next
+
 	rts

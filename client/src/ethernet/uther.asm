@@ -93,8 +93,6 @@ replyaddr:	.res 4
 replyport:	.res 2
 state:		.res 2
 
-serverip:
-	.byte 192, 168, 0, 3
-;	.byte 192 ,168, 0, 15
-;	.byte 192 ,168, 0, 42
-;	.byte 127, 0, 0, 1
+;serverip:
+; Note - this is now handled in ipconfig/ethconfig.
+;	.byte 192, 168, 0, 16

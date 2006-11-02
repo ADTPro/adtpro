@@ -11,7 +11,8 @@
 ;	.data	; should be bss
 cfg_mac:	.byte $00, $80, $10, $6d, $76, $30
 
-cfg_ip:		.byte 192, 168, 0, 123
-cfg_netmask:	.byte 255, 255, 248, 0
-cfg_gateway:	.byte 192, 168, 0, 1
-cfg_dns:	.byte 192, 168, 0, 1
+; Note - these values are now taken care of in ipconfig/ethconfig
+;cfg_ip:	.byte 192, 168, 0, 123
+;cfg_netmask:	.byte 255, 255, 248, 0
+;cfg_gateway:	.byte 192, 168, 0, 1
+;cfg_dns:	.byte 192, 168, 0, 1

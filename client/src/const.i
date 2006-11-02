@@ -75,6 +75,7 @@ V_BUF	= $0f
 ;---------------------------------------------------------
 CHR_BLK	= $20
 CHR_SP	= ' ' | $80
+CHR_DOT = '.' | $80
 CHR_C	= 'C' | $80
 CHR_D	= 'D' | $80
 CHR_G	= 'G' | $80
@@ -145,3 +146,4 @@ WR11BBRG	=	%01010000	; init wr11 in Ch B - use baud rate generator
 .charmap	$3d, $bd
 .charmap	$3e, $be
 .charmap	$3f, $bf
+

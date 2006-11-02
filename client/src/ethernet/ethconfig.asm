@@ -22,6 +22,10 @@
 ; CONFIG - ADTPro Configuration
 ;---------------------------------------------------------
 CONFIG:
+
+	;jsr IPConfig
+	;rts
+
 	jsr HOME	; Clear screen
 
 ; No matter what, we put in the default value for 
@@ -45,26 +49,61 @@ SAVPARM:
 	ldy #PMSG24	; 'CONFIGURE ADTPRO PARAMETERS'
 	jsr SHOWMSG
 
-	lda #$08	; Column
+	lda #$05	; Column
 	sta <CH
 	lda #$03	; Row
 	jsr TABV
 	ldy #PMSG26	; 'COMMS SLOT'
 	jsr SHOWMSG
 
-	lda #$08	; Column
+	lda #$05	; Column
 	sta <CH
 	lda #$04	; Row
 	jsr TABV
 	ldy #PMSG28	; 'ENABLE SOUND'
 	jsr SHOWMSG
 
-	lda #$08	; Column
+	lda #$05	; Column
 	sta <CH
 	lda #$05	; Row
 	jsr TABV
 	ldy #PMSG28a	; 'SAVE CONFIGURATION'
 	jsr SHOWMSG
+
+	lda #$05
+	sta <CH
+	lda #$07
+	jsr TABV
+	ldax #IPMsg01
+	jsr IPShowMsg	; 'SERVER IP ADDR'
+
+	lda #$05
+	sta <CH
+	lda #$08
+	jsr TABV
+	ldax #IPMsg02
+	jsr IPShowMsg	; 'LOCAL IP ADDR'
+	
+	lda #$05
+	sta <CH
+	lda #$09
+	jsr TABV
+	ldax #IPMsg03
+	jsr IPShowMsg	; 'NETMASK'
+	
+	lda #$05
+	sta <CH
+	lda #$0a
+	jsr TABV
+	ldax #IPMsg04
+	jsr IPShowMsg	; 'GATEWAY ADDR'
+	
+	lda #$05
+	sta <CH
+	lda #$0b
+	jsr TABV
+	ldax #IPMsg05
+	jsr IPShowMsg	; 'DNS ADDRESS'
 
 	lda #$04	; Column
 	sta <CH
@@ -80,63 +119,13 @@ SAVPARM:
 	ldy #PMSG23	; 'SELECT WITH RETURN, ESC CANCELS'
 	jsr SHOWMSG
 
-REFRESH:
-	lda #3		; FIRST PARAMETER IS ON LINE 3
-	jsr TABV
-	ldx #0		; PARAMETER NUMBER
-	ldy #$FF	; OFFSET INTO PARAMETER TEXT
-
-NXTLINE:
-	stx LINECNT	; SAVE CURRENT LINE
-	lda #$15	; Start printing config parms in this column
-	sta <CH
-	clc
-	lda PARMSIZ,X	; GET CURRENT VALUE (NEGATIVE:
-	sbc PARMS,X	; LAST VALUE HAS CURVAL=0)
-	sta CURVAL
-	lda PARMSIZ,X	; X WILL BE EACH POSSIBLE VALUE
-	tax		; STARTING WITH THE LAST ONE
-	dex
-
-VALLOOP:
-	cpx CURVAL	; X EQUAL TO CURRENT VALUE?
-	beq PRINTIT	; YES, PRINT IT
-SKIPCHR:
-	iny		; NO, SKIP IT
-	lda PARMTXT,Y
-	bne SKIPCHR
-	beq ENDVAL
-
-PRINTIT:
-	lda LINECNT	; IF WE'RE ON THE ACTIVE LINE,
-	cmp CURPARM	; THEN PRINT VALUE IN INVERSE
-	bne PRTVAL	; ELSE PRINT IT NORMALLY
-	lda #$3F
-	sta <INVFLG
-
-PRTVAL:	lda #$A0	; SPACE BEFORE & AFTER VALUE
-	jsr COUT1
-PRTLOOP:
-	iny		; PRINT VALUE
-	lda PARMTXT,Y
-	beq ENDPRT
-	jsr COUT1
-	jmp PRTLOOP
-ENDPRT:	lda #$A0
-	jsr COUT1
-	lda #$FF	; BACK TO NORMAL
-	sta <INVFLG
-ENDVAL:	dex
-	bpl VALLOOP	; PRINT REMAINING VALUES
-
-	sty YSAVE	; CLREOL USES Y
-	jsr CLREOL	; REMOVE GARBAGE AT EOL
-	jsr CROUT
-	ldy YSAVE
-	ldx LINECNT	; INCREMENT CURRENT LINE
-	inx
-	cpx #PARMNUM
-	bcc NXTLINE	; Loop PARMNUM times
+;*********************************************************
+; TODO: INTEGRATE THIS WITH THE REST OF THE CONFIG SCREEN
+;*********************************************************
+	jsr IPConfig	
+;	jmp NOSAVE
+;*********************************************************
+	jsr REFRESH
 
 ;--------------- SECOND PART: CHANGE VALUES --------------
 
@@ -154,7 +143,8 @@ GETCMD:
 	sbc #1
 	sta PARMS,X
 LEFTOK:
-	jmp REFRESH
+	jsr REFRESH
+	jmp GETCMD
 
 NOTLEFT:
 	cmp #$95
@@ -166,17 +156,20 @@ NOTLEFT:
 	lda #0
 RIGHTOK:
 	sta PARMS,X
-	jmp REFRESH
+	jsr REFRESH
+	jmp GETCMD
 
 NOTRGT:
 	cmp #$8B
 	bne NOTUP
 	dex		; Up arrow pressed
 	bpl UPOK	; Decrement parameter
-	ldx #PARMNUM-1
+	stx CURPARM
+	jsr REFRESH
+	jsr IPConfigBottomEntry
 UPOK:	stx CURPARM
-	jmp REFRESH
-
+	jsr REFRESH
+	jmp GETCMD
 NOTUP:
 	cmp #$8A
 	beq ISDOWN
@@ -186,16 +179,22 @@ ISDOWN:
 	inx		; Down arrow or space pressed
 	cpx #PARMNUM	; Increment prarameter
 	bcc DOWNOK
-	ldx #0
+	stx CURPARM
+	jsr REFRESH
+	jsr IPConfigTopEntry
+	;ldx #0
 DOWNOK:
 	stx CURPARM
-	jmp REFRESH
+	jsr REFRESH
+	jmp GETCMD
 
 NOTDOWN:
 	cmp #$84
 	bne NOTCTLD
 	jsr PARMDFT	; CTRL-D pressed, resore previous values
-NOTESC:	jmp REFRESH
+NOTESC:	jsr REFRESH
+	jmp GETCMD
+
 
 NOTCTLD:
 	cmp #$8D
@@ -266,6 +265,83 @@ PARMDFTNEXT:
 	rts
 
 ;---------------------------------------------------------
+; IPShowMsg
+;---------------------------------------------------------
+IPShowMsg:
+	sta UTILPTR
+	stx UTILPTR+1
+	ldy #$00
+@MSGLOOP:
+	lda (UTILPTR),Y
+	beq @MSGEND
+	jsr COUT1
+	iny
+	bne @MSGLOOP
+@MSGEND:	rts
+
+;
+;
+;
+REFRESH:
+	lda #3		; FIRST PARAMETER IS ON LINE 3
+	jsr TABV
+	ldx #0		; PARAMETER NUMBER
+	ldy #$FF	; OFFSET INTO PARAMETER TEXT
+
+NXTLINE:
+	stx LINECNT	; SAVE CURRENT LINE
+	lda #$15	; Start printing config parms in this column
+	sta <CH
+	clc
+	lda PARMSIZ,X	; GET CURRENT VALUE (NEGATIVE:
+	sbc PARMS,X	; LAST VALUE HAS CURVAL=0)
+	sta CURVAL
+	lda PARMSIZ,X	; X WILL BE EACH POSSIBLE VALUE
+	tax		; STARTING WITH THE LAST ONE
+	dex
+
+VALLOOP:
+	cpx CURVAL	; X EQUAL TO CURRENT VALUE?
+	beq PRINTIT	; YES, PRINT IT
+SKIPCHR:
+	iny		; NO, SKIP IT
+	lda PARMTXT,Y
+	bne SKIPCHR
+	beq ENDVAL
+
+PRINTIT:
+	lda LINECNT	; IF WE'RE ON THE ACTIVE LINE,
+	cmp CURPARM	; THEN PRINT VALUE IN INVERSE
+	bne PRTVAL	; ELSE PRINT IT NORMALLY
+	lda #$3F
+	sta <INVFLG
+
+PRTVAL:	lda #$A0	; SPACE BEFORE & AFTER VALUE
+	jsr COUT1
+PRTLOOP:
+	iny		; PRINT VALUE
+	lda PARMTXT,Y
+	beq ENDPRT
+	jsr COUT1
+	jmp PRTLOOP
+ENDPRT:	lda #$A0
+	jsr COUT1
+	lda #$FF	; BACK TO NORMAL
+	sta <INVFLG
+ENDVAL:	dex
+	bpl VALLOOP	; PRINT REMAINING VALUES
+
+	sty YSAVE	; CLREOL USES Y
+	jsr CLREOL	; REMOVE GARBAGE AT EOL
+	jsr CROUT
+	ldy YSAVE
+	ldx LINECNT	; INCREMENT CURRENT LINE
+	inx
+	cpx #PARMNUM
+	bcc NXTLINE	; Loop PARMNUM times
+	rts
+
+;---------------------------------------------------------
 ; Configuration
 ;---------------------------------------------------------
 
@@ -294,6 +370,12 @@ PARMS:
 PSSC:	.byte 1		; Comms slot (2)
 PSOUND:	.byte 0		; Sounds? (YES)
 PSAVE:	.byte 1		; Save parms? (NO)
+
+IPMsg01:	.asciiz "SERVER IP ADDR"
+IPMsg02:	.asciiz "LOCAL IP ADDR"
+IPMsg03:	.asciiz "NETMASK"
+IPMsg04:	.asciiz "GATEWAY ADDR"
+IPMsg05:	.asciiz "DNS ADDRESS"
 
 DEFAULT:	.byte 1,0,1	; Default parm indices
 FACTORY:	.byte 1,0,1	; Factory default parm indices

@@ -325,6 +325,20 @@ SENDHBLK:
 	ldax #udp_outp + udp_data
 	stax UTILPTR
 
+	jmp SS1
+
+	ldx #$06
+	lda #$00
+:	sta (UTILPTR),Y
+	iny
+	bne :-
+	inc UTILPTR+1
+	dex
+	bne :-
+
+	ldax #udp_outp + udp_data
+	stax UTILPTR
+
 SS1:	lda (BLKPTR),Y	; GET BYTE TO SEND
 	jsr UPDCRC	; UPDATE CRC
 	tax		; KEEP A COPY IN X
@@ -352,8 +366,7 @@ SENDHEND:
 	jsr BUFBYTE
 	lda <CRC+1
 	jsr BUFBYTE
-	;ldax #BLKPTR
-	;stax copy_src
+
 	jsr udp_send_nocopy
 	rts
 
