@@ -166,6 +166,8 @@ ExitRight:
 	jmp IPConfigReEntry
 
 ExitUp:
+	lda #$00
+	sta raw_x
 	lda raw_y
 	sec
 	sbc #$01
@@ -176,6 +178,8 @@ ExitUp:
 	jmp IPConfigReEntry
 
 ExitDown:
+	lda #$00
+	sta raw_x
 	lda #$01
 	clc
 	adc raw_y
@@ -183,7 +187,6 @@ ExitDown:
 	bmi :+
 	ldx #$00	; Head back to upper config items - top
 	rts
-	;lda #$00
 :	sta raw_y
 	jmp IPConfigReEntry
 
@@ -223,12 +226,15 @@ InputLoop:
 	rts
 :
 	cmp #$8a	; Down arrow?
-	bne :+
-	lda #$00
+	beq :+
+	cmp #$a0	; Space?
+	beq :+
+	jmp @Next
+:	lda #$00
 	sta dirtyBit
 	lda #$02
 	rts
-:
+@Next:
 	cmp #$88	; Left arrow?
 	bne :+
 	lda #$00

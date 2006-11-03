@@ -23,6 +23,9 @@
 ;---------------------------------------------------------
 CONFIG:
 	jsr HOME	; Clear screen
+	lda #$00
+	sta LINECNT
+	sta CURPARM
 
 ; No matter what, we put in the default value for 
 ; 'save' - always turn it off when we start up.
@@ -158,6 +161,9 @@ NOTRGT:
 	stx CURPARM
 	jsr REFRESH
 	jsr IPConfigBottomEntry
+	bmi PARMRST	; Escape coming from IP Config
+	cmp #$04
+	beq ENDCFG	; Return pressed, all done
 UPOK:	stx CURPARM
 	jsr REFRESH
 	jmp GETCMD
@@ -173,7 +179,9 @@ ISDOWN:
 	stx CURPARM
 	jsr REFRESH
 	jsr IPConfigTopEntry
-	;ldx #0
+	bmi PARMRST	; Escape coming from IP Config
+	cmp #$04
+	beq ENDCFG	; Return pressed, all done
 DOWNOK:
 	stx CURPARM
 	jsr REFRESH
@@ -365,7 +373,7 @@ PARMTXT:
 	.asciiz "NO"
 
 PARMS:
-PSSC:	.byte 1		; Comms slot (2)
+PSSC:	.byte 2		; Comms slot (3)
 PSOUND:	.byte 0		; Sounds? (YES)
 PSAVE:	.byte 1		; Save parms? (NO)
 
@@ -375,7 +383,7 @@ IPMsg03:	.asciiz "NETMASK"
 IPMsg04:	.asciiz "GATEWAY ADDR"
 IPMsg05:	.asciiz "DNS ADDRESS"
 
-DEFAULT:	.byte 1,0,1	; Default parm indices
-FACTORY:	.byte 1,0,1	; Factory default parm indices
+DEFAULT:	.byte 2,0,1	; Default parm indices
+FACTORY:	.byte 2,0,1	; Factory default parm indices
 YSAVE:	.byte $00
 BSAVEP	= $02		; Index to the 'Save parameters' parameter
