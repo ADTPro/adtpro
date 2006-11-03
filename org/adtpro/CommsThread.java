@@ -21,6 +21,7 @@
 package org.adtpro;
 
 import java.io.*;
+import java.net.InetAddress;
 import java.net.SocketException;
 import java.util.GregorianCalendar;
 
@@ -62,6 +63,7 @@ public class CommsThread extends Thread
       {
         _transport = (ATransport)new UDPTransport("6502");
         _transport.open();
+        _parent.setTitle(Messages.getString("Gui.EthTitle")+ " " + InetAddress.getLocalHost().getHostAddress());
       }
       else
         _transport = (ATransport)new SerialTransport(one, two);

@@ -124,6 +124,7 @@ public final class Gui extends JFrame implements ActionListener
     comboSpeed.addItem("9600"); //$NON-NLS-1$
     comboSpeed.addItem("19200"); //$NON-NLS-1$
     comboSpeed.addItem("115200"); //$NON-NLS-1$
+      
     comboSpeed.setSelectedItem(_properties.getProperty("CommPortSpeed","115200")); //$NON-NLS-1$ //$NON-NLS-2$
     buttonConnect = new JButton(Messages.getString("Gui.Disconnect")); //$NON-NLS-1$
     buttonConnect.addActionListener(this);
@@ -291,6 +292,11 @@ public final class Gui extends JFrame implements ActionListener
     progressBar.setValue(value);
   }
 
+  public void setWindowTitle(String text)
+  {
+    setTitle(text);
+  }
+
   public void setMainText(String text)
   {
     labelMainProgress.setText(text);
@@ -384,6 +390,7 @@ public final class Gui extends JFrame implements ActionListener
       }
       comboComPort.setEnabled(true);
       comboSpeed.setEnabled(true);
+      setTitle(Messages.getString("Gui.Title") + " " + Messages.getString("Version.Number")); //$NON-NLS-1$ //$NON-NLS-2$
     }
     else
     {

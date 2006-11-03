@@ -25,9 +25,7 @@ package org.adtpro.transport;
 
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
-
-import org.adtpro.resources.Messages;
-import org.adtpro.utilities.UnsignedByte;
+import java.net.InetAddress;
 
 public class UDPTransport extends ATransport
 {
@@ -38,7 +36,6 @@ public class UDPTransport extends ATransport
   int _port, _inPacketPtr = 0, _inPacketLen = 0, _outPacketPtr = 0;
 
   DatagramSocket _socket;
-
   DatagramPacket _packet;
 
   byte[] _receiveBuffer = null;
@@ -114,7 +111,7 @@ public class UDPTransport extends ATransport
     {
       _socket = new DatagramSocket(_port);
       _connected = true;
-      System.out.println("UDPTransport opened UDP port " + _port + " at address " + _socket.getLocalAddress().getHostAddress() ); //$NON-NLS-1$ //$NON-NLS-2$
+      System.out.println("UDPTransport opened UDP port " + _port + " at address " + InetAddress.getLocalHost().getHostAddress() ); //$NON-NLS-1$ //$NON-NLS-2$
       return;
     }
   }
