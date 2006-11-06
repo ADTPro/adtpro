@@ -179,7 +179,7 @@ public class SerialTransport extends ATransport
    * @throws IOException
    */
 
-  public byte readByte() throws IOException
+  public byte readByte(int timeout) throws IOException
   {
     boolean hasData = false;
     byte oneByte = 0;
@@ -290,6 +290,11 @@ public class SerialTransport extends ATransport
   }
 
   public void pushBuffer()
+  {
+    // Serial port is byte-by-byte, no buffering
+  }
+
+  public void flushReceiveBuffer()
   {
     // Serial port is byte-by-byte, no buffering
   }

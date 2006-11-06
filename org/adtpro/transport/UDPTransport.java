@@ -57,18 +57,38 @@ public class UDPTransport extends ATransport
     _sendBuffer = new byte[1500];
   }
 
-  public byte readByte() throws Exception
+  public byte readByte(int timeout) throws Exception
   {
     //System.out.println("DEBUG: readByte() entry; _inPacketPtr = "+_inPacketPtr+"; _inPacketLen = "+_inPacketLen+".");
     if (_receiveBuffer == null)
     {
       //System.out.println("DEBUG: readByte() needs to pull a buffer; buffer is null.");
-      pullBuffer();
+      try
+      {
+        pullBuffer(timeout);
+      }
+      catch (java.net.SocketTimeoutException e1)
+      {
+        throw (new TransportTimeoutException());
+      }
+      catch (Exception e2)
+      {        
+      }
     }
     if (_inPacketPtr + 1 > _inPacketLen)
     {
       //System.out.println("DEBUG: readByte() needs to pull a buffer; we're out of data.");
-      pullBuffer();
+      try
+      {
+        pullBuffer(timeout);
+      }
+      catch (java.net.SocketTimeoutException e1)
+      {
+        throw (new TransportTimeoutException());
+      }
+      catch (Exception e2)
+      {
+      }
     }
     int myByte = _receiveBuffer[_inPacketPtr];
     if (myByte < 0)
@@ -197,11 +217,12 @@ public class UDPTransport extends ATransport
     //System.out.println("DEBUG: pushBuffer() exit.");
   }
 
-  public void pullBuffer() throws Exception
+  public void pullBuffer(int timeout) throws Exception
   {
     //System.out.println("DEBUG: pullBuffer() entry.");
     _receiveBuffer = new byte[1500];
     _packet.setData(_receiveBuffer);
+    _socket.setSoTimeout(timeout);
     _socket.receive(_packet);
     //System.out.println("DEBUG: received packet.");
     _socket.connect(_packet.getSocketAddress());
@@ -221,5 +242,9 @@ public class UDPTransport extends ATransport
 
     System.out.println("DEBUG: pullBuffer() exit; _inPacketLen = "+_inPacketLen);
     */
+  }
+  public void flushReceiveBuffer()
+  {
+    _receiveBuffer = null;
   }
 }

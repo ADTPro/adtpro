@@ -28,6 +28,7 @@ import java.util.GregorianCalendar;
 import org.adtpro.resources.Messages;
 import org.adtpro.transport.ATransport;
 import org.adtpro.transport.SerialTransport;
+import org.adtpro.transport.TransportTimeoutException;
 import org.adtpro.transport.UDPTransport;
 
 import org.adtpro.disk.Disk;
@@ -345,7 +346,7 @@ public class CommsThread extends Thread
         int remainder = (int) length % 40;
         for (part = 0; part < numParts; part++)
         {
-          //System.out.print("Receiving part " + (part + 1) + " of " + numParts + "; "); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+          //System.out.println("Receiving part " + (part + 1) + " of " + numParts + "; "); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
           for (halfBlock = 0; halfBlock < 80; halfBlock++)
           {
             receiveSuccess = receivePacket(buffer, halfBlock * 256);
@@ -721,10 +722,18 @@ public class CommsThread extends Thread
         _transport.writeByte((byte) (crc & 0xff));
         _transport.writeByte((byte) (((crc & 0xff00) >> 8) & 0xff));
         _transport.pushBuffer();
-        System.out.println("");
-        System.out.println("Locally calculated CRC: " + (crc & 0xffff));
-        ok = waitForData();
-        System.out.println("ack from Apple: " + ok);
+        //System.out.println("");
+        //System.out.println("Locally calculated CRC: " + (crc & 0xffff));
+        try
+        {
+          ok = waitForData2(500);
+        }
+        catch (TransportTimeoutException te)
+        {
+          System.out.println("CommsThread.sendPacket() timeout.");
+          ok = NAK;
+        }
+        //System.out.println("ack from Apple: " + ok);
         if (ok == ACK) rc = true;
         else
           currentRetries++;
@@ -838,15 +847,30 @@ public class CommsThread extends Thread
     int received_crc = -1, computed_crc = 0;
     byte data = 0x00, prev, crc1 = 0, crc2 = 0;
     boolean rc = false;
+    boolean restarting = false;
 
     //System.out.println("DEBUG: receivePacket() entry; offset "+offset+".");
     do
     {
-      // System.out.print(" top of receivePacket loop.");
+      //System.out.println(" top of receivePacket loop.");
       prev = 0;
+      restarting = false;
       for (byteCount = 0; byteCount < 256;)
       {
-        data = waitForData();
+        try
+        {
+          // Wait for the go-ahead from the Apple...
+          data = waitForData2(500);
+        }
+        catch (TransportTimeoutException tte)
+        {
+          System.out.println("Sending NAK (location 1)...");
+          _transport.writeByte(NAK);
+          _transport.pushBuffer();
+          _transport.flushReceiveBuffer();
+          restarting = true;
+          break;
+        }
         if (UnsignedByte.intValue(data) > 0)
         {
           prev += UnsignedByte.intValue(data);
@@ -856,7 +880,19 @@ public class CommsThread extends Thread
         }
         else
         {
-          data = waitForData();
+          try
+          {
+            data = waitForData2(500);
+          }
+          catch (TransportTimeoutException ex2)
+          {
+            System.out.println("Sending NAK (location 2)...");
+            _transport.writeByte(NAK);
+            _transport.pushBuffer();
+            _transport.flushReceiveBuffer();
+            restarting = true;
+            break;
+          }
           do
           {
             //if (byteCount % 32 == 0) System.out.println("");
@@ -871,7 +907,7 @@ public class CommsThread extends Thread
           break;
         }
       }
-      if (_shouldRun)
+      if (_shouldRun && !restarting)
       {
         //System.out.println("");
         //System.out.print("Receiving CRC bytes...");
@@ -881,20 +917,18 @@ public class CommsThread extends Thread
         computed_crc = doCrc(buffer, offset, 256);
         if (received_crc != computed_crc)
         {
-          // System.out.println("Incorrect CRC. Computed: " + computed_crc + "
-          // Received: " + received_crc); //$NON-NLS-1$ //$NON-NLS-2$
+          System.out.println("Incorrect CRC. Computed: " + computed_crc + " Received: " + received_crc); //$NON-NLS-1$ //$NON-NLS-2$
           _transport.writeByte(NAK);
           _transport.pushBuffer();
         }
         else
         {
-          // System.out.println("Correct CRC. Computed: " + computed_crc + "
-          // Received: " + received_crc); //$NON-NLS-1$ //$NON-NLS-2$
+          //System.out.println("Correct CRC. Computed: " + computed_crc + " Received: " + received_crc); //$NON-NLS-1$ //$NON-NLS-2$
           rc = true;
         }
       }
     }
-    while ((received_crc != computed_crc) && (_shouldRun == true));
+    while (((received_crc != computed_crc) || restarting) && (_shouldRun == true));
     if (_shouldRun)
     {
       _transport.writeByte(ACK);
@@ -908,6 +942,20 @@ public class CommsThread extends Thread
   public byte waitForData()
   {
     byte oneByte = 0;
+    try
+    {
+      oneByte = waitForData2(0);
+    }
+    catch (TransportTimeoutException e)
+    {
+      
+    }
+    return oneByte;
+  }
+ 
+  public byte waitForData2(int timeout) throws TransportTimeoutException
+  {
+    byte oneByte = 0;
     boolean readYet = false;
     while ((readYet == false) && (_shouldRun == true))
     {
@@ -915,13 +963,19 @@ public class CommsThread extends Thread
       {
         if (_transport != null)
         {
-          oneByte = _transport.readByte();
+          oneByte = _transport.readByte(timeout);
           readYet = true;
         }
         else
         {
           _shouldRun = false;
         }
+      }
+      catch (TransportTimeoutException tte)
+      {
+        System.out.println("TransportTimeoutException!");
+        throw tte;
+        //_shouldRun = false;
       }
       catch (SocketException se)
       {
