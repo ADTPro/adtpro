@@ -27,6 +27,8 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 
+import org.adtpro.utilities.UnsignedByte;
+
 public class UDPTransport extends ATransport
 {
   protected boolean _connected;
@@ -243,8 +245,14 @@ public class UDPTransport extends ATransport
     System.out.println("DEBUG: pullBuffer() exit; _inPacketLen = "+_inPacketLen);
     */
   }
+
   public void flushReceiveBuffer()
   {
     _receiveBuffer = null;
+  }
+
+  public void flushSendBuffer()
+  {
+    _outPacketPtr = 0;
   }
 }

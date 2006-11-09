@@ -298,4 +298,9 @@ public class SerialTransport extends ATransport
   {
     // Serial port is byte-by-byte, no buffering
   }
+
+  public void flushSendBuffer()
+  {
+    // Serial port is byte-by-byte, no buffering
+  }
 }
