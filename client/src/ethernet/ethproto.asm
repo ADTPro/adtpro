@@ -74,7 +74,7 @@ UDPDISPATCH:
 :	cmp #STATE_RECVHBLK
 	bne :+
 	jmp RECVHBLK
-			; fallthrough	
+:			; fallthrough	
 @skip:
 	rts
 
@@ -325,19 +325,12 @@ SENDHBLK:
 	ldax #udp_outp + udp_data
 	stax UTILPTR
 
-	jmp SS1
-
-	ldx #$06
-	lda #$00
-:	sta (UTILPTR),Y
-	iny
-	bne :-
-	inc UTILPTR+1
-	dex
-	bne :-
-
-	ldax #udp_outp + udp_data
-	stax UTILPTR
+	lda BLKLO
+	jsr BUFBYTE	; Send the block number (LSB)
+	lda BLKHI
+	jsr BUFBYTE	; Send the block number (MSB)
+	lda <ZP
+	jsr BUFBYTE	; Send the half-block number
 
 SS1:	lda (BLKPTR),Y	; GET BYTE TO SEND
 	jsr UPDCRC	; UPDATE CRC
