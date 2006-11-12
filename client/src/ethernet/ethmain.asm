@@ -38,10 +38,3 @@
 	.include "ethernet/ethbsave.asm"
 	.include "ethernet/ethproto.asm"
 	.include "ethernet/ipconfig.asm"
-
-; Pull in the IP stack.  We pull it in explicitly like this because
-; we need to know exactly how big our entire footprint will be.
-	.include "ip65/all.asm"
-	
-PEND:
-	.segment "DATA"

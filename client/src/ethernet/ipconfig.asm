@@ -18,6 +18,11 @@
 ; 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 ;
 
+	.export cfg_ip
+	.export cfg_netmask
+	.export cfg_gateway
+	.export cfg_dns
+
 raw_x:		.byte $00
 raw_y:		.byte $00
 xpos:		.byte $14

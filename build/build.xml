@@ -13,6 +13,7 @@
 		Clean up everything
 		-->
 		<delete file="${builddir}/ADTPRO" />
+		<delete file="${builddir}/ADTPROETH" />
 		<delete file="${builddir}/${distName}.dsk" />
 		<delete file="${builddir}/${distName}.jar" />
 		<delete file="${builddir}/${distName}.zip" />
@@ -29,10 +30,23 @@
 		Assemble the ADTPro source
 		-->
 		<exec dir="${projdir}/client/src" executable="${assemblerPath}/ca65">
-			<arg line="-l -t c64 serial/sermain.asm" />
+			<arg line="-l -t c64 ethernet/ethmain.asm" />
 		</exec>
 		<exec dir="${projdir}/client/src" executable="${assemblerPath}/ca65">
-			<arg line="-l -t c64 ethernet/ethmain.asm" />
+			<arg line="-l -t c64 serial/sermain.asm" />
+		</exec>
+		<!--
+		Assemble the IP65 stack source
+		-->
+		<apply executable="${assemblerPath}/ca65" dir="${projdir}/client/src/ip65">
+			<arg line="-l -t c64" />
+			<fileset dir="${projdir}/client/src/ip65" includes="**/*.s"/>
+		</apply>
+		<!--
+		Package the IP65 stack library
+		-->
+		<exec executable="${assemblerPath}/ar65" dir="${projdir}/client/src/ip65">
+			<arg line="a ip65.lib *.o" />
 		</exec>
 		<!--
 		Link the bits
@@ -41,7 +55,7 @@
 			<arg line="-m adtproser.map -C adtpro.cfg -o ADTPRO serial/sermain.o" />
 		</exec>
 		<exec dir="${projdir}/client/src" executable="${assemblerPath}/ld65">
-			<arg line="-m adtproeth.map -C adtpro.cfg -o ADTPROETH ethernet/ethmain.o" />
+			<arg line="-m adtproeth.map -C adtpro.cfg -o ADTPROETH ethernet/ethmain.o ip65/ip65.lib" />
 		</exec>
 		<!--
 		Move the object code to the build directory
@@ -68,6 +82,17 @@
 		<exec dir="${builddir}" executable="java" input="${builddir}/ADTPROETH">
 			<arg line="-jar ${acJar} -p ADTPROETH bin 2051 ${distName}.dsk" />
 		</exec>
+		<!--
+		Build a little unit test disk that is 64k (128 blocks) long
+		-->
+		<!--
+		<exec dir="${builddir}" executable="java" input="${builddir}/ADTPROETH">
+			<arg line="-jar ${acJar} -d ADTPROETH ADTDEV.PO" />
+		</exec>
+		<exec dir="${builddir}" executable="java" input="${builddir}/ADTPROETH">
+			<arg line="-jar ${acJar} -p ADTPROETH bin 2051 ADTDEV.PO" />
+		</exec>
+		-->
 		<!--
 		Lock the backup version
 		-->

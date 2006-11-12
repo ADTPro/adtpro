@@ -315,7 +315,7 @@ public class CommsThread extends Thread
     int part, length, packetResult = -1;
     byte report, sizelo, sizehi;
     int halfBlock;
-    int blocksDone = 0;
+    int blocksDone = 0, retries = 0;
 
     // New ADT protcol - file size to expect
     //System.out.print("Waiting for sizeLo..."); //$NON-NLS-1$
@@ -353,7 +353,10 @@ public class CommsThread extends Thread
               packetResult = receivePacket(buffer, halfBlock * 256, (part*80 + halfBlock));
             }
             if (packetResult == -1)
+            {
+              retries++;
               break;
+            }
             blocksDone++;
             _parent.setProgressValue(blocksDone);
           }
@@ -385,7 +388,11 @@ public class CommsThread extends Thread
             {
               packetResult = receivePacket(buffer, halfBlock * 256, (part*80 + halfBlock));
             }
-            if (packetResult == -1) break;
+            if (packetResult == -1)
+            {
+              retries++;
+              break;
+            }
             blocksDone++;
             _parent.setProgressValue(blocksDone);
           }
@@ -884,32 +891,30 @@ public class CommsThread extends Thread
       //System.out.println(" top of receivePacket loop.");
       prev = 0;
       restarting = false;
-      if (buffNum >= 0)
+      if (_transport.hasPreamble())
       {
       try
       {
           // Wait for the block number...
-          incomingBlockNum = UnsignedByte.intValue(waitForData2(500));
-          incomingBlockNum = incomingBlockNum + ((UnsignedByte.intValue(waitForData2(500)) * 256));
-          data = waitForData2(500);
+          incomingBlockNum = UnsignedByte.intValue(waitForData2(1000));
+          incomingBlockNum = incomingBlockNum + ((UnsignedByte.intValue(waitForData2(1000)) * 256));
+          data = waitForData2(1000);
           incomingHalf = Math.abs(2 - data);    // Get the half block 
 
           blockNum = buffNum / 2;
           halfNum = buffNum % 2;
-          //System.out.println("BlockNum: "+blockNum);
-          //System.out.println("HalfNum: "+halfNum);
-          //System.out.println("Incoming BlockNum: "+incomingBlockNum);
-          //System.out.println("Incoming HalfNum: "+incomingHalf);
+          System.out.println("BlockNum: " + blockNum + " Incoming: "+incomingBlockNum + " HalfNum: "+halfNum + " Incoming: "+incomingHalf);
           if ((incomingBlockNum != blockNum) || (incomingHalf != halfNum))
           {
             rc = -1;
             _transport.flushReceiveBuffer();
             _transport.flushSendBuffer();
+            System.out.println("Block numbers didn't match.");
           }
       }
       catch (TransportTimeoutException tte)
       {
-        //System.out.println("Sending NAK (location 0)...");
+        System.out.println("Sending NAK (location 0)...");
         _transport.writeByte(NAK);
         _transport.pushBuffer();
         _transport.flushReceiveBuffer();

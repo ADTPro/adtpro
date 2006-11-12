@@ -303,4 +303,9 @@ public class SerialTransport extends ATransport
   {
     // Serial port is byte-by-byte, no buffering
   }
+  
+  public boolean hasPreamble()
+  {
+    return false;
+  }
 }

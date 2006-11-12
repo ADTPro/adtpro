@@ -255,4 +255,9 @@ public class UDPTransport extends ATransport
   {
     _outPacketPtr = 0;
   }
+
+  public boolean hasPreamble()
+  {
+    return true;
+  }
 }

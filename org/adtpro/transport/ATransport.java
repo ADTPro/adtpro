@@ -16,4 +16,5 @@ public abstract class ATransport
   public abstract void flushReceiveBuffer();
 //  public abstract void pullBuffer() throws Exception;
   public abstract void close() throws Exception;
+  public abstract boolean hasPreamble();
 }

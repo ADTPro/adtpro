@@ -18,28 +18,28 @@
 ; 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 ;
 
-;	.import ip65_init
-;	.import ip65_process
+	.import ip65_init
+	.import ip65_process
 
-;	.import udp_add_listener
-;	.import udp_callback
-;	.import udp_send
+	.import udp_add_listener
+	.import udp_callback
+	.import udp_send
 
-;	.import udp_inp
-;	.import udp_outp
+	.import udp_inp
+	.import udp_outp
 
-;	.importzp udp_data
-;	.importzp udp_len
-;	.importzp udp_src_port
-;	.importzp udp_dest_port
+	.importzp udp_data
+	.importzp udp_len
+	.importzp udp_src_port
+	.importzp udp_dest_port
 
-;	.import udp_send_dest
-;	.import udp_send_src_port
-;	.import udp_send_dest_port
-;	.import udp_send_len
+	.import udp_send_dest
+	.import udp_send_src_port
+	.import udp_send_dest_port
+	.import udp_send_len
 
-;	.importzp ip_src
-;	.import ip_inp
+	.importzp ip_src
+	.import ip_inp
 
 ;---------------------------------------------------------
 ; INITUTHER - Initialize Uther card

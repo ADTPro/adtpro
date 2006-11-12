@@ -18,8 +18,17 @@
 ; 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 ;
 
-;	.import udp_send
-;	.import udp_send_len
+	.import udp_send_nocopy
+	.import udp_send
+	.import udp_send_len
+	.import udp_send_len
+	.import ip_inp
+	.import udp_inp
+	.import udp_outp
+
+	.importzp ip_src
+	.importzp udp_src_port
+	.importzp udp_data
 
 ;---------------------------------------------------------
 ; UDPDISPATCH - Dispatch the UDP packet to the receiver
