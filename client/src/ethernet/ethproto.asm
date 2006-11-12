@@ -102,6 +102,17 @@ RECEIVE_LOOP:
 	rts
 
 ;---------------------------------------------------------
+; PINGREQUEST - Send out a ping
+;---------------------------------------------------------
+PINGREQUEST:
+	lda #STATE_IDLE	; Don't want any reply
+	sta state
+	lda #CHR_Y
+	jsr PUTC
+	jsr RECEIVE_LOOP
+	rts
+
+;---------------------------------------------------------
 ; DIRREQUEST - Request current directory contents
 ;---------------------------------------------------------
 DIRREQUEST:

@@ -89,6 +89,7 @@ CHR_S	= 'S' | $80
 CHR_V	= 'V' | $80
 CHR_W	= 'W' | $80
 CHR_X	= 'X' | $80
+CHR_Y	= 'Y' | $80
 CHR_Z	= 'Z' | $80
 CHR_0	= '0' | $80	; Zero
 CHR_1	= '1' | $80

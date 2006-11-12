@@ -96,6 +96,14 @@ public final class Gui extends JFrame implements ActionListener
     MenuAction quitAction = new MenuAction(Messages.getString("Gui.Quit")); //$NON-NLS-1$
     menuFile.add(quitAction);
     menuBar.add(menuFile);
+    JMenu menuBootstrap = new JMenu(Messages.getString("Gui.Bootstrap")); //$NON-NLS-1$
+    MenuAction dosAction = new MenuAction(Messages.getString("Gui.BS.DOS")); //$NON-NLS-1$
+    menuBootstrap.add(dosAction);
+    MenuAction adtAction = new MenuAction(Messages.getString("Gui.BS.ADT")); //$NON-NLS-1$
+    menuBootstrap.add(adtAction);
+    MenuAction adtgsAction = new MenuAction(Messages.getString("Gui.BS.ADTgs")); //$NON-NLS-1$
+    menuBootstrap.add(adtgsAction);
+    menuBar.add(menuBootstrap);
     JMenu menuHelp = new JMenu(Messages.getString("Gui.Help")); //$NON-NLS-1$
     MenuAction aboutAction = new MenuAction(Messages.getString("Gui.About")); //$NON-NLS-1$
     menuHelp.add(aboutAction);
@@ -371,6 +379,21 @@ public final class Gui extends JFrame implements ActionListener
                 setSecondaryText(Messages.getString("Gui.InvalidCD"));
             }
           }
+          else
+            if (e.getActionCommand().equals(Messages.getString("Gui.BS.DOS"))) //$NON-NLS-1$
+            {
+              commsThread.requestSend("org/adtpro/resources/dos33.dmp");
+            }
+            else
+              if (e.getActionCommand().equals(Messages.getString("Gui.BS.ADTgs"))) //$NON-NLS-1$
+              {
+                commsThread.requestSend("org/adtpro/resources/adtgs.dmp");
+              }
+              else
+                if (e.getActionCommand().equals(Messages.getString("Gui.BS.ADT"))) //$NON-NLS-1$
+                {
+                  commsThread.requestSend("org/adtpro/resources/adt.dmp");
+                }
     }
   }
 
@@ -433,7 +456,6 @@ public final class Gui extends JFrame implements ActionListener
     _properties.setProperty("WorkingDirectory",getWorkingDirectory());
     _properties.save();
   }
-
 
   public static class WindowCloseMonitor extends WindowAdapter
   {

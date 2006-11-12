@@ -166,6 +166,22 @@ public class UDPTransport extends ATransport
       //System.out.println("DEBUG: UDPTransport.writeBytes() didn't have room!");
   }
 
+  public void writeBytes(char[] data)
+  {
+    if ((1499 - _outPacketPtr) >= data.length)
+    {
+      if (_outPacketPtr == 0)
+      {
+        _packetNum++;
+        _sendBuffer[_outPacketPtr++] = _packetNum;
+      }
+      for (int i = 0; i < data.length; i++)
+      {
+        _sendBuffer[_outPacketPtr++] = (byte) data[i];
+      }
+    }
+  }
+
   public void writeBytes(String str)
   {
     writeBytes(str.getBytes());
@@ -260,4 +276,13 @@ public class UDPTransport extends ATransport
   {
     return true;
   }
+
+  public void setFullSpeed()
+  {
+  }
+
+  public void setSlowSpeed(int speed)
+  {
+  }
+
 }

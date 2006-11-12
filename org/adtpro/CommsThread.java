@@ -54,6 +54,8 @@ public class CommsThread extends Thread
 
   private float _diffMillis;
 
+  private Worker _worker = null;
+
   public CommsThread(Gui parent, String one, String two)
   {
     // System.out.println("CommsThread constructor.");
@@ -125,6 +127,12 @@ public class CommsThread extends Thread
           _parent.setSecondaryText(""); //$NON-NLS-1$
           //System.out.println("Get/Receive..."); //$NON-NLS-1$
           sendDisk();
+          break;
+        case (byte) 217: // Ping
+          _parent.setSecondaryText("Ping received from client."); //$NON-NLS-1$
+          //System.out.println("Ping..."); //$NON-NLS-1$
+          _transport.pushBuffer();
+          _transport.flushReceiveBuffer();
           break;
         case (byte) 218: // Size
           _parent.setMainText(Messages.getString("CommsThread.14")); //$NON-NLS-1$
@@ -1114,9 +1122,28 @@ public class CommsThread extends Thread
     }
   }
 
+  public void requestSend(String resourceName)
+  {
+    InputStream is = ADTPro.class.getClassLoader().getResourceAsStream(resourceName);
+    if (is != null)
+    {
+      // Run this on a thread...
+      _parent.setMainText(Messages.getString("CommsThread.4")); //$NON-NLS-1$
+      _parent.setSecondaryText(resourceName); //$NON-NLS-1$
+      _worker = new Worker(is);
+      _worker.start();
+    }
+    else
+    {
+      System.out.println("Didn't find anything there.");
+    }
+  }
+
   public void requestStop()
   {
     _shouldRun = false;
+    if (_worker != null)
+      _worker.requestStop();
     try
     {
       _transport.close();
@@ -1125,5 +1152,48 @@ public class CommsThread extends Thread
     {
       System.out.println("CommsThread.requestStop() exception: "+ex);
     }
+  }
+
+  public class Worker extends Thread
+  {
+
+    public Worker(InputStream is)
+    {
+      _is = is;
+    }
+
+    public void run()
+    {
+      try
+      {
+        char[] buffer = new char[_is.available()];
+        InputStreamReader isr = new InputStreamReader(_is);
+        isr.read(buffer);
+        _parent.setProgressMaximum(buffer.length);
+        _transport.setSlowSpeed(300);
+        for (int i = 0; i < buffer.length; i++)
+        {
+          if (_shouldRun == false)
+            break;
+          if (buffer[i] == 0x0d)
+            _transport.writeByte(0x8d); 
+          else if (buffer[i] != 0x0a)
+            _transport.writeByte(buffer[i]); 
+          _parent.setProgressValue(i);
+        }
+        _transport.pushBuffer();        
+      }
+      catch (Exception e)
+      {
+        System.out.println(e);
+      }      
+    }
+
+    public void requestStop()
+    {
+      _shouldRun = false;
+    }
+
+    InputStream _is;
   }
 }

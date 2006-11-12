@@ -45,6 +45,8 @@ public class SerialTransport extends ATransport
 
   protected String portName = null;
 
+  protected int _currentSpeed = 0;
+
   /**
    * Create a new instance of the Comm API Transport. This constructor creates a
    * new instance of the Comm API Transport.
@@ -243,12 +245,27 @@ public class SerialTransport extends ATransport
       outputStream.write(data, 0, data.length);
     }
     catch (IOException ex)
-    {}
+    {
+      ex.printStackTrace();
+    }
   }
 
   public void writeBytes(String str)
   {
     writeBytes(str.getBytes(), ""); //$NON-NLS-1$
+  }
+
+  public void writeBytes(byte[] data)
+  {
+    writeBytes(data, ""); //$NON-NLS-1$
+  }
+
+  public void writeBytes(char[] data)
+  {
+    byte[] bytes = new byte[data.length];
+    for (int i = 0;i<data.length;i++)
+      bytes[i] = (byte)data[i];
+    writeBytes(bytes, ""); //$NON-NLS-1$
   }
 
   public void writeByte(char datum)
@@ -279,11 +296,6 @@ public class SerialTransport extends ATransport
     writeBytes(data, str);
   }
 
-  public void writeBytes(byte[] data)
-  {
-    // TODO Auto-generated method stub
-  }
-
   public void pullBuffer()
   {
     // Serial port is byte-by-byte, no buffering
@@ -308,4 +320,29 @@ public class SerialTransport extends ATransport
   {
     return false;
   }
+
+  public void setFullSpeed()
+  {
+    try
+    {
+      port.setSerialPortParams(_currentSpeed, 8, 1, 0);
+    }
+    catch (UnsupportedCommOperationException e)
+    {
+      e.printStackTrace();
+    }
+  }
+
+  public void setSlowSpeed(int speed)
+  {
+    try
+    {
+      port.setSerialPortParams(speed, 8, 1, 0);
+    }
+    catch (UnsupportedCommOperationException e)
+    {
+      e.printStackTrace();
+    }
+  }
+
 }
