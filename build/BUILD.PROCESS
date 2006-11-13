@@ -3,12 +3,17 @@ the cc65 project (http://www.cc65.org/).  The build.xml file
 will need a pointer to where the assembler lives in your
 installation.
 
+The web site is built using Maven (http://maven.apache.org/).
+Go into the doc directory and run the command "mvn site".
+The resulting directory rooted at doc/target/site is
+the stuff that gets uploaded to sourceforge.
+
 1. Make sure the version number is updated.  Places where 
    the version number is encoded:
 	*	build/build.xml: <property name="versionString" value="v.r.m" />
 	*	client/src/print.asm: MSG01 .as -'v.r.m'
-	*	org/adtpro/resources/messages.properties: Version.0=v.r.m
-	*	org/adtpro/resources/messages.properties: Gui.7=Apple Disk Transfer ProDOS (ADTPro) v.r.m
+	*	org/adtpro/resources/messages.properties: Version.Number=v.r.m
+	*	org/adtpro/resources/messages.properties: Gui.AboutText=Apple Disk Transfer ProDOS (ADTPro) v.r.m
 
 2. Tag adtpro project with the version number.  The
     standard is:  v_[major]_[minor]_[service]
