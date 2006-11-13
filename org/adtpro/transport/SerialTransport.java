@@ -68,7 +68,8 @@ public class SerialTransport extends ATransport
     connected = false;
     portId = CommPortIdentifier.getPortIdentifier(portName);
     port = (RXTXPort) portId.open(Messages.getString("SerialTransport.3"), 100); //$NON-NLS-1$
-    port.setSerialPortParams(Integer.parseInt(speed), 8, 1, 0);
+    _currentSpeed = Integer.parseInt(speed);
+    port.setSerialPortParams(_currentSpeed, 8, 1, 0);
     port.setFlowControlMode(3);
     /*
      *  Unixen would never return from a port.close() because they

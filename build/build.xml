@@ -85,14 +85,12 @@
 		<!--
 		Build a little unit test disk that is 64k (128 blocks) long
 		-->
-		<!--
 		<exec dir="${builddir}" executable="java" input="${builddir}/ADTPROETH">
-			<arg line="-jar ${acJar} -d ADTPROETH ADTDEV.PO" />
+			<arg line="-jar ${acJar} -d ADTPROETH RAM5.PO" />
 		</exec>
 		<exec dir="${builddir}" executable="java" input="${builddir}/ADTPROETH">
-			<arg line="-jar ${acJar} -p ADTPROETH bin 2051 ADTDEV.PO" />
+			<arg line="-jar ${acJar} -p ADTPROETH bin 2051 RAM5.PO" />
 		</exec>
-		-->
 		<!--
 		Lock the backup version
 		-->
@@ -109,7 +107,7 @@
 
 	<target name="jar" depends="builddsk">
 		<!-- jar up the source, object and properties files -->
-		<jar jarfile="${builddir}/${distName}.jar" manifest="${builddir}/manifest.mf" basedir="${projdir}" includes="org/**/*.class org/**/*.java org/**/*.properties org/**/*.png LICENSE" />
+		<jar jarfile="${builddir}/${distName}.jar" manifest="${builddir}/manifest.mf" basedir="${projdir}" includes="org/**/*.class org/**/*.java org/**/*.properties org/**/*.png org/**/*.dmp LICENSE" />
 		<!-- zip up the whole sheebang -->
 		<zip destfile="${builddir}/${distName}.zip" basedir="${builddir}" includes="${distName}.jar ${distName}.dsk rxtx/rxtx-2.1-7-bins-r2.zip rxtx/fixperm.sh LICENSE README" />
 	</target>

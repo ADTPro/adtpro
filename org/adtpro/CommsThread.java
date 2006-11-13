@@ -91,6 +91,7 @@ public class CommsThread extends Thread
 
   public void commandLoop()
   {
+    System.out.println("CommsThread.commandLoop() starting.");
     byte oneByte = (byte) 0x00;
     while (_shouldRun)
     {
@@ -158,6 +159,7 @@ public class CommsThread extends Thread
       }
       }
     }
+    System.out.println("CommsThread.commandLoop() ending.");
   }
 
   public void sendDirectory()
@@ -1164,6 +1166,7 @@ public class CommsThread extends Thread
 
     public void run()
     {
+      System.out.println("CommsThread.Worker.Run() starting.");
       try
       {
         char[] buffer = new char[_is.available()];
@@ -1171,15 +1174,25 @@ public class CommsThread extends Thread
         isr.read(buffer);
         _parent.setProgressMaximum(buffer.length);
         _transport.setSlowSpeed(300);
+        _startTime = new GregorianCalendar();
         for (int i = 0; i < buffer.length; i++)
         {
           if (_shouldRun == false)
             break;
           if (buffer[i] == 0x0d)
-            _transport.writeByte(0x8d); 
+          {
+            _transport.writeByte(0x8d);
+            try
+            {
+              sleep(500);
+            }
+            catch (Exception e)
+            {
+            }
+          }
           else if (buffer[i] != 0x0a)
             _transport.writeByte(buffer[i]); 
-          _parent.setProgressValue(i);
+          _parent.setProgressValue(i+1);
         }
         _transport.pushBuffer();        
       }
@@ -1187,6 +1200,13 @@ public class CommsThread extends Thread
       {
         System.out.println(e);
       }      
+      _endTime = new GregorianCalendar();
+      _diffMillis = (float)(_endTime.getTimeInMillis() - _startTime.getTimeInMillis())/(float)1000;
+      _parent.setSecondaryText(Messages.getString("CommsThread.22") + " in " + _diffMillis + " seconds.");
+      System.out.println("Text file sent in "+(float)(_endTime.getTimeInMillis() - _startTime.getTimeInMillis())/(float)1000+" seconds.");
+      _transport.flushReceiveBuffer();
+      _transport.setFullSpeed();
+      System.out.println("CommsThread.Worker.Run() stopping.");
     }
 
     public void requestStop()
