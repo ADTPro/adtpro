@@ -47,7 +47,7 @@ machines, and a single-sided, double-density 5.25" floppy or two.
       one that you want.
     
     * If you get any syntax errors or anything, just hit Return a bunch of
-      times and start again.  You just type: <<<ctrl-A6B>>> or <<<ctrl-I6B>>>
+      times and start again.  You just type: <<<ctrl-A 6B>>> or <<<ctrl-I 6B>>>
       and hit return.
 
     []
@@ -58,14 +58,15 @@ machines, and a single-sided, double-density 5.25" floppy or two.
       Click on the "Bootstrapping->Send DOS" menu item.
       You should start to see text flowing (if slowly) across the Apple screen.
 
-    [[1]] After some 22-23 minutes, you should see a prompt like this:
+    [[1]] After some 17-18 minutes, you should see a prompt like this:
 
 +---
 NOW INSERT A BLANK DISK.
 HIT RETURN WHEN READY TO FORMAT.
 ]INIT HELLO
 +---
-      You now have EsDOS II in <memory> on your apple.  When you hit Return,
+      You now have EsDOS II in <memory> on your apple.  When you hit the 
+      <<<RETURN>>> key,
       it'll format the floppy disk in the drive (slot 6, drive 1 by default).
       Once the <<<INIT>>> operation completes, you now have a bootable DOS 
       diskette.  Go ahead and reboot with it now with a <<<PR#6>>> command.
@@ -80,7 +81,7 @@ HIT RETURN WHEN READY TO FORMAT.
       
       * <<<IN#2>>>
       
-      * <<<ctrl-A6B>>> (or <<<ctrl-I6B>>>)
+      * <<<ctrl-A 6B>>> (or <<<ctrl-I 6B>>>)
 
       []
 

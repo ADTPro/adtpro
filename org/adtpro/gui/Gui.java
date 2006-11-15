@@ -72,6 +72,8 @@ public final class Gui extends JFrame implements ActionListener
 
   private ADTProperties _properties = new ADTProperties(Messages.getString("PropertiesFileName"));
 
+  JMenu menuBootstrap;
+
   public Gui(java.lang.String[] args)
   {
     addWindowListener(new WindowCloseMonitor());
@@ -96,7 +98,7 @@ public final class Gui extends JFrame implements ActionListener
     MenuAction quitAction = new MenuAction(Messages.getString("Gui.Quit")); //$NON-NLS-1$
     menuFile.add(quitAction);
     menuBar.add(menuFile);
-    JMenu menuBootstrap = new JMenu(Messages.getString("Gui.Bootstrap")); //$NON-NLS-1$
+    menuBootstrap = new JMenu(Messages.getString("Gui.Bootstrap")); //$NON-NLS-1$
     MenuAction dosAction = new MenuAction(Messages.getString("Gui.BS.DOS")); //$NON-NLS-1$
     menuBootstrap.add(dosAction);
     MenuAction adtAction = new MenuAction(Messages.getString("Gui.BS.ADT")); //$NON-NLS-1$
@@ -104,6 +106,7 @@ public final class Gui extends JFrame implements ActionListener
     MenuAction adtgsAction = new MenuAction(Messages.getString("Gui.BS.ADTgs")); //$NON-NLS-1$
     menuBootstrap.add(adtgsAction);
     menuBar.add(menuBootstrap);
+    menuBootstrap.setEnabled(false);
     JMenu menuHelp = new JMenu(Messages.getString("Gui.Help")); //$NON-NLS-1$
     MenuAction aboutAction = new MenuAction(Messages.getString("Gui.About")); //$NON-NLS-1$
     menuHelp.add(aboutAction);
@@ -348,6 +351,8 @@ public final class Gui extends JFrame implements ActionListener
 
     public void actionPerformed(ActionEvent e)
     {
+      Object buttons[] = {Messages.getString("Gui.Ok"), Messages.getString("Gui.Cancel")};
+      String message = Messages.getString("Gui.BS.DumpInstructions");
       if (e.getActionCommand().equals(Messages.getString("Gui.Quit"))) //$NON-NLS-1$
       {
         setVisible(false);
@@ -382,17 +387,54 @@ public final class Gui extends JFrame implements ActionListener
           else
             if (e.getActionCommand().equals(Messages.getString("Gui.BS.DOS"))) //$NON-NLS-1$
             {
-              commsThread.requestSend("org/adtpro/resources/dos33.dmp");
+              // TODO: Put up a dialog box with instructions
+              /* Ask the user if she is sure */
+              int ret = JOptionPane.showOptionDialog(_parent,
+                                                     message,
+                                                     Messages.getString("Gui.Name"),
+                                                     JOptionPane.YES_NO_OPTION,
+                                                     JOptionPane.QUESTION_MESSAGE,
+                                                     null,
+                                                     buttons,
+                                                     buttons[0]);
+              if (ret == JOptionPane.YES_OPTION)
+              {
+                commsThread.requestSend("org/adtpro/resources/dos33.dmp");
+              }
             }
             else
               if (e.getActionCommand().equals(Messages.getString("Gui.BS.ADTgs"))) //$NON-NLS-1$
               {
-                commsThread.requestSend("org/adtpro/resources/adtgs.dmp");
+                /* Ask the user if she is sure */
+                int ret = JOptionPane.showOptionDialog(_parent,
+                                                       message,
+                                                       Messages.getString("guiName"),
+                                                       JOptionPane.YES_NO_OPTION,
+                                                       JOptionPane.QUESTION_MESSAGE,
+                                                       null,
+                                                       buttons,
+                                                       buttons[0]);
+                if (ret == JOptionPane.YES_OPTION)
+                {
+                  commsThread.requestSend("org/adtpro/resources/adtgs.dmp");
+                }
               }
               else
                 if (e.getActionCommand().equals(Messages.getString("Gui.BS.ADT"))) //$NON-NLS-1$
                 {
-                  commsThread.requestSend("org/adtpro/resources/adt.dmp");
+                  /* Ask the user if she is sure */
+                  int ret = JOptionPane.showOptionDialog(_parent,
+                                                         message,
+                                                         Messages.getString("guiName"),
+                                                         JOptionPane.YES_NO_OPTION,
+                                                         JOptionPane.QUESTION_MESSAGE,
+                                                         null,
+                                                         buttons,
+                                                         buttons[0]);
+                  if (ret == JOptionPane.YES_OPTION)
+                  {
+                    commsThread.requestSend("org/adtpro/resources/adt.dmp");
+                  }
                 }
     }
   }
@@ -413,6 +455,7 @@ public final class Gui extends JFrame implements ActionListener
       }
       comboComPort.setEnabled(true);
       comboSpeed.setEnabled(true);
+      menuBootstrap.setEnabled(false);
       setTitle(Messages.getString("Gui.Title") + " " + Messages.getString("Version.Number")); //$NON-NLS-1$ //$NON-NLS-2$
     }
     else
@@ -426,6 +469,7 @@ public final class Gui extends JFrame implements ActionListener
       saveProperties();
       comboComPort.setEnabled(false);
       comboSpeed.setEnabled(false);
+      menuBootstrap.setEnabled(true);
     }
   }
 
