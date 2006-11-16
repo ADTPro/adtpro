@@ -91,7 +91,7 @@ public class CommsThread extends Thread
 
   public void commandLoop()
   {
-    System.out.println("CommsThread.commandLoop() starting.");
+    //System.out.println("CommsThread.commandLoop() starting.");
     byte oneByte = (byte) 0x00;
     while (_shouldRun)
     {
@@ -159,7 +159,7 @@ public class CommsThread extends Thread
       }
       }
     }
-    System.out.println("CommsThread.commandLoop() ending.");
+    //System.out.println("CommsThread.commandLoop() ending.");
   }
 
   public void sendDirectory()

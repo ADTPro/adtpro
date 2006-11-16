@@ -103,8 +103,6 @@ public final class Gui extends JFrame implements ActionListener
     menuBootstrap.add(dosAction);
     MenuAction adtAction = new MenuAction(Messages.getString("Gui.BS.ADT")); //$NON-NLS-1$
     menuBootstrap.add(adtAction);
-    MenuAction adtgsAction = new MenuAction(Messages.getString("Gui.BS.ADTgs")); //$NON-NLS-1$
-    menuBootstrap.add(adtgsAction);
     menuBar.add(menuBootstrap);
     menuBootstrap.setEnabled(false);
     JMenu menuHelp = new JMenu(Messages.getString("Gui.Help")); //$NON-NLS-1$
@@ -402,23 +400,6 @@ public final class Gui extends JFrame implements ActionListener
                 commsThread.requestSend("org/adtpro/resources/dos33.dmp");
               }
             }
-            else
-              if (e.getActionCommand().equals(Messages.getString("Gui.BS.ADTgs"))) //$NON-NLS-1$
-              {
-                /* Ask the user if she is sure */
-                int ret = JOptionPane.showOptionDialog(_parent,
-                                                       message,
-                                                       Messages.getString("guiName"),
-                                                       JOptionPane.YES_NO_OPTION,
-                                                       JOptionPane.QUESTION_MESSAGE,
-                                                       null,
-                                                       buttons,
-                                                       buttons[0]);
-                if (ret == JOptionPane.YES_OPTION)
-                {
-                  commsThread.requestSend("org/adtpro/resources/adtgs.dmp");
-                }
-              }
               else
                 if (e.getActionCommand().equals(Messages.getString("Gui.BS.ADT"))) //$NON-NLS-1$
                 {
