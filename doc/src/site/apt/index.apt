@@ -29,6 +29,8 @@ systems.
 
     * Server compatibility with Windows, Mac OSX, and Linux
 
+    * Ability to bootstrap bare-metal Apples with zero software to start
+
     * Ability to change working directory on the fly
 
  ADTPro may be used to transer either Apple diskette/disk images in DOS or ProDOS format.

@@ -6,6 +6,18 @@
 
 ADTPro Release History
 
+* 0.1.1 - November 16, 2006
+
+ New functionality:
+
+ * ADTPro server now has the ability to serve bare-metal
+   bootstrapping data (ESDOS II, DOS ADT client)
+
+ * DOS ADT client enhanced to use either SSC or IIgs native
+   serial communications at speeds up to 115kbps
+
+ []
+
 * 0.0.9 - September 23, 2006
 
  Bug fix:
