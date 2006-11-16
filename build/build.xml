@@ -79,9 +79,11 @@
 		<exec dir="${builddir}" executable="java" input="${builddir}/ADTPRO">
 			<arg line="-jar ${acJar} -p ADTPRO.BACKUP bin 2051 ${distName}.dsk" />
 		</exec>
+		<!--
 		<exec dir="${builddir}" executable="java" input="${builddir}/ADTPROETH">
 			<arg line="-jar ${acJar} -p ADTPROETH bin 2051 ${distName}.dsk" />
 		</exec>
+		-->
 		<!--
 		Build a little unit test disk that is 64k (128 blocks) long
 		-->
