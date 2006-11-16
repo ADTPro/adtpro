@@ -26,8 +26,9 @@ machines, and a single-sided, double-density 5.25" floppy or two.
 
     [[1]] Connect the two computers through their serial ports.
 
-    [[1]] Boot your Apple; hit ctrl-reset before it reads anything from a disk drive
-      (you don't have any software, right?).
+    [[1]] Boot your Apple; hit ctrl-reset before it reads anything from the disk drive
+      (you don't have any software, right?).  Put a double sided, double density 
+      diskette in the drive and close the door; it doesn't matter if it's formatted or not.
 
     [[1]] Tell the Apple to listen to its Super Serial Card or Modem port.
       The command is typically <<<IN#2>>>, but that number will depend on which slot
@@ -36,19 +37,20 @@ machines, and a single-sided, double-density 5.25" floppy or two.
       
     * <<<IN#2>>>
     
-    * Hit <<<ctrl-A>>> (The Apple Super Serial card will respond with "<<<APPLE SSC:>>>" and the 
+    * <<<ctrl-A>>> (The Apple Super Serial card will respond with "<<<APPLE SSC:>>>" and the 
       IIgs will respond with "<<<?>>>".)
       
-    * Type <<<6B>>> and hit the Return key.
+    * <<<6B>>> (and hit the Return key).
 
     * Note: with some switch settings, the Apple Super Serial card will need you
       to hit <<<ctrl-I>>> instead.  If you hit <<<ctrl-A>>> and nothing happens, just hit the
-      Return key and try <<<ctrl-I>>>.  The one that greets you with the "<<<APPLE SSC:>>>" is the
+      Return key and try <<<ctrl-I>>>.  The one that greets you with the "<<<APPLE SSC:>>>" 
+      or <<<"?">>> is the
       one that you want.
     
-    * If you get any syntax errors or anything, just hit Return a bunch of
+    * If you get any syntax errors or anything, hit Return a bunch of
       times and start again.  You just type: <<<ctrl-A 6B>>> or <<<ctrl-I 6B>>>
-      and hit return.
+      (no spaces) and hit return.
 
     []
 
@@ -65,11 +67,13 @@ NOW INSERT A BLANK DISK.
 HIT RETURN WHEN READY TO FORMAT.
 ]INIT HELLO
 +---
-      You now have EsDOS II in <memory> on your apple.  When you hit the 
+      You now have EsDOS II <in memory only> on your apple.  When you hit the 
       <<<RETURN>>> key,
       it'll format the floppy disk in the drive (slot 6, drive 1 by default).
       Once the <<<INIT>>> operation completes, you now have a bootable DOS 
       diskette.  Go ahead and reboot with it now with a <<<PR#6>>> command.
+      The <<<HELLO>>> program will complain this time because it expects to
+      see an <<<ADT>>> proram, but it's not on the disk yet.  Soon enough...
 
     [[1]] You might 'init' another floppy now to get a second floppy formatted, now
       that you have a working version of DOS.  The command <<<INIT HELLO>>>
@@ -79,15 +83,13 @@ HIT RETURN WHEN READY TO FORMAT.
       version of ADT to the apple.  On the Apple, prepare it to listen to the
       serial port again:
       
-      * <<<IN#2>>>
+      * <<<IN#2>>> (or whatever slot your serial communications card is in)
       
       * <<<ctrl-A 6B>>> (or <<<ctrl-I 6B>>>)
 
       []
 
-      On the ADTPro server, click on "Bootstrapping->Send DOS SSC ADT Client"
-      if you have a Super Serial card, or "Bootstrapping->Send DOS ADTgs Client"
-      if you just have an IIgs.
+      On the ADTPro server, click on "Bootstrapping->Send DOS ADT Client."
       You should start to see text flowing (if slowly) across the Apple screen.
 
     [[1]] You probably want to write-protect your new DOS ADT diskette by covering
@@ -100,7 +102,10 @@ HIT RETURN WHEN READY TO FORMAT.
     [[1]] Remove the DOS ADT diskette from the drive, and insert another formatted,
       blank floppy.
       From the Apple, hit the <<<R>>> key to receive 
-      ADTPro-v.r.m.dsk.
+      ADTPro-v.r.m.dsk.  If you need to change the default communications prameters,
+      (ADT assumes a Super Serial card in slot #2, at 115k baud) hit the 
+      <<<C>>> key.  You can change the SSC slot or or IIgs Modem port from there,
+      as well as the baud rate, disk defaults, etc.
 
     [[1]] Boot ADTPro's newly minted disk.
 
@@ -128,7 +133,6 @@ on the SSC card), you can connect computers with a straight-through serial
 cable like this:
 
 [images/superSerialCable.jpg]
-
 
 * {IIgs modem port specifics}
 

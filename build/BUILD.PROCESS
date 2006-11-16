@@ -15,10 +15,10 @@ the stuff that gets uploaded to sourceforge.
 	*	org/adtpro/resources/messages.properties: Version.Number=v.r.m
 	*	org/adtpro/resources/messages.properties: Gui.AboutText=Apple Disk Transfer ProDOS (ADTPro) v.r.m
 
-2. Tag adtpro project with the version number.  The
-    standard is:  v_[major]_[minor]_[service]
+2. Perform a build
 
-3. Perform a build
+3. Tag adtpro project with the version number.  The
+    standard is:  v_[major]_[minor]_[service]
 
 4. Anonymously FTP ADTPro-v.r.m.zip to upload.sourceforge.net, in the incoming directory
 

@@ -85,12 +85,14 @@
 		<!--
 		Build a little unit test disk that is 64k (128 blocks) long
 		-->
+		<!--
 		<exec dir="${builddir}" executable="java" input="${builddir}/ADTPROETH">
 			<arg line="-jar ${acJar} -d ADTPROETH RAM5.PO" />
 		</exec>
 		<exec dir="${builddir}" executable="java" input="${builddir}/ADTPROETH">
 			<arg line="-jar ${acJar} -p ADTPROETH bin 2051 RAM5.PO" />
 		</exec>
+		-->
 		<!--
 		Lock the backup version
 		-->
