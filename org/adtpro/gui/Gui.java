@@ -126,7 +126,7 @@ public final class Gui extends JFrame implements ActionListener
     }
     catch (Throwable t)
     {}
-    comboComPort.addItem(Messages.getString("Gui.Ethernet"));
+    //comboComPort.addItem(Messages.getString("Gui.Ethernet"));
     comboComPort.setSelectedItem(_properties.getProperty("CommPort","COM1")); //$NON-NLS-1$ //$NON-NLS-2$
 
     comboSpeed = new JComboBox();
