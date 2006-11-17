@@ -1,0 +1,6 @@
+Screen captures from AppleWin - screen coordinates in MS Paint:
+
+7,25 to 562,386
+
+117,69 to 358,73
+

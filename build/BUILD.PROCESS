@@ -29,6 +29,6 @@ the stuff that gets uploaded to sourceforge.
    cd /home/groups/a/ad/adtpro
    put adtpro.zip (or whatever you call the package)
    (quit)
-   putty adtpro.sourceforge.net
-   cd /home/groups/a/ad/adtpro
-   unzip adtpro.zip (or whatever you call the package)
+   putty sf_user@adtpro.sourceforge.net
+   cd /home/groups/a/ad/adtpro/htdocs
+   unzip ../adtpro.zip (or whatever you call the package)
