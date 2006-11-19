@@ -40,10 +40,12 @@ machines, and a single-sided, double-density 5.25" floppy or two.
     * <<<ctrl-A>>> (The Apple Super Serial card will respond with "<<<APPLE SSC:>>>" and the 
       IIgs will respond with "<<<?>>>".)
       
-    * <<<6B>>> (and hit the Return key).
+    * <<<6B>>> (and hit the Return key.  This sets the communications rate at 
+      the Apple end to 300 baud.)
 
-    * Note: with some switch settings, the Apple Super Serial card will need you
-      to hit <<<ctrl-I>>> instead.  If you hit <<<ctrl-A>>> and nothing happens, just hit the
+    * Note: with some configurations, you will need
+      to hit <<<ctrl-I>>> instead.  (Where <<<I>>> is the capital letter I.)
+      If you hit <<<ctrl-A>>> and nothing happens, just hit the
       Return key and try <<<ctrl-I>>>.  The one that greets you with the "<<<APPLE SSC:>>>" 
       or <<<"?">>> is the
       one that you want.
@@ -67,20 +69,23 @@ NOW INSERT A BLANK DISK.
 HIT RETURN WHEN READY TO FORMAT.
 ]INIT HELLO
 +---
-      You now have EsDOS II <in memory only> on your apple.  When you hit the 
+      The cursor will be blinking after <<<HELLO>>>; you will need to hit 
+      hit the <<<RETURN>>> key on the Apple to actually format your disk.
+
+      You now have EsDOS II <in memory only> on your Apple.  When you hit the 
       <<<RETURN>>> key,
       it'll format the floppy disk in the drive (slot 6, drive 1 by default).
       Once the <<<INIT>>> operation completes, you now have a bootable DOS 
       diskette.  Go ahead and reboot with it now with a <<<PR#6>>> command.
       The <<<HELLO>>> program will complain this time because it expects to
-      see an <<<ADT>>> proram, but it's not on the disk yet.  Soon enough...
+      start an <<<ADT>>> program, but it's not on the disk yet.  Soon enough...
 
     [[1]] You might 'init' another floppy now to get a second floppy formatted, now
       that you have a working version of DOS.  The command <<<INIT HELLO>>>
-      will format it.
+      on the Apple will format it.
 
-    [[1]] With a freshly formatted floppy in the drive, send over the DOS
-      version of ADT to the apple.  On the Apple, prepare it to listen to the
+    [[1]] With a freshly formatted floppy in the Apple drive, send over the
+      DOS version of ADT to the Apple.  On the Apple, prepare it to listen to the
       serial port again:
       
       * <<<IN#2>>> (or whatever slot your serial communications card is in)
@@ -91,6 +96,9 @@ HIT RETURN WHEN READY TO FORMAT.
 
       On the ADTPro server, click on "Bootstrapping->Send DOS ADT Client."
       You should start to see text flowing (if slowly) across the Apple screen.
+      When it's done, it will save the DOS ADT client program on the floppy
+      without you needing to hit <<<RETURN>>>, so make sure the drive door is
+      still closed.
 
     [[1]] You probably want to write-protect your new DOS ADT diskette by covering
       the write notch with tape to be sure you don't ever have to send all that

@@ -103,6 +103,8 @@ public final class Gui extends JFrame implements ActionListener
     menuBootstrap.add(dosAction);
     MenuAction adtAction = new MenuAction(Messages.getString("Gui.BS.ADT")); //$NON-NLS-1$
     menuBootstrap.add(adtAction);
+    MenuAction adtProAction = new MenuAction(Messages.getString("Gui.BS.ADTPro")); //$NON-NLS-1$
+    menuBootstrap.add(adtProAction);
     menuBar.add(menuBootstrap);
     menuBootstrap.setEnabled(false);
     JMenu menuHelp = new JMenu(Messages.getString("Gui.Help")); //$NON-NLS-1$
@@ -385,7 +387,6 @@ public final class Gui extends JFrame implements ActionListener
           else
             if (e.getActionCommand().equals(Messages.getString("Gui.BS.DOS"))) //$NON-NLS-1$
             {
-              // TODO: Put up a dialog box with instructions
               /* Ask the user if she is sure */
               int ret = JOptionPane.showOptionDialog(_parent,
                                                      message,
@@ -400,13 +401,31 @@ public final class Gui extends JFrame implements ActionListener
                 commsThread.requestSend("org/adtpro/resources/dos33.dmp");
               }
             }
-              else
-                if (e.getActionCommand().equals(Messages.getString("Gui.BS.ADT"))) //$NON-NLS-1$
+            else
+              if (e.getActionCommand().equals(Messages.getString("Gui.BS.ADT"))) //$NON-NLS-1$
+              {
+                /* Ask the user if she is sure */
+                int ret = JOptionPane.showOptionDialog(_parent,
+                                                       message,
+                                                       Messages.getString("Gui.Name"),
+                                                       JOptionPane.YES_NO_OPTION,
+                                                       JOptionPane.QUESTION_MESSAGE,
+                                                       null,
+                                                       buttons,
+                                                       buttons[0]);
+                if (ret == JOptionPane.YES_OPTION)
                 {
+                  commsThread.requestSend("org/adtpro/resources/adt.dmp");
+                }
+              }
+              else
+                if (e.getActionCommand().equals(Messages.getString("Gui.BS.ADTPro"))) //$NON-NLS-1$
+                {
+                  message = Messages.getString("Gui.BS.DumpProInstructions");
                   /* Ask the user if she is sure */
                   int ret = JOptionPane.showOptionDialog(_parent,
                                                          message,
-                                                         Messages.getString("guiName"),
+                                                         Messages.getString("Gui.Name"),
                                                          JOptionPane.YES_NO_OPTION,
                                                          JOptionPane.QUESTION_MESSAGE,
                                                          null,
@@ -414,7 +433,7 @@ public final class Gui extends JFrame implements ActionListener
                                                          buttons[0]);
                   if (ret == JOptionPane.YES_OPTION)
                   {
-                    commsThread.requestSend("org/adtpro/resources/adt.dmp");
+                    commsThread.requestSend("org/adtpro/resources/adtpro.dmp");
                   }
                 }
     }

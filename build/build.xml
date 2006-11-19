@@ -7,6 +7,7 @@
 	<property name="projdir" value="." />
 	<property name="builddir" value="${basedir}/build" />
 	<property name="acJar" value="AppleCommander-1.3.4b-ac.jar" />
+	<taskdef name="appleDump" classname="org.adtpro.utilities.AppleDump" classpath="${projdir}"/>
 
 	<target name="clean">
 		<!--
@@ -17,6 +18,7 @@
 		<delete file="${builddir}/${distName}.dsk" />
 		<delete file="${builddir}/${distName}.jar" />
 		<delete file="${builddir}/${distName}.zip" />
+		<delete file="${projdir}/org/adtpro/resources/adtpro.dmp" />
 		<delete>
 			<fileset dir="${projdir}/client/src" includes="**/*.o"/>
 			<fileset dir="${projdir}/client/src" includes="**/*.map"/>
@@ -62,6 +64,10 @@
 		-->
 		<move file="${projdir}/client/src/ADTPRO" tofile="${builddir}/ADTPRO" />
 		<move file="${projdir}/client/src/ADTPROETH" tofile="${builddir}/ADTPROETH" />
+		<!--
+		Make dumpable versions
+		-->
+		<appleDump infilename="${builddir}/ADTPRO" outfilename="${basedir}/org/adtpro/resources/adtpro.dmp" applename="ADTPRO" startaddrhex="803" numbyteswide="32" />
 	</target>
 
 	<target name="builddsk" depends="assemble">
