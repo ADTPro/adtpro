@@ -20,6 +20,7 @@
 
 package org.adtpro.utilities;
 
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
@@ -34,69 +35,55 @@ public class AppleDump extends Task
 
   public void execute() throws BuildException
   {
-    String[] args = {
-        "-infilename",_inFileName,
-        "-outfilename",_outFileName,
-        "-applename",_appleName,
-        "-startaddrhex",_startAddrHex,
-        "-numbyteswide",_numBytesString};
+    String[] args =
+    { "-infilename", _inFileName, "-outfilename", _outFileName, "-applename", _appleName, "-startaddrhex",
+        _startAddrHex, "-numbyteswide", _numBytesString };
     if (checkArgs(args) == true)
     {
-    int datum;
-    boolean printedPrefix = false;
-    int fileLength = 0;
-    try
-    {
-      FileReader fr = new FileReader(_inFileName);
-      PrintStream ps;
+      byte datum;
+      int fileLength = 0;
       try
       {
-        ps = new PrintStream(new FileOutputStream(_outFileName));
-      }
-      catch (FileNotFoundException io)
-      {
-        throw new BuildException(io);
-      }
-      ps.println("");
-      ps.println("3D0G");
-      ps.println("NEW");
-      ps.println("CALL -151");
-      while(fr.ready())
-      {
-        for (int i = 0; i < _numBytes; i++)
+        FileInputStream fis = new FileInputStream(_inFileName);
+        PrintStream ps;
+        try
         {
-          if (fr.ready())
+          ps = new PrintStream(new FileOutputStream(_outFileName));
+        }
+        catch (FileNotFoundException io)
+        {
+          throw new BuildException(io);
+        }
+        ps.println("");
+        ps.println("3D0G");
+        ps.println("NEW");
+        ps.println("CALL -151");
+        ps.print(_startAddrHex);
+        int max = fis.available();
+        for (int j = 0; j < max; j++)
+        {
+          datum = (byte) fis.read();
+          if (j % _numBytes == 0)
           {
-            datum = fr.read();
-            if (i == 0)
-            {
-              if (!printedPrefix)
-              {
-                ps.print(_startAddrHex);
-                printedPrefix = true;
-              }
-              ps.print(":");
-            }
-            ps.print(UnsignedByte.toString(UnsignedByte.loByte(datum)));
-            fileLength ++;
-            if (i + 1 < _numBytes)
-            {
-              ps.print(" ");
-            }
+            if (j > 0)
+              ps.println();
+            ps.print(":");
           }
+          ps.print(UnsignedByte.toString(datum));
+          fileLength++;
+          ps.print(" ");
         }
         ps.println();
+        ps.println("BSAVE " + _appleName + ",A$" + _startAddrHex + ",L" + fileLength);
       }
-      ps.println("BSAVE "+_appleName+",A$"+_startAddrHex+",L"+fileLength+",S6,D1");
-    }
-    catch (FileNotFoundException e)
-    {
-      throw new BuildException(e);
-    }
-    catch (IOException e)
-    {
-      throw new BuildException(e);
-    }
+      catch (FileNotFoundException e)
+      {
+        throw new BuildException(e);
+      }
+      catch (IOException e)
+      {
+        throw new BuildException(e);
+      }
     }
     else
     {
@@ -143,9 +130,14 @@ public class AppleDump extends Task
   }
 
   String _inFileName = null;
+
   String _outFileName = null;
+
   String _appleName = null;
+
   String _startAddrHex = null;
+
   String _numBytesString = "32";
+
   int _numBytes = 32;
 }

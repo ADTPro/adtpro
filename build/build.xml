@@ -3,6 +3,8 @@
 	<property name="versionString" value="0.1.2" />
 	<property name="distName" value="ADTPro-${versionString}" />
 	<property name="volName" value="ADTPro.${versionString}" />
+	<property name="dosVersionString" value="130" />
+	<property name="dosDistName" value="ADT${dosVersionString}" />
 	<property name="assemblerPath" value="C:/dev/xassm/cc65/bin" />
 	<property name="projdir" value="." />
 	<property name="builddir" value="${basedir}/build" />
@@ -18,6 +20,7 @@
 		<delete file="${builddir}/${distName}.dsk" />
 		<delete file="${builddir}/${distName}.jar" />
 		<delete file="${builddir}/${distName}.zip" />
+		<delete file="${projdir}/org/adtpro/resources/adt.dmp" />
 		<delete file="${projdir}/org/adtpro/resources/adtpro.dmp" />
 		<delete>
 			<fileset dir="${projdir}/client/src" includes="**/*.o"/>
@@ -36,6 +39,12 @@
 		</exec>
 		<exec dir="${projdir}/client/src" executable="${assemblerPath}/ca65">
 			<arg line="-l -t c64 serial/sermain.asm" />
+		</exec>
+		<!--
+		Assemble the ADT source
+		-->
+		<exec dir="${projdir}/client/src/dos" executable="${assemblerPath}/ca65">
+			<arg line="-l -t c64 adt.asm" />
 		</exec>
 		<!--
 		Assemble the IP65 stack source
@@ -59,15 +68,20 @@
 		<exec dir="${projdir}/client/src" executable="${assemblerPath}/ld65">
 			<arg line="-m adtproeth.map -C adtpro.cfg -o ADTPROETH ethernet/ethmain.o ip65/ip65.lib" />
 		</exec>
+		<exec dir="${projdir}/client/src/dos" executable="${assemblerPath}/ld65">
+			<arg line="-m adt.map -C adt.cfg -o ADT adt.o" />
+		</exec>
 		<!--
 		Move the object code to the build directory
 		-->
 		<move file="${projdir}/client/src/ADTPRO" tofile="${builddir}/ADTPRO" />
 		<move file="${projdir}/client/src/ADTPROETH" tofile="${builddir}/ADTPROETH" />
+		<move file="${projdir}/client/src/dos/ADT" tofile="${builddir}/ADT" />
 		<!--
 		Make dumpable versions
 		-->
 		<appleDump infilename="${builddir}/ADTPRO" outfilename="${basedir}/org/adtpro/resources/adtpro.dmp" applename="ADTPRO" startaddrhex="803" numbyteswide="32" />
+		<appleDump infilename="${builddir}/ADT" outfilename="${basedir}/org/adtpro/resources/adt.dmp" applename="ADT" startaddrhex="803" numbyteswide="16" />
 	</target>
 
 	<target name="builddsk" depends="assemble">
@@ -75,6 +89,7 @@
 		Start a .dsk image containing the release number
 		-->
 		<copy file="${builddir}/ADTProBase.dsk" tofile="${builddir}/${distName}.dsk" />
+		<copy file="${builddir}/ADTBase.dsk" tofile="${builddir}/${dosDistName}.dsk" />
 		<!--
 		Put the assembled ADTPRO program on the .dsk image a couple of times
 		and lock the backup version
@@ -84,6 +99,12 @@
 		</exec>
 		<exec dir="${builddir}" executable="java" input="${builddir}/ADTPRO">
 			<arg line="-jar ${acJar} -p ADTPRO.BACKUP bin 2051 ${distName}.dsk" />
+		</exec>
+		<!--
+		Put the assembled DOS ADT program on the .dsk image
+		-->
+		<exec dir="${builddir}" executable="java" input="${builddir}/ADT">
+			<arg line="-jar ${acJar} -p ADT bin 2051 ${dosDistName}.dsk" />
 		</exec>
 		<!--
 		<exec dir="${builddir}" executable="java" input="${builddir}/ADTPROETH">
