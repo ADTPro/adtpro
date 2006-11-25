@@ -1166,7 +1166,7 @@ public class CommsThread extends Thread
 
     public void run()
     {
-      System.out.println("CommsThread.Worker.Run() starting.");
+      //System.out.println("CommsThread.Worker.Run() starting.");
       try
       {
         char[] buffer = new char[_is.available()];
@@ -1206,7 +1206,7 @@ public class CommsThread extends Thread
       System.out.println("Text file sent in "+(float)(_endTime.getTimeInMillis() - _startTime.getTimeInMillis())/(float)1000+" seconds.");
       _transport.flushReceiveBuffer();
       _transport.setFullSpeed();
-      System.out.println("CommsThread.Worker.Run() stopping.");
+      //System.out.println("CommsThread.Worker.Run() stopping.");
     }
 
     public void requestStop()
