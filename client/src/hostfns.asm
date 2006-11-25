@@ -65,8 +65,7 @@ DIRCONT:
 	jsr RDKEY
 	eor #CHR_ESC	; NOT ESCAPE, CONTINUE NORMALLY
 	bne DIR		; BY SENDING A "D" TO PC
-	jsr DIRABORT
-	rts
+	jmp DIRABORT
 
 ;---------------------------------------------------------
 ; CD - Change directory
