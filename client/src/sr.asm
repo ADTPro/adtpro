@@ -19,6 +19,18 @@
 ;
 
 ;---------------------------------------------------------
+; BATCH
+;---------------------------------------------------------
+
+BATCH:
+	ldy #PMPREFIX
+	jsr GETFN2
+	ldy #PMSGSOU	; 'SELECT SOURCE VOLUME'
+	jsr PICKVOL	; Pick a volume - A has index into DEVICES table
+
+	rts
+
+;---------------------------------------------------------
 ; SEND/RECEIVE functions
 ;
 ; Assumes a volume has been chosen via PICKVOL, setting:

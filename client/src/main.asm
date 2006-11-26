@@ -67,14 +67,14 @@ RESETIO:	jsr $0000	; Pseudo-indirect JSR to rest the IO device
 
 	jsr SHOWLOGO
 
-   	lda #$07
+   	lda #$02
 	sta <CH
 	lda #$0e
 	jsr TABV
 	ldy #PMSG02	; Prompt line 1
 	jsr SHOWMSG
 
-    	lda #$03
+    	lda #$02
 	sta <CH
 	ldy #PMSG03	; Prompt line 2
 	jsr SHOWMSG
@@ -90,52 +90,64 @@ KBDLUP:
 	and #$DF	; Conver to upper case
 
 KSEND:	cmp #'S'	; SEND?
-	bne KRECV	; NOPE, TRY RECEIVE
+	bne :+		; Nope
 	lda #$06
-        ldx #$07
+        ldx #$02
 	ldy #$0e
 	jsr INVERSE
 	jsr SEND	; YES, DO SEND ROUTINE
 	jmp MAINLUP
-
+:
 KRECV:	cmp #'R'	; RECEIVE?
-	bne KDIR	; NOPE, TRY DIR
+	bne :+		; Nope
 	lda #$09
-	ldx #$0e
+	ldx #$09
 	ldy #$0e
 	jsr INVERSE
 	jsr RECEIVE
 	jmp MAINLUP
-
+:
 KDIR:	cmp #'D'	; DIR?
-	bne KCD		; Nope, try CD
+	bne :+		; Nope, try CD
 	lda #$05
-	ldx #$18
+	ldx #$13
 	ldy #$0e
 	jsr INVERSE
 	jsr DIR	  	; Yes, do DIR routine
 	jmp MAINLUP
-
+:
+KBATCH:
+	cmp #'B'	; Batch processing?
+	bne :+		; Nope
+	ldy #PMNULL	; No title line
+	lda #$07
+        ldx #$19
+	ldy #$0e
+	jsr INVERSE
+	jsr BATCH	; Set up batch processing
+	jmp MAINLUP
+:
 KCD:	cmp #'C'	; CD?
-	bne KCONF	; Nope, try Configure
+	bne :+		; Nope
 	lda #$04
-        ldx #$1e
+        ldx #$21
 	ldy #$0e
 	jsr INVERSE
 	jsr CD	  	; Yes, do CD routine
 	jmp MAINLUP
-
+:
 KCONF:	cmp #CHR_G	; Configure?
-	bne KABOUT	; NOPE, TRY ABOUT
+	bne :+		; Nope
 	jsr CONFIG      ; YES, DO CONFIGURE ROUTINE
 	jsr HOME
 	jsr PARMINT     ; AND INTERPRET PARAMETERS
 	jmp MAINL
 
+:
 KABOUT:	cmp #$9F	; ABOUT MESSAGE? ("?" KEY)
-	bne KVOLUMS	; NOPE, TRY VOLUMES
+	bne :+		; Nope
 	lda #$08
-        ldx #$16
+        ldx #$15
 	ldy #$10
 	jsr INVERSE
     	lda #$00
@@ -146,20 +158,20 @@ KABOUT:	cmp #$9F	; ABOUT MESSAGE? ("?" KEY)
 	jsr SHOWMSG
 	jsr RDKEY
 	jmp MAINLUP	; Clear and start over
-
+:
 KVOLUMS:
 	cmp #'V'	; Volumes online?
-	bne KQUIT1	; NOPE, TRY Escape
+	bne :+		; Nope
 	ldy #PMNULL	; No title line
 	jsr PICKVOL	; Pick a volume - A has index into DEVICES table
 	jmp MAINLUP
-
-KQUIT1:
+:
+KESCAPE:
 	cmp #$9B	; Escape?
-	bne KQUIT	; NOPE, TRY QUIT
+	bne :+		; Nope, try Quit
 	jsr CLEANUP
 	jmp $03d0	; Bail allllllllllll the way out
-
+:
 KQUIT:
 	cmp #'Q'	; Quit?
 	bne FORWARD	; No, it was an unknown key
