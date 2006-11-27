@@ -25,10 +25,11 @@
 BATCH:
 	ldy #PMPREFIX
 	jsr GETFN2
-
+	bne :+
+	jmp BATCHDONE
+:
 	ldy #PMSGSOU	; 'SELECT SOURCE VOLUME'
 	jsr PICKVOL
-;			Accumulator now has the index into device table
 	bmi BATCHDONE
 	sta SLOWA
 
@@ -44,6 +45,7 @@ BATCH:
 	ldy #PMINSERTDISK	; Tell user to insert the next disk...
 	jsr SHOWM1
 	jsr PAUSE
+	bcs BATCHDONE
 
 	ldy #PMWAIT
 	jsr SHOWM1	; Tell user to have patience
@@ -54,6 +56,7 @@ BATCH:
 	jmp PCERROR
 BATCHOK:
 	jsr PCOK
+	bcs BATCHDONE
 	jmp :-
 
 BATCHDONE:	

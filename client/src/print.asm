@@ -477,7 +477,7 @@ MSGTBL:
 	.addr MNULL
 
 MSG01:	.asciiz "0.1.2"
-;MSG01:	.asciiz "v.r.m"
+;MSG01:	.byte 246,".",242,".",237,$00 ; "v.r.m"
 MSG02:	.byte "(S)END (R)ECEIVE (D)IR (B)ATCH (C)D",$8d,$8d,$00
 MSG03:	.asciiz "(V)OLUMES CONFI(G) (?)ABOUT (Q)UIT:"
 MSG04:	.byte $8d,"GOODBYE - THANKS FOR USING ADTPRO!",$8d,$8d,$00
@@ -534,7 +534,7 @@ MFORC:	.asciiz "COPY IMAGE DATA ANYWAY? (Y/N):"
 MFEX:	.asciiz "FILE ALREADY EXISTS AT HOST."
 MUTHBAD:	.asciiz "UTHERNET INIT FAILED; PLEASE RUN CONFIG."
 MPREFIX:	.asciiz "FILENAME PREFIX: "
-MINSERTDISK:	.asciiz "INSERT NEXT DISK TO SEND..."
+MINSERTDISK:	.asciiz "INSERT THE NEXT DISK TO SEND."
 MNULL:	.byte $00
 
 ;---------------------------------------------------------

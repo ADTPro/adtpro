@@ -51,6 +51,12 @@ PAUSE:
 	ldy #PMSG16
 	jsr SHOWMSG
 	jsr RDKEY
+	cmp #$9B
+	beq PAUSEESC
+	clc
+	rts
+PAUSEESC:
+	sec
 	rts
 
 ;---------------------------------------------------------
