@@ -25,9 +25,38 @@
 BATCH:
 	ldy #PMPREFIX
 	jsr GETFN2
-	ldy #PMSGSOU	; 'SELECT SOURCE VOLUME'
-	jsr PICKVOL	; Pick a volume - A has index into DEVICES table
 
+	ldy #PMSGSOU	; 'SELECT SOURCE VOLUME'
+	jsr PICKVOL
+;			Accumulator now has the index into device table
+	bmi BATCHDONE
+	sta SLOWA
+
+	lda UNITNBR	; Set up the unit number
+	sta PARMBUF+1
+
+	lda #$00
+	sta <CH
+	lda #$14
+	jsr TABV
+	jsr CLREOP
+:
+	ldy #PMINSERTDISK	; Tell user to insert the next disk...
+	jsr SHOWM1
+	jsr PAUSE
+
+	ldy #PMWAIT
+	jsr SHOWM1	; Tell user to have patience
+
+	jsr BATCHREQUEST
+	jsr PUTREPLY
+	beq BATCHOK
+	jmp PCERROR
+BATCHOK:
+	jsr PCOK
+	jmp :-
+
+BATCHDONE:	
 	rts
 
 ;---------------------------------------------------------

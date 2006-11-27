@@ -83,6 +83,10 @@ UDPDISPATCH:
 :	cmp #STATE_RECVHBLK
 	bne :+
 	jmp RECVHBLK
+			; Receiving BATCH data?
+:	cmp #STATE_BATCH
+	bne :+
+	jmp BATCHREPLY1
 :			; fallthrough	
 @skip:
 	rts
@@ -166,22 +170,25 @@ CDREQUEST:
 ;---------------------------------------------------------
 ; CDREPLY - Reply to current directory change
 ; PUTREPLY - Reply from send an image to the host
+; BATCHREPLY - Reply from send multiple images to the host
 ; GETREPLY - Reply from requesting an image be sent from the host
 ; One-byte replies
 ;---------------------------------------------------------
 CDREPLY1:
 PUTREPLY1:
+BATCHREPLY1:
 GETREPLY1:
 	lda udp_inp + udp_data + 1	; Pick up the data byte
 	sta QUERYRC
 CDREPLY:
 PUTREPLY:
+BATCHREPLY:
 GETREPLY:
 	lda QUERYRC
 	rts
 
 ;---------------------------------------------------------
-; PUTREQUEST -
+; PUTREQUEST - Request to send an image to the host
 ;---------------------------------------------------------
 PUTREQUEST:
 	lda #<BIGBUF	; Connect the block pointer to the
@@ -268,6 +275,35 @@ GETFINALACK:
 	stax udp_send_len
 	ldax #BIGBUF
 	jsr udp_send
+	rts
+
+;---------------------------------------------------------
+; BATCHREQUEST - Request to send multiple images to the host
+;---------------------------------------------------------
+BATCHREQUEST:
+	lda #<BIGBUF	; Connect the block pointer to the
+	sta BLKPTR	; beginning of the Big Buffer(TM)
+	lda #>BIGBUF
+	sta BLKPTR+1
+	ldy #$00
+	lda #CHR_B		; Tell host we are Putting/Sending
+	sta (BLKPTR),Y
+	iny
+	jsr COPYINPUT
+	lda NUMBLKS	; Send the total block size
+	sta (BLKPTR),Y
+	iny
+	lda NUMBLKS+1
+	sta (BLKPTR),Y
+	iny
+	tya
+	ldx #$00
+	stax udp_send_len
+	lda #STATE_PUT
+	sta state
+	ldax #BIGBUF
+	jsr udp_send
+	jsr RECEIVE_LOOP
 	rts
 
 ;---------------------------------------------------------
@@ -551,6 +587,7 @@ STATE_GET	= 4
 STATE_QUERY	= 5
 STATE_RECVHBLK	= 6
 STATE_SENDHBLK	= 7
+STATE_BATCH	= 8
 
 ;---------------------------------------------------------
 ; Variables

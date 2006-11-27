@@ -74,13 +74,6 @@ CDREQUEST:
 	rts
 
 ;---------------------------------------------------------
-; CDREPLY - Reply to current directory change
-;---------------------------------------------------------
-CDREPLY:
-	jsr GETC	; Get response from host
-	rts
-
-;---------------------------------------------------------
 ; PUTREQUEST - Request to send an image to the host
 ;---------------------------------------------------------
 PUTREQUEST:
@@ -96,12 +89,6 @@ PUTREQUEST:
 	jsr PUTC
 	rts
 
-;---------------------------------------------------------
-; PUTREPLY - Reply from send an image to the host
-;---------------------------------------------------------
-PUTREPLY:
-	jsr GETC	; Get response from host
-	rts
 
 ;---------------------------------------------------------
 ; PUTINITIALACK - Send initial ACK for a PUTREQUEST/PUTREPLY
@@ -131,10 +118,16 @@ GETREQUEST:
 
 
 ;---------------------------------------------------------
+; PUTREPLY - Reply from send an image to the host
+; BATCHREPLY - Reply from send multiple images to the host
+; CDREPLY - Reply to current directory change
 ; GETREPLY - Reply from requesting an image be sent from the host
 ;---------------------------------------------------------
+PUTREPLY:
+CDREPLY:
 GETREPLY:
-	jsr GETC	; Get response from host: return code/message
+BATCHREPLY:
+	jsr GETC
 	rts
 
 
@@ -146,6 +139,23 @@ GETFINALACK:
 	jsr PUTC
 	lda ECOUNT	; Errors during send?
 	jsr PUTC	; Send error flag to host
+	rts
+
+
+;---------------------------------------------------------
+; BATCHREQUEST - Request to send multiple images to the host
+;---------------------------------------------------------
+BATCHREQUEST:
+	jsr PARMINT	; Clean up the comms device
+	lda #CHR_B	; Tell host we are Putting/Sending
+	jsr PUTC
+
+	jsr SENDFN	; Send file (prefix) name
+
+	lda NUMBLKS	; Send the total block size
+	jsr PUTC
+	lda NUMBLKS+1
+	jsr PUTC
 	rts
 
 
