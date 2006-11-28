@@ -7,7 +7,7 @@
 ADTPro
 
  Apple Disk Transfer ProDOS (ADTPro) is a pair of communications
-programs that transfers physical or logical disk images
+programs that transfers physical disks and logical disk images
 between Apple ][-era computers and the modern world.  If you're 
 familiar with the original ADT, ADTPro extends ADT's reach by 
 working with more disk formats, drive types, and host operating
@@ -29,11 +29,11 @@ systems.
 
     * Server compatibility with Windows, Mac OSX, and Linux
 
-    * Ability to bootstrap bare-metal Apples with zero software to start
+    * Ability to {{{bootstrap.html}bootstrap}} bare-metal Apples with zero software to start
 
     * Ability to change working directory on the fly
 
-    * Ability to send floppies in "batch" mode without having to name each one
+    * Ability to send floppies in "{{{batch.html}batch}}" mode without having to name each one
 
  ADTPro may be used to transer either Apple diskette/disk images in DOS or ProDOS format.
 The Apple client side happens to run under ProDOS, but it is perfectly capable
@@ -52,6 +52,15 @@ communications are taking place between the host and the Apple ][:
 
 [images/serverBusy.png]
 
+ The server's primary role is to send and receive disk images from the
+client.  But if you have recently acquired
+an Apple and a disk drive, but you have no software for it - you're in a
+bit of a tricky situation if you want to move software from the Internet
+all the way to your shiny new Apple.  ADTPro's server can help get you
+get {{{bootstrap.html}bootstrapped}}.
+
+[images/serverBoot.png]
+
 * Client
 
  The client program, running on the Apple ][, handles most of the 
@@ -62,7 +71,7 @@ user interaction:
  When choosing disks/volumes to transfer, anything that ProDOS can see
 is fair game:
 
-[images/adtpropick.png]
+[images/miscVolume.png]
 
  Transferring data occurs with a 20k buffer on the Apple, so all transfers
 are broken up into 20k chunks.  A progress indicator shows how far it is 
