@@ -1,6 +1,24 @@
 Welcome to ADTPro!
 ------------------
 
+The ADTPro distribution comes as a single .zip file, named
+ADTPro-v.r.m.zip. After unpacking the .zip file, you will find:
+
+ * ADTPro-v.r.m.jar - ADTPro server-side software (a Java 
+                      .jar file)
+ * ADTPro-v.r.m.dsk - ADTPro client-side software (an Apple
+                      disk image)
+ * DOSADTvrm.dsk    - An enhanced legacy Apple DOS ADT client, 
+                      capable of running on both Super Serial 
+                      hardware as well as on the IIgs serial 
+                      (modem) port
+ * LICENSE          - The GNU Public License file
+ * README           - The page you're looking at now, mostly
+ * rxtx/fixperm.sh  - A script to help OSX server users get 
+                      going
+ * rxtx/rxtx-2.1-7-bins-r2.zip - A library to help Java see 
+                      serial ports.
+
 You'll need a couple of things to run the server.
 
 First, you will need a Java you can call from the command line
@@ -37,10 +55,12 @@ You should see the following line on the console:
 
 	SerialTransport opening port named COMx at speed 115200.
 
-Transfer the ADTPro-v.r.m.dsk file to your apple with the original
-ADT client (you can use the ADTPro server to send it) and reboot
-with the ADTPro client diskette in the Apple's drive.  You're ready
-to go!
+Transfer the ADTPro-v.r.m.dsk file to your apple with the original 
+ADT client (you can use the ADTPro server to send it) and reboot 
+your Apple with the new ADTPro client diskette in the disk drive. 
+You're ready to go! If you don't have the original ADT, there's 
+lots of help available. Start at ADTPro's bootstrapping page
+(http://adtpro.sourceforge.net/bootstrap.html).
 
 Please report troubles, bugs, requests for help, etc. on the Help 
 forum for ADTPro at SourceForge:

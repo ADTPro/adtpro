@@ -1069,8 +1069,9 @@ MSGTBL:  .addr  MSG01,MSG02,MSG03,MSG04,MSG05,MSG06,MSG07
 
 MSG01:   .byte "SSC:S"
 MTSSC:   .byte " ,"
-MTSPD:   .byte "       "
+MTSPD:   .byte "      "
          .byte '+' & $7f
+         .byte ' ' & $7f
          .byte 'A' & $3f
          .byte 'D' & $3f
          .byte 'T' & $3f
@@ -1160,9 +1161,9 @@ HEXNUM:  .byte '0' & $7f
          .byte 'D' & $3f
          .byte 'E' & $3f
          .byte 'F' & $3f
-         .byte ' ' & $7f
-         .byte ' ' & $7f
-         .byte ' ' & $7f
+         .byte '0' & $7f
+         .byte '1' & $7f
+         .byte '2' & $7f
          .byte ' ' & $7f
          .byte ' ' & $7f
          .byte $8D,$00

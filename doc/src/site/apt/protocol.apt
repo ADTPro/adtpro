@@ -10,11 +10,13 @@ ADTPro Protocol
 
  ["C" - CD]   Change working directory
 
- ["Z" - Size] Ask for file size (implies existence test)
+ ["Z" - Size]  Ask for file size (implies existence test)
 
  ["G" - Get]  Initiate download
 
  ["P" - Put]  Inititate upload (always overwrite)
+
+ ["B" - Batch]  Inititate batch upload (unique suffix added to specified prefix)
 
  ["D" - Dir]  DOS ADT compatible listing of the current directory
 

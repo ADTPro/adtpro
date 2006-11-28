@@ -103,58 +103,64 @@ public class CommsThread extends Thread
       _parent.setProgressMaximum(0);
       switch (oneByte)
       {
-        case (byte) 195: // CD
+        case (byte) 195: // "C": CD
           _parent.setMainText(Messages.getString("CommsThread.2")); //$NON-NLS-1$
           _parent.setSecondaryText(""); //$NON-NLS-1$
           // System.out.println("CD..."); //$NON-NLS-1$
           changeDirectory();
           _parent.setSecondaryText(_parent.getWorkingDirectory()); //$NON-NLS-1$
           break;
-        case (byte) 196: // DIR
+        case (byte) 196: // "D": DIR
           _parent.setMainText(Messages.getString("CommsThread.1")); //$NON-NLS-1$
           _parent.setSecondaryText(_parent.getWorkingDirectory()); //$NON-NLS-1$
           //System.out.println("Dir..."); //$NON-NLS-1$
           sendDirectory();
           _parent.setSecondaryText(_parent.getWorkingDirectory()); //$NON-NLS-1$
           break;
-        case (byte) 208: // Put (Send)
+        case (byte) 208: // "P": Put (Send)
           _parent.setMainText(Messages.getString("CommsThread.16")); //$NON-NLS-1$
           _parent.setSecondaryText(""); //$NON-NLS-1$
           //System.out.println("Put/Send..."); //$NON-NLS-1$
-          receiveDisk();
+          receiveDisk(false);
           break;
-        case (byte) 199: // Get (Receive)
+        case (byte) 199: // "G": Get (Receive)
           _parent.setMainText(Messages.getString("CommsThread.3")); //$NON-NLS-1$
           _parent.setSecondaryText(""); //$NON-NLS-1$
           //System.out.println("Get/Receive..."); //$NON-NLS-1$
           sendDisk();
           break;
-        case (byte) 217: // Ping
+        case (byte) 194: // "B": Batch send
+          _parent.setMainText(Messages.getString("CommsThread.3")); //$NON-NLS-1$
+          _parent.setSecondaryText(""); //$NON-NLS-1$
+          //System.out.println("Get/Receive..."); //$NON-NLS-1$
+          receiveDisk(true);
+          break;
+        case (byte) 217: // "P": Ping
           _parent.setSecondaryText("Ping received from client."); //$NON-NLS-1$
           //System.out.println("Ping..."); //$NON-NLS-1$
           _transport.pushBuffer();
           _transport.flushReceiveBuffer();
           break;
-        case (byte) 218: // Size
+        case (byte) 218: // "Q": Size
           _parent.setMainText(Messages.getString("CommsThread.14")); //$NON-NLS-1$
           _parent.setSecondaryText(""); //$NON-NLS-1$
           //System.out.println("queryFileSize..."); //$NON-NLS-1$
           queryFileSize();
           break;
-        case (byte) 210: // Receive (Legacy ADT style)
+        case (byte) 210: // "R": Receive (Legacy ADT style)
           _parent.setMainText(Messages.getString("CommsThread.11")); //$NON-NLS-1$
           _parent.setSecondaryText(""); //$NON-NLS-1$
           // System.out.println("Legacy receive..."); //$NON-NLS-1$
           send140kDisk();
           break;
-        case (byte) 211: // Send (Legacy ADT style)
+        case (byte) 211: // "S": Send (Legacy ADT style)
           _parent.setMainText(Messages.getString("CommsThread.15")); //$NON-NLS-1$
           _parent.setSecondaryText(""); //$NON-NLS-1$
           // System.out.println("Legacy send..."); //$NON-NLS-1$
           receive140kDisk();
           break;
         default:
-          // System.out.println("not understood... received: " + UnsignedByte.toString(oneByte));
+          //System.out.println("not understood... received: " + UnsignedByte.toString(oneByte));
           break;
       }
       }
@@ -311,7 +317,7 @@ public class CommsThread extends Thread
     }
   }
 
-  public void receiveDisk()
+  public void receiveDisk(boolean generateName)
   /* Main receive routine - Host <- Apple (Apple sends) */
   {
     //System.out.println("DEBUG: receiveDisk() entry.");
@@ -319,7 +325,29 @@ public class CommsThread extends Thread
     //System.out.print("Waiting for name..."); //$NON-NLS-1$
     String name = _parent.getWorkingDirectory() + File.separator + receiveName();
     //System.out.println(" received name: " + name); //$NON-NLS-1$
-    File f = new File(name);
+    File f = null;
+    String nameGen, zeroPad;
+    if (generateName)
+    {
+      do
+      {
+        if (lastFileNumber < 10)
+          zeroPad = "000";
+            else if (lastFileNumber < 100)
+              zeroPad = "00";
+                else if (lastFileNumber < 1000)
+                  zeroPad = "0";
+                  else
+                    zeroPad = "";
+        nameGen = zeroPad + lastFileNumber;
+        f = new File(name+nameGen+".PO");
+        lastFileNumber++;
+      }
+      while (f.exists());
+      name = name+nameGen+".PO";
+    }
+    else
+      f = new File(name);
     FileOutputStream fos = null;
     byte[] buffer = new byte[20480];
     int part, length, packetResult = -1;
@@ -1216,4 +1244,5 @@ public class CommsThread extends Thread
 
     InputStream _is;
   }
+  public static int lastFileNumber = 0;
 }

@@ -352,7 +352,7 @@ public final class Gui extends JFrame implements ActionListener
     public void actionPerformed(ActionEvent e)
     {
       Object buttons[] = {Messages.getString("Gui.Ok"), Messages.getString("Gui.Cancel")};
-      String message = Messages.getString("Gui.BS.DumpInstructions");
+      String message;
       if (e.getActionCommand().equals(Messages.getString("Gui.Quit"))) //$NON-NLS-1$
       {
         setVisible(false);
@@ -387,12 +387,13 @@ public final class Gui extends JFrame implements ActionListener
           else
             if (e.getActionCommand().equals(Messages.getString("Gui.BS.DOS"))) //$NON-NLS-1$
             {
+              message = Messages.getString("Gui.BS.DumpDOSInstructions");
               /* Ask the user if she is sure */
               int ret = JOptionPane.showOptionDialog(_parent,
                                                      message,
                                                      Messages.getString("Gui.Name"),
                                                      JOptionPane.YES_NO_OPTION,
-                                                     JOptionPane.QUESTION_MESSAGE,
+                                                     JOptionPane.WARNING_MESSAGE,
                                                      null,
                                                      buttons,
                                                      buttons[0]);
@@ -404,12 +405,13 @@ public final class Gui extends JFrame implements ActionListener
             else
               if (e.getActionCommand().equals(Messages.getString("Gui.BS.ADT"))) //$NON-NLS-1$
               {
+                message = Messages.getString("Gui.BS.DumpADTInstructions");
                 /* Ask the user if she is sure */
                 int ret = JOptionPane.showOptionDialog(_parent,
                                                        message,
                                                        Messages.getString("Gui.Name"),
                                                        JOptionPane.YES_NO_OPTION,
-                                                       JOptionPane.QUESTION_MESSAGE,
+                                                       JOptionPane.WARNING_MESSAGE,
                                                        null,
                                                        buttons,
                                                        buttons[0]);
@@ -427,7 +429,7 @@ public final class Gui extends JFrame implements ActionListener
                                                          message,
                                                          Messages.getString("Gui.Name"),
                                                          JOptionPane.YES_NO_OPTION,
-                                                         JOptionPane.QUESTION_MESSAGE,
+                                                         JOptionPane.WARNING_MESSAGE,
                                                          null,
                                                          buttons,
                                                          buttons[0]);

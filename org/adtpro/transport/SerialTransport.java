@@ -210,7 +210,6 @@ public class SerialTransport extends ATransport
     	   * if we care about timeout or not.  Then, we'd
     	   * throw a new exception if we did time out.
     	   */
-        System.out.println("io exception... timeout was: "+timeout);
       }
     }
     return oneByte;

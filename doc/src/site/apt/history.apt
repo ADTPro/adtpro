@@ -6,6 +6,22 @@
 
 ADTPro Release History
 
+* 0.1.2 - November 27, 2006
+
+ New functionality:
+
+ * Added a "{{{batch.html}batch send}}" mode to repeatedly send the same volume (i.e. one floppy after another)
+
+ * ADTPro server can send the ADTPro client as bootstrap text; the destination Apple would have to already be running ProDOS
+
+ []
+
+ Bug fix:
+
+ * Split up bootstrap text into lines of 8 bytes each to help the slowest Apples keep up
+
+ []
+
 * 0.1.1 - November 16, 2006
 
  New functionality:

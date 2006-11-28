@@ -71,7 +71,8 @@ public class AppleDump extends Task
           }
           ps.print(UnsignedByte.toString(datum));
           fileLength++;
-          ps.print(" ");
+          if (j % _numBytes < (_numBytes - 1) )
+            ps.print(" ");
         }
         ps.println();
         ps.println("BSAVE " + _appleName + ",A$" + _startAddrHex + ",L" + fileLength);

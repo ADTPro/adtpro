@@ -11,12 +11,85 @@ virtual floppy containing ADTPro that comes with this project
 (ADTPro-v.r.m.dsk) to your Apple.  Reboot the Apple with the ADTPro floppy, and
 you're ready to go.
 
-  But if you have an Apple ][ with floppy drives but zero physical software, that's
-where the fun really begins.
+  If you don't use DOS ADT now, or don't have software for your Apple yet, 
+more bootstrapping scenarios and configurations are detailed below:
 
-* Starting from bare metal
+ * {{{bootstrap.html#If you already have ProDOS}If you already have ProDOS}}
 
-  Bootstrapping a bare-metal Apple all the way into ProDOS is a fun little 
+ * {{{bootstrap.html#If you already have DOS 3.3, but no ProDOS}If you already have DOS 3.3, but no ProDOS}}
+
+ * {{{bootstrap.html#Starting from bare metal}If you have no software at all... starting from bare metal}}
+
+ * {{{bootstrap.html#Super Serial cabling specifics}Super Serial cabling specifics}}
+
+ * {{{bootstrap.html#IIgs modem port cabling specifics}IIgs modem port cabling specifics}}
+
+* {If you already have ProDOS}
+
+    [[1]] Start with ProDOS booted from floppy (or any bootable partition).
+      This process will write the ADTPro to the current prefix/directory,
+      so you may want to set that now.  If you don't, it will be saved to 
+      the root of the boot drive.
+
+    [[1]] On the Apple, prepare it to 
+      listen to its Super Serial Card or IIgs modem port.
+      The command is typically <<<IN#2>>>, but that number will depend on which slot
+      you have your Super Serial Card plugged into.  An IIgs' modem port is always in
+      "virtual" slot #2.  Type in the following commands at the Apple:
+
+    * <<<IN#2>>>
+
+    * <<<ctrl-A>>> (The Apple Super Serial card will respond with "<<<APPLE SSC:>>>" and the 
+      IIgs will respond with "<<<?>>>".)
+
+    * <<<6B>>> (and hit the Return key.  This sets the communications rate at 
+      the Apple end to 300 baud.)
+
+    * Note: with some configurations, you will need
+      to hit <<<ctrl-I>>> instead.  (Where <<<I>>> is the capital letter I.)
+      If you hit <<<ctrl-A>>> and nothing happens, just hit the
+      Return key and try <<<ctrl-I>>>.  The one that greets you with the "<<<APPLE SSC:>>>" 
+      or <<<"?">>> is the
+      one that you want.
+
+    * If you get any syntax errors or anything, hit Return a bunch of
+      times and start again.  You just type: <<<ctrl-A 6B>>> or <<<ctrl-I 6B>>>
+      (no spaces) and hit return.
+
+    []
+
+    [[1]] On the ADTPro server, select the communications port and speed you 
+      want to use and click the "Connect" button. (The bootstrapping 
+      operations will always use 300 baud, and will ignore the speed settings 
+      for now.)
+      
+    [[1]] On the ADTPro server, click on "Bootstrapping->Send ADTPro Client."
+      After dismissing the dialog box,
+      you should start to see text flowing (if slowly) across the Apple screen.
+      After some 17-18 minutes, it will save the ADTPro client program to the current drive
+      without you needing to hit <<<RETURN>>>, so make sure the floppy drive 
+      door is closed (if you're saving to floppy).
+
+    [[1]] You can now start the ADTPro client with the <<<BRUN ADTPRO>>> 
+      command at the Apple.  Or more simply, the <<<-ADTPRO>>> command, since
+      you're using ProDOS.
+      Start transferring 5.25", 3.5", Ram drive, or hard drive images to your
+      heart's content!
+
+      []
+
+* {If you already have DOS 3.3, but no ProDOS}
+
+    Start following the "bare metal" instructions below from
+    {{{bootstrap.html#With a freshly formatted DOS floppy in the Apple drive}step 7, "With a freshly formatted DOS floppy..." }}.
+    You will first send the ADT DOS client over to a DOS diskette, then
+    use that DOS ADT client to transfer a new ProDOS-formatted floppy 
+    containing the ADTPro client.
+
+* {Starting from bare metal}
+
+  If you have an Apple ][ with floppy drives but zero physical software, that's
+where the fun really begins.  Bootstrapping a bare-metal Apple all the way into ProDOS is a fun little 
 project in and of itself.  
 You need a Super Serial card or an Apple IIgs,
 a host computer with a serial port, a serial cable to stretch between the two
@@ -60,31 +133,34 @@ machines, and a single-sided, double-density 5.25" floppy or two.
       to use and click the "Connect" button.  (The bootstrapping operations will
       always use 300 baud, and will ignore the speed settings for now.)
       Click on the "Bootstrapping->Send DOS" menu item.
-      You should start to see text flowing (if slowly) across the Apple screen.
+      After dismissing the dialog box,
+      you should start to see text flowing (if slowly) across the Apple screen.
 
-    [[1]] After some 17-18 minutes, you should see a prompt like this:
+    [[1]] After some 22-23 minutes, you should see a prompt like this:
 
 +---
-NOW INSERT A BLANK DISK.
+NOW INSERT A BLANK FLOPPY DISK AND CLOSE
+THE DRIVE DOOR.
+
 HIT RETURN WHEN READY TO FORMAT.
+
 ]INIT HELLO
 +---
-      The cursor will be blinking after <<<HELLO>>>; you will need to hit 
+      The cursor will be blinking after <<<INIT HELLO>>>; you will need to hit 
       hit the <<<RETURN>>> key on the Apple to actually format your disk.
 
-      You now have EsDOS II <in memory only> on your Apple.  When you hit the 
-      <<<RETURN>>> key,
-      it'll format the floppy disk in the drive (slot 6, drive 1 by default).
+      Note that you have EsDOS II <in memory only> on your Apple until you 
+      hit the <<<RETURN>>> key and format a floppy.
       Once the <<<INIT>>> operation completes, you now have a bootable DOS 
       diskette.  Go ahead and reboot with it now with a <<<PR#6>>> command.
       The <<<HELLO>>> program will complain this time because it expects to
       start an <<<ADT>>> program, but it's not on the disk yet.  Soon enough...
 
-    [[1]] You might 'init' another floppy now to get a second floppy formatted, now
-      that you have a working version of DOS.  The command <<<INIT HELLO>>>
+    [[1]] You might 'init' another floppy now to get a second floppy formatted,
+      now that you have a working version of DOS.  The command <<<INIT HELLO>>>
       on the Apple will format it.
 
-    [[1]] With a freshly formatted floppy in the Apple drive, send over the
+    [[1]] {With a freshly formatted DOS floppy in the Apple drive}, send over the
       DOS version of ADT to the Apple.  On the Apple, prepare it to listen to the
       serial port again:
       
@@ -95,25 +171,27 @@ HIT RETURN WHEN READY TO FORMAT.
       []
 
       On the ADTPro server, click on "Bootstrapping->Send DOS ADT Client."
-      You should start to see text flowing (if slowly) across the Apple screen.
-      When it's done, it will save the DOS ADT client program on the floppy
-      without you needing to hit <<<RETURN>>>, so make sure the drive door is
-      still closed.
+      After dismissing the dialog box,
+      you should start to see text flowing (if slowly) across the Apple screen.
+      When it's done (after some 8-9 minutes), it will save the DOS ADT client
+      program on the floppy without you needing to hit <<<RETURN>>>, so make 
+      sure the drive door is closed.
 
-    [[1]] You probably want to write-protect your new DOS ADT diskette by covering
-      the write notch with tape to be sure you don't ever have to send all that
-      stuff over the serial line again.
+    [[1]] You probably want to write-protect your new DOS ADT diskette by
+      covering the write notch with tape to be sure you don't ever have to send
+      all that stuff over the serial line again.
 
-    [[1]] Boot the DOS ADT floppy.  It should start running the Apple DOS
-      version of ADT.
+    [[1]] Boot the DOS ADT floppy.  The Apple command <<<BRUN ADT>>> will start
+      the DOS ADT client up if it doesn't come up automatically.
 
-    [[1]] Remove the DOS ADT diskette from the drive, and insert another formatted,
-      blank floppy.
-      From the Apple, hit the <<<R>>> key to receive 
-      ADTPro-v.r.m.dsk.  If you need to change the default communications prameters,
+    [[1]] Remove the DOS ADT diskette from the drive, and insert another
+      formatted, blank floppy.
+      If you need to change the default communications prameters,
       (ADT assumes a Super Serial card in slot #2, at 115k baud) hit the 
       <<<C>>> key.  You can change the SSC slot or or IIgs Modem port from there,
       as well as the baud rate, disk defaults, etc.
+      From the Apple, hit the <<<R>>> key when you're ready to receive the
+      ADTPro client disk, ADTPro-v.r.m.dsk.
 
     [[1]] Boot ADTPro's newly minted disk.
 
@@ -142,7 +220,7 @@ cable like this:
 
 [images/superSerialCable.jpg]
 
-* {IIgs modem port specifics}
+* {IIgs modem port cabling specifics}
 
   You will need a serial cable setup
 that ultimately connects your IIgs' round, 8-pin mini-din modem connectcor to 
@@ -153,8 +231,7 @@ in between.
       default.  Default values have a little checkmark beside them in the
       control panel.
 
-    [[1]] Use the IIgs control panel to set the Modem Port to all defaults except
-      for the baud rate, which should be set to <<<Baud: 300>>>.  
+    [[1]] Use the IIgs control panel to set the Modem Port to all defaults.  
       Remember, default values will have a little checkmark beside them in the
       control panel.
 

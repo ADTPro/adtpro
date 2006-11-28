@@ -1,0 +1,73 @@
+ -----
+ Sending Disks in Batch
+ -----
+ David Schmidt (david__schmidt at users dot souceforge dot net)
+ -----
+
+Sending Disks in Batch
+
+ Hitting the "B" key from the main menu starts the Batch send process.
+You enter a filename prefix, pick the volume to (repeatedly) send, and
+the ADTPro server will append a unique number to filename for each
+image sent.  
+
+[images/sendBatch.png]
+
+ The prefix you enter will be appended to the current working directory
+of the ADTPro server, and a 4-digit serial number and the suffix "<<<.PO>>>" will
+be appended to it.  If the current working directory were <<</apple/disks>>>, 
+the first disk would be saved as <<</apple/disks/BIGUPLOAD0000.PO>>>.
+The next disk would be saved as <<</apple/disks/BIGUPLOAD0001.PO>>>, and so on.
+If you run out of space (i.e. you already have 9,999 batch images saved), the
+ADTPro server will increment the number without any zero padding.
+
+ After hitting Return to specify the filename prefix, ADTPro will present you with
+a screen to pick a "volume" (a slot/drive combination).  The slot and drive 
+numbers are the first two columns; if the volume happens to be formatted with
+ProDOS, its name will appear in the Volume Name column.  You can use the arrow
+keys or the space bar to pick the volume to be sent to the host:
+
+[images/sendBatch1.png]
+
+ The "Blocks" column is the count of ProDOS blocks present on the disk.  Each 
+block contains 512 bytes of data.  So, typical disk sizes are:
+
+*-------*-----*
+| <<Blocks>> | <<Disk>> |
+*-------*-----*
+|   127 | 64k RAM disk (128k Apples) |
+*-------*-----*
+|   280 | 5-1/4" Floppy disk (140k) |
+*-------*-----*
+|  1600 | 3-1/2" Floppy disk (800k) |
+*-------*-----*
+| 65535 | 32MB Hard drive |
+*-------*-----*
+
+ Some messages may appear in the "Volume name" column to indicate various
+situations:
+
+*-------*-----*
+| <<Message>> | <<Meaning>> |
+*-------*-----*
+|  \<NO NAME\> | A DOS 3.3 disk is in the drive (which is ok) |
+*-------*-----*
+|  \<I/O ERROR\> | Can't read the disk in the drive |
+*-------*-----*
+|  \<NO DISK\> | No disk is found in the drive |
+*-------*-----*
+
+ Once you pick the volume to repeatdly send, you are prompted to insert
+the next disk to send and hit a key.  Once contact is made with the host, 
+the disk information starts reading and sending as with normal 
+{{{sending.html}send}}
+operations.
+
+ When the image has finished sending to the host, you will see a "Complete" message,
+which you must acknowledge by hitting a key.  You are then prompted to insert
+the next disk to send and hit a key.  When you do, the same volume will be
+read and sent to the ADTPro server (presumably, with a different diskette that
+you inserted).  The numeric prefix will be incremented with each disk you send;
+the ADTPro server will show the current disk name on its window.
+
+ You can hit the Escape key at any time to bring you back to the main ADTPro menu.

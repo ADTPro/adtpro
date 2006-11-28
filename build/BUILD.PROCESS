@@ -17,14 +17,18 @@ the stuff that gets uploaded to sourceforge.
 
 2. Perform a build
 
-3. Tag adtpro project with the version number.  The
+3. If you change DOS ADT - change the value of L$ in ADT CONFIGURATION
+   on the ADTBase.dsk image to reflect the new length (see the adt.lst
+   file for final length).
+
+4. Tag adtpro project with the version number.  The
     standard is:  v_[major]_[minor]_[service]
 
-4. Anonymously FTP ADTPro-v.r.m.zip to upload.sourceforge.net, in the incoming directory
+5. Anonymously FTP ADTPro-v.r.m.zip to upload.sourceforge.net, in the incoming directory
 
-5. Release the file
+6. Release the file
 
-6. Upload updated web contents:
+7. Upload updated web contents:
    sftp sf_user@adtpro.sourceforge.net
    cd /home/groups/a/ad/adtpro
    put adtpro.zip (or whatever you call the package)

@@ -33,6 +33,8 @@ systems.
 
     * Ability to change working directory on the fly
 
+    * Ability to send floppies in "batch" mode without having to name each one
+
  ADTPro may be used to transer either Apple diskette/disk images in DOS or ProDOS format.
 The Apple client side happens to run under ProDOS, but it is perfectly capable
 of reading or writing Apple DOS (or Pascal, or CPM, or...) diskettes.
