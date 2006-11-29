@@ -18,6 +18,7 @@
 ; 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 ;
 
+.include "applechr.i"
 .include "const.i"
 .include "ip65/common.i"
 
@@ -89,7 +90,7 @@ KBDLUP:
 	jsr RDKEY	; GET ANSWER
 	and #$DF	; Conver to upper case
 
-KSEND:	cmp #'S'	; SEND?
+KSEND:	cmp #CHR_S	; SEND?
 	bne :+		; Nope
 	lda #$06
         ldx #$02
@@ -98,7 +99,7 @@ KSEND:	cmp #'S'	; SEND?
 	jsr SEND	; YES, DO SEND ROUTINE
 	jmp MAINLUP
 :
-KRECV:	cmp #'R'	; RECEIVE?
+KRECV:	cmp #CHR_R	; RECEIVE?
 	bne :+		; Nope
 	lda #$09
 	ldx #$09
@@ -107,7 +108,7 @@ KRECV:	cmp #'R'	; RECEIVE?
 	jsr RECEIVE
 	jmp MAINLUP
 :
-KDIR:	cmp #'D'	; DIR?
+KDIR:	cmp #CHR_D	; DIR?
 	bne :+		; Nope, try CD
 	lda #$05
 	ldx #$13
@@ -117,7 +118,7 @@ KDIR:	cmp #'D'	; DIR?
 	jmp MAINLUP
 :
 KBATCH:
-	cmp #'B'	; Batch processing?
+	cmp #CHR_B	; Batch processing?
 	bne :+		; Nope
 	ldy #PMNULL	; No title line
 	lda #$07
@@ -127,7 +128,7 @@ KBATCH:
 	jsr BATCH	; Set up batch processing
 	jmp MAINLUP
 :
-KCD:	cmp #'C'	; CD?
+KCD:	cmp #CHR_C	; CD?
 	bne :+		; Nope
 	lda #$04
         ldx #$21
@@ -160,20 +161,14 @@ KABOUT:	cmp #$9F	; ABOUT MESSAGE? ("?" KEY)
 	jmp MAINLUP	; Clear and start over
 :
 KVOLUMS:
-	cmp #'V'	; Volumes online?
+	cmp #CHR_V	; Volumes online?
 	bne :+		; Nope
 	ldy #PMNULL	; No title line
 	jsr PICKVOL	; Pick a volume - A has index into DEVICES table
 	jmp MAINLUP
 :
-KESCAPE:
-	cmp #$9B	; Escape?
-	bne :+		; Nope, try Quit
-	jsr CLEANUP
-	jmp $03d0	; Bail allllllllllll the way out
-:
 KQUIT:
-	cmp #'Q'	; Quit?
+	cmp #CHR_Q	; Quit?
 	bne FORWARD	; No, it was an unknown key
 	jsr CLEANUP
 	jmp $03d0	; Bail allllllllllll the way out

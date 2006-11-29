@@ -74,44 +74,44 @@ V_BUF	= $0f
 ; Characters
 ;---------------------------------------------------------
 CHR_BLK	= $20
-CHR_SP	= ' ' | $80
-CHR_DOT = '.' | $80
-CHR_A	= 'A' | $80
-CHR_B	= 'B' | $80
-CHR_C	= 'C' | $80
-CHR_D	= 'D' | $80
-CHR_E	= 'E' | $80
-CHR_F	= 'F' | $80
-CHR_G	= 'G' | $80
-CHR_H	= 'H' | $80
-CHR_I	= 'I' | $80
-CHR_J	= 'J' | $80
-CHR_K	= 'K' | $80
-CHR_L	= 'L' | $80
-CHR_M	= 'M' | $80
-CHR_N	= 'N' | $80
-CHR_O	= 'O' | $80	; The letter O
-CHR_P	= 'P' | $80
-CHR_Q	= 'Q' | $80
-CHR_R	= 'R' | $80
-CHR_S	= 'S' | $80
-CHR_T	= 'T' | $80
-CHR_U	= 'U' | $80
-CHR_V	= 'V' | $80
-CHR_W	= 'W' | $80
-CHR_X	= 'X' | $80
-CHR_Y	= 'Y' | $80
-CHR_Z	= 'Z' | $80
-CHR_0	= '0' | $80	; Zero
-CHR_1	= '1' | $80
-CHR_2	= '2' | $80
-CHR_3	= '3' | $80
-CHR_4	= '4' | $80
-CHR_5	= '5' | $80
-CHR_6	= '6' | $80
-CHR_7	= '7' | $80
-CHR_8	= '8' | $80
-CHR_9	= '9' | $80
+CHR_SP	= _' '
+CHR_DOT = _'.'
+CHR_A	= _'A'
+CHR_B	= _'B'
+CHR_C	= _'C'
+CHR_D	= _'D'
+CHR_E	= _'E'
+CHR_F	= _'F'
+CHR_G	= _'G'
+CHR_H	= _'H'
+CHR_I	= _'I'
+CHR_J	= _'J'
+CHR_K	= _'K'
+CHR_L	= _'L'
+CHR_M	= _'M'
+CHR_N	= _'N'
+CHR_O	= _'O'	; The letter O
+CHR_P	= _'P'
+CHR_Q	= _'Q'
+CHR_R	= _'R'
+CHR_S	= _'S'
+CHR_T	= _'T'
+CHR_U	= _'U'
+CHR_V	= _'V'
+CHR_W	= _'W'
+CHR_X	= _'X'
+CHR_Y	= _'Y'
+CHR_Z	= _'Z'
+CHR_0	= _'0'	; Zero
+CHR_1	= _'1'
+CHR_2	= _'2'
+CHR_3	= _'3'
+CHR_4	= _'4'
+CHR_5	= _'5'
+CHR_6	= _'6'
+CHR_7	= _'7'
+CHR_8	= _'8'
+CHR_9	= _'9'
 CHR_ESC	= $9b
 CHR_ACK	= $06
 CHR_NAK	= $15
@@ -131,42 +131,3 @@ RESETB	=	%01010001	; constant to reset Channel B
 WR11A	=	%11010000	; init wr11 in Ch A
 WR11BXTAL	=	%00000000	; init wr11 in Ch B - use external clock
 WR11BBRG	=	%01010000	; init wr11 in Ch B - use baud rate generator
-
-;---------------------------------------------------------
-; Apple II character mapping - turn that high-bit on!
-;---------------------------------------------------------
-
-.charmap	$20, $A0
-.charmap	$21, $A1
-.charmap	$22, $A2
-.charmap	$23, $A3
-.charmap	$24, $A4
-.charmap	$25, $A5
-.charmap	$26, $A6
-.charmap	$27, $A7
-.charmap	$28, $A8
-.charmap	$29, $A9
-.charmap	$2a, $Aa
-.charmap	$2b, $Ab
-.charmap	$2c, $Ac
-.charmap	$2d, $AD
-.charmap	$2e, $Ae
-.charmap	$2f, $Af
-
-.charmap	$30, $b0
-.charmap	$31, $b1
-.charmap	$32, $b2
-.charmap	$33, $b3
-.charmap	$34, $b4
-.charmap	$35, $b5
-.charmap	$36, $b6
-.charmap	$37, $b7
-.charmap	$38, $b8
-.charmap	$39, $b9
-.charmap	$3a, $ba
-.charmap	$3b, $bb
-.charmap	$3c, $bc
-.charmap	$3d, $bd
-.charmap	$3e, $be
-.charmap	$3f, $bf
-

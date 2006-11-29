@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project name="ADTPro" default="jar" basedir="..">
-	<property name="versionString" value="0.1.2" />
+	<property name="versionString" value="0.1.3" />
 	<property name="distName" value="ADTPro-${versionString}" />
 	<property name="volName" value="ADTPro.${versionString}" />
 	<property name="dosVersionString" value="130" />
@@ -36,16 +36,16 @@
 		Assemble the ADTPro source
 		-->
 		<exec dir="${projdir}/client/src" executable="${assemblerPath}/ca65">
-			<arg line="-l -t c64 ethernet/ethmain.asm" />
+			<arg line="-l -t none ethernet/ethmain.asm" />
 		</exec>
 		<exec dir="${projdir}/client/src" executable="${assemblerPath}/ca65">
-			<arg line="-l -t c64 serial/sermain.asm" />
+			<arg line="-l -t none serial/sermain.asm" />
 		</exec>
 		<!--
 		Assemble the ADT source
 		-->
 		<exec dir="${projdir}/client/src/dos" executable="${assemblerPath}/ca65">
-			<arg line="-l -t c64 adt.asm" />
+			<arg line="-l -t none adt.asm" />
 		</exec>
 		<!--
 		Assemble the IP65 stack source

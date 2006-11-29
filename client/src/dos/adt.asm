@@ -1,3 +1,4 @@
+	.include "../applechr.i"
 	.include "const.i"
 
 ;--------------------------------
@@ -163,22 +164,22 @@ RESETIO: jsr $0000	; Pseudo-indirect JSR to rest the IO device
          AND #$DF          ;CONVERT TO UPPERCASE
 ;MOD0:    BIT $C088         ;CLEAR SSC INPUT REGISTER
 
-         CMP #'S' | $80    ;SEND?
+         CMP #_'S' | $80    ;SEND?
          BNE KRECV         ;NOPE, TRY RECEIVE
          JSR SEND          ;YES, DO SEND ROUTINE
          JMP MAINLUP
 
-KRECV:   CMP #'R' | $80    ;RECEIVE?
+KRECV:   CMP #_'R' | $80    ;RECEIVE?
          BNE KDIR          ;NOPE, TRY DIR
          JSR RECEIVE       ;YES, DO RECEIVE ROUTINE
          JMP MAINLUP
 
-KDIR:    CMP #'D' | $80    ;DIR?
+KDIR:    CMP #_'D' | $80    ;DIR?
          BNE KCONF         ;NOPE, TRY CONFIGURE
          JSR DIR           ;YES, DO DIR ROUTINE
          JMP REDRAW
 
-KCONF:   CMP #'C' | $80    ;CONFIGURE?
+KCONF:   CMP #_'C' | $80    ;CONFIGURE?
          BNE KABOUT        ;NOPE, TRY ABOUT
          JSR CONFIG        ;YES, DO CONFIGURE ROUTINE
          JSR PARMINT       ;AND INTERPRET PARAMETERS
@@ -191,7 +192,7 @@ KABOUT:  CMP #$9F          ;ABOUT MESSAGE? ("?" KEY)
          JSR RDKEY
          JMP MAINLUP
 
-KQUIT:   CMP #'Q'  | $80   ;QUIT?
+KQUIT:   CMP #_'Q'  | $80   ;QUIT?
          BNE MAINLUP       ;NOPE, WAS A BAD KEY
          LDA DOSBYTE       ;YES, RESTORE DOS CHECKSUM CODE
          STA $B92E
@@ -205,7 +206,7 @@ KQUIT:   CMP #'Q'  | $80   ;QUIT?
 ; PC SENDS 0,1 AFTER PAGES 1..N-1, 0,0 AFTER LAST PAGE
 ;---------------------------------------------------------
 DIR:     JSR HOME          ;CLEAR SCREEN
-         LDA #'D' | $80    ;SEND DIR COMMAND TO PC
+         LDA #_'D' | $80    ;SEND DIR COMMAND TO PC
          JSR PUTC
 
          LDA PSPEED
@@ -421,7 +422,7 @@ OLDPARM: .byte $00,$00,$00,$00,$00,$00,$00,$00	; There must be PARMNUM bytes her
 PARMINT: LDY PDSLOT        ;GET SLOT# (0..6)
          INY               ;NOW 1..7
          TYA
-         ORA #'0' | $80    ;CONVERT TO ASCII AND PUT
+         ORA #_'0' | $80    ;CONVERT TO ASCII AND PUT
          STA MTSLT         ;INTO TITLE SCREEN
          TYA
          ASL
@@ -436,13 +437,13 @@ PARMINT: LDY PDSLOT        ;GET SLOT# (0..6)
          INY               ;NOW 1..2
          STY IOBDRV        ;STORE IN IOB
          TYA
-         ORA #'0' | $80    ;CONVERT TO ASCII AND PUT
+         ORA #_'0' | $80    ;CONVERT TO ASCII AND PUT
          STA MTDRV         ;INTO TITLE SCREEN
 
          LDY PSSC          ;GET SSC SLOT# (0..6)
          INY               ;NOW 1..7
          TYA
-         ORA #'0' | $80    ;CONVERT TO ASCII AND PUT
+         ORA #_'0' | $80    ;CONVERT TO ASCII AND PUT
          STA MTSSC         ;INTO TITLE SCREEN
          TYA
          ASL
@@ -495,7 +496,7 @@ IIGS:
 
          RTS               ;(YES)
 
-SPDTXT:  .byte "  003 0021 0042 0084 006900291 K511"
+SPDTXT:  asc "  003 0021 0042 0084 006900291 K511"
 BPSCTRL: .byte $16,$18,$1A,$1C,$1E,$1F,$10
 TRYTBL:  .byte 0,1,2,3,4,5,10,99
 
@@ -537,7 +538,7 @@ FNAMEOK: LDY #MTEST        ;"TESTING THE DISK"
 
 DISKOK:  LDY #MPCANS       ;"AWAITING ANSWER FROM PC"
          JSR SHOWMSG
-         LDA #'R' | $80    ;LOAD ACC WITH "R" OR "S"
+         LDA #_'R' | $80    ;LOAD ACC WITH "R" OR "S"
          ADC DIRECTN
          JSR PUTC          ;AND SEND TO PC
          LDX #0
@@ -717,7 +718,7 @@ NOTONE:  DEC TRKCNT
          JMP S7TRK         ;LOOP UNTIL 7 TRACKS DONE
 SREND:   RTS
 
-SRCHAR:  .byte "OI"       ;STATUS CHARACTERS: OUT/IN
+SRCHAR:  asc "OI"       ;STATUS CHARACTERS: OUT/IN
 WHAT2DO: .byte 00
 
 
@@ -814,13 +815,13 @@ RWAGAIN: LDA $C000         ;CHECK KEYBOARD
 RWCONT:  LDA #>IOB         ;GET IOB ADDRESS IN REGISTERS
          LDY #<IOB
          JSR $3D9          ;CALL RWTS THROUGH VECTOR
-         LDA #'.' | $80    ;CARRY CLEAR MEANS NO ERROR
+         LDA #_'.' | $80    ;CARRY CLEAR MEANS NO ERROR
          BCC SECTOK        ;NO ERROR: PUT . IN STATUS
          DEC RETRIES       ;ERROR: SOME PATIENCE LEFT?
          BPL RWAGAIN       ;YES, TRY AGAIN
          ROL ERRORS        ;NO, SET ERRORS TO NONZERO
          JSR CLRSECT       ;FILL SECTOR WITH ZEROS
-         LDA #';'          ;AND PUT INVERSE ; IN STATUS
+         LDA #_';'          ;AND PUT INVERSE ; IN STATUS
 
 SECTOK:  JSR CHRADV        ;PRINT SECTOR STATUS & ADVANCE
          INC IOBBUF+1      ;NEXT PAGE IN BUFFER
@@ -831,7 +832,7 @@ SECTOK:  JSR CHRADV        ;PRINT SECTOR STATUS & ADVANCE
          BNE NEXTTRK
          RTS
 
-RWCHAR:  .byte "RW"       ;STATUS CHARACTERS: READ/WRITE
+RWCHAR:  asc "RW"       ;STATUS CHARACTERS: READ/WRITE
 RETRIES: .byte 00
 REALTRY: .byte 00,00       ;REAL NUMBER OF RETRIES
 
@@ -1067,196 +1068,105 @@ MSGTBL:  .addr  MSG01,MSG02,MSG03,MSG04,MSG05,MSG06,MSG07
          .addr  MSG15,MSG16,MSG17,MSG18,MSG19,MSG20,MSG21
          .addr  MSG22
 
-MSG01:   .byte "SSC:S"
-MTSSC:   .byte " ,"
-MTSPD:   .byte "      "
-         .byte '+' & $7f
-         .byte ' ' & $7f
-         .byte 'A' & $3f
-         .byte 'D' & $3f
-         .byte 'T' & $3f
-         .byte ' ' & $7f
-         .byte '1' & $7f
-         .byte '.' & $7f
-         .byte '3' & $7f
-         .byte '0' & $7f
-         .byte ' ' & $7f
-         .byte '+' & $7f
-         .byte "   DISK:S"
-MTSLT:   .byte " ,D"
-MTDRV:   .byte " ",$8D,$8D,$8D
-         .byte ' ' & $7f
-         .byte ' ' & $7f
-         .byte '0' & $7f
-         .byte '0' & $7f
-         .byte '0' & $7f
-         .byte '0' & $7f
-         .byte '0' & $7f
-         .byte '0' & $7f
-         .byte '0' & $7f
-         .byte '0' & $7f
-         .byte '0' & $7f
-         .byte '0' & $7f
-         .byte '0' & $7f
-         .byte '0' & $7f
-         .byte '0' & $7f
-         .byte '0' & $7f
-         .byte '0' & $7f
-         .byte '0' & $7f
-         .byte '1' & $7f
-         .byte '1' & $7f
-         .byte '1' & $7f
-         .byte '1' & $7f
-         .byte '1' & $7f
-         .byte '1' & $7f
-         .byte '1' & $7f
-         .byte '1' & $7f
-         .byte '1' & $7f
-         .byte '1' & $7f
-         .byte '1' & $7f
-         .byte '1' & $7f
-         .byte '1' & $7f
-         .byte '1' & $7f
-         .byte '1' & $7f
-         .byte '1' & $7f
-         .byte '2' & $7f
-         .byte '2' & $7f
-         .byte '2' & $7f
-         .byte ' ' & $7f
-         .byte ' ' & $7f
-         .byte $8D
+MSG01:   asc "SSC:S"
+MTSSC:   asc " ,"
+MTSPD:   asc "      "
+         inv "+ ADT 1.30 +"
+         asc "   DISK:S"
+MTSLT:   asc " ,D"
+MTDRV:   asc " "
+	 .byte   $8d,$8d,$8d
+         invcr   "  00000000000000001111111111111111222  "
+         inv     "  "
 
+HEXNUM:	inv     "0123456789ABCDEF0123456789ABCDEF012  "
+	.byte   $8d,$00
 
-         .byte ' ' & $7f
-         .byte ' ' & $7f
-HEXNUM:  .byte '0' & $7f
-         .byte '1' & $7f
-         .byte '2' & $7f
-         .byte '3' & $7f
-         .byte '4' & $7f
-         .byte '5' & $7f
-         .byte '6' & $7f
-         .byte '7' & $7f
-         .byte '8' & $7f
-         .byte '9' & $7f
-         .byte 'A' & $3f
-         .byte 'B' & $3f
-         .byte 'C' & $3f
-         .byte 'D' & $3f
-         .byte 'E' & $3f
-         .byte 'F' & $3f
-         .byte '0' & $7f
-         .byte '1' & $7f
-         .byte '2' & $7f
-         .byte '3' & $7f
-         .byte '4' & $7f
-         .byte '5' & $7f
-         .byte '6' & $7f
-         .byte '7' & $7f
-         .byte '8' & $7f
-         .byte '9' & $7f
-         .byte 'A' & $3f
-         .byte 'B' & $3f
-         .byte 'C' & $3f
-         .byte 'D' & $3f
-         .byte 'E' & $3f
-         .byte 'F' & $3f
-         .byte '0' & $7f
-         .byte '1' & $7f
-         .byte '2' & $7f
-         .byte ' ' & $7f
-         .byte ' ' & $7f
-         .byte $8D,$00
+MSG02:  inv     " ADT CONFIGURATION "
+        .byte   $8d,$8d,$8d
+        asccr   "DISK SLOT"
+        asccr   "DISK DRIVE"
+        asccr   "SSC SLOT"
+        asccr   "SSC SPEED"
+        asccr   "READ RETRIES"
+        asccr   "WRITE RETRIES"
+        asccr   "USE CHECKSUMS"
+        ascz    "ENABLE SOUND"
 
-MSG02:   .byte ' ' & $7f
-         .byte 'A' & $3f
-         .byte 'D' & $3f
-         .byte 'T' & $3f
-         .byte ' ' & $3f
-         .byte 'C' & $3f
-         .byte 'O' & $3f
-         .byte 'N' & $3f
-         .byte 'F' & $3f
-         .byte 'I' & $3f
-         .byte 'G' & $3f
-         .byte 'U' & $3f
-         .byte 'R' & $3f
-         .byte 'A' & $3f
-         .byte 'T' & $3f
-         .byte 'I' & $3f
-         .byte 'O' & $3f
-         .byte 'N' & $3f
-         .byte ' ' & $7f
-         .byte $8D,$8D,$8D
-         .byte "DISK SLOT",$8D
-         .byte "DISK DRIVE",$8D
-         .byte "COMMS DEVICE",$8D
-         .byte "COMMS SPEED",$8D
-         .byte "READ RETRIES",$8D
-         .byte "WRITE RETRIES",$8D
-         .byte "USE CHECKSUMS",$8D
-         .byte "ENABLE SOUND",$00
+MSG03:   asccr "USE ARROWS AND SPACE TO CHANGE VALUES,"
+         ascz "RETURN TO ACCEPT, CTRL-D FOR DEFAULTS."
 
-MSG03:   .byte "USE ARROWS AND SPACE TO CHANGE VALUES,",$8D
-         .byte "RETURN TO ACCEPT, CTRL-D FOR DEFAULTS.",$00
+MSG04:   ascz "SEND, RECEIVE, DIR, CONFIGURE, QUIT? "
+MSG05:   ascz "SPACE TO CONTINUE, ESC TO STOP: "
+MSG06:   ascz "END OF DIRECTORY, TYPE SPACE: "
 
-MSG04:   .byte "SEND, RECEIVE, DIR, CONFIGURE, QUIT? ",$00
-MSG05:   .byte "SPACE TO CONTINUE, ESC TO STOP: ",$00
-MSG06:   .byte "END OF DIRECTORY, TYPE SPACE: ",$00
+MSG07:   ascz "FILE TO RECEIVE: "
+MSG08:   ascz "FILE TO SEND: "
 
-MSG07:   .byte "FILE TO RECEIVE: ",$00
-MSG08:   .byte "FILE TO SEND: ",$00
+MSG09:   ascz "RECEIVING FILE "
+MSG10:   ascz "SENDING FILE "
 
-MSG09:   .byte "RECEIVING FILE ",$00
-MSG10:   .byte "SENDING FILE ",$00
+MSG11:   inv "ERROR:"
+         ascz " NONSENSE FROM PC."
 
-MSG11:   .byte "ERROR:" ; s/b inverse
-         .byte " NONSENSE FROM PC.",$00
+MSG12:   inv "ERROR:"
+         ascz " NOT A 16-SECTOR DISK."
 
-MSG12:   .byte "ERROR:" ; s/b inverse
-         .byte " NOT A 16-SECTOR DISK.",$00
-
-MSG13:   .byte "ERROR:" ; s/b inverse
-         .byte " FILE ",$00
+MSG13:   inv "ERROR:"
+         ascz " FILE "
 
 MSG14:   .byte $8D
-         .byte "CAN'T BE OPENED.",$00
+         ascz "CAN'T BE OPENED."
 
 MSG15:   .byte $8D
-         .byte "ALREADY EXISTS.",00
+         ascz "ALREADY EXISTS."
 
 MSG16:   .byte $8D
-         .byte "IS NOT A 140K IMAGE.",00
+         ascz "IS NOT A 140K IMAGE."
 
 MSG17:   .byte $8D
-         .byte "DOESN'T FIT ON DISK.",00
+         ascz "DOESN'T FIT ON DISK."
 
-MSG18:   .byte "  ANY KEY: ",00
+MSG18:   ascz "  ANY KEY: "
 
-MSG19:   .byte "<- DO NOT CHANGE",00
+MSG19:   ascz "<- DO NOT CHANGE"
 
-MSG20:   .byte "APPLE DISK TRANSFER 1.30     2006-11-15",$8D
-         .byte "PAUL GUERTIN (SSC AND IIGS COMPATIBLE)",$00
+MSG20:   asccr "APPLE DISK TRANSFER 1.30     2006-11-15"
+         ascz "PAUL GUERTIN (SSC AND IIGS COMPATIBLE)"
 
-MSG21:   .byte "TESTING DISK FORMAT.",$00
+MSG21:   ascz "TESTING DISK FORMAT."
 
-MSG22:   .byte "AWAITING ANSWER FROM PC.",$00
+MSG22:   ascz "AWAITING ANSWER FROM PC."
 
 
 ;----------------------- PARAMETERS ----------------------
 
 PARMSIZ: .byte 7,2,8,7,8,8,2,2        ;#OPTIONS OF EACH PARM
 
-PARMTXT: .byte "1",0,"2",0,"3",0,"4",0,"5",0,"6",0,"7",0
-         .byte "1",0,"2",0
-         .byte "SSC SLOT 1",0,"SSC SLOT 2",0,"SSC SLOT 3",0,"SSC SLOT 4",0,"SSC SLOT 5",0,"SSC SLOT 6",0,"SSC SLOT 7",0,"IIGS MODEM",0
-         .byte "300",0,"1200",0,"2400",0
-         .byte "4800",0,"9600",0,"19200",0
-         .byte "115K",0
-         .byte "0",0,"1",0,"2",0,"3",0,"4",0,"5",0,"1","0",0,"9","9",0
-         .byte "0",0,"1",0,"2",0,"3",0,"4",0,"5",0,"1","0",0,"9","9",0
-         .byte "YES",0,"NO",0
-         .byte "YES",0,"NO",0
+PARMTXT:
+         .byte   _'1',0,_'2',0,_'3',0,_'4',0,_'5',0,_'6',0,_'7',0
+         .byte   _'1',0,_'2',0
+         ascz "SSC SLOT 1"
+         ascz "SSC SLOT 2"
+         ascz "SSC SLOT 3"
+         ascz "SSC SLOT 4"
+         ascz "SSC SLOT 5"
+         ascz "SSC SLOT 6"
+         ascz "SSC SLOT 7"
+         ascz "IIGS MODEM"
+         ascz "300"
+         ascz "1200"
+         ascz "2400"
+         ascz "4800"
+         ascz "9600"
+         ascz "19200"
+         ascz "115K"
+         .byte _'0',0,_'1',0,_'2',0,_'3',0,_'4',0,_'5',0,_'1',_'0',0,_'9',_'9',0
+         .byte _'0',0,_'1',0,_'2',0,_'3',0,_'4',0,_'5',0,_'1',_'0',0,_'9',_'9',0
+         ascz "YES"
+         ascz "NO"
+         ascz "YES"
+         ascz "NO"
 
 PARMS:
 PDSLOT:  .byte 5             ;DISK SLOT (6)
