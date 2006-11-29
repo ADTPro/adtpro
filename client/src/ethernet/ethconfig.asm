@@ -362,28 +362,28 @@ CURVAL:		.byte 00		; VALUE OF ACTIVE PARAMETER
 OLDPARM:	.byte $00,$00,$00	; There must be PARMNUM bytes here...
 
 PARMTXT:
-	.asciiz "UTH SLOT 1"
-	.asciiz "UTH SLOT 2"
-	.asciiz "UTH SLOT 3"
-	.asciiz "UTH SLOT 4"
-	.asciiz "UTH SLOT 5"
-	.asciiz "UTH SLOT 6"
-	.asciiz "UTH SLOT 7"
-	.asciiz "YES"
-	.asciiz "NO"
-	.asciiz "YES"
-	.asciiz "NO"
+	ascz "UTH SLOT 1"
+	ascz "UTH SLOT 2"
+	ascz "UTH SLOT 3"
+	ascz "UTH SLOT 4"
+	ascz "UTH SLOT 5"
+	ascz "UTH SLOT 6"
+	ascz "UTH SLOT 7"
+	ascz "YES"
+	ascz "NO"
+	ascz "YES"
+	ascz "NO"
 
 PARMS:
 PSSC:	.byte 2		; Comms slot (3)
 PSOUND:	.byte 0		; Sounds? (YES)
 PSAVE:	.byte 1		; Save parms? (NO)
 
-IPMsg01:	.asciiz "SERVER IP ADDR"
-IPMsg02:	.asciiz "LOCAL IP ADDR"
-IPMsg03:	.asciiz "NETMASK"
-IPMsg04:	.asciiz "GATEWAY ADDR"
-IPMsg05:	.asciiz "DNS ADDRESS"
+IPMsg01:	ascz "SERVER IP ADDR"
+IPMsg02:	ascz "LOCAL IP ADDR"
+IPMsg03:	ascz "NETMASK"
+IPMsg04:	ascz "GATEWAY ADDR"
+IPMsg05:	ascz "DNS ADDRESS"
 
 DEFAULT:	.byte 2,0,1	; Default parm indices
 FACTORY:	.byte 2,0,1	; Factory default parm indices

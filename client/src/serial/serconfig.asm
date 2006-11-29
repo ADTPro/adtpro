@@ -295,21 +295,21 @@ PARMNUM	= $04		; Number of configurable parms
 PARMSIZ: .byte 8,3,2,2	; Number of options for each parm
 
 PARMTXT:
-	.asciiz "SSC SLOT 1"
-	.asciiz "SSC SLOT 2"
-	.asciiz "SSC SLOT 3"
-	.asciiz "SSC SLOT 4"
-	.asciiz "SSC SLOT 5"
-	.asciiz "SSC SLOT 6"
-	.asciiz "SSC SLOT 7"
-	.asciiz "IIGS MODEM"
-	.asciiz "9600"
-	.asciiz "19200"
-	.asciiz "115200"
-	.asciiz "YES"
-	.asciiz "NO"
-	.asciiz "YES"
-	.asciiz "NO"
+	ascz "SSC SLOT 1"
+	ascz "SSC SLOT 2"
+	ascz "SSC SLOT 3"
+	ascz "SSC SLOT 4"
+	ascz "SSC SLOT 5"
+	ascz "SSC SLOT 6"
+	ascz "SSC SLOT 7"
+	ascz "IIGS MODEM"
+	ascz "9600"
+	ascz "19200"
+	ascz "115200"
+	ascz "YES"
+	ascz "NO"
+	ascz "YES"
+	ascz "NO"
 
 PARMS:
 PSSC:	.byte 1		; Comms slot (2)
