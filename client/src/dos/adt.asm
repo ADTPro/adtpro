@@ -120,7 +120,7 @@ MPCANS   = 42            ;AWAITING ANSWER FROM PC
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-;        ORG $803
+         .ORG $803
 
          JMP START         ;SKIP DEFAULT PARAMETERS
 
@@ -1206,5 +1206,7 @@ MESSAGE: .byte $00            ;SECTOR STATUS SENT TO PC
 PCCRC:   .byte $00,$00         ;CRC RECEIVED FROM PC
 ERRORS:  .byte $00            ;NON0 IF AT LEAST 1 DISK ERROR
 
+; Pull in source for IIgs Serial Communications Controller (SCC)
          .include "iigsscc.asm"
+; Pull in source for Super Serial  Controller (SSC)
          .include "ssc.asm"
