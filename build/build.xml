@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project name="ADTPro" default="jar" basedir="..">
+<project name="ADTPro" default="all" basedir="..">
 	<property name="versionString" value="0.1.3" />
 	<property name="distName" value="ADTPro-${versionString}" />
 	<property name="volName" value="ADTPro.${versionString}" />
@@ -11,12 +11,17 @@
 	<property name="acJar" value="AppleCommander-1.3.4b-ac.jar" />
 	<taskdef name="appleDump" classname="org.adtpro.utilities.AppleDump" classpath="${projdir}"/>
 
+	<target name="all" depends="clean, assemble, builddsk, scripts, jar">
+	</target>
+
 	<target name="clean">
 		<!--
 		Clean up everything
 		-->
 		<delete file="${builddir}/ADTPRO" />
 		<delete file="${builddir}/ADTPROETH" />
+		<delete file="${builddir}/adtpro.bat" />
+		<delete file="${builddir}/adtpro.sh" />
 		<delete file="${builddir}/${distName}.dsk" />
 		<delete file="${builddir}/${distName}.jar" />
 		<delete file="${builddir}/${distName}.zip" />
@@ -82,7 +87,13 @@
 		<appleDump infilename="${builddir}/ADT" outfilename="${basedir}/org/adtpro/resources/adt.dmp" applename="ADT" startaddrhex="803" numbyteswide="8" />
 	</target>
 
-	<target name="builddsk" depends="assemble">
+	<target name="scripts">
+		<echo message="@start /min java -jar ${distName}.jar" file="${builddir}/adtpro.bat"/>
+		<echo file="${builddir}/adtpro.sh">#\!/bin/sh
+java -jar ${distName}.jar</echo>
+	</target>
+
+	<target name="builddsk">
 		<!--
 		Start a .dsk image containing the release number
 		-->
@@ -140,10 +151,16 @@
 		</exec>
 	</target>
 
-	<target name="jar" depends="builddsk">
+	<target name="jar">
 		<!-- jar up the source, object and properties files -->
-		<jar jarfile="${builddir}/${distName}.jar" manifest="${builddir}/manifest.mf" basedir="${projdir}" includes="org/**/*.class org/**/*.java org/**/*.properties org/**/*.png org/**/*.dmp LICENSE" />
+		<jar jarfile="${builddir}/${distName}.jar" 
+			manifest="${builddir}/manifest.mf" 
+			basedir="${projdir}" 
+			includes="org/**/*.class org/**/*.java org/**/*.properties org/**/*.png org/**/*.dmp LICENSE" />
 		<!-- zip up the whole sheebang -->
-		<zip destfile="${builddir}/${distName}.zip" basedir="${builddir}" includes="${distName}.jar ${distName}.dsk ${dosDistName}.dsk rxtx/rxtx-2.1-7-bins-r2.zip rxtx/fixperm.sh LICENSE README" />
+		<zip destfile="${builddir}/${distName}.zip" 
+			basedir="${builddir}" 
+			includes="${distName}.jar ${distName}.dsk ${dosDistName}.dsk rxtx/rxtx-2.1-7-bins-r2.zip rxtx/fixperm.sh LICENSE README adtpro.bat adtpro.sh" />
 	</target>
+
 </project>
