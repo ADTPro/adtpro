@@ -2,6 +2,6 @@
 <classpath>
 	<classpathentry kind="src" path=""/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/ANT"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/ANT_JAR"/>
 	<classpathentry kind="output" path=""/>
 </classpath>
