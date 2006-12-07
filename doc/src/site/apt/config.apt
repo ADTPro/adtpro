@@ -36,10 +36,8 @@ AppleTalk communications to/from your Apple IIgs.
 
 [images/configIIgs.png]
 
- Note that using the native serial port will kill things like AppleTalk.
-In fact, it's not particularly reliable to start up with GSOS and then use
-ADTPro.
-It's best to start up under ProDOS - the distribution diskette is 
+ Note that it's not particularly reliable to start up with GSOS and then use
+ADTPro.  It's best to start up under ProDOS - the distribution diskette is 
 well suited to this.
 If you normally start with GSOS, you can hit the '8' key as the computer is displaying
 the initial "Apple IIgs" screen and it'll start 8-bit ProDOS and drop you into the
@@ -50,8 +48,10 @@ of the IIgs:
 
 [images/iigsmodemport.jpg]
 
- And it will require a "null modem" cable or adapter when connecting to the host
-computer.
+ ADTPro will require a "null modem" cable or adapter when connecting to the host
+computer.  See the 
+{{{bootstrap.html#IIgs modem port cabling specifics}IIgs modem port cabling specifics}}
+section of the bootstrap page for details.
 
 * Baud Rate
 
@@ -59,11 +59,10 @@ computer.
 
 [images/configBaud.png]
 
- 115200 is the absolute maximum that ADTPro supports through the Super Serial
-Card; thank Knut Roll-Lund for the code that bumps us to that rate.
-9600 will work as long as you have good wire between the two computers, and the
-two computers are less than a mile apart from one another.  If you can't get 9600 to
-work reliably, something else is wrong.
+ 115200 is the absolute maximum that ADTPro supports.  If you have good wire, this
+speed will work reliably.
+9600 will work as long as the two computers are less than a mile apart from one another.
+If you can't get 9600 to work reliably, something else is wrong.
 
 * Enable Sound
 

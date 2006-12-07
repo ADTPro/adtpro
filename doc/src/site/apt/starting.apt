@@ -34,8 +34,3 @@ ask for a directory listing at the host.  If the client "hangs" waiting for
 a response from the host, or if garbled data comes back, it will be necessary
 to check the physical connections, port names and speeds on both host and
 client ends.
-
- Sometimes, if you get data back from the directory listing but it is formatted
-strangely - a simple ctrl-reset and restart of ADTPro will fix the problem. 
-This has the effect of resetting the Super Serial card, and often cleans the 
-issue up.

@@ -7,48 +7,47 @@
 ADTPro
 
  Apple Disk Transfer ProDOS (ADTPro) is a pair of communications
-programs that transfers physical disks and logical disk images
+programs that transfers diskettes and logical disk images
 between Apple ][-era computers and the modern world.  If you're 
 familiar with the original ADT, ADTPro extends ADT's reach by 
-working with more disk formats, drive types, and host operating
-systems.
+working with more logical disk formats, drive types, communications devices,
+and host operating systems.
 
  ADTPro offers:
 
-    * Compatibility with Super Serial Card up to 115,200 BPS
-
-    * Compatibility with the Apple IIgs serial (modem) port up to 115,200 BPS
+    * Serial transfer speeds up to 115,200 BPS - Super Serial Card or IIgs
 
     * Compatibility with anything ProDOS can read
 
     * Compatibility with any Apple ][ (or clone) computer with 64k memory
 
-    * Compatibility with many diskette/disk image formats: .DSK, .PO, .NIB, 2IMG
+    * Compatibility with many logical disk image formats: .DSK, .PO, .NIB, 2IMG
 
     * Server compatibility with original ADT client program
 
     * Server compatibility with Windows, Mac OSX, and Linux
 
-    * Ability to {{{bootstrap.html}bootstrap}} bare-metal Apples with zero software to start
-
-    * Ability to change working directory on the fly
+    * Ability to {{{bootstrap.html}bootstrap}} bare-metal Apples with no software
 
     * Ability to send floppies in "{{{batch.html}batch}}" mode without having to name each one
 
- ADTPro may be used to transer either Apple diskette/disk images in DOS or ProDOS format.
+    * Ability to change host working directory on the fly
+
+ ADTPro may be used to transfer either Apple diskette/disk images in DOS or ProDOS format.
 The Apple client side happens to run under ProDOS, but it is perfectly capable
 of reading or writing Apple DOS (or Pascal, or CPM, or...) diskettes.
 
  The latest ADTPro can always be 
 {{{https://sourceforge.net/project/showfiles.php?group_id=170262}downloaded}}
-from the SourceForge project page 
-{{{https://sourceforge.net/project/showfiles.php?group_id=170262}here}}.
+from the SourceForge 
+{{{https://sourceforge.net/project/showfiles.php?group_id=170262}project page}}. 
 
 * Server
 
- The server program, running on a computer capable of running Java and 
-hosting a serial port, offers a few hints as to what 
-communications are taking place between the host and the Apple ][:
+ The server program runs on a computer capable of hosting Java and 
+a serial port.  It offers a small user interface that 
+shows what communications are taking place 
+between the host and the Apple ][:
 
 [images/serverBusy.png]
 
@@ -63,7 +62,7 @@ get {{{bootstrap.html}bootstrapped}}.
 
 * Client
 
- The client program, running on the Apple ][, handles most of the 
+ The client side runs on the Apple ][.  It handles most of the 
 user interaction:
 
 [images/about.png]
