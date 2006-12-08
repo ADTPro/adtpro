@@ -19,29 +19,24 @@ left arrow keys.  Your Apple has right and left arrow keys; trust me.
 
 * Comms Device
 
- Select the slot your Super Serial card is in.
+ Select the slot your communications card is in.
 
 [images/configSlot.png]
 
  The most common slot is 2, but it 
-could be any one from 1 to 7.  Pull off your Apple's lid to check if you need to.
-If you have an IIgs and you are using a Super Serial card in it, ensure you select
+could be any slot from 1 to 7.  Pull off your Apple's lid to check if you need to.
+If you have an IIgs and you want to use a Super Serial card in it, ensure you select
 "Your Card" in the IIgs' control panel for the slot your SSC card is in,
 and select that same slot number here.
 
- If you want to use the IIgs' native serial (modem) port, rotate through the 
-<<<COMMS DEVICE>>> selections until "IIGS MODEM" shows up.  You do not need to 
-make any changes in the control panel, but be warned that ADTPro will disrupt 
-AppleTalk communications to/from your Apple IIgs.
+ Super Serial cabling between the host and the Apple is discussed in the
+{{{bootstrap.html#Super Serial cabling specifics}Super Serial cabling specifics}}
+section of the bootstrap page.
+
+ If you want to use the IIgs' native serial modem port, rotate through the 
+<<<COMMS DEVICE>>> selections until "IIGS MODEM" shows up:
 
 [images/configIIgs.png]
-
- Note that it's not particularly reliable to start up with GSOS and then use
-ADTPro.  It's best to start up under ProDOS - the distribution diskette is 
-well suited to this.
-If you normally start with GSOS, you can hit the '8' key as the computer is displaying
-the initial "Apple IIgs" screen and it'll start 8-bit ProDOS and drop you into the
-BASIC interpreter, just like the old days.
 
  The modem port (as opposed to the printer port) looks like this at the back
 of the IIgs:
@@ -52,6 +47,13 @@ of the IIgs:
 computer.  See the 
 {{{bootstrap.html#IIgs modem port cabling specifics}IIgs modem port cabling specifics}}
 section of the bootstrap page for details.
+
+ Note that it's not particularly reliable to start up with GSOS and then use
+ADTPro.  It's best to start up under ProDOS - the distribution diskette is 
+well suited to this.
+If you normally start with GSOS, you can hit the '8' key as the computer is displaying
+the initial "Apple IIgs" screen and it'll start 8-bit ProDOS and drop you into the
+BASIC interpreter, just like the old days.
 
 * Baud Rate
 
@@ -82,5 +84,5 @@ configuration that works for you, select "YES" for SAVE CONFIG and hit Return.
 [images/configSave.png]
 
  This will save ADTPRO back out to the current slot/disk (volume).
-When you start ADTPRO again, it will come back with the configuration parameters you 
+When you start ADTPRO again, it will start with the configuration parameters you 
 saved last.

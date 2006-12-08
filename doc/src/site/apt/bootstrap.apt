@@ -245,9 +245,10 @@ that ultimately connects your IIgs' round, 8-pin mini-din modem connectcor to
 the serial port of your host computer - and also performs a null-modem function 
 in between.
 
-  For the next two notes: you can enter the IIgs control panel with the key sequence 
+  You will need to verify a couple of things in the IIgs control panel.  
+You bring up the IIgs control panel with the key sequence 
 <<<Control>>>-<<<OpenApple>>>-<<<Escape>>>.
-  
+
     [[1]] Use the IIgs control panel to set slot 2 to <<<Modem>>>, which is the
       default.  Default values have a little checkmark beside them in the
       control panel:
