@@ -447,10 +447,14 @@ INUM:	.byte $00
 
 HMSGTBL:	.addr HMGBG,HMFIL,HMFMT,HMDIR
 
-HMGBG:	.byte "GARBAGE RECEIVED FROM HOST",$8d,$00
-HMFIL:	.byte "UNABLE TO OPEN FILE",$8d,$00
-HMFMT:	.byte "FILE FORMAT NOT RECOGNIZED",$8d,$00
-HMDIR:	.byte "UNABLE TO CHANGE DIRECTORY",$8d,$00
+HMGBG:	asc "GARBAGE RECEIVED FROM HOST"
+	.byte $8d,$00
+HMFIL:	asc "UNABLE TO OPEN FILE"
+	.byte $8d,$00
+HMFMT:	asc "FILE FORMAT NOT RECOGNIZED"
+	.byte $8d,$00
+HMDIR:	asc "UNABLE TO CHANGE DIRECTORY"
+	.byte $8d,$00
 
 ;---------------------------------------------------------
 ; Host message equates

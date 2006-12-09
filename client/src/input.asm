@@ -69,11 +69,11 @@ YN:
 YNLOOP:
 	jsr RDKEY
 	and #$DF	; Convert to upper case
-	cmp #'Y'
+	cmp #CHR_Y
 	beq YNYES
-	cmp #'N'
+	cmp #CHR_N
 	beq YNNO
-	cmp CHR_ESC	; ESCAPE = No
+	cmp #CHR_ESC	; ESCAPE = No
 	beq YNNO
 	jmp YNLOOP
 YNYES:
