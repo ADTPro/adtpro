@@ -61,7 +61,7 @@
 	.importzp copy_src
 
 
-	.segment "ZP" : zeropage
+	.segment "IP65ZP" : zeropage
 
 ; checksum
 ip_cksum_ptr:	.res 2		; data pointer

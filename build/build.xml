@@ -69,10 +69,10 @@
 		Link the bits
 		-->
 		<exec dir="${projdir}/client/src" executable="${assemblerPath}/ld65">
-			<arg line="-m adtproser.map -C adtpro.cfg -o ADTPRO serial/sermain.o" />
+			<arg line="-m adtproser.map -C serial/adtpro.cfg -o ADTPRO serial/sermain.o" />
 		</exec>
 		<exec dir="${projdir}/client/src" executable="${assemblerPath}/ld65">
-			<arg line="-m adtproeth.map -C adtpro.cfg -o ADTPROETH ethernet/ethmain.o ip65/ip65.lib" />
+			<arg line="-m adtproeth.map -C ethernet/adtpro.cfg -o ADTPROETH ethernet/ethmain.o ip65/ip65.lib" />
 		</exec>
 		<!--
 		Move the object code to the build directory
@@ -109,11 +109,9 @@ java -jar ${distName}.jar</echo>
 		<exec dir="${builddir}" executable="java" input="${builddir}/ADTPRO">
 			<arg line="-jar ${acJar} -p ADTPRO.BACKUP bin 2051 ${distName}.dsk" />
 		</exec>
-		<!--
 		<exec dir="${builddir}" executable="java" input="${builddir}/ADTPROETH">
 			<arg line="-jar ${acJar} -p ADTPROETH bin 2051 ${distName}.dsk" />
 		</exec>
-		-->
 		<!--
 		Put the assembled DOS ADT program on the .dsk image
 		-->

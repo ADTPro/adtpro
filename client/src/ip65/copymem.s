@@ -6,7 +6,7 @@
 	.exportzp copy_dest
 
 
-	.segment "ZP" : zeropage
+	.segment "IP65ZP" : zeropage
 
 ; pointers for copying
 copy_src:	.res 2			; source pointer

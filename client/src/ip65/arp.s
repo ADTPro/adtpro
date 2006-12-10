@@ -32,7 +32,7 @@
 	.import timer_timeout
 
 
-	.segment "ZP" : zeropage
+	.segment "IP65ZP" : zeropage
 
 ap:		.res 2
 

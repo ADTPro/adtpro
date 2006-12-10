@@ -42,7 +42,7 @@
 	.endmacro
 
 
-	.segment "ZP" : zeropage
+	.segment "IP65ZP" : zeropage
 
 eth_packet:	.res 2
 
