@@ -55,11 +55,12 @@ You should see the following line on the console:
 
 	SerialTransport opening port named COMx at speed 115200.
 
-Transfer the ADTPro-v.r.m.dsk file to your apple with the original 
-ADT client (you can use the ADTPro server to send it) and reboot 
-your Apple with the new ADTPro client diskette in the disk drive. 
-You're ready to go! If you don't have the original ADT, there's 
-lots of help available. Start at ADTPro's bootstrapping page
+Transfer the ADTPro-v.r.m.dsk file to your apple with the original
+ADT client (you can use the ADTPro server to send it) and reboot
+your Apple with the new ADTPro client diskette in the disk drive.
+You're ready to go!  If you don't have the original ADT, or any 
+software at all for your Apple, there's lots of help available.
+Start at ADTPro's bootstrapping page
 (http://adtpro.sourceforge.net/bootstrap.html).
 
 Please report troubles, bugs, requests for help, etc. on the Help 

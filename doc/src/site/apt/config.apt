@@ -61,8 +61,8 @@ BASIC interpreter, just like the old days.
 
 [images/configBaud.png]
 
- 115200 is the absolute maximum that ADTPro supports.  If you have good wire, this
-speed will work reliably.
+ 115200 is the absolute maximum that ADTPro supports.  If you have a good
+serial cable, this speed will work reliably.
 9600 will work as long as the two computers are less than a mile apart from one another.
 If you can't get 9600 to work reliably, something else is wrong.
 

@@ -30,7 +30,7 @@ ADTPro Installation
  []
 
  First, you will need a Java installation you can call from the command
-line (i.e. "java -version" from the command line ought to produce 
+line (i.e. "<<<java -version>>>" from the command line ought to produce 
 something besides complaints).  One place to get a downloadable
 Java distribution is from Sun Microsystems:
 {{{http://java.sun.com/j2se/1.5.0/download.jsp}Sun JRE download}}.
@@ -77,8 +77,9 @@ SerialTransport opening port named COMx at speed 115200.
  Transfer the ADTPro-v.r.m.dsk file to your apple with the original
 ADT client (you can use the ADTPro server to send it) and reboot
 your Apple with the new ADTPro client diskette in the disk drive.
-You're ready to go!  If you don't have the original ADT, there's 
-lots of help available.  Start at ADTPro's
+You're ready to go!  If you don't have the original ADT, or any 
+software at all for your Apple, there's lots of help available.
+Start at ADTPro's
 {{{bootstrap.html}bootstrapping}} page.
 
  Please report troubles, bugs, requests for help, etc. on the Help 
