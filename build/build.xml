@@ -18,6 +18,7 @@
 		<!--
 		Clean up everything
 		-->
+		<delete file="${builddir}/ADT" />
 		<delete file="${builddir}/ADTPRO" />
 		<delete file="${builddir}/ADTPROETH" />
 		<delete file="${builddir}/adtpro.bat" />
