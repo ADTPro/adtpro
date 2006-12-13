@@ -336,7 +336,6 @@ ip_send:
 
 	jmp eth_tx			; send packet and return status
 
-
 ; calculate checksum for ip header
 ip_calc_cksum:
 	sta ip_cksum_len		; save length
@@ -344,66 +343,90 @@ ip_calc_cksum:
 
 	lda #0
 	sta cksum
-	sta cksum + 1
-	sta cksum + 2
+	sta cksum+1
 
-	cpx #0
-	beq @tail
+	lda ip_cksum_len+1
+	beq chksumlast
 
-:	ldx #$80			; number of bytes / 2
-	jsr @calc
-	inc ip_cksum_ptr + 1
-	dec ip_cksum_len + 1
-	bne :-
-
-@tail:
-	lda ip_cksum_len		; divide length by 2
-	lsr
-	php				; save carry for odd size
-	tax
-
-	jsr @calc
-
-	plp
-	bcc @done
-
+; If checksum is > 256, do the first runs.
+	ldy #0
 	clc
-	lda (ip_cksum_ptr),y
-	adc cksum
-	sta cksum
-	bcc @done
-	inc cksum + 1
-	bne @done
-	inc cksum + 2
-
-@done:
-	lda cksum + 2			; add carries back in
-	clc
-	adc cksum
-	pha
-	lda cksum + 1
-	adc #0
-	eor #$ff			; return inverted result
-	tax
-	pla
-	eor #$ff
-
-	rts
-
-@calc:
-	ldy #0				; 1's complement 16-bit sum
-@next:
-	clc
+chksumloop_256:
 	lda (ip_cksum_ptr),y
 	adc cksum
 	sta cksum
 	iny
 	lda (ip_cksum_ptr),y
-	adc cksum + 1
-	sta cksum + 1
-	bcc :+
-	inc cksum + 2
-:	iny
-	dex
-	bne @next
+	adc cksum+1
+	sta cksum+1
+	iny
+	bne chksumloop_256
+	inc ip_cksum_ptr+1
+	dec ip_cksum_len+1
+	bne chksumloop_256
+
+chksum_endloop_256:
+	lda cksum
+	adc #0
+	sta cksum
+	lda cksum+1
+	adc #0
+	sta cksum+1
+	bcs chksum_endloop_256
+  
+chksumlast:
+	lda ip_cksum_len
+	lsr
+	bcc chksum_noodd
+	ldy ip_cksum_len
+	dey
+	lda (ip_cksum_ptr),y
+	clc
+	adc cksum
+	sta cksum
+	bcc noinc1
+	inc cksum+1
+	bne noinc1
+	inc cksum
+noinc1:
+	dec ip_cksum_len
+
+chksum_noodd:
+	clc
+	php
+	ldy ip_cksum_len
+chksum_loop1:
+	cpy #0
+	beq chksum_loop1_end
+	plp
+	dey
+	dey
+	lda (ip_cksum_ptr),y
+	adc cksum
+	sta cksum
+	iny
+	lda (ip_cksum_ptr),y
+	adc cksum+1
+	sta cksum+1
+	dey
+	php
+	jmp chksum_loop1
+chksum_loop1_end:
+	plp
+  
+chksum_endloop:
+	lda cksum
+	adc #0
+	sta cksum
+	lda cksum+1
+	adc #0
+	sta cksum+1
+	bcs chksum_endloop
+  
+	lda cksum+1
+	eor #$ff
+	tax
+	lda cksum
+	eor #$ff
+
 	rts
