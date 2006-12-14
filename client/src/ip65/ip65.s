@@ -51,6 +51,9 @@ ip65_process:
 	jsr eth_rx		; check for incoming packets
 	bcs @done
 
+:	jsr eth_rx		; ADTPro needs to discard all but the most
+	bcc :-			; recent incoming packet.
+
 	lda eth_inp + 12	; type should be 08xx
 	cmp #8
 	bne @done
