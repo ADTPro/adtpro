@@ -15,3 +15,5 @@ go.bat
 ADTPro.properties
 *.hdv
 ADT
+adtpro.bat
+adtpro.sh
