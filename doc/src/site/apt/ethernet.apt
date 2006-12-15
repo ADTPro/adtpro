@@ -1,0 +1,85 @@
+ -----
+ ADTPro Ethernet Configuration
+ -----
+ David Schmidt (david__schmidt at users dot souceforge dot net)
+ -----
+
+Configuring ADTPro - Ethernet
+
+ The ADTPro client program comes in two flavors - serial and ethernet.  
+The serial version is named <<<ADTPRO>>> and the ethernet version is named
+<<<ADTPROETH>>>.  This page details the ethernet version.
+
+ Hitting the "G" key from <<<ADTPROETH>>>'s main menu brings up the ADTPro
+ethernet configuration screen:
+
+[images/ethconfig.png]
+
+ You can scroll between the selections with the up and down arrow keys.  If your
+Apple doesn't have up and down arrow keys, the space bar will cycle between the
+selections.
+
+ You can rotate through the options of a particular selection with the right and
+left arrow keys.  Your Apple has right and left arrow keys; trust me.
+
+* Comms Device
+
+ Select the slot your Uthernet card is in.
+
+[images/ethconfigSlot.png]
+
+ The most common slot is 3, but it 
+could be any slot from 1 to 7.  Pull off your Apple's lid to check if you need to.
+If you have an IIgs, ensure you select "Your Card" in the IIgs' control panel for
+the slot your Uthernet card is in, and select that same slot number here.
+
+* Enable Sound
+
+ The sound option is, of course, up to you.  
+
+[images/ethconfigSound.png]
+
+ ADTPro makes bleating sounds when
+things finish or abort.  I personally think computers should be seen and not
+heard, but not everyone feels that way.  Express your own personal feelings here.
+
+* Save Configuration
+
+ Hit the "Return" key to work with these parameters.  Once you get a 
+configuration that works for you, select "YES" for SAVE CONFIG and hit Return.
+
+[images/ethconfigSave.png]
+
+ This will save <<<ADTPROETH>>> back out to the current slot/disk (volume).
+When you start <<<ADTPROETH>>> again, it will start with the configuration parameters you 
+saved last.
+
+* IP Parameters
+
+ When editing the IP address numbers, you can't backspace - the left arrow moves
+you to the field to the left.  So, if you make a mistake, just hit the left and 
+right arrows so you can start over again.  Play with the screen for a minute and 
+you'll get the hang of it.
+
+[images/ethconfigIp.png]
+
+ For <<<SERVER IP ADDR>>>, enter the IP address of the machine running the 
+ADTPro server software.  When you have the server connect with TCP/IP, it
+will say what IP address it is currently serving:
+
+[images/ethServerIp.png]
+
+ For <<<LOCAL IP ADDR>>>, enter any IP address on your subnet that isn't already
+taken.  If your home network has IP addresses assigned by DHCP, this number might
+be tricky to come by.  But the final suffix of .123 is as likely a candidate as any.
+
+ For <<<NETMASK>>>, <<<GATEWAY ADDR>>>, and <<<DNS ADDRESS>>>, these will be the 
+same for the server computer as for your Apple.  If the server is running Windows,
+you can find this information by issuing the command: <<<ipconfig /all>>> from the 
+command line.  If the server is running Linux or OSX, you can generally find it 
+with the command: <<<ifconfig en0>>> from a terminal window.
+
+ Once you get your addresses set up, save your configuration and hit the "D" 
+key from the main menu to ask for a directory once or twice.  It seems to take 
+some networks a couple of tries to finally find he server.
+

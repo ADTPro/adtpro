@@ -17,6 +17,8 @@ and host operating systems.
 
     * Serial transfer speeds up to 115,200 BPS - via Super Serial Card or IIgs
 
+    * Ethernet transfers via the Uthernet card
+
     * Compatibility with any device ProDOS can read
 
     * Compatibility with any Apple ][ (or clone) computer with 64k memory
@@ -45,7 +47,8 @@ from the SourceForge
 * Server
 
  The server program runs on a computer capable of hosting Java and 
-a serial port.  It offers a compact user interface that 
+a serial port.  Or, if your Apple has an Uthernet card, you don't 
+even need the serial port any more.  It offers a compact user interface that 
 shows what communications are taking place 
 between the host and the Apple ][:
 

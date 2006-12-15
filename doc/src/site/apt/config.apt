@@ -1,12 +1,16 @@
  -----
- ADTPro Configuration
+ ADTPro Serial Configuration
  -----
  David Schmidt (david__schmidt at users dot souceforge dot net)
  -----
 
-Configuring ADTPro
+Configuring ADTPro - Serial
 
- Hitting the "G" key from the main menu brings up the ADTPro configuration screen:
+ The ADTPro client program comes in two flavors - serial and ethernet.  
+The serial version is named <<<ADTPRO>>> and the ethernet version is named
+<<<ADTPROETH>>>.  This page details the serial version.
+
+ Hitting the "G" key from <<<ADTPRO>>>'s main menu brings up the ADTPro configuration screen:
 
 [images/config.png]
 

@@ -6,6 +6,22 @@
 
 ADTPro Release History
 
+* 0.1.3 - December 15, 2006
+
+ New functionality:
+
+ * Added support for Ethernet UDP transport via the Uthernet card ({{http://a2retrosystems.com/}}).
+   The best reliability is achieved with machines on a wired network in the same
+   subnet (on the same ethernet switch).  Sending (Apple/client->host/server)
+   has reliable retry logic since the server, in Java, can control timeout intervals.  
+   Receiving is a different story.  It won't give you corrupt images, it'll just
+   hang if acknowledgement packets get lost.  TODO: add a timeout function to the 
+   client side as well.
+
+ * Added a batch file for Windows and a shell script for Linux/OSX to start the server
+
+ []
+
 * 0.1.2 - November 27, 2006
 
  New functionality:

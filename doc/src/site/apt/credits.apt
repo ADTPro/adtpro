@@ -40,6 +40,12 @@ Note that the current code is not nearly as nice to the system as either
 Joseph's or the the BBS code is.  It <<will>> break AppleTalk if it's
 running.
 
+ The IP stack is taken from MagerValp's ip65 project at 
+{{http://www.paradroid.net/ip65/}}.
+It was ported to the Apple II by Glenn Jones ({{http://a2retrosystems.com/}}).
+The checksum algorithm was transplanted into ip65 from the Contiki project
+({{http://www.sics.se/contiki/}}).
+
 ADT Lineage
 
  Rich Williamson (glitch at eskimo dot com) released SENDDISK on April 9, 1993.

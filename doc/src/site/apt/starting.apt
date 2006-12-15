@@ -12,20 +12,26 @@ Starting Server and Client
 java -jar ADTPro-v.r.m.jar
 +-------
 
- (Where v.r.m represents the release number of ADTPro).  The server program's
-GUI comes up:
+ (Where v.r.m represents the release number of ADTPro).
+
+ ADTPro also comes with a batch file (<<<adtpro.bat>>>) for Windows
+and a shell script (<<<adtpro.sh>>>) for Linux and OSX.  They don't
+do much more than issue the command above, but if you need to point
+to a specific Java JRE, for example, you can modify the scripts.
+
+ Once started, the server program's GUI comes up:
 
 [images/serverInit.png]
 
-  Boot your Apple ][ from the ADTPro disk, or <<<BRUN ADTPRO>>> from wherever 
-you've copied the ADTPRO program.  
+ Boot your Apple ][ from the ADTPro disk, or <<<BRUN ADTPRO>>> or <<<BRUN ADTPROETH>>>
+from wherever you've copied the program.  
 
-  <<IIgs Note:>> users starting from a hard drive or 
+ <<IIgs Note:>> users starting from a hard drive or 
 CFFA card are advised to hit the '8' key while booting if they are running GSOS.
 That has the effect of starting the IIgs in 8-bit ProDOS (BASIC) mode.  
 The less contention for the serial hardware, the better.
 
-  However you start it, the main screen comes up:
+ However you start it, the main screen comes up:
 
 [images/adtpro.png]
 
@@ -33,4 +39,5 @@ The less contention for the serial hardware, the better.
 ask for a directory listing at the host.  If the client "hangs" waiting for 
 a response from the host, or if garbled data comes back, it will be necessary
 to check the physical connections, port names and speeds on both host and
-client ends.
+client ends.  The ethernet version of ADTPro (<<<ADTPROETH>>>) often needs 
+a couple of directory queries to find the server.
