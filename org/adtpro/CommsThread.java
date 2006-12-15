@@ -907,7 +907,7 @@ public class CommsThread extends Thread
         try
         {
           // Wait for the block number...
-          incomingBlockNum = UnsignedByte.intValue(waitForData2(1000));
+          incomingBlockNum = UnsignedByte.intValue(waitForData2(5000));
           incomingBlockNum = incomingBlockNum + ((UnsignedByte.intValue(waitForData2(1000)) * 256));
           data = waitForData2(1000);
           incomingHalf = Math.abs(2 - data); // Get the half block
