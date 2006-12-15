@@ -58,8 +58,8 @@ saved last.
 
  When editing the IP address numbers, you can't backspace - the left arrow moves
 you to the field to the left.  So, if you make a mistake, just hit the left and 
-right arrows so you can start over again.  Play with the screen for a minute and 
-you'll get the hang of it.
+right arrows so you can start over again with that number.
+Play with the screen for a minute and you'll get the hang of it.
 
 [images/ethconfigIp.png]
 
@@ -74,12 +74,18 @@ taken.  If your home network has IP addresses assigned by DHCP, this number migh
 be tricky to come by.  But the final suffix of .123 is as likely a candidate as any.
 
  For <<<NETMASK>>>, <<<GATEWAY ADDR>>>, and <<<DNS ADDRESS>>>, these will be the 
-same for the server computer as for your Apple.  If the server is running Windows,
+same for the server computer as for your Apple, assuming you're on the same network.
+If the server is running Windows,
 you can find this information by issuing the command: <<<ipconfig /all>>> from the 
 command line.  If the server is running Linux or OSX, you can generally find it 
-with the command: <<<ifconfig en0>>> from a terminal window.
+with the command: <<<ifconfig en0>>> or <<<ifconfig eth0>>> from a terminal window.
+The graphical network configuration program for your operating system will have all
+the details you need, but you may have to do some digging to get at them.
+Chances are, though, that if you bought an Uther card... you know these kinds of
+details.  Feel free to
+{{{https://sourceforge.net/forum/forum.php?forum_id=582337}ask for help}}
+if you need it.
 
  Once you get your addresses set up, save your configuration and hit the "D" 
-key from the main menu to ask for a directory once or twice.  It seems to take 
-some networks a couple of tries to finally find he server.
-
+key from the main menu (and escape) to ask for a directory once or twice.  
+It seems to take some networks a couple of tries to finally find the server.
