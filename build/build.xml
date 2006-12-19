@@ -47,6 +47,9 @@
 		<exec dir="${projdir}/client/src" executable="${assemblerPath}/ca65">
 			<arg line="-l -t none serial/sermain.asm" />
 		</exec>
+		<exec dir="${projdir}/client/src" executable="${assemblerPath}/ca65">
+			<arg line="-l -t none tail.asm" />
+		</exec>
 		<!--
 		Assemble and link the ADT source
 		-->
@@ -70,10 +73,10 @@
 		Link the bits
 		-->
 		<exec dir="${projdir}/client/src" executable="${assemblerPath}/ld65">
-			<arg line="-m adtproser.map -C serial/adtpro.cfg -o ADTPRO serial/sermain.o" />
+			<arg line="-m adtproser.map -C serial/adtpro.cfg -o ADTPRO serial/sermain.o tail.o" />
 		</exec>
 		<exec dir="${projdir}/client/src" executable="${assemblerPath}/ld65">
-			<arg line="-m adtproeth.map -C ethernet/adtpro.cfg -o ADTPROETH ethernet/ethmain.o ip65/ip65.lib" />
+			<arg line="-m adtproeth.map -C ethernet/adtpro.cfg -o ADTPROETH ethernet/ethmain.o ip65/ip65.lib tail.o" />
 		</exec>
 		<!--
 		Move the object code to the build directory

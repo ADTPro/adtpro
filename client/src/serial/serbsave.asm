@@ -18,6 +18,12 @@
 ; 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 ;
 	.include "bsave.asm"
+	.import ASMEND
 
-COMMAND:	.byte "BSAVE ADTPRO,A$0803,L$3BFD"
-CMDEND:		.byte $8D
+COMMAND:	.byte "BSAVE ADTPRO,A$0803,L$"
+NYBBLE1:	.byte $00
+NYBBLE2:	.byte $00
+NYBBLE3:	.byte $00
+NYBBLE4:	.byte $00
+CMDEND:	.byte $8D
+LENGTH:	.word ASMEND-PBEGIN

@@ -1,0 +1,2 @@
+	.export ASMEND
+ASMEND:

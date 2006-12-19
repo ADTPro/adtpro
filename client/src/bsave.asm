@@ -22,6 +22,58 @@
 ; BSAVE - Save a copy of ADTPro in memory
 ;---------------------------------------------------------
 BSAVE:
+	lda LENGTH+1
+	lsr
+	lsr
+	lsr
+	lsr
+	clc
+	cmp #$0a
+	bcs BS1		; A is greater than 9
+	adc #$B0
+	jmp BS2
+BS1:
+	adc #$b6	; Get ascii of hex digit
+BS2:
+	sta NYBBLE1
+	lda LENGTH+1
+	and #$0F
+	clc
+	cmp #$0a
+	bcs BS3		; A is greater than 9
+	adc #$B0
+	jmp BS4
+BS3:
+	adc #$b6
+BS4:
+	sta NYBBLE2
+
+	lda LENGTH
+	lsr
+	lsr
+	lsr
+	lsr
+	clc
+	cmp #$0a
+	bcs BS5		; A is greater than 9
+	adc #$B0
+	jmp BS6
+BS5:
+	adc #$b6
+BS6:
+	sta NYBBLE3
+	lda LENGTH
+	and #$0F
+	clc
+	cmp #$0a
+	bcs BS7		; A is greater than 9
+	adc #$B0
+	jmp BS8
+BS7:
+	adc #$b6
+BS8:
+	sta NYBBLE4
+
 	ldx #$00
 :	lda COMMAND,X
 	sta $0200,X

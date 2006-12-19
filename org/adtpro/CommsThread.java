@@ -709,7 +709,7 @@ public class CommsThread extends Thread
           _transport.flushReceiveBuffer();
           _transport.flushSendBuffer();
         }
-        finally
+        
         {
           if (fis != null) try
           {
@@ -722,6 +722,7 @@ public class CommsThread extends Thread
         }
       }
     }
+    // System.out.println("DEBUG: send140kDisk() exit.");
   }
 
   public boolean sendPacket(byte[] buffer, int offset)
@@ -793,7 +794,6 @@ public class CommsThread extends Thread
     int i, part, track, sector, packetResult = -1;
     int sectorsDone = 0;
     byte report;
-    boolean receiveSuccess = false;
 
     if (f.exists())
     {
@@ -848,7 +848,7 @@ public class CommsThread extends Thread
             if (packetResult != 0) break;
           }
           fos.close();
-          if (receiveSuccess)
+          if (packetResult == 0)
           {
             report = waitForData();
             _endTime = new GregorianCalendar();
@@ -878,8 +878,18 @@ public class CommsThread extends Thread
           _transport.writeByte(0x1a); // ADT protocol - unable to write file
           _transport.pushBuffer();
         }
+        finally
+        {
+          if (fos != null) try
+          {
+            fos.close();
+          }
+          catch (IOException io)
+          {}
+        }
       }
     }
+    // System.out.println("DEBUG: receive140kDisk() exit.");
   }
 
   public int receivePacket(byte[] buffer, int offset, int buffNum)
