@@ -26,6 +26,8 @@ Ethernet) for this task.
 
  * {{{bootstrap.html#IIgs modem port cabling specifics}IIgs modem port cabling specifics}}
 
+ * {{{bootstrap.html#USB cabling specifics}USB cabling specifics}}
+
 * {If you already have ProDOS}
 
     [[1]] Start with ProDOS booted from floppy (or any bootable partition).
@@ -278,3 +280,35 @@ plugging into the telephone (modem) one, on the left as you look at the back.
 It looks like this:
 
 [images/iigsmodemport.jpg]
+
+* {USB cabling specifics}
+
+  Several manufacturers make different types of USB to serial adapters.
+These types of devices will work fine with ADTPro.  You will need to
+connect everything up with the right combination of cables, of course.  Here is
+an example of a Keyspan USB-to-8-pin mini-DIN adapter connected to an IIgs:
+
+[images/keyspanConnection.jpg]
+
+  Each manufacturer will include a software driver that will provide the "glue"
+between the computer and the adapter.  For example, the Keyspan adapters come
+with a piece of software they call "Keyspan Serial Assistant:"
+
+[images/keyspan.png]
+
+  This software will tell you some details about the serial adapter, the name
+it chooses to call itself, and so on.  In our case, we can see that the adapter
+has chosen port names like "KeySerial1," "USA28X1813P1.1," and "USA28X1813P2.2".
+Since this adapter happens to have two ports on it, you see suffixes of ".1" and
+".2."  They will correspond to whichever port (on the adapter itself) you are
+plugging your serial cable into.
+
+  At the ADTPro server software end, should see those names repeated.
+In Keyspan's case, you will see a prefix of "tty" and "cu" added to each port name.
+ADTPro seems to be able to function normally using either flavor.
+
+[images/osxServerPort.png]
+
+  Once connected, ADTPro will be able to operate normally over the USB connection,
+including {{{bootstrap.html#Starting from bare metal}bare metal}} bootstrapping
+operations.
