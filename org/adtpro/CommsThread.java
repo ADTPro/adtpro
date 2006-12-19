@@ -786,7 +786,7 @@ public class CommsThread extends Thread
   public void receive140kDisk()
   {
     _startTime = new GregorianCalendar();
-    String name = receiveName();
+    String name = _parent.getWorkingDirectory() + File.separator + receiveName();
     File f = new File(name);
     FileOutputStream fos = null;
     byte[] buffer = new byte[28672];

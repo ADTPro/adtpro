@@ -70,7 +70,7 @@ public class SerialTransport extends ATransport
     port = (RXTXPort) portId.open(Messages.getString("SerialTransport.3"), 100); //$NON-NLS-1$
     _currentSpeed = Integer.parseInt(speed);
     port.setSerialPortParams(_currentSpeed, 8, 1, 0);
-    port.setFlowControlMode(3);
+    port.setFlowControlMode(SerialPort.FLOWCONTROL_RTSCTS_IN);
     /*
      *  Unixen would never return from a port.close() because they
      * locked hard on the outstanding port.read() request.
@@ -168,7 +168,7 @@ public class SerialTransport extends ATransport
     {
       port = (RXTXPort) portId.open(Messages.getString("SerialTransport.3"), 100); //$NON-NLS-1$
       port.setSerialPortParams(115200, 8, 1, 0);
-      port.setFlowControlMode(3);
+      port.setFlowControlMode(SerialPort.FLOWCONTROL_RTSCTS_IN);
       inputStream = new DataInputStream(port.getInputStream());
       outputStream = new DataOutputStream(port.getOutputStream());
       connected = true;
