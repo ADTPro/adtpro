@@ -31,7 +31,7 @@ the rxtx organization: {{http://www.rxtx.org/}}.
  ProDOS assembly programming particulars were divined from the {{{ftp://ftp.a2central.com/pub/documents/beneathprodos.pdf}Beneath ProDOS}}
 book by Don Worth and Pieter Lechner, published by Quality Software in 1984.
 
- The original native IIgs serial port work was contributed by Joseph Oswold.  
+ The original native IIgs serial port work was contributed by Joseph Oswald.  
 It was based on Pascal entry points and firmware stuff, so it was limited to
 19,200 baud.  The code now interfaces directly with the SCC chip.  It was 
 partially borrowed from the "Warp Six BBS" code:
