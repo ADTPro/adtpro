@@ -480,7 +480,7 @@ MSGTBL:
 	.addr MUTHBAD, MPREFIX, MINSERTDISK
 	.addr MNULL
 
-MSG01:	ascz "0.1.3"
+MSG01:	ascz "0.1.4"
 ;MSG01:	ascz "v.r.m"
 MSG02:	asccr "(S)END (R)ECEIVE (D)IR (B)ATCH (C)D"
 	.byte $8d,$00

@@ -22,7 +22,7 @@
 ; INITSSC - Initialize the SSC
 ; Y holds the desired slot number
 ;---------------------------------------------------------
-INITSSC:
+initssc:
 	tya
 	asl
 	asl
@@ -32,75 +32,75 @@ INITSSC:
 	tax
 	lda #$0B	; COMMAND: NO PARITY, RTS ON,
 	sta $C002,X	; DTR ON, NO INTERRUPTS
-	ldy PSPEED	; CONTROL: 8 DATA BITS, 1 STOP
-	lda BPSCTRL,Y	; BIT, BAUD RATE DEPENDS ON
+	ldy pspeed	; CONTROL: 8 DATA BITS, 1 STOP
+	lda bpsctrl,Y	; BIT, BAUD RATE DEPENDS ON
 	sta $C003,X	; PSPEED
-	stx MOD0+1	; SELF-MODS FOR $C088+S0
-	stx MOD2+1	; IN MAIN LOOP
-	stx MOD4+1	; AND IN SSCGET AND SSCPUT
+	stx mod0+1	; SELF-MODS FOR $C088+S0
+	stx mod2+1	; IN MAIN LOOP
+	stx mod4+1	; AND IN sscget AND sscput
 	inx
-	stx MOD1+1	; SELF-MODS FOR $C089+S0
-	stx MOD3+1	; IN SSCGET AND SSCPUT
-	jsr PATCHSSC
+	stx mod1+1	; SELF-MODdS FOR $C089+S0
+	stx mod3+1	; IN sscget AND sscput
+	jsr patchssc
 	rts
 
 ;---------------------------------------------------------
-; SSCPUT - Send accumulator out the serial line
+; sscput - Send accumulator out the serial line
 ;---------------------------------------------------------
-SSCPUT:
+sscput:
 	pha		; Push A onto the stack
-PUTC1:	lda $C000
-	cmp #CHR_ESC	; Escape = abort
-	beq PABORT
+putc1:	lda $C000
+	cmp #esc	; Escape = abort
+	beq pabort
 
-MOD1:	lda $C089	; Check status bits
+mod1:	lda $C089	; Check status bits
 	and #$70
 	cmp #$10
-	bne PUTC1	; Output register is full, so loop
+	bne putc1	; Output register is full, so loop
 	pla
-MOD2:	sta $C088	; Put character
+mod2:	sta $C088	; Put character
 	rts
 
-PABORT:	jmp BABORT
+pabort:	jmp babort
 
 ;---------------------------------------------------------
-; SSCGET - Get a character from Super Serial Card (XY unchanged)
+; sscget - Get a character from Super Serial Card (XY unchanged)
 ;---------------------------------------------------------
-SSCGET:
+sscget:
 	lda $C000
-	cmp #CHR_ESC	; Escape = abort
-	beq PABORT
-MOD3:	lda $C089	; Check status bits
+	cmp #esc	; Escape = abort
+	beq pabort
+mod3:	lda $C089	; Check status bits
 	and #$68
 	cmp #$8
-	bne SSCGET	; Input register empty, loop
-MOD4:	lda $C088	; Get character
+	bne sscget	; Input register empty, loop
+mod4:	lda $C088	; Get character
 	rts
 
 ;---------------------------------------------------------
-; RESETSSC - Clean up SSC
+; resetssc - Clean up SSC
 ;---------------------------------------------------------
-RESETSSC:
-MOD0:	bit $C088	; CLEAR SSC INPUT REGISTER
+resetssc:
+mod0:	bit $C088	; CLEAR SSC INPUT REGISTER
 	rts
 
 ;---------------------------------------------------------
 ; PATCHSSC - Patch the entry points of SSC processing
 ;---------------------------------------------------------
-PATCHSSC:
-	lda #<SSCPUT
-	sta PUTC+1
-	lda #>SSCPUT
-	sta PUTC+2
+patchssc:
+	lda #<sscput
+	sta putc+1
+	lda #>sscput
+	sta putc+2
 
-	lda #<SSCGET
-	sta GETC+1
-	lda #>SSCGET
-	sta GETC+2
+	lda #<sscget
+	sta getc+1
+	lda #>sscget
+	sta getc+2
 
-	lda #<RESETSSC
-	sta RESETIO+1
-	lda #>RESETSSC
-	sta RESETIO+2
+	lda #<resetssc
+	sta resetio+1
+	lda #>resetssc
+	sta resetio+2
 
 	rts

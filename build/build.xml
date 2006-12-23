@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project name="ADTPro" default="all" basedir="..">
-	<property name="versionString" value="0.1.3" />
+	<property name="versionString" value="0.1.4" />
 	<property name="distName" value="ADTPro-${versionString}" />
 	<property name="volName" value="ADTPro.${versionString}" />
-	<property name="dosVersionString" value="130" />
-	<property name="dosDistName" value="DOSADT${dosVersionString}" />
+	<property name="dosVersionString" value="131" />
+	<property name="dosDistName" value="ADT${dosVersionString}" />
 	<property name="assemblerPath" value="C:/dev/xassm/cc65/bin" />
 	<property name="projdir" value="." />
 	<property name="builddir" value="${basedir}/build" />
@@ -54,7 +54,7 @@
 		Assemble and link the ADT source
 		-->
 		<exec dir="${projdir}/client/src/dos" executable="${assemblerPath}/cl65">
-			<arg line="-l -t none adt.asm" />
+			<arg line="-l -t none adt.s" />
 		</exec>
 		<!--
 		Assemble the IP65 stack source
