@@ -264,10 +264,6 @@ InputLoop:
 ; Renders current_value at (xpos,ypos)
 ;---------------------------------------------------------
 RenderNumber:
-	lda #$00
-	sta PRTPTR+1
-	lda current_value
-	sta PRTPTR
 	clc
 	lda ypos
 	adc raw_y
@@ -276,7 +272,8 @@ RenderNumber:
 	lda xpos
 	adc raw_x
 	sta CH
-	jsr PRTNUMB
+	lda current_value
+	jsr ToDecimal
 	clc
 	lda xpos
 	adc raw_x

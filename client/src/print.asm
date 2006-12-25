@@ -404,6 +404,42 @@ PADCHR:	.byte CHR_0
 PRTPTR:	.byte $00,$00
 
 ;---------------------------------------------------------
+; ToDecimal
+; Prints accumulator as a decimal number
+; The number is right/space justified to 3 digits
+;---------------------------------------------------------
+ToDecimal:
+	ldy #$00
+	sty DigitYet
+	ldy #2
+TD1:	ldx #_'0'
+TD2:	cmp DECTBL,Y  
+	bcc TD3		; Digit finished
+	sbc DECTBL,Y  
+	inx              
+	bne TD2		; Branch ...always
+TD3:	pha		; Save remainder
+	txa
+	cmp #_'0'
+	bne :+
+	ldx DigitYet
+	bne :+
+	cpy #$00
+	beq :+
+	lda #_' '
+	jmp TD4
+:	inc DigitYet	; Print out a digit
+TD4:	jsr COUT1
+	pla		; Get remainder
+	dey
+	bpl TD1
+	rts    
+
+DECTBL:	.byte	1,10,100           
+DigitYet:
+	.byte 0
+
+;---------------------------------------------------------
 ; CHROVER - Write new contents without advancing cursor
 ;---------------------------------------------------------
 CHROVER:
