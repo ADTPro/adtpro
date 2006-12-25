@@ -8,7 +8,7 @@
 	<property name="assemblerPath" value="C:/dev/xassm/cc65/bin" />
 	<property name="projdir" value="." />
 	<property name="builddir" value="${basedir}/build" />
-	<property name="acJar" value="AppleCommander-1.3.4b-ac.jar" />
+	<property name="acJar" value="AppleCommander-1.3.4d-ac.jar" />
 	<taskdef name="appleDump" classname="org.adtpro.utilities.AppleDump" classpath="${projdir}"/>
 
 	<target name="all" depends="clean, assemble, builddsk, scripts, jar">
@@ -121,6 +121,15 @@ java -jar ${distName}.jar</echo>
 		-->
 		<exec dir="${builddir}" executable="java" input="${builddir}/ADT">
 			<arg line="-jar ${acJar} -p ADT bin 2051 ${dosDistName}.dsk" />
+		</exec>
+		<exec dir="${builddir}" executable="java" input="${builddir}/ADT">
+			<arg line="-jar ${acJar} -p ADT.BACKUP bin 2051 ${dosDistName}.dsk" />
+		</exec>
+		<!--
+		Lock the backup ADT version
+		-->
+		<exec dir="${builddir}" executable="java">
+			<arg line="-jar ${acJar} -k ADT.BACKUP ${dosDistName}.dsk" />
 		</exec>
 		<!--
 		Build a little unit test disk that is 64k (128 blocks) long

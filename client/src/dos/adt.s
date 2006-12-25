@@ -132,11 +132,6 @@ mdos08	= 52			; I/O ERROR
 ;*********************************************************
 
 	.ORG	$803
-main:
-	jmp	start		; SKIP DEFAULT PARAMETERS
-
-default:
-	.byte	5,0,1,6,1,0,0,0,1 ; DEFAULT PARM VALUES
 
 ;---------------------------------------------------------
 ; START - MAIN PROGRAM
@@ -150,8 +145,6 @@ start:
 	lda	#$15
 	jsr	cout		; Switch to 40 columns
 	lda	#$00
-	sta	$33		; (Un-)set the prompt character
-				; ...so that Ctrl-D commands work
 	sta	secptr		; secptr is always page-aligned
 	sta	stddos		; Assume standard DOS initially
 	lda	$b92e		; Save contents of DOS
@@ -354,16 +347,11 @@ endval: dex
 	bpl	valloop		; PRINT REMAINING VALUES
 	sty	ysave		; CLREOL USES Y
 	jsr	clreol		; REMOVE GARBAGE AT EOL
-	lda #$8d
-	jsr cout
-;	jsr	crout
 
-;	pha
-;	inc cv
-;	jsr tabv
-;	lda #$00
-;	sta ch
-;	pla
+	lda	#$a0		; Add an extra space to output
+	jsr	cout		; Without it, the crout will
+	jsr	crout		; sometimes cause the disk to
+				; spin!  Strange but true!
 
 	ldy	ysave
 	ldx	linecnt		; INCREMENT CURRENT LINE
@@ -469,6 +457,8 @@ linecnt:
 curparm:
 	.byte	$00		; Active parameter
 curval: .byte	$00		; Value of active parameter
+default:
+	.byte	5,0,1,6,1,0,0,0,1 ; DEFAULT PARM VALUES
 oldparm:
 	.res	parmnum		; Old parameters saved here
 
@@ -566,7 +556,7 @@ bsavedone:
 	rts
 
 command:
-	.byte $8D,$84
+	.byte $8d,$84
 	asc "BSAVE ADT,A$0803,L$"
 nybble1:
 	.byte $00
@@ -577,7 +567,7 @@ nybble3:
 nybble4:
 	.byte $00
 	.byte $8D,$00
-length:	.word endasm-main
+length:	.word endasm-start
 
 ;---------------------------------------------------------
 ; PAUSE - print 'PRESS A KEY TO CONTINUE...' and wait
@@ -1384,8 +1374,8 @@ parmtxt:
 parms:
 pdslot: .byte	5		; DISK SLOT (6)
 pdrive: .byte	0		; DISK DRIVE (1)
-pssc:	.byte	1		; Comms slot (2)
-pspeed: .byte	6		; Comms speed (115.2K)
+pssc:	.byte	1		; SSC SLOT (2)
+pspeed: .byte	6		; SSC SPEED (115.2K)
 pretry: .byte	1,0		; READ/WRITE MAX RETRIES (1,0)
 pcksum: .byte	0		; USE RWTS CHECKSUMS? (Y)
 psound: .byte	0		; SOUND AT END OF TRANSFER? (Y)
