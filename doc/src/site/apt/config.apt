@@ -47,8 +47,8 @@ of the IIgs:
 
 [images/iigsmodemport.jpg]
 
- ADTPro will require a "null modem" cable or adapter when connecting to the host
-computer.  See the 
+ ADTPro on an IIgs will require a "null modem" cable or adapter when connecting 
+to the host computer.  See the 
 {{{bootstrap.html#IIgs modem port cabling specifics}IIgs modem port cabling specifics}}
 section of the bootstrap page for details.
 
