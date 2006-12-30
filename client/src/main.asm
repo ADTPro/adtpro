@@ -31,6 +31,7 @@
 	.org $0803
 
 PBEGIN:
+	sei
 	lda #$00	; In general - do a warm start
 	sta COLDSTART	; i.e. don't load up factory defaults
 
@@ -171,6 +172,7 @@ KQUIT:
 	cmp #CHR_Q	; Quit?
 	bne FORWARD	; No, it was an unknown key
 	jsr CLEANUP
+	cli
 	jmp $03d0	; Bail allllllllllll the way out
 
 FORWARD:

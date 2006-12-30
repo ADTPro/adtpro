@@ -32,6 +32,7 @@ DIRREQUEST:
 ;---------------------------------------------------------
 DIRREPLY:
 	ldy #$00
+	sty TMOT	; Clear timeout processing
 	lda #<BIGBUF	; Connect the block pointer to the
 	sta BLKPTR	; beginning of the Big Buffer(TM)
 	lda #>BIGBUF

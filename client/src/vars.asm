@@ -62,6 +62,7 @@ UDPI	= $1a		; ($01 byte) Used by UDP SEND and RECEIVE
 BLKPTR	= $1b		; ($02 bytes) Used by SEND and RECEIVE
 CRC	= $1d		; ($02 bytes) Used by ONLINE, SEND and RECEIVE
 CRCY	= $8a		; ($01 byte) Used by UDP SEND
+TMOT    = $8b		; ($01 byte) Timeout indicator
 
 SR_WR_C:
 	.byte $00	; A place to save the send/receive/read/write character

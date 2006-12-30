@@ -481,7 +481,7 @@ INUM:	.byte $00
 ; Host messages
 ;---------------------------------------------------------
 
-HMSGTBL:	.addr HMGBG,HMFIL,HMFMT,HMDIR
+HMSGTBL:	.addr HMGBG,HMFIL,HMFMT,HMDIR,HMTIMEOUT
 
 HMGBG:	asc "GARBAGE RECEIVED FROM HOST"
 	.byte $8d,$00
@@ -490,6 +490,9 @@ HMFIL:	asc "UNABLE TO OPEN FILE"
 HMFMT:	asc "FILE FORMAT NOT RECOGNIZED"
 	.byte $8d,$00
 HMDIR:	asc "UNABLE TO CHANGE DIRECTORY"
+	.byte $8d,$00
+HMTIMEOUT:
+	asc "HOST TIMEOUT"
 	.byte $8d,$00
 
 ;---------------------------------------------------------
@@ -500,7 +503,8 @@ PHMGBG	= $00
 PHMFIL	= $02
 PHMFMT	= $04
 PHMDIR	= $06
-PHMMAX	= $07		; This must be one greater than the largest host message
+PHMTIMEOUT	= $08
+PHMMAX	= $0a		; This must be two greater than the largest host message
 
 ;---------------------------------------------------------
 ; Client messages

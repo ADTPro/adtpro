@@ -34,6 +34,9 @@ DIR:
 
 	jsr DIRREQUEST
 	jsr DIRREPLY
+	ldy TMOT
+	bne DIRTIMEOUT
+
 	ldy #$00	; Reset counter
 	jsr HOME	; Clear screen
 
@@ -59,12 +62,20 @@ DIRPAGE:
 	jsr RDKEY;
 	rts
 
+DIRTIMEOUT:
+	jsr DIRABORT
+	ldy #PHMTIMEOUT
+	jsr SHOWHM1
+	jsr PAUSE
+	rts
+
 DIRCONT:
 	ldy #PMSG29	; "space to continue, esc to stop"
 	jsr SHOWMSG
 	jsr RDKEY
 	eor #CHR_ESC	; NOT ESCAPE, CONTINUE NORMALLY
 	bne DIR		; BY SENDING A "D" TO PC
+DIRDONE:
 	jmp DIRABORT
 
 ;---------------------------------------------------------
@@ -81,6 +92,7 @@ CDSTART:
 	jsr SHOWM1	; Tell user to have patience
 	jsr CDREQUEST
 	jsr CDREPLY
+	
 	bne CDERROR
 	ldy #PMSG14
 	jsr SHOWM1

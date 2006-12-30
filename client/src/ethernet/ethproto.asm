@@ -36,11 +36,14 @@
 UDPDISPATCH:
 	lda state
 	cmp #STATE_IDLE		; Do we care at all?
-	beq @skip
+	beq UDPSKIP
+
+	lda TMOT
+	bne TIMEOUTENTRY	; Skip packet processing if timeout occurred
 
 	lda udp_inp + udp_data	; Grab the packet number
 	cmp PREVPACKET
-	beq @skip		; We received a duplicate packet.  Bail.
+	beq UDPSKIP		; We received a duplicate packet.  Bail.
 	sta PREVPACKET
 
 	lda udp_inp + udp_src_port + 1
@@ -54,11 +57,13 @@ UDPDISPATCH:
 	dex
 	bpl :-
 
+TIMEOUTENTRY:
 	lda state
 	php
 	ldx #STATE_IDLE	; Set state back to idle
 	stx state
 	plp
+
 			; Receiving a DIR reply?
 	cmp #STATE_DIR
 	bne :+
@@ -88,22 +93,40 @@ UDPDISPATCH:
 	bne :+
 	jmp BATCHREPLY1
 :			; fallthrough	
-@skip:
+UDPSKIP:
 	rts
 
 ;---------------------------------------------------------
 ; RECEIVE_LOOP - Wait for an incoming packet to come along
 ;---------------------------------------------------------
 RECEIVE_LOOP:
+	lda #$00
+	sta TIMEOUT
+	sta TIMEOUT+1
+	sta TMOT
+
+RECEIVE_LOOP_WARM:
 	jsr ip65_process
 	lda $C000
 	cmp #CHR_ESC	; Escape = abort
 	bne :+
 	jmp BABORT
+:	inc TIMEOUT	; Increment our counter
+	bne :+
+	inc TIMEOUT+1
+	lda #$60	; Timeout should be $40 for approx. 1 sec on IIe
+	cmp TIMEOUT+1
+	bne :+
+	inc TMOT
+	jsr UDPDISPATCH
+	rts 
+
 :	lda state
 	cmp #STATE_IDLE
-	bne RECEIVE_LOOP
+	bne RECEIVE_LOOP_WARM
 	rts
+
+TIMEOUT:	.res 2
 
 ;---------------------------------------------------------
 ; PINGREQUEST - Send out a ping
@@ -178,8 +201,12 @@ CDREPLY1:
 PUTREPLY1:
 BATCHREPLY1:
 GETREPLY1:
+	lda TMOT
+	bne @Repl1
 	lda udp_inp + udp_data + 1	; Pick up the data byte
-	sta QUERYRC
+	jmp @Repl2
+@Repl1:	lda #PHMTIMEOUT			; Load up timeout indicator
+@Repl2:	sta QUERYRC
 CDREPLY:
 PUTREPLY:
 BATCHREPLY:
@@ -191,8 +218,8 @@ GETREPLY:
 ; PUTREQUEST - Request to send an image to the host
 ;---------------------------------------------------------
 PUTREQUEST:
-	lda #<BIGBUF	; Connect the block pointer to the
-	sta BLKPTR	; beginning of the Big Buffer(TM)
+	lda #<BIGBUF		; Connect the block pointer to the
+	sta BLKPTR		; beginning of the Big Buffer(TM)
 	lda #>BIGBUF
 	sta BLKPTR+1
 	ldy #$00
@@ -200,7 +227,7 @@ PUTREQUEST:
 	sta (BLKPTR),Y
 	iny
 	jsr COPYINPUT
-	lda NUMBLKS	; Send the total block size
+	lda NUMBLKS		; Send the total block size
 	sta (BLKPTR),Y
 	iny
 	lda NUMBLKS+1
@@ -281,8 +308,8 @@ GETFINALACK:
 ; BATCHREQUEST - Request to send multiple images to the host
 ;---------------------------------------------------------
 BATCHREQUEST:
-	lda #<BIGBUF	; Connect the block pointer to the
-	sta BLKPTR	; beginning of the Big Buffer(TM)
+	lda #<BIGBUF		; Connect the block pointer to the
+	sta BLKPTR		; beginning of the Big Buffer(TM)
 	lda #>BIGBUF
 	sta BLKPTR+1
 	ldy #$00
@@ -290,7 +317,7 @@ BATCHREQUEST:
 	sta (BLKPTR),Y
 	iny
 	jsr COPYINPUT
-	lda NUMBLKS	; Send the total block size
+	lda NUMBLKS		; Send the total block size
 	sta (BLKPTR),Y
 	iny
 	lda NUMBLKS+1
@@ -333,14 +360,21 @@ QUERYFNREQUEST:
 ; QUERYFNREPLY -
 ;---------------------------------------------------------
 QUERYFNREPLY1:
+	lda TMOT
+	bne :+
 	lda udp_inp + udp_data + 1	; File size lsb
 	sta HOSTBLX
 	lda udp_inp + udp_data + 2	; File size msb
 	sta HOSTBLX+1
 	lda udp_inp + udp_data + 3	; Return code/message
 	sta QUERYRC			; Just some temp storage
+	jmp QUERYFNREPLY
+:
+	lda #PHMTIMEOUT
+	sta QUERYRC
 QUERYFNREPLY:
 	lda QUERYRC
+QUERYFNREPLYDONE:
 	rts
 
 ;---------------------------------------------------------
@@ -359,7 +393,7 @@ SENDMORE:
 	jsr RECEIVE_LOOP
 SENDMORE2:
 	lda QUERYRC
-	cmp #CHR_ACK	; Is it ACK?  Loop back if NAK.
+	cmp #CHR_ACK	; Is it ACK?  Loop back if NAK ($17) or timeout ($08).
 	bne SENDMORE
 	inc <BLKPTR+1	; Get next 256 bytes
 	dec <ZP
@@ -498,7 +532,7 @@ RECVHBLK:
 	ldax #udp_inp + udp_data + 1
 	stax UTILPTR	; Connect UTILPTR to UDP packet buffer
 	lda #$00
-	sta RLEPREV		; Start output at beginning of BLKPTR buffer
+	sta RLEPREV	; Start output at beginning of BLKPTR buffer
 	sta UDPI	; Start input at beginning of UTILPTR buffer
 RC1:
 	ldy UDPI
@@ -522,7 +556,7 @@ RC2:
 	bne :+
 	inc UTILPTR+1
 :	lda (UTILPTR),Y	; Get next byte out of UDP packet buffer - the next index
-	sta RLEPREV		; Save the new BLKPTR index
+	sta RLEPREV	; Save the new BLKPTR index
 	php
 	iny		; Increment the UTILPTR index
 	sty UDPI
