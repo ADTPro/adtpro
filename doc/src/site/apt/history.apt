@@ -6,6 +6,22 @@
 
 ADTPro Release History
 
+* 0.1.4 - December 30, 2006
+
+ New functionality:
+
+ * Ethernet version now has a timeout function at the client end.
+   This addresses one class of problem we have with UDP
+   dropping packets.
+
+ * Included DOS ADT 1.31 in the package as well as part
+   of bare-metal bootstrapping function.  The main 
+   improvement of DOS ADT 1.31 over 1.30 is the capability
+   of self-saving the configuration (no need for the 
+   Applesoft configuration program)
+
+ []
+
 * 0.1.3 - December 15, 2006
 
  New functionality:
