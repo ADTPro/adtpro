@@ -30,14 +30,14 @@ ypos:		.byte $07
 current_value:	.byte $00
 new_digit:	.byte $09
 ip_parms:
-serverip:	.byte 192, 168,   0,  42
-cfg_ip:		.byte 192, 168,   0, 234
+serverip:	.byte 192, 168,   0,   2
+cfg_ip:		.byte 192, 168,   0, 123
 cfg_netmask:	.byte 255, 255, 248,   0
 cfg_gateway:	.byte 192, 168,   0,   1
 cfg_dns:	.byte 192, 168,   0,   1
 ip_parms_temp:
-		.byte 192, 168,   0,  42
-		.byte 192, 168,   0, 234
+		.byte 192, 168,   0,   2
+		.byte 192, 168,   0, 123
 		.byte 255, 255, 248,   0
 		.byte 192, 168,   0,   1
 		.byte 192, 168,   0,   1
