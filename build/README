@@ -10,7 +10,7 @@ ADTPro-v.r.m.zip. After unpacking the .zip file, you will find:
                       dos-order disk image)
  * adtpro.bat       - A Windows batch file to start the server
  * adtpro.sh        - A Linux/OSX shell script to start the server
- * DOSADTvrm.dsk    - An enhanced legacy Apple DOS ADT client, 
+ * ADTvrm.dsk       - An enhanced legacy Apple DOS ADT client, 
                       capable of running on both Super Serial 
                       hardware as well as on the IIgs serial 
                       (modem) port
