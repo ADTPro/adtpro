@@ -1,6 +1,6 @@
 ;
 ; ADTPro - Apple Disk Transfer ProDOS
-; Copyright (C) 2006 by David Schmidt
+; Copyright (C) 2006-2007 by David Schmidt
 ; david__schmidt at users.sourceforge.net
 ;
 ; This program is free software; you can redistribute it and/or modify it 
@@ -518,10 +518,8 @@ HOWBIG2:
 	lsr		; /
 @next:	tax		; X is now the index into blocks table
 	lda PARMBUF+5
-;	lda #$01	; UNIT TESTING - remove me
 	sta CAPBLKS,x
 	lda PARMBUF+6
-;	lda #$00	; UNIT TESTING - remove me
 	sta CAPBLKS+1,x
 	sec
 	jmp @H2EXIT
@@ -540,9 +538,6 @@ HOWBIG2:
 	tax
 	rts
 
-
-;VOLNAME .byte $00,'/LONGESTVOLUMENM                            '
-;	.byte '                               '
 VOLNAME:	.res 16,$00
 
 LASTVOL:	.byte $00
