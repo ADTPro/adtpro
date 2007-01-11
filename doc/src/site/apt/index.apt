@@ -37,7 +37,7 @@ and host operating systems.
 
  ADTPro may be used to transfer either Apple diskette/disk images in DOS or ProDOS format.
 The Apple client side happens to run under ProDOS, but it is perfectly capable
-of reading or writing Apple DOS (or Pascal, or CPM, or...) diskettes.
+of reading or writing Apple DOS (or Pascal, or CP/M, or...) diskettes.
 
  The latest ADTPro can always be 
 {{{https://sourceforge.net/project/showfiles.php?group_id=170262}downloaded}}
