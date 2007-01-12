@@ -28,7 +28,7 @@ from the jSyncManager project: {{http://jsyncmanager.sourceforge.net/}}
  The Java serial communications subsystem of ADTPro's server software is produced by
 the rxtx organization: {{http://www.rxtx.org/}}.
 
- ProDOS assembly programming particulars were divined from the {{{ftp://ftp.a2central.com/pub/documents/beneathprodos.pdf}Beneath ProDOS}}
+ ProDOS assembly programming particulars were divined from the {{{ftp://a2central.com/a2c.essential/A2_BOOKS/beneathprodos.pdf}Beneath ProDOS}}
 book by Don Worth and Pieter Lechner, published by Quality Software in 1984.
 
  The original native IIgs serial port work was contributed by Joseph Oswald.  
