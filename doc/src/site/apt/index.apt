@@ -9,7 +9,7 @@ ADTPro
  Apple Disk Transfer ProDOS (ADTPro) is a pair of communications
 programs that transfers diskettes and logical disk images
 between Apple ][-era computers and the modern world.  If you're 
-familiar with the original ADT, ADTPro extends ADT's reach by 
+familiar with the {{{http://adt.berlios.de}original ADT}}, ADTPro extends ADT's reach by
 working with more logical disk formats, drive types, communications devices,
 and host operating systems.
 
