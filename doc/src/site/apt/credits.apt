@@ -22,7 +22,7 @@ from his DiskMaker 8 program: {{http://www.syndicomm.com/~mark/DM8/}}
  The disk abstraction layer of ADTPro's server software was borrowed from the 
 AppleCommander project: {{http://applecommander.sourceforge.net/}}
 
- The serial communications layer conceps of ADTPros's server software were borrowed
+ The serial communications layer conceps of ADTPro's server software were borrowed
 from the jSyncManager project: {{http://jsyncmanager.sourceforge.net/}}
 
  The Java serial communications subsystem of ADTPro's server software is produced by
