@@ -154,7 +154,7 @@ KABOUT:	cmp #$9F	; ABOUT MESSAGE? ("?" KEY)
 	jsr INVERSE
     	lda #$00
 	sta <CH
-	lda #$15
+	lda #$14
 	jsr TABV
 	ldy #PMSG17	; "About" message
 	jsr SHOWMSG
