@@ -19,7 +19,7 @@ ADTPro Installation
 
  * <<<adtpro.sh>>>        - A Linux/OSX shell script to start the server
 
- * <<<DOSADTvrm.dsk>>> - An enhanced legacy Apple DOS ADT client, capable 
+ * <<<ADTvrm.dsk>>> - An enhanced legacy Apple DOS ADT client, capable 
    of running on both Super Serial hardware as well as on the IIgs serial
    (modem) port
 

@@ -1,0 +1,151 @@
+ -----
+ Developing ADTPro
+ -----
+ David Schmidt (david__schmidt at users dot souceforge dot net)
+ -----
+
+Developing ADTPro
+
+ The full build system for ADTPro actually uses several components
+that are not readily visible.  The full list looks like this:
+
+ * {{{http://java.sun.com/javase/downloads/index.jsp}Java SDK}} - compiles Java-based server
+
+ * {{{http://www.cc65.org/}cc65}} toolchain's 6502 assembler - assembles and links the client(s)
+
+ * {{{http://www.rxtx.org/}rxtx}} - multiplatform Java serial libarary
+
+ * {{{http://maven.apache.org/}Maven}} - builds the web pages
+
+ * {{{http://ant.apache.org/}Ant}} - orchestrates the build process
+
+ []
+
+ The main build.xml script in ADTPro's CVS repository calls upon these
+tools to go from source files to distributable packages.  Well, with the exception
+of the Maven website stuff - that's not part of the main build script, mostly
+because that's a step most people wouldn't ever want to do, and if it were there -
+they'd have to have Maven installed.  
+
+ Everyone has their favorite integrated development environment (IDE).  I happen
+to use {{{http://www.eclipse.org/}Eclipse}}, so I'll provide setup information
+for that.  Other IDEs are similar, and surely address your own pet peeves.
+This page happens to show screenshots of a Windows setup, but there's nothing
+inherently Windows-ey about the build process.  It should run on any platform
+that can support all of the build tools.
+
+ Table of Contents:
+
+ * {{{developing.html#Starting from Scratch}Starting from Scratch}}
+ 
+ * {{{developing.html#Downloading/Importing the ADTPro Project}Downloading/Importing the ADTPro Project}}
+ 
+ * {{{developing.html#Configuring the Project Properties}Configuring the Project Properties}}
+ 
+ * {{{developing.html#Configuring the Build Script: build.xml}Configuring the Build Script: build.xml}}
+ 
+ * {{{developing.html#Starting a Build}Starting a Build}}
+
+ []
+
+* {Starting from Scratch}
+
+ Let's assume you have a clean machine and want to make this thing build.  
+The minimum amount of work you'd go through to do so:
+
+ * Download and install Eclipse from {{{http://www.eclipse.org/}http://www.eclipse.org}}
+ 
+ * Download and install a Java {{{http://download.eclipse.org/eclipse/downloads/drops/R-3.2.2-200702121330//java-runtimes.html}JRE}} if your Eclipse distribution doesn't come with one
+ 
+ * Download and install the cc65 toolchain from {{{http://www.cc65.org/}http://www.cc65.org}}
+ 
+ * Download and install the rxtx library from {{{http://www.rxtx.org/}http://rxtx.org}} - select the Download link, and grab the latest binary release
+
+ []
+
+* {Downloading/Importing the ADTPro Project}
+
+ Connect Eclipse to the ADTPro CVS repository on Sourceforge:
+ 
+ * From the Eclipse IDE: <<<File->New->Project>>>, <<<Project from CVS>>>:
+
+[images/eclipse1.jpg]
+   
+ * Fill in the CVS repository info:
+
+[images/eclipse2.jpg]
+
+ * Pick, or type in, <<<adtpro>>> for the module name:
+
+[images/eclipse3.jpg]
+
+ * Check it out to the workspace:
+
+[images/eclipse4.jpg]
+
+ []
+
+ You now have the entire ADTPro project checked out to your workspace,
+and it probably looks mad:
+
+[images/eclipse5.jpg]
+
+ The problem is that the Java code can't automatically compile in the
+workspace because the project needs to resolve a couple of support jars
+right away: Ant and rxtx.  So, we need to go into the project properties
+and tell it where to find both of those things.
+
+* {Configuring the Project Properties}
+
+ Resolving the external jar dependencies is probably easiest to do by
+right-clicking on the top-level <<<adtpro [adtpro.cvs.sourceforge.net]>>>
+object in the package explorer, then picking <<<Build Path->Configure Build Path...>>>
+from the context menu.  The Java Build Path dialog box will come up:
+
+[images/eclipse6.jpg]
+
+ Ignore the fact that there's an ANT_JAR in there already - that's my fault.
+Next step: click on the "Add External Jars..." button and tell it where to 
+find the RXTXcomm.jar - which is where you installed rxtx.  Hit the button again
+and tell it where to find ant.jar, which you will find buried deep within your Eclipse
+installation.  The path is probably something like this:
+<<</eclipse/plugins/org.apache.ant_v.r.m/lib/ant.jar>>>
+
+ When you've got your external jars connected, the Java Build Path dialog will
+look something like this:
+
+[images/eclipse7.jpg]
+
+ And the main Eclipse window should no long have any errors, though it may still
+have warnings (depending on how tidy the build happens to be right then).
+
+* {Configuring the Build Script: <<<build.xml>>>}
+
+ In the Package Explorer, expand the <<<build>>> section and double-click on
+<<<build.xml>>>.  You will need to point the <<<assemblerPath>>> variable at 
+the top of the script to 
+where you have the cc65 toolchain installed.  The full line should look like this,
+assuming you unzipped cc65 into a directory named <<<cc65>>>:
+
+ <<<\<property name="assemblerPath" value="e:/cc65/bin" /> >>>
+
+* {Starting a Build}
+
+ All that's left to do now is hit the shiny red build button.  Right-click on the
+<<<build.xml>>> file in the Package Explorer, pick <<<Run As...->Ant Build>>>, and
+all the magic should happen:
+
+[images/eclipse8.jpg]
+
+ The "BUILD SUCCESSFUL" message is the indication of success, obviously enough.
+You can start subsequent builds now that the first one happened by just clicking
+on the little suitcase button:
+ 
+[images/eclipse9.jpg]
+
+ The build output goes to the place where your Eclipse workspace directory is.
+The exact location will appear in the console output.  In the Eclipse
+picture above, you can see the path listed in the <<<[zip]>>> line.  The build
+output will consist of the server .jar file, the ADTPro client contained on a .dsk
+file, the DOS ADT client contained on another .dsk file, and a .zip file of
+the complete distribution package.
