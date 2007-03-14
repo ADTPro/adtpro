@@ -27,6 +27,7 @@ import java.io.*;
 import java.util.*;
 
 import org.adtpro.resources.Messages;
+import org.adtpro.utilities.Log;
 import org.adtpro.utilities.UnsignedByte;
 
 import gnu.io.*;
@@ -47,6 +48,8 @@ public class SerialTransport extends ATransport
 
   protected int _currentSpeed = 0;
 
+  protected int _timeout = 0;
+
   /**
    * Create a new instance of the Comm API Transport. This constructor creates a
    * new instance of the Comm API Transport.
@@ -64,6 +67,7 @@ public class SerialTransport extends ATransport
 
   public SerialTransport(String portName, String speed) throws Exception
   {
+    Log.getSingleton();
     this.portName = portName;
     connected = false;
     portId = CommPortIdentifier.getPortIdentifier(portName);
@@ -81,9 +85,14 @@ public class SerialTransport extends ATransport
     inputStream = new DataInputStream(port.getInputStream());
     outputStream = new DataOutputStream(port.getOutputStream());
     connected = true;
-    System.out.println("SerialTransport opened port named " + portName + " at speed " + speed + "."); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+    Log.println(true,"SerialTransport opened port named " + portName + " at speed " + speed + "."); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
   }
 
+  public int transportType()
+  {
+    return TRANSPORT_TYPE_SERIAL;
+  }
+  
   /**
    * Closes the Java COMM API port.
    * 
@@ -97,7 +106,7 @@ public class SerialTransport extends ATransport
     {
       connected = false;
       port.close();
-      System.out.println("SerialTransport closed port."); //$NON-NLS-1$
+      Log.println(true,"SerialTransport closed port."); //$NON-NLS-1$
     }
   }
 
@@ -135,7 +144,7 @@ public class SerialTransport extends ATransport
     }
     catch (NoClassDefFoundError ex)
     {
-      System.out.println(Messages.getString("SerialTransport.2")); //$NON-NLS-1$
+      Log.println(true,Messages.getString("SerialTransport.2")); //$NON-NLS-1$
       return null;
     }
 
@@ -184,16 +193,32 @@ public class SerialTransport extends ATransport
 
   public byte readByte(int timeout) throws IOException
   {
+    if (timeout > 0 )
+    {
+      if (timeout != _timeout)
+      {
+        port.enableReceiveTimeout(timeout);
+        _timeout = timeout;
+      }
+    }
+    else if (timeout == 0)
+    {
+      port.disableReceiveTimeout();
+      _timeout = timeout;
+    }
+    // else (timeout < 0), which means leave it alone
+
+    return (readByte());
+  }
+
+  public byte readByte() throws IOException
+  {
     boolean hasData = false;
     byte oneByte = 0;
     while ((hasData == false) && (connected))
     {
       try
       {
-        if (timeout == 0)
-          port.disableReceiveTimeout();
-        else
-          port.enableReceiveTimeout(timeout);
         oneByte = inputStream.readByte();
         hasData = true;
       }
@@ -224,8 +249,26 @@ public class SerialTransport extends ATransport
    *              thrown when a problem occurs with flushing the stream.
    */
 
-  public void setSpeed(int speed) throws Exception
+  public void setTimeout(int timeout)
   {
+    /**
+     * Sets the timeout of the underlying Java COMM API port.
+     * 
+     * @param timeout
+     *          The timeout value in milliseconds.
+     */
+    if (timeout != _timeout)
+    {
+      if (timeout == 0)
+        port.disableReceiveTimeout();
+      else
+        port.enableReceiveTimeout(timeout);
+    }
+    _timeout = timeout;
+  }
+  
+    public void setSpeed(int speed) throws Exception
+    {
     flush();
     port.setSerialPortParams(speed, 8, 1, 0);
   }
@@ -244,14 +287,14 @@ public class SerialTransport extends ATransport
       /*
       for (int i = 0; i < data.length; i++)
       {
-        System.out.print(UnsignedByte.toString(data[i]) + " "); 
+        Log.print(UnsignedByte.toString(data[i]) + " "); 
       }
       */
       outputStream.write(data, 0, data.length);
     }
     catch (IOException ex)
     {
-      ex.printStackTrace();
+      Log.printStackTrace(ex);
     }
   }
 
@@ -334,7 +377,7 @@ public class SerialTransport extends ATransport
     }
     catch (UnsupportedCommOperationException e)
     {
-      e.printStackTrace();
+      Log.printStackTrace(e);
     }
   }
 
@@ -346,8 +389,29 @@ public class SerialTransport extends ATransport
     }
     catch (UnsupportedCommOperationException e)
     {
-      e.printStackTrace();
+      Log.printStackTrace(e);
     }
   }
 
+  public boolean supportsBootstrap()
+  {
+    return true;
+  }
+
+  public void pauseIncorrectCRC()
+  {
+    // Only necessary for audio transport
+  }
+
+  public String getInstructions(String guiString, int fileSize)
+  {
+    String ret = "'SerialTransport.getInstructions() - returned null!'";
+    if (guiString.equals(Messages.getString("Gui.BS.DOS")))
+      ret = Messages.getString("Gui.BS.DumpDOSInstructions");
+    else if (guiString.equals(Messages.getString("Gui.BS.ADT")))
+      ret = Messages.getString("Gui.BS.DumpADTInstructions");
+    else if (guiString.equals(Messages.getString("Gui.BS.ADTPro")))
+      ret = Messages.getString("Gui.BS.DumpProInstructions");
+    return ret;
+  }
 }

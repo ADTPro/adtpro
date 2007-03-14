@@ -65,7 +65,8 @@ MAINLUP:
 	jsr HOME	; Clear screen
 
 MAINL:
-RESETIO:	jsr $0000	; Pseudo-indirect JSR to rest the IO device
+RESETIO:
+	jsr $0000	; Pseudo-indirect JSR to reset the IO device
 
 	jsr SHOWLOGO
 

@@ -1,6 +1,6 @@
 /*
  * ADTPro - Apple Disk Transfer ProDOS
- * Copyright (C) 2006 by David Schmidt
+ * Copyright (C) 2006, 2007 by David Schmidt
  * david__schmidt at users.sourceforge.net
  *
  * This program is free software; you can redistribute it and/or modify it 
@@ -32,6 +32,7 @@ import java.io.IOException;
 import javax.swing.*;
 
 import org.adtpro.resources.Messages;
+import org.adtpro.transport.ATransport;
 import org.adtpro.transport.SerialTransport;
 import org.adtpro.ADTProperties;
 import org.adtpro.CommsThread;
@@ -44,7 +45,7 @@ import org.adtpro.CommsThread;
 public final class Gui extends JFrame implements ActionListener
 {
   /**
-   *
+   * 
    */
   private static final long serialVersionUID = 1L;
 
@@ -74,6 +75,8 @@ public final class Gui extends JFrame implements ActionListener
 
   JMenu menuBootstrap;
 
+  JMenuItem _dosAction2 = null;
+
   public Gui(java.lang.String[] args)
   {
     addWindowListener(new WindowCloseMonitor());
@@ -84,9 +87,8 @@ public final class Gui extends JFrame implements ActionListener
     }
     catch (Throwable ex)
     {}
-    String tempDir = _properties.getProperty("WorkingDirectory",null); //$NON-NLS-1$
-    if (tempDir != null)
-      setWorkingDirectory(tempDir);
+    String tempDir = _properties.getProperty("WorkingDirectory", null); //$NON-NLS-1$
+    if (tempDir != null) setWorkingDirectory(tempDir);
 
     JMenuBar menuBar = new JMenuBar();
     JPanel mainPanel = new JPanel(new GridBagLayout());
@@ -101,10 +103,15 @@ public final class Gui extends JFrame implements ActionListener
     menuBootstrap = new JMenu(Messages.getString("Gui.Bootstrap")); //$NON-NLS-1$
     MenuAction dosAction = new MenuAction(Messages.getString("Gui.BS.DOS")); //$NON-NLS-1$
     menuBootstrap.add(dosAction);
+    MenuAction dosAction2 = new MenuAction(Messages.getString("Gui.BS.DOS2")); //$NON-NLS-1$
+    _dosAction2 = menuBootstrap.add(dosAction2);
+    _dosAction2.setEnabled(true);
     MenuAction adtAction = new MenuAction(Messages.getString("Gui.BS.ADT")); //$NON-NLS-1$
     menuBootstrap.add(adtAction);
     MenuAction adtProAction = new MenuAction(Messages.getString("Gui.BS.ADTPro")); //$NON-NLS-1$
     menuBootstrap.add(adtProAction);
+    MenuAction adtProAudioAction = new MenuAction(Messages.getString("Gui.BS.ADTProAudio")); //$NON-NLS-1$
+    menuBootstrap.add(adtProAudioAction);
     menuBar.add(menuBootstrap);
     menuBootstrap.setEnabled(false);
     JMenu menuHelp = new JMenu(Messages.getString("Gui.Help")); //$NON-NLS-1$
@@ -129,14 +136,15 @@ public final class Gui extends JFrame implements ActionListener
     catch (Throwable t)
     {}
     comboComPort.addItem(Messages.getString("Gui.Ethernet"));
-    comboComPort.setSelectedItem(_properties.getProperty("CommPort","COM1")); //$NON-NLS-1$ //$NON-NLS-2$
+    comboComPort.addItem(Messages.getString("Gui.Audio"));
+    comboComPort.setSelectedItem(_properties.getProperty("CommPort", "COM1")); //$NON-NLS-1$ //$NON-NLS-2$
 
     comboSpeed = new JComboBox();
     comboSpeed.addItem("9600"); //$NON-NLS-1$
     comboSpeed.addItem("19200"); //$NON-NLS-1$
     comboSpeed.addItem("115200"); //$NON-NLS-1$
-      
-    comboSpeed.setSelectedItem(_properties.getProperty("CommPortSpeed","115200")); //$NON-NLS-1$ //$NON-NLS-2$
+
+    comboSpeed.setSelectedItem(_properties.getProperty("CommPortSpeed", "115200")); //$NON-NLS-1$ //$NON-NLS-2$
     buttonConnect = new JButton(Messages.getString("Gui.Disconnect")); //$NON-NLS-1$
     buttonConnect.addActionListener(this);
 
@@ -234,12 +242,10 @@ public final class Gui extends JFrame implements ActionListener
     byte rc = 0x06; // Unable to change directory message at Apple
     cwd = cwd.trim();
     File parentDir;
-    if (cwd.equals("/") || cwd.equals("\\"))
-      parentDir = null;
+    if (cwd.equals("/") || cwd.equals("\\")) parentDir = null;
     else
       parentDir = new File(_workingDirectory);
-    if ((cwd.startsWith("/") || cwd.startsWith("\\")))
-      parentDir = null;
+    if ((cwd.startsWith("/") || cwd.startsWith("\\"))) parentDir = null;
 
     File baseDirFile = new File(parentDir, cwd);
     String tempWorkingDirectory = null;
@@ -266,7 +272,7 @@ public final class Gui extends JFrame implements ActionListener
       }
       catch (IOException io2)
       {
-        //System.out.println("boom...");
+        // System.out.println("boom...");
       }
     }
     if (tempWorkingDirectory != null)
@@ -351,7 +357,8 @@ public final class Gui extends JFrame implements ActionListener
 
     public void actionPerformed(ActionEvent e)
     {
-      Object buttons[] = {Messages.getString("Gui.Ok"), Messages.getString("Gui.Cancel")};
+      Object buttons[] =
+      { Messages.getString("Gui.Ok"), Messages.getString("Gui.Cancel") };
       String message;
       if (e.getActionCommand().equals(Messages.getString("Gui.Quit"))) //$NON-NLS-1$
       {
@@ -371,7 +378,7 @@ public final class Gui extends JFrame implements ActionListener
             JFileChooser jc = new JFileChooser();
             jc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
             jc.setCurrentDirectory(new File(getWorkingDirectory()));
-            int rc = jc.showDialog(_parent,Messages.getString("Gui.CDSet"));
+            int rc = jc.showDialog(_parent, Messages.getString("Gui.CDSet"));
             if (rc == 0)
             {
               if (jc.getSelectedFile().isDirectory())
@@ -385,59 +392,22 @@ public final class Gui extends JFrame implements ActionListener
             }
           }
           else
-            if (e.getActionCommand().equals(Messages.getString("Gui.BS.DOS"))) //$NON-NLS-1$
+            if ((e.getActionCommand().equals(Messages.getString("Gui.BS.DOS"))) || //$NON-NLS-1$
+                (e.getActionCommand().equals(Messages.getString("Gui.BS.DOS2"))) || //$NON-NLS-1$
+                (e.getActionCommand().equals(Messages.getString("Gui.BS.ADT"))) || //$NON-NLS-1$
+                (e.getActionCommand().equals(Messages.getString("Gui.BS.ADTPro"))) || //$NON-NLS-1$
+                (e.getActionCommand().equals(Messages.getString("Gui.BS.ADTProAudio")))) //$NON-NLS-1$
             {
-              message = Messages.getString("Gui.BS.DumpDOSInstructions");
+              int size = commsThread.requestSend(e.getActionCommand(), false);
+              message = commsThread.getInstructions(e.getActionCommand(), size);
               /* Ask the user if she is sure */
-              int ret = JOptionPane.showOptionDialog(_parent,
-                                                     message,
-                                                     Messages.getString("Gui.Name"),
-                                                     JOptionPane.YES_NO_OPTION,
-                                                     JOptionPane.WARNING_MESSAGE,
-                                                     null,
-                                                     buttons,
-                                                     buttons[0]);
+              int ret = JOptionPane.showOptionDialog(_parent, message, Messages.getString("Gui.Name"),
+                  JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE, null, buttons, buttons[0]);
               if (ret == JOptionPane.YES_OPTION)
               {
-                commsThread.requestSend("org/adtpro/resources/dos33.dmp");
+                commsThread.requestSend(e.getActionCommand(),true);
               }
             }
-            else
-              if (e.getActionCommand().equals(Messages.getString("Gui.BS.ADT"))) //$NON-NLS-1$
-              {
-                message = Messages.getString("Gui.BS.DumpADTInstructions");
-                /* Ask the user if she is sure */
-                int ret = JOptionPane.showOptionDialog(_parent,
-                                                       message,
-                                                       Messages.getString("Gui.Name"),
-                                                       JOptionPane.YES_NO_OPTION,
-                                                       JOptionPane.WARNING_MESSAGE,
-                                                       null,
-                                                       buttons,
-                                                       buttons[0]);
-                if (ret == JOptionPane.YES_OPTION)
-                {
-                  commsThread.requestSend("org/adtpro/resources/adt.dmp");
-                }
-              }
-              else
-                if (e.getActionCommand().equals(Messages.getString("Gui.BS.ADTPro"))) //$NON-NLS-1$
-                {
-                  message = Messages.getString("Gui.BS.DumpProInstructions");
-                  /* Ask the user if she is sure */
-                  int ret = JOptionPane.showOptionDialog(_parent,
-                                                         message,
-                                                         Messages.getString("Gui.Name"),
-                                                         JOptionPane.YES_NO_OPTION,
-                                                         JOptionPane.WARNING_MESSAGE,
-                                                         null,
-                                                         buttons,
-                                                         buttons[0]);
-                  if (ret == JOptionPane.YES_OPTION)
-                  {
-                    commsThread.requestSend("org/adtpro/resources/adtpro.dmp");
-                  }
-                }
     }
   }
 
@@ -462,7 +432,8 @@ public final class Gui extends JFrame implements ActionListener
     }
     else
     {
-      commsThread = new CommsThread(this, (String) comboComPort.getSelectedItem(), (String) comboSpeed.getSelectedItem());
+      commsThread = new CommsThread(this, (String) comboComPort.getSelectedItem(), (String) comboSpeed
+          .getSelectedItem());
       commsThread.start();
       setMainText(Messages.getString("Gui.Quiesced")); //$NON-NLS-1$
       setSecondaryText(Messages.getString("Gui.Connected")); //$NON-NLS-1$
@@ -471,7 +442,11 @@ public final class Gui extends JFrame implements ActionListener
       saveProperties();
       comboComPort.setEnabled(false);
       comboSpeed.setEnabled(false);
-      menuBootstrap.setEnabled(true);
+      if (commsThread.supportsBootstrap())
+      {
+        menuBootstrap.setEnabled(true);
+        _dosAction2.setEnabled(commsThread.transportType() == ATransport.TRANSPORT_TYPE_AUDIO);
+      }
     }
   }
 
@@ -479,6 +454,7 @@ public final class Gui extends JFrame implements ActionListener
   {
     // The comms thread complained the port was in use.
     JOptionPane.showMessageDialog(this, Messages.getString("Gui.PortInUse"));
+    menuBootstrap.setEnabled(false);
     cleanupCommsThread();
   }
 
@@ -495,11 +471,9 @@ public final class Gui extends JFrame implements ActionListener
 
   public void saveProperties()
   {
-    if (comboComPort != null)
-      _properties.setProperty("CommPort",(String) comboComPort.getSelectedItem());
-    if (comboSpeed != null)
-      _properties.setProperty("CommPortSpeed",(String) comboSpeed.getSelectedItem());
-    _properties.setProperty("WorkingDirectory",getWorkingDirectory());
+    if (comboComPort != null) _properties.setProperty("CommPort", (String) comboComPort.getSelectedItem());
+    if (comboSpeed != null) _properties.setProperty("CommPortSpeed", (String) comboSpeed.getSelectedItem());
+    _properties.setProperty("WorkingDirectory", getWorkingDirectory());
     _properties.save();
   }
 

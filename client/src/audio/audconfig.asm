@@ -1,6 +1,6 @@
 ;
 ; ADTPro - Apple Disk Transfer ProDOS
-; Copyright (C) 2006, 2007 by David Schmidt
+; Copyright (C) 2007 by David Schmidt
 ; david__schmidt at users.sourceforge.net
 ;
 ; This program is free software; you can redistribute it and/or modify it 
@@ -45,30 +45,16 @@ SAVPARM:
 	ldy #PMSG24	; 'CONFIGURE ADTPRO PARAMETERS'
 	jsr SHOWMSG
 
-	lda #$08	; Column
+	lda #$0B	; Column
 	sta <CH
 	lda #$03	; Row
-	jsr TABV
-	ldy #PMSG26	; 'COMMS DEVICE'
-	jsr SHOWMSG
-
-	lda #$08	; Column
-	sta <CH
-	lda #$04	; Row
-	jsr TABV
-	ldy #PMSG27	; 'BAUD RATE'
-	jsr SHOWMSG
-
-	lda #$08	; Column
-	sta <CH
-	lda #$05	; Row
 	jsr TABV
 	ldy #PMSG28	; 'ENABLE SOUND'
 	jsr SHOWMSG
 
-	lda #$08	; Column
+	lda #$0B	; Column
 	sta <CH
-	lda #$06	; Row
+	lda #$04	; Row
 	jsr TABV
 	ldy #PMSG28a	; 'SAVE CONFIGURATION'
 	jsr SHOWMSG
@@ -95,7 +81,7 @@ REFRESH:
 
 NXTLINE:
 	stx LINECNT	; SAVE CURRENT LINE
-	lda #$15	; Start printing config parms in this column
+	lda #$18	; Start printing config parms in this column
 	sta <CH
 	clc
 	lda PARMSIZ,X	; GET CURRENT VALUE (NEGATIVE:
@@ -236,24 +222,14 @@ NOSAVE:
 LINECNT:	.byte 00		; CURRENT LINE NUMBER
 CURPARM:	.byte 00		; ACTIVE PARAMETER
 CURVAL:		.byte 00		; VALUE OF ACTIVE PARAMETER
-OLDPARM:	.byte $00,$00,$00,$00	; There must be PARMNUM bytes here...
+OLDPARM:	.byte $00,$00		; There must be PARMNUM bytes here...
 
 
 ;---------------------------------------------------------
 ; PARMINT - INTERPRET PARAMETERS
 ;---------------------------------------------------------
 PARMINT:
-	ldy PSSC	; GET SSC SLOT# (0..6)
-	iny		; NOW 1..7
-	tya
-	cmp #$08
-	bpl IIGS
-	jmp INITSSC	; Y holds slot number
-
-IIGS:
-	lda #$02
-	sta PGSSLOT
-	jmp INITZGS
+	jmp INITAUDIO
 
 ;---------------------------------------------------------
 ; PARMDFT - Set parameters to last saved values (uses A,X)
@@ -290,37 +266,22 @@ PARMDFTNEXT:
 ; Configuration
 ;---------------------------------------------------------
 
-PARMNUM	= $04		; Number of configurable parms
+PARMNUM	= $02		; Number of configurable parms
 ;			; Note - add bytes to OLDPARM if this is expanded.
-PARMSIZ: .byte 8,3,2,2	; Number of options for each parm
+PARMSIZ: .byte 2,2	; Number of options for each parm
 
 PARMTXT:
-	ascz "SSC SLOT 1"
-	ascz "SSC SLOT 2"
-	ascz "SSC SLOT 3"
-	ascz "SSC SLOT 4"
-	ascz "SSC SLOT 5"
-	ascz "SSC SLOT 6"
-	ascz "SSC SLOT 7"
-	ascz "IIGS MODEM"
-	ascz "9600"
-	ascz "19200"
-	ascz "115200"
 	ascz "YES"
 	ascz "NO"
 	ascz "YES"
 	ascz "NO"
 
 PARMS:
-PSSC:	.byte 1		; Comms slot (2)
-PSPEED:	.byte 2		; Comms speed (115200)
+PSSC:			; Need a reference; not really used in audio version
 PSOUND:	.byte 0		; Sounds? (YES)
 PSAVE:	.byte 1		; Save parms? (NO)
-PGSSLOT:
-	.byte 1		; IIgs slot (2)
 
-DEFAULT:	.byte 1,2,0,1	; Default parm indices
-FACTORY:	.byte 1,2,0,1	; Factory default parm indices
-BPSCTRL:	.byte $1E,$1F,$10
+DEFAULT:	.byte 0,1	; Default parm indices
+FACTORY:	.byte 0,1	; Factory default parm indices
 YSAVE:		.byte $00
-BSAVEP		= $03	; Index to the 'Save parameters' parameter
+BSAVEP		= $01	; Index to the 'Save parameters' parameter

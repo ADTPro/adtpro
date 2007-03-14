@@ -1,6 +1,6 @@
 ;
 ; ADTPro - Apple Disk Transfer ProDOS
-; Copyright (C) 2006, 2007 by David Schmidt
+; Copyright (C) 2006 by David Schmidt
 ; david__schmidt at users.sourceforge.net
 ;
 ; This program is free software; you can redistribute it and/or modify it 
@@ -17,26 +17,13 @@
 ; with this program; if not, write to the Free Software Foundation, Inc., 
 ; 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 ;
+	.include "bsave.asm"
+	.import ASMEND
 
-	.include "main.asm"
-
-;---------------------------------------------------------
-; Pull in all the rest of the code
-;---------------------------------------------------------
-	.include "vars.asm"
-	.include "print.asm"
-	.include "serial/serproto.asm"
-	.include "online.asm"
-	.include "rw.asm"
-	.include "sr.asm"
-	.include "serial/ssc.asm"
-	.include "serial/iigsscc.asm"
-	.include "crc.asm"
-	.include "pickvol.asm"
-	.include "input.asm"
-	.include "serial/serconfig.asm"
-	.include "hostfns.asm"
-	.include "serial/serbsave.asm"
-
-PEND:
-	.segment "DATA"
+COMMAND:	.byte "BSAVE ADTPROAUD,A$0803,L$"
+NYBBLE1:	.byte $00
+NYBBLE2:	.byte $00
+NYBBLE3:	.byte $00
+NYBBLE4:	.byte $00
+CMDEND:	.byte $8D
+LENGTH:	.word ASMEND-PBEGIN

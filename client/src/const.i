@@ -131,3 +131,5 @@ RESETB	=	%01010001	; constant to reset Channel B
 WR11A	=	%11010000	; init wr11 in Ch A
 WR11BXTAL	=	%00000000	; init wr11 in Ch B - use external clock
 WR11BBRG	=	%01010000	; init wr11 in Ch B - use baud rate generator
+
+CASSLOT		= $08	; Selection number for cassette transport

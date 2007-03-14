@@ -3,6 +3,9 @@
  * Copyright (C) 2006 by David Schmidt
  * david__schmidt at users.sourceforge.net
  *
+ * Serial Transport notions derived from the jSyncManager project
+ * http://jsyncmanager.sourceforge.net/
+ *
  * This program is free software; you can redistribute it and/or modify it 
  * under the terms of the GNU General Public License as published by the 
  * Free Software Foundation; either version 2 of the License, or (at your 
@@ -18,25 +21,17 @@
  * 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-package org.adtpro;
+package org.adtpro.transport;
 
-import org.adtpro.gui.Gui;
-import org.adtpro.resources.Messages;
-import org.adtpro.utilities.Log;
-
-/** The main class for launching the ADTPro client graphical user interface.
- * @author File Created By: David Schmidt &lt;david@attglobal.net&gt;
- */
-public class ADTPro
+public class TransportClosedException extends Exception
 {
+  private static final long serialVersionUID = 1L;
+    public TransportClosedException()
+    {
+    }
 
-  public static void main(java.lang.String[] args)
-  {
-    Log.getSingleton();
-    Log.print(true,Messages.getString("Gui.Title")); //$NON-NLS-1$
-    Log.println(true," " + Messages.getString("Version.Number")); //$NON-NLS-1$
-    Log.println(true,""); //$NON-NLS-1$
-    Log.print(true,Messages.getString("Gui.RXTX")); //$NON-NLS-1$
-    new Gui(args);
-  }
+    public TransportClosedException(String s)
+    {
+        super(s);
+    }
 }

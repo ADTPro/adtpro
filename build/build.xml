@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project name="ADTPro" default="all" basedir="..">
-	<property name="versionString" value="0.1.4" />
+	<property name="versionString" value="0.1.5" />
 	<property name="distName" value="ADTPro-${versionString}" />
 	<property name="volName" value="ADTPro.${versionString}" />
 	<property name="dosVersionString" value="131" />
@@ -20,6 +20,7 @@
 		-->
 		<delete file="${builddir}/ADT" />
 		<delete file="${builddir}/ADTPRO" />
+		<delete file="${builddir}/ADTPROAUD" />
 		<delete file="${builddir}/ADTPROETH" />
 		<delete file="${builddir}/adtpro.bat" />
 		<delete file="${builddir}/adtpro.sh" />
@@ -29,6 +30,10 @@
 		<delete file="${builddir}/${dosDistName}.dsk" />
 		<delete file="${projdir}/org/adtpro/resources/adt.dmp" />
 		<delete file="${projdir}/org/adtpro/resources/adtpro.dmp" />
+		<delete file="${projdir}/org/adtpro/resources/adtproaud.dmp" />
+		<delete file="${projdir}/org/adtpro/resources/adt.raw" />
+		<delete file="${projdir}/org/adtpro/resources/adtpro.raw" />
+		<delete file="${projdir}/org/adtpro/resources/adtproaud.raw" />
 		<delete>
 			<fileset dir="${projdir}/client/src" includes="**/*.o"/>
 			<fileset dir="${projdir}/client/src" includes="**/*.map"/>
@@ -41,6 +46,9 @@
 		<!--
 		Assemble the ADTPro source
 		-->
+		<exec dir="${projdir}/client/src" executable="${assemblerPath}/ca65">
+			<arg line="-l -t none audio/audmain.asm" />
+		</exec>
 		<exec dir="${projdir}/client/src" executable="${assemblerPath}/ca65">
 			<arg line="-l -t none ethernet/ethmain.asm" />
 		</exec>
@@ -76,17 +84,26 @@
 			<arg line="-m adtproser.map -C serial/adtpro.cfg -o ADTPRO serial/sermain.o tail.o" />
 		</exec>
 		<exec dir="${projdir}/client/src" executable="${assemblerPath}/ld65">
+			<arg line="-m adtproser.map -C serial/adtpro.cfg -o ADTPROAUD audio/audmain.o tail.o" />
+		</exec>
+		<exec dir="${projdir}/client/src" executable="${assemblerPath}/ld65">
 			<arg line="-m adtproeth.map -C ethernet/adtpro.cfg -o ADTPROETH ethernet/ethmain.o ip65/ip65.lib tail.o" />
 		</exec>
 		<!--
 		Move the object code to the build directory
 		-->
 		<move file="${projdir}/client/src/ADTPRO" tofile="${builddir}/ADTPRO" />
+		<copy file="${builddir}/ADTPRO" tofile="${basedir}/org/adtpro/resources/adtpro.raw" />
+		<move file="${projdir}/client/src/ADTPROAUD" tofile="${builddir}/ADTPROAUD" />
+		<copy file="${builddir}/ADTPROAUD" tofile="${basedir}/org/adtpro/resources/adtproaud.raw" />
 		<move file="${projdir}/client/src/ADTPROETH" tofile="${builddir}/ADTPROETH" />
+		<copy file="${builddir}/ADTPROETH" tofile="${basedir}/org/adtpro/resources/adtproeth.raw" />
 		<move file="${projdir}/client/src/dos/ADT" tofile="${builddir}/ADT" />
+		<copy file="${builddir}/ADT" tofile="${basedir}/org/adtpro/resources/adt.raw" />
 		<!--
 		Make dumpable versions
 		-->
+		<appleDump infilename="${builddir}/ADTPROAUD" outfilename="${basedir}/org/adtpro/resources/adtproaud.dmp" applename="ADTPROAUD" startaddrhex="803" numbyteswide="8" />
 		<appleDump infilename="${builddir}/ADTPRO" outfilename="${basedir}/org/adtpro/resources/adtpro.dmp" applename="ADTPRO" startaddrhex="803" numbyteswide="8" />
 		<appleDump infilename="${builddir}/ADT" outfilename="${basedir}/org/adtpro/resources/adt.dmp" applename="ADT" startaddrhex="803" numbyteswide="8" />
 	</target>
@@ -113,6 +130,9 @@ java -jar ${distName}.jar</echo>
 		<exec dir="${builddir}" executable="java" input="${builddir}/ADTPRO">
 			<arg line="-jar ${acJar} -p ADTPRO.BACKUP bin 2051 ${distName}.dsk" />
 		</exec>
+		<exec dir="${builddir}" executable="java" input="${builddir}/ADTPROAUD">
+			<arg line="-jar ${acJar} -p ADTPROAUD bin 2051 ${distName}.dsk" />
+		</exec>
 		<exec dir="${builddir}" executable="java" input="${builddir}/ADTPROETH">
 			<arg line="-jar ${acJar} -p ADTPROETH bin 2051 ${distName}.dsk" />
 		</exec>
@@ -138,16 +158,22 @@ java -jar ${distName}.jar</echo>
 		<exec dir="${builddir}" executable="java">
 			<arg line="-jar ${acJar} -d ADTPROETH RAM5.PO" />
 		</exec>
-		<exec dir="${builddir}" executable="java">
-			<arg line="-jar ${acJar} -d ADTPRO RAM5.PO" />
-		</exec>
 		<exec dir="${builddir}" executable="java" input="${builddir}/ADTPROETH">
 			<arg line="-jar ${acJar} -p ADTPROETH bin 2051 RAM5.PO" />
+		</exec>
+		<exec dir="${builddir}" executable="java">
+			<arg line="-jar ${acJar} -d ADTPRO RAM5.PO" />
 		</exec>
 		<exec dir="${builddir}" executable="java" input="${builddir}/ADTPRO">
 			<arg line="-jar ${acJar} -p ADTPRO bin 2051 RAM5.PO" />
 		</exec>
 		-->
+		<exec dir="${builddir}" executable="java">
+			<arg line="-jar ${acJar} -d ADTPROAUD RAM5.PO" />
+		</exec>
+		<exec dir="${builddir}" executable="java" input="${builddir}/ADTPROAUD">
+			<arg line="-jar ${acJar} -p ADTPROAUD bin 2051 RAM5.PO" />
+		</exec>
 		<!--
 		Lock the backup version
 		-->
@@ -167,7 +193,7 @@ java -jar ${distName}.jar</echo>
 		<jar jarfile="${builddir}/${distName}.jar" 
 			manifest="${builddir}/manifest.mf" 
 			basedir="${projdir}" 
-			includes="org/**/*.class org/**/*.java org/**/*.properties org/**/*.png org/**/*.dmp LICENSE" />
+			includes="org/**/*.class org/**/*.java org/**/*.properties org/**/*.png org/**/*.dmp org/**/*.raw LICENSE" />
 		<!-- zip up the whole sheebang -->
 		<zip destfile="${builddir}/${distName}.zip" 
 			basedir="${builddir}" 

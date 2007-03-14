@@ -27,6 +27,8 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 
+import org.adtpro.resources.Messages;
+import org.adtpro.utilities.Log;
 import org.adtpro.utilities.UnsignedByte;
 
 public class UDPTransport extends ATransport
@@ -36,6 +38,8 @@ public class UDPTransport extends ATransport
   String _serverIP;
 
   int _port, _inPacketPtr = 0, _inPacketLen = 0, _outPacketPtr = 0;
+
+  int _timeout = 0;
 
   DatagramSocket _socket;
   DatagramPacket _packet;
@@ -59,15 +63,25 @@ public class UDPTransport extends ATransport
     _sendBuffer = new byte[1500];
   }
 
+  public int transportType()
+  {
+    return TRANSPORT_TYPE_UDP;
+  }
+  
   public byte readByte(int timeout) throws Exception
   {
-    //System.out.println("DEBUG: readByte() entry; _inPacketPtr = "+_inPacketPtr+"; _inPacketLen = "+_inPacketLen+".");
+    return readByte();
+  }
+
+  public byte readByte() throws Exception
+  {
+    Log.println(false,"readByte() entry; _inPacketPtr = "+_inPacketPtr+"; _inPacketLen = "+_inPacketLen+".");
     if (_receiveBuffer == null)
     {
-      //System.out.println("DEBUG: readByte() needs to pull a buffer; buffer is null.");
+      Log.println(false,"readByte() needs to pull a buffer; buffer is null.");
       try
       {
-        pullBuffer(timeout);
+        pullBuffer(_timeout);
       }
       catch (java.net.SocketTimeoutException e1)
       {
@@ -79,10 +93,10 @@ public class UDPTransport extends ATransport
     }
     if (_inPacketPtr + 1 > _inPacketLen)
     {
-      //System.out.println("DEBUG: readByte() needs to pull a buffer; we're out of data.");
+      Log.println(false,"UDPTransport.readByte() needs to pull a buffer; we're out of data.");
       try
       {
-        pullBuffer(timeout);
+        pullBuffer(_timeout);
       }
       catch (java.net.SocketTimeoutException e1)
       {
@@ -95,7 +109,7 @@ public class UDPTransport extends ATransport
     int myByte = _receiveBuffer[_inPacketPtr];
     if (myByte < 0)
       myByte += 256;
-    //System.out.println("DEBUG: readByte() exit with " + myByte);
+    Log.println(false,"UDPTransport.readByte() exit with " + myByte);
     return _receiveBuffer[_inPacketPtr++];
   }
 
@@ -107,14 +121,14 @@ public class UDPTransport extends ATransport
    */
   public synchronized void close() throws Exception
   {
-    // System.out.println("DEBUG: UDPTransport.close() entry.");
+    Log.println(false,"UDPTransport.close() entry.");
     if (_connected)
     {
       _connected = false;
       _socket.close();
-      System.out.println("UDPTransport closed UDP port " + _port + "."); //$NON-NLS-1$ //$NON-NLS-2$
+      Log.println(true,"UDPTransport closed UDP port " + _port + "."); //$NON-NLS-1$ //$NON-NLS-2$
     }
-    // System.out.println("DEBUG: UDPTransport.close() exit.");
+    Log.println(false,"UDPTransport.close() exit.");
   }
 
   /**
@@ -133,7 +147,7 @@ public class UDPTransport extends ATransport
     {
       _socket = new DatagramSocket(_port);
       _connected = true;
-      System.out.println("UDPTransport opened UDP port " + _port + " at address " + InetAddress.getLocalHost().getHostAddress() ); //$NON-NLS-1$ //$NON-NLS-2$
+      Log.println(true,"UDPTransport opened UDP port " + _port + " at address " + InetAddress.getLocalHost().getHostAddress() ); //$NON-NLS-1$ //$NON-NLS-2$
       return;
     }
   }
@@ -146,24 +160,24 @@ public class UDPTransport extends ATransport
    */
   public void writeBytes(byte data[])
   {
-    //System.out.println("DEBUG: UDPTransport.writeBytes() entry.");
+    Log.println(false,"UDPTransport.writeBytes() entry.");
     if ((1499 - _outPacketPtr) >= data.length)
     {
-      //System.out.println("DEBUG: UDPTransport.writeBytes() writing "+data.length+" bytes into packet starting from "+_outPacketPtr+".");
+      Log.println(false,"UDPTransport.writeBytes() writing "+data.length+" bytes into packet starting from "+_outPacketPtr+".");
       if (_outPacketPtr == 0)
       {
         _packetNum++;
-        //System.out.println("DEBUG: Setting sequence number to: "+UnsignedByte.intValue(_packetNum));
+        Log.println(false,"Setting sequence number to: "+ UnsignedByte.intValue(_packetNum));
         _sendBuffer[_outPacketPtr++] = _packetNum;
       }
       for (int i = 0; i < data.length; i++)
       {
         _sendBuffer[_outPacketPtr++] = data[i];
-        //System.out.println("  data to buffer: "+data[i]);
+        //Log.println(false,"  data to buffer: "+data[i]);
       }
     }
     //else
-      //System.out.println("DEBUG: UDPTransport.writeBytes() didn't have room!");
+      //Log.println(false,"DEBUG: UDPTransport.writeBytes() didn't have room!");
   }
 
   public void writeBytes(char[] data)
@@ -207,20 +221,20 @@ public class UDPTransport extends ATransport
 
   public void pushBuffer()
   {
-    //System.out.println("DEBUG: pushBuffer() entry.");
+    Log.println(false,"UDPTransport.pushBuffer() entry.");
     /*
-    System.out.println("Data:");
+    Log.println(false,"Data:");
     for (int i = 0; i < _outPacketPtr; i++)
     {
       int j = i - 1;
       if ((j % 32) == 0)
-        System.out.println("");
+        Log.println(false,"");
       System.out.print(UnsignedByte.toString(_sendBuffer[i])+" ");
     }
-    System.out.println("");
+    Log.println(false,"");
     */
     //String fred = new String(_sendBuffer,0,_outPacketPtr);
-    //System.out.println("Sending: "+fred);
+    //Log.println(false,"Sending: "+fred);
 
     _packet.setData(_sendBuffer,0,_outPacketPtr);
     try
@@ -229,36 +243,36 @@ public class UDPTransport extends ATransport
     }
     catch (Exception e)
     {
-      e.printStackTrace();
+      Log.printStackTrace(e);
     }
     _outPacketPtr = 0;
-    //System.out.println("DEBUG: pushBuffer() exit.");
+    Log.println(false,"UDPTransport.pushBuffer() exit.");
   }
 
   public void pullBuffer(int timeout) throws Exception
   {
-    //System.out.println("DEBUG: pullBuffer() entry.");
+    Log.println(false,"UDPTransport.pullBuffer() entry.");
     _receiveBuffer = new byte[1500];
     _packet.setData(_receiveBuffer);
     _socket.setSoTimeout(timeout);
     _socket.receive(_packet);
-    //System.out.println("DEBUG: received packet.");
+    Log.println(false,"received packet.");
     _socket.connect(_packet.getSocketAddress());
-    //System.out.println("DEBUG: connected to socket.");
+    Log.println(false,"connected to socket.");
     _receiveBuffer = _packet.getData();
     _inPacketLen = _packet.getLength();
     _inPacketPtr = 0;
-    //System.out.println("DEBUG: data: ["+new String (_receiveBuffer)+ "]");
+    Log.println(false,"data: ["+new String (_receiveBuffer)+ "]");
     /*
     for (int i = 0; i < _inPacketLen; i++)
     {
       if ((i % 32) == 0)
-        System.out.println("");
-      System.out.print(UnsignedByte.toString(_receiveBuffer[i])+" ");
+        Log.println(false,"");
+      Log.print(false,UnsignedByte.toString(_receiveBuffer[i])+" ");
     }
-    System.out.println("");
+    Log.println(false,"");
 
-    System.out.println("DEBUG: pullBuffer() exit; _inPacketLen = "+_inPacketLen);
+    Log.println(false,"UDPTransport.pullBuffer() exit; _inPacketLen = "+_inPacketLen);
     */
   }
 
@@ -285,4 +299,30 @@ public class UDPTransport extends ATransport
   {
   }
 
+  public boolean supportsBootstrap()
+  {
+    return false;
+  }
+
+  public void setTimeout(int timeout)
+  {
+    _timeout = timeout;
+  }
+
+  public void pauseIncorrectCRC()
+  {
+    // Only necessary for audio transport
+  }
+
+  public String getInstructions(String guiString, int fileSize)
+  {
+    String ret = "UDPTransport.getInstructions() - returned null!";
+    if (guiString.equals(Messages.getString("Gui.BS.DOS")))
+      Messages.getString("Gui.BS.DumpDOSInstructions");
+    else if (guiString.equals(Messages.getString("Gui.BS.ADT")))
+      Messages.getString("Gui.BS.DumpADTInstructions");
+    else if (guiString.equals(Messages.getString("Gui.BS.ADTPro")))
+      Messages.getString("Gui.BS.DumpProInstructions");
+    return ret;
+  }
 }

@@ -1,6 +1,6 @@
 ;
 ; ADTPro - Apple Disk Transfer ProDOS
-; Copyright (C) 2006, 2007 by David Schmidt
+; Copyright (C) 2007 by David Schmidt
 ; david__schmidt at users.sourceforge.net
 ;
 ; This program is free software; you can redistribute it and/or modify it 
@@ -25,18 +25,17 @@
 ;---------------------------------------------------------
 	.include "vars.asm"
 	.include "print.asm"
-	.include "serial/serproto.asm"
+	.include "audio/audproto.asm"
 	.include "online.asm"
 	.include "rw.asm"
-	.include "sr.asm"
-	.include "serial/ssc.asm"
-	.include "serial/iigsscc.asm"
+	.include "audio/sr.asm"
+	.include "audio/audio.asm"
 	.include "crc.asm"
 	.include "pickvol.asm"
 	.include "input.asm"
-	.include "serial/serconfig.asm"
+	.include "audio/audconfig.asm"
 	.include "hostfns.asm"
-	.include "serial/serbsave.asm"
+	.include "audio/audbsave.asm"
 
 PEND:
 	.segment "DATA"
