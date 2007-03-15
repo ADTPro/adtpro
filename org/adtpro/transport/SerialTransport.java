@@ -403,6 +403,14 @@ public class SerialTransport extends ATransport
     // Only necessary for audio transport
   }
 
+  public void setHardwareHandshaking(boolean state)
+  {
+    if (state)
+      port.setFlowControlMode(SerialPort.FLOWCONTROL_NONE);
+    else
+      port.setFlowControlMode(SerialPort.FLOWCONTROL_RTSCTS_IN);  
+  }
+
   public String getInstructions(String guiString, int fileSize)
   {
     String ret = "'SerialTransport.getInstructions() - returned null!'";
@@ -412,6 +420,11 @@ public class SerialTransport extends ATransport
       ret = Messages.getString("Gui.BS.DumpADTInstructions");
     else if (guiString.equals(Messages.getString("Gui.BS.ADTPro")))
       ret = Messages.getString("Gui.BS.DumpProInstructions");
+    else if (guiString.equals(Messages.getString("Gui.BS.ADTProAudio")))
+      ret = Messages.getString("Gui.BS.DumpProAudioSerialInstructions");
+    else if (guiString.equals(Messages.getString("Gui.BS.ADTProEthernet")))
+      ret = Messages.getString("Gui.BS.DumpProEthernetInstructions");
+    Log.println(false,"SerialTransport.getInstructions() returning:\n"+ret);
     return ret;
   }
 }

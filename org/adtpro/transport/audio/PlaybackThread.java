@@ -111,18 +111,16 @@ public class PlaybackThread extends Thread
      * detected by a return value of -1 from the read method of the
      * AudioInputStream.
      */
-    // line.open(audioFormat, _audioData);//, 0, _audioData.length);
-    // open(AudioFormat format, byte[] data, int offset, int bufferSize)
     Log.println(false, "PlaybackThread.play() payload size: " + _audioData.length);
     if (_parent != null) _parent.setProgressMaximum(_audioData.length);
     int i, nBytesWritten = 0;
     int chunk = _audioData.length / 100;
-    //for (i = 0; i < 100; i++)
+    for (i = 0; i < 100; i++)
     {
       if (_shouldRun)
       {
-        nBytesWritten += line.write(_audioData, 0, _audioData.length);
-        //nBytesWritten += line.write(_audioData, i * chunk, chunk);
+        //nBytesWritten += line.write(_audioData, 0, _audioData.length);
+        nBytesWritten += line.write(_audioData, i * chunk, chunk);
         Log.println(false, "PlaybackThread.play() Bytes written: " + nBytesWritten);
         if ((_parent != null) && (_shouldRun))
         {
@@ -130,17 +128,6 @@ public class PlaybackThread extends Thread
         }
       }
     }
-    /*
-    if ((nBytesWritten < _audioData.length) && (_shouldRun))
-    {
-      nBytesWritten += line.write(_audioData, i * chunk, _audioData.length - nBytesWritten);
-      Log.println(false, "PlaybackThread.play() Bytes written: " + nBytesWritten);
-      if ((_parent != null) && (_shouldRun))
-      {
-        _parent.setProgressValue(nBytesWritten);
-      }
-      */
-    //}
     /*
      * Wait until all data are played. This is only necessary because of the bug
      * noted below. (If we do not wait, we would interrupt the playback by

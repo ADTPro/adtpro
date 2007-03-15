@@ -24,11 +24,15 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.PrintStream;
 
+import org.adtpro.resources.Messages;
+
 public class Log
 {
   private static Log _theSingleton = null;
 
-  private static boolean _trace = true;
+  private static String _traceFileName = Messages.getString("TraceFileName");
+
+  private static boolean _trace = false;
 
   private static PrintStream _out = null;
 
@@ -40,7 +44,6 @@ public class Log
   private Log()
   {
     _out = System.out;
-    setTraceFile("out");
   }
 
   public static void printStackTrace(Throwable e)
@@ -76,23 +79,33 @@ public class Log
   public void setTrace(boolean trace)
   {
     _trace = trace;
+    if (trace == true) // Trace turned on
+    {
+      if (_traceFileName != null)
+      {
+        try
+        {
+          _out.flush();
+          _out = new PrintStream(new FileOutputStream(_traceFileName));
+        }
+        catch (FileNotFoundException io)
+        {
+          io.printStackTrace();
+          _out = System.out;
+        }
+      }
+    }
+    else // Trace turned off
+    {
+      _out.flush();
+      _out.close();
+      _out = System.out;
+    }
   }
 
   public void setTraceFile(String filename)
   {
-    if (filename != null)
-    {
-      try
-      {
-        _out.flush();
-        _out = new PrintStream(new FileOutputStream(filename));
-      }
-      catch (FileNotFoundException io)
-      {
-        io.printStackTrace();
-        _out = System.out;
-      }
-    }
+    _traceFileName = filename;
   }
 
   /**

@@ -144,7 +144,8 @@ public class CommsThread extends Thread
             receiveDisk(true);
             break;
           case (byte) 217: // "P": Ping
-            _parent.setSecondaryText("Ping received from client."); //$NON-NLS-1$
+            _parent.setMainText(Messages.getString("CommsThread.23")); //$NON-NLS-1$
+            _parent.setSecondaryText(""); //$NON-NLS-1$
             Log.println(false, "CommsThread.commandLoop() Received Ping command."); //$NON-NLS-1$
             _transport.pushBuffer();
             _transport.flushReceiveBuffer();
@@ -1254,7 +1255,7 @@ public class CommsThread extends Thread
     byte oneByte = 0;
     try
     {
-      oneByte = waitForData(-1);
+      oneByte = waitForData(0);
     }
     catch (TransportTimeoutException e)
     {
@@ -1357,10 +1358,10 @@ public class CommsThread extends Thread
   public int requestSend(String resource, boolean reallySend)
   {
     int fileSize = 0;
-    Log.println(false, "CommsThread.requestSend() - resource=" + resource);
+    Log.println(false, "CommsThread.requestSend() request: " + resource+ ", reallySend = "+reallySend);
     String resourceName;
     InputStream is = null;
-    if (_transport.getClass() == AudioTransport.class)
+    if (_transport.transportType() == ATransport.TRANSPORT_TYPE_AUDIO)
     {
       if (resource.equals(Messages.getString("Gui.BS.DOS"))) resourceName = "org/adtpro/resources/EsDOS1.raw";
       else
@@ -1372,11 +1373,13 @@ public class CommsThread extends Thread
             else
               if (resource.equals(Messages.getString("Gui.BS.ADTProAudio"))) resourceName = "org/adtpro/resources/adtproaud.raw";
               else
-                resourceName = "'CommsThread.requestSend() - not set! (AudioTransport)'";
+                if (resource.equals(Messages.getString("Gui.BS.ADTProEthernet"))) resourceName = "org/adtpro/resources/adtproeth.raw";
+                else
+                  resourceName = "'CommsThread.requestSend() - not set! (AudioTransport)'";
     }
     else
     {
-      if (resource.equals(Messages.getString("Gui.BS.DOS"))) resourceName = "org/adtpro/resources/dos.dmp";
+      if (resource.equals(Messages.getString("Gui.BS.DOS"))) resourceName = "org/adtpro/resources/EsDOS.dmp";
       else
         if (resource.equals(Messages.getString("Gui.BS.ADT"))) resourceName = "org/adtpro/resources/adt.dmp";
         else
@@ -1384,8 +1387,11 @@ public class CommsThread extends Thread
           else
             if (resource.equals(Messages.getString("Gui.BS.ADTProAudio"))) resourceName = "org/adtpro/resources/adtproaud.dmp";
             else
-              resourceName = "'CommsThread.requestSend() - not set! (non-AudioTransport)'";
+              if (resource.equals(Messages.getString("Gui.BS.ADTProEthernet"))) resourceName = "org/adtpro/resources/adtproeth.dmp";
+              else
+                resourceName = "'CommsThread.requestSend() - not set! (non-AudioTransport)'";
     }
+    Log.println(false, "CommsThread.requestSend() seeking resource named " + resourceName);
     is = ADTPro.class.getClassLoader().getResourceAsStream(resourceName);
     if (is != null)
     {
@@ -1406,6 +1412,8 @@ public class CommsThread extends Thread
         _worker = new Worker(is);
         _worker.start();
       }
+      else 
+        Log.println(false, "CommsThread.requestSend() found file sized " + fileSize + " bytes.");
     }
     else
     {
@@ -1438,20 +1446,23 @@ public class CommsThread extends Thread
 
     public void run()
     {
-      Log.println(false, "CommsThread.Worker.Run() starting.");
+      Log.println(false, "CommsThread.Worker.run() starting.");
+      int bytesRead, bytesAvailable;
       _startTime = new GregorianCalendar();
-      if (_transport.getClass() == AudioTransport.class)
+      if (_transport.transportType() == ATransport.TRANSPORT_TYPE_AUDIO)
       {
         try
         {
-          byte[] buffer = new byte[_is.available()];
-          // InputStreamReader isr = new InputStreamReader(_is);
-          // isr.read(buffer);
-          // for (int i = 0; i < buffer.length; i++)
-          // buffer[i] = _is.read();
-          _is.read(buffer, 0, buffer.length);
-          _parent.setProgressMaximum(buffer.length);
-          Log.println(false, "CommsThread.Worker.Run() - buffer length: " + buffer.length);
+          bytesAvailable = _is.available();
+          _parent.setProgressMaximum(bytesAvailable);
+          byte[] buffer = new byte[bytesAvailable];
+          bytesRead = _is.read(buffer);
+          Log.println(false, "CommsThread.Worker.run() read " + bytesRead + " bytes from the stream.");
+          while (bytesRead < bytesAvailable)
+          {
+            bytesRead += _is.read(buffer, bytesRead, bytesAvailable - bytesRead);
+            Log.println(false, "CommsThread.Worker.run() read " + bytesRead + " more bytes from the stream.");
+          }
           ((AudioTransport) _transport).writeBigBytes(buffer);
           ((AudioTransport) _transport).pushBigBuffer(_parent);
         }
@@ -1464,9 +1475,16 @@ public class CommsThread extends Thread
       {
         try
         {
-          char[] buffer = new char[_is.available()];
+          bytesAvailable = _is.available();
+          char[] buffer = new char[bytesAvailable];
           InputStreamReader isr = new InputStreamReader(_is);
-          isr.read(buffer);
+          bytesRead = isr.read(buffer);
+          Log.println(false, "CommsThread.Worker.run() read " + bytesRead + " bytes from the stream.");
+          while (bytesRead < bytesAvailable)
+          {
+            bytesRead += isr.read(buffer, bytesRead, bytesAvailable - bytesRead);
+            Log.println(false, "CommsThread.Worker.run() read " + bytesRead + " more bytes from the stream.");
+          }
           _parent.setProgressMaximum(buffer.length);
           _transport.setSlowSpeed(300);
           for (int i = 0; i < buffer.length; i++)
@@ -1500,7 +1518,7 @@ public class CommsThread extends Thread
         }
       }
       _transport.flushReceiveBuffer();
-      Log.println(false, "CommsThread.Worker.Run() stopping.");
+      Log.println(false, "CommsThread.Worker.run() stopping.");
     }
 
     public void requestStop()
@@ -1519,6 +1537,14 @@ public class CommsThread extends Thread
   public boolean supportsBootstrap()
   {
     return _transport.supportsBootstrap();
+  }
+
+  public void setHardwareHandshaking(boolean state)
+  {
+    if (_transport.transportType() == ATransport.TRANSPORT_TYPE_SERIAL)
+    {
+      ((SerialTransport)_transport).setHardwareHandshaking(state);
+    }
   }
 
   public String getInstructions(String guiString, int size)

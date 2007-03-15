@@ -23,7 +23,6 @@
 
 package org.adtpro.transport;
 
-import org.adtpro.CommsThread;
 import org.adtpro.gui.Gui;
 import org.adtpro.resources.Messages;
 import org.adtpro.transport.audio.BytesToWav;
@@ -117,7 +116,6 @@ public class AudioTransport extends ATransport
     {
       _bigBuffer[_bigOutPacketPtr++] = data[i];
     }
-
   }
 
   public void writeBytes(String str)
@@ -234,6 +232,19 @@ public class AudioTransport extends ATransport
   public void pushBigBuffer(Gui parent)
   {
     Log.println(false, "AudioTransport.pushBigBuffer() entry, pushing " + _bigBuffer.length + " bytes.");
+    if (_sendThread != null)
+    {
+      try
+      {
+        Log.println(false, "AudioTransport.pushBigBuffer() waiting for another send thread to end...");
+        _sendThread.join();
+        Log.println(false, "AudioTransport.pushBigBuffer() done waiting.");
+      }
+      catch (InterruptedException e)
+      {
+        Log.printStackTrace(e);
+      }
+    }
     Log.println(false, "AudioTransport.pushBigBuffer() pushing data:");
     for (int i = 0; i < _bigBuffer.length; i++)
     {
@@ -242,17 +253,6 @@ public class AudioTransport extends ATransport
     }
     Log.println(false, "");
     byte[] stuff = BytesToWav.encode(_bigBuffer, _bigOutPacketPtr, 7000);
-    if (_sendThread != null)
-    {
-      try
-      {
-        _sendThread.join();
-      }
-      catch (InterruptedException e)
-      {
-        Log.printStackTrace(e);
-      }
-    }
     _sendThread = new PlaybackThread(stuff, parent);
     _sendThread.play();
     _bigOutPacketPtr = 0;
@@ -360,8 +360,7 @@ public class AudioTransport extends ATransport
     int endAddr = 0;
     if (guiString.equals(Messages.getString("Gui.BS.DOS"))) ret = Messages.getString("Gui.BS.DumpDOSAudioInstructions");
     else
-      if (guiString.equals(Messages.getString("Gui.BS.DOS2"))) ret = Messages
-          .getString("Gui.BS.DumpDOSAudioInstructions2");
+      if (guiString.equals(Messages.getString("Gui.BS.DOS2"))) ret = Messages.getString("Gui.BS.DumpDOSAudioInstructions2");
       else
         if (guiString.equals(Messages.getString("Gui.BS.ADT")))
         {
@@ -386,6 +385,15 @@ public class AudioTransport extends ATransport
               String endAddrHex = UnsignedByte.toString(UnsignedByte.hiByte(endAddr))+UnsignedByte.toString(UnsignedByte.loByte(endAddr));
               ret = ret.replaceFirst("%1%",endAddrHex);
             }
+            else
+              if (guiString.equals(Messages.getString("Gui.BS.ADTProEthernet")))
+              {
+                ret = Messages.getString("Gui.BS.DumpProEthernetAudioInstructions");
+                endAddr = fileSize - 1 + 2051;
+                String endAddrHex = UnsignedByte.toString(UnsignedByte.hiByte(endAddr))+UnsignedByte.toString(UnsignedByte.loByte(endAddr));
+                ret = ret.replaceFirst("%1%",endAddrHex);
+              }
+    Log.println(false,"AudioTransport.getInstructions() returning:\n"+ret);
     return ret;
   }
 }
