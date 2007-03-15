@@ -167,13 +167,13 @@ java -jar ${distName}.jar</echo>
 		<exec dir="${builddir}" executable="java" input="${builddir}/ADTPRO">
 			<arg line="-jar ${acJar} -p ADTPRO bin 2051 RAM5.PO" />
 		</exec>
-		-->
 		<exec dir="${builddir}" executable="java">
 			<arg line="-jar ${acJar} -d ADTPROAUD RAM5.PO" />
 		</exec>
 		<exec dir="${builddir}" executable="java" input="${builddir}/ADTPROAUD">
 			<arg line="-jar ${acJar} -p ADTPROAUD bin 2051 RAM5.PO" />
 		</exec>
+		-->
 		<!--
 		Lock the backup version
 		-->
