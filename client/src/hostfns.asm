@@ -34,8 +34,8 @@ DIR:
 
 	jsr DIRREQUEST
 	jsr DIRREPLY
-	;ldy TMOT
-	;bne DIRTIMEOUT
+	ldy TMOT
+	bne DIRTIMEOUT
 
 	ldy #$00	; Reset counter
 	jsr HOME	; Clear screen

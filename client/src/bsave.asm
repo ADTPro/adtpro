@@ -80,7 +80,7 @@ tochrhi:
 	lsr
 tochrgo:
 	clc
-	cmp #$09
+	cmp #$0a
 	bcc gt9			; A is greater than 9
 	adc #$B6
 	jmp tochrdone
