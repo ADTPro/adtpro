@@ -182,7 +182,7 @@ public class CaptureThread extends Thread
                 default:
                   if (!training)
                   {
-                    Log.println(false, "Unexpected frequency: " + freq);
+                    Log.println(false, "CaptureThread.interpretStream() unexpected frequency: " + freq);
                   }
                   break;
               }

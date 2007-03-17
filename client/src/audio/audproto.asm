@@ -44,6 +44,8 @@ DIRREQUEST:
 ; DIRREPLY - Reply to current directory contents
 ;---------------------------------------------------------
 DIRREPLY:
+	ldy #$00
+	sty TMOT	; Clear timeout processing
 	ldax #AUD_BUFFER
 	stax A1L
 	stax BLKPTR	; DIRDISP expects data at (BLKPTR)

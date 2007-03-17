@@ -49,7 +49,7 @@ public class CommsThread extends Thread
 
   private int[] CRCTABLE = new int[256];
 
-  private int _maxRetries = 15;
+  private int _maxRetries = 10;
 
   GregorianCalendar _startTime = null, _endTime = null;
 
@@ -88,6 +88,7 @@ public class CommsThread extends Thread
 
   public void run()
   {
+    Log.println(false, "CommsThread.run() entry.");
     if (_shouldRun)
     {
       makeCrcTable();
@@ -95,16 +96,29 @@ public class CommsThread extends Thread
     }
     else
       _parent.cancelCommsThread();
+    Log.println(false, "CommsThread.run() exit.");
   }
 
   public void commandLoop()
   {
     Log.println(false, "CommsThread.commandLoop() starting.");
     byte oneByte = (byte) 0x00;
+    boolean readYet = false;
     while (_shouldRun)
     {
       Log.println(false, "CommsThread.commandLoop() Waiting for command from Apple."); //$NON-NLS-1$
-      oneByte = waitForData();
+      readYet = false;
+      while (_shouldRun && !readYet)
+        try
+        {
+          oneByte = waitForData(1);
+          readYet = true;
+          Log.println(false, "CommsThread.commandLoop() Received data.");
+        }
+        catch (TransportTimeoutException e)
+        {
+          Log.println(false, "CommsThread.commandLoop() Timeout in command...");
+        }
       if (_shouldRun)
       {
         Log.println(false, "CommsThread.commandLoop() Received a byte: " + UnsignedByte.toString(oneByte)); //$NON-NLS-1$
@@ -209,7 +223,7 @@ public class CommsThread extends Thread
             _transport.writeByte('\0');
             _transport.writeByte('\1');
             _transport.pushBuffer();
-            if (waitForData() == '\0') break;
+            if (waitForData(15) == '\0') break;
           }
           line += (files[j].getName().length() / 40);
           i += (files[j].getName().length() % 40);
@@ -253,222 +267,244 @@ public class CommsThread extends Thread
   {
     long length = 0;
     byte sizeLo = 0, sizeHi = 0, rc = (byte) 0xff;
-    String requestedFileName = receiveName();
-    Disk disk = null;
-
     try
     {
-      disk = new Disk(_parent.getWorkingDirectory() + File.separator + requestedFileName);
-      Log.println(false, "queryFileSize found file " + _parent.getWorkingDirectory() + File.separator
-          + requestedFileName);
-    }
-    catch (IOException e)
-    {
+      String requestedFileName = receiveName();
+      Disk disk = null;
       try
       {
-        disk = new Disk(requestedFileName);
-        Log.println(false, "queryFileSize found file " + requestedFileName); //$NON-NLS-1$
+        disk = new Disk(_parent.getWorkingDirectory() + File.separator + requestedFileName);
+        Log.println(false, "CommsThread.queryFileSize() found file " + _parent.getWorkingDirectory() + File.separator
+            + requestedFileName);
       }
-      catch (IOException e2)
+      catch (IOException e)
       {
-        Log.println(false, "can't read file: " + requestedFileName + "."); //$NON-NLS-1$ //$NON-NLS-2$
-        rc = 0x02; // Unable to open file
+        try
+        {
+          disk = new Disk(requestedFileName);
+          Log.println(false, "CommsThread.queryFileSize() found file " + requestedFileName); //$NON-NLS-1$
+        }
+        catch (IOException e2)
+        {
+          Log.println(false, "CommsThread.queryFileSize() can't read file: " + requestedFileName + "."); //$NON-NLS-1$ //$NON-NLS-2$
+          rc = 0x02; // Unable to open file
+        }
       }
-    }
-    catch (ArrayIndexOutOfBoundsException ix)
-    {
-      rc = 0x04; // Unrecognized file format
-    }
-    if (disk == null)
-    {
-      if (rc == (byte) 0xff) rc = 0x02; // Unable to open file
-      // else let rc be whatever it was before
-    }
-    else
-      if (disk.getImageOrder() == null) rc = 0x04; // Unrecognized file format
+      catch (ArrayIndexOutOfBoundsException ix)
+      {
+        rc = 0x04; // Unrecognized file format
+      }
+      if (disk == null)
+      {
+        if (rc == (byte) 0xff) rc = 0x02; // Unable to open file
+        // else let rc be whatever it was before
+      }
       else
-      {
-        length = disk.getImageOrder().getBlocksOnDevice();
-        sizeLo = UnsignedByte.loByte(length);
-        Log.println(false, "loByte of " + requestedFileName + " is: " + UnsignedByte.intValue(sizeLo)); //$NON-NLS-1$ //$NON-NLS-2$
-        sizeHi = UnsignedByte.hiByte(length);
-        Log.println(false, "hiByte of " + requestedFileName + " is: " + UnsignedByte.intValue(sizeHi)); //$NON-NLS-1$ //$NON-NLS-2$
-        rc = 0;
-      }
+        if (disk.getImageOrder() == null) rc = 0x04; // Unrecognized file format
+        else
+        {
+          length = disk.getImageOrder().getBlocksOnDevice();
+          sizeLo = UnsignedByte.loByte(length);
+          sizeHi = UnsignedByte.hiByte(length);
+          rc = 0;
+        }
 
-    if (disk != null) _parent.setSecondaryText(disk.getFilename());
-    else
-      _parent.setSecondaryText(requestedFileName);
-    Log.println(false, "queryFileSize lo:" + UnsignedByte.toString(sizeLo) + " hi:" + UnsignedByte.toString(sizeHi)); //$NON-NLS-1$ //$NON-NLS-2$
-    _transport.writeByte(sizeLo);
-    _transport.writeByte(sizeHi);
-    _transport.writeByte(rc);
-    _transport.pushBuffer();
+      if (disk != null) _parent.setSecondaryText(disk.getFilename());
+      else
+        _parent.setSecondaryText(requestedFileName);
+      Log.println(false, "CommsThread.queryFileSize() lo:" + UnsignedByte.toString(sizeLo) + " hi:" + UnsignedByte.toString(sizeHi)); //$NON-NLS-1$ //$NON-NLS-2$
+      _transport.writeByte(sizeLo);
+      _transport.writeByte(sizeHi);
+      _transport.writeByte(rc);
+      _transport.pushBuffer();
+    }
+    catch (TransportTimeoutException e)
+    {
+      Log.println(false, "CommsThread.queryFileSize() aborting due to timeout.");
+    }
   }
 
   public void changeDirectory()
   {
     byte rc = 0x06;
 
-    String requestedDirectory = receiveName();
-    if (_shouldRun)
+    try
     {
-      rc = _parent.setWorkingDirectory(requestedDirectory);
-      _transport.writeByte(rc);
-      _transport.pushBuffer();
+      String requestedDirectory = receiveName();
+      if (_shouldRun)
+      {
+        rc = _parent.setWorkingDirectory(requestedDirectory);
+        _transport.writeByte(rc);
+        _transport.pushBuffer();
+      }
+    }
+    catch (TransportTimeoutException e)
+    {
+      Log.println(false, "CommsThread.changeDirectory() aborting due to timeout.");
+      _parent.setSecondaryText(Messages.getString("CommsThread.21"));
     }
   }
 
   public void receiveDisk(boolean generateName)
   /* Main receive routine - Host <- Apple (Apple sends) */
   {
-    Log.println(false, "receiveDisk() entry.");
+    Log.println(false, "CommsThread.receiveDisk() entry.");
     _startTime = new GregorianCalendar();
-    Log.print(false, "Waiting for name..."); //$NON-NLS-1$
-    String name = _parent.getWorkingDirectory() + File.separator + receiveName();
-    Log.println(false, " received name: " + name); //$NON-NLS-1$
-    File f = null;
-    String nameGen, zeroPad;
-    if (generateName)
-    {
-      do
-      {
-        if (lastFileNumber < 10) zeroPad = "000";
-        else
-          if (lastFileNumber < 100) zeroPad = "00";
-          else
-            if (lastFileNumber < 1000) zeroPad = "0";
-            else
-              zeroPad = "";
-        nameGen = zeroPad + lastFileNumber;
-        f = new File(name + nameGen + ".PO");
-        lastFileNumber++;
-      }
-      while (f.exists());
-      name = name + nameGen + ".PO";
-    }
-    else
-      f = new File(name);
-    FileOutputStream fos = null;
-    byte[] buffer = new byte[20480];
-    int part, length, packetResult = 0;
-    byte report, sizelo, sizehi;
-    int halfBlock;
-    int blocksDone = 0;
-
-    // New ADT protcol - file size to expect
-    Log.println(false, "Waiting for sizeLo..."); //$NON-NLS-1$
-    sizelo = waitForData();
-    Log.println(false, " received sizeLo: " + UnsignedByte.toString(sizelo)); //$NON-NLS-1$
-    Log.println(false, "Waiting for sizeHi..."); //$NON-NLS-1$
-    sizehi = waitForData();
-    Log.println(false, " received sizeHi: " + UnsignedByte.toString(sizehi)); //$NON-NLS-1$
-    length = UnsignedByte.intValue(sizelo, sizehi);
-    _parent.setProgressMaximum(length);
     try
     {
-      fos = new FileOutputStream(f);
-      // ready for transfer
-      _transport.writeByte(0x00);
-      _transport.pushBuffer();
-      Log.println(false, "receiveDisk() about to wait for ACK from apple...");
-      if (waitForData() == ACK)
+      Log.print(false, "Waiting for name..."); //$NON-NLS-1$
+      String name = _parent.getWorkingDirectory() + File.separator + receiveName();
+      Log.println(false, " received name: " + name); //$NON-NLS-1$
+      File f = null;
+      String nameGen, zeroPad;
+      if (generateName)
       {
-        Log.println(false, "receiveDisk() received ACK from apple.");
-        _parent.setProgressMaximum((int) length * 2); // Half-blocks
-        _parent.setSecondaryText(name);
-        int numParts = (int) length / 40;
-        int remainder = (int) length % 40;
-        for (part = 0; part < numParts; part++)
+        do
         {
-          Log.println(false, "Receiving part " + (part + 1) + " of " + numParts + "; "); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-          for (halfBlock = 0; halfBlock < 80; halfBlock++)
-          {
-            packetResult = receivePacket(buffer, halfBlock * 256, (part * 80 + halfBlock));
-            if (packetResult != 0) break;
-            blocksDone++;
-            _parent.setProgressValue(blocksDone);
-          }
-          if (packetResult != 0) break;
-          Log.println(false, "Writing part " + (part + 1) + " of " + numParts + "."); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-          fos.write(buffer);
+          if (lastFileNumber < 10) zeroPad = "000";
+          else
+            if (lastFileNumber < 100) zeroPad = "00";
+            else
+              if (lastFileNumber < 1000) zeroPad = "0";
+              else
+                zeroPad = "";
+          nameGen = zeroPad + lastFileNumber;
+          f = new File(name + nameGen + ".PO");
+          lastFileNumber++;
         }
-        Log.println(false, "Bottom of for loop... packetResult: " + packetResult);
-        if ((packetResult == 0) && (remainder > 0))
-        {
-          Log.println(false, "Receiving remainder part."); //$NON-NLS-1$
-          for (halfBlock = 0; halfBlock < (remainder * 2); halfBlock++)
-          {
-            packetResult = receivePacket(buffer, halfBlock * 256, (part * 80 + halfBlock));
-            if (packetResult == -1) break;
-            blocksDone++;
-            _parent.setProgressValue(blocksDone);
-          }
-          if (packetResult == 0)
-          {
-            Log.println(false, "Writing remainder " + remainder + " blocks."); //$NON-NLS-1$ //$NON-NLS-2$
-            fos.write(buffer, 0, remainder * 512);
-          }
-        }
-        fos.close();
+        while (f.exists());
+        name = name + nameGen + ".PO";
       }
       else
+        f = new File(name);
+      FileOutputStream fos = null;
+      byte[] buffer = new byte[20480];
+      int part, length, packetResult = 0;
+      byte report, sizelo, sizehi;
+      int halfBlock;
+      int blocksDone = 0;
+
+      // New ADT protcol - file size to expect
+      Log.println(false, "Waiting for sizeLo..."); //$NON-NLS-1$
+
+      sizelo = waitForData(15);
+      Log.println(false, " received sizeLo: " + UnsignedByte.toString(sizelo)); //$NON-NLS-1$
+      Log.println(false, "Waiting for sizeHi..."); //$NON-NLS-1$
+      sizehi = waitForData(15);
+      Log.println(false, " received sizeHi: " + UnsignedByte.toString(sizehi)); //$NON-NLS-1$
+      length = UnsignedByte.intValue(sizelo, sizehi);
+      _parent.setProgressMaximum(length);
+      try
       {
-        packetResult = -1;
-      }
-      if (packetResult == 0)
-      {
-        report = waitForData();
-        _endTime = new GregorianCalendar();
-        _diffMillis = (float) (_endTime.getTimeInMillis() - _startTime.getTimeInMillis()) / (float) 1000;
-        if (report == 0x00)
+        fos = new FileOutputStream(f);
+        // ready for transfer
+        _transport.writeByte(0x00);
+        _transport.pushBuffer();
+        Log.println(false, "CommsThread.receiveDisk() about to wait for ACK from apple...");
+        if (waitForData(15) == ACK)
         {
-          _parent.setSecondaryText(Messages.getString("CommsThread.19") + " in " + _diffMillis + " seconds.");
-          Log.println(true, "Apple sent disk image " + name + " successfully in "
-              + (float) (_endTime.getTimeInMillis() - _startTime.getTimeInMillis()) / (float) 1000 + " seconds.");
+          Log.println(false, "receiveDisk() received ACK from apple.");
+          _parent.setProgressMaximum((int) length * 2); // Half-blocks
+          _parent.setSecondaryText(name);
+          int numParts = (int) length / 40;
+          int remainder = (int) length % 40;
+          for (part = 0; part < numParts; part++)
+          {
+            Log.println(false, "Receiving part " + (part + 1) + " of " + numParts + "; "); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+            for (halfBlock = 0; halfBlock < 80; halfBlock++)
+            {
+              packetResult = receivePacket(buffer, halfBlock * 256, (part * 80 + halfBlock));
+              if (packetResult != 0) break;
+              blocksDone++;
+              _parent.setProgressValue(blocksDone);
+            }
+            if (packetResult != 0) break;
+            Log.println(false, "Writing part " + (part + 1) + " of " + numParts + "."); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+            fos.write(buffer);
+          }
+          Log.println(false, "CommsThread.receiveDisk() Bottom of for loop... packetResult: " + packetResult);
+          if ((packetResult == 0) && (remainder > 0))
+          {
+            Log.println(false, "Receiving remainder part."); //$NON-NLS-1$
+            for (halfBlock = 0; halfBlock < (remainder * 2); halfBlock++)
+            {
+              packetResult = receivePacket(buffer, halfBlock * 256, (part * 80 + halfBlock));
+              if (packetResult == -1) break;
+              blocksDone++;
+              _parent.setProgressValue(blocksDone);
+            }
+            if (packetResult == 0)
+            {
+              Log.println(false, "Writing remainder " + remainder + " blocks."); //$NON-NLS-1$ //$NON-NLS-2$
+              fos.write(buffer, 0, remainder * 512);
+            }
+          }
+          fos.close();
         }
         else
         {
-          _parent.setSecondaryText(Messages.getString("CommsThread.20") + " in " + _diffMillis + " seconds.");
-          Log.println(true, "Apple sent disk image " + name + " with errors."); //$NON-NLS-1$ //$NON-NLS-2$
+          packetResult = -1;
+        }
+        if (packetResult == 0)
+        {
+          report = waitForData(15);
+          _endTime = new GregorianCalendar();
+          _diffMillis = (float) (_endTime.getTimeInMillis() - _startTime.getTimeInMillis()) / (float) 1000;
+          if (report == 0x00)
+          {
+            _parent.setSecondaryText(Messages.getString("CommsThread.19") + " in " + _diffMillis + " seconds.");
+            Log.println(true, "Apple sent disk image " + name + " successfully in "
+                + (float) (_endTime.getTimeInMillis() - _startTime.getTimeInMillis()) / (float) 1000 + " seconds.");
+          }
+          else
+          {
+            _parent.setSecondaryText(Messages.getString("CommsThread.20") + " in " + _diffMillis + " seconds.");
+            Log.println(true, "Apple sent disk image " + name + " with errors."); //$NON-NLS-1$ //$NON-NLS-2$
+          }
+        }
+        else
+        {
+          Log.println(true, Messages.getString("CommsThread.21"));
+          _parent.setSecondaryText(Messages.getString("CommsThread.21"));
+          _parent.clearProgress();
+          _transport.flushReceiveBuffer();
+          _transport.flushSendBuffer();
         }
       }
-      else
+      catch (FileNotFoundException ex)
       {
-        _parent.setSecondaryText(Messages.getString("CommsThread.21"));
-        _parent.clearProgress();
-        _transport.flushReceiveBuffer();
-        _transport.flushSendBuffer();
+        _transport.writeByte(0x02); // New ADT protocol: HMFIL - unable to write
+        // file
+        _transport.pushBuffer();
+      }
+      catch (IOException ex2)
+      {
+        _transport.writeByte(0x02); // New ADT protocol: HMFIL - unable to write
+        // file
+        _transport.pushBuffer();
+      }
+      finally
+      {
+        if (fos != null) try
+        {
+          fos.close();
+        }
+        catch (IOException io)
+        {}
       }
     }
-    catch (FileNotFoundException ex)
+    catch (TransportTimeoutException e)
     {
-      _transport.writeByte(0x02); // New ADT protocol: HMFIL - unable to write
-      // file
-      _transport.pushBuffer();
+      Log.println(false, "CommsThread.receiveDisk() aborting due to timeout.");
+      _parent.setSecondaryText(Messages.getString("CommsThread.21"));
     }
-    catch (IOException ex2)
-    {
-      _transport.writeByte(0x02); // New ADT protocol: HMFIL - unable to write
-      // file
-      _transport.pushBuffer();
-    }
-    finally
-    {
-      if (fos != null) try
-      {
-        fos.close();
-      }
-      catch (IOException io)
-      {}
-    }
-    Log.println(false, "receiveDisk() exit.");
+    Log.println(false, "CommsThread.receiveDisk() exit.");
   }
 
   public void sendDisk()
   /* Main send routine - Host -> Apple (Host sends) */
   {
-    Log.println(false, "DEBUG: sendDisk() entry.");
+    Log.println(false, "CommsThread.sendDisk() entry.");
     byte[] buffer = new byte[Disk.BLOCK_SIZE];
     int halfBlock, blocksDone = 0;
     byte ack, report;
@@ -478,75 +514,87 @@ public class CommsThread extends Thread
     /*
      * ADT protocol: receive the requested file name
      */
-    String name = receiveName();
-
-    Disk disk = null;
     try
     {
-      disk = new Disk(_parent.getWorkingDirectory() + File.separator + name);
-    }
-    catch (IOException io)
-    {
+      String name = receiveName();
+      Disk disk = null;
       try
       {
-        disk = new Disk(name);
+        disk = new Disk(_parent.getWorkingDirectory() + File.separator + name);
       }
-      catch (IOException io2)
-      {}
-    }
-    if (disk != null)
-    {
-      if (disk.getImageOrder() != null)
+      catch (IOException io)
       {
-        // If the file exists, then...
-        _transport.writeByte(0x00); // Tell Apple ][ we're ready to go
-        _transport.pushBuffer();
-        Log.println(false, "DEBUG: sendDisk() about to wait for initial ack.");
-        ack = waitForData();
-        Log.println(false, "Received initial reply from Apple: " + ack); //$NON-NLS-1$
-        if (ack == 0x06)
+        try
         {
-          length = disk.getImageOrder().getBlocksOnDevice();
-          _parent.setProgressMaximum(length * 2); // Half-blocks
-          _parent.setSecondaryText(disk.getFilename());
-          Log.println(false, "Length is " + length + " blocks."); //$NON-NLS-1$ //$NON-NLS-2$
-          for (int block = 0; block < length; block++)
+          disk = new Disk(name);
+        }
+        catch (IOException io2)
+        {}
+      }
+      if (disk != null)
+      {
+        if (disk.getImageOrder() != null)
+        {
+          // If the file exists, then...
+          _transport.writeByte(0x00); // Tell Apple ][ we're ready to go
+          _transport.pushBuffer();
+          Log.println(false, "CommsThread.sendDisk() about to wait for initial ack.");
+          ack = waitForData(15);
+          Log.println(false, "CommsThread.sendDisk() received initial reply from Apple: " + ack); //$NON-NLS-1$
+          if (ack == 0x06)
           {
-            buffer = disk.readBlock(block);
-            for (halfBlock = 0; halfBlock < 2; halfBlock++)
+            length = disk.getImageOrder().getBlocksOnDevice();
+            _parent.setProgressMaximum(length * 2); // Half-blocks
+            _parent.setSecondaryText(disk.getFilename());
+            Log.println(false, "CommsThread.sendDisk() disk length is " + length + " blocks."); //$NON-NLS-1$ //$NON-NLS-2$
+            for (int block = 0; block < length; block++)
             {
-              sendSuccess = sendPacket(buffer, halfBlock * 256);
-              if (sendSuccess)
+              buffer = disk.readBlock(block);
+              for (halfBlock = 0; halfBlock < 2; halfBlock++)
               {
-                blocksDone++;
-                _parent.setProgressValue(blocksDone);
+                sendSuccess = sendPacket(buffer, halfBlock * 256);
+                if (sendSuccess)
+                {
+                  blocksDone++;
+                  _parent.setProgressValue(blocksDone);
+                }
+                else
+                  break;
+              }
+              if (!sendSuccess) break;
+            }
+            if (sendSuccess)
+            {
+              report = waitForData(15);
+              _endTime = new GregorianCalendar();
+              _diffMillis = (float) (_endTime.getTimeInMillis() - _startTime.getTimeInMillis()) / (float) 1000;
+              if (report == 0x00)
+              {
+                _parent.setSecondaryText(Messages.getString("CommsThread.17") + " in " + _diffMillis + " seconds.");
+                Log
+                    .println(
+                        true,
+                        "Apple received disk image " + name + " successfully in " + (float) (_endTime.getTimeInMillis() - _startTime.getTimeInMillis()) / (float) 1000 + " seconds."); //$NON-NLS-1$ //$NON-NLS-2$
               }
               else
-                break;
-            }
-            if (!sendSuccess) break;
-          }
-          if (sendSuccess)
-          {
-            report = waitForData();
-            _endTime = new GregorianCalendar();
-            _diffMillis = (float) (_endTime.getTimeInMillis() - _startTime.getTimeInMillis()) / (float) 1000;
-            if (report == 0x00)
-            {
-              _parent.setSecondaryText(Messages.getString("CommsThread.17") + " in " + _diffMillis + " seconds.");
-              Log
-                  .println(
-                      true,
-                      "Apple received disk image " + name + " successfully in " + (float) (_endTime.getTimeInMillis() - _startTime.getTimeInMillis()) / (float) 1000 + " seconds."); //$NON-NLS-1$ //$NON-NLS-2$
+              {
+                _parent.setSecondaryText(Messages.getString("CommsThread.18"));
+                Log.println(true, "Apple received disk image " + name + " with " + report + " errors."); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+              }
             }
             else
             {
-              _parent.setSecondaryText(Messages.getString("CommsThread.18"));
-              Log.println(true, "Apple received disk image " + name + " with " + report + " errors."); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+              Log.println(true,Messages.getString("CommsThread.21"));
+              _parent.setSecondaryText(Messages.getString("CommsThread.21"));
+              _parent.clearProgress();
+              _transport.flushReceiveBuffer();
+              _transport.flushSendBuffer();
             }
           }
           else
           {
+            // Log.print(false,"No ACK received from the Apple...");
+            // //$NON-NLS-1$
             _parent.setSecondaryText(Messages.getString("CommsThread.21"));
             _parent.clearProgress();
             _transport.flushReceiveBuffer();
@@ -555,12 +603,9 @@ public class CommsThread extends Thread
         }
         else
         {
-          // Log.print(false,"No ACK received from the Apple...");
-          // //$NON-NLS-1$
-          _parent.setSecondaryText(Messages.getString("CommsThread.21"));
-          _parent.clearProgress();
-          _transport.flushReceiveBuffer();
-          _transport.flushSendBuffer();
+          // New ADT protocol: HMFIL - can't open the file
+          _transport.writeByte(0x02);
+          _transport.pushBuffer();
         }
       }
       else
@@ -570,13 +615,13 @@ public class CommsThread extends Thread
         _transport.pushBuffer();
       }
     }
-    else
+    catch (TransportTimeoutException e)
     {
-      // New ADT protocol: HMFIL - can't open the file
-      _transport.writeByte(0x02);
-      _transport.pushBuffer();
+      Log.println(false, "CommsThread.sendDisk() aborting due to timeout.");
+      _parent.setSecondaryText(Messages.getString("CommsThread.21"));
     }
-    Log.println(false, "sendDisk() exit.");
+
+    Log.println(false, "CommsThread.sendDisk() exit.");
   }
 
   /**
@@ -590,129 +635,136 @@ public class CommsThread extends Thread
     /*
      * ADT protocol: receive the requested file name
      */
-    String name = receiveName();
-    byte ack;
-    int bufSize = 28672;
-    byte[] buffer = new byte[bufSize];
-    File f = new File(name);
-    int rc = 0;
-    int sectorsDone = 0;
-    FileInputStream fis = null;
-    boolean sendSuccess = false;
-
-    if (!f.isFile())
+    try
     {
-      f = new File(_parent.getWorkingDirectory() + File.separator + name);
+      String name = receiveName();
+      byte ack;
+      int bufSize = 28672;
+      byte[] buffer = new byte[bufSize];
+      File f = new File(name);
+      int rc = 0;
+      int sectorsDone = 0;
+      FileInputStream fis = null;
+      boolean sendSuccess = false;
+
       if (!f.isFile())
       {
-        _transport.writeByte(26); // ADT protocol - can't open
-        _transport.pushBuffer();
-        rc = -1;
+        f = new File(_parent.getWorkingDirectory() + File.separator + name);
+        if (!f.isFile())
+        {
+          _transport.writeByte(26); // ADT protocol - can't open
+          _transport.pushBuffer();
+          rc = -1;
+        }
       }
-    }
-    if (rc == 0)
-    {
-      long length = f.length();
-      if (length != (long) 143360)
+      if (rc == 0)
       {
-        /*
-         * ADT protocol: send error (message) number
-         */
-        Log.println(false, "Not a 140k image for legacy ADT."); //$NON-NLS-1$
-        _transport.writeByte(30); // ADT protocol - not a 140k image
-        _transport.pushBuffer();
-        rc = -1;
-      }
-      else
-      {
-        /*
-         * ADT protocol: send trigger
-         */
-        _parent.setSecondaryText(name);
-        // If the file exists, is pristine, etc., then...
-        _transport.writeByte(0x00);
-        _transport.pushBuffer();
-        try
+        long length = f.length();
+        if (length != (long) 143360)
         {
           /*
-           * ADT protocol: receive acknowledgement for "previous" sector
+           * ADT protocol: send error (message) number
            */
-          ack = waitForData();
-          if (ack == 0x06)
+          Log.println(false, "Not a 140k image for legacy ADT."); //$NON-NLS-1$
+          _transport.writeByte(30); // ADT protocol - not a 140k image
+          _transport.pushBuffer();
+          rc = -1;
+        }
+        else
+        {
+          /*
+           * ADT protocol: send trigger
+           */
+          _parent.setSecondaryText(name);
+          // If the file exists, is pristine, etc., then...
+          _transport.writeByte(0x00);
+          _transport.pushBuffer();
+          try
           {
-            _parent.setProgressMaximum(560); // Sectors
-            fis = new FileInputStream(f);
-            for (int part = 0; part < 5; part++)
+            /*
+             * ADT protocol: receive acknowledgement for "previous" sector
+             */
+            ack = waitForData(15);
+            if (ack == 0x06)
             {
-              int charsRead = fis.read(buffer);
-              Log.println(false, " ... read " + charsRead + " chars.");
-              for (int track = 0; track < 7; track++)
+              _parent.setProgressMaximum(560); // Sectors
+              fis = new FileInputStream(f);
+              for (int part = 0; part < 5; part++)
               {
-                Log.print(false, "Reading track " + track);
-                for (int sector = 15; sector >= 0; sector--)
+                int charsRead = fis.read(buffer);
+                Log.println(false, " ... read " + charsRead + " chars.");
+                for (int track = 0; track < 7; track++)
                 {
-                  Log.println(false, "Sending track " + (track + (part * 7)) + " sector " + sector + "."); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-                  sendSuccess = sendPacket(buffer, (track * 4096 + sector * 256));
+                  Log.print(false, "Reading track " + track);
+                  for (int sector = 15; sector >= 0; sector--)
+                  {
+                    Log.println(false, "Sending track " + (track + (part * 7)) + " sector " + sector + "."); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+                    sendSuccess = sendPacket(buffer, (track * 4096 + sector * 256));
+                    if (!sendSuccess) break;
+                    sectorsDone++;
+                    _parent.setProgressValue(sectorsDone);
+                  }
                   if (!sendSuccess) break;
-                  sectorsDone++;
-                  _parent.setProgressValue(sectorsDone);
                 }
                 if (!sendSuccess) break;
               }
-              if (!sendSuccess) break;
-            }
-            fis.close();
-            if (sendSuccess)
-            {
-              /*
-               * ADT protocol: receive final error report
-               */
-              byte report = waitForData();
-              _endTime = new GregorianCalendar();
-              _diffMillis = (float) (_endTime.getTimeInMillis() - _startTime.getTimeInMillis()) / (float) 1000;
-              if (report == 0x00)
+              fis.close();
+              if (sendSuccess)
               {
-                _parent.setSecondaryText(Messages.getString("CommsThread.19") + " in " + _diffMillis + " seconds.");
-                Log
-                    .println(
-                        true,
-                        "Apple sent disk image " + name + " successfully in " + (float) (_endTime.getTimeInMillis() - _startTime.getTimeInMillis()) / (float) 1000 + " seconds."); //$NON-NLS-1$ //$NON-NLS-2$
+                /*
+                 * ADT protocol: receive final error report
+                 */
+                byte report = waitForData(15);
+                _endTime = new GregorianCalendar();
+                _diffMillis = (float) (_endTime.getTimeInMillis() - _startTime.getTimeInMillis()) / (float) 1000;
+                if (report == 0x00)
+                {
+                  _parent.setSecondaryText(Messages.getString("CommsThread.19") + " in " + _diffMillis + " seconds.");
+                  Log
+                      .println(
+                          true,
+                          "Apple sent disk image " + name + " successfully in " + (float) (_endTime.getTimeInMillis() - _startTime.getTimeInMillis()) / (float) 1000 + " seconds."); //$NON-NLS-1$ //$NON-NLS-2$
+                }
+                else
+                {
+                  _parent.setSecondaryText(Messages.getString("CommsThread.20") + " in " + _diffMillis + " seconds.");
+                  Log.println(true, "Apple sent disk image " + name + " with errors."); //$NON-NLS-1$ //$NON-NLS-2$
+                }
               }
               else
               {
-                _parent.setSecondaryText(Messages.getString("CommsThread.20") + " in " + _diffMillis + " seconds.");
-                Log.println(true, "Apple sent disk image " + name + " with errors."); //$NON-NLS-1$ //$NON-NLS-2$
+                _parent.setSecondaryText(Messages.getString("CommsThread.21"));
+                _transport.flushReceiveBuffer();
+                _transport.flushSendBuffer();
               }
             }
-            else
+            // else
+            // Log.print(false,"No ACK received from the Apple."); //$NON-NLS-1$
+          }
+          catch (IOException ex)
+          {
+            // Log.print(false,"Disk send aborted."); //$NON-NLS-1$
+            _parent.setSecondaryText(Messages.getString("CommsThread.21"));
+            _transport.flushReceiveBuffer();
+            _transport.flushSendBuffer();
+          }
+
+          {
+            if (fis != null) try
             {
-              _parent.setSecondaryText(Messages.getString("CommsThread.21"));
-              _transport.flushReceiveBuffer();
-              _transport.flushSendBuffer();
+              fis.close();
             }
-          }
-          // else
-          // Log.print(false,"No ACK received from the Apple."); //$NON-NLS-1$
-        }
-        catch (IOException ex)
-        {
-          // Log.print(false,"Disk send aborted."); //$NON-NLS-1$
-          _parent.setSecondaryText(Messages.getString("CommsThread.21"));
-          _transport.flushReceiveBuffer();
-          _transport.flushSendBuffer();
-        }
+            catch (IOException io)
+            {
 
-        {
-          if (fis != null) try
-          {
-            fis.close();
-          }
-          catch (IOException io)
-          {
-
+            }
           }
         }
       }
+    }
+    catch (TransportTimeoutException e)
+    {
+
     }
     Log.println(false, "send140kDisk() exit.");
   }
@@ -755,17 +807,19 @@ public class CommsThread extends Thread
         _transport.writeByte((byte) (crc & 0xff));
         _transport.writeByte((byte) (((crc & 0xff00) >> 8) & 0xff));
         _transport.pushBuffer();
-        Log.println(false, "");
-        Log.println(false, "Locally calculated CRC: " + (crc & 0xffff));
-        ok = waitForData();
+        Log.println(false, "CommsThread.sendPacket() calculated CRC: " + (crc & 0xffff));
+        try
+        {
+          ok = waitForData(15);
+        }
         // We can't time out here! This timeout has to be initiated from the
         // Apple...
-        // catch (TransportTimeoutException te)
-        // {
-        // Log.println(false,"CommsThread.sendPacket() timeout.");
-        // ok = NAK;
-        // }
-        Log.println(false, "ack from Apple: " + ok);
+        catch (TransportTimeoutException te)
+        {
+          Log.println(false,"CommsThread.sendPacket() timeout.");
+          ok = NAK;
+        }
+        Log.println(false, "CommsThread.sendPacket() ACK from Apple: " + ok);
         if (ok == ACK) rc = true;
         else
           currentRetries++;
@@ -780,107 +834,115 @@ public class CommsThread extends Thread
   public void receive140kDisk()
   {
     _startTime = new GregorianCalendar();
-    String name = _parent.getWorkingDirectory() + File.separator + receiveName();
-    File f = new File(name);
-    FileOutputStream fos = null;
-    byte[] buffer = new byte[28672];
-    int i, part, track, sector, packetResult = -1;
-    int sectorsDone = 0;
-    byte report;
+    try
+    {
+      String name = _parent.getWorkingDirectory() + File.separator + receiveName();
+      File f = new File(name);
+      FileOutputStream fos = null;
+      byte[] buffer = new byte[28672];
+      int i, part, track, sector, packetResult = -1;
+      int sectorsDone = 0;
+      byte report;
 
-    if (f.exists())
-    {
-      _transport.writeByte(0x1c); // ADT protocol - file exists
-      _transport.pushBuffer();
-    }
-    else
-    {
-      try
+      if (f.exists())
       {
-        fos = new FileOutputStream(f);
+        _transport.writeByte(0x1c); // ADT protocol - file exists
+        _transport.pushBuffer();
       }
-      catch (FileNotFoundException ex)
+      else
       {
-        // We expect a file not found exception
-      }
-      if (fos != null)
-      {
-        _parent.setSecondaryText(name);
-        for (i = 0; i < buffer.length; i++)
-          buffer[i] = 0x00;
         try
         {
-          for (i = 0; i < 7; i++)
-            fos.write(buffer);
-          fos.close();
-          _transport.writeByte(0x00); // File is now ready
-          _transport.pushBuffer();
           fos = new FileOutputStream(f);
-          while (waitForData() != ACK)
+        }
+        catch (FileNotFoundException ex)
+        {
+          // We expect a file not found exception
+        }
+        if (fos != null)
+        {
+          _parent.setSecondaryText(name);
+          for (i = 0; i < buffer.length; i++)
+            buffer[i] = 0x00;
+          try
           {
-            // TODO: What needs to happen here? Original ADT talked about
-            // a bad header message...
-            Log.println(true, "hrm, not getting an ACK from the Apple..."); //$NON-NLS-1$
-          }
-          _parent.setProgressMaximum(560); // sectors
-          for (part = 0; part < 5; part++)
-          {
-            for (track = 0; track < 7; track++)
+            for (i = 0; i < 7; i++)
+              fos.write(buffer);
+            fos.close();
+            _transport.writeByte(0x00); // File is now ready
+            _transport.pushBuffer();
+            fos = new FileOutputStream(f);
+            while (waitForData(15) != ACK)
             {
-              for (sector = 15; sector >= 0; sector--)
+              // TODO: What needs to happen here? Original ADT talked about
+              // a bad header message...
+              Log.println(true, "hrm, not getting an ACK from the Apple..."); //$NON-NLS-1$
+            }
+            _parent.setProgressMaximum(560); // sectors
+            for (part = 0; part < 5; part++)
+            {
+              for (track = 0; track < 7; track++)
               {
-                packetResult = receivePacket(buffer, (track * 4096) + (sector * 256), -1);
+                for (sector = 15; sector >= 0; sector--)
+                {
+                  packetResult = receivePacket(buffer, (track * 4096) + (sector * 256), -1);
+                  if (packetResult != 0) break;
+                  sectorsDone++;
+                  _parent.setProgressValue(sectorsDone);
+                }
                 if (packetResult != 0) break;
-                sectorsDone++;
-                _parent.setProgressValue(sectorsDone);
               }
+              fos.write(buffer);
               if (packetResult != 0) break;
             }
-            fos.write(buffer);
-            if (packetResult != 0) break;
-          }
-          fos.close();
-          if (packetResult == 0)
-          {
-            report = waitForData();
-            _endTime = new GregorianCalendar();
-            _diffMillis = (float) (_endTime.getTimeInMillis() - _startTime.getTimeInMillis()) / (float) 1000;
-            if (report == 0x00)
+            fos.close();
+            if (packetResult == 0)
             {
-              _parent.setSecondaryText(Messages.getString("CommsThread.19") + " in " + _diffMillis + " seconds.");
-              Log
-                  .println(
-                      true,
-                      "Apple sent disk image " + name + " successfully in " + (float) (_endTime.getTimeInMillis() - _startTime.getTimeInMillis()) / (float) 1000 + " seconds."); //$NON-NLS-1$ //$NON-NLS-2$
+              report = waitForData(15);
+              _endTime = new GregorianCalendar();
+              _diffMillis = (float) (_endTime.getTimeInMillis() - _startTime.getTimeInMillis()) / (float) 1000;
+              if (report == 0x00)
+              {
+                _parent.setSecondaryText(Messages.getString("CommsThread.19") + " in " + _diffMillis + " seconds.");
+                Log
+                    .println(
+                        true,
+                        "Apple sent disk image " + name + " successfully in " + (float) (_endTime.getTimeInMillis() - _startTime.getTimeInMillis()) / (float) 1000 + " seconds."); //$NON-NLS-1$ //$NON-NLS-2$
+              }
+              else
+              {
+                _parent.setSecondaryText(Messages.getString("CommsThread.20") + " in " + _diffMillis + " seconds.");
+                Log.println(true, "Received disk image " + name + " with errors."); //$NON-NLS-1$ //$NON-NLS-2$
+              }
             }
             else
             {
-              _parent.setSecondaryText(Messages.getString("CommsThread.20") + " in " + _diffMillis + " seconds.");
-              Log.println(true, "Received disk image " + name + " with errors."); //$NON-NLS-1$ //$NON-NLS-2$
+              _parent.setSecondaryText(Messages.getString("CommsThread.21"));
+              _transport.flushReceiveBuffer();
+              _transport.flushSendBuffer();
             }
           }
-          else
+          catch (IOException ex2)
           {
-            _parent.setSecondaryText(Messages.getString("CommsThread.21"));
-            _transport.flushReceiveBuffer();
-            _transport.flushSendBuffer();
+            _transport.writeByte(0x1a); // ADT protocol - unable to write file
+            _transport.pushBuffer();
           }
-        }
-        catch (IOException ex2)
-        {
-          _transport.writeByte(0x1a); // ADT protocol - unable to write file
-          _transport.pushBuffer();
-        }
-        finally
-        {
-          if (fos != null) try
+          finally
           {
-            fos.close();
+            if (fos != null) try
+            {
+              fos.close();
+            }
+            catch (IOException io)
+            {}
           }
-          catch (IOException io)
-          {}
         }
       }
+    }
+    catch (TransportTimeoutException e)
+    {
+      Log.println(true, "receive140kDisk() aborting due to timeout.");
+      _parent.setSecondaryText(Messages.getString("CommsThread.21"));
     }
     Log.println(false, "receive140kDisk() exit.");
   }
@@ -901,7 +963,7 @@ public class CommsThread extends Thread
     Log.println(false, "CommsThread.receivePacket() entry; offset " + offset + ", buffNum = " + buffNum + ".");
     do
     {
-      Log.println(false, " top of receivePacket loop.");
+      //Log.println(false, " top of receivePacket loop.");
       rc = 0;
       prev = 0;
       restarting = false;
@@ -910,14 +972,14 @@ public class CommsThread extends Thread
         try
         {
           // Wait for the block number...
-          incomingBlockNum = UnsignedByte.intValue(waitForData(5000));
-          incomingBlockNum = incomingBlockNum + ((UnsignedByte.intValue(waitForData(5000)) * 256));
-          data = waitForData(1000);
+          incomingBlockNum = UnsignedByte.intValue(waitForData(15));
+          incomingBlockNum = incomingBlockNum + ((UnsignedByte.intValue(waitForData(15)) * 256));
+          data = waitForData(15);
           incomingHalf = Math.abs(2 - data); // Get the half block
 
           blockNum = buffNum / 2;
           halfNum = buffNum % 2;
-          Log.println(false, "BlockNum: " + blockNum + " Incoming: " + incomingBlockNum + " HalfNum: " + halfNum
+          Log.println(false, "CommsThread.receivePacket() BlockNum: " + blockNum + " Incoming: " + incomingBlockNum + " HalfNum: " + halfNum
               + " Incoming: " + incomingHalf);
           if ((incomingBlockNum != blockNum) || (incomingHalf != halfNum))
           {
@@ -936,6 +998,7 @@ public class CommsThread extends Thread
               {
                 rc = -1;
                 Log.println(false, "Block numbers didn't match.");
+                _transport.pauseIncorrectCRC();
               }
           }
           else
@@ -944,19 +1007,19 @@ public class CommsThread extends Thread
         catch (TransportTimeoutException tte)
         {
           rc = -1;
-          Log.println(true, "TransportTimeoutException! (location 1)");
+          Log.println(true, "CommsThread.receivePacket() TransportTimeoutException! (location 1)");
         }
       } // end if (_transport.hasPreamble()) (i.e. Ethernet)
       if (rc == 0)
       {
         for (byteCount = 0; byteCount < 256;)
         {
-          Log.println(false, "CommsThread.receivePacket() byteCount: " + byteCount);
+          // Log.println(false, "CommsThread.receivePacket() byteCount: " + byteCount);
           try
           {
             // Wait for a byte...
-            data = waitForData(1000);
-            Log.println(false, "Received: " + UnsignedByte.toString(data));
+            data = waitForData(15);
+            // Log.println(false, "Received: " + UnsignedByte.toString(data));
             if (UnsignedByte.intValue(data) > 0)
             {
               prev += UnsignedByte.intValue(data);
@@ -968,7 +1031,7 @@ public class CommsThread extends Thread
             }
             else
             {
-              data = waitForData(1000); // We have a run - get the length!
+              data = waitForData(15); // We have a run - get the length!
               // Log.println(false,"CommsThread.receivePacket() Received run
               // length: "+UnsignedByte.toString(data));
               do
@@ -992,7 +1055,7 @@ public class CommsThread extends Thread
           catch (TransportTimeoutException tte)
           {
             rc = -1;
-            Log.println(true, "CommsThread.receivePacket().TransportTimeoutException! (location 2)");
+            Log.println(true, "CommsThread.receivePacket() TransportTimeoutException! (location 2)");
             break;
           }
         }
@@ -1001,8 +1064,8 @@ public class CommsThread extends Thread
           Log.println(false, "Receiving CRC bytes...");
           try
           {
-            crc1 = waitForData(1000);
-            crc2 = waitForData(1000);
+            crc1 = waitForData(15);
+            crc2 = waitForData(15);
             received_crc = UnsignedByte.intValue(crc1, crc2);
             computed_crc = doCrc(buffer, offset, 256);
             if (received_crc != computed_crc)
@@ -1019,7 +1082,7 @@ public class CommsThread extends Thread
           }
           catch (TransportTimeoutException tte2)
           {
-            Log.println(true, "TransportTimeoutException! (location 3)");
+            Log.println(true, "CommsThread.receivePacket() TransportTimeoutException! (location 3)");
             rc = -1;
           }
         }
@@ -1059,217 +1122,13 @@ public class CommsThread extends Thread
     return rc;
   }
 
-  public int receivePacket2(byte[] buffer, int offset, int buffNum)
-  // Receive a packet with RLE compression
-  // Returns:
-  // 0 on successful read - block/halfblock numbers, CRC matched
-  // -1 on inability to read a packet successfully (timeouts, retries exhausted)
-  {
-    int byteCount = 0, retries = 0;
-    int received_crc = -1, computed_crc = 0;
-    int incomingBlockNum, incomingHalf, blockNum, halfNum;
-    byte data = 0x00, prev, crc1 = 0, crc2 = 0;
-    int rc = 0;
-    boolean restarting = false;
-
-    Log.println(false, "CommsThread.receivePacket() entry; offset " + offset + ", buffNum = " + buffNum + ".");
-    do
-    {
-      // Log.println(false," top of receivePacket loop.");
-      rc = 0;
-      prev = 0;
-      restarting = false;
-      if (_transport.hasPreamble())
-      {
-        try
-        {
-          // Wait for the block number...
-          incomingBlockNum = UnsignedByte.intValue(waitForData(5000));
-          incomingBlockNum = incomingBlockNum + ((UnsignedByte.intValue(waitForData(1000)) * 256));
-          data = waitForData(1000);
-          incomingHalf = Math.abs(2 - data); // Get the half block
-
-          blockNum = buffNum / 2;
-          halfNum = buffNum % 2;
-          // Log.println(false,"BlockNum: " + blockNum + " Incoming: " +
-          // incomingBlockNum + " HalfNum: " + halfNum + " Incoming: " +
-          // incomingHalf);
-          if ((incomingBlockNum != blockNum) || (incomingHalf != halfNum))
-          {
-            if ((incomingBlockNum == (blockNum - 1) && (incomingHalf == (1 - halfNum))))
-            {
-              rc = -2;
-              Log.println(true, "Block numbers were close (full); acknowledging.");
-            }
-            else
-              if ((incomingBlockNum == blockNum) && (incomingHalf == (1 - halfNum)))
-              {
-                rc = -2;
-                Log.println(true, "Block numbers were close (half); acknowledging.");
-              }
-              else
-              {
-                rc = -1;
-                Log.println(true, "Block numbers didn't match.");
-              }
-          }
-          else
-            rc = 0;
-        }
-        catch (TransportTimeoutException tte)
-        {
-          rc = -1;
-          Log.println(true, "TransportTimeoutException! (location 4)");
-        }
-      } // end if (_transport.hasPreamble())
-      if (rc == 0)
-      {
-        for (byteCount = 0; byteCount < 256;)
-        {
-          Log.println(false, "CommsThread.receivePacket() byteCount: " + byteCount);
-          try
-          {
-            // Wait for a byte...
-            data = waitForData(1000);
-            if (UnsignedByte.intValue(data) > 0)
-            {
-              Log.print(false, " prev was: " + UnsignedByte.toString(prev));
-              // prev += UnsignedByte.intValue(data);
-              prev = UnsignedByte.loByte(prev + data);
-              Log.print(false, " prev is now: " + UnsignedByte.toString(prev));
-              if (byteCount % 32 == 0) Log.println(false, "");
-              buffer[offset + byteCount++] = prev;
-              Log.print(false, UnsignedByte.toString(buffer[(offset + byteCount) - 1]) + " ");
-            }
-            else
-            {
-              data = waitForData(1000);
-              for (int i = 0; i < UnsignedByte.intValue(data); i++)
-              {
-                Log.println(false, "");
-                Log.println(false, "Duplicating " + UnsignedByte.toString(prev) + "... byteCount=" + byteCount
-                    + " times=" + UnsignedByte.intValue(data));
-                if (byteCount % 32 == 0) Log.println(false, "");
-                buffer[offset + byteCount++] = prev;
-                Log.print(false, UnsignedByte.toString(buffer[offset + byteCount - 1]) + " ");
-                if (byteCount >= 256) break;
-                if (!_shouldRun) break;
-              }
-              /*
-               * do { Log.println(false,""); Log.println(false,"Duplicating
-               * "+UnsignedByte.toString(prev)+"... byteCount="+byteCount+"
-               * times="+UnsignedByte.intValue(data)); if (byteCount % 32 == 0)
-               * Log.println(false,""); buffer[offset + byteCount++] = prev;
-               * Log.print(false,UnsignedByte.toString(buffer[offset + byteCount -
-               * 1]) + " "); } while (_shouldRun && byteCount < 256 && byteCount !=
-               * UnsignedByte.intValue(data));
-               */
-            }
-            if (!_shouldRun)
-            {
-              rc = -1;
-              break;
-            }
-          }
-          catch (TransportTimeoutException tte)
-          {
-            rc = -1;
-            Log.println(true, "TransportTimeoutException! (location 5)");
-            break;
-          }
-        }
-        if (_shouldRun && !restarting && rc == 0)
-        {
-          Log.println(false, "");
-          Log.println(false, "Receiving CRC bytes...");
-          try
-          {
-            crc1 = waitForData(1000);
-            crc2 = waitForData(1000);
-            received_crc = UnsignedByte.intValue(crc1, crc2);
-            computed_crc = doCrc(buffer, offset, 256);
-            if (received_crc != computed_crc)
-            {
-              rc = -1;
-              Log.println(false, "Incorrect CRC. Computed: " + computed_crc + " Received: " + received_crc); //$NON-NLS-1$ //$NON-NLS-2$
-              try
-              {
-                // TODO: remove this sleep (and surrounding try/catch block)
-                Thread.sleep(2000);
-                Log.println(false, "Snoozola!");
-              }
-              catch (InterruptedException e)
-              {
-                Log.printStackTrace(e);
-              }
-            }
-            else
-            {
-              Log.println(false, "Correct CRC. Computed: " + computed_crc + " Received: " + received_crc); //$NON-NLS-1$ //$NON-NLS-2$
-              rc = 0;
-            }
-          }
-          catch (TransportTimeoutException tte2)
-          {
-            Log.println(true, "TransportTimeoutException! (location 6)");
-            rc = -1;
-          }
-        }
-      }
-      if (rc == 0)
-      {
-        _transport.writeByte(ACK);
-        _transport.pushBuffer();
-        _transport.flushReceiveBuffer();
-      }
-      else
-        if (rc == -2)
-        {
-          /*
-           * We received an out-of-sync packet (likely a duplicate). Acknowledge
-           * it, and swing around again for another try.
-           */
-          _transport.writeByte(ACK);
-          _transport.pushBuffer();
-          _transport.flushReceiveBuffer();
-          _transport.flushSendBuffer();
-          retries++;
-        }
-        else
-        {
-          _transport.flushReceiveBuffer();
-          _transport.flushSendBuffer();
-          _transport.writeByte(NAK);
-          _transport.pushBuffer();
-          retries++;
-        }
-    }
-    while ((rc != 0) && (_shouldRun == true) && (retries < _maxRetries));
-    Log.println(false, "CommsThread.receivePacket() exit.");
-
-    return rc;
-  }
-
-  public byte waitForData()
-  {
-    byte oneByte = 0;
-    try
-    {
-      oneByte = waitForData(0);
-    }
-    catch (TransportTimeoutException e)
-    {
-
-    }
-    return oneByte;
-  }
-
   public byte waitForData(int timeout) throws TransportTimeoutException
   {
     /*
      * Fix me This needs to figure out a better way to set timeouts - not once
      * per byte read, but only when different timing transitions are needed.
      */
+    // Log.println(false, "CommsThread.waitForData() entry, timeout: " + timeout);
     byte oneByte = 0;
     boolean readYet = false;
     while ((readYet == false) && (_shouldRun == true))
@@ -1288,17 +1147,9 @@ public class CommsThread extends Thread
       }
       catch (TransportTimeoutException tte)
       {
-        Log.println(true, "TransportTimeoutException!");
+        Log.println(false, "CommsThread.waitForData.TransportTimeoutException! (location 0)");
         throw tte;
         // _shouldRun = false;
-      }
-      catch (SocketException se)
-      {
-        _shouldRun = false;
-      }
-      catch (IOException ex)
-      {
-        Log.printStackTrace(ex);
       }
       catch (Exception e)
       {
@@ -1308,7 +1159,7 @@ public class CommsThread extends Thread
     return oneByte;
   }
 
-  public String receiveName()
+  public String receiveName() throws TransportTimeoutException
   {
     byte oneByte;
     StringBuffer buf = new StringBuffer();
@@ -1316,7 +1167,14 @@ public class CommsThread extends Thread
     for (int i = 0; i < 256; i++)
     {
       if (!_shouldRun) break;
-      oneByte = waitForData();
+      try
+      {
+        oneByte = waitForData(15);
+      }
+      catch (TransportTimeoutException e)
+      {
+        throw e;
+      }
       if (oneByte != (byte) 0x00)
       {
         buf.append((char) (UnsignedByte.intValue(oneByte) & 0x7f));
@@ -1358,7 +1216,7 @@ public class CommsThread extends Thread
   public int requestSend(String resource, boolean reallySend)
   {
     int fileSize = 0;
-    Log.println(false, "CommsThread.requestSend() request: " + resource+ ", reallySend = "+reallySend);
+    Log.println(false, "CommsThread.requestSend() request: " + resource + ", reallySend = " + reallySend);
     String resourceName;
     InputStream is = null;
     if (_transport.transportType() == ATransport.TRANSPORT_TYPE_AUDIO)
@@ -1412,7 +1270,7 @@ public class CommsThread extends Thread
         _worker = new Worker(is);
         _worker.start();
       }
-      else 
+      else
         Log.println(false, "CommsThread.requestSend() found file sized " + fileSize + " bytes.");
     }
     else
@@ -1425,7 +1283,10 @@ public class CommsThread extends Thread
   public void requestStop()
   {
     _shouldRun = false;
-    if (_worker != null) _worker.requestStop();
+    if (_worker != null)
+    {
+      _worker.interrupt();
+    }
     try
     {
       _transport.close();
@@ -1446,7 +1307,7 @@ public class CommsThread extends Thread
 
     public void run()
     {
-      Log.println(false, "CommsThread.Worker.run() starting.");
+      Log.println(false, "CommsThread.Worker.run() entry.");
       int bytesRead, bytesAvailable;
       _startTime = new GregorianCalendar();
       if (_transport.transportType() == ATransport.TRANSPORT_TYPE_AUDIO)
@@ -1489,7 +1350,11 @@ public class CommsThread extends Thread
           _transport.setSlowSpeed(300);
           for (int i = 0; i < buffer.length; i++)
           {
-            if (_shouldRun == false) break;
+            if (_shouldRun == false)
+            {
+              Log.println(false,"CommsThread.Worker.run() told to stop.");
+              break;
+            }
             if (buffer[i] == 0x0d)
             {
               _transport.writeByte(0x8d);
@@ -1497,28 +1362,42 @@ public class CommsThread extends Thread
               {
                 sleep(500);
               }
-              catch (Exception e)
-              {}
+              catch (InterruptedException e)
+              {
+                Log.println(false,"CommsThread.Worker.run() interrupted.");
+                if (_shouldRun == false)
+                {
+                  Log.println(false,"CommsThread.Worker.run() told to stop, again...");
+                  break;
+                }
+              }
             }
             else
               if (buffer[i] != 0x0a) _transport.writeByte(buffer[i]);
-            _parent.setProgressValue(i + 1);
+            if (_shouldRun)
+            {
+              _parent.setProgressValue(i + 1);
+            }
           }
-          _transport.pushBuffer();
-          _endTime = new GregorianCalendar();
-          _diffMillis = (float) (_endTime.getTimeInMillis() - _startTime.getTimeInMillis()) / (float) 1000;
-          _parent.setSecondaryText(Messages.getString("CommsThread.22") + " in " + _diffMillis + " seconds.");
-          Log.println(true, "Text file sent in " + (float) (_endTime.getTimeInMillis() - _startTime.getTimeInMillis())
+          if (_shouldRun)
+          {
+            _transport.pushBuffer();
+            _endTime = new GregorianCalendar();
+            _diffMillis = (float) (_endTime.getTimeInMillis() - _startTime.getTimeInMillis()) / (float) 1000;
+            _parent.setSecondaryText(Messages.getString("CommsThread.22") + " in " + _diffMillis + " seconds.");
+            Log.println(true, "Text file sent in " + (float) (_endTime.getTimeInMillis() - _startTime.getTimeInMillis())
               / (float) 1000 + " seconds.");
-          _transport.setFullSpeed();
+            _transport.setFullSpeed();
+          }
         }
         catch (Exception e)
         {
           Log.printStackTrace(e);
         }
       }
-      _transport.flushReceiveBuffer();
-      Log.println(false, "CommsThread.Worker.run() stopping.");
+      if (_shouldRun)
+        _transport.flushReceiveBuffer();
+      Log.println(false, "CommsThread.Worker.run() exit.");
     }
 
     public void requestStop()
@@ -1533,7 +1412,7 @@ public class CommsThread extends Thread
   {
     return _transport.transportType();
   }
-  
+
   public boolean supportsBootstrap()
   {
     return _transport.supportsBootstrap();
@@ -1543,7 +1422,7 @@ public class CommsThread extends Thread
   {
     if (_transport.transportType() == ATransport.TRANSPORT_TYPE_SERIAL)
     {
-      ((SerialTransport)_transport).setHardwareHandshaking(state);
+      ((SerialTransport) _transport).setHardwareHandshaking(state);
     }
   }
 

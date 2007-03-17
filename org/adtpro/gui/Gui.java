@@ -236,7 +236,7 @@ public final class Gui extends JFrame implements ActionListener
 
   public void actionPerformed(ActionEvent e)
   {
-    Log.println(false,"Gui.actionPerformed() responding to "+e.getActionCommand());
+    Log.println(false,"Gui.actionPerformed() entry, responding to "+e.getActionCommand());
     if (e.getSource() == buttonConnect)
     {
       startComms();
@@ -254,6 +254,7 @@ public final class Gui extends JFrame implements ActionListener
       Log.getSingleton().setTrace(_traceMenuItem.isSelected());
       saveProperties();
     }
+    Log.println(false,"Gui.actionPerformed() exit.");
   }
 
   public String getWorkingDirectory()
@@ -441,17 +442,22 @@ public final class Gui extends JFrame implements ActionListener
                 _commsThread.requestSend(e.getActionCommand(),true);
               }
             }
+      Log.println(false,"Gui.MenuAction.actionPerformed() exit.");
     }
   }
 
   public void startComms()
   {
+    Log.println(false,"Gui.startComms() entry.");
     if (_commsThread != null)
     {
       try
       {
+        Log.println(false,"Gui.startComms() about to interrupt existing comms thread...");
         _commsThread.interrupt();
+        Log.println(false,"Gui.startComms() about to request stop of comms thread...");
         _commsThread.requestStop();
+        Log.println(false,"Gui.startComms() about clean up after thread...");
         cleanupCommsThread();
       }
       catch (Throwable throwable)
@@ -462,6 +468,7 @@ public final class Gui extends JFrame implements ActionListener
       comboSpeed.setEnabled(true);
       menuBootstrap.setEnabled(false);
       setTitle(Messages.getString("Gui.Title") + " " + Messages.getString("Version.Number")); //$NON-NLS-1$ //$NON-NLS-2$
+      Log.println(false,"Gui.startComms() done with old thread.");
     }
     else
     {
@@ -481,6 +488,7 @@ public final class Gui extends JFrame implements ActionListener
         _dosAction2.setEnabled(_commsThread.transportType() == ATransport.TRANSPORT_TYPE_AUDIO);
       }
     }
+    Log.println(false,"Gui.startComms() exit.");
   }
 
   public void cancelCommsThread()

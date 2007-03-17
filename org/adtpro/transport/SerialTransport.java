@@ -48,8 +48,6 @@ public class SerialTransport extends ATransport
 
   protected int _currentSpeed = 0;
 
-  protected int _timeout = 0;
-
   /**
    * Create a new instance of the Comm API Transport. This constructor creates a
    * new instance of the Comm API Transport.
@@ -75,13 +73,7 @@ public class SerialTransport extends ATransport
     _currentSpeed = Integer.parseInt(speed);
     port.setSerialPortParams(_currentSpeed, 8, 1, 0);
     port.setFlowControlMode(SerialPort.FLOWCONTROL_RTSCTS_IN);
-    /*
-     *  Unixen would never return from a port.close() because they
-     * locked hard on the outstanding port.read() request.
-     * Receive timeout gives us a chance to come up for air
-     * once in a while.
-     */
-    port.enableReceiveTimeout(500);
+    port.enableReceiveTimeout(250);
     inputStream = new DataInputStream(port.getInputStream());
     outputStream = new DataOutputStream(port.getOutputStream());
     connected = true;
@@ -105,7 +97,9 @@ public class SerialTransport extends ATransport
     if (connected)
     {
       connected = false;
+      Log.println(false,"SerialTransport.close() closing port..."); //$NON-NLS-1$
       port.close();
+      Log.println(false,"SerialTransport.close() closed port."); //$NON-NLS-1$
       Log.println(true,"SerialTransport closed port."); //$NON-NLS-1$
     }
   }
@@ -191,28 +185,10 @@ public class SerialTransport extends ATransport
    * @throws IOException
    */
 
-  public byte readByte(int timeout) throws IOException
+  public byte readByte(int seconds) throws TransportTimeoutException
   {
-    if (timeout > 0 )
-    {
-      if (timeout != _timeout)
-      {
-        port.enableReceiveTimeout(timeout);
-        _timeout = timeout;
-      }
-    }
-    else if (timeout == 0)
-    {
-      port.disableReceiveTimeout();
-      _timeout = timeout;
-    }
-    // else (timeout < 0), which means leave it alone
-
-    return (readByte());
-  }
-
-  public byte readByte() throws IOException
-  {
+    int collectedTimeouts = 0;
+    Log.println(false, "SerialTransport.readByte() entry, timeout: "+seconds+" seconds.");
     boolean hasData = false;
     byte oneByte = 0;
     while ((hasData == false) && (connected))
@@ -223,20 +199,13 @@ public class SerialTransport extends ATransport
         hasData = true;
       }
       catch (java.io.IOException e)
-      {
-    	  /*
-    	   * Here, we could increment a count to implement
-    	   * a timeout.  We'd need to only "count" if we
-    	   * were inside a protocol flow, though - there is
-    	   * an outstanding read() that happens in the 
-    	   * inbetween times to wait for some work from
-    	   * the Apple.  I suppose the way to implement it
-    	   * would be to send in a boolean that signifies 
-    	   * if we care about timeout or not.  Then, we'd
-    	   * throw a new exception if we did time out.
-    	   */
+      {        
+        collectedTimeouts++;
       }
+      if (collectedTimeouts/4 > seconds)
+        throw new TransportTimeoutException();
     }
+    Log.println(false, "SerialTransport.readByte() exit.");
     return oneByte;
   }
 
@@ -249,24 +218,6 @@ public class SerialTransport extends ATransport
    *              thrown when a problem occurs with flushing the stream.
    */
 
-  public void setTimeout(int timeout)
-  {
-    /**
-     * Sets the timeout of the underlying Java COMM API port.
-     * 
-     * @param timeout
-     *          The timeout value in milliseconds.
-     */
-    if (timeout != _timeout)
-    {
-      if (timeout == 0)
-        port.disableReceiveTimeout();
-      else
-        port.enableReceiveTimeout(timeout);
-    }
-    _timeout = timeout;
-  }
-  
     public void setSpeed(int speed) throws Exception
     {
     flush();

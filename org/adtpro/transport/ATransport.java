@@ -35,8 +35,8 @@ public abstract class ATransport
   public abstract void writeBytes(byte data[]);
   public abstract void writeBytes(char data[]);
   public abstract void writeBytes(String str);
-  public abstract byte readByte() throws Exception;
-  public abstract byte readByte(int timeout) throws Exception;
+  //public abstract byte readByte() throws Exception;
+  public abstract byte readByte(int timeout) throws TransportTimeoutException;
   public abstract void pauseIncorrectCRC();
   public abstract void pushBuffer();
   public abstract void flushSendBuffer();

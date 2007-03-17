@@ -39,8 +39,6 @@ public class UDPTransport extends ATransport
 
   int _port, _inPacketPtr = 0, _inPacketLen = 0, _outPacketPtr = 0;
 
-  int _timeout = 0;
-
   DatagramSocket _socket;
   DatagramPacket _packet;
 
@@ -68,12 +66,7 @@ public class UDPTransport extends ATransport
     return TRANSPORT_TYPE_UDP;
   }
   
-  public byte readByte(int timeout) throws Exception
-  {
-    return readByte();
-  }
-
-  public byte readByte() throws Exception
+  public byte readByte(int seconds) throws TransportTimeoutException
   {
     Log.println(false,"readByte() entry; _inPacketPtr = "+_inPacketPtr+"; _inPacketLen = "+_inPacketLen+".");
     if (_receiveBuffer == null)
@@ -81,7 +74,7 @@ public class UDPTransport extends ATransport
       Log.println(false,"readByte() needs to pull a buffer; buffer is null.");
       try
       {
-        pullBuffer(_timeout);
+        pullBuffer(seconds);
       }
       catch (java.net.SocketTimeoutException e1)
       {
@@ -96,7 +89,7 @@ public class UDPTransport extends ATransport
       Log.println(false,"UDPTransport.readByte() needs to pull a buffer; we're out of data.");
       try
       {
-        pullBuffer(_timeout);
+        pullBuffer(seconds);
       }
       catch (java.net.SocketTimeoutException e1)
       {
@@ -249,12 +242,12 @@ public class UDPTransport extends ATransport
     Log.println(false,"UDPTransport.pushBuffer() exit.");
   }
 
-  public void pullBuffer(int timeout) throws Exception
+  public void pullBuffer(int seconds) throws Exception
   {
     Log.println(false,"UDPTransport.pullBuffer() entry.");
     _receiveBuffer = new byte[1500];
     _packet.setData(_receiveBuffer);
-    _socket.setSoTimeout(timeout);
+    _socket.setSoTimeout(seconds*1000);
     _socket.receive(_packet);
     Log.println(false,"received packet.");
     _socket.connect(_packet.getSocketAddress());
@@ -302,11 +295,6 @@ public class UDPTransport extends ATransport
   public boolean supportsBootstrap()
   {
     return false;
-  }
-
-  public void setTimeout(int timeout)
-  {
-    _timeout = timeout;
   }
 
   public void pauseIncorrectCRC()

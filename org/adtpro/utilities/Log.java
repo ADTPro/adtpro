@@ -98,7 +98,8 @@ public class Log
     else // Trace turned off
     {
       _out.flush();
-      _out.close();
+      if (_out.getClass() == PrintStream.class)
+        _out.close();
       _out = System.out;
     }
   }

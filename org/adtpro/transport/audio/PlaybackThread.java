@@ -119,9 +119,12 @@ public class PlaybackThread extends Thread
     {
       if (_shouldRun)
       {
-        //nBytesWritten += line.write(_audioData, 0, _audioData.length);
         nBytesWritten += line.write(_audioData, i * chunk, chunk);
-        Log.println(false, "PlaybackThread.play() Bytes written: " + nBytesWritten);
+        if (i % 25 == 0)
+        {
+          // Only write one in 4 for this...
+          Log.println(false, "PlaybackThread.play() Bytes written: " + nBytesWritten);
+        }
         if ((_parent != null) && (_shouldRun))
         {
           _parent.setProgressValue(nBytesWritten);
@@ -139,6 +142,18 @@ public class PlaybackThread extends Thread
     if (_shouldRun)
     {
       line.drain();
+      try
+      {
+        /*
+         *  There always seems to be some sound playing even when Java thinks it's done.
+         *  Wait.
+         */
+        Thread.sleep(250);
+      }
+      catch (InterruptedException e)
+      {
+        Log.printStackTrace(e);
+      }
       while (line.getFramePosition() < nBytesWritten)
       {
         System.out.println("line active... position:" + line.getFramePosition());

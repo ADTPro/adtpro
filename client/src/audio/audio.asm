@@ -55,16 +55,6 @@ RESETAUDIO:
 ; PATCHAUDIO - Patch the entry points of SSC processing
 ;---------------------------------------------------------
 PATCHAUDIO:
-	;lda #<AUDIOPUT
-	;sta PUTC+1
-	;lda #>AUDIOPUT
-	;sta PUTC+2
-
-	;lda #<AUDIOGET
-	;sta GETC+1
-	;lda #>AUDIOGET
-	;sta GETC+2
-
 	lda #<RESETAUDIO
 	sta RESETIO+1
 	lda #>RESETAUDIO

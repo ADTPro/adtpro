@@ -35,8 +35,6 @@ public class AudioTransport extends ATransport
 {
   int _inPacketPtr = 0, _inPacketLen = 0, _outPacketPtr = 0, _bigOutPacketPtr = 0;
 
-  int _timeout = 0;
-
   byte[] _receiveBuffer = null;
 
   byte[] _sendBuffer = null;
@@ -62,7 +60,7 @@ public class AudioTransport extends ATransport
   {
     return TRANSPORT_TYPE_AUDIO;
   }
-  
+
   public void setSlowSpeed(int speed)
   {
   // Unnecessary, unimplemented
@@ -81,11 +79,11 @@ public class AudioTransport extends ATransport
    */
   public void writeBytes(byte data[])
   {
-    Log.println(false, "AudioTransport.writeBytes() entry.");
+    // Log.println(false, "AudioTransport.writeBytes() entry.");
     if ((1499 - _outPacketPtr) >= data.length)
     {
-      Log.println(false, "AudioTransport.writeBytes() writing " + data.length + " bytes into packet starting from "
-          + _outPacketPtr + ".");
+      // Log.println(false, "AudioTransport.writeBytes() writing " + data.length
+      // + " bytes into packet starting from " + _outPacketPtr + ".");
       for (int i = 0; i < data.length; i++)
       {
         _sendBuffer[_outPacketPtr++] = data[i];
@@ -144,44 +142,41 @@ public class AudioTransport extends ATransport
     writeBytes(data);
   }
 
-  public byte readByte(int timeout) throws Exception
-  {
-    if (timeout >= 0) _timeout = timeout;
-    return readByte();
-  }
-
-  public byte readByte() throws Exception
+  public byte readByte(int timeout) throws TransportTimeoutException
   {
     byte retByte = 0;
-    Log.println(false, "AudioTransport.readByte() entry; _inPacketPtr = " + _inPacketPtr + "; _inPacketLen = "
-        + _inPacketLen + ".");
+    // Log.println(false, "AudioTransport.readByte() entry; _inPacketPtr = " + _inPacketPtr + "; _inPacketLen = " + _inPacketLen + ".");
     if (_receiveBuffer == null)
     {
       Log.println(false, "AudioTransport.readByte() needs to pull a buffer; buffer is null.");
       try
       {
-        pullBuffer(_timeout);
+        pullBuffer(timeout);
       }
-      catch (java.net.SocketTimeoutException e1)
+      catch (TransportTimeoutException e)
       {
-        throw (new TransportTimeoutException());
+        throw e;
       }
-      catch (Exception e2)
-      {}
+      catch (TransportClosedException e1)
+      {
+        throw new TransportTimeoutException();
+      }
     }
     if (_inPacketPtr + 1 > _inPacketLen)
     {
       Log.println(false, "AudioTransport.readByte() needs to pull a buffer; we're out of data.");
       try
       {
-        pullBuffer(_timeout);
+        pullBuffer(timeout);
       }
-      catch (java.net.SocketTimeoutException e1)
+      catch (TransportTimeoutException e)
       {
-        throw (new TransportTimeoutException());
+        throw e;
       }
-      catch (TransportClosedException e2)
-      {}
+      catch (TransportClosedException e1)
+      {
+        throw new TransportTimeoutException();
+      }
     }
     if (_receiveBuffer != null)
     {
@@ -189,7 +184,7 @@ public class AudioTransport extends ATransport
       {
         int myByte = _receiveBuffer[_inPacketPtr];
         if (myByte < 0) myByte += 256;
-        Log.println(false, "AudioTransport.readByte() exit with " + UnsignedByte.toString(UnsignedByte.loByte(myByte)));
+        // Log.println(false, "AudioTransport.readByte() exit with " + UnsignedByte.toString(UnsignedByte.loByte(myByte)));
       }
       if (_receiveBuffer.length > 0) retByte = _receiveBuffer[_inPacketPtr++];
       else
@@ -221,7 +216,7 @@ public class AudioTransport extends ATransport
       }
     }
     _sendThread = new PlaybackThread(stuff);
-    _sendThread.play();
+    _sendThread.start();
     _outPacketPtr = 0;
     Log.println(false, "AudioTransport.pushBuffer() exit.");
     _inPacketLen = 0;
@@ -260,22 +255,27 @@ public class AudioTransport extends ATransport
     Log.println(false, "AudioTransport.pushBigBuffer() exit.");
   }
 
-  public void pullBuffer(int timeout) throws Exception
+  public void pullBuffer(int seconds) throws TransportTimeoutException, TransportClosedException
   {
-    Log.println(false, "AudioTransport.pullBuffer() entry; timeout = " + timeout + " _timeout = " + _timeout);
-    int numTimeouts = 0;
-    if (timeout == -1) timeout = _timeout;
-    while ((_captureThread != null) && ((_captureThread.receiveBufferSize()) == 0)
-        && ((100 * numTimeouts < timeout) || timeout == 0))
+    Log.println(false, "AudioTransport.pullBuffer() entry; timeout = " + seconds + " seconds.");
+    int collectedTimeouts = 0;
+    while ((_captureThread != null) && ((_captureThread.receiveBufferSize()) == 0) && (collectedTimeouts / 4 < seconds))
     {
-      if (timeout > 0) Log.println(false, "AudioTransport.pullBuffer sleeping... numTimeouts: " + numTimeouts * 100
-          + " requested: " + timeout);
-      Thread.sleep(100);
-      numTimeouts++;
+      Log.println(false, "AudioTransport.pullBuffer() sleeping... collectedTimeouts: " + collectedTimeouts / 4
+          + " requested: " + seconds);
+      try
+      {
+        Thread.sleep(250);
+      }
+      catch (InterruptedException e)
+      {
+
+      }
+      collectedTimeouts++;
     }
     if (_captureThread != null)
     {
-      if ((_captureThread.receiveBufferSize() == 0) && (timeout > 0)) { throw new TransportTimeoutException(); }
+      if (_captureThread.receiveBufferSize() == 0) { throw new TransportTimeoutException(); }
       if (_captureThread.receiveBufferSize() > 0)
       {
         _receiveBuffer = _captureThread.retrieveReceiveBuffer();
@@ -343,9 +343,9 @@ public class AudioTransport extends ATransport
     try
     {
       Log.getSingleton();
-      Log.println(false, "Pausing for an incorrect CRC...");
-      Thread.sleep(4000);
-      Log.println(false, "Done pausing.");
+      Log.println(false, "AudioTransport.pauseIncorrectCRC() Pausing for garbled data...");
+      Thread.sleep(7000);
+      Log.println(false, "AudioTransport.pauseIncorrectCRC() Done pausing.");
     }
     catch (InterruptedException e)
     {
@@ -358,42 +358,38 @@ public class AudioTransport extends ATransport
   {
     String ret = "AudioTransport.getInstructions() - returned null!";
     int endAddr = 0;
-    if (guiString.equals(Messages.getString("Gui.BS.DOS"))) ret = Messages.getString("Gui.BS.DumpDOSAudioInstructions");
+    if (guiString.equals(Messages.getString("Gui.BS.DOS")))
+    {
+      ret = Messages.getString("Gui.BS.DumpDOSAudioInstructions");
+      endAddr = fileSize - 1 + 976;
+      String endAddrHex = UnsignedByte.toString(UnsignedByte.hiByte(endAddr))
+          + UnsignedByte.toString(UnsignedByte.loByte(endAddr));
+      ret = ret.replaceFirst("%1%", endAddrHex);
+      ret = ret.replaceFirst("0.0", "0."); // Remove the unsightly leading zero
+    }
     else
-      if (guiString.equals(Messages.getString("Gui.BS.DOS2"))) ret = Messages.getString("Gui.BS.DumpDOSAudioInstructions2");
+      if (guiString.equals(Messages.getString("Gui.BS.DOS2"))) ret = Messages
+          .getString("Gui.BS.DumpDOSAudioInstructions2");
       else
-        if (guiString.equals(Messages.getString("Gui.BS.ADT")))
+        if ((guiString.equals(Messages.getString("Gui.BS.ADT"))) ||
+            (guiString.equals(Messages.getString("Gui.BS.ADTPro"))) ||
+            (guiString.equals(Messages.getString("Gui.BS.ADTProAudio"))) ||
+            (guiString.equals(Messages.getString("Gui.BS.ADTProEthernet"))))
         {
-          ret = Messages.getString("Gui.BS.DumpADTAudioInstructions");
-          endAddr = fileSize - 1 + 2051;
-          String endAddrHex = UnsignedByte.toString(UnsignedByte.hiByte(endAddr))+UnsignedByte.toString(UnsignedByte.loByte(endAddr));
-          ret = ret.replaceFirst("%1%",endAddrHex);
-        }
-        else
-          if (guiString.equals(Messages.getString("Gui.BS.ADTPro")))
-          {
+          if (guiString.equals(Messages.getString("Gui.BS.ADT")))
+            ret = Messages.getString("Gui.BS.DumpADTAudioInstructions");
+          else if (guiString.equals(Messages.getString("Gui.BS.ADTPro")))
             ret = Messages.getString("Gui.BS.DumpProAudioInstructions");
-            endAddr = fileSize - 1 + 2051;
-            String endAddrHex = UnsignedByte.toString(UnsignedByte.hiByte(endAddr))+UnsignedByte.toString(UnsignedByte.loByte(endAddr));
-            ret = ret.replaceFirst("%1%",endAddrHex);
-          }
-          else
-            if (guiString.equals(Messages.getString("Gui.BS.ADTProAudio")))
-            {
-              ret = Messages.getString("Gui.BS.DumpProAudioAudioInstructions");
-              endAddr = fileSize - 1 + 2051;
-              String endAddrHex = UnsignedByte.toString(UnsignedByte.hiByte(endAddr))+UnsignedByte.toString(UnsignedByte.loByte(endAddr));
-              ret = ret.replaceFirst("%1%",endAddrHex);
-            }
-            else
-              if (guiString.equals(Messages.getString("Gui.BS.ADTProEthernet")))
-              {
-                ret = Messages.getString("Gui.BS.DumpProEthernetAudioInstructions");
-                endAddr = fileSize - 1 + 2051;
-                String endAddrHex = UnsignedByte.toString(UnsignedByte.hiByte(endAddr))+UnsignedByte.toString(UnsignedByte.loByte(endAddr));
-                ret = ret.replaceFirst("%1%",endAddrHex);
-              }
-    Log.println(false,"AudioTransport.getInstructions() returning:\n"+ret);
+          else if (guiString.equals(Messages.getString("Gui.BS.ADTProAudio")))
+            ret = Messages.getString("Gui.BS.DumpProAudioAudioInstructions");
+          else if (guiString.equals(Messages.getString("Gui.BS.ADTProEthernet")))
+            ret = Messages.getString("Gui.BS.DumpProEthernetAudioInstructions");
+          endAddr = fileSize - 1 + 2051;
+          String endAddrHex = UnsignedByte.toString(UnsignedByte.hiByte(endAddr))
+              + UnsignedByte.toString(UnsignedByte.loByte(endAddr));
+          ret = ret.replaceFirst("%1%", endAddrHex);
+        }
+    Log.println(false, "AudioTransport.getInstructions() returning:\n" + ret);
     return ret;
   }
 }
