@@ -46,6 +46,13 @@ It was ported to the Apple II by Glenn Jones ({{http://a2retrosystems.com/}}).
 The checksum algorithm was transplanted into ip65 from the Contiki project
 ({{http://www.sics.se/contiki/}}).
 
+ I learned a good deal about Java sound capture and playback from Gamelan in an
+introductory article here:
+{{http://www.developer.com/java/other/article.php/1565671}}.
+I found some very helpful audio code from the {{{http://www.jbother.org/}JBother}} project:
+{{http://www.jbother.org/api/src-html/com/valhalla/jbother/sound/SoundPlayer.html}}.
+The audio code in ADTPro is a particularly undisciplined extension of this.
+
 ADT Lineage
 
  Rich Williamson (glitch at eskimo dot com) released SENDDISK on April 9, 1993.

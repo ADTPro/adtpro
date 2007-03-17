@@ -65,22 +65,31 @@ The minimum amount of work you'd go through to do so:
 
 * {Downloading/Importing the ADTPro Project}
 
- Connect Eclipse to the ADTPro CVS repository on Sourceforge:
+ Connect Eclipse to the ADTPro CVS repository on Sourceforge by going through
+the next few configuration dialogs in Eclipse.
  
  * From the Eclipse IDE: <<<File->New->Project>>>, <<<Project from CVS>>>:
+
+ ** 
 
 [images/eclipse1.jpg]
    
  * Fill in the CVS repository info:
 
+ **
+ 
 [images/eclipse2.jpg]
 
  * Pick, or type in, <<<adtpro>>> for the module name:
 
+ **
+ 
 [images/eclipse3.jpg]
 
  * Check it out to the workspace:
 
+ **
+ 
 [images/eclipse4.jpg]
 
  []

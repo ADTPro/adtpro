@@ -13,11 +13,15 @@ familiar with the {{{http://adt.berlios.de}original ADT}}, ADTPro extends ADT's 
 working with more logical disk formats, drive types, communications devices,
 and host operating systems.
 
- ADTPro offers:
+ ADTPro transfers disks using any of these communications devices:
 
-    * Serial transfer speeds up to 115,200 BPS - via Super Serial Card or IIgs
+    * Super Serial Card or IIgs modem port at 115,200 BPS 
 
-    * Ethernet transfers via the {{{http://a2retrosystems.com/}Uthernet}} card
+    * {{{http://a2retrosystems.com/}Uthernet}} Ethernet card
+
+    * A standard sound card and the Apple's cassette ports
+
+ ADTPro has these capabilities:
 
     * Compatibility with any device ProDOS can read
 
@@ -29,11 +33,9 @@ and host operating systems.
 
     * Server compatibility with Windows, Mac OSX, and Linux
 
-    * Ability to {{{bootstrap.html}bootstrap}} an Apple ][ from bare metal
+    * Ability to {{{bootstrap.html}bootstrap}} an Apple ][ from bare metal over serial or cassette ports
 
     * Ability to send floppies in "{{{batch.html}batch}}" mode without having to name each one
-
-    * Ability to change host working directory on the fly
 
  ADTPro may be used to transfer either Apple diskette/disk images in DOS or ProDOS format.
 The Apple client side happens to run under ProDOS, but it is perfectly capable
@@ -46,9 +48,10 @@ from the SourceForge
 
 * Server
 
- The server program runs on a computer capable of hosting Java and 
-a serial port.  Or, if your Apple has an Uthernet card, you don't 
-even need the serial port any more.  It offers a compact user interface that 
+ The server program runs on a computer capable of hosting Java.
+Depending on how you want to connect to your Apple, you might also need
+a serial port and cables, a Uthernet card for your apple, or a couple of
+audio patch cables.  The server offers a compact user interface that 
 shows what communications are taking place 
 between the host and the Apple ][:
 
@@ -77,6 +80,6 @@ is fair game:
 
  Transferring data occurs with a 20k buffer on the Apple, so all transfers
 are broken up into 20k chunks.  A progress indicator shows how far it is 
-into the current chunk, as well as a running count of the total progress.
+into the current chunk, as well as a running count of the total progress:
 
 [images/sending.png]

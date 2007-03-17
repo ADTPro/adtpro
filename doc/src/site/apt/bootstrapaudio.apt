@@ -1,37 +1,37 @@
  -----
- ADTPro Bootstrapping - Serial
+ ADTPro Bootstrapping - Audio
  -----
  David Schmidt (david__schmidt at users dot souceforge dot net)
  -----
 
-ADTPro Serial Bootstrapping
+ADTPro Audio Bootstrapping
 
-  If you already use the DOS version of ADT, you can use it to transfer the 
-virtual floppy containing ADTPro that comes with this project
-(ADTPro-v.r.m.dsk) to your Apple.  Reboot the Apple with the ADTPro floppy, and
-you're ready to go.
+ Audio bootstrapping is actually quite a bit faster than the standard
+ 300-baud {{{bootstrapserial.html}serial bootstrap procedure}}.  That's
+ because the cassette port of the Apple II runs at something close to 
+ 1800 baud.  While you probably don't want to use the audio version of ADTPro
+ for diskette transfers, it is definitely useful for the inital bootstrap
+ steps.
 
   If you don't use DOS ADT now, or don't have software for your Apple yet, 
 more bootstrapping scenarios and configurations are detailed below.
 Please note that you will need to use serial communications (as opposed to
 Ethernet) for this task.
 
- * {{{bootstrap.html#If you already have ProDOS}If you already have ProDOS}}
+ * {{{bootstrapaudio.html#If you already have ProDOS}If you already have ProDOS}}
 
- * {{{bootstrap.html#If you already have DOS 3.3, but no ProDOS}If you already have DOS 3.3, but no ProDOS}}
+ * {{{bootstrapaudio.html#If you already have DOS 3.3, but no ProDOS}If you already have DOS 3.3, but no ProDOS}}
 
- * {{{bootstrap.html#Starting from bare metal}If you have no Apple software on disk at all... starting from bare metal}}
+ * {{{bootstrapaudio.html#Starting from bare metal}If you have no Apple software on disk at all... starting from bare metal}}
 
- []
+ [] 
 
  If you still need to connect your host and Apple II computers through their 
- serial ports, refer to these notes:
+ sound and cassette ports, refer to these notes:
 
- * {{{connectionsserial.html#Super Serial cabling specifics}Super Serial cabling specifics}}
+ * {{{connectionsaudio.html}Audio connections}}
 
- * {{{connectionsserial.html#IIgs modem port cabling specifics}IIgs modem port cabling specifics}}
-
- * {{{connectionsserial.html#USB cabling specifics}USB cabling specifics}}
+ []
 
 * {If you already have ProDOS}
 
@@ -92,7 +92,7 @@ Ethernet) for this task.
 * {If you already have DOS 3.3, but no ProDOS}
 
     Start following the "bare metal" instructions below from
-    {{{bootstrap.html#With a freshly formatted DOS floppy in the Apple drive}step 7, "With a freshly formatted DOS floppy..." }}.
+    {{{bootstrapaudio.html#With a freshly formatted DOS floppy in the Apple drive}step 7, "With a freshly formatted DOS floppy..." }}.
     You will first send the ADT DOS client over to a DOS diskette, then
     use that DOS ADT client to transfer a new ProDOS-formatted floppy 
     containing the ADTPro client.

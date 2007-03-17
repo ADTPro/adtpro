@@ -1,0 +1,92 @@
+ -----
+ ADTPro Serial Configuration
+ -----
+ David Schmidt (david__schmidt at users dot souceforge dot net)
+ -----
+
+Configuring ADTPro - Serial
+
+ The ADTPro client program comes in two flavors - serial and ethernet.  
+The serial version is named <<<ADTPRO>>> and the ethernet version is named
+<<<ADTPROETH>>>.  This page details the serial version.
+
+ Hitting the "G" key from <<<ADTPRO>>>'s main menu brings up the ADTPro configuration screen:
+
+[images/config.png]
+
+ You can scroll between the selections with the up and down arrow keys.  If your
+Apple doesn't have up and down arrow keys, the space bar will cycle between the
+selections.
+
+ You can rotate through the options of a particular selection with the right and
+left arrow keys.  Your Apple has right and left arrow keys; trust me.
+
+* Comms Device
+
+ Select the slot your communications card is in.
+
+[images/configSlot.png]
+
+ The most common slot is 2, but it 
+could be any slot from 1 to 7.  Pull off your Apple's lid to check if you need to.
+If you have an IIgs and you want to use a Super Serial card in it, ensure you select
+"Your Card" in the IIgs' control panel for the slot your SSC card is in,
+and select that same slot number here.
+
+ Super Serial cabling between the host and the Apple is discussed in the
+{{{bootstrap.html#Super Serial cabling specifics}Super Serial cabling specifics}}
+section of the bootstrap page.
+
+ If you want to use the IIgs' native serial modem port, rotate through the 
+<<<COMMS DEVICE>>> selections until "IIGS MODEM" shows up:
+
+[images/configIIgs.png]
+
+ The modem port (as opposed to the printer port) looks like this at the back
+of the IIgs:
+
+[images/iigsmodemport.jpg]
+
+ ADTPro on an IIgs will require a "null modem" cable or adapter when connecting 
+to the host computer.  See the 
+{{{bootstrap.html#IIgs modem port cabling specifics}IIgs modem port cabling specifics}}
+section of the bootstrap page for details.
+
+ Note that it's not particularly reliable to start up with GSOS and then use
+ADTPro.  It's best to start up under ProDOS - the distribution diskette is 
+well suited to this.
+If you normally start with GSOS, you can hit the '8' key as the computer is displaying
+the initial "Apple IIgs" screen and it'll start 8-bit ProDOS and drop you into the
+BASIC interpreter, just like the old days.
+
+* Baud Rate
+
+ Select the highest baud rate that still works reliably.
+
+[images/configBaud.png]
+
+ 115200 is the absolute maximum that ADTPro supports.  If you have a good
+serial cable, this speed will work reliably.
+9600 will work as long as the two computers are less than a mile apart from one another.
+If you can't get 9600 to work reliably, something else is wrong.
+
+* Enable Sound
+
+ The sound option is, of course, up to you.  
+
+[images/configSound.png]
+
+ ADTPro makes bleating sounds when
+things finish or abort.  I personally think computers should be seen and not
+heard, but not everyone feels that way.  Express your own personal feelings here.
+
+* Save Configuration
+
+ Hit the "Return" key to work with these parameters.  Once you get a 
+configuration that works for you, select "YES" for SAVE CONFIG and hit Return.
+
+[images/configSave.png]
+
+ This will save ADTPRO back out to the current slot/disk (volume).
+When you start ADTPRO again, it will start with the configuration parameters you 
+saved last.

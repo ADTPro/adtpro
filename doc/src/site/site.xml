@@ -20,18 +20,31 @@
 
     <menu name="Operation">
       <item name="Installation" href="install.html"/>
-      <item name="Bootstrapping" href="bootstrap.html"/>
+      <item name="Connections" href="connections.html" collapse="true">
+        <item name="Serial" href="connectionsserial.html" collapse="true"/>
+        <item name="Ethernet" href="connectionsethernet.html"/>
+        <item name="Audio" href="connectionsaudio.html" collapse="true"/>
+      </item>
+      <item name="Bootstrapping" href="bootstrapmain.html" collapse="true">
+        <item name="Serial" href="bootstrap.html" collapse="true"/>
+        <item name="Audio" href="bootstrapaudio.html" collapse="true"/>
+      </item>
       <item name="Starting" href="starting.html"/>
-      <item name="Config (Ethernet)" href="ethernet.html"/>
-      <item name="Config (Serial)" href="config.html"/>
-      <item name="Sending" href="sending.html"/>
-      <item name="Sending in Batch" href="batch.html"/>
+      <item name="Configuration" href="config.html" collapse="true">
+        <item name="Serial" href="configserial.html" collapse="true"/>
+        <item name="Ethernet" href="configethernet.html"/>
+        <item name="Audio" href="configaudio.html" collapse="true"/>
+      </item>
+      <item name="Sending" href="sending.html" collapse="true">
+        <item name="Sending in Batch" href="batch.html" collapse="true"/>
+      </item>
       <item name="Receiving" href="receiving.html"/>
       <item name="Misc. Functions" href="misc.html"/>
       <item name="French Language Resources" href="http://site.voila.fr/ressources-apple2/adtpro/adtpro.html" target="_new"/>
     </menu>
 
     <menu name="Minutiae">
+      <item name="Developing" href="developing.html"/>
       <item name="Protocol" href="protocol.html"/>
       <item name="Release History" href="history.html"/>
     </menu>

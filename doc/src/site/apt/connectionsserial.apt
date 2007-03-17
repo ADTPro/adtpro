@@ -1,0 +1,129 @@
+ -----
+ ADTPro Serial Cabling
+ -----
+ David Schmidt (david__schmidt at users dot souceforge dot net)
+ -----
+
+Connections - Serial
+
+ Connecting an Apple II and your host computer through serial ports 
+ can take several forms.  This section details:
+ 
+ * {{{connectionsserial.html#Super Serial cabling specifics}Super Serial card}}
+
+ * {{{connectionsserial.html#IIgs modem port cabling specifics}IIgs modem port}}
+
+ * {{{connectionsserial.html#USB cabling specifics}USB adapters}}
+
+ []
+
+* {Super Serial cabling specifics}
+
+  The serial cable can either be straight-through or of the
+null modem variety; there is a jumper block on the Super Serial card that will take
+care of signal switching for you if you have one or the other and need to switch.
+
+  If you have a stright-through cable, set the super serial card's block to point
+downwards toward the word "Terminal," as in this picture:
+
+[images/ss1.jpg]
+
+  If you have a null-modem cable, set the super serial card's block to point
+upwards toward the word "Modem," as in this picture:
+
+[images/ss2.jpg]
+
+ Once ADT and ADTPro are up and running, they set the card's configuration
+switches through software.  But to ensure trouble-free operation in the bootstrap
+step, you can set the swtiches like so:
+
++---
+SW1: 1001111  SW2: 1101110
++---
+
+  Where <<<0>>> means <<<off>>>, <<<down>>>, or <<<open>>>, and 
+<<<1>>> means <<<on>>>, <<<up>>>, or <<<closed>>>.
+Super Serial cards came with (at least) two different kinds of jumper blocks. 
+One had little rocker switches, and the other had little sliders.
+Here are two examples with switches in the correct position for 300 baud operation:
+
+[images/switch1.jpg]
+
+[images/switch2.jpg]
+
+  Strapped as a terminal (arrow on the jumper block pointing downwards
+on the SSC card), you can connect computers with a straight-through serial 
+cable like this:
+
+[images/superSerialCable.jpg]
+
+* {IIgs modem port cabling specifics}
+
+  You will need a serial cable setup
+that ultimately connects your IIgs' round, 8-pin mini-din modem connectcor to 
+the serial port of your host computer - and also performs a null-modem function 
+in between.
+
+  You will need to verify a couple of things in the IIgs control panel.  
+You bring up the IIgs control panel with the key sequence 
+<<<Control>>>-<<<OpenApple>>>-<<<Escape>>>.
+
+    [[1]] Use the IIgs control panel to set slot 2 to <<<Modem>>>, which is the
+      default.  Default values have a little checkmark beside them in the
+      control panel:
+
+[images/iigsControl1.png]
+
+    [[1]] Use the IIgs control panel to set the Modem Port to all defaults.  
+      Remember, default values will have a little checkmark beside them in the
+      control panel.  You can optionally set the baud rate to 300 to ensure 
+      trouble-free operation in the bootstrap step:
+
+[images/iigsControl2.png]
+
+  One possible setup that connects a male DB9 serial port to the IIgs' 8-pin
+mini-din connector with a null modem in between looks like this:
+
+[images/nullModem.jpg]
+
+  The cables are getting harder to find in stores, but eBay, swap meets, Jameco, etc.
+will have what you need.
+
+  There are two 8-pin mini-din connectors on the back of the IIgs.  One has the
+icon of a telephone, the other has an icon of a printer.  Be sure you are 
+plugging into the telephone (modem) one, on the left as you look at the back.
+It looks like this:
+
+[images/iigsmodemport.jpg]
+
+* {USB cabling specifics}
+
+  Several manufacturers make different types of USB to serial adapters.
+These types of devices will work fine with ADTPro.  You will need to
+connect everything up with the right combination of cables, of course.  Here is
+an example of a Keyspan USB-to-8-pin mini-DIN adapter connected to an IIgs:
+
+[images/keyspanConnection.jpg]
+
+  Each manufacturer will include a software driver that will provide the "glue"
+between the computer and the adapter.  For example, the Keyspan adapters come
+with a piece of software they call "Keyspan Serial Assistant:"
+
+[images/keyspan.png]
+
+  This software will tell you some details about the serial adapter, the name
+it chooses to call itself, and so on.  In our case, we can see that the adapter
+has chosen port names like "KeySerial1," "USA28X1813P1.1," and "USA28X1813P2.2".
+Since this adapter happens to have two ports on it, you see suffixes of ".1" and
+".2."  They will correspond to whichever port (on the adapter itself) you are
+plugging your serial cable into.
+
+  At the ADTPro server software end, should see those names repeated.
+In Keyspan's case, you will see a prefix of "tty" and "cu" added to each port name.
+ADTPro seems to be able to function normally using either flavor.
+
+[images/osxServerPort.png]
+
+  Once connected, ADTPro will be able to operate normally over the USB connection,
+including {{{bootstrap.html#Starting from bare metal}bare metal}} bootstrapping
+operations.

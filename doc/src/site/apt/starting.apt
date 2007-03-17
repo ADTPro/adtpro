@@ -4,7 +4,7 @@
  David Schmidt (david__schmidt at users dot souceforge dot net)
  -----
 
-Starting Server and Client
+Starting the Server
 
  Start the ADTPro server from your host computer's command line:
 
@@ -23,11 +23,50 @@ to a specific Java JRE, for example, you can modify the scripts.
 
 [images/serverInit.png]
 
- Boot your Apple ][ from the ADTPro disk, or <<<BRUN ADTPRO>>> or <<<BRUN ADTPROETH>>>
-from wherever you've copied the program.  
+ From here, you can select the communications device you want to use at 
+ the host end.  Note that the speed setting only applies if you are using
+ a serial port.  Be sure to click the "Connect" button to start the server
+ listening on the device specified.  Choose a maching client program at the
+ Apple II end as discussed below.
 
- <<IIgs Note:>> users starting from a hard drive or 
-CFFA card are advised to hit the '8' key while booting if they are running GSOS.
+Starting the Client
+
+ When you boot your Apple ][ from the ADTPro disk, it will start the serial
+version of ADTPro by default.  But all three versions are actually on your disk:
+
+  * <<<ADTPRO>>> - for serial cards or the IIgs modem port
+  
+  * <<<ADTPROETH>>> - for the Uthernet card
+  
+  * <<<ADTPROAUD>>> - for sound card/cassette port
+
+  []
+
+ You can choose which one will start by default by modifying the
+supplied <<<STARTUP>>> program on the disk.  The <<<STARTUP>>> program is simply this:
+
++-------------+
+10 PRINT "BRUN ADTPRO"
++-------------+
+
+ Just change <<<ADTPRO>>> specified in line 10 to the program of your choice.
+ Get to an Applesoft prompt (hit <<<Q>>> to exit ADTPro), type <<<LOAD STARTUP>>>,
+ type in the name of the version you want to run by default; for example, to always
+ run <<<ADTPROAUD>>>, the program should look like this:
+
++-------------+
+10 PRINT "BRUN ADTPROAUD"
++-------------+
+
+ When you have the line looking like you want it (remember Applesoft commands
+ <<<NEW>>> to start over, and <<<LIST>>> to see the program) save it back out
+ to the disk: <<<SAVE STARTUP>>>.  That program will be the one that starts
+ automatically after booting from then on.  If you make a mistake and the Apple
+ complains, <<<"PATH NOT FOUND">>> when you boot, check your <<<STARTUP>>>
+ program by <<<LIST>>>ing it and checking the disk's contents with the <<<CAT>>>
+ command.
+
+ <<IIgs Note:>> users running GSOS are advised to hit the '8' key while booting.
 That has the effect of starting the IIgs in 8-bit ProDOS (BASIC) mode.  
 The less contention for the serial hardware, the better.
 
@@ -40,4 +79,7 @@ ask for a directory listing at the host.  If the client "hangs" waiting for
 a response from the host, or if garbled data comes back, it will be necessary
 to check the physical connections, port names and speeds on both host and
 client ends.  The ethernet version of ADTPro (<<<ADTPROETH>>>) often needs 
-a couple of directory queries to find the server.
+a couple of directory queries to find the server.  If you're using the audio
+version of ADTPro (<<<ADTPROAUD>>>), ensure the volume setting for your sound
+card is set to at least halfway up the scale (i.e. much louder than you'd 
+generally listen to computer speakers).
