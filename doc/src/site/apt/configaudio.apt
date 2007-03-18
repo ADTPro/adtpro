@@ -4,11 +4,10 @@
  David Schmidt (david__schmidt at users dot souceforge dot net)
  -----
 
-Configuring ADTPro - Audio
+ADTPro Audio Configuration
 
- The ADTPro client program comes in three flavors - serial, ethernet, and audio.  
-The audio version is named <<<ADTPROAUD>>>.
-This page details the audio version.
+ The audio version of the ADTPro client program is named <<<ADTPROAUD>>> on the 
+ distribution diskette.
 
  Hitting the "G" key from <<<ADTPROAUD>>>'s main menu brings up the ADTPro
 configuration screen, which doesn't really have much to configure:

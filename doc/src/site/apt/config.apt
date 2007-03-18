@@ -4,37 +4,19 @@
  David Schmidt (david__schmidt at users dot souceforge dot net)
  -----
 
-Configuring ADTPro
+ADTPro Configuration
 
- The ADTPro client program comes in three flavors:
-{{{config.html#Serial}serial}},
-{{{config.html#Ethernet}ethernet}},
-and
-{{{config.html#Audio}audio}}.
+ The ADTPro client program comes in three flavors: serial, ethernet, and audio.
 Each has unique cabling and configuration details.  Note that both the server
 and client sides must match in the communications mechanism they use.
 
-* {{{configserial.html}Serial}}
-
-[images/ss1.jpg]
-
-[images/iigsmodemport.jpg]
-
- In the serial version, you set the slot your Super Serial card is in, or use the
-modem port of the IIgs.  Click {{{configserial.html#here}here}} for serial details.
-
-* {{{configethernet.html}Ethernet}}
- 
-[images/uthernet.jpg]
-
- In the ethernet version, you set the slot your {{{http://a2retrosystems.com/}Uthernet}}
- card is in and the IP address infomation.  Click {{{configethernet.html#here}here}}
- for ethernet details.
- 
-* {{{configaudio.html}Audio}}
-
-[images/audiocable.jpg]
-
- In the audio version, the host and Apple II talk to each other via the sound card
- (host) and cassette ports (Apple II).  There isn't much to configure, and it 
- beeps incessantly.  My advice to you: unplug your Apple's speaker.
+*----------+----------------------+---------------+
+| <<Serial>>  | <<Ethernet>> | <<Audio>> |
+*----------+----------------------+---------------+
+| {{{connectionsserial.html}Connections}} | {{{connectionsethernet.html}Connections}} | {{{connectionsaudio.html}Connections}} |
+*----------+----------------------+---------------+
+| {{{bootstrap.html}Bootstrapping}} | (Bootstrapping not supported) | {{{bootstrapaudio.html}Bootstrapping}} |
+*----------+----------------------+---------------+
+| {{{configserial.html}Client configuration}} | {{{configethernet.html}Client configuration}} | {{{configaudio.html}Client configuration}} |
+*----------+----------------------+---------------+
+<<Configuration Overview>>

@@ -6,14 +6,14 @@
 
 ADTPro Release History
 
-* 0.1.5 - (Unreleased)
+* 0.1.5 - March 18, 2007
 
  New functionality:
 
  * Added support for audio transfers and bootsrapping using a host
    sound card and the Apple cassette port.
 
- * Apple IIc support (hardware handshaking) is now selectable via a 
+ * Apple IIc support (disable hardware handshaking) is now selectable via a 
    checkbox in the File menu.
 
  * Added a logging/tracing capability to the File menu.  Enabling tracing
@@ -26,7 +26,9 @@ ADTPro Release History
 
  * Managing serial timeouts better fixes two problems:
    
-   * "Hang" when disconnecting on *nix boxes, especially after transfers
+   * "Hang" when disconnecting on *nix boxes, especially after transfers;
+     though sometimes it still seems to take a while (i.e. several seconds)
+     to fully disconnect after hitting the disconnect button
    
    * Dropped data on some Wintel chipsets due to rapid toggling of
      port timeout values

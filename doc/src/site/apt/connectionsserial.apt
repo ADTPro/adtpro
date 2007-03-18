@@ -4,20 +4,22 @@
  David Schmidt (david__schmidt at users dot souceforge dot net)
  -----
 
-Connections - Serial
+ADTPro Serial Connections
 
  Connecting an Apple II and your host computer through serial ports 
  can take several forms.  This section details:
  
- * {{{connectionsserial.html#Super Serial cabling specifics}Super Serial card}}
+ * {{{connectionsserial.html#Super Serial cabling}Super Serial card}}
 
- * {{{connectionsserial.html#IIgs modem port cabling specifics}IIgs modem port}}
+ * {{{connectionsserial.html#IIgs modem port cabling}IIgs modem port}}
 
- * {{{connectionsserial.html#USB cabling specifics}USB adapters}}
+ * {{{connectionsserial.html#IIc serial port cabling}IIc serial port}}
+
+ * {{{connectionsserial.html#USB cabling}USB adapters}}
 
  []
 
-* {Super Serial cabling specifics}
+* {Super Serial cabling}
 
   The serial cable can either be straight-through or of the
 null modem variety; there is a jumper block on the Super Serial card that will take
@@ -34,8 +36,8 @@ upwards toward the word "Modem," as in this picture:
 [images/ss2.jpg]
 
  Once ADT and ADTPro are up and running, they set the card's configuration
-switches through software.  But to ensure trouble-free operation in the bootstrap
-step, you can set the swtiches like so:
+switches through software.  But to ensure trouble-free operation in the
+initial bootstrap step, you can set the swtiches like so:
 
 +---
 SW1: 1001111  SW2: 1101110
@@ -57,7 +59,7 @@ cable like this:
 
 [images/superSerialCable.jpg]
 
-* {IIgs modem port cabling specifics}
+* {IIgs modem port cabling}
 
   You will need a serial cable setup
 that ultimately connects your IIgs' round, 8-pin mini-din modem connectcor to 
@@ -89,6 +91,11 @@ mini-din connector with a null modem in between looks like this:
   The cables are getting harder to find in stores, but eBay, swap meets, Jameco, etc.
 will have what you need.
 
+ A company in the USA is (as of Spring 2007) selling Apple serial cables and
+ adapters.  You might check
+ {{{http://www.connectworld.net/cgi-bin/iec/05MCAOSerial.html}there}}
+ for the one you need.  No endorsement of this company is expressed or implied.
+ 
   There are two 8-pin mini-din connectors on the back of the IIgs.  One has the
 icon of a telephone, the other has an icon of a printer.  Be sure you are 
 plugging into the telephone (modem) one, on the left as you look at the back.
@@ -96,7 +103,44 @@ It looks like this:
 
 [images/iigsmodemport.jpg]
 
-* {USB cabling specifics}
+* {IIc serial port cabling}
+
+  I don't have an IIc to test and take pictures of 
+  {{{mailto:fixme... david__schmidt at users dot sourceforge dot net}(donations, anyone?)}},
+  but users report success with standard serial port adapters.  
+  You will also need to tick the "Apple IIc Serial" checkbox in the server File menu:
+
+[images/tickiic.png]
+
+ Note that the original IIc motherboard is not able to operate the serial 
+ port at speeds higher than 300 baud, making serial transfers with that
+ version unsupported.  You can check the revision of your IIc by checking
+ memory location 64447:
+
+ * if <<<PRINT PEEK(64427)>>> returns 255, you have an original IIc (ROM revision '255').
+ 
+ * if <<<PRINT PEEK(64427)>>> returns 0, you have an IIc with UniDisk 3.5 inch drive support (ROM revision '0').
+ 
+ * if <<<PRINT PEEK(64427)>>> returns 3, you have an IIc with memory expansion support (ROM revision '3').
+ 
+ * if <<<PRINT PEEK(64427)>>> returns 4, you have an IIc with a modified/fixed version of memory expansion support (ROM revision '4').
+ 
+ * if <<<PRINT PEEK(64427)>>> returns 5, you have an Apple IIc Plus (ROM revision '5').
+
+ []
+
+ This {{{http://home.swbell.net/rubywand/Csa2T1TCOM.html#016}FAQ}} contains
+ details about constructing a proper null modem cable.  If you can find one, the 
+ standard "Apple IIc to ImageWriter I" cable has a DIN-5 plug on one end
+ and a standard Dsub-25 plug on the other with the correct line swapping
+ to be a null modem.
+
+ A company in the USA is (as of Spring 2007) selling Apple serial cables and
+ adapters.  You might check
+ {{{http://www.connectworld.net/cgi-bin/iec/05MCAOSerial.html}there}}
+ for the one you need.  No endorsement of this company is expressed or implied.
+ 
+* {USB cabling}
 
   Several manufacturers make different types of USB to serial adapters.
 These types of devices will work fine with ADTPro.  You will need to

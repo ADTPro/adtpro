@@ -15,11 +15,11 @@ and host operating systems.
 
  ADTPro transfers disks using any of these communications devices:
 
-    * Super Serial Card or IIgs modem port at 115,200 BPS 
+    * Super Serial Card, IIgs modem port or IIc serial port at 115,200 BPS 
 
     * {{{http://a2retrosystems.com/}Uthernet}} Ethernet card
 
-    * A standard sound card and the Apple's cassette ports
+    * The Apple's cassette ports
 
  ADTPro has these capabilities:
 
@@ -33,7 +33,7 @@ and host operating systems.
 
     * Server compatibility with Windows, Mac OSX, and Linux
 
-    * Ability to {{{bootstrap.html}bootstrap}} an Apple ][ from bare metal over serial or cassette ports
+    * Ability to {{{bootstrapmain.html}bootstrap}} an Apple ][ from bare metal over serial or cassette ports
 
     * Ability to send floppies in "{{{batch.html}batch}}" mode without having to name each one
 
@@ -62,7 +62,7 @@ client.  But if you have recently acquired
 an Apple and a disk drive, but you have no software for it - you're in a
 bit of a tricky situation if you want to move software from the Internet
 all the way to your shiny new Apple.  ADTPro's server can help get you
-get {{{bootstrap.html}bootstrapped}}.
+get {{{bootstrapmain.html}bootstrapped}}.
 
 [images/serverBoot.png]
 

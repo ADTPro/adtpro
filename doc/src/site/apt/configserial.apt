@@ -4,11 +4,10 @@
  David Schmidt (david__schmidt at users dot souceforge dot net)
  -----
 
-Configuring ADTPro - Serial
+ADTPro Serial Configuration
 
- The ADTPro client program comes in two flavors - serial and ethernet.  
-The serial version is named <<<ADTPRO>>> and the ethernet version is named
-<<<ADTPROETH>>>.  This page details the serial version.
+ The serial version of the ADTPro client program is named <<<ADTPRO>>> on the 
+ distribution diskette.
 
  Hitting the "G" key from <<<ADTPRO>>>'s main menu brings up the ADTPro configuration screen:
 
@@ -34,8 +33,10 @@ If you have an IIgs and you want to use a Super Serial card in it, ensure you se
 and select that same slot number here.
 
  Super Serial cabling between the host and the Apple is discussed in the
-{{{bootstrap.html#Super Serial cabling specifics}Super Serial cabling specifics}}
-section of the bootstrap page.
+{{{connectionsserial.html#Super Serial cabling}Super Serial cabling}}
+connections section.  IIc considerations are discussed 
+{{{connectionsserial.html#IIc serial port cabling}IIc serial port cabling}}
+connections section.
 
  If you want to use the IIgs' native serial modem port, rotate through the 
 <<<COMMS DEVICE>>> selections until "IIGS MODEM" shows up:
@@ -49,8 +50,8 @@ of the IIgs:
 
  ADTPro on an IIgs will require a "null modem" cable or adapter when connecting 
 to the host computer.  See the 
-{{{bootstrap.html#IIgs modem port cabling specifics}IIgs modem port cabling specifics}}
-section of the bootstrap page for details.
+{{{connectionsserial.html#IIgs modem port cabling}IIgs modem port}}
+connections section for details.
 
  Note that it's not particularly reliable to start up with GSOS and then use
 ADTPro.  It's best to start up under ProDOS - the distribution diskette is 

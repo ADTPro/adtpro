@@ -11,17 +11,27 @@ virtual floppy containing ADTPro that comes with this project
 (ADTPro-v.r.m.dsk) to your Apple.  Reboot the Apple with the ADTPro floppy, and
 you're ready to go.
 
-  If you don't use DOS ADT now, or don't have software for your Apple yet, 
+  If you don't use DOS ADT now, don't have software for your Apple yet, 
 or don't have a serial card, more bootstrapping scenarios and configurations 
 are detailed below.  Please note that you will need to use 
-{{{bootstrapserial.html}serial}} or
+{{{bootstrap.html}serial}} or
 {{{bootstrapaudio.html}audio}} communications 
-(not Ethernet) for this task.
+(not ethernet) for this task.  The audio procedure requires a little more 
+typing on your part, but is substantially faster than serial.
 
- * {{{bootstrap.html#If you already have ProDOS}If you already have ProDOS}}
+ * {{{bootstrap.html#If you already have ProDOS}[serial}}|{{{bootstrapaudio.html#If you already have ProDOS}audio]}} If you already have ProDOS
 
- * {{{bootstrap.html#If you already have DOS 3.3, but no ProDOS}If you already have DOS 3.3, but no ProDOS}}
+ * {{{bootstrap.html#If you already have DOS 3.3, but no ProDOS}[serial}}|{{{bootstrapaudio.html#If you already have DOS 3.3, but no ProDOS}audio]}} If you already have DOS 3.3, but no ProDOS
 
- * {{{bootstrap.html#Starting from bare metal}If you have no Apple software on disk at all... starting from bare metal}}
+ * {{{bootstrap.html#Starting from bare metal}[serial}}|{{{bootstrapaudio.html#Starting from bare metal}audio]}} If you have no Apple software on disk at all... starting from bare metal
+
+ []
+ 
+ If you still need to connect your host and Apple computers with physical cables,
+ refer back to the "Connections" section of this website:
+
+ * {{{connectionsserial.html}Serial cabling connections}}
+
+ * {{{connectionsaudio.html}Audio cabling connections}}
 
  []
