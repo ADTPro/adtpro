@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project name="ADTPro" default="all" basedir="..">
-	<property name="versionString" value="0.1.5" />
+	<property name="versionString" value="v.r.m" />
 	<property name="distName" value="ADTPro-${versionString}" />
 	<property name="volName" value="ADTPro.${versionString}" />
 	<property name="dosVersionString" value="131" />
@@ -62,7 +62,7 @@
 		Assemble and link the ADT source
 		-->
 		<exec dir="${projdir}/client/src/dos" executable="${assemblerPath}/cl65">
-			<arg line="-l -t none adt.s" />
+			<arg line="-l -t none adt.s -o ADT" />
 		</exec>
 		<!--
 		Assemble the IP65 stack source
@@ -74,9 +74,10 @@
 		<!--
 		Package the IP65 stack library
 		-->
-		<exec executable="${assemblerPath}/ar65" dir="${projdir}/client/src/ip65">
-			<arg line="a ip65.lib *.o" />
-		</exec>
+		<apply executable="${assemblerPath}/ar65" dir="${projdir}/client/src/ip65">
+			<arg line="a ip65.lib "/>
+			<fileset dir="${projdir}/client/src/ip65" includes="**/*.o"/>
+		</apply>
 		<!--
 		Link the bits
 		-->
