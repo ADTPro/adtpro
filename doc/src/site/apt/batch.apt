@@ -32,30 +32,30 @@ keys or the space bar to pick the volume to be sent to the host:
  The "Blocks" column is the count of ProDOS blocks present on the disk.  Each 
 block contains 512 bytes of data.  So, typical disk sizes are:
 
-*-------*-----*
+*-------:-----+
 | <<Blocks>> | <<Disk>> |
-*-------*-----*
+*-------:-----+
 |   127 | 64k RAM disk (128k Apples) |
-*-------*-----*
+*-------:-----+
 |   280 | 5-1/4" Floppy disk (140k) |
-*-------*-----*
+*-------:-----+
 |  1600 | 3-1/2" Floppy disk (800k) |
-*-------*-----*
+*-------:-----+
 | 65535 | 32MB Hard drive |
-*-------*-----*
+*-------:-----+
 
  Some messages may appear in the "Volume name" column to indicate various
 situations:
 
-*-------*-----*
+*-------:-----+
 | <<Message>> | <<Meaning>> |
-*-------*-----*
+*-------:-----+
 |  \<NO NAME\> | A DOS 3.3 disk is in the drive (which is ok) |
-*-------*-----*
+*-------:-----+
 |  \<I/O ERROR\> | Can't read the disk in the drive |
-*-------*-----*
+*-------:-----+
 |  \<NO DISK\> | No disk is found in the drive |
-*-------*-----*
+*-------:-----+
 
  Once you pick the volume to repeatdly send, you are prompted to insert
 the next disk to send and hit a key.  Once contact is made with the host, 
