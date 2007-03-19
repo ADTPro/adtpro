@@ -34,7 +34,7 @@ Starting the Client
  When you boot your Apple ][ from the ADTPro disk, it will start the serial
 version of ADTPro by default.  But all three versions are actually on your disk:
 
-  * <<<ADTPRO>>> - for serial cards or the IIgs modem port
+  * <<<ADTPRO>>> - for serial cards, the IIgs modem port, or the IIc serial port
   
   * <<<ADTPROETH>>> - for the Uthernet card
   
@@ -46,7 +46,7 @@ version of ADTPro by default.  But all three versions are actually on your disk:
 supplied <<<STARTUP>>> program on the disk.  The <<<STARTUP>>> program is simply this:
 
 +-------------+
-10 PRINT "BRUN ADTPRO"
+10 PRINT CHR$(4)"BRUN ADTPRO"
 +-------------+
 
  Just change <<<ADTPRO>>> specified in line 10 to the program of your choice.
@@ -55,7 +55,7 @@ supplied <<<STARTUP>>> program on the disk.  The <<<STARTUP>>> program is simply
  run <<<ADTPROAUD>>>, the program should look like this:
 
 +-------------+
-10 PRINT "BRUN ADTPROAUD"
+10 PRINT CHR$(4)"BRUN ADTPROAUD"
 +-------------+
 
  When you have the line looking like you want it (remember Applesoft commands
