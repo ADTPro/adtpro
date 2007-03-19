@@ -1,0 +1,17 @@
+ -----
+ ADTPro Configuration Overview
+ -----
+ David Schmidt (david__schmidt at users dot souceforge dot net)
+ -----
+
+ADTPro Audio Configuration Overview
+
+*---------------:--------------+
+| <<Click:>> | <<To Learn:>>
+*---------------:--------------+
+| {{{connectionsaudio.html}Connections}} | How to connect cables between your host and your Apple II |
+*---------------:--------------+
+| {{{bootstrapaudio.html}Bootstrapping}} | How to get your Apple II started if you have little or no software yet |
+*---------------:--------------+
+| {{{configaudio.html}Client}} | How to set up the ADTPro client once it's been transferred to your Apple II |
+*---------------:--------------+

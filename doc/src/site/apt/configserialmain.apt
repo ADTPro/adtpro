@@ -1,0 +1,17 @@
+ -----
+ ADTPro Serial Configuration Overview
+ -----
+ David Schmidt (david__schmidt at users dot souceforge dot net)
+ -----
+
+ADTPro Serial Configuration Overview
+
+*---------------:--------------+
+| <<Click:>> | <<To Learn:>>
+*---------------:--------------+
+| {{{connectionsserial.html}Connections}} | How to connect cables between your host and your Apple II |
+*---------------:--------------+
+| {{{bootstrap.html}Bootstrapping}} | How to get your Apple II started if you have little or no software yet |
+*---------------:--------------+
+| {{{configserial.html}Client}} | How to set up the ADTPro client once it's been transferred to your Apple II |
+*---------------:--------------+

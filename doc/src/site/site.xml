@@ -18,23 +18,24 @@
       <item name="Download" href="https://sourceforge.net/project/showfiles.php?group_id=170262"/>
     </menu>
 
+    <menu name="Configuration">
+      <item name="Serial" href="configserialmain.html" collapse="true">
+        <item name="Connections" href="connectionsserial.html" collapse="true"/>
+        <item name="Bootstrapping" href="bootstrap.html" collapse="true"/>
+        <item name="Client" href="configserial.html" collapse="true"/>
+      </item>
+      <item name="Ethernet" href="configethernet.html"/>
+      <item name="Audio" href="configaudiomain.html" collapse="true">
+        <item name="Connections" href="connectionsaudio.html" collapse="true"/>
+        <item name="Bootstrapping" href="bootstrapaudio.html" collapse="true"/>
+        <item name="Client" href="configaudio.html" collapse="true"/>
+      </item>
+    </menu>
+
     <menu name="Operation">
       <item name="Installation" href="install.html"/>
       <item name="Bootstrapping" href="bootstrapmain.html"/>
       <item name="Starting" href="starting.html"/>
-      <item name="Configuration" href="config.html" collapse="true">
-        <item name="Serial" href="configserial.html" collapse="true">
-          <item name="Connections" href="connectionsserial.html" collapse="true"/>
-          <item name="Bootstrapping" href="bootstrap.html" collapse="true"/>
-        </item>
-        <item name="Ethernet" href="configethernet.html">
-          <item name="Connections" href="connectionsethernet.html" collapse="true"/>
-        </item>
-        <item name="Audio" href="configaudio.html" collapse="true">
-          <item name="Connections" href="connectionsaudio.html" collapse="true"/>
-          <item name="Bootstrapping" href="bootstrapaudio.html" collapse="true"/>
-        </item>
-      </item>
       <item name="Sending" href="sending.html" collapse="true">
         <item name="Sending in Batch" href="batch.html" collapse="true"/>
       </item>

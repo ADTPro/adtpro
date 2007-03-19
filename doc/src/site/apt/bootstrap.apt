@@ -25,7 +25,7 @@ a little more typing on your part, but is substantially faster than serial.
  []
 
  If you still need to connect your host and Apple II computers through their 
- serial ports, refer back to the "Configuration - Serial - Connections" section:
+ serial ports, refer back to the "Connections" section:
 
  * {{{connectionsserial.html#Super Serial cabling}Super Serial card}}
 
