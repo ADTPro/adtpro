@@ -27,10 +27,11 @@ A2L	= $3e
 A2H	= $3f
 TIMEY	= $8a
 DONE	= $1a
+NXTA1	= $FCBA
 HEADR	= $FCC9
-WRBIT	= $FCD6
 LASTIN	= $2f
 TAPEIN	= $C060
+TAPEOUT	= $C020
 
 ;---------------------------------------------------------
 ; DIRREQUEST - Request current directory contents
@@ -480,8 +481,53 @@ GETC:
 ;---------------------------------------------------------
 aud_send:
 	lda #$02	; Only train for a little while - not 10 seconds!
-	jsr $FECF	; Write bytes from (A1L) to (A2L)
+	JSR HEADR	;WRITE 10-SEC HEADER
+; Write loop.  Continue until A1 reaches A2.
+	LDY #$27
+WR1:	LDX #$00
+	EOR (A1L,X)
+	PHA
+	LDA (A1L,X)
+	JSR WRBYTE
+	JSR NXTA1
+	LDY #$1D
+	PLA
+	BCC WR1
+; Write checksum byte, then beep the speaker.
+	LDY   #$22
+	JSR   WRBYTE
 	rts
+
+; Write one byte (8 bits, or 16 half-cycles).
+; On exit, Z-flag is set.
+WRBYTE:	LDX   #$10
+WRBYT2:	ASL
+	JSR   WRBIT
+	BNE   WRBYT2
+	RTS
+; Write one bit.  Called from WRITE with Y=$27.
+WRBIT:	JSR   ZERDLY     ;WRITE TWO HALF CYCLES
+	INY              ;  OF 250 USEC ('0')
+	INY              ;  OR 500 USEC ('0')
+; Delay for '0'.  X typically holds a bit count or half-cycle count.
+; Y holds delay period in 5-usec increments:
+;   (carry clear) $21=165us  $27=195us  $2C=220 $4B=375us
+;   (carry set) $21=165+250=415us  $27=195+250=445us  $4B=375+250=625us
+;   Remember that TOTAL delay, with all other instructions, must equal target
+; On exit, Y=$2C, Z-flag is set if X decremented to zero.  The 2C in Y
+;  is for WRBYTE, which is in a tight loop and doesn't need much padding.
+ZERDLY:	DEY
+	BNE   ZERDLY
+	BCC   WRTAPE     ;Y IS COUNT FOR
+; Additional delay for '1' (always 250us).
+	LDY   #$32       ;  TIMING LOOP
+ONEDLY:	DEY
+	BNE   ONEDLY
+; Write a transition to the tape.
+WRTAPE:	LDY   TAPEOUT
+	LDY   #$2C
+	DEX
+	RTS
 
 ;---------------------------------------------------------
 ; aud_receive - Receive a packet from the cassette port
