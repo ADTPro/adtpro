@@ -23,16 +23,8 @@ left arrow keys.  Your Apple has right and left arrow keys; trust me.
 
 * Enable Sound
 
- <<Note:>> the audio version of ADTPro uses the standard Apple II cassette 
- routines from ROM, in part.  The cassette routines have an undesirable side-effect:
- they make the speaker beep when they start and end every handshake and data
- transfer.  This can't be turned off in software.  I've resorted to unplugging
- my speaker wire when I do audio transfers.
- 
- The sound option here only refers to extra sounds that ADTPro would emit, which
- pale in comparison to the incessant beeping you'll hear from the ROM cassette
- routines.
- 
+ The sound option is, of course, up to you.  
+
 [images/configaudio1.png]
 
  ADTPro makes bleating sounds when

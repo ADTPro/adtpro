@@ -25,7 +25,7 @@ that are not readily visible.  The full list looks like this:
 tools to go from source files to distributable packages.  Well, with the exception
 of the Maven website stuff - that's not part of the main build script, mostly
 because that's a step most people wouldn't ever want to do, and if it were there -
-they'd have to have Maven installed.  
+they'd need to have Maven installed.  
 
  Everyone has their favorite integrated development environment (IDE).  I happen
 to use {{{http://www.eclipse.org/}Eclipse}}, so I'll provide setup information
@@ -134,7 +134,8 @@ have yellow warnings (depending on how tidy the repository happens to be right t
  In the Package Explorer, expand the <<<build>>> section and double-click on
 <<<build.xml>>>.  You will need to point the <<<assemblerPath>>> variable at 
 the top of the script to 
-where you have the cc65 toolchain installed.  The full line should look like this,
+where you have the cc65 toolchain installed.  The full line should look 
+something like this,
 assuming you unzipped cc65 into a directory named <<<cc65>>>:
 
  <<<\<property name="assemblerPath" value="e:/cc65/bin" /> >>>
