@@ -36,7 +36,6 @@ public class ADTPro
     Log.print(true,Messages.getString("Gui.Title")); //$NON-NLS-1$
     Log.println(true," " + Messages.getString("Version.Number")); //$NON-NLS-1$
     Log.println(true,""); //$NON-NLS-1$
-    Log.print(true,Messages.getString("Gui.RXTX")); //$NON-NLS-1$
     new Gui(args);
   }
 }

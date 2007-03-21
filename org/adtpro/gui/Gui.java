@@ -52,8 +52,6 @@ public final class Gui extends JFrame implements ActionListener
 
   Gui _parent;
 
-  String[] portNames = SerialTransport.getPortNames();
-
   private JLabel labelComPort;
 
   private JComboBox comboComPort;
@@ -137,6 +135,7 @@ public final class Gui extends JFrame implements ActionListener
     comboComPort = new JComboBox();
     try
     {
+      Log.print(true, Messages.getString("Gui.RXTX")); //$NON-NLS-1$
       String[] portNames = SerialTransport.getPortNames();
       for (int i = 0; i < portNames.length; i++)
       {
@@ -146,7 +145,9 @@ public final class Gui extends JFrame implements ActionListener
       }
     }
     catch (Throwable t)
-    {}
+    {
+      Log.println(true, Messages.getString("Gui.NoRXTX")); //$NON-NLS-1$
+    }
     comboComPort.addItem(Messages.getString("Gui.Ethernet"));
     comboComPort.addItem(Messages.getString("Gui.Audio"));
     comboComPort.setSelectedItem(_properties.getProperty("CommPort", "COM1")); //$NON-NLS-1$ //$NON-NLS-2$
