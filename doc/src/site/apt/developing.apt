@@ -31,8 +31,9 @@ they'd need to have Maven installed.
 to use {{{http://www.eclipse.org/}Eclipse}}, so I'll provide setup information
 for that.  Other IDEs are similar, and surely address your own pet peeves.
 This page happens to show screenshots of a Windows setup, but there's nothing
-inherently Windows-ey about the build process.  It should run on any platform
-that can support all of the build tools.
+particularly Windows-ey about the build process.  It should run on any platform
+that can support all of the build tools.  I have tested it myself on Windows
+and SuSE Linux.
 
  Table of Contents:
 
@@ -42,7 +43,7 @@ that can support all of the build tools.
  
  * {{{developing.html#Configuring the Project Properties}Configuring the Project Properties}}
  
- * {{{developing.html#Configuring the Build Script: build.xml}Configuring the Build Script: build.xml}}
+ * {{{developing.html#Configuring the Build Script}Configuring the Build Script}}
  
  * {{{developing.html#Starting a Build}Starting a Build}}
 
@@ -129,16 +130,30 @@ look something like this:
  The main Eclipse window should no longer show any red errors, though it may still
 have yellow warnings (depending on how tidy the repository happens to be right then).
 
-* {Configuring the Build Script: <<<build.xml>>>}
+* {Configuring the Build Script}
 
- In the Package Explorer, expand the <<<build>>> section and double-click on
-<<<build.xml>>>.  You will need to point the <<<assemblerPath>>> variable at 
-the top of the script to 
-where you have the cc65 toolchain installed.  The full line should look 
-something like this,
-assuming you unzipped cc65 into a directory named <<<cc65>>>:
+ In the Package Explorer, expand the <<<build>>> section.  Look for the file named
+ <<<ADTProBuild-default.properties>>>.  You want to make a copy of that and rename it
+ <<<ADTProBuild.properties>>> and customize it for your location.
+ The easiest way to do that is to click on <<<ADTProBuild-default.properties>>>,
+ then hit Ctrl-C, then Ctrl-V.  That will copy and paste the file into the build
+ directory, and demand you rename it all at the same time:
+ 
+[images/renameBuild.png]
 
- <<<\<property name="assemblerPath" value="e:/cc65/bin" /> >>>
+ Double-click on your new  <<<ADTProBuild.properties>>> file.
+ You will need to point the <<<assemblerPath>>> variable to
+ where you have the cc65 toolchain <<<bin>>> directory installed.
+ The full line should look something like this,
+ assuming you unzipped cc65 into a directory named <<<cc65>>>:
+
+ <<<\<property name="assemblerPath" value="/usr/local/cc65/bin" /> >>>
+
+ The value you specify in <<<ADTProBuild.properties>>> will override all
+ others, so you can keep this local file to tailor your local build
+ and not affect other developers.
+ 
+[images/buildPropertiesRename.png]
 
 * {Starting a Build}
 
