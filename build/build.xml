@@ -111,9 +111,10 @@
 	</target>
 
 	<target name="scripts">
-		<echo message="@start /min java -jar ${distName}.jar" file="${builddir}/adtpro.bat"/>
-		<echo file="${builddir}/adtpro.sh">#\!/bin/sh
-java -jar ${distName}.jar</echo>
+		<copy file="${builddir}/adtprobase.bat" tofile="${builddir}/adtpro.bat" />
+		<replace file="${builddir}/adtpro.bat" token="%ADTPRO_VERSION%" value="${distName}.jar"/>
+		<copy file="${builddir}/adtprobase.sh" tofile="${builddir}/adtpro.sh" />
+		<replace file="${builddir}/adtpro.sh" token="%ADTPRO_VERSION%" value="${distName}.jar"/>
 	</target>
 
 	<target name="builddsk">
