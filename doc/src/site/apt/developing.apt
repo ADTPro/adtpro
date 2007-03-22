@@ -110,22 +110,51 @@ and tell it where to find both of those things.
  Resolving the external jar dependencies is easiest to do by
 right-clicking on the top-level <<<adtpro [adtpro.cvs.sourceforge.net]>>>
 object in the package explorer, then picking <<<Build Path->Configure Build Path...>>>
-from the context menu.  The Java Build Path dialog box will come up:
+from the context menu.  The Java Build Path dialog box will come up; 
+then click on the Libraries tab:
 
 [images/eclipse6.jpg]
 
- Ignore the fact that there's an ANT_JAR in there already - that's my fault.
-Next step: click on the "Add External JARs..." button and tell it where to 
-find the RXTXcomm.jar - which is where you installed the rxtx distribution.
-Hit the button again and tell it where to find ant.jar, which you will find
-buried deep within your Eclipse installation.
-The path is probably something like this:
-<<</eclipse/plugins/org.apache.ant_v.r.m/lib/ant.jar>>>
-
- When you've got your external jars connected, the Java Build Path dialog will
-look something like this:
+ Now, we need to build "User Libraries" to match <<<ANT_JAR>>> and <<<RXTX_JAR>>>.
+Click on the "Add Libarary..." button, and select the "User Library" item
+when the "Add Library" dialog box comes up:
 
 [images/eclipse7.jpg]
+
+ Click on the "Next" button, and the Add Libarary/User Library dialog box comes up:
+
+[images/eclipse8.jpg]
+
+ Click on the "User Libraries..." button, and the Preferences/User Libraries dialog box comes up:
+ 
+[images/eclipse10.jpg]
+
+ Click on the "New..." button, and the "New User Library" dialog box comes up:
+
+[images/eclipse11.jpg]
+
+ We'll fill in <<<ANT_JAR>>> first.  Type <<<ANT_JAR>>> in as the name, and
+ hit the "OK" button.  The Preferences/User Libraries dialog box will come back
+ up, and will now have the <<<ANT_JAR>>> user library name in it:
+
+[images/eclipse12.jpg]
+
+ Click on the "Add JARs..." button, and the "JAR Selection" dialog box will
+ come up.
+ Navigate to where you have an <<<ant.jar>>>
+ file.  Eclipse has one in the <<<eclipse/plugins/org.apache.ant_1.6.5>>>
+ directory by default:
+ 
+[images/eclipse13.jpg]
+
+ Click the "Open" button.  That will associate your <<<ant.jar>>> with the 
+ <<<ANT_JAR>>> user library:
+
+[images/eclipse14.jpg]
+
+ Now, go through the same set of steps to add an RXTX_JAR user library.
+ You will find the <<<RXTXcomm.jar>>> in the <<<rxtx-2.1-7-bins-r2.zip>>>
+ package that comes with ADTPro.
 
  The main Eclipse window should no longer show any red errors, though it may still
 have yellow warnings (depending on how tidy the repository happens to be right then).
@@ -161,13 +190,13 @@ have yellow warnings (depending on how tidy the repository happens to be right t
 <<<build.xml>>> file in the Package Explorer, pick <<<Run As...->Ant Build>>>, and
 all the magic should happen:
 
-[images/eclipse8.jpg]
+[images/eclipseBuild.jpg]
 
  The "BUILD SUCCESSFUL" message is the indication of success, obviously enough.
 You can start subsequent builds now that the first one happened by just clicking
 on the little suitcase button:
  
-[images/eclipse9.jpg]
+[images/eclipseBuildButton.jpg]
 
  The build output goes to the place where your Eclipse workspace directory is.
 The exact location will appear in the console output.  In the Eclipse
