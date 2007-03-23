@@ -482,12 +482,12 @@ SAVSIZE:
 ;
 ;---------------------------------------------------------
 HOWBIG2:
+	and #$0f	; Lop off the high nybble
 	clc
 	adc #$01	; Add one for the leading "/"
-	and #$0f
 	sta VOLNAME	; Store total name length
-	txa		; Preserve X
-	pha		; by pushing it onto the stack
+	txa			; Preserve X
+	pha			; by pushing it onto the stack
 	lda #'/'
 	sta VOLNAME+1
 	ldy #$01

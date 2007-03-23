@@ -6,6 +6,20 @@
 
 ADTPro Release History
 
+* 0.1.6 - (Unreleased)
+
+ Bug fixes:
+
+ * ProDOS volumes with full names (15 characters) would walk all over memory,
+   causing a crash when initiating a send
+
+ * Made RXTX library optional
+
+ * Made build slightly friendlier for new developers
+ []
+
+ADTPro Release History
+
 * 0.1.5 - March 18, 2007
 
  New functionality:

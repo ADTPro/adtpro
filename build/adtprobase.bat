@@ -10,4 +10,4 @@
 @REM SET MY_JAVA_HOME=C:\Progra~1\IBM\Java142\bin\ (need final backslash)
 @REM SET ADTPRO_HOME=C:\src\workspace\311\adtpro\build\  (need final backslash)
 @REM
-@start /min "%JAVA_HOME%"java -jar "%ADTPRO_HOME%"%ADTPRO_VERSION%
+@start /min %MY_JAVA_HOME%java -jar %ADTPRO_HOME%%ADTPRO_VERSION%

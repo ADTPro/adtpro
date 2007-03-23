@@ -194,6 +194,7 @@ public class CommsThread extends Thread
   public void sendDirectory()
   {
     int i, j, line;
+    Log.println(false, "CommsThread.sendDirectory() Seeking directory of: "+_parent.getWorkingDirectory());
     try
     {
       _transport.writeBytes("DIRECTORY OF "); //$NON-NLS-1$
@@ -273,14 +274,16 @@ public class CommsThread extends Thread
       Disk disk = null;
       try
       {
+        Log.println(false, "CommsThread.queryFileSize() seeking file " + _parent.getWorkingDirectory() + File.separator + requestedFileName);
         disk = new Disk(_parent.getWorkingDirectory() + File.separator + requestedFileName);
-        Log.println(false, "CommsThread.queryFileSize() found file " + _parent.getWorkingDirectory() + File.separator
-            + requestedFileName);
+        Log.println(false, "CommsThread.queryFileSize() seeking file " + _parent.getWorkingDirectory() + File.separator + requestedFileName);
       }
       catch (IOException e)
       {
         try
         {
+          Log.println(false, "CommsThread.queryFileSize() failed to find that file.");
+          Log.println(false, "CommsThread.queryFileSize() seeking file " + requestedFileName); //$NON-NLS-1$
           disk = new Disk(requestedFileName);
           Log.println(false, "CommsThread.queryFileSize() found file " + requestedFileName); //$NON-NLS-1$
         }
@@ -505,6 +508,7 @@ public class CommsThread extends Thread
   /* Main send routine - Host -> Apple (Host sends) */
   {
     Log.println(false, "CommsThread.sendDisk() entry.");
+    Log.println(false, "Current working directory: "+_parent.getWorkingDirectory());
     byte[] buffer = new byte[Disk.BLOCK_SIZE];
     int halfBlock, blocksDone = 0;
     byte ack, report;
@@ -520,12 +524,14 @@ public class CommsThread extends Thread
       Disk disk = null;
       try
       {
+        Log.println(false, "CommsThread.sendDisk() looking for file: "+_parent.getWorkingDirectory() + File.separator + name);
         disk = new Disk(_parent.getWorkingDirectory() + File.separator + name);
       }
       catch (IOException io)
       {
         try
         {
+          Log.println(false, "CommsThread.sendDisk() Failed to find that file.  Now looking for: "+name);
           disk = new Disk(name);
         }
         catch (IOException io2)
