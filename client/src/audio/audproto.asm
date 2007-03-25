@@ -363,15 +363,31 @@ RECVMORE:
 	lda #$00	; Clear out the new half-block
 	tay
 CLRLOOP:
+	clc
 	sta (BLKPTR),Y
 	iny
 	bne CLRLOOP
+
+	ldax #AUD_BUFFER
+	stax UTILPTR
+	stax A1L
+
 	lda ACK_CHAR
-	jsr PUTC	; Send ack/nak
+	jsr BUFBYTE	; Send ack/nak
+
+	lda BLKLO
+	jsr BUFBYTE	; Send the block number (LSB)
+	lda BLKHI
+	jsr BUFBYTE	; Send the block number (MSB)
+	lda <ZP
+	jsr BUFBYTE	; Send the half-block number
+
+	ldax UTILPTR
+	stax A2L
+	jsr aud_send	; Send our ack package
 
 	jsr RECVHBLK
-
-RECVBLK2:
+	bcs RECVERR
 	jsr UNDIFF
 	lda <CRC
 	cmp PCCRC
@@ -380,7 +396,6 @@ RECVBLK2:
 	cmp PCCRC+1
 	bne RECVERR
 
-RECBRANCH:
 	lda #CHR_ACK
 	sta ACK_CHAR
 	inc <BLKPTR+1	; Get next 256 bytes
@@ -398,17 +413,39 @@ ACK_CHAR: .byte CHR_ACK
 
 ;---------------------------------------------------------
 ; RECVHBLK - Receive half a block with RLE
-;
+; Carry set on error
 ; CRC is computed and stored
 ;---------------------------------------------------------
+HBLKERR:
+	sec
+	rts
+
 RECVHBLK:
 	ldax #AUD_BUFFER
 	stax UTILPTR	; Connect UTILPTR to audio buffer
 	stax A1L
 	lda #$00
-	sta RLEPREV	; Start output at beginning of BLKPTR buffer
-	sta UDPI	; Start input at beginning of UTILPTR buffer
+	sta RLEPREV	; Used as Y-index to BLKPTR buffer (output)
+	sta UDPI	; Used as Y-index to UTILPTR buffer (input)
 	jsr aud_receive
+
+	ldy #$00
+	lda (UTILPTR),Y	; Get block number (lsb)
+	sec
+	sbc BLKLO
+	bne HBLKERR
+	iny
+	lda (UTILPTR),Y	; Get block number (msb)
+	sec
+	sbc BLKHI
+	bne HBLKERR
+	iny
+	lda (UTILPTR),Y	; Get half-block
+	sec
+	sbc ZP
+	bne HBLKERR
+	iny
+	sty UDPI
 RC1:
 	ldy UDPI
 	lda (UTILPTR),Y	; Get next byte out of audio buffer
@@ -451,6 +488,7 @@ RCVEND:
 	inc UTILPTR+1	; Point at next 256 bytes
 :	lda (UTILPTR),Y	; Get next byte out of audio buffer
 	sta PCCRC+1
+	clc
 	rts
 
 ;---------------------------------------------------------
@@ -651,3 +689,73 @@ ABORTMSG:
 	.byte $00
 ACKMSG:
 	.byte CHR_ACK
+
+;PRINTBLOCK:		; Handy debug routine to print the block number & ack/nak status
+;	lda CH
+;	sta CH_SAV
+;	lda CV
+;	sta CV_SAV
+;
+;	ldy #$00
+;:
+;	lda $0480,y	; Scroll messages
+;	sta $0400,y
+;	lda $0500,y
+;	sta $0480,y
+;	lda $0580,y
+;	sta $0500,y
+;	lda $0600,y
+;	sta $0580,y
+;	lda $0680,y
+;	sta $0600,y
+;	lda $0700,y
+;	sta $0680,y
+;	lda $0780,y
+;	sta $0700,y
+;	iny
+;	cpy #$28
+;	bne :-
+;
+;	lda #$00
+;	sta CH
+;	lda #$07
+;	jsr TABV
+;
+;	jsr CLREOL
+;	ldy #$00
+;DEBUG_MSG_1_PRINT:
+;	lda DEBUG_MSG_1,Y	; Print our message header
+;	beq DEBUG_MSG_DONE
+;	jsr COUT1
+;	iny
+;	jmp DEBUG_MSG_1_PRINT
+;DEBUG_MSG_DONE:
+;
+;	lda NUMBLKS+1	; Print block number in hex
+;	jsr $FDDA		; PRBYTE
+;	lda NUMBLKS
+;	jsr PRBYTE
+;	lda #CHR_SP
+;	jsr COUT1
+;	
+;	lda BLKPTR+1	; Print MSB of block pointer in hex
+;	jsr PRBYTE
+;	lda #CHR_SP
+;	jsr COUT1
+;	lda ZP
+;	jsr PRBYTE
+;	lda #CHR_SP
+;	jsr COUT1
+;	lda ACK_CHAR
+;	jsr COUT1
+;
+;	lda CH_SAV
+;	sta CH
+;	lda CV_SAV
+;	sta CV
+;	jsr TABV
+;	rts
+;
+;CH_SAV:	.byte $00
+;CV_SAV:	.byte $00
+;DEBUG_MSG_1: ascz "BLKPTR: "

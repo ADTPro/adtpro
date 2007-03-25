@@ -1,6 +1,6 @@
 ;
 ; ADTPro - Apple Disk Transfer ProDOS
-; Copyright (C) 2006 by David Schmidt
+; Copyright (C) 2006, 2007 by David Schmidt
 ; david__schmidt at users.sourceforge.net
 ;
 ; This program is free software; you can redistribute it and/or modify it 
@@ -249,14 +249,27 @@ PUTREQUEST:
 PUTINITIALACK:
 	lda ACKMSG
 	jsr PUTC
+	lda #$00
+	
 	rts
 
 ;---------------------------------------------------------
 ; PUTFINALACK -
 ;---------------------------------------------------------
 PUTFINALACK:
+	ldy #$00	; Start at first byte
+        sty udp_send_len
+        sty udp_send_len+1
+	ldax #udp_outp + udp_data
+	stax UTILPTR
 	lda ECOUNT
-	jsr PUTC
+	jsr BUFBYTE	; Send the number of errors
+	lda #$00
+	jsr BUFBYTE	; Send the block number (LSB)
+	jsr BUFBYTE	; Send the block number (MSB)
+	lda #$00
+	jsr BUFBYTE	; Send the half-block number
+	jsr udp_send_nocopy
 	rts
 
 ;---------------------------------------------------------
@@ -286,22 +299,21 @@ GETREQUEST:
 ; GETFINALACK -
 ;---------------------------------------------------------
 GETFINALACK:
-	lda #<BIGBUF	; Connect the block pointer to the
-	sta BLKPTR	; beginning of the Big Buffer(TM)
-	lda #>BIGBUF
-	sta BLKPTR+1
-	ldy #$00
+	ldy #$00	; Start at first byte
+        sty udp_send_len
+        sty udp_send_len+1
+	ldax #udp_outp + udp_data
+	stax UTILPTR
 	lda #CHR_ACK	; Send last ACK
-	sta (BLKPTR),Y
-	iny
-	lda ECOUNT	; Errors during send?
-	sta (BLKPTR),Y
-	iny
-	tya
-	ldx #$00
-	stax udp_send_len
-	ldax #BIGBUF
-	jsr udp_send
+	jsr BUFBYTE
+	lda ECOUNT	; Send the number of errors
+	jsr BUFBYTE
+	lda #$00
+	jsr BUFBYTE	; Send the block number (LSB)
+	jsr BUFBYTE	; Send the block number (MSB)
+	lda #$00
+	jsr BUFBYTE	; Send the half-block number
+	jsr udp_send_nocopy
 	rts
 
 ;---------------------------------------------------------
@@ -488,17 +500,32 @@ RECVMORE:
 	lda #$00	; Clear out the new half-block
 	tay
 CLRLOOP:
+	clc
 	sta (BLKPTR),Y
 	iny
 	bne CLRLOOP
+        sty udp_send_len
+        sty udp_send_len+1
+	ldax #udp_outp + udp_data
+	stax UTILPTR	; Set up UTILPTR to be our BUFBYTE area
 	lda ACK_CHAR
-	jsr PUTC	; Send ack/nak
+	jsr BUFBYTE	; Send ack/nak
+	lda BLKLO
+	jsr BUFBYTE	; Send the block number (LSB)
+	lda BLKHI
+	jsr BUFBYTE	; Send the block number (MSB)
+	lda <ZP
+	jsr BUFBYTE	; Send the half-block number
+
+	jsr udp_send_nocopy	; Send our ack package
 
 	lda #STATE_RECVHBLK	; Set up callback to RECVHBLK
 	sta state
 	jsr RECEIVE_LOOP
 
 RECVBLK2:
+	lda <CRCY
+	bne RECVERR
 	jsr UNDIFF
 	lda <CRC
 	cmp PCCRC
@@ -528,12 +555,39 @@ ACK_CHAR: .byte CHR_ACK
 ;
 ; CRC is computed and stored
 ;---------------------------------------------------------
+HBLKERR:
+	lda #$01
+	sta <CRCY
+	rts
+
 RECVHBLK:
 	ldax #udp_inp + udp_data + 1
 	stax UTILPTR	; Connect UTILPTR to UDP packet buffer
 	lda #$00
-	sta RLEPREV	; Start output at beginning of BLKPTR buffer
-	sta UDPI	; Start input at beginning of UTILPTR buffer
+	sta RLEPREV	; Used as Y-index to BLKPTR buffer (output)
+	sta UDPI	; Used as Y-index to UTILPTR buffer (input)
+
+	ldy #$00
+	lda (UTILPTR),Y	; Get block number (lsb)
+	sec
+	sbc BLKLO
+	bne HBLKERR
+	iny
+	lda (UTILPTR),Y	; Get block number (msb)
+	sec
+	sbc BLKHI
+	bne HBLKERR
+	iny
+	lda (UTILPTR),Y	; Get half-block
+	sec
+	sbc ZP
+	bne HBLKERR
+	clc
+	lda <UTILPTR
+	adc #$03
+	sta <UTILPTR
+	bcc RC1
+	inc <UTILPTR+1
 RC1:
 	ldy UDPI
 	lda (UTILPTR),Y	; Get next byte out of UDP packet buffer
@@ -580,6 +634,8 @@ RCVEND:
 	inc UTILPTR+1	; Point at next 256 bytes
 :	lda (UTILPTR),Y	; Get next byte out of UDP packet buffer
 	sta PCCRC+1
+	lda #$00
+	sta <CRCY
 	rts
 
 ;---------------------------------------------------------

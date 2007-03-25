@@ -68,10 +68,10 @@ public class UDPTransport extends ATransport
   
   public byte readByte(int seconds) throws TransportTimeoutException
   {
-    Log.println(false,"readByte() entry; _inPacketPtr = "+_inPacketPtr+"; _inPacketLen = "+_inPacketLen+".");
+    //Log.println(false,"UDPTransport.readByte() entry; _inPacketPtr = "+_inPacketPtr+"; _inPacketLen = "+_inPacketLen+".");
     if (_receiveBuffer == null)
     {
-      Log.println(false,"readByte() needs to pull a buffer; buffer is null.");
+      Log.println(false,"UDPTransport.readByte() needs to pull a buffer; buffer is null.");
       try
       {
         pullBuffer(seconds);
@@ -102,7 +102,6 @@ public class UDPTransport extends ATransport
     int myByte = _receiveBuffer[_inPacketPtr];
     if (myByte < 0)
       myByte += 256;
-    Log.println(false,"UDPTransport.readByte() exit with " + myByte);
     return _receiveBuffer[_inPacketPtr++];
   }
 
@@ -153,14 +152,14 @@ public class UDPTransport extends ATransport
    */
   public void writeBytes(byte data[])
   {
-    Log.println(false,"UDPTransport.writeBytes() entry.");
+    //Log.println(false,"UDPTransport.writeBytes() entry.");
     if ((1499 - _outPacketPtr) >= data.length)
     {
-      Log.println(false,"UDPTransport.writeBytes() writing "+data.length+" bytes into packet starting from "+_outPacketPtr+".");
+      //Log.println(false,"UDPTransport.writeBytes() writing "+data.length+" bytes into packet starting from "+_outPacketPtr+".");
       if (_outPacketPtr == 0)
       {
         _packetNum++;
-        Log.println(false,"Setting sequence number to: "+ UnsignedByte.intValue(_packetNum));
+        //Log.println(false,"Setting sequence number to: "+ UnsignedByte.intValue(_packetNum));
         _sendBuffer[_outPacketPtr++] = _packetNum;
       }
       for (int i = 0; i < data.length; i++)
@@ -215,19 +214,13 @@ public class UDPTransport extends ATransport
   public void pushBuffer()
   {
     Log.println(false,"UDPTransport.pushBuffer() entry.");
-    /*
-    Log.println(false,"Data:");
+    Log.println(false, "UDPTransport.pushBuffer() pushing data:");
     for (int i = 0; i < _outPacketPtr; i++)
     {
-      int j = i - 1;
-      if ((j % 32) == 0)
-        Log.println(false,"");
-      System.out.print(UnsignedByte.toString(_sendBuffer[i])+" ");
+      if (((i % 32) == 0) && (i != 0)) Log.println(false, "");
+      Log.print(false, UnsignedByte.toString(_sendBuffer[i]) + " ");
     }
-    Log.println(false,"");
-    */
-    //String fred = new String(_sendBuffer,0,_outPacketPtr);
-    //Log.println(false,"Sending: "+fred);
+    Log.println(false, "");
 
     _packet.setData(_sendBuffer,0,_outPacketPtr);
     try
@@ -249,24 +242,19 @@ public class UDPTransport extends ATransport
     _packet.setData(_receiveBuffer);
     _socket.setSoTimeout(seconds*1000);
     _socket.receive(_packet);
-    Log.println(false,"received packet.");
+    Log.println(false,"UDPTransport.pullBuffer() received a packet.");
     _socket.connect(_packet.getSocketAddress());
-    Log.println(false,"connected to socket.");
+    Log.println(false,"UDPTransport.pullBuffer() connected to socket.");
     _receiveBuffer = _packet.getData();
     _inPacketLen = _packet.getLength();
     _inPacketPtr = 0;
-    Log.println(false,"data: ["+new String (_receiveBuffer)+ "]");
-    /*
+    Log.println(false, "UDPTransport.pullBuffer() pulled data:");
     for (int i = 0; i < _inPacketLen; i++)
     {
-      if ((i % 32) == 0)
-        Log.println(false,"");
-      Log.print(false,UnsignedByte.toString(_receiveBuffer[i])+" ");
+      if (((i % 32) == 0) && (i != 0)) Log.println(false, "");
+      Log.print(false, UnsignedByte.toString(_receiveBuffer[i]) + " ");
     }
-    Log.println(false,"");
-
-    Log.println(false,"UDPTransport.pullBuffer() exit; _inPacketLen = "+_inPacketLen);
-    */
+    Log.println(false, "");
   }
 
   public void flushReceiveBuffer()
