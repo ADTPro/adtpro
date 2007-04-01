@@ -1021,7 +1021,11 @@ public class CommsThread extends Thread
       prev = 0;
       restarting = false;
       if (((preamble) && (_client01xCompatibleProtocol == false)) ||
-          _transport.getClass() == UDPTransport.class)
+          (_transport.getClass() == UDPTransport.class) ||
+          (_transport.getClass() == AudioTransport.class))
+      /*
+       * Remember, UDP and Audio originally had a preamble from the beginning.
+       */
       {
         try
         {
