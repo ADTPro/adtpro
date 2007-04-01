@@ -174,10 +174,10 @@ more bootstrapping scenarios and configurations are detailed below.
     [[1]] Enter that command on the Apple and hit Return.  The blinking cursor 
       should go away.
 
-    [[1]] Dismiss the dialog on the ADTPro server.  You should
-      soon hear the Apple "beep."  The progress bar will show how far along 
-      the transfer is.  After the transfer finishes, you should
-      hear another "beep" and be returned to the asterisk prompt ("<<<*>>>").
+    [[1]] Dismiss the dialog on the ADTPro server.
+      The progress bar will show how far along the transfer is.
+      After the transfer finishes, you should hear a "beep" and
+      be returned to the asterisk prompt ("<<<*>>>").
 
     [[1]] Back on the Apple, enter this command (the one you wrote down
      just a minute ago):
@@ -217,10 +217,18 @@ more bootstrapping scenarios and configurations are detailed below.
       characters above as given.  Hit return on the Apple; the blinking cursor 
       should go away.
 
-    [[1]] Dismiss the dialog on the ADTPro server.  You should
-      soon hear the Apple "beep."  The progress bar will show how far along 
-      the transfer is.  After the transfer finishes, you should
-      hear another "beep" and be returned to the asterisk prompt ("<<<*>>>").
+    [[1]] Dismiss the dialog on the ADTPro server.  
+      The progress bar will show how far along the transfer is.
+      After the transfer finishes, you should hear a "beep" and 
+      be returned to the asterisk prompt ("<<<*>>>").
+      
+      * If instead it says "<<<ERR>>>" or never returns you to a prompt,
+        either the Apple isn't hearing 
+        anything at all ({{{connectionsaudio.html}check}} the audio cable)
+        or it isn't hearing things
+        loudly enough.  Make sure your sound volume is set at close to 75% 
+        of maximum and try again.  Hit Ctrl-Reset on the Apple to regain control
+        and start again at step 15 above.
 
     [[1]] Start the DOS ADT client with the command <<<803G>>> 
       from the asterisk prompt at the Apple.  Go to ADT's configuration 
@@ -236,12 +244,17 @@ more bootstrapping scenarios and configurations are detailed below.
       (ADT assumes a Super Serial card in slot #2, at 115k baud) hit the 
       <<<C>>> key.  You can change the SSC slot or or IIgs Modem port from there,
       as well as the baud rate, disk defaults, etc.
-      From the Apple, hit the <<<R>>> key when you're ready to receive the
-      ADTPro client disk, ADTPro-v.r.m.dsk.
+
+    [[1]] On the ADTPro server, switch from audio to serial communications.
+      Click the "Disconnect" button, select the appropriate serial port,
+      and click the "Connect" button.
+
+    [[1]] From the Apple, hit the <<<R>>> key when you're ready to receive
+      the ADTPro client disk, ADTPro-v.r.m.dsk.
 
     [[1]] Boot ADTPro's newly minted disk.
 
-    [[1]] Start transferring 5.25", 3.5", Ram drive, or hard drive images to your
-      heart's content!
+    [[1]] Start transferring 5.25", 3.5", Ram drive, or hard drive images 
+      to your heart's content!
 
     []

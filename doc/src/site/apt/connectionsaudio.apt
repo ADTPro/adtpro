@@ -7,11 +7,11 @@
 ADTPro Audio Connections
 
  Connecting a host computer and the Apple II requires one (if only bootstrapping)
- or two (if doing image transfers) audio patch cables.  They are available from
+ or two (if doing image transfers) audio patch wires.  They are available from
  electronics retailers worldwide; Radio Shack has a part number 42-2387 (stereo)
  and 42-2420 (mono).  Either should work; the Apple is only going to speak
  mono anyway.  
- The cables need to have 1/8" plugs on each end, like this:
+ The wires need to have 1/8" plugs on each end, like this:
 
 [images/audiopatch.jpg]
 
@@ -25,19 +25,19 @@ ADTPro Audio Connections
  normally listen to your computer's speakers.
 
  You then connect the host computer's audio to the Apple's cassette ports with
- the two patch cables:
+ the two patch wires:
 
-[images/audioappleclose.jpg]
+[images/audioappleclose.jpg] Apple IIe cassette ports
  
-[images/audioiiplus.jpg]
+[images/audioiiplus.jpg] Apple II+ cassette ports
 
-[images/audiomac.jpg]
+[images/audiomac.jpg] Audio in/out ports on an iMac
 
  If you are only going to use audio to {{{bootstrapaudio.html}bootstrap}}, 
  you only need to connect your host's audio out to the Apple's cassette in
  (the white wire in this example).
 
- In these images, I have a convention for white and black cables.  The white cable
+ In these images, I have a convention for white and black wires.  The white cable
  connects the host audio out to the Apple cassette in.  The black cable connects
  the host audio in to the Apple cassette out.  Just like serial connections, the 
  transmit and recieve lines are "crossed."

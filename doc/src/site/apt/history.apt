@@ -46,9 +46,9 @@ ADTPro Release History
  * Apple IIc support (disable hardware handshaking) is now selectable via a 
    checkbox in the File menu.
 
- * Added a logging/tracing capability to the File menu.  Enabling tracing
-   logs verbose tracing information to a file name ADTProTrace.txt in the
-   servers's startup directory.
+ * Added a logging/tracing capability via checkbox in the File menu.
+   Enabling tracing logs verbose tracing information to a file name 
+   ADTProTrace.txt in the servers's startup directory.
 
  []
 
@@ -60,8 +60,8 @@ ADTPro Release History
      though sometimes it still seems to take a while (i.e. several seconds)
      to fully disconnect after hitting the disconnect button
    
-   * Dropped data on some Wintel chipsets due to rapid toggling of
-     port timeout values
+   * Dropped data on some Wintel chipsets due to (erroneous) rapid toggling
+     of port timeout values
 
  []
 
