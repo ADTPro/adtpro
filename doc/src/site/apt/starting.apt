@@ -29,6 +29,17 @@ to a specific Java JRE, for example, you can modify the scripts.
  listening on the device specified.  Choose a maching client program at the
  Apple II end as discussed below.
 
+ During development of version 0.2.1 of the server and client software,
+ there was a {change} in the transfer protocol.  
+ Servers and clients in the 0.2.x family are of course compatible
+ with one another; and a 0.2.x server can be made compatible with a 0.1.x 
+ client by checking the "Client 0.1.x protocol" checkbox:
+
+[images/clientCompat.png]
+
+ A 0.2.x client will not communicate correctly with a 0.1.x server.
+ Upgrade both at the same time to minimize confusion.
+
 Starting the Client
 
  When you boot your Apple ][ from the ADTPro disk, it will start the serial
