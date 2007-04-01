@@ -23,6 +23,9 @@ package org.adtpro.utilities;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.PrintStream;
+import java.text.DateFormat;
+import java.util.Date;
+import java.util.GregorianCalendar;
 
 import org.adtpro.resources.Messages;
 
@@ -55,7 +58,13 @@ public class Log
   public static void println(boolean console, String logString)
   {
     if (console) System.out.println(logString);
-    if (_trace) _out.println(logString);
+    if (_trace)
+    {
+      DateFormat longTimestamp = 
+        DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.MEDIUM);
+      _out.print(longTimestamp.format(new Date())+" ");
+      _out.println(logString);
+    }
   }
 
   public static void print(boolean console, String logString)
