@@ -148,7 +148,8 @@ public final class Gui extends JFrame implements ActionListener
       {
         String nextName = portNames[i];
         if (nextName == null) continue;
-        comboComPort.addItem(nextName);
+        if (!nextName.startsWith("LPT")) // Get rid of LPTx ports, since we're not likely to run on parallel hardware...
+          comboComPort.addItem(nextName);
       }
     }
     catch (Throwable t)

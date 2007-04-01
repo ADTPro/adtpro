@@ -6,20 +6,26 @@
 
 ADTPro Release History
 
-* 0.2.0 - (Unreleased)
+* 0.2.1 - (Unreleased)
 
  New functionality:
 
- * Protocol enhanced to communicate block numbers: enables recovery
+ * Protocol enhanced to always communicate block numbers: enables recovery
    from lost acknowledgements which can ultimately result in corrupt
-   transfers even if all CRCs match
+   transfers even if all CRCs match.  New version retains 
+   {{{starting.html#change}compatibility}}
+   with ADTPro v0.1.x clients with a checkbox in the File menu.
+
+ * Added date/timestamps to trace log entries.
 
  []
 
  Bug fixes:
 
  * ProDOS volumes with full names (15 characters) would walk all over memory,
-   causing a crash when initiating a send
+   causing a crash when initiating a send.  Thanks to James Putnam for going
+   the extra mile to snail-mail me a physical floppy exhibiting the problem 
+   as we tried to figure out what went wrong.
 
  * Made RXTX library optional
 
