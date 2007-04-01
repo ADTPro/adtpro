@@ -12,14 +12,14 @@ ADTPro Ethernet Configuration
  Uthernet card into the Apple, and then plugging a Cat-5 Ethernet cable
  from the card into your home router or switch.  You just need to tell
  ADTPro which slot your Uthernet card is in, then set the
- IP parameters.
+ IP parameters (details {{{configethernet.html#Client IP Configuration}below}}).
  
  If your home network has MAC address filtering, you may need to add a
  rule for your router to allow the Apple to join the network.  The MAC
- address assigned by ADTPro is
+ address assigned to the Uthernet card by ADTPro is
  <<<00:80:10:6d:76:30>>>.
 
-Client IP Configuration
+{Client IP Configuration}
 
  The ethernet version of the ADTPro client program is named <<<ADTPROETH>>> on the 
  distribution diskette.

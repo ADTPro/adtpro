@@ -6,7 +6,15 @@
 
 ADTPro Release History
 
-* 0.1.6 - (Unreleased)
+* 0.2.0 - (Unreleased)
+
+ New functionality:
+
+ * Protocol enhanced to communicate block numbers: enables recovery
+   from lost acknowledgements which can ultimately result in corrupt
+   transfers even if all CRCs match
+
+ []
 
  Bug fixes:
 
@@ -16,9 +24,11 @@ ADTPro Release History
  * Made RXTX library optional
 
  * Made build slightly friendlier for new developers
- []
 
-ADTPro Release History
+ * Filled out the {{{protocol.html}Protocol}} documentation (I'm not saying it's pretty, or
+   necessarily understandible - but at least it matches reality)
+
+ []
 
 * 0.1.5 - March 18, 2007
 

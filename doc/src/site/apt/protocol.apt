@@ -28,11 +28,13 @@ ADTPro Protocol
 
 -------------
 
-  Apple sends: One byte: "C"
-  Apple sends: Byte stream: directory name (null terminated)
-  Host sends: return code:
-    $00 = ok
-    $06 = Unable to change directory
+ Apple sends:
+   One byte: "C" ($C3)
+   Byte stream: directory name (null terminated)
+
+ Host sends: return code:
+   $00 = ok
+   $06 = Unable to change directory
 
 -------------
 
@@ -40,31 +42,44 @@ ADTPro Protocol
 
 ------------
 
-  Apple sends: One byte: "G"
-  Apple sends: Byte stream: file name (null terminated)
+ Apple sends: 
+   One byte: "G" ($C7)
+   Byte stream: file name (null terminated)
 
-  Host sends: return code:
-    $00 = ok
-    $02 = file not found
+ Host sends: return code:
+   $00 = Ok
+   $02 = File not found (Apple aborts)
 
-  (Assuming zero return code... )
+ Apple sends:
+   $06 = ACK
 
-  (parts = filesize /40, remainder = filesize % 40)
+ (parts = filesize /(40 * 512), remainder = filesize % (40 * 512))
+ (loop: parts * 40 blocks + remainder * blocks)
 
-  (loop: parts * 40 blocks + remainder * blocks)
-  Apple sends:
-      $06 = ACK (always ACK for the first half-block)
-      $15 = NAK
+   Host sends:
+     2 bytes: current block number (LSB, MSB)
+     1 byte: half-block number (2 = bytes 0-255, 1 = bytes 256-511)
+     Half-block, RLE encoded
+     two bytes:
+       CRC (lo)
+       CRC (hi)
 
-    Host sends:
-      Next half-block, RLE encoded
-      two bytes:
-        CRC (lo)
-        CRC (hi)
+   Apple sends:
+     One byte acknowledgement:
+       $06 = ACK (Apple understood the packet, CRC is correct; send next one)
+       $15 = NAK (Resend this same packet again: block number tells what Apple
+                 is still waiting to get a good packet for)
+     Two bytes: current block number (LSB, MSB)
+     One byte: half-block number (2 = bytes 0-255, 1 = bytes 256-511)
 
-  (loop end)
+   Note: if the host receives a NAK, and the Apple is expecting a packet 
+         that is one greater than what's just been sent, then an ACK got 
+         lost.  Recovery is for the host to go ahead and advance to the next
+         block and send that.
 
-  Apple sends: One byte: number of errors encountered
+ (loop end)
+
+ Apple sends: One byte: number of errors encountered
 
 -------------
 
@@ -72,17 +87,41 @@ ADTPro Protocol
 
 ------------
 
-Apple sends: One byte: "P"
-Apple sends: Byte stream: file name (null terminated)
-Apple sends: Two bytes:
-  Number of blocks to follow (lo)
-  Number of blocks to follow (hi)
+Apple sends:
+  One byte: "P" ($D0)
+  Byte stream: file name (null terminated)
+  Two bytes:
+    Number of blocks to follow (lsb)
+    Number of blocks to follow (msb)
 
 Host sends: return code:
-  $00 = ok
-  $08 = File exists
+  $00 = Ok
+  $02 = Unable to write (Apple aborts)
 
-<documentation unfinished>
+Apple sends:
+  $06 = ACK
+
+(parts = filesize /(40 * 512), remainder = filesize % (40 * 512))
+(loop: parts * 40 blocks + remainder * blocks)
+
+  Apple sends:
+    Two bytes: current block number (LSB, MSB)
+    One byte: half-block number (2 = bytes 0-255, 1 = bytes 256-511)
+    Half-block, RLE encoded
+    two bytes:
+      CRC (LSB)
+      CRC (MSB)
+
+  Host sends one byte acknowledgement:
+    $06 = ACK (Host understood the packet, CRC is correct; send next one)
+              (Also: this is a duplicate packet, already received; acknowledge
+              so the Apple sends the next one)
+    $15 = NAK (Resend the same packet again)
+
+(end loop)
+
+Apple sends: One byte: number of errors encountered
+
 ------------
 
 
@@ -92,26 +131,31 @@ ADT Compatibility
 
 ------------
 
-Apple sends: One byte: "R"
+Apple sends: One byte: "R" ($D2)
 Apple sends: Byte stream: file name (null terminated)
 
-Host sends: return code:
+Host sends one byte return code:
   $00 = ok
   $1a = file can't be opened (Old ADT message number)
   $1e = not a 140k image (Old ADT message number)
 
-(Assuming zero return code... )
+(Assuming zero return code...)
 (loop: 5 parts * 7 tracks * 16 sectors)
-  Apple sends:
+
+  Apple sends one byte acknowledgement:
     $06 = ACK (always ACK for the first sector)
     $15 = NAK
+
   Host sends:
     Next sector, RLE encoded
     two bytes:
       CRC (lo)
       CRC (hi)
+
 (loop end)
-Apple sends: One byte: number of errors encountered
+
+Apple sends:
+  One byte: number of errors encountered
 
 ------------
 
@@ -119,17 +163,34 @@ Apple sends: One byte: number of errors encountered
 
 ------------
 
-Apple sends: One byte: "S"
+Apple sends: One byte: "S" ($D3)
 
-Host sends: return code:
-  $00 = ok
+Host sends one byte return code:
+  $00 = Ok
   $1c = File exists
   $1a = Can't open
   $1e = Disk full
 
-(Assuming zero return code... )
-Apple sends: 
-<documentation unfinished>
+(Assuming zero return code...)
+(loop: 5 parts * 7 tracks * 16 sectors)
+
+  Host sends:
+    $00 = ready to commence
+
+  Apple sends:
+    Next sector, RLE encoded
+    two bytes:
+      CRC (lo)
+      CRC (hi)
+
+  Host sends one byte acknowledgement:
+    $06 = ACK
+    $15 = NAK
+
+(loop end)
+
+Apple sends:
+  One byte: number of errors encountered
 
 ------------
 
@@ -137,9 +198,18 @@ Apple sends:
 
 ------------
 
-Apple sends: One byte: "D"
+Apple sends: One byte: "D" ($C4)
 
 Host sends: 
-<documentation unfinished>
+  Screen-formatted data of directory contents; null-terminated
+
+  Final byte:
+    $00 = last screen
+    $01 = another screen follows
+
+If final byte is $01:
+  Apple sends one byte:
+      "D" ($C4) = retrieve subsequent screen
+      $00 = abort
 
 ------------

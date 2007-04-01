@@ -328,11 +328,6 @@ public class AudioTransport extends ATransport
     Log.println(false, "AudioTransport.close() exit.");
   }
 
-  public boolean hasPreamble()
-  {
-    return true;
-  }
-
   public boolean supportsBootstrap()
   {
     return true;

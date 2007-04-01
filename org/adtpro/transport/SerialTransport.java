@@ -211,7 +211,10 @@ public class SerialTransport extends ATransport
       }
       if (collectedTimeouts / 4 > seconds) throw new TransportTimeoutException();
     }
-    Log.println(false, "SerialTransport.readByte() exit.");
+    if (hasData)
+      Log.println(false, "SerialTransport.readByte() exit, byte: "+UnsignedByte.toString(oneByte));
+    else
+      Log.println(false, "SerialTransport.readByte() exit.");
     return oneByte;
   }
 
@@ -317,11 +320,6 @@ public class SerialTransport extends ATransport
   public void flushSendBuffer()
   {
   // Serial port is byte-by-byte, no buffering
-  }
-
-  public boolean hasPreamble()
-  {
-    return false;
   }
 
   public void setFullSpeed()

@@ -100,7 +100,7 @@ PUTINITIALACK:
 	rts
 
 ;---------------------------------------------------------
-; PUTFINALACK - Send final ACK for a PUTREQUEST/PUTREPLY
+; PUTFINALACK - Send error count for PUT request
 ;---------------------------------------------------------
 PUTFINALACK:
 	lda ECOUNT	; Errors during send?
@@ -138,10 +138,15 @@ BATCHREPLY:
 GETFINALACK:
 	lda #CHR_ACK	; Send last ACK
 	jsr PUTC
+	lda BLKLO
+	jsr PUTC	; Send the block number (LSB)
+	lda BLKHI
+	jsr PUTC	; Send the block number (MSB)
+	lda <ZP
+	jsr PUTC	; Send the half-block number
 	lda ECOUNT	; Errors during send?
 	jsr PUTC	; Send error flag to host
 	rts
-
 
 ;---------------------------------------------------------
 ; BATCHREQUEST - Request to send multiple images to the host
@@ -199,8 +204,15 @@ CLRLOOP:
 	bne CLRLOOP
 	txa
 	jsr PUTC	; Send ack/nak
+	lda BLKLO
+	jsr PUTC	; Send the block number (LSB)
+	lda BLKHI
+	jsr PUTC	; Send the block number (MSB)
+	lda <ZP
+	jsr PUTC	; Send the half-block number
 
 	jsr RECVHBLK
+	bcs RECVERR	; Do we have an error from block count?
 	jsr GETC	; Receive reply
 	sta PCCRC	; Receive the CRC of that block
 	jsr GETC
@@ -214,7 +226,6 @@ CLRLOOP:
 	cmp PCCRC+1
 	bne RECVERR
 
-RECBRANCH:
 	lda #CHR_ACK
 	inc <BLKPTR+1	; Get next 256 bytes
 	dec <ZP
@@ -231,20 +242,42 @@ RECVERR:
 ;
 ; CRC is computed and stored
 ;---------------------------------------------------------
+HBLKERR:
+	sec
+	rts
+
 RECVHBLK:
 	ldy #00		; Start at beginning of buffer
+
+			; Pull the preamble
+	jsr GETC	; Get block number (lsb)
+	sec
+	sbc BLKLO
+	bne HBLKERR
+	jsr GETC	; Get block number (msb)
+	sec
+	sbc BLKHI
+	bne HBLKERR
+	jsr GETC	; Get half-block
+	sec
+	sbc <ZP
+	bne HBLKERR
+
 RC1:
 	jsr GETC	; Get difference
 	beq RC2		; If zero, get new index
 	sta (BLKPTR),Y	; else put char in buffer
 	iny		; ...and increment index
 	bne RC1		; Loop if not at end of buffer
+	clc
 	rts		; ...else return
 RC2:
 	jsr GETC	; Get new index
 	tay		; in the Y register
 	bne RC1		; Loop if index <> 0
-	rts		; ...else return
+			; ...else return
+	clc
+	rts
 
 ;---------------------------------------------------------
 ; SENDBLK - Send a block with RLE
@@ -279,6 +312,13 @@ SENDHBLK:
 	sty <CRC	; Clean out CRC
 	sty <CRC+1
 	sty <RLEPREV
+
+	lda BLKLO
+	jsr PUTC	; Send the block number (LSB)
+	lda BLKHI
+	jsr PUTC	; Send the block number (MSB)
+	lda <ZP
+	jsr PUTC	; Send the half-block number
 
 SS1:	lda (BLKPTR),Y	; GET BYTE TO SEND
 	jsr UPDCRC	; UPDATE CRC

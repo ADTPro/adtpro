@@ -27,7 +27,7 @@ ADTPro Installation
 
  * <<<README>>> - The page you're looking at now, mostly
 
- * <<<rxtx/fixperm.sh>>> - A script to help OSX server users get going
+ * <<<rxtx/fixperm.sh>>> - A script to help OSX users get going
 
  * <<<rxtx/rxtx-2.1-7-bins-r2.zip>>> - A library to help Java see serial ports.
 
@@ -41,7 +41,9 @@ Java distribution is from Sun Microsystems:
 When you get there, look for a "Java Runtime Environment (JRE)"
 download for your platform.
 
- Second, you will need an installation of the rxtx library where
+ Second, if you want to communicate using serial ports (as opposed to 
+Ethernet or Audio), you will need to install the included rxtx library.
+The rxtx library should be unzipped where
 your java installation "lives."  That means the location of your Java jre/jdk
 installation; on Windows machines, it might be in a place like
 <<<c:\Program Files\Java\jre-version>>> or <<<C:\Program Files\IBM\Java142>>>.
@@ -78,13 +80,24 @@ You should see the following new line on the console:
 SerialTransport opening port named COMx at speed 115200.
 +-------
 
+ If you aren't using serial communications or haven't correctly 
+ installed the rxtx library where Java can find it, you will see
+ these messages when starting the server:
+ 
++-------
+ADTPro Server version v.r.m
+
+RXTX: Serial library not installed.
++-------
+
  Transfer the ADTPro-v.r.m.dsk file to your apple with the original
 ADT client (you can use the ADTPro server to send it) and reboot
 your Apple with the new ADTPro client diskette in the disk drive.
-You're ready to go!  If you don't have the original ADT, or any 
-software at all for your Apple, there's lots of help available.
+You're ready to go!  If you don't use DOS ADT now, 
+don't have software for your Apple yet, 
+or don't have a serial card, there's lots of help available.
 Start at ADTPro's
-{{{bootstrap.html}bootstrapping}} page.
+{{{bootstrapmain.html}bootstrapping}} page.
 
  Please report troubles, bugs, requests for help, etc. on the Help 
 forum for ADTPro at SourceForge:

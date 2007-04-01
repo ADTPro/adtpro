@@ -35,14 +35,12 @@ public abstract class ATransport
   public abstract void writeBytes(byte data[]);
   public abstract void writeBytes(char data[]);
   public abstract void writeBytes(String str);
-  //public abstract byte readByte() throws Exception;
   public abstract byte readByte(int timeout) throws TransportTimeoutException;
   public abstract void pauseIncorrectCRC();
   public abstract void pushBuffer();
   public abstract void flushSendBuffer();
   public abstract void flushReceiveBuffer();
   public abstract void close() throws Exception;
-  public abstract boolean hasPreamble();
   public abstract boolean supportsBootstrap();
   public abstract String getInstructions(String guiString, int fileSize);
   public static final int TRANSPORT_TYPE_SERIAL = 1;

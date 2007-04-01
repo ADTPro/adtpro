@@ -28,7 +28,7 @@ typing on your part, but is substantially faster than serial.
  []
  
  If you still need to connect your host and Apple computers with physical cables,
- refer back to the "Configuration - Connections" section for your connection type:
+ refer back to the "Configuration" section for your connection type:
 
  * {{{connectionsserial.html}Serial cabling connections}}
 

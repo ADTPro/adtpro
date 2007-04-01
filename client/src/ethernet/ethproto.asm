@@ -244,31 +244,40 @@ PUTREQUEST:
 	rts
 
 ;---------------------------------------------------------
-; PUTINITIALACK -
+; PUTINITIALACK - Send initial ACK for a PUTREQUEST/PUTREPLY
 ;---------------------------------------------------------
 PUTINITIALACK:
-	lda ACKMSG
+	lda #CHR_ACK
 	jsr PUTC
-	lda #$00
-	
 	rts
 
 ;---------------------------------------------------------
-; PUTFINALACK -
+; PUTFINALACK - Send error count for PUT request
 ;---------------------------------------------------------
 PUTFINALACK:
-	ldy #$00	; Start at first byte
+	lda ECOUNT	; Errors during send?
+	jsr PUTC	; Send error flag to host
+	rts
+
+;---------------------------------------------------------
+; GETFINALACK -
+;---------------------------------------------------------
+GETFINALACK:
+	ldy #$00
         sty udp_send_len
         sty udp_send_len+1
 	ldax #udp_outp + udp_data
 	stax UTILPTR
-	lda ECOUNT
-	jsr BUFBYTE	; Send the number of errors
-	lda #$00
+	lda #CHR_ACK
+	jsr BUFBYTE	; Send last ACK
+	lda BLKLO	
 	jsr BUFBYTE	; Send the block number (LSB)
+	lda BLKHI
 	jsr BUFBYTE	; Send the block number (MSB)
-	lda #$00
+	lda <ZP
 	jsr BUFBYTE	; Send the half-block number
+	lda ECOUNT
+	jsr BUFBYTE	; Send number of errors encountered
 	jsr udp_send_nocopy
 	rts
 
@@ -293,27 +302,6 @@ GETREQUEST:
 	ldax #BIGBUF
 	jsr udp_send
 	jsr RECEIVE_LOOP
-	rts
-
-;---------------------------------------------------------
-; GETFINALACK -
-;---------------------------------------------------------
-GETFINALACK:
-	ldy #$00	; Start at first byte
-        sty udp_send_len
-        sty udp_send_len+1
-	ldax #udp_outp + udp_data
-	stax UTILPTR
-	lda #CHR_ACK	; Send last ACK
-	jsr BUFBYTE
-	lda ECOUNT	; Send the number of errors
-	jsr BUFBYTE
-	lda #$00
-	jsr BUFBYTE	; Send the block number (LSB)
-	jsr BUFBYTE	; Send the block number (MSB)
-	lda #$00
-	jsr BUFBYTE	; Send the half-block number
-	jsr udp_send_nocopy
 	rts
 
 ;---------------------------------------------------------
@@ -400,7 +388,7 @@ SENDBLK:
 
 SENDMORE:
 	jsr SENDHBLK
-	lda #STATE_PUT
+	lda #STATE_PUT	; Set up callback to PUTREPLY1
 	sta state
 	jsr RECEIVE_LOOP
 SENDMORE2:
@@ -552,7 +540,7 @@ ACK_CHAR: .byte CHR_ACK
 
 ;---------------------------------------------------------
 ; RECVHBLK - Receive half a block with RLE
-;
+; CRCY is set to $01 on error, $00 on success
 ; CRC is computed and stored
 ;---------------------------------------------------------
 HBLKERR:
@@ -687,9 +675,5 @@ QUERYRC:
 PUTCMSG:
 	.byte $00
 PUTCMSGEND:
-;ABORTMSG:
-;	.byte $00
-ACKMSG:
-	.byte CHR_ACK
 PREVPACKET:
 	.byte $00

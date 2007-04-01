@@ -41,6 +41,8 @@ public class CommsThread extends Thread
 {
   private boolean _shouldRun = true;
 
+  protected boolean _client01xCompatibleProtocol = false;
+
   private ATransport _transport;
 
   private Gui _parent;
@@ -157,7 +159,7 @@ public class CommsThread extends Thread
             Log.println(false, "CommsThread.commandLoop() Received Batch command."); //$NON-NLS-1$
             receiveDisk(true);
             break;
-          case (byte) 217: // "P": Ping
+          case (byte) 217: // "Y": Ping
             _parent.setMainText(Messages.getString("CommsThread.23")); //$NON-NLS-1$
             _parent.setSecondaryText(""); //$NON-NLS-1$
             Log.println(false, "CommsThread.commandLoop() Received Ping command."); //$NON-NLS-1$
@@ -277,8 +279,6 @@ public class CommsThread extends Thread
         Log.println(false, "CommsThread.queryFileSize() seeking file " + _parent.getWorkingDirectory() + File.separator
             + requestedFileName);
         disk = new Disk(_parent.getWorkingDirectory() + File.separator + requestedFileName);
-        Log.println(false, "CommsThread.queryFileSize() seeking file " + _parent.getWorkingDirectory() + File.separator
-            + requestedFileName);
       }
       catch (IOException e)
       {
@@ -420,7 +420,7 @@ public class CommsThread extends Thread
             Log.println(false, "receiveDisk() Receiving part " + (part + 1) + " of " + numParts + "; "); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
             for (halfBlock = 0; halfBlock < 80; halfBlock++)
             {
-              packetResult = receivePacket(buffer, halfBlock * 256, (part * 80 + halfBlock));
+              packetResult = receivePacket(buffer, halfBlock * 256, (part * 80 + halfBlock), true);
               if (packetResult != 0) break;
               blocksDone++;
               _parent.setProgressValue(blocksDone);
@@ -435,7 +435,7 @@ public class CommsThread extends Thread
             Log.println(false, "Receiving remainder part."); //$NON-NLS-1$
             for (halfBlock = 0; halfBlock < (remainder * 2); halfBlock++)
             {
-              packetResult = receivePacket(buffer, halfBlock * 256, (part * 80 + halfBlock));
+              packetResult = receivePacket(buffer, halfBlock * 256, (part * 80 + halfBlock), true);
               if (packetResult == -1) break;
               blocksDone++;
               _parent.setProgressValue(blocksDone);
@@ -552,16 +552,14 @@ public class CommsThread extends Thread
           Log.println(false, "CommsThread.sendDisk() about to wait for initial ack.");
           ack = waitForData(15);
           Log.println(false, "CommsThread.sendDisk() received initial reply from Apple: " + UnsignedByte.toString(ack)); //$NON-NLS-1$
-          if (_transport.hasPreamble())
-          {
-            byte blklo = waitForData(15); // Consume the three bytes that are
-                                          // the start of the block/half block
-                                          // counters
-            blklo = waitForData(15);
-            blklo = waitForData(15);
-          }
           if (ack == 0x06)
           {
+            if (_client01xCompatibleProtocol == false)
+            {
+              waitForData(15);
+              waitForData(15);
+              waitForData(15);
+            }
             length = disk.getImageOrder().getBlocksOnDevice();
             _parent.setProgressMaximum(length * 2); // Half-blocks
             _parent.setSecondaryText(disk.getFilename());
@@ -572,8 +570,8 @@ public class CommsThread extends Thread
               for (halfBlock = 0; halfBlock < 2; halfBlock++)
               {
                 Log.println(false, "CommsThread.sendDisk() sending packet for block: " + block + " halfBlock: "
-                    + halfBlock);
-                sendSuccess = sendPacket(buffer, block, halfBlock * 256);
+                    + (2-halfBlock));
+                sendSuccess = sendPacket(buffer, block, halfBlock * 256, true);
                 if (sendSuccess)
                 {
                   blocksDone++;
@@ -720,7 +718,7 @@ public class CommsThread extends Thread
                   for (int sector = 15; sector >= 0; sector--)
                   {
                     Log.println(false, "Sending track " + (track + (part * 7)) + " sector " + sector + "."); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-                    sendSuccess = sendPacket(buffer, 0, (track * 4096 + sector * 256));
+                    sendSuccess = sendPacket(buffer, 0, (track * 4096 + sector * 256), false);
                     if (!sendSuccess) break;
                     sectorsDone++;
                     _parent.setProgressValue(sectorsDone);
@@ -790,7 +788,7 @@ public class CommsThread extends Thread
     Log.println(false, "send140kDisk() exit.");
   }
 
-  public boolean sendPacket(byte[] buffer, int block, int offset)
+  public boolean sendPacket(byte[] buffer, int block, int offset, boolean preamble)
   {
     boolean rc = false;
 
@@ -801,7 +799,7 @@ public class CommsThread extends Thread
     do
     {
       prev = 0;
-      if (_transport.hasPreamble())
+      if ((preamble) && (_client01xCompatibleProtocol == false))
       {
         _transport.writeByte(UnsignedByte.loByte(block));
         _transport.writeByte(UnsignedByte.hiByte(block));
@@ -838,13 +836,18 @@ public class CommsThread extends Thread
         try
         {
           ok = waitForData(15);
-          if (_transport.hasPreamble())
+          if ((preamble) && (_client01xCompatibleProtocol == false))
           {
             int incomingBlock = waitForData(15);
             incomingBlock += (waitForData(15) * 256);
             byte appleHalf = waitForData(15);
             byte hostHalf = UnsignedByte.loByte(2 - (offset / 256));
-
+            Log.println(false, "CommsThread.sendPacket() BlockNum: " + block 
+                + " host lsb: " + UnsignedByte.toString(UnsignedByte.loByte(block)) 
+                + " Apple lsb: " + UnsignedByte.toString(UnsignedByte.loByte(incomingBlock))
+                + " host msb: " + UnsignedByte.toString(UnsignedByte.hiByte(block)) 
+                + " Apple msb: " + UnsignedByte.toString(UnsignedByte.hiByte(incomingBlock))
+                + " host halfNum: " + UnsignedByte.loByte(2 - (offset / 256)) + " Apple halfNum: " + appleHalf);
             if (ok == NAK)
             {
               if (((block == incomingBlock) && (appleHalf - hostHalf != 0)) || ((block + 1 == incomingBlock))
@@ -935,7 +938,7 @@ public class CommsThread extends Thread
               {
                 for (sector = 15; sector >= 0; sector--)
                 {
-                  packetResult = receivePacket(buffer, (track * 4096) + (sector * 256), -1);
+                  packetResult = receivePacket(buffer, (track * 4096) + (sector * 256), -1, false);
                   if (packetResult != 0) break;
                   sectorsDone++;
                   _parent.setProgressValue(sectorsDone);
@@ -997,7 +1000,7 @@ public class CommsThread extends Thread
     Log.println(false, "receive140kDisk() exit.");
   }
 
-  public int receivePacket(byte[] buffer, int offset, int buffNum)
+  public int receivePacket(byte[] buffer, int offset, int buffNum, boolean preamble)
   // Receive a packet with RLE compression
   // Returns:
   // 0 on successful read - block/halfblock numbers, CRC matched
@@ -1017,7 +1020,8 @@ public class CommsThread extends Thread
       rc = 0;
       prev = 0;
       restarting = false;
-      if (_transport.hasPreamble())
+      if (((preamble) && (_client01xCompatibleProtocol == false)) ||
+          _transport.getClass() == UDPTransport.class)
       {
         try
         {
@@ -1063,7 +1067,7 @@ public class CommsThread extends Thread
           rc = -1;
           Log.println(true, "CommsThread.receivePacket() TransportTimeoutException! (location 1)");
         }
-      } // end if (_transport.hasPreamble())
+      } // end if (preamble)
       if (rc == 0)
       {
         for (byteCount = 0; byteCount < 256;)
@@ -1157,12 +1161,6 @@ public class CommsThread extends Thread
            * it, and swing around again for another try.
            */
           _transport.writeByte(ACK);
-          /*
-           * if (_transport.hasPreamble()) {
-           * _transport.writeByte(UnsignedByte.loByte(incomingBlockNum));
-           * _transport.writeByte(UnsignedByte.hiByte(incomingBlockNum));
-           * _transport.writeByte(UnsignedByte.loByte(incomingHalf)); }
-           */
           _transport.pushBuffer();
           _transport.flushReceiveBuffer();
           _transport.flushSendBuffer();
@@ -1173,12 +1171,6 @@ public class CommsThread extends Thread
           _transport.flushReceiveBuffer();
           _transport.flushSendBuffer();
           _transport.writeByte(NAK);
-          /*
-           * if (_transport.hasPreamble()) {
-           * _transport.writeByte(UnsignedByte.loByte(incomingBlockNum));
-           * _transport.writeByte(UnsignedByte.hiByte(incomingBlockNum));
-           * _transport.writeByte(UnsignedByte.loByte(incomingHalf)); }
-           */
           _transport.pushBuffer();
           retries++;
         }
@@ -1491,6 +1483,11 @@ public class CommsThread extends Thread
     {
       ((SerialTransport) _transport).setHardwareHandshaking(state);
     }
+  }
+
+  public void setProtocolCompatibility(boolean state)
+  {
+    _client01xCompatibleProtocol = state;
   }
 
   public String getInstructions(String guiString, int size)

@@ -129,19 +129,41 @@ PUTREQUEST:
 	rts
 
 ;---------------------------------------------------------
-; PUTINITIALACK -
+; PUTINITIALACK - Send initial ACK for a PUTREQUEST/PUTREPLY
 ;---------------------------------------------------------
 PUTINITIALACK:
-	lda ACKMSG
+	lda #CHR_ACK
 	jsr PUTC
 	rts
 
 ;---------------------------------------------------------
-; PUTFINALACK -
+; PUTFINALACK - Send error count for PUT request
 ;---------------------------------------------------------
 PUTFINALACK:
+	lda ECOUNT	; Errors during send?
+	jsr PUTC	; Send error flag to host
+	rts
+
+;---------------------------------------------------------
+; GETFINALACK -
+;---------------------------------------------------------
+GETFINALACK:
+	ldax #AUD_BUFFER
+	stax UTILPTR
+	stax A1L
+	lda #CHR_ACK
+	jsr BUFBYTE	; Send last ACK
+	lda BLKLO
+	jsr BUFBYTE	; Send the block number (LSB)
+	lda BLKHI
+	jsr BUFBYTE	; Send the block number (MSB)
+	lda <ZP
+	jsr BUFBYTE	; Send the half-block number
 	lda ECOUNT
-	jsr PUTC
+	jsr BUFBYTE	; Send number of errors encountered
+	ldax UTILPTR
+	stax A2L
+	jsr aud_send
 	rts
 
 ;---------------------------------------------------------
@@ -158,31 +180,6 @@ GETREQUEST:
 	iny
 	jsr COPYINPUT
 	dey
-	tya
-	clc
-	adc A1L
-	sta A2L
-	bcc :+
-	inc A2H
-:	jsr aud_send
-	rts
-
-;---------------------------------------------------------
-; GETFINALACK -
-;---------------------------------------------------------
-GETFINALACK:
-	ldax #AUD_BUFFER
-	stax BLKPTR
-	stax A1L
-	stx A2H
-
-	ldy #$00
-	lda #CHR_ACK	; Send last ACK
-	sta (BLKPTR),Y
-	iny
-	lda ECOUNT	; Errors during send?
-	sta (BLKPTR),Y
-	iny
 	tya
 	clc
 	adc A1L
@@ -413,7 +410,7 @@ ACK_CHAR: .byte CHR_ACK
 
 ;---------------------------------------------------------
 ; RECVHBLK - Receive half a block with RLE
-; Carry set on error
+; Carry set on error, cleared on success
 ; CRC is computed and stored
 ;---------------------------------------------------------
 HBLKERR:
@@ -685,10 +682,6 @@ QUERYRC:
 	.byte $00
 PUTCMSG:
 	.byte $00
-ABORTMSG:
-	.byte $00
-ACKMSG:
-	.byte CHR_ACK
 
 ;PRINTBLOCK:		; Handy debug routine to print the block number & ack/nak status
 ;	lda CH

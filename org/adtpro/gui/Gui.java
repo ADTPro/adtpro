@@ -76,11 +76,13 @@ public final class Gui extends JFrame implements ActionListener
 
   JMenuItem _dosAction2 = null;
   JCheckBoxMenuItem _iicMenuItem = null;
+  JCheckBoxMenuItem _protoCompatMenuItem = null;
   JCheckBoxMenuItem _traceMenuItem = null;
   
   public Gui(java.lang.String[] args)
   {
-    Log.getSingleton();
+    Log.getSingleton().setTrace(_properties.getProperty("TraceEnabled", "false").compareTo("true") == 0);
+    Log.println(false,"Gui Constructor entry.");
     addWindowListener(new WindowCloseMonitor());
     setTitle(Messages.getString("Gui.Title") + " " + Messages.getString("Version.Number")); //$NON-NLS-1$ //$NON-NLS-2$
     try
@@ -103,6 +105,10 @@ public final class Gui extends JFrame implements ActionListener
     _iicMenuItem = new JCheckBoxMenuItem(Messages.getString("Gui.IIc"));
     menuFile.add(_iicMenuItem);
     _iicMenuItem.addActionListener(this);
+    _protoCompatMenuItem = new JCheckBoxMenuItem(Messages.getString("Gui.ProtocolCompatability"));
+    menuFile.add(_protoCompatMenuItem);
+    _protoCompatMenuItem.addActionListener(this);
+
     MenuAction cdAction = new MenuAction(Messages.getString("Gui.CD")); //$NON-NLS-1$
     menuFile.add(cdAction);
     MenuAction quitAction = new MenuAction(Messages.getString("Gui.Quit")); //$NON-NLS-1$
@@ -135,6 +141,7 @@ public final class Gui extends JFrame implements ActionListener
     comboComPort = new JComboBox();
     try
     {
+      Log.println(false,"Gui Constructor about to attempt to instantiate rxtx library.");
       Log.print(true, Messages.getString("Gui.RXTX")); //$NON-NLS-1$
       String[] portNames = SerialTransport.getPortNames();
       for (int i = 0; i < portNames.length; i++)
@@ -148,6 +155,7 @@ public final class Gui extends JFrame implements ActionListener
     {
       Log.println(true, Messages.getString("Gui.NoRXTX")); //$NON-NLS-1$
     }
+    Log.println(false,"Gui Constructor completed instantiating rxtx library.");
     comboComPort.addItem(Messages.getString("Gui.Ethernet"));
     comboComPort.addItem(Messages.getString("Gui.Audio"));
     comboComPort.setSelectedItem(_properties.getProperty("CommPort", "COM1")); //$NON-NLS-1$ //$NON-NLS-2$
@@ -160,8 +168,9 @@ public final class Gui extends JFrame implements ActionListener
     comboSpeed.setSelectedItem(_properties.getProperty("CommPortSpeed", "115200")); //$NON-NLS-1$ //$NON-NLS-2$
 
     _iicMenuItem.setSelected(_properties.getProperty("HardwareHandshaking", "false").compareTo("true") == 0); //$NON-NLS-1$ //$NON-NLS-2$
+    _protoCompatMenuItem.setSelected(_properties.getProperty("Client01xCompatibleProtocol", "false").compareTo("true") == 0); //$NON-NLS-1$ //$NON-NLS-2$
     _traceMenuItem.setSelected(_properties.getProperty("TraceEnabled", "false").compareTo("true") == 0); //$NON-NLS-1$ //$NON-NLS-2$
-    Log.getSingleton().setTrace(_traceMenuItem.isSelected());
+    //Log.getSingleton().setTrace(_traceMenuItem.isSelected());
 
     buttonConnect = new JButton(Messages.getString("Gui.Disconnect")); //$NON-NLS-1$
     buttonConnect.addActionListener(this);
@@ -233,6 +242,7 @@ public final class Gui extends JFrame implements ActionListener
     buttonConnect.setText(Messages.getString("Gui.Connect")); //$NON-NLS-1$
     buttonConnect.requestFocus();
     this.show();
+    Log.println(false,"Gui Constructor exit.");
   }
 
   public void actionPerformed(ActionEvent e)
@@ -247,6 +257,14 @@ public final class Gui extends JFrame implements ActionListener
       if (_commsThread != null)
       {
         _commsThread.setHardwareHandshaking(_iicMenuItem.isSelected());
+      }
+      saveProperties();
+    }
+    else if (e.getActionCommand().equals(Messages.getString("Gui.ProtocolCompatability"))) //$NON-NLS-1$
+    {
+      if (_commsThread != null)
+      {
+        _commsThread.setProtocolCompatibility(_protoCompatMenuItem.isSelected());
       }
       saveProperties();
     }
@@ -476,6 +494,8 @@ public final class Gui extends JFrame implements ActionListener
       _commsThread = new CommsThread(this, (String) comboComPort.getSelectedItem(), (String) comboSpeed.getSelectedItem());
       _commsThread.start();
       _commsThread.setHardwareHandshaking(_iicMenuItem.isSelected());
+      _commsThread.setHardwareHandshaking(_iicMenuItem.isSelected());
+      _commsThread.setProtocolCompatibility(_protoCompatMenuItem.isSelected());
       setMainText(Messages.getString("Gui.Quiesced")); //$NON-NLS-1$
       setSecondaryText(Messages.getString("Gui.Connected")); //$NON-NLS-1$
       buttonConnect.setText(Messages.getString("Gui.Disconnect")); //$NON-NLS-1$
@@ -521,6 +541,13 @@ public final class Gui extends JFrame implements ActionListener
         _properties.setProperty("HardwareHandshaking","true");
       else
         _properties.setProperty("HardwareHandshaking","false");
+    }
+    if (_protoCompatMenuItem != null)
+    {
+      if (_protoCompatMenuItem.isSelected())
+        _properties.setProperty("Client01xCompatibleProtocol","true");
+      else
+        _properties.setProperty("Client01xCompatibleProtocol","false");
     }
     if (_traceMenuItem != null)
     {
