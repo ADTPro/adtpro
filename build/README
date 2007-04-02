@@ -17,7 +17,7 @@ ADTPro-v.r.m.zip. After unpacking the .zip file, you will find:
  * LICENSE          - The GNU Public License file
  * README           - The page you're looking at now, mostly
  * rxtx/fixperm.sh  - A script to help OSX server users get 
-                      going
+                      going with serial communications
  * rxtx/rxtx-2.1-7-bins-r2.zip - A library to help Java see 
                       serial ports.
 
@@ -29,9 +29,10 @@ something besides complaints). One place to get a downloadable
 Java distribution is from Sun Microsystems here:
 http://java.sun.com/j2se/1.5.0/download.jsp
 
-Second, you will need an installation of the rxtx library where
-your java lives.  That means the location of your Java jre/jdk
-installation; on Windows machines, it might be in a place like
+Second, if you will be using serial communications, you will 
+need an installation of the rxtx library where your java lives.
+That means the location of your Java jre/jdk installation; 
+on Windows machines, it might be in a place like
 C:\Program Files\IBM\Java142 or
 c:\Program Files\Java\jre-version.  Please unzip the file 
 rxtx-2.1-7-bins-r2.zip in the rxtx distribution included with 
