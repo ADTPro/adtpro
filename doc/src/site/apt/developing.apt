@@ -9,6 +9,8 @@ Developing ADTPro
  The full build system for ADTPro actually uses several components
 that are not readily visible.  The full list looks like this:
 
+ * {{{http://ant.apache.org/}Ant}} - orchestrates the build process
+
  * {{{http://java.sun.com/javase/downloads/index.jsp}Java SDK}} - compiles Java-based server
 
  * {{{http://www.cc65.org/}cc65}} - a multiplatform toolchain with a nice 6502 macro assembler
@@ -17,11 +19,9 @@ that are not readily visible.  The full list looks like this:
 
  * {{{http://maven.apache.org/}Maven}} - builds the web pages
 
- * {{{http://ant.apache.org/}Ant}} - orchestrates the build process
-
  []
 
- The main build.xml script in ADTPro's CVS repository calls upon these
+ The main Ant build.xml script in ADTPro's CVS repository calls upon these
 tools to go from source files to distributable packages.  Well, with the exception
 of the Maven website stuff - that's not part of the main build script, mostly
 because that's a step most people wouldn't ever want to do, and if it were there -
