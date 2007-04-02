@@ -22,7 +22,6 @@ package org.adtpro;
 
 import java.io.*;
 import java.net.InetAddress;
-import java.net.SocketException;
 import java.util.GregorianCalendar;
 
 import org.adtpro.resources.Messages;

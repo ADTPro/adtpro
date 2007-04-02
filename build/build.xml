@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project name="ADTPro" default="all" basedir="..">
-	<property name="versionString" value="v.r.m" />
+	<property name="versionString" value="0.2.1" />
 	<property name="distName" value="ADTPro-${versionString}" />
 	<property name="volName" value="ADTPro.${versionString}" />
 	<property name="dosVersionString" value="131" />
