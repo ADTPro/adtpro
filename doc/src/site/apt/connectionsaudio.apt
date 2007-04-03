@@ -31,7 +31,13 @@ ADTPro Audio Connections
  
 [images/audioiiplus.jpg] Apple II+ cassette ports
 
+[images/audiobh.jpg] Bell+Howell cassette ports
+
+ Host computer examples:
+ 
 [images/audiomac.jpg] Audio in/out ports on an iMac
+
+[images/audiopcclose.jpg] Audio in/out ports on a random PC
 
  If you are only going to use audio to {{{bootstrapaudio.html}bootstrap}}, 
  you only need to connect your host's audio out to the Apple's cassette in

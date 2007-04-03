@@ -45,9 +45,9 @@
     </menu>
 
     <menu name="Minutiae">
-      <item name="Developing" href="developing.html"/>
-      <item name="Protocol" href="protocol.html"/>
       <item name="Release History" href="history.html"/>
+      <item name="Protocol" href="protocol.html"/>
+      <item name="Developing" href="developing.html"/>
     </menu>
 
   </body>
