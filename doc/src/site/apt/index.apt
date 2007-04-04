@@ -13,6 +13,14 @@ familiar with the {{{http://adt.berlios.de}original ADT}}, ADTPro extends ADT's 
 working with more logical disk formats, drive types, communications devices,
 and host operating systems.
 
+ There is a host (server) component that runs on modern computers with
+ Java, and an Apple II (client) component that runs on any Apple II 
+ compatible computer with at least 64k of memory:
+
+[images/serverBusy.png]
+
+[images/sendingsmall.png]
+
  ADTPro transfers disks using any of these communications devices:
 
     * Super Serial Card, IIgs modem port or IIc serial port at 115,200 BPS 
@@ -48,7 +56,7 @@ from the SourceForge
 
 * Server
 
- The server program runs on a computer capable of hosting Java.
+ The server program runs on a computer capable of running Java.
 Depending on how you want to connect to your Apple, you might also need
 a serial port and cables, a Uthernet card for your apple, or a couple of
 audio patch cables.  The server offers a compact user interface that 

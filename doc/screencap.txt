@@ -4,3 +4,4 @@ Screen captures from AppleWin - screen coordinates in MS Paint:
 
 117,69 to 358,73
 
+Need to capture an area that is 560x384
