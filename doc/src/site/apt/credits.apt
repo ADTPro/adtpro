@@ -17,7 +17,7 @@ ADTWin project is hosted here:
 
  The routine to decide what kind of block device a particular slot/drive 
 combination contains was generously donated by Mark Percival.  It originates
-from his DiskMaker 8 program: {{http://www.syndicomm.com/~mark/DM8/}}
+from his DiskMaker 8 program: {{http://www.gamebits.net/mark/DM8/}}
 
  The disk abstraction layer of ADTPro's server software was borrowed from the 
 AppleCommander project: {{http://applecommander.sourceforge.net/}}
@@ -51,7 +51,7 @@ introductory article here:
 {{http://www.developer.com/java/other/article.php/1565671}}.
 I found some very helpful audio code from the {{{http://www.jbother.org/}JBother}} project:
 {{http://www.jbother.org/api/src-html/com/valhalla/jbother/sound/SoundPlayer.html}}.
-The audio code in ADTPro is a particularly undisciplined extension of this.
+The audio code in ADTPro is a particularly undisciplined extension of these two sources.
 
 ADT Lineage
 
