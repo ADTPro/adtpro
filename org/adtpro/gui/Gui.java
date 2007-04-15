@@ -23,17 +23,25 @@ package org.adtpro.gui;
 import java.awt.BorderLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.Insets;
 import java.awt.Toolkit;
 import java.awt.Window;
 import java.awt.event.*;
 import java.io.File;
 import java.io.IOException;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 
 import javax.swing.*;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 import org.adtpro.resources.Messages;
 import org.adtpro.transport.ATransport;
+import org.adtpro.transport.AudioTransport;
 import org.adtpro.transport.SerialTransport;
+import org.adtpro.transport.UDPTransport;
+import org.adtpro.utilities.BareBonesBrowserLaunch;
 import org.adtpro.utilities.Log;
 import org.adtpro.ADTProperties;
 import org.adtpro.CommsThread;
@@ -52,16 +60,6 @@ public final class Gui extends JFrame implements ActionListener
 
   Gui _parent;
 
-  private JLabel labelComPort;
-
-  private JComboBox comboComPort;
-
-  private JLabel labelSpeed;
-
-  private JComboBox comboSpeed;
-
-  private JButton buttonConnect = null;
-
   private CommsThread _commsThread;
 
   private String _workingDirectory = getWorkingDirectory();
@@ -75,14 +73,25 @@ public final class Gui extends JFrame implements ActionListener
   JMenu menuBootstrap;
 
   JMenuItem _dosAction2 = null;
-  JCheckBoxMenuItem _iicMenuItem = null;
+
   JCheckBoxMenuItem _protoCompatMenuItem = null;
+
   JCheckBoxMenuItem _traceMenuItem = null;
-  
+
+  JRadioButton _serialButton = null;
+
+  JRadioButton _ethernetButton = null;
+
+  JRadioButton _audioButton = null;
+
+  JRadioButton _disconnectButton = null;
+
+  JRadioButton _previousButton = null;
+
   public Gui(java.lang.String[] args)
   {
     Log.getSingleton().setTrace(_properties.getProperty("TraceEnabled", "false").compareTo("true") == 0);
-    Log.println(false,"Gui Constructor entry.");
+    Log.println(false, "Gui Constructor entry.");
     addWindowListener(new WindowCloseMonitor());
     setTitle(Messages.getString("Gui.Title") + " " + Messages.getString("Version.Number")); //$NON-NLS-1$ //$NON-NLS-2$
     try
@@ -99,18 +108,16 @@ public final class Gui extends JFrame implements ActionListener
     this.getContentPane().add(mainPanel, BorderLayout.CENTER);
 
     JMenu menuFile = new JMenu(Messages.getString("Gui.File")); //$NON-NLS-1$
+    MenuAction serialConfigAction = new MenuAction(Messages.getString("Gui.SerialConfig")); //$NON-NLS-1$
+    menuFile.add(serialConfigAction);
+    MenuAction cdAction = new MenuAction(Messages.getString("Gui.CD")); //$NON-NLS-1$
+    menuFile.add(cdAction);
     _traceMenuItem = new JCheckBoxMenuItem(Messages.getString("Gui.Trace"));
     menuFile.add(_traceMenuItem);
     _traceMenuItem.addActionListener(this);
-    _iicMenuItem = new JCheckBoxMenuItem(Messages.getString("Gui.IIc"));
-    menuFile.add(_iicMenuItem);
-    _iicMenuItem.addActionListener(this);
     _protoCompatMenuItem = new JCheckBoxMenuItem(Messages.getString("Gui.ProtocolCompatability"));
     menuFile.add(_protoCompatMenuItem);
     _protoCompatMenuItem.addActionListener(this);
-
-    MenuAction cdAction = new MenuAction(Messages.getString("Gui.CD")); //$NON-NLS-1$
-    menuFile.add(cdAction);
     MenuAction quitAction = new MenuAction(Messages.getString("Gui.Quit")); //$NON-NLS-1$
     menuFile.add(quitAction);
     menuBar.add(menuFile);
@@ -131,50 +138,17 @@ public final class Gui extends JFrame implements ActionListener
     menuBar.add(menuBootstrap);
     menuBootstrap.setEnabled(false);
     JMenu menuHelp = new JMenu(Messages.getString("Gui.Help")); //$NON-NLS-1$
+    MenuAction helpAction = new MenuAction(Messages.getString("Gui.Website")); //$NON-NLS-1$
+    menuHelp.add(helpAction);
     MenuAction aboutAction = new MenuAction(Messages.getString("Gui.About")); //$NON-NLS-1$
     menuHelp.add(aboutAction);
     menuBar.add(menuHelp);
     this.setJMenuBar(menuBar);
 
-    labelComPort = new JLabel(Messages.getString("Gui.Port"), SwingConstants.LEFT); //$NON-NLS-1$
-    labelSpeed = new JLabel(Messages.getString("Gui.Speed"), SwingConstants.LEFT); //$NON-NLS-1$
-    comboComPort = new JComboBox();
-    try
-    {
-      Log.println(false,"Gui Constructor about to attempt to instantiate rxtx library.");
-      Log.print(true, Messages.getString("Gui.RXTX")); //$NON-NLS-1$
-      String[] portNames = SerialTransport.getPortNames();
-      for (int i = 0; i < portNames.length; i++)
-      {
-        String nextName = portNames[i];
-        if (nextName == null) continue;
-        if (!nextName.startsWith("LPT")) // Get rid of LPTx ports, since we're not likely to run on parallel hardware...
-          comboComPort.addItem(nextName);
-      }
-    }
-    catch (Throwable t)
-    {
-      Log.println(true, Messages.getString("Gui.NoRXTX")); //$NON-NLS-1$
-    }
-    Log.println(false,"Gui Constructor completed instantiating rxtx library.");
-    comboComPort.addItem(Messages.getString("Gui.Ethernet"));
-    comboComPort.addItem(Messages.getString("Gui.Audio"));
-    comboComPort.setSelectedItem(_properties.getProperty("CommPort", "COM1")); //$NON-NLS-1$ //$NON-NLS-2$
-
-    comboSpeed = new JComboBox();
-    comboSpeed.addItem("9600"); //$NON-NLS-1$
-    comboSpeed.addItem("19200"); //$NON-NLS-1$
-    comboSpeed.addItem("115200"); //$NON-NLS-1$
-
-    comboSpeed.setSelectedItem(_properties.getProperty("CommPortSpeed", "115200")); //$NON-NLS-1$ //$NON-NLS-2$
-
-    _iicMenuItem.setSelected(_properties.getProperty("HardwareHandshaking", "false").compareTo("true") == 0); //$NON-NLS-1$ //$NON-NLS-2$
-    _protoCompatMenuItem.setSelected(_properties.getProperty("Client01xCompatibleProtocol", "false").compareTo("true") == 0); //$NON-NLS-1$ //$NON-NLS-2$
+    _protoCompatMenuItem
+        .setSelected(_properties.getProperty("Client01xCompatibleProtocol", "false").compareTo("true") == 0); //$NON-NLS-1$ //$NON-NLS-2$
     _traceMenuItem.setSelected(_properties.getProperty("TraceEnabled", "false").compareTo("true") == 0); //$NON-NLS-1$ //$NON-NLS-2$
-    //Log.getSingleton().setTrace(_traceMenuItem.isSelected());
-
-    buttonConnect = new JButton(Messages.getString("Gui.Disconnect")); //$NON-NLS-1$
-    buttonConnect.addActionListener(this);
+    // Log.getSingleton().setTrace(_traceMenuItem.isSelected());
 
     labelMainProgress = new JLabel(Messages.getString("Gui.Quiesced")); //$NON-NLS-1$
     labelSubProgress = new JLabel(Messages.getString("Gui.Disconnected")); //$NON-NLS-1$
@@ -184,33 +158,64 @@ public final class Gui extends JFrame implements ActionListener
     progressBar.setValue(0);
     progressBar.setStringPainted(true);
 
-    this.getRootPane().setDefaultButton(buttonConnect);
+    _serialButton = new JRadioButton("Serial", new ImageIcon(Toolkit.getDefaultToolkit().getImage(
+        getClass().getResource("/org/adtpro/resources/serialDeselected.png"))));
+    _serialButton.setHorizontalTextPosition(SwingConstants.CENTER);
+    _serialButton.setVerticalTextPosition(SwingConstants.BOTTOM);
+    _serialButton.setMargin(new Insets(0, 0, 0, 0));
+    _serialButton.setSelectedIcon(new ImageIcon(Toolkit.getDefaultToolkit().getImage(
+        getClass().getResource("/org/adtpro/resources/serialSelected.png"))));
+    _serialButton.addActionListener(this);
+    _ethernetButton = new JRadioButton("Ethernet", new ImageIcon(Toolkit.getDefaultToolkit().getImage(
+        getClass().getResource("/org/adtpro/resources/ethernetDeselected.png"))));
+    _ethernetButton.setHorizontalTextPosition(SwingConstants.CENTER);
+    _ethernetButton.setVerticalTextPosition(SwingConstants.BOTTOM);
+    _ethernetButton.setMargin(new Insets(0, 0, 0, 0));
+    _ethernetButton.setSelectedIcon(new ImageIcon(Toolkit.getDefaultToolkit().getImage(
+        getClass().getResource("/org/adtpro/resources/ethernetSelected.png"))));
+    _ethernetButton.addActionListener(this);
+    _audioButton = new JRadioButton("Audio", new ImageIcon(Toolkit.getDefaultToolkit().getImage(
+        getClass().getResource("/org/adtpro/resources/audioDeselected.png"))));
+    _audioButton.setHorizontalTextPosition(SwingConstants.CENTER);
+    _audioButton.setVerticalTextPosition(SwingConstants.BOTTOM);
+    _audioButton.setMargin(new Insets(0, 0, 0, 0));
+    _audioButton.setSelectedIcon(new ImageIcon(Toolkit.getDefaultToolkit().getImage(
+        getClass().getResource("/org/adtpro/resources/audioSelected.png"))));
+    _audioButton.addActionListener(this);
+    _disconnectButton = new JRadioButton("Disconnect", new ImageIcon(Toolkit.getDefaultToolkit().getImage(
+        getClass().getResource("/org/adtpro/resources/disconnectDeselected.png"))));
+    _disconnectButton.setHorizontalTextPosition(SwingConstants.CENTER);
+    _disconnectButton.setVerticalTextPosition(SwingConstants.BOTTOM);
+    _disconnectButton.setMargin(new Insets(0, 0, 0, 0));
+    _disconnectButton.setSelectedIcon(new ImageIcon(Toolkit.getDefaultToolkit().getImage(
+        getClass().getResource("/org/adtpro/resources/disconnectSelected.png"))));
+    _disconnectButton.addActionListener(this);
+    ButtonGroup bg = new ButtonGroup();
+    bg.add(_serialButton);
+    bg.add(_ethernetButton);
+    bg.add(_audioButton);
+    bg.add(_disconnectButton);
 
-    GridBagUtil.constrain(mainPanel, labelComPort, 1, 1, // X, Y Coordinates
-        1, 1, // Grid width, height
-        GridBagConstraints.NONE, // Fill value
-        GridBagConstraints.WEST, // Anchor value
-        0.0, 0.0, // Weight X, Y
-        5, 5, 0, 0); // Top, left, bottom, right insets
-    GridBagUtil.constrain(mainPanel, comboComPort, 1, 2, // X, Y Coordinates
+    GridBagUtil.constrain(mainPanel, _serialButton, 1, 1, // X, Y Coordinates
         1, 1, // Grid width, height
         GridBagConstraints.HORIZONTAL, // Fill value
         GridBagConstraints.WEST, // Anchor value
         0.0, 0.0, // Weight X, Y
         0, 5, 5, 5); // Top, left, bottom, right insets
-    GridBagUtil.constrain(mainPanel, labelSpeed, 2, 1, // X, Y Coordinates
-        1, 1, // Grid width, height
-        GridBagConstraints.NONE, // Fill value
-        GridBagConstraints.WEST, // Anchor value
-        0.0, 0.0, // Weight X, Y
-        5, 5, 0, 0); // Top, left, bottom, right insets
-    GridBagUtil.constrain(mainPanel, comboSpeed, 2, 2, // X, Y Coordinates
+    GridBagUtil.constrain(mainPanel, _ethernetButton, 2, 1, // X, Y Coordinates
         1, 1, // Grid width, height
         GridBagConstraints.HORIZONTAL, // Fill value
         GridBagConstraints.WEST, // Anchor value
-        1.0, 0.0, // Weight X, Y
+        0.0, 0.0, // Weight X, Y
         0, 0, 5, 5); // Top, left, bottom, right insets
-    GridBagUtil.constrain(mainPanel, buttonConnect, 3, 2, // X, Y Coordinates
+    GridBagUtil.constrain(mainPanel, _audioButton, 3, 1, // X, Y Coordinates
+        1, 1, // Grid width, height
+        GridBagConstraints.HORIZONTAL, // Fill value
+        GridBagConstraints.WEST, // Anchor value
+        0.0, 0.0, // Weight X, Y
+        0, 0, 5, 5); // Top, left, bottom, right insets
+    GridBagUtil.constrain(mainPanel, _disconnectButton, 4, 1, // X, Y
+        // Coordinates
         1, 1, // Grid width, height
         GridBagConstraints.HORIZONTAL, // Fill value
         GridBagConstraints.WEST, // Anchor value
@@ -218,63 +223,132 @@ public final class Gui extends JFrame implements ActionListener
         0, 0, 5, 5); // Top, left, bottom, right insets
     GridBagUtil.constrain(mainPanel, labelMainProgress, 1, 3, // X, Y
         // Coordinates
-        3, 1, // Grid width, height
+        4, 1, // Grid width, height
         GridBagConstraints.HORIZONTAL, // Fill value
         GridBagConstraints.WEST, // Anchor value
         0.0, 0.0, // Weight X, Y
         0, 5, 5, 5); // Top, left, bottom, right insets
     GridBagUtil.constrain(mainPanel, progressBar, 1, 4, // X, Y Coordinates
-        3, 1, // Grid width, height
+        4, 1, // Grid width, height
         GridBagConstraints.HORIZONTAL, // Fill value
         GridBagConstraints.WEST, // Anchor value
         0.0, 0.0, // Weight X, Y
         0, 5, 5, 5); // Top, left, bottom, right insets
     GridBagUtil.constrain(mainPanel, labelSubProgress, 1, 5, // X, Y
         // Coordinates
-        3, 1, // Grid width, height
+        4, 1, // Grid width, height
         GridBagConstraints.HORIZONTAL, // Fill value
         GridBagConstraints.WEST, // Anchor value
         0.0, 0.0, // Weight X, Y
         0, 5, 5, 5); // Top, left, bottom, right insets
-
     _parent = this;
     this.pack();
+    _disconnectButton.doClick();
+    _previousButton = _disconnectButton; // Remember last button state
     setBounds(FrameUtils.center(this.getSize()));
-    buttonConnect.setText(Messages.getString("Gui.Connect")); //$NON-NLS-1$
-    buttonConnect.requestFocus();
     this.show();
-    Log.println(false,"Gui Constructor exit.");
+    SerialConfig.getSingleton();
+    Log.println(false, "Gui Constructor exit.");
   }
 
   public void actionPerformed(ActionEvent e)
   {
-    Log.println(false,"Gui.actionPerformed() entry, responding to "+e.getActionCommand());
-    if (e.getSource() == buttonConnect)
+    Log.println(false, "Gui.actionPerformed() entry, responding to " + e.getActionCommand());
+    if ((e.getSource() == _serialButton) && (_previousButton != _serialButton))
     {
-      startComms();
-    }
-    else if (e.getActionCommand().equals(Messages.getString("Gui.IIc"))) //$NON-NLS-1$
-    {
-      if (_commsThread != null)
+      _previousButton = _serialButton;
+      if ((_properties.getProperty("CommPortSpeed") == null) ||
+          (_properties.getProperty("CommPort") == null))
       {
-        _commsThread.setHardwareHandshaking(_iicMenuItem.isSelected());
+        serialConfigGui();
+        if (SerialConfig.getSingleton().getExitStatus() == SerialConfig.OK)
+        {
+          try
+          {
+            String msg = Messages.getString("Gui.ServingSerialTitle");
+            msg = msg.replaceAll("%1",_properties.getProperty("CommPort"));
+            msg = msg.replaceAll("%2",_properties.getProperty("CommPortSpeed"));
+            setTitle(msg);
+            startComms(new SerialTransport(SerialConfig.getPort(), SerialConfig.getSpeed(), SerialConfig.getHardware()));
+          }
+          catch (Exception e1)
+          {
+            Log.printStackTrace(e1);
+            _disconnectButton.doClick();
+          }
+        }
+        else
+        {
+          _disconnectButton.doClick();
+          _previousButton = _disconnectButton;
+        }
       }
-      saveProperties();
-    }
-    else if (e.getActionCommand().equals(Messages.getString("Gui.ProtocolCompatability"))) //$NON-NLS-1$
-    {
-      if (_commsThread != null)
+      else
       {
-        _commsThread.setProtocolCompatibility(_protoCompatMenuItem.isSelected());
+        try
+        {
+          String msg = Messages.getString("Gui.ServingSerialTitle");
+          msg = msg.replaceAll("%1",_properties.getProperty("CommPort"));
+          msg = msg.replaceAll("%2",_properties.getProperty("CommPortSpeed"));
+          setTitle(msg);
+          startComms(new SerialTransport(_properties.getProperty("CommPort"), _properties.getProperty("CommPortSpeed"), _properties.getProperty("HardwareHandshaking", "false").compareTo("true") == 0));
+        }
+        catch (Exception e1)
+        {
+          Log.printStackTrace(e1);
+          _disconnectButton.doClick();
+        }
       }
-      saveProperties();
     }
-    else if (e.getActionCommand().equals(Messages.getString("Gui.Trace"))) //$NON-NLS-1$
-    {
-      Log.getSingleton().setTrace(_traceMenuItem.isSelected());
-      saveProperties();
-    }
-    Log.println(false,"Gui.actionPerformed() exit.");
+    else
+      if ((e.getSource() == _ethernetButton) && (_previousButton != _ethernetButton))
+      {
+        _previousButton = _ethernetButton;
+        try
+        {
+          String msg = Messages.getString("Gui.ServingEthernetTitle");
+          msg = msg.replaceAll("%1",InetAddress.getLocalHost().getHostAddress());
+          setTitle(msg);
+          startComms(new UDPTransport("6502"));
+        }
+        catch (Exception e1)
+        {
+          Log.printStackTrace(e1);
+          setTitle(Messages.getString("Gui.Title") + " " + Messages.getString("Version.Number")); //$NON-NLS-1$ //$NON-NLS-2$
+          _disconnectButton.doClick();
+        }
+      }
+      else
+        if ((e.getSource() == _audioButton) && (_previousButton != _audioButton))
+        {
+          setTitle(Messages.getString("Gui.Title") + " " + Messages.getString("Version.Number")); //$NON-NLS-1$ //$NON-NLS-2$
+          setTitle(Messages.getString("Gui.ServingAudioTitle"));
+          _previousButton = _audioButton;
+          startComms(new AudioTransport());
+        }
+        else
+          if ((e.getSource() == _disconnectButton) && (_previousButton != _disconnectButton))
+          {
+            setTitle(Messages.getString("Gui.Title") + " " + Messages.getString("Version.Number")); //$NON-NLS-1$ //$NON-NLS-2$
+            _previousButton = _disconnectButton;
+            startComms(null);
+          }
+        else
+          if (e.getActionCommand().equals(Messages.getString("Gui.ProtocolCompatability"))) //$NON-NLS-1$
+          {
+            if (_commsThread != null)
+            {
+              _commsThread.setProtocolCompatibility(_protoCompatMenuItem.isSelected());
+            }
+            saveProperties();
+          }
+          else
+            if (e.getActionCommand().equals(Messages.getString("Gui.Trace"))) //$NON-NLS-1$
+            {
+              Log.getSingleton().setTrace(_traceMenuItem.isSelected());
+              saveProperties();
+            }
+    Log.println(false, "Gui.actionPerformed() exit.");
   }
 
   public String getWorkingDirectory()
@@ -287,6 +361,13 @@ public final class Gui extends JFrame implements ActionListener
       _workingDirectory = _workingDirectory.substring(0, _workingDirectory.length() - 2);
     }
     return _workingDirectory;
+  }
+
+  public void serialConfigGui()
+  {
+    SerialConfig.getSingleton();
+    SerialConfig.setProperties(_properties);
+    SerialConfig.showSingleton();
   }
 
   public byte setWorkingDirectory(String cwd)
@@ -361,11 +442,6 @@ public final class Gui extends JFrame implements ActionListener
     progressBar.setValue(value);
   }
 
-  public void setWindowTitle(String text)
-  {
-    setTitle(text);
-  }
-
   public void setMainText(String text)
   {
     labelMainProgress.setText(text);
@@ -412,7 +488,7 @@ public final class Gui extends JFrame implements ActionListener
       Object buttons[] =
       { Messages.getString("Gui.Ok"), Messages.getString("Gui.Cancel") };
       String message;
-      Log.println(false,"Gui.MenuAction.actionPerformed() responding to "+e.getActionCommand());
+      Log.println(false, "Gui.MenuAction.actionPerformed() responding to " + e.getActionCommand());
       if (e.getActionCommand().equals(Messages.getString("Gui.Quit"))) //$NON-NLS-1$
       {
         setVisible(false);
@@ -422,95 +498,113 @@ public final class Gui extends JFrame implements ActionListener
       else
         if (e.getActionCommand().equals(Messages.getString("Gui.About"))) //$NON-NLS-1$
         {
+
           JOptionPane.showMessageDialog(null, Messages.getString("Gui.AboutText"), Messages.getString("Gui.About"),
               JOptionPane.INFORMATION_MESSAGE);
         }
         else
-          if (e.getActionCommand().equals(Messages.getString("Gui.CD"))) //$NON-NLS-1$
+          if (e.getActionCommand().equals(Messages.getString("Gui.Website"))) //$NON-NLS-1$
           {
-            JFileChooser jc = new JFileChooser();
-            jc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-            jc.setCurrentDirectory(new File(getWorkingDirectory()));
-            int rc = jc.showDialog(_parent, Messages.getString("Gui.CDSet"));
-            if (rc == 0)
-            {
-              if (jc.getSelectedFile().isDirectory())
-              {
-                setWorkingDirectory(jc.getSelectedFile().toString());
-                setSecondaryText(jc.getSelectedFile().toString());
-                saveProperties();
-              }
-              else
-                setSecondaryText(Messages.getString("Gui.InvalidCD"));
-            }
+            BareBonesBrowserLaunch.openURL("http://adtpro.sourceforge.net");
           }
           else
-            if ((e.getActionCommand().equals(Messages.getString("Gui.BS.DOS"))) || //$NON-NLS-1$
-                (e.getActionCommand().equals(Messages.getString("Gui.BS.DOS2"))) || //$NON-NLS-1$
-                (e.getActionCommand().equals(Messages.getString("Gui.BS.ADT"))) || //$NON-NLS-1$
-                (e.getActionCommand().equals(Messages.getString("Gui.BS.ADTPro"))) || //$NON-NLS-1$
-                (e.getActionCommand().equals(Messages.getString("Gui.BS.ADTProAudio"))) || //$NON-NLS-1$
-                (e.getActionCommand().equals(Messages.getString("Gui.BS.ADTProEthernet")))) //$NON-NLS-1$
+            if (e.getActionCommand().equals(Messages.getString("Gui.CD"))) //$NON-NLS-1$
             {
-              int size = _commsThread.requestSend(e.getActionCommand(), false);
-              message = _commsThread.getInstructions(e.getActionCommand(), size);
-              /* Ask the user if she is sure */
-              int ret = JOptionPane.showOptionDialog(_parent, message, Messages.getString("Gui.Name"),
-                  JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE, null, buttons, buttons[0]);
-              if (ret == JOptionPane.YES_OPTION)
+              JFileChooser jc = new JFileChooser();
+              jc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+              jc.setCurrentDirectory(new File(getWorkingDirectory()));
+              int rc = jc.showDialog(_parent, Messages.getString("Gui.CDSet"));
+              if (rc == 0)
               {
-                _commsThread.requestSend(e.getActionCommand(),true);
+                if (jc.getSelectedFile().isDirectory())
+                {
+                  setWorkingDirectory(jc.getSelectedFile().toString());
+                  setSecondaryText(jc.getSelectedFile().toString());
+                  saveProperties();
+                }
+                else
+                  setSecondaryText(Messages.getString("Gui.InvalidCD"));
               }
             }
-      Log.println(false,"Gui.MenuAction.actionPerformed() exit.");
+            else
+              if ((e.getActionCommand().equals(Messages.getString("Gui.BS.DOS"))) || //$NON-NLS-1$
+                  (e.getActionCommand().equals(Messages.getString("Gui.BS.DOS2"))) || //$NON-NLS-1$
+                  (e.getActionCommand().equals(Messages.getString("Gui.BS.ADT"))) || //$NON-NLS-1$
+                  (e.getActionCommand().equals(Messages.getString("Gui.BS.ADTPro"))) || //$NON-NLS-1$
+                  (e.getActionCommand().equals(Messages.getString("Gui.BS.ADTProAudio"))) || //$NON-NLS-1$
+                  (e.getActionCommand().equals(Messages.getString("Gui.BS.ADTProEthernet")))) //$NON-NLS-1$
+              {
+                int size = _commsThread.requestSend(e.getActionCommand(), false);
+                message = _commsThread.getInstructions(e.getActionCommand(), size);
+                /* Ask the user if she is sure */
+                int ret = JOptionPane.showOptionDialog(_parent, message, Messages.getString("Gui.Name"),
+                    JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE, null, buttons, buttons[0]);
+                if (ret == JOptionPane.YES_OPTION)
+                {
+                  _commsThread.requestSend(e.getActionCommand(), true);
+                }
+              }
+              else
+                if ((e.getActionCommand().equals(Messages.getString("Gui.SerialConfig"))))
+                {
+                  serialConfigGui();
+                  if (SerialConfig.getSingleton().getExitStatus() == SerialConfig.OK)
+                  {
+                    if (_commsThread != null)
+                    {
+                      //_commsThread.setHardwareHandshaking(_properties.getProperty("HardwareHandshaking", "false").compareTo("true") == 0);
+                      //_commsThread.setSpeed(Integer.parseInt(_properties.getProperty("CommPortSpeed")));
+                      _commsThread.setParms(_properties.getProperty("CommPort"),Integer.parseInt(_properties.getProperty("CommPortSpeed")),_properties.getProperty("HardwareHandshaking", "false").compareTo("true") == 0);
+                      String msg = Messages.getString("Gui.ServingSerialTitle");
+                      msg = msg.replaceAll("%1",_properties.getProperty("CommPort"));
+                      msg = msg.replaceAll("%2",_properties.getProperty("CommPortSpeed"));
+                      setTitle(msg);
+                    }
+                  }
+                }
+      Log.println(false, "Gui.MenuAction.actionPerformed() exit.");
     }
   }
 
-  public void startComms()
+  public void startComms(ATransport transport)
   {
-    Log.println(false,"Gui.startComms() entry.");
+    Log.println(false, "Gui.startComms() entry.");
     if (_commsThread != null)
     {
       try
       {
-        Log.println(false,"Gui.startComms() about to interrupt existing comms thread...");
+        Log.println(false, "Gui.startComms() about to interrupt existing comms thread...");
         _commsThread.interrupt();
-        Log.println(false,"Gui.startComms() about to request stop of comms thread...");
+        Log.println(false, "Gui.startComms() about to request stop of comms thread...");
         _commsThread.requestStop();
-        Log.println(false,"Gui.startComms() about clean up after thread...");
+        Log.println(false, "Gui.startComms() about clean up after thread...");
         cleanupCommsThread();
       }
       catch (Throwable throwable)
       {
         Log.printStackTrace(throwable);
       }
-      comboComPort.setEnabled(true);
-      comboSpeed.setEnabled(true);
       menuBootstrap.setEnabled(false);
-      setTitle(Messages.getString("Gui.Title") + " " + Messages.getString("Version.Number")); //$NON-NLS-1$ //$NON-NLS-2$
-      Log.println(false,"Gui.startComms() done with old thread.");
+      Log.println(false, "Gui.startComms() done with old thread.");
     }
-    else
+    if (transport != null)
     {
-      _commsThread = new CommsThread(this, (String) comboComPort.getSelectedItem(), (String) comboSpeed.getSelectedItem());
+      _commsThread = new CommsThread(this, transport);
       _commsThread.start();
-      _commsThread.setHardwareHandshaking(_iicMenuItem.isSelected());
-      _commsThread.setHardwareHandshaking(_iicMenuItem.isSelected());
       _commsThread.setProtocolCompatibility(_protoCompatMenuItem.isSelected());
       setMainText(Messages.getString("Gui.Quiesced")); //$NON-NLS-1$
       setSecondaryText(Messages.getString("Gui.Connected")); //$NON-NLS-1$
-      buttonConnect.setText(Messages.getString("Gui.Disconnect")); //$NON-NLS-1$
       clearProgress();
       saveProperties();
-      comboComPort.setEnabled(false);
-      comboSpeed.setEnabled(false);
       if (_commsThread.supportsBootstrap())
       {
         menuBootstrap.setEnabled(true);
         _dosAction2.setEnabled(_commsThread.transportType() == ATransport.TRANSPORT_TYPE_AUDIO);
       }
     }
-    Log.println(false,"Gui.startComms() exit.");
+    else
+      Log.println(false, "Gui.startComms() didn't find anything to do...");
+    Log.println(false, "Gui.startComms() exit.");
   }
 
   public void cancelCommsThread()
@@ -526,36 +620,22 @@ public final class Gui extends JFrame implements ActionListener
     _commsThread = null;
     setMainText(Messages.getString("Gui.Quiesced")); //$NON-NLS-1$
     setSecondaryText(Messages.getString("Gui.Disconnected")); //$NON-NLS-1$
-    buttonConnect.setText(Messages.getString("Gui.Connect")); //$NON-NLS-1$
     clearProgress();
-    comboComPort.setEnabled(true);
-    comboSpeed.setEnabled(true);
   }
 
   public void saveProperties()
   {
-    if (comboComPort != null) _properties.setProperty("CommPort", (String) comboComPort.getSelectedItem());
-    if (comboSpeed != null) _properties.setProperty("CommPortSpeed", (String) comboSpeed.getSelectedItem());
-    if (_iicMenuItem != null)
-    {
-      if (_iicMenuItem.isSelected())
-        _properties.setProperty("HardwareHandshaking","true");
-      else
-        _properties.setProperty("HardwareHandshaking","false");
-    }
     if (_protoCompatMenuItem != null)
     {
-      if (_protoCompatMenuItem.isSelected())
-        _properties.setProperty("Client01xCompatibleProtocol","true");
+      if (_protoCompatMenuItem.isSelected()) _properties.setProperty("Client01xCompatibleProtocol", "true");
       else
-        _properties.setProperty("Client01xCompatibleProtocol","false");
+        _properties.setProperty("Client01xCompatibleProtocol", "false");
     }
     if (_traceMenuItem != null)
     {
-      if (_traceMenuItem.isSelected())
-        _properties.setProperty("TraceEnabled","true");
+      if (_traceMenuItem.isSelected()) _properties.setProperty("TraceEnabled", "true");
       else
-        _properties.setProperty("TraceEnabled","false");
+        _properties.setProperty("TraceEnabled", "false");
     }
     _properties.setProperty("WorkingDirectory", getWorkingDirectory());
     _properties.save();

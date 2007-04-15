@@ -44,9 +44,11 @@ public class SerialTransport extends ATransport
 
   protected boolean connected;
 
-  protected String portName = null;
+  protected String _portName = null;
 
   protected int _currentSpeed = 0;
+  
+  protected boolean _hardware = false;
 
   /**
    * Create a new instance of the Comm API Transport. This constructor creates a
@@ -63,23 +65,16 @@ public class SerialTransport extends ATransport
    *              used to pass any exceptions thrown during initialization.
    */
 
-  public SerialTransport(String portName, String speed) throws Exception
+  public SerialTransport(String portName, String speed, boolean hardware) throws Exception
   {
     Log.getSingleton();
-    this.portName = portName;
+    this._portName = portName;
     connected = false;
     try
     {
-      portId = CommPortIdentifier.getPortIdentifier(portName);
-      port = (RXTXPort) portId.open(Messages.getString("SerialTransport.3"), 100); //$NON-NLS-1$
+      _hardware = hardware;
       _currentSpeed = Integer.parseInt(speed);
-      port.setSerialPortParams(_currentSpeed, 8, 1, 0);
-      port.setFlowControlMode(SerialPort.FLOWCONTROL_RTSCTS_IN);
-      port.enableReceiveTimeout(250);
-      inputStream = new DataInputStream(port.getInputStream());
-      outputStream = new DataOutputStream(port.getOutputStream());
-      connected = true;
-      Log.println(true, "SerialTransport opened port named " + portName + " at speed " + speed + "."); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+      open(portName, _currentSpeed, _hardware);
     }
     catch (java.lang.NoClassDefFoundError e)
     {
@@ -168,6 +163,7 @@ public class SerialTransport extends ATransport
    * @exception IOException
    *              thrown when a problem occurs with flushing the stream.
    */
+
   public void open() throws Exception
   {
     if (connected)
@@ -176,14 +172,37 @@ public class SerialTransport extends ATransport
     }
     else
     {
-      port = (RXTXPort) portId.open(Messages.getString("SerialTransport.3"), 100); //$NON-NLS-1$
-      port.setSerialPortParams(115200, 8, 1, 0);
-      port.setFlowControlMode(SerialPort.FLOWCONTROL_RTSCTS_IN);
-      inputStream = new DataInputStream(port.getInputStream());
-      outputStream = new DataOutputStream(port.getOutputStream());
-      connected = true;
+      open(_portName, _currentSpeed, false);
       return;
     }
+  }
+
+  /**
+   * Opens a read/write connection to the implemented transport. This method
+   * should open the transport device being implemented using default
+   * parameters.
+   * 
+   * @exception IOException
+   *              thrown when a problem occurs with flushing the stream.
+   */
+  public void open(String portName, int portSpeed, boolean hardware) throws Exception
+  {
+    Log.println(false, "SerialTransport.open() entry.");
+    if (connected)
+    {
+      Log.println(false, "SerialTransport.open() was connected; closing.");
+      close();
+    }
+    portId = CommPortIdentifier.getPortIdentifier(portName);
+    port = (RXTXPort) portId.open(Messages.getString("SerialTransport.3"), 100); //$NON-NLS-1$
+    port.setSerialPortParams(portSpeed, 8, 1, 0);
+    setHardwareHandshaking(hardware);
+    port.enableReceiveTimeout(250);
+    inputStream = new DataInputStream(port.getInputStream());
+    outputStream = new DataOutputStream(port.getOutputStream());
+    connected = true;      
+    Log.println(true, "SerialTransport opened port named " + portName + " at speed " + portSpeed + "."); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+    return;
   }
 
   /**
@@ -219,6 +238,38 @@ public class SerialTransport extends ATransport
   }
 
   /**
+   * Sets the parameters of the underlying Java COMM API port.
+   * 
+   * @param port
+   *          The port to set the transport to.
+   * @param speed
+   *          The speed to set the transport to.
+   * @param hardware
+   *          Boolean to say if hardware handshaking should be used
+   * @exception IOException
+   *              thrown when a problem occurs with flushing the stream.
+   */
+
+  public void setParms(String newPort, int newSpeed, boolean newHardware) throws Exception
+  {
+    if (!newPort.equals(_portName))
+    {
+      close();
+      open(newPort, newSpeed, newHardware);
+    }
+    else
+    {
+      setHardwareHandshaking(newHardware);
+      if (_currentSpeed != newSpeed)
+      {
+        flush();
+        _currentSpeed = newSpeed;
+        port.setSerialPortParams(newSpeed, 8, 1, 0);
+      }
+    }
+  }
+
+  /**
    * Sets the speed of the underlying Java COMM API port.
    * 
    * @param speed
@@ -229,8 +280,12 @@ public class SerialTransport extends ATransport
 
   public void setSpeed(int speed) throws Exception
   {
-    flush();
-    port.setSerialPortParams(speed, 8, 1, 0);
+    if (_currentSpeed != speed)
+    {
+      flush();
+      _currentSpeed = speed;
+      port.setSerialPortParams(speed, 8, 1, 0);
+    }
   }
 
   /**
@@ -358,6 +413,7 @@ public class SerialTransport extends ATransport
 
   public void setHardwareHandshaking(boolean state)
   {
+    _hardware = state;
     if (state) port.setFlowControlMode(SerialPort.FLOWCONTROL_NONE);
     else
       port.setFlowControlMode(SerialPort.FLOWCONTROL_RTSCTS_IN);

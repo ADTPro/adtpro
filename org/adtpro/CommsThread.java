@@ -58,27 +58,26 @@ public class CommsThread extends Thread
 
   private Worker _worker = null;
 
-  public CommsThread(Gui parent, String one, String two)
+  public CommsThread(Gui parent, ATransport transport)
   {
+    _transport = transport;
     Log.getSingleton();
     Log.println(false, "CommsThread constructor.");
     _parent = parent;
     try
     {
-      if (one.equals(Messages.getString("Gui.Ethernet")))
+      if (transport.getClass() == AudioTransport.class)
+      {
+        _transport.open();
+      }
+      else if (transport.getClass() == UDPTransport.class)
       {
         _transport = (ATransport) new UDPTransport("6502");
         _transport.open();
-        _parent.setTitle(Messages.getString("Gui.EthTitle") + " " + InetAddress.getLocalHost().getHostAddress());
       }
       else
-        if (one.equals(Messages.getString("Gui.Audio")))
-        {
-          _transport = (ATransport) new AudioTransport();
-          _transport.open();
-        }
-        else
-          _transport = (ATransport) new SerialTransport(one, two);
+        //_transport = (ATransport) new SerialTransport(one, two);
+        _transport.open();
     }
     catch (Exception ex)
     {
@@ -1485,6 +1484,40 @@ public class CommsThread extends Thread
     if (_transport.transportType() == ATransport.TRANSPORT_TYPE_SERIAL)
     {
       ((SerialTransport) _transport).setHardwareHandshaking(state);
+    }
+  }
+
+  public void setSpeed(int speed)
+  {
+    if (_transport.transportType() == ATransport.TRANSPORT_TYPE_SERIAL)
+    {
+      try
+      {
+        Log.println(false,"CommsThread.setSpeed() Attempting to set the serial port's speed to "+speed);
+        ((SerialTransport) _transport).setSpeed(speed);
+        Log.println(false,"CommsThread.setSpeed() successful.");
+      }
+      catch (Exception e)
+      {
+        Log.printStackTrace(e);
+        Log.println(true,"CommsThread.setSpeed() failed to set the port speed to "+speed+".");
+      }
+    }
+  }
+
+  public void setParms(String portName, int speed, boolean hardware)
+  {
+    if (_transport.transportType() == ATransport.TRANSPORT_TYPE_SERIAL)
+    {
+      try
+      {
+        ((SerialTransport) _transport).setParms(portName, speed, hardware);
+      }
+      catch (Exception e)
+      {
+        Log.printStackTrace(e);
+        Log.println(true,"CommsThread.setParms() failed to set the port parameters.");
+      }
     }
   }
 
