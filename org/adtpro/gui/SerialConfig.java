@@ -54,7 +54,7 @@ public class SerialConfig extends JDialog implements ActionListener
    */
   private SerialConfig()
   {
-    this.setTitle(Messages.getString("Gui.SerialConfig"));
+     this.setTitle(Messages.getString("Gui.SerialConfig"));
     JPanel buttonPanel = new JPanel(new GridBagLayout());
     okButton.addActionListener(this);
     cancelButton.addActionListener(this);
@@ -140,16 +140,8 @@ public class SerialConfig extends JDialog implements ActionListener
         GridBagConstraints.WEST, // Anchor value
         1.0, 0.0, // Weight X, Y
         0, 0, 5, 5); // Top, left, bottom, right insets
-    /*
-    dialog.getContentPane().add(SerialConfig.getSingleton());
-    SerialConfig.setProperties(_properties);
-    dialog.pack();
-    dialog.setBounds(FrameUtils.center(dialog.getSize()));
-    dialog.show();
-    */
     this.pack();
     this.setBounds(FrameUtils.center(this.getSize()));
-    //this.show();
     Log.println(false,"SerialConfig Constructor exit.");
   }
 
@@ -199,9 +191,10 @@ public class SerialConfig extends JDialog implements ActionListener
     return (boolean)_theSingleton.iicCheckBox.isSelected();
   }
 
-  public static void showSingleton()
+  public static void showSingleton(Gui parent)
   {
     _theSingleton.setModal(true);
+    _theSingleton.setBounds(FrameUtils.center(_theSingleton.getSize(),parent.getBounds()));
     _theSingleton.show();
   }
 

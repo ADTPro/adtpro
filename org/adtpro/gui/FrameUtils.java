@@ -24,6 +24,12 @@ import java.awt.*;
 
 public class FrameUtils
 {
+  /**
+   * center: center a Rectangle on screen coordinates
+   * 
+   * @param dim - Dimension of desired component
+   * @return Rectangle, centered on screen coordinates
+   */
   public static Rectangle center(Dimension dim)
   {
     final Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
@@ -35,6 +41,41 @@ public class FrameUtils
                    dim.height);
     return centeredRect;
   }
+
+  /**
+   * center: center a Rectangle within a viewport
+   * 
+   * @param dim - Dimension of desired component
+   * @param r - Rectangle of viewport
+   * @return Rectangle, centered on rectangle coordinates
+   */
+  public static Rectangle center(Dimension dim, Rectangle r)
+  {
+    final Rectangle centeredRect =
+    new Rectangle( (r.width  - dim.width)  /2 + r.x,
+                   (r.height - dim.height) /2 + r.y,
+                   dim.width,
+                   dim.height);
+    return centeredRect;
+  }
+
+  /**
+   * @param r - desired rectangle
+   * @return true if the rectangle will fit on the screen
+   */
+  public static boolean fits(Rectangle r)
+  {
+    boolean ret = false;
+    final Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+
+    if (((r.x + r.width) <= screenSize.width) && 
+        ((r.y + r.height) <= screenSize.height))
+    {
+      ret = true;
+    }
+    return ret;
+  }
+
   private FrameUtils()
   {
     // Prohibit instantiation

@@ -24,17 +24,15 @@ import java.awt.BorderLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.awt.Rectangle;
 import java.awt.Toolkit;
 import java.awt.Window;
 import java.awt.event.*;
 import java.io.File;
 import java.io.IOException;
 import java.net.InetAddress;
-import java.net.UnknownHostException;
 
 import javax.swing.*;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 
 import org.adtpro.resources.Messages;
 import org.adtpro.transport.ATransport;
@@ -201,51 +199,76 @@ public final class Gui extends JFrame implements ActionListener
         GridBagConstraints.HORIZONTAL, // Fill value
         GridBagConstraints.WEST, // Anchor value
         0.0, 0.0, // Weight X, Y
-        0, 5, 5, 5); // Top, left, bottom, right insets
+        5, 5, 5, 0); // Top, left, bottom, right insets
     GridBagUtil.constrain(mainPanel, _ethernetButton, 2, 1, // X, Y Coordinates
         1, 1, // Grid width, height
         GridBagConstraints.HORIZONTAL, // Fill value
         GridBagConstraints.WEST, // Anchor value
         0.0, 0.0, // Weight X, Y
-        0, 0, 5, 5); // Top, left, bottom, right insets
+        5, 10, 5, 0); // Top, left, bottom, right insets
     GridBagUtil.constrain(mainPanel, _audioButton, 3, 1, // X, Y Coordinates
         1, 1, // Grid width, height
         GridBagConstraints.HORIZONTAL, // Fill value
         GridBagConstraints.WEST, // Anchor value
         0.0, 0.0, // Weight X, Y
-        0, 0, 5, 5); // Top, left, bottom, right insets
+        5, 10, 5, 0); // Top, left, bottom, right insets
     GridBagUtil.constrain(mainPanel, _disconnectButton, 4, 1, // X, Y
         // Coordinates
         1, 1, // Grid width, height
-        GridBagConstraints.HORIZONTAL, // Fill value
-        GridBagConstraints.WEST, // Anchor value
+        GridBagConstraints.NONE, // Fill value
+        GridBagConstraints.EAST, // Anchor value
         0.0, 0.0, // Weight X, Y
-        0, 0, 5, 5); // Top, left, bottom, right insets
+        5, 10, 5, 5); // Top, left, bottom, right insets
     GridBagUtil.constrain(mainPanel, labelMainProgress, 1, 3, // X, Y
         // Coordinates
         4, 1, // Grid width, height
         GridBagConstraints.HORIZONTAL, // Fill value
         GridBagConstraints.WEST, // Anchor value
-        0.0, 0.0, // Weight X, Y
+        1.0, 0.0, // Weight X, Y
         0, 5, 5, 5); // Top, left, bottom, right insets
     GridBagUtil.constrain(mainPanel, progressBar, 1, 4, // X, Y Coordinates
         4, 1, // Grid width, height
         GridBagConstraints.HORIZONTAL, // Fill value
         GridBagConstraints.WEST, // Anchor value
-        0.0, 0.0, // Weight X, Y
+        1.0, 0.0, // Weight X, Y
         0, 5, 5, 5); // Top, left, bottom, right insets
     GridBagUtil.constrain(mainPanel, labelSubProgress, 1, 5, // X, Y
         // Coordinates
         4, 1, // Grid width, height
         GridBagConstraints.HORIZONTAL, // Fill value
         GridBagConstraints.WEST, // Anchor value
-        0.0, 0.0, // Weight X, Y
+        1.0, 0.0, // Weight X, Y
         0, 5, 5, 5); // Top, left, bottom, right insets
     _parent = this;
     this.pack();
     _disconnectButton.doClick();
     _previousButton = _disconnectButton; // Remember last button state
-    setBounds(FrameUtils.center(this.getSize()));
+
+    int coord = Integer.parseInt(_properties.getProperty("CoordH", "0"));
+    if (coord > 0)
+    {
+      Rectangle r = new Rectangle(
+          Integer.parseInt(_properties.getProperty("CoordX", "0")),
+          Integer.parseInt(_properties.getProperty("CoordY", "0")),
+          Integer.parseInt(_properties.getProperty("CoordW", "0")),
+          Integer.parseInt(_properties.getProperty("CoordH", "0")));
+      if (((r.height == 0) || (r.width == 0)) || // Anything was zero
+          (!FrameUtils.fits(r))) // Dimensions put us outside current view
+      {
+        Log.println(false,"Gui setting screen coordinates to defaults; properties file coords weren't good.");
+        setBounds(FrameUtils.center(this.getSize()));
+      }
+      else
+      {
+        Log.println(false,"Gui setting screen coordinates from properties file values.");
+        setBounds(r);
+      }
+    }
+    else
+    {
+      Log.println(false,"Gui setting screen coordinates to defaults; properties file height was zero.");
+      setBounds(FrameUtils.center(this.getSize()));
+    }
     this.show();
     SerialConfig.getSingleton();
     Log.println(false, "Gui Constructor exit.");
@@ -367,7 +390,7 @@ public final class Gui extends JFrame implements ActionListener
   {
     SerialConfig.getSingleton();
     SerialConfig.setProperties(_properties);
-    SerialConfig.showSingleton();
+    SerialConfig.showSingleton(this);
   }
 
   public byte setWorkingDirectory(String cwd)
@@ -491,6 +514,7 @@ public final class Gui extends JFrame implements ActionListener
       Log.println(false, "Gui.MenuAction.actionPerformed() responding to " + e.getActionCommand());
       if (e.getActionCommand().equals(Messages.getString("Gui.Quit"))) //$NON-NLS-1$
       {
+        saveProperties();
         setVisible(false);
         dispose();
         System.exit(0);
@@ -550,10 +574,8 @@ public final class Gui extends JFrame implements ActionListener
                   serialConfigGui();
                   if (SerialConfig.getSingleton().getExitStatus() == SerialConfig.OK)
                   {
-                    if (_commsThread != null)
+                    if ((_commsThread != null) && (_commsThread.transportType() == ATransport.TRANSPORT_TYPE_SERIAL))
                     {
-                      //_commsThread.setHardwareHandshaking(_properties.getProperty("HardwareHandshaking", "false").compareTo("true") == 0);
-                      //_commsThread.setSpeed(Integer.parseInt(_properties.getProperty("CommPortSpeed")));
                       _commsThread.setParms(_properties.getProperty("CommPort"),Integer.parseInt(_properties.getProperty("CommPortSpeed")),_properties.getProperty("HardwareHandshaking", "false").compareTo("true") == 0);
                       String msg = Messages.getString("Gui.ServingSerialTitle");
                       msg = msg.replaceAll("%1",_properties.getProperty("CommPort"));
@@ -638,6 +660,14 @@ public final class Gui extends JFrame implements ActionListener
         _properties.setProperty("TraceEnabled", "false");
     }
     _properties.setProperty("WorkingDirectory", getWorkingDirectory());
+    Rectangle r = this.getBounds();
+    if (r.height > 0)
+    {
+      _properties.setProperty("CoordX", ""+r.x);
+      _properties.setProperty("CoordY", ""+r.y);
+      _properties.setProperty("CoordH", ""+r.height);
+      _properties.setProperty("CoordW", ""+r.width);
+    }
     _properties.save();
   }
 
@@ -646,6 +676,8 @@ public final class Gui extends JFrame implements ActionListener
     public void windowClosing(WindowEvent e)
     {
       Window w = e.getWindow();
+      Gui parent = (Gui)e.getSource();
+      parent.saveProperties();
       w.setVisible(false);
       w.dispose();
       System.exit(0);
