@@ -241,6 +241,7 @@ public final class Gui extends JFrame implements ActionListener
         0, 5, 5, 5); // Top, left, bottom, right insets
     _parent = this;
     this.pack();
+    _disconnectButton.requestFocus();
     _disconnectButton.doClick();
     _previousButton = _disconnectButton; // Remember last button state
 
