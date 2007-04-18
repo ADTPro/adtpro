@@ -274,9 +274,9 @@ public class CommsThread extends Thread
       Disk disk = null;
       try
       {
-        Log.println(false, "CommsThread.queryFileSize() seeking file " + _parent.getWorkingDirectory() + File.separator
+        Log.println(false, "CommsThread.queryFileSize() seeking file " + _parent.getWorkingDirectory() 
             + requestedFileName);
-        disk = new Disk(_parent.getWorkingDirectory() + File.separator + requestedFileName);
+        disk = new Disk(_parent.getWorkingDirectory() + requestedFileName);
       }
       catch (IOException e)
       {
@@ -358,7 +358,7 @@ public class CommsThread extends Thread
     try
     {
       Log.print(false, "Waiting for name..."); //$NON-NLS-1$
-      String name = _parent.getWorkingDirectory() + File.separator + receiveName();
+      String name = _parent.getWorkingDirectory() + receiveName();
       Log.println(false, " received name: " + name); //$NON-NLS-1$
       File f = null;
       String nameGen, zeroPad;

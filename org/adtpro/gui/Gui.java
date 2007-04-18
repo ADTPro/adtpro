@@ -399,17 +399,22 @@ public final class Gui extends JFrame implements ActionListener
     byte rc = 0x06; // Unable to change directory message at Apple
     cwd = cwd.trim();
     File parentDir;
+    System.out.println("cwd: "+cwd);
+    System.out.println("_workingDirectory: "+_workingDirectory);
     if (cwd.equals("/") || cwd.equals("\\")) parentDir = null;
     else
       parentDir = new File(_workingDirectory);
     if ((cwd.startsWith("/") || cwd.startsWith("\\"))) parentDir = null;
+    System.out.println("parentDir: "+parentDir);
 
     File baseDirFile = new File(parentDir, cwd);
+    System.out.println("baseDirFile: "+baseDirFile);
     String tempWorkingDirectory = null;
     try
     {
       tempWorkingDirectory = baseDirFile.getCanonicalPath();
       baseDirFile = new File(tempWorkingDirectory);
+      System.out.println("baseDirFile2: "+baseDirFile);
       if (!baseDirFile.isDirectory())
       {
         tempWorkingDirectory = null;
@@ -417,6 +422,7 @@ public final class Gui extends JFrame implements ActionListener
     }
     catch (IOException io)
     {
+      System.out.println("io exception...");
       tempWorkingDirectory = null;
       baseDirFile = new File(cwd);
       try
@@ -434,6 +440,10 @@ public final class Gui extends JFrame implements ActionListener
     }
     if (tempWorkingDirectory != null)
     {
+      if (!_workingDirectory.endsWith(File.separator))
+      {
+        _workingDirectory = _workingDirectory + File.separator; 
+      }
       _workingDirectory = tempWorkingDirectory;
       saveProperties();
       rc = 0x00;
