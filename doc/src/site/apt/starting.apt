@@ -24,11 +24,15 @@ to a specific Java JRE, for example, you can modify the scripts.
 [images/serverInit.png]
 
  From here, you can select the communications device you want to use at 
- the host end.  Note that the speed setting only applies if you are using
- a serial port.  Be sure to click the "Connect" button to start the server
- listening on the device specified.  Choose a maching client program at the
- Apple II end as discussed below.
-
+ the host end by clicking one of the shiny buttons (besides Disconnect, of course).
+ Note that serial communications has an additional set of
+ configuration options, accessible from the <<<File->Serial Configuration>>>
+ menu item.  The first time you use serial communications, the Serial Configuration
+ dialog box will come up automatically to allow you to pick a communications port
+ and speed:
+ 
+[images/serialConfig.png]
+ 
  During development of version 0.2.1 of the server and client software,
  there was a {change} in the transfer protocol.  
  Servers and clients in the 0.2.x family are of course compatible
@@ -47,12 +51,14 @@ version of ADTPro by default.  But all three versions are actually on your disk:
 
   * <<<ADTPRO>>> - for serial cards, the IIgs modem port, or the IIc serial port
   
-  * <<<ADTPROETH>>> - for the Uthernet card
+  * <<<ADTPROETH>>> - for the Ethernet communications via the Uthernet card
   
-  * <<<ADTPROAUD>>> - for sound card/cassette port
+  * <<<ADTPROAUD>>> - for Audio communications via sound card/cassette ports
 
   []
 
+ Be sure to choose a client program at the Apple II end to match the communications
+ device being used at the host end.
  You can choose which one will start by default by modifying the
 supplied <<<STARTUP>>> program on the disk.  The <<<STARTUP>>> program is simply this:
 

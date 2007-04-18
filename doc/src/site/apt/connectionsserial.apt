@@ -108,7 +108,8 @@ It looks like this:
   I don't have an IIc to test and take pictures of 
   {{{mailto:fixme... david__schmidt at users dot sourceforge dot net}(donations, anyone?)}},
   but users report success with standard serial port adapters.  
-  You will also need to tick the "Apple IIc Serial" checkbox in the server File menu:
+  You will need to tick the "Apple IIc Serial" checkbox in the serial config
+  dialog box, brought up from the <<<File->Serial Configuration>>> menu item:
 
 [images/tickiic.png]
 
@@ -162,7 +163,9 @@ Since this adapter happens to have two ports on it, you see suffixes of ".1" and
 ".2."  They will correspond to whichever port (on the adapter itself) you are
 plugging your serial cable into.
 
-  At the ADTPro server software end, should see those names repeated.
+  At the ADTPro server software end, should see those names repeated in the
+serial configuration dialog box (which comes up with the 
+<<<File->Serial Configuration>>> menu item).
 In Keyspan's case, you will see a prefix of "tty" and "cu" added to each port name.
 ADTPro seems to be able to function normally using either flavor.
 
