@@ -256,6 +256,7 @@ public class SerialTransport extends ATransport
     {
       close();
       open(newPort, newSpeed, newHardware);
+      _portName = newPort;
     }
     else
     {
