@@ -17,14 +17,18 @@ the stuff that gets uploaded to sourceforge.
 
 2. Perform a build
 
-3. Tag adtpro project with the version number.  The
+3. Ensure the client can BSAVE itself...
+
+4. Commit all changes
+
+5. Tag adtpro project with the version number.  The
     standard is:  v_[major]_[minor]_[service]
 
-5. Anonymously FTP ADTPro-v.r.m.zip to upload.sourceforge.net, in the incoming directory
+6. Anonymously FTP ADTPro-v.r.m.zip to upload.sourceforge.net, in the incoming directory
 
-6. Release the file
+7. Release the file
 
-7. Upload updated web contents:
+8. Upload updated web contents:
    sftp sf_user@adtpro.sourceforge.net
    cd /home/groups/a/ad/adtpro
    put adtpro.zip (or whatever you call the package)

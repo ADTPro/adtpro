@@ -21,7 +21,6 @@
 package org.adtpro;
 
 import java.io.*;
-import java.net.InetAddress;
 import java.util.GregorianCalendar;
 
 import org.adtpro.resources.Messages;
@@ -62,40 +61,58 @@ public class CommsThread extends Thread
   {
     _transport = transport;
     Log.getSingleton();
-    Log.println(false, "CommsThread constructor.");
+    Log.println(false, "CommsThread constructor entry.");
     _parent = parent;
     try
     {
-      if (transport.getClass() == AudioTransport.class)
-      {
-        _transport.open();
-      }
-      else if (transport.getClass() == UDPTransport.class)
-      {
-        _transport = (ATransport) new UDPTransport("6502");
-        _transport.open();
-      }
-      else
-        //_transport = (ATransport) new SerialTransport(one, two);
-        _transport.open();
+      _transport.open();
+    }
+    catch (java.net.BindException ex1)
+    {
+      Log.printStackTrace(ex1);
+      _parent.cancelCommsThread("Gui.PortInUse");
+      requestStop();
+    }
+    catch (gnu.io.PortInUseException ex1)
+    {
+      Log.printStackTrace(ex1);
+      _parent.cancelCommsThread("Gui.PortInUse");
+      requestStop();
+    }
+    catch (gnu.io.NoSuchPortException ex1)
+    {
+      Log.printStackTrace(ex1);
+      requestStop();
+      _parent.cancelCommsThread("Gui.PortDoesNotExist");
     }
     catch (Exception ex)
     {
       Log.printStackTrace(ex);
       _shouldRun = false;
     }
+    Log.println(false, "CommsThread constructor exit; _shouldRun="+_shouldRun);
   }
 
   public void run()
   {
-    Log.println(false, "CommsThread.run() entry.");
+    Log.println(false, "CommsThread.run() entry; _shouldRun="+_shouldRun);
     if (_shouldRun)
     {
       makeCrcTable();
       commandLoop();
     }
     else
-      _parent.cancelCommsThread();
+    {
+      if (_transport != null)
+      try
+      {
+        _transport.close();
+      }
+      catch (Exception e)
+      {
+        e.printStackTrace();
+      }
+    }
     Log.println(false, "CommsThread.run() exit.");
   }
 
@@ -1344,6 +1361,7 @@ public class CommsThread extends Thread
 
   public void requestStop()
   {
+    Log.println(false,"CommsThread.requestStop() entry.");
     _shouldRun = false;
     if (_worker != null)
     {
@@ -1351,14 +1369,19 @@ public class CommsThread extends Thread
     }
     try
     {
+      Log.println(false,"CommsThread.requestStop() about to close transport.");
       _transport.close();
     }
     catch (Exception ex)
     {
       Log.printStackTrace(ex);
     }
+    Log.println(false,"CommsThread.requestStop() exit.");
   }
 
+  /*
+   * Worker class is a thread that sends bootstrapping data.
+   */
   public class Worker extends Thread
   {
 

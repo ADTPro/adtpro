@@ -73,11 +73,17 @@ a little more typing on your part, but is substantially faster than serial.
     []
 
     [[1]] On the ADTPro server, select the communications port and speed you 
-      want to use and click the "Connect" button. (The bootstrapping 
-      operations will always use 300 baud, and will ignore the speed settings 
+      want to use via the <<<File->Serial Configuation>>> dialog box; click
+      <<<Ok>>>.   Then, click the big "Serial" button. (The bootstrapping 
+      operations will always use 300 baud, and will ignore the speed setting 
       for now.)
       
-    [[1]] On the ADTPro server, click on "Bootstrapping->Send ADTPro Serial Client."
+    [[1]] On the ADTPro server, decide which version of the client you wish to send.
+      You can send the serial ("Bootstrapping->Send ADTPro Serial Client"),
+      audio ("Bootstrapping->Send ADTPro Audio Client"), or ethernet 
+      ("Bootstrapping->Send ADTPro Ethernet Client").  You don't have to stick
+      to the same method of communicating with your Apple once you've finished
+      with the initial bootstrapping, but you certainly can if you want.
       After dismissing the dialog box,
       you should start to see text flowing (if slowly) across the Apple screen.
       After some 17-18 minutes, it will save the ADTPro client program to the current drive
@@ -145,9 +151,11 @@ machines, and two single-sided, double-density 5.25" floppy disks.
 
     []
 
-    [[1]] On the ADTPro server, select the communications port and speed you want
-      to use and click the "Connect" button.  (The bootstrapping operations will
-      always use 300 baud, and will ignore the speed settings for now.)
+    [[1]] On the ADTPro server, select the communications port and speed you 
+      want to use via the <<<File->Serial Configuation>>> dialog box; click
+      <<<Ok>>>.   Then, click the big "Serial" button. (The bootstrapping 
+      operations will always use 300 baud, and will ignore the speed setting 
+      for now.)
       Click on the "Bootstrapping->Send EsDOS ][" menu item.  Serial bootstrapping
       will not require the greyed-out "Send EsDOS ][ part 2" menu item.
       After dismissing the dialog box,
@@ -188,7 +196,7 @@ HIT RETURN WHEN READY TO FORMAT.
 
       []
 
-      On the ADTPro server, click on "Bootstrapping->Send DOS ADT Client."
+    [[1]] On the ADTPro server, click on "Bootstrapping->Send DOS ADT Client."
       After dismissing the dialog box,
       you should start to see text flowing (if slowly) across the Apple screen.
       When it's done (after some 8-9 minutes), it will save the DOS ADT client
@@ -203,13 +211,15 @@ HIT RETURN WHEN READY TO FORMAT.
       the DOS ADT client up if it doesn't come up automatically.
 
     [[1]] Remove the DOS ADT diskette from the drive, and insert another
-      formatted, blank floppy.  This one must be formatted; ADT can't format
-      it for you.
+      formatted, blank floppy.  This one must be formatted beforehand;
+      ADT can't format it for you.  Recall that formatting is done with the
+      <<<INIT HELLO>>> command with a blank disk in the drive on the Apple.
       If you need to change the default communications prameters,
       (ADT assumes a Super Serial card in slot #2, at 115k baud) hit the 
       <<<C>>> key.  You can change the SSC slot or or IIgs Modem port from there,
       as well as the baud rate, disk defaults, etc.
-      From the Apple, hit the <<<R>>> key when you're ready to receive the
+
+    [[1]] From the Apple, hit the <<<R>>> key when you're ready to receive the
       ADTPro client disk, ADTPro-v.r.m.dsk.
 
     [[1]] Boot ADTPro's newly minted disk.

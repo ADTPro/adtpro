@@ -10,8 +10,8 @@ ADTPro Release History
 
  New functionality:
 
- * Creature comforts: graphical buttons for communications devices,
-   Automatically save window position and size
+ * Server-side creature comforts: graphical buttons for communications
+   devices, automatically save window position and size
 
  []
 
@@ -57,7 +57,7 @@ ADTPro Release History
 
  * Added a logging/tracing capability via checkbox in the File menu.
    Enabling tracing logs verbose tracing information to a file name 
-   ADTProTrace.txt in the servers's startup directory.
+   ADTProTrace.txt in the server's startup directory.
 
  []
 

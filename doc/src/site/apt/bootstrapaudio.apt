@@ -14,10 +14,10 @@ ADTPro Audio Bootstrapping
  steps.  Please note that neither the IIgs or the IIc have cassette ports, 
  so this will only work on the II, II+, and IIe.
 
-    <<Note:>> At this point, you can't get all the way from metal to ProDOS exclusively 
-    through the audio port.  I cheat and use serial to get the ADTPro image
-    across.  We can push DOS, we can push ADT, and we can push ADTPro clients
-    through the audio port.  We just can't push ProDOS itself.
+    <<Note:>> At this point, you can't get all the way from metal to ProDOS
+    exclusively through audio transfers.  I cheat and use serial to get the
+    ADTPro image across.  We can push DOS, we can push ADT, and we can push
+    ADTPro clients through the audio port.  We just can't push ProDOS itself.
 
   If you don't use DOS ADT now, or don't have software for your Apple yet, 
 more bootstrapping scenarios and configurations are detailed below.
@@ -36,7 +36,8 @@ more bootstrapping scenarios and configurations are detailed below.
 
 * {If you already have ProDOS}
 
-    [[1]] {{{connectionsaudio.html}Connect}} the two computers through their audio ports.
+    [[1]] {{{connectionsaudio.html}Connect}} the two computers through their
+    audio out and cassette in ports.
 
     [[1]] Start your Apple with ProDOS booted from floppy (or any bootable partition).
       The following procedure will write the ADTPro client to the current prefix/directory,
@@ -49,14 +50,14 @@ more bootstrapping scenarios and configurations are detailed below.
 
     []
 
-    [[1]] On the ADTPro server, select "Audio" as the port to use 
-      and click the "Connect" button. (Audio transfers always ignore the speed
-      setting; it is not variable.)
+    [[1]] On the ADTPro server, push the "Audio" button.
       
     [[1]] On the ADTPro server, decide which version of the client you wish to send.
       You can send the audio ("Bootstrapping->Send ADTPro Audio Client"), serial
       ("Bootstrapping->Send ADTPro Serial Client"), or ethernet
-      ("Bootstrapping->Send ADTPro Ethernet Client").
+      ("Bootstrapping->Send ADTPro Ethernet Client").  You don't have to stick
+      to the same method of communicating with your Apple once you've finished
+      with the initial bootstrapping, but you certainly can if you want.
 
     [[1]] A dialog box will come up instructing you to type the command above
       plus one more:
@@ -123,9 +124,7 @@ more bootstrapping scenarios and configurations are detailed below.
 
     []
 
-    [[1]] On the ADTPro server, select "Audio" as the port to use 
-      and click the "Connect" button. (Audio transfers always ignore the speed
-      setting; it is not variable.)      
+    [[1]] On the ADTPro server, click the big "Audio" button.
       Click on the "Bootstrapping->Send EsDOS ][" menu item.
       
     [[1]] A dialog box will come up instructing you to type the commands above
@@ -163,16 +162,16 @@ more bootstrapping scenarios and configurations are detailed below.
 
     [[1]] On the ADTPro server, click on the "Bootstrapping->Send EsDOS ][ part 2" menu item.
       
-    [[1]] A dialog box will come up instructing you to type more commands at the Apple.
-      The only one you really need to enter if you're at the asterisk prompt
-      ("<<<*>>>") is this:
+    [[1]] A dialog box will come up instructing you to type more commands at
+      the Apple.  The only one you really need to enter if you're already at
+      the asterisk prompt ("<<<*>>>") is this:
 
     * <<<9D00.BFFFR>>> (Note the "<<<0>>>" is a zero, not the letter "O.")
 
     []
 
-    [[1]] Enter that command on the Apple and hit Return.  The blinking cursor 
-      should go away.
+    [[1]] Enter <<<9D00.BFFFR>>> on the Apple and hit Return.  The blinking
+      cursor should go away.
 
     [[1]] Dismiss the dialog on the ADTPro server.
       The progress bar will show how far along the transfer is.
@@ -186,17 +185,19 @@ more bootstrapping scenarios and configurations are detailed below.
 
     []
 
-    [[1]] The Apple should return you from the asterisk prompt ("<<<*>>>")
+    [[1]] The Apple should change from the asterisk prompt ("<<<*>>>")
       to the Applesoft prompt ("<<<]>>>").
 
-      You have EsDOS II <in memory only> on your Apple until you 
-      format a floppy.  Do this with the <<<INIT>>> command: <<<INIT HELLO>>>.
-      Once the <<<INIT>>> operation completes, you now have a bootable DOS 
-      diskette.  Go ahead and reboot with it now with a <<<PR#6>>> command.
+      You now have EsDOS II <in memory only> on your Apple until you 
+      format a floppy.  Do this now with the <<<INIT>>> command on the Apple:
+      <<<INIT HELLO>>>.  Once the <<<INIT>>> operation completes, you now have
+      a bootable DOS diskette.  Go ahead and reboot with it now with a
+      <<<PR#6>>> command.
 
-    [[1]] You might 'init' another floppy now to get a second floppy formatted,
-      now that you have a working version of DOS.  The command <<<INIT HELLO>>>
-      on the Apple will format it.
+    [[1]] You might 'init' another floppy now to get a second floppy formatted
+      now that you have a working version of DOS.  Remove your EsDOS diskette,
+      insert a blank diskette, and type the command <<<INIT HELLO>>>
+      on the Apple to format it.
 
     [[1]] {With a freshly formatted DOS floppy in the Apple drive}, send over the
       DOS version of ADT to the Apple.  On the Apple, prepare it to listen to the

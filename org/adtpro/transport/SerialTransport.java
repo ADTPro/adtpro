@@ -68,18 +68,12 @@ public class SerialTransport extends ATransport
   public SerialTransport(String portName, String speed, boolean hardware) throws Exception
   {
     Log.getSingleton();
+    Log.println(false,"SerialTransport constructor entry.");
     this._portName = portName;
     connected = false;
-    try
-    {
-      _hardware = hardware;
-      _currentSpeed = Integer.parseInt(speed);
-      open(portName, _currentSpeed, _hardware);
-    }
-    catch (java.lang.NoClassDefFoundError e)
-    {
-      Log.println(true, Messages.getString("SerialTransport.2")); //$NON-NLS-1$
-    }
+    _hardware = hardware;
+    _currentSpeed = Integer.parseInt(speed);
+    Log.println(false,"SerialTransport constructor exit.");
   }
 
   public int transportType()
@@ -104,6 +98,8 @@ public class SerialTransport extends ATransport
       Log.println(false, "SerialTransport.close() closed port."); //$NON-NLS-1$
       Log.println(true, "SerialTransport closed port."); //$NON-NLS-1$
     }
+    else
+      Log.println(false, "SerialTransport.close() didn't think port was connected."); //$NON-NLS-1$
   }
 
   /**
@@ -161,7 +157,7 @@ public class SerialTransport extends ATransport
    * parameters.
    * 
    * @exception IOException
-   *              thrown when a problem occurs with flushing the stream.
+   *              thrown when a problem occurs opening the stream.
    */
 
   public void open() throws Exception
@@ -173,7 +169,6 @@ public class SerialTransport extends ATransport
     else
     {
       open(_portName, _currentSpeed, false);
-      return;
     }
   }
 
