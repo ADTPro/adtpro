@@ -246,9 +246,8 @@ more bootstrapping scenarios and configurations are detailed below.
       <<<C>>> key.  You can change the SSC slot or or IIgs Modem port from there,
       as well as the baud rate, disk defaults, etc.
 
-    [[1]] On the ADTPro server, switch from audio to serial communications.
-      Click the "Disconnect" button, select the appropriate serial port,
-      and click the "Connect" button.
+    [[1]] On the ADTPro server, switch from audio to serial communications
+      by pushing the "Serial" button.
 
     [[1]] From the Apple, hit the <<<R>>> key when you're ready to receive
       the ADTPro client disk, ADTPro-v.r.m.dsk.

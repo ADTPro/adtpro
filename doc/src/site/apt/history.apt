@@ -10,8 +10,11 @@ ADTPro Release History
 
  New functionality:
 
- * Server-side creature comforts: graphical buttons for communications
-   devices, automatically save window position and size
+ * Server-side creature comforts:
+ 
+   * Added graphical buttons for communications devices
+
+   * Server automatically saves its last window position and size
 
  []
 
