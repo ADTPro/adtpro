@@ -32,9 +32,11 @@
 		<delete file="${projdir}/org/adtpro/resources/adt.dmp" />
 		<delete file="${projdir}/org/adtpro/resources/adtpro.dmp" />
 		<delete file="${projdir}/org/adtpro/resources/adtproaud.dmp" />
+		<delete file="${projdir}/org/adtpro/resources/adtproeteh.dmp" />
 		<delete file="${projdir}/org/adtpro/resources/adt.raw" />
 		<delete file="${projdir}/org/adtpro/resources/adtpro.raw" />
 		<delete file="${projdir}/org/adtpro/resources/adtproaud.raw" />
+		<delete file="${projdir}/org/adtpro/resources/adtproeth.raw" />
 		<delete>
 			<fileset dir="${projdir}/client/src" includes="**/*.o"/>
 			<fileset dir="${projdir}/client/src" includes="**/*.map"/>
@@ -105,6 +107,7 @@
 		<!--
 		Make dumpable versions
 		-->
+		<appleDump infilename="${builddir}/ADTPROETH" outfilename="${basedir}/org/adtpro/resources/adtproeth.dmp" applename="ADTPROETH" startaddrhex="803" numbyteswide="8" />
 		<appleDump infilename="${builddir}/ADTPROAUD" outfilename="${basedir}/org/adtpro/resources/adtproaud.dmp" applename="ADTPROAUD" startaddrhex="803" numbyteswide="8" />
 		<appleDump infilename="${builddir}/ADTPRO" outfilename="${basedir}/org/adtpro/resources/adtpro.dmp" applename="ADTPRO" startaddrhex="803" numbyteswide="8" />
 		<appleDump infilename="${builddir}/ADT" outfilename="${basedir}/org/adtpro/resources/adt.dmp" applename="ADT" startaddrhex="803" numbyteswide="8" />
