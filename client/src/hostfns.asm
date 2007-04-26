@@ -71,7 +71,7 @@ DIRTIMEOUT:
 
 DIRCONT:
 	ldy #PMSG29	; "space to continue, esc to stop"
-	jsr SHOWMSG
+	jsr SHOWM1
 	jsr RDKEY
 	eor #CHR_ESC	; NOT ESCAPE, CONTINUE NORMALLY
 	bne DIR		; BY SENDING A "D" TO PC
