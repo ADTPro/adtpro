@@ -78,7 +78,7 @@ Play with the screen for a minute and you'll get the hang of it.
 [images/ethconfigIp.png]
 
  For <<<SERVER IP ADDR>>>, enter the IP address of the machine running the 
-ADTPro server software.  When you have the server connect with TCP/IP, it
+ADTPro server software.  When you have the server connect with Ethernet, it
 will say what IP address it is currently serving:
 
 [images/ethServerIp.png]
