@@ -543,9 +543,8 @@ public class CommsThread extends Thread
       Disk disk = null;
       try
       {
-        Log.println(false, "CommsThread.sendDisk() looking for file: " + _parent.getWorkingDirectory() + File.separator
-            + name);
-        disk = new Disk(_parent.getWorkingDirectory() + File.separator + name);
+        Log.println(false, "CommsThread.sendDisk() looking for file: " + _parent.getWorkingDirectory() + name);
+        disk = new Disk(_parent.getWorkingDirectory() + name);
       }
       catch (IOException io)
       {
@@ -683,7 +682,7 @@ public class CommsThread extends Thread
 
       if (!f.isFile())
       {
-        f = new File(_parent.getWorkingDirectory() + File.separator + name);
+        f = new File(_parent.getWorkingDirectory() + name);
         if (!f.isFile())
         {
           _transport.writeByte(26); // ADT protocol - can't open
@@ -904,7 +903,7 @@ public class CommsThread extends Thread
     _startTime = new GregorianCalendar();
     try
     {
-      String name = _parent.getWorkingDirectory() + File.separator + receiveName();
+      String name = _parent.getWorkingDirectory() + receiveName();
       File f = new File(name);
       FileOutputStream fos = null;
       byte[] buffer = new byte[28672];
