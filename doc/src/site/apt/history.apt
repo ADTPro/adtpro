@@ -6,6 +6,17 @@
 
 ADTPro Release History
 
+* 0.2.3 - April 26, 2007
+
+ Bug fixes:
+
+ * Current working directory was being handled incorrectly - not consistently
+   putting a trailing separator character after the path
+
+ * Ethernet bootstrap image was missing from resources
+
+ []
+
 * 0.2.2 - April 24, 2007
 
  New functionality:

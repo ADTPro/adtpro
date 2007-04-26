@@ -387,9 +387,13 @@ public final class Gui extends JFrame implements ActionListener
       _workingDirectory = baseDirFile.getAbsolutePath();
       _workingDirectory = _workingDirectory.substring(0, _workingDirectory.length() - 2);
     }
+    if (!_workingDirectory.endsWith(File.separator))
+    {
+      _workingDirectory = _workingDirectory + File.separator; 
+    }
+    Log.println(false,"Gui.getWorkingDirectory(): " + _workingDirectory);
     return _workingDirectory;
   }
-
   public void serialConfigGui()
   {
     SerialConfig.getSingleton();
