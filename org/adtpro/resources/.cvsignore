@@ -1,4 +1,4 @@
-adtpro.dmp
-adt.dmp
-*.raw
 adt*.dmp
+adt*.raw
+format.*
+PD*.dmp

@@ -47,7 +47,7 @@ public class SerialTransport extends ATransport
   protected String _portName = null;
 
   protected int _currentSpeed = 0;
-  
+
   protected boolean _hardware = false;
 
   /**
@@ -68,12 +68,12 @@ public class SerialTransport extends ATransport
   public SerialTransport(String portName, String speed, boolean hardware) throws Exception
   {
     Log.getSingleton();
-    Log.println(false,"SerialTransport constructor entry.");
+    Log.println(false, "SerialTransport constructor entry.");
     this._portName = portName;
     connected = false;
     _hardware = hardware;
     _currentSpeed = Integer.parseInt(speed);
-    Log.println(false,"SerialTransport constructor exit.");
+    Log.println(false, "SerialTransport constructor exit.");
   }
 
   public int transportType()
@@ -195,7 +195,7 @@ public class SerialTransport extends ATransport
     port.enableReceiveTimeout(250);
     inputStream = new DataInputStream(port.getInputStream());
     outputStream = new DataOutputStream(port.getOutputStream());
-    connected = true;      
+    connected = true;
     Log.println(true, "SerialTransport opened port named " + portName + " at speed " + portSpeed + "."); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
     return;
   }
@@ -225,8 +225,7 @@ public class SerialTransport extends ATransport
       }
       if (collectedTimeouts / 4 > seconds) throw new TransportTimeoutException();
     }
-    if (hasData)
-      Log.println(false, "SerialTransport.readByte() exit, byte: "+UnsignedByte.toString(oneByte));
+    if (hasData) Log.println(false, "SerialTransport.readByte() exit, byte: " + UnsignedByte.toString(oneByte));
     else
       Log.println(false, "SerialTransport.readByte() exit.");
     return oneByte;
@@ -418,18 +417,29 @@ public class SerialTransport extends ATransport
   public String getInstructions(String guiString, int fileSize)
   {
     String ret = "'SerialTransport.getInstructions() - returned null!'";
-    if (guiString.equals(Messages.getString("Gui.BS.DOS"))) ret = Messages.getString("Gui.BS.DumpDOSInstructions");
+    if (guiString.equals(Messages.getString("Gui.BS.ProDOSFormat"))) ret = Messages
+        .getString("Gui.BS.DumpProDOSFormatInstructions");
     else
-      if (guiString.equals(Messages.getString("Gui.BS.ADT"))) ret = Messages.getString("Gui.BS.DumpADTInstructions");
+      if (guiString.equals(Messages.getString("Gui.BS.ProDOS"))) ret = Messages
+          .getString("Gui.BS.DumpProDOSInstructions");
       else
-        if (guiString.equals(Messages.getString("Gui.BS.ADTPro"))) ret = Messages
-            .getString("Gui.BS.DumpProInstructions");
+        if (guiString.equals(Messages.getString("Gui.BS.ProDOS2"))) ret = Messages
+            .getString("Gui.BS.DumpProDOSInstructions2");
         else
-          if (guiString.equals(Messages.getString("Gui.BS.ADTProAudio"))) ret = Messages
-              .getString("Gui.BS.DumpProAudioSerialInstructions");
+          if (guiString.equals(Messages.getString("Gui.BS.DOS"))) ret = Messages
+              .getString("Gui.BS.DumpDOSInstructions");
           else
-            if (guiString.equals(Messages.getString("Gui.BS.ADTProEthernet"))) ret = Messages
-                .getString("Gui.BS.DumpProEthernetInstructions");
+            if (guiString.equals(Messages.getString("Gui.BS.ADT"))) ret = Messages
+                .getString("Gui.BS.DumpADTInstructions");
+            else
+              if (guiString.equals(Messages.getString("Gui.BS.ADTPro"))) ret = Messages
+                  .getString("Gui.BS.DumpProInstructions");
+              else
+                if (guiString.equals(Messages.getString("Gui.BS.ADTProAudio"))) ret = Messages
+                    .getString("Gui.BS.DumpProAudioSerialInstructions");
+                else
+                  if (guiString.equals(Messages.getString("Gui.BS.ADTProEthernet"))) ret = Messages
+                      .getString("Gui.BS.DumpProEthernetInstructions");
     Log.println(false, "SerialTransport.getInstructions() returning:\n" + ret);
     return ret;
   }

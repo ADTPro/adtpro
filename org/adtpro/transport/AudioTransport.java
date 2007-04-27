@@ -145,7 +145,8 @@ public class AudioTransport extends ATransport
   public byte readByte(int timeout) throws TransportTimeoutException
   {
     byte retByte = 0;
-    // Log.println(false, "AudioTransport.readByte() entry; _inPacketPtr = " + _inPacketPtr + "; _inPacketLen = " + _inPacketLen + ".");
+    // Log.println(false, "AudioTransport.readByte() entry; _inPacketPtr = " +
+    // _inPacketPtr + "; _inPacketLen = " + _inPacketLen + ".");
     if (_receiveBuffer == null)
     {
       Log.println(false, "AudioTransport.readByte() needs to pull a buffer; buffer is null.");
@@ -184,7 +185,8 @@ public class AudioTransport extends ATransport
       {
         int myByte = _receiveBuffer[_inPacketPtr];
         if (myByte < 0) myByte += 256;
-        // Log.println(false, "AudioTransport.readByte() exit with " + UnsignedByte.toString(UnsignedByte.loByte(myByte)));
+        // Log.println(false, "AudioTransport.readByte() exit with " +
+        // UnsignedByte.toString(UnsignedByte.loByte(myByte)));
       }
       if (_receiveBuffer.length > 0) retByte = _receiveBuffer[_inPacketPtr++];
       else
@@ -353,37 +355,57 @@ public class AudioTransport extends ATransport
   {
     String ret = "AudioTransport.getInstructions() - returned null!";
     int endAddr = 0;
-    if (guiString.equals(Messages.getString("Gui.BS.DOS")))
+    if (guiString.equals(Messages.getString("Gui.BS.ProDOSFormat")))
     {
-      ret = Messages.getString("Gui.BS.DumpDOSAudioInstructions");
-      endAddr = fileSize - 1 + 976;
+      ret = Messages.getString("Gui.BS.DumpProDOSFormatAudioInstructions");
+      endAddr = fileSize - 1 + 20480;
       String endAddrHex = UnsignedByte.toString(UnsignedByte.hiByte(endAddr))
           + UnsignedByte.toString(UnsignedByte.loByte(endAddr));
       ret = ret.replaceFirst("%1%", endAddrHex);
-      ret = ret.replaceFirst("0.0", "0."); // Remove the unsightly leading zero
     }
     else
-      if (guiString.equals(Messages.getString("Gui.BS.DOS2"))) ret = Messages
-          .getString("Gui.BS.DumpDOSAudioInstructions2");
+      if (guiString.equals(Messages.getString("Gui.BS.ProDOS"))) ret = Messages
+          .getString("Gui.BS.DumpProDOSAudioInstructions");
       else
-        if ((guiString.equals(Messages.getString("Gui.BS.ADT"))) ||
-            (guiString.equals(Messages.getString("Gui.BS.ADTPro"))) ||
-            (guiString.equals(Messages.getString("Gui.BS.ADTProAudio"))) ||
-            (guiString.equals(Messages.getString("Gui.BS.ADTProEthernet"))))
-        {
-          if (guiString.equals(Messages.getString("Gui.BS.ADT")))
-            ret = Messages.getString("Gui.BS.DumpADTAudioInstructions");
-          else if (guiString.equals(Messages.getString("Gui.BS.ADTPro")))
-            ret = Messages.getString("Gui.BS.DumpProAudioInstructions");
-          else if (guiString.equals(Messages.getString("Gui.BS.ADTProAudio")))
-            ret = Messages.getString("Gui.BS.DumpProAudioAudioInstructions");
-          else if (guiString.equals(Messages.getString("Gui.BS.ADTProEthernet")))
-            ret = Messages.getString("Gui.BS.DumpProEthernetAudioInstructions");
-          endAddr = fileSize - 1 + 2051;
-          String endAddrHex = UnsignedByte.toString(UnsignedByte.hiByte(endAddr))
-              + UnsignedByte.toString(UnsignedByte.loByte(endAddr));
-          ret = ret.replaceFirst("%1%", endAddrHex);
-        }
+        if (guiString.equals(Messages.getString("Gui.BS.ProDOS2"))) ret = Messages
+            .getString("Gui.BS.DumpProDOSAudioInstructions2");
+        else
+          if (guiString.equals(Messages.getString("Gui.BS.DOS")))
+          {
+            ret = Messages.getString("Gui.BS.DumpDOSAudioInstructions");
+            endAddr = fileSize - 1 + 976;
+            String endAddrHex = UnsignedByte.toString(UnsignedByte.hiByte(endAddr))
+                + UnsignedByte.toString(UnsignedByte.loByte(endAddr));
+            ret = ret.replaceFirst("%1%", endAddrHex);
+            ret = ret.replaceFirst("0.0", "0."); // Remove the unsightly
+                                                  // leading
+            // zero
+          }
+          else
+            if (guiString.equals(Messages.getString("Gui.BS.DOS2"))) ret = Messages
+                .getString("Gui.BS.DumpDOSAudioInstructions2");
+            else
+              if ((guiString.equals(Messages.getString("Gui.BS.ADT")))
+                  || (guiString.equals(Messages.getString("Gui.BS.ADTPro")))
+                  || (guiString.equals(Messages.getString("Gui.BS.ADTProAudio")))
+                  || (guiString.equals(Messages.getString("Gui.BS.ADTProEthernet"))))
+              {
+                if (guiString.equals(Messages.getString("Gui.BS.ADT"))) ret = Messages
+                    .getString("Gui.BS.DumpADTAudioInstructions");
+                else
+                  if (guiString.equals(Messages.getString("Gui.BS.ADTPro"))) ret = Messages
+                      .getString("Gui.BS.DumpProAudioInstructions");
+                  else
+                    if (guiString.equals(Messages.getString("Gui.BS.ADTProAudio"))) ret = Messages
+                        .getString("Gui.BS.DumpProAudioAudioInstructions");
+                    else
+                      if (guiString.equals(Messages.getString("Gui.BS.ADTProEthernet"))) ret = Messages
+                          .getString("Gui.BS.DumpProEthernetAudioInstructions");
+                endAddr = fileSize - 1 + 2051;
+                String endAddrHex = UnsignedByte.toString(UnsignedByte.hiByte(endAddr))
+                    + UnsignedByte.toString(UnsignedByte.loByte(endAddr));
+                ret = ret.replaceFirst("%1%", endAddrHex);
+              }
     Log.println(false, "AudioTransport.getInstructions() returning:\n" + ret);
     return ret;
   }

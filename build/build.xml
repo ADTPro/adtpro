@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project name="ADTPro" default="all" basedir="..">
-	<property name="versionString" value="0.2.3" />
+	<property name="versionString" value="v.r.m" />
 	<property name="distName" value="ADTPro-${versionString}" />
 	<property name="volName" value="ADTPro.${versionString}" />
 	<property name="dosVersionString" value="131" />
 	<property name="dosDistName" value="ADT${dosVersionString}" />
-	<property name="projdir" value="." />
+	<property name="projdir" value="${basedir}" />
 	<property name="builddir" value="${basedir}/build" />
 	<property file="${builddir}/ADTProBuild.properties"/>
 	<property file="${builddir}/ADTProBuild-default.properties"/>
@@ -32,11 +32,15 @@
 		<delete file="${projdir}/org/adtpro/resources/adt.dmp" />
 		<delete file="${projdir}/org/adtpro/resources/adtpro.dmp" />
 		<delete file="${projdir}/org/adtpro/resources/adtproaud.dmp" />
-		<delete file="${projdir}/org/adtpro/resources/adtproeteh.dmp" />
+		<delete file="${projdir}/org/adtpro/resources/adtproeth.dmp" />
 		<delete file="${projdir}/org/adtpro/resources/adt.raw" />
 		<delete file="${projdir}/org/adtpro/resources/adtpro.raw" />
 		<delete file="${projdir}/org/adtpro/resources/adtproaud.raw" />
 		<delete file="${projdir}/org/adtpro/resources/adtproeth.raw" />
+		<delete file="${projdir}/org/adtpro/resources/format.raw" />
+		<delete file="${projdir}/org/adtpro/resources/format.dmp" />
+		<delete file="${projdir}/org/adtpro/resources/PD1.dmp" />
+		<delete file="${projdir}/org/adtpro/resources/PD2.dmp" />
 		<delete>
 			<fileset dir="${projdir}/client/src" includes="**/*.o"/>
 			<fileset dir="${projdir}/client/src" includes="**/*.map"/>
@@ -68,6 +72,12 @@
 			<arg line="-l -t none adt.s -o ADT" />
 		</exec>
 		<!--
+		Assemble and link the ProDOS Formatter source
+		-->
+		<exec dir="${projdir}/client/src" executable="${assemblerPath}/cl65">
+			<arg line="-l -t none format.asm -o FORMAT" />
+		</exec>
+		<!--
 		Assemble the IP65 stack source
 		-->
 		<apply executable="${assemblerPath}/ca65" dir="${projdir}/client/src/ip65">
@@ -96,6 +106,8 @@
 		<!--
 		Move the object code to the build directory
 		-->
+		<move file="${projdir}/client/src/FORMAT" tofile="${builddir}/FORMAT" />
+		<copy file="${builddir}/FORMAT" tofile="${basedir}/org/adtpro/resources/format.raw" />
 		<move file="${projdir}/client/src/ADTPRO" tofile="${builddir}/ADTPRO" />
 		<copy file="${builddir}/ADTPRO" tofile="${basedir}/org/adtpro/resources/adtpro.raw" />
 		<move file="${projdir}/client/src/ADTPROAUD" tofile="${builddir}/ADTPROAUD" />
@@ -107,6 +119,9 @@
 		<!--
 		Make dumpable versions
 		-->
+		<appleDump infilename="${projdir}/org/adtpro/resources/PD1.raw" outfilename="${basedir}/org/adtpro/resources/PD1.dmp" applename="PD1" startaddrhex="2000" numbyteswide="8" />
+		<appleDump infilename="${projdir}/org/adtpro/resources/PD2.raw" outfilename="${basedir}/org/adtpro/resources/PD2.dmp" applename="PD2" startaddrhex="2000" numbyteswide="8" />
+		<appleDump infilename="${builddir}/FORMAT" outfilename="${basedir}/org/adtpro/resources/format.dmp" applename="FORMAT" startaddrhex="5000" numbyteswide="8" />
 		<appleDump infilename="${builddir}/ADTPROETH" outfilename="${basedir}/org/adtpro/resources/adtproeth.dmp" applename="ADTPROETH" startaddrhex="803" numbyteswide="8" />
 		<appleDump infilename="${builddir}/ADTPROAUD" outfilename="${basedir}/org/adtpro/resources/adtproaud.dmp" applename="ADTPROAUD" startaddrhex="803" numbyteswide="8" />
 		<appleDump infilename="${builddir}/ADTPRO" outfilename="${basedir}/org/adtpro/resources/adtpro.dmp" applename="ADTPRO" startaddrhex="803" numbyteswide="8" />
@@ -132,6 +147,9 @@
 		-->
 		<exec dir="${builddir}" executable="java" input="${builddir}/ADTPRO">
 			<arg line="-jar ${acJar} -p ADTPRO bin 2051 ${distName}.dsk" />
+		</exec>
+		<exec dir="${builddir}" executable="java" input="${builddir}/FORMAT">
+			<arg line="-jar ${acJar} -p FORMAT bin 20480 ${distName}.dsk" />
 		</exec>
 		<exec dir="${builddir}" executable="java" input="${builddir}/ADTPRO">
 			<arg line="-jar ${acJar} -p ADTPRO.BACKUP bin 2051 ${distName}.dsk" />

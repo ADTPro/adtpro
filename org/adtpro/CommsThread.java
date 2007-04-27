@@ -90,12 +90,12 @@ public class CommsThread extends Thread
       Log.printStackTrace(ex);
       _shouldRun = false;
     }
-    Log.println(false, "CommsThread constructor exit; _shouldRun="+_shouldRun);
+    Log.println(false, "CommsThread constructor exit; _shouldRun=" + _shouldRun);
   }
 
   public void run()
   {
-    Log.println(false, "CommsThread.run() entry; _shouldRun="+_shouldRun);
+    Log.println(false, "CommsThread.run() entry; _shouldRun=" + _shouldRun);
     if (_shouldRun)
     {
       makeCrcTable();
@@ -103,8 +103,7 @@ public class CommsThread extends Thread
     }
     else
     {
-      if (_transport != null)
-      try
+      if (_transport != null) try
       {
         _transport.close();
       }
@@ -291,7 +290,7 @@ public class CommsThread extends Thread
       Disk disk = null;
       try
       {
-        Log.println(false, "CommsThread.queryFileSize() seeking file " + _parent.getWorkingDirectory() 
+        Log.println(false, "CommsThread.queryFileSize() seeking file " + _parent.getWorkingDirectory()
             + requestedFileName);
         disk = new Disk(_parent.getWorkingDirectory() + requestedFileName);
       }
@@ -584,7 +583,7 @@ public class CommsThread extends Thread
               for (halfBlock = 0; halfBlock < 2; halfBlock++)
               {
                 Log.println(false, "CommsThread.sendDisk() sending packet for block: " + block + " halfBlock: "
-                    + (2-halfBlock));
+                    + (2 - halfBlock));
                 sendSuccess = sendPacket(buffer, block, halfBlock * 256, true);
                 if (sendSuccess)
                 {
@@ -856,12 +855,12 @@ public class CommsThread extends Thread
             incomingBlock += (waitForData(15) * 256);
             byte appleHalf = waitForData(15);
             byte hostHalf = UnsignedByte.loByte(2 - (offset / 256));
-            Log.println(false, "CommsThread.sendPacket() BlockNum: " + block 
-                + " host lsb: " + UnsignedByte.toString(UnsignedByte.loByte(block)) 
-                + " Apple lsb: " + UnsignedByte.toString(UnsignedByte.loByte(incomingBlock))
-                + " host msb: " + UnsignedByte.toString(UnsignedByte.hiByte(block)) 
-                + " Apple msb: " + UnsignedByte.toString(UnsignedByte.hiByte(incomingBlock))
-                + " host halfNum: " + UnsignedByte.loByte(2 - (offset / 256)) + " Apple halfNum: " + appleHalf);
+            Log.println(false, "CommsThread.sendPacket() BlockNum: " + block + " host lsb: "
+                + UnsignedByte.toString(UnsignedByte.loByte(block)) + " Apple lsb: "
+                + UnsignedByte.toString(UnsignedByte.loByte(incomingBlock)) + " host msb: "
+                + UnsignedByte.toString(UnsignedByte.hiByte(block)) + " Apple msb: "
+                + UnsignedByte.toString(UnsignedByte.hiByte(incomingBlock)) + " host halfNum: "
+                + UnsignedByte.loByte(2 - (offset / 256)) + " Apple halfNum: " + appleHalf);
             if (ok == NAK)
             {
               if (((block == incomingBlock) && (appleHalf - hostHalf != 0)) || ((block + 1 == incomingBlock))
@@ -1034,9 +1033,8 @@ public class CommsThread extends Thread
       rc = 0;
       prev = 0;
       restarting = false;
-      if (((preamble) && (_client01xCompatibleProtocol == false)) ||
-          (_transport.getClass() == UDPTransport.class) ||
-          (_transport.getClass() == AudioTransport.class))
+      if (((preamble) && (_client01xCompatibleProtocol == false)) || (_transport.getClass() == UDPTransport.class)
+          || (_transport.getClass() == AudioTransport.class))
       /*
        * Remember, UDP and Audio originally had a preamble from the beginning.
        */
@@ -1299,33 +1297,45 @@ public class CommsThread extends Thread
     InputStream is = null;
     if (_transport.transportType() == ATransport.TRANSPORT_TYPE_AUDIO)
     {
-      if (resource.equals(Messages.getString("Gui.BS.DOS"))) resourceName = "org/adtpro/resources/EsDOS1.raw";
+      if (resource.equals(Messages.getString("Gui.BS.ProDOS"))) resourceName = "org/adtpro/resources/PD1.raw";
       else
-        if (resource.equals(Messages.getString("Gui.BS.DOS2"))) resourceName = "org/adtpro/resources/EsDOS2.raw";
+        if (resource.equals(Messages.getString("Gui.BS.ProDOS2"))) resourceName = "org/adtpro/resources/PD2.raw";
         else
-          if (resource.equals(Messages.getString("Gui.BS.ADT"))) resourceName = "org/adtpro/resources/adt.raw";
+          if (resource.equals(Messages.getString("Gui.BS.ProDOSFormat"))) resourceName = "org/adtpro/resources/format.raw";
           else
-            if (resource.equals(Messages.getString("Gui.BS.ADTPro"))) resourceName = "org/adtpro/resources/adtpro.raw";
+            if (resource.equals(Messages.getString("Gui.BS.DOS"))) resourceName = "org/adtpro/resources/EsDOS1.raw";
             else
-              if (resource.equals(Messages.getString("Gui.BS.ADTProAudio"))) resourceName = "org/adtpro/resources/adtproaud.raw";
+              if (resource.equals(Messages.getString("Gui.BS.DOS2"))) resourceName = "org/adtpro/resources/EsDOS2.raw";
               else
-                if (resource.equals(Messages.getString("Gui.BS.ADTProEthernet"))) resourceName = "org/adtpro/resources/adtproeth.raw";
+                if (resource.equals(Messages.getString("Gui.BS.ADT"))) resourceName = "org/adtpro/resources/adt.raw";
                 else
-                  resourceName = "'CommsThread.requestSend() - not set! (AudioTransport)'";
+                  if (resource.equals(Messages.getString("Gui.BS.ADTPro"))) resourceName = "org/adtpro/resources/adtpro.raw";
+                  else
+                    if (resource.equals(Messages.getString("Gui.BS.ADTProAudio"))) resourceName = "org/adtpro/resources/adtproaud.raw";
+                    else
+                      if (resource.equals(Messages.getString("Gui.BS.ADTProEthernet"))) resourceName = "org/adtpro/resources/adtproeth.raw";
+                      else
+                        resourceName = "'CommsThread.requestSend() - not set! (AudioTransport)'";
     }
     else
     {
-      if (resource.equals(Messages.getString("Gui.BS.DOS"))) resourceName = "org/adtpro/resources/EsDOS.dmp";
+      if (resource.equals(Messages.getString("Gui.BS.ProDOS"))) resourceName = "org/adtpro/resources/PD1.dmp";
       else
-        if (resource.equals(Messages.getString("Gui.BS.ADT"))) resourceName = "org/adtpro/resources/adt.dmp";
+        if (resource.equals(Messages.getString("Gui.BS.ProDOS2"))) resourceName = "org/adtpro/resources/PD2.dmp";
         else
-          if (resource.equals(Messages.getString("Gui.BS.ADTPro"))) resourceName = "org/adtpro/resources/adtpro.dmp";
+          if (resource.equals(Messages.getString("Gui.BS.ProDOSFormat"))) resourceName = "org/adtpro/resources/format.dmp";
           else
-            if (resource.equals(Messages.getString("Gui.BS.ADTProAudio"))) resourceName = "org/adtpro/resources/adtproaud.dmp";
+            if (resource.equals(Messages.getString("Gui.BS.DOS"))) resourceName = "org/adtpro/resources/EsDOS.dmp";
             else
-              if (resource.equals(Messages.getString("Gui.BS.ADTProEthernet"))) resourceName = "org/adtpro/resources/adtproeth.dmp";
+              if (resource.equals(Messages.getString("Gui.BS.ADT"))) resourceName = "org/adtpro/resources/adt.dmp";
               else
-                resourceName = "'CommsThread.requestSend() - not set! (non-AudioTransport)'";
+                if (resource.equals(Messages.getString("Gui.BS.ADTPro"))) resourceName = "org/adtpro/resources/adtpro.dmp";
+                else
+                  if (resource.equals(Messages.getString("Gui.BS.ADTProAudio"))) resourceName = "org/adtpro/resources/adtproaud.dmp";
+                  else
+                    if (resource.equals(Messages.getString("Gui.BS.ADTProEthernet"))) resourceName = "org/adtpro/resources/adtproeth.dmp";
+                    else
+                      resourceName = "'CommsThread.requestSend() - not set! (non-AudioTransport)'";
     }
     Log.println(false, "CommsThread.requestSend() seeking resource named " + resourceName);
     is = ADTPro.class.getClassLoader().getResourceAsStream(resourceName);
@@ -1360,7 +1370,7 @@ public class CommsThread extends Thread
 
   public void requestStop()
   {
-    Log.println(false,"CommsThread.requestStop() entry.");
+    Log.println(false, "CommsThread.requestStop() entry.");
     _shouldRun = false;
     if (_worker != null)
     {
@@ -1368,14 +1378,14 @@ public class CommsThread extends Thread
     }
     try
     {
-      Log.println(false,"CommsThread.requestStop() about to close transport.");
+      Log.println(false, "CommsThread.requestStop() about to close transport.");
       _transport.close();
     }
     catch (Exception ex)
     {
       Log.printStackTrace(ex);
     }
-    Log.println(false,"CommsThread.requestStop() exit.");
+    Log.println(false, "CommsThread.requestStop() exit.");
   }
 
   /*
@@ -1515,14 +1525,14 @@ public class CommsThread extends Thread
     {
       try
       {
-        Log.println(false,"CommsThread.setSpeed() Attempting to set the serial port's speed to "+speed);
+        Log.println(false, "CommsThread.setSpeed() Attempting to set the serial port's speed to " + speed);
         ((SerialTransport) _transport).setSpeed(speed);
-        Log.println(false,"CommsThread.setSpeed() successful.");
+        Log.println(false, "CommsThread.setSpeed() successful.");
       }
       catch (Exception e)
       {
         Log.printStackTrace(e);
-        Log.println(true,"CommsThread.setSpeed() failed to set the port speed to "+speed+".");
+        Log.println(true, "CommsThread.setSpeed() failed to set the port speed to " + speed + ".");
       }
     }
   }
@@ -1538,7 +1548,7 @@ public class CommsThread extends Thread
       catch (Exception e)
       {
         Log.printStackTrace(e);
-        Log.println(true,"CommsThread.setParms() failed to set the port parameters.");
+        Log.println(true, "CommsThread.setParms() failed to set the port parameters.");
       }
     }
   }
