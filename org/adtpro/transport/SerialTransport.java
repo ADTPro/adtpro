@@ -386,6 +386,7 @@ public class SerialTransport extends ATransport
 
   public void setSlowSpeed(int speed)
   {
+    Log.println(false,"SerialTransport.setSlowSpeed() setting speed to "+speed);
     try
     {
       port.setSerialPortParams(speed, 8, 1, 0);
@@ -414,7 +415,7 @@ public class SerialTransport extends ATransport
       port.setFlowControlMode(SerialPort.FLOWCONTROL_RTSCTS_IN);
   }
 
-  public String getInstructions(String guiString, int fileSize)
+  public String getInstructions(String guiString, int fileSize, int speed)
   {
     String ret = "'SerialTransport.getInstructions() - returned null!'";
     if (guiString.equals(Messages.getString("Gui.BS.ProDOSFormat"))) ret = Messages
@@ -440,6 +441,23 @@ public class SerialTransport extends ATransport
                 else
                   if (guiString.equals(Messages.getString("Gui.BS.ADTProEthernet"))) ret = Messages
                       .getString("Gui.BS.DumpProEthernetInstructions");
+    String baudCommand;
+    switch (speed)
+    {
+      case 300: baudCommand = "6"; break;
+      case 600: baudCommand = "7"; break;
+      case 1200: baudCommand = "8"; break;
+      case 1800: baudCommand = "9"; break;
+      case 2400: baudCommand = "10"; break;
+      case 3600: baudCommand = "11"; break;
+      case 4800: baudCommand = "12"; break;
+      case 7200: baudCommand = "13"; break;
+      case 9600: baudCommand = "14"; break;
+      case 19200: baudCommand = "15"; break;
+      default: baudCommand = "6";
+    }
+    ret = ret.replaceFirst("%1%", baudCommand);
+
     Log.println(false, "SerialTransport.getInstructions() returning:\n" + ret);
     return ret;
   }

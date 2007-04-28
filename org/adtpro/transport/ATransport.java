@@ -42,7 +42,7 @@ public abstract class ATransport
   public abstract void flushReceiveBuffer();
   public abstract void close() throws Exception;
   public abstract boolean supportsBootstrap();
-  public abstract String getInstructions(String guiString, int fileSize);
+  public abstract String getInstructions(String guiString, int fileSize, int serialSpeed);
   public static final int TRANSPORT_TYPE_SERIAL = 1;
   public static final int TRANSPORT_TYPE_UDP = 2;
   public static final int TRANSPORT_TYPE_AUDIO = 3;

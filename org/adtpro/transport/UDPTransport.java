@@ -285,8 +285,9 @@ public class UDPTransport extends ATransport
     // Only necessary for audio transport
   }
 
-  public String getInstructions(String guiString, int fileSize)
+  public String getInstructions(String guiString, int fileSize, int serialSpeed)
   {
+    // Shouldn't be needed unless we eventually support bootstrapping over UDP.
     String ret = "UDPTransport.getInstructions() - returned null!";
     if (guiString.equals(Messages.getString("Gui.BS.DOS")))
       Messages.getString("Gui.BS.DumpDOSInstructions");

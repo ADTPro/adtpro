@@ -351,7 +351,7 @@ public class AudioTransport extends ATransport
 
   }
 
-  public String getInstructions(String guiString, int fileSize)
+  public String getInstructions(String guiString, int fileSize, int serialSpeed)
   {
     String ret = "AudioTransport.getInstructions() - returned null!";
     int endAddr = 0;

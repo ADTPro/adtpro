@@ -35,8 +35,15 @@ public class AppleDump extends Task
   public void execute() throws BuildException
   {
     String[] args =
-    { "-infilename", _inFileName, "-outfilename", _outFileName, "-applename", _appleName, "-startaddrhex",
-        _startAddrHex, "-numbyteswide", _numBytesString };
+    {
+      "-infilename", _inFileName,
+      "-outfilename", _outFileName,
+      "-applename", _appleName,
+      "-startaddrhex", _startAddrHex,
+      "-numbyteswide", _numBytesString,
+      "-decoration", _decoration,
+      "-executeaddrhex", _executeAddrHex
+    };
     if (checkArgs(args) == true)
     {
       byte datum;
@@ -54,9 +61,18 @@ public class AppleDump extends Task
           throw new BuildException(io);
         }
         ps.println("");
-        ps.println("3D0G");
-        ps.println("NEW");
-        ps.println("CALL -151");
+        if ((_decoration.equalsIgnoreCase("yes")) || 
+           (_decoration.equalsIgnoreCase("begin")))
+        {
+          ps.println("3D0G");
+          ps.println("NEW");
+          ps.println("CALL -151");
+        }
+        else
+        {
+          ps.println("");
+          ps.println("");
+        }
         ps.print(_startAddrHex);
         int max = fis.available();
         for (int j = 0; j < max; j++)
@@ -73,8 +89,18 @@ public class AppleDump extends Task
           if (j % _numBytes < (_numBytes - 1) )
             ps.print(" ");
         }
+        if ((_decoration.equalsIgnoreCase("yes")) ||
+            (_decoration.equalsIgnoreCase("end")))
+        {
+          ps.println();
+          ps.println("BSAVE " + _appleName + ",A$" + _startAddrHex + ",L" + fileLength);
+        }
+        if (_executeAddrHex != null)
+        {
+          ps.println();
+          ps.println(_executeAddrHex+"G");
+        }
         ps.println();
-        ps.println("BSAVE " + _appleName + ",A$" + _startAddrHex + ",L" + fileLength);
       }
       catch (FileNotFoundException e)
       {
@@ -87,14 +113,14 @@ public class AppleDump extends Task
     }
     else
     {
-      throw new BuildException("All arguments must be provided.");
+      throw new BuildException("AppleDump.execute(): All arguments must be provided.");
     }
   }
 
   public boolean checkArgs(String[] args)
   {
     boolean rc = false;
-    if (args.length == 10)
+//    if (args.length == 10)
     {
       if ((args[1] != null) && (args[3] != null) && (args[5] != null) && (args[7] != null) && (args[9] != null))
       {
@@ -129,6 +155,16 @@ public class AppleDump extends Task
     _numBytes = Integer.parseInt(numbytesstring);
   }
 
+  public void setDecoration(String decoration)
+  {
+    _decoration = decoration;
+  }
+
+  public void setExecuteAddrHex(String executeAddrHex)
+  {
+    _executeAddrHex = executeAddrHex;
+  }
+
   String _inFileName = null;
 
   String _outFileName = null;
@@ -138,6 +174,10 @@ public class AppleDump extends Task
   String _startAddrHex = null;
 
   String _numBytesString = "32";
+
+  String _decoration = "yes";
+
+  String _executeAddrHex = null;
 
   int _numBytes = 32;
 }

@@ -144,6 +144,7 @@ public final class Gui extends JFrame implements ActionListener
     menuBar.add(menuBootstrap);
     menuBootstrap.add(menuBootstrapProDOS);
     menuBootstrap.add(menuBootstrapDOS);
+    menuBootstrap.add(serialConfigAction);
     menuBootstrap.setEnabled(false);
     JMenu menuHelp = new JMenu(Messages.getString("Gui.Help")); //$NON-NLS-1$
     MenuAction helpAction = new MenuAction(Messages.getString("Gui.Website")); //$NON-NLS-1$
@@ -583,14 +584,26 @@ public final class Gui extends JFrame implements ActionListener
                   (e.getActionCommand().equals(Messages.getString("Gui.BS.ADTProAudio"))) || //$NON-NLS-1$
                   (e.getActionCommand().equals(Messages.getString("Gui.BS.ADTProEthernet")))) //$NON-NLS-1$
               {
-                int size = _commsThread.requestSend(e.getActionCommand(), false);
-                message = _commsThread.getInstructions(e.getActionCommand(), size);
+                int size = _commsThread.requestSend(e.getActionCommand());
+                int speed = 300;
+                try
+                {
+                  speed = Integer.parseInt(_properties.getProperty("CommPortBootstrapSpeed"));
+                }
+                catch (NumberFormatException e2)
+                {
+                  speed = 300;
+                }
+                Log.println(false,"Gui.actionPerformed getting instructions with speed = "+speed);
+                message = _commsThread.getInstructions(e.getActionCommand(), size, speed);
                 /* Ask the user if she is sure */
                 int ret = JOptionPane.showOptionDialog(_parent, message, Messages.getString("Gui.Name"),
                     JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE, null, buttons, buttons[0]);
                 if (ret == JOptionPane.YES_OPTION)
                 {
-                  _commsThread.requestSend(e.getActionCommand(), true);
+                  _commsThread.requestSend(e.getActionCommand(), true,
+                    _properties.getProperty("CommPortBootstrapPacing", "500"), //$NON-NLS-1$ //$NON-NLS-2$
+                    _properties.getProperty("CommPortBootstrapSpeed", "300")); //$NON-NLS-1$ //$NON-NLS-2$
                 }
               }
               else

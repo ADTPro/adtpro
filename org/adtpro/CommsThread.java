@@ -1289,7 +1289,12 @@ public class CommsThread extends Thread
     }
   }
 
-  public int requestSend(String resource, boolean reallySend)
+  public int requestSend(String resource)
+  {
+    return requestSend(resource, false, null, null);
+  }
+
+  public int requestSend(String resource, boolean reallySend, String pacing, String speed)
   {
     int fileSize = 0;
     Log.println(false, "CommsThread.requestSend() request: " + resource + ", reallySend = " + reallySend);
@@ -1353,9 +1358,27 @@ public class CommsThread extends Thread
       {
         // Run this on a thread...
         Log.println(false, "CommsThread.requestSend() Reading " + resourceName);
+        int iPacing = 500; // 500 ms default
+        int iSpeed = 300;  // 300 baud default
+        try
+        {
+          iPacing = Integer.parseInt(pacing);
+        }
+        catch (NumberFormatException e)
+        {
+          iPacing = 500;
+        }
+        try
+        {
+          iSpeed = Integer.parseInt(speed);
+        }
+        catch (NumberFormatException e)
+        {
+          iSpeed = 300;
+        }
         _parent.setMainText(Messages.getString("CommsThread.4")); //$NON-NLS-1$
         _parent.setSecondaryText(resourceName); //$NON-NLS-1$
-        _worker = new Worker(is);
+        _worker = new Worker(is, iPacing, iSpeed);
         _worker.start();
       }
       else
@@ -1394,9 +1417,13 @@ public class CommsThread extends Thread
   public class Worker extends Thread
   {
 
-    public Worker(InputStream is)
+    public Worker(InputStream is, int pacing, int speed)
     {
+      Log.println(false,"CommsThread Worker inner class instantiation.");
+      Log.println(false,"CommsThread Worker Pacing = "+pacing+", speed = "+speed);
       _is = is;
+      _pacing = pacing;
+      _speed = speed;
     }
 
     public void run()
@@ -1440,8 +1467,9 @@ public class CommsThread extends Thread
             bytesRead += isr.read(buffer, bytesRead, bytesAvailable - bytesRead);
             Log.println(false, "CommsThread.Worker.run() read " + bytesRead + " more bytes from the stream.");
           }
+          Log.println(false,"commsThread.Worker.run() speed = "+_speed+" pacing = "+_pacing);
           _parent.setProgressMaximum(buffer.length);
-          _transport.setSlowSpeed(300);
+          _transport.setSlowSpeed(_speed);
           for (int i = 0; i < buffer.length; i++)
           {
             if (_shouldRun == false)
@@ -1454,7 +1482,7 @@ public class CommsThread extends Thread
               _transport.writeByte(0x8d);
               try
               {
-                sleep(500);
+                sleep(_pacing);
               }
               catch (InterruptedException e)
               {
@@ -1499,6 +1527,8 @@ public class CommsThread extends Thread
     }
 
     InputStream _is;
+    int _speed;
+    int _pacing;
   }
 
   public int transportType()
@@ -1558,9 +1588,9 @@ public class CommsThread extends Thread
     _client01xCompatibleProtocol = state;
   }
 
-  public String getInstructions(String guiString, int size)
+  public String getInstructions(String guiString, int size, int speed)
   {
-    return (_transport.getInstructions(guiString, size));
+    return (_transport.getInstructions(guiString, size, speed));
   }
 
   public static int lastFileNumber = 0;
