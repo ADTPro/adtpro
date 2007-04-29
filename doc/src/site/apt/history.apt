@@ -6,6 +6,20 @@
 
 ADTPro Release History
 
+* 0.2.4 - (Unreleased)
+
+ New functionality:
+
+ * Bootstrapping from iron directly to ProDOS now possible
+
+ * Made serial bootstrapping pacing and speed configurable - making much
+   higher rates possible (and reliable)
+
+ * Included a ProDOS disk formatting utility (because you don't have any
+   formatted disks yet, remember?)
+
+ []
+
 * 0.2.3 - April 26, 2007
 
  Bug fixes:

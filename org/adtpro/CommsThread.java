@@ -1297,6 +1297,8 @@ public class CommsThread extends Thread
   public int requestSend(String resource, boolean reallySend, String pacing, String speed)
   {
     int fileSize = 0;
+    int slowFirstLines = 0;
+    int slowLastLines = 0;
     Log.println(false, "CommsThread.requestSend() request: " + resource + ", reallySend = " + reallySend);
     String resourceName;
     InputStream is = null;
@@ -1324,21 +1326,58 @@ public class CommsThread extends Thread
     }
     else
     {
-      if (resource.equals(Messages.getString("Gui.BS.ProDOS"))) resourceName = "org/adtpro/resources/PD1.dmp";
+      if (resource.equals(Messages.getString("Gui.BS.ProDOS")))
+      {
+        resourceName = "org/adtpro/resources/PD1.dmp";
+        slowFirstLines = 5;
+      }
       else
-        if (resource.equals(Messages.getString("Gui.BS.ProDOS2"))) resourceName = "org/adtpro/resources/PD2.dmp";
+        if (resource.equals(Messages.getString("Gui.BS.ProDOS2")))
+        {
+          resourceName = "org/adtpro/resources/PD2.dmp";
+          slowFirstLines = 4;
+        }
         else
-          if (resource.equals(Messages.getString("Gui.BS.ProDOSFormat"))) resourceName = "org/adtpro/resources/format.dmp";
+          if (resource.equals(Messages.getString("Gui.BS.ProDOSFormat")))
+          {
+            resourceName = "org/adtpro/resources/format.dmp";
+            slowFirstLines = 5;
+          }
           else
-            if (resource.equals(Messages.getString("Gui.BS.DOS"))) resourceName = "org/adtpro/resources/EsDOS.dmp";
+            if (resource.equals(Messages.getString("Gui.BS.DOS")))
+            {
+              resourceName = "org/adtpro/resources/EsDOS.dmp";
+              slowFirstLines = 5;
+              slowLastLines = 9;
+            }
             else
-              if (resource.equals(Messages.getString("Gui.BS.ADT"))) resourceName = "org/adtpro/resources/adt.dmp";
+              if (resource.equals(Messages.getString("Gui.BS.ADT")))
+              {
+                resourceName = "org/adtpro/resources/adt.dmp";
+                slowFirstLines = 5;
+                slowLastLines = 4;
+              }
               else
-                if (resource.equals(Messages.getString("Gui.BS.ADTPro"))) resourceName = "org/adtpro/resources/adtpro.dmp";
+                if (resource.equals(Messages.getString("Gui.BS.ADTPro")))
+                {
+                  resourceName = "org/adtpro/resources/adtpro.dmp";
+                  slowFirstLines = 5;
+                  slowLastLines = 4;
+                }
                 else
-                  if (resource.equals(Messages.getString("Gui.BS.ADTProAudio"))) resourceName = "org/adtpro/resources/adtproaud.dmp";
+                  if (resource.equals(Messages.getString("Gui.BS.ADTProAudio")))
+                  {
+                    resourceName = "org/adtpro/resources/adtproaud.dmp";
+                    slowFirstLines = 5;
+                    slowLastLines = 4;
+                  }
                   else
-                    if (resource.equals(Messages.getString("Gui.BS.ADTProEthernet"))) resourceName = "org/adtpro/resources/adtproeth.dmp";
+                    if (resource.equals(Messages.getString("Gui.BS.ADTProEthernet")))
+                    {
+                      resourceName = "org/adtpro/resources/adtproeth.dmp";
+                      slowFirstLines = 5;
+                      slowLastLines = 4;
+                    }
                     else
                       resourceName = "'CommsThread.requestSend() - not set! (non-AudioTransport)'";
     }
@@ -1358,15 +1397,15 @@ public class CommsThread extends Thread
       {
         // Run this on a thread...
         Log.println(false, "CommsThread.requestSend() Reading " + resourceName);
-        int iPacing = 500; // 500 ms default
-        int iSpeed = 300;  // 300 baud default
+        int iPacing = 100; // 100 ms default
+        int iSpeed = 9600; // 9600 baud default
         try
         {
           iPacing = Integer.parseInt(pacing);
         }
         catch (NumberFormatException e)
         {
-          iPacing = 500;
+          iPacing = 100;
         }
         try
         {
@@ -1374,11 +1413,11 @@ public class CommsThread extends Thread
         }
         catch (NumberFormatException e)
         {
-          iSpeed = 300;
+          iSpeed = 9600;
         }
         _parent.setMainText(Messages.getString("CommsThread.4")); //$NON-NLS-1$
         _parent.setSecondaryText(resourceName); //$NON-NLS-1$
-        _worker = new Worker(is, iPacing, iSpeed);
+        _worker = new Worker(is, iPacing, iSpeed, slowFirstLines, slowLastLines);
         _worker.start();
       }
       else
@@ -1417,13 +1456,15 @@ public class CommsThread extends Thread
   public class Worker extends Thread
   {
 
-    public Worker(InputStream is, int pacing, int speed)
+    public Worker(InputStream is, int pacing, int speed, int slowFirstLines, int slowLastLines)
     {
-      Log.println(false,"CommsThread Worker inner class instantiation.");
-      Log.println(false,"CommsThread Worker Pacing = "+pacing+", speed = "+speed);
+      Log.println(false, "CommsThread Worker inner class instantiation.");
+      Log.println(false, "CommsThread Worker Pacing = " + pacing + ", speed = " + speed);
       _is = is;
       _pacing = pacing;
       _speed = speed;
+      _slowFirst = slowFirstLines;
+      _slowLast = slowLastLines;
     }
 
     public void run()
@@ -1467,9 +1508,31 @@ public class CommsThread extends Thread
             bytesRead += isr.read(buffer, bytesRead, bytesAvailable - bytesRead);
             Log.println(false, "CommsThread.Worker.run() read " + bytesRead + " more bytes from the stream.");
           }
-          Log.println(false,"commsThread.Worker.run() speed = "+_speed+" pacing = "+_pacing);
+          Log.println(false, "commsThread.Worker.run() speed = " + _speed + " pacing = " + _pacing);
           _parent.setProgressMaximum(buffer.length);
           _transport.setSlowSpeed(_speed);
+          int numLines = 0;
+          /*
+           * Go through once and just count the number of lines in the file.
+           * We use that to determine when to start slowing down the pacing.
+           */
+          for (int i = 0; i < buffer.length; i++)
+          {
+            if (buffer[i] == 0x0d)
+              numLines ++;
+          }
+          int currentLine = 0;
+          /*
+           * "Slow" pacing is 500ms.  If they asked for pacing even slower
+           * than that, we need to respect that too.  So take the max of
+           * their pacing and 500ms.
+           */
+          int slowPacing = 500;
+          if (slowPacing < _pacing)
+            slowPacing = _pacing;
+          /*
+           * Start sending the file.
+           */
           for (int i = 0; i < buffer.length; i++)
           {
             if (_shouldRun == false)
@@ -1477,12 +1540,30 @@ public class CommsThread extends Thread
               Log.println(false, "CommsThread.Worker.run() told to stop.");
               break;
             }
+            /*
+             * We hit the end of a line.
+             */
             if (buffer[i] == 0x0d)
             {
               _transport.writeByte(0x8d);
               try
               {
-                sleep(_pacing);
+                /*
+                 * Are we within the boundaries of what was supposed
+                 * to be send with slower pacing - at the beginning
+                 * or end of the file?
+                 */
+                if ((_slowFirst > currentLine) ||
+                    (currentLine > (numLines - _slowLast)))
+                {
+                  Log.println(false,"slow pacing: "+slowPacing);
+                  sleep(slowPacing);
+                }
+                else
+                {
+                  Log.println(false,"fast pacing: "+_pacing);                  
+                  sleep(_pacing);
+                }
               }
               catch (InterruptedException e)
               {
@@ -1493,6 +1574,7 @@ public class CommsThread extends Thread
                   break;
                 }
               }
+              currentLine ++;
             }
             else
               if (buffer[i] != 0x0a) _transport.writeByte(buffer[i]);
@@ -1527,8 +1609,12 @@ public class CommsThread extends Thread
     }
 
     InputStream _is;
+
     int _speed;
+
     int _pacing;
+    int _slowFirst = 0;
+    int _slowLast = 0;
   }
 
   public int transportType()

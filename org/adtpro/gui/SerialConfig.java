@@ -12,6 +12,7 @@ import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JTabbedPane;
 import javax.swing.SwingConstants;
 
 import org.adtpro.resources.Messages;
@@ -25,6 +26,8 @@ public class SerialConfig extends JDialog implements ActionListener
    * 
    */
   private static SerialConfig _theSingleton = null;
+
+  JTabbedPane _tabbedPane = new JTabbedPane();
 
   private static final long serialVersionUID = 1L;
 
@@ -80,9 +83,11 @@ public class SerialConfig extends JDialog implements ActionListener
         0.0, 0.0, // Weight X, Y
         5, 5, 5, 5); // Top, left, bottom, right insets
     JPanel configPanel = new JPanel();
+    JPanel bootstrapPanel = new JPanel();
     configPanel.setLayout(new GridBagLayout());
+    bootstrapPanel.setLayout(new GridBagLayout());
     this.getContentPane().setLayout(new BorderLayout());    
-    this.getContentPane().add(configPanel,BorderLayout.CENTER);
+    this.getContentPane().add(_tabbedPane,BorderLayout.CENTER);
     this.getContentPane().add(buttonPanel,BorderLayout.SOUTH);
     Log.getSingleton();
     comboComPort = new JComboBox();
@@ -168,30 +173,33 @@ public class SerialConfig extends JDialog implements ActionListener
         1.0, 0.0, // Weight X, Y
         0, 0, 5, 5); // Top, left, bottom, right insets
 
-    GridBagUtil.constrain(configPanel, labelBootstrapPacing, 1, 4, // X, Y Coordinates
+    GridBagUtil.constrain(bootstrapPanel, labelBootstrapPacing, 1, 4, // X, Y Coordinates
         1, 1, // Grid width, height
         GridBagConstraints.NONE, // Fill value
         GridBagConstraints.WEST, // Anchor value
         0.0, 0.0, // Weight X, Y
         0, 5, 0, 5); // Top, left, bottom, right insets
-    GridBagUtil.constrain(configPanel, comboBootstrapPacing, 1, 5, // X, Y Coordinates
+    GridBagUtil.constrain(bootstrapPanel, comboBootstrapPacing, 1, 5, // X, Y Coordinates
         1, 1, // Grid width, height
         GridBagConstraints.HORIZONTAL, // Fill value
         GridBagConstraints.WEST, // Anchor value
         1.0, 0.0, // Weight X, Y
         0, 5, 5, 5); // Top, left, bottom, right insets
-    GridBagUtil.constrain(configPanel, labelBootstrapSpeed, 2, 4, // X, Y Coordinates
+    GridBagUtil.constrain(bootstrapPanel, labelBootstrapSpeed, 2, 4, // X, Y Coordinates
         1, 1, // Grid width, height
         GridBagConstraints.NONE, // Fill value
         GridBagConstraints.WEST, // Anchor value
         0.0, 0.0, // Weight X, Y
         0, 5, 0, 5); // Top, left, bottom, right insets
-    GridBagUtil.constrain(configPanel, comboBootstrapSpeed, 2, 5, // X, Y Coordinates
+    GridBagUtil.constrain(bootstrapPanel, comboBootstrapSpeed, 2, 5, // X, Y Coordinates
         1, 1, // Grid width, height
         GridBagConstraints.HORIZONTAL, // Fill value
         GridBagConstraints.WEST, // Anchor value
         1.0, 0.0, // Weight X, Y
         0, 5, 5, 5); // Top, left, bottom, right insets
+
+    _tabbedPane.addTab(Messages.getString("Gui.ConfigSerialTab"), null, configPanel, Messages.getString("Gui.ConfigSerialTab.Help"));
+    _tabbedPane.addTab(Messages.getString("Gui.ConfigBootstrapTab"), null, bootstrapPanel, Messages.getString("Gui.ConfigBootstrapTab.Help"));
 
     this.pack();
     this.setBounds(FrameUtils.center(this.getSize()));
@@ -246,10 +254,11 @@ public class SerialConfig extends JDialog implements ActionListener
     return (boolean)_theSingleton.iicCheckBox.isSelected();
   }
 
-  public static void showSingleton(Gui parent)
+  public static void showSingleton(Gui parent, int tab)
   {
     _theSingleton.setModal(true);
     _theSingleton.setBounds(FrameUtils.center(_theSingleton.getSize(),parent.getBounds()));
+    _theSingleton._tabbedPane.setSelectedIndex(tab);
     _theSingleton.show();
   }
 

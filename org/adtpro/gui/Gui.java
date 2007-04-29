@@ -144,7 +144,8 @@ public final class Gui extends JFrame implements ActionListener
     menuBar.add(menuBootstrap);
     menuBootstrap.add(menuBootstrapProDOS);
     menuBootstrap.add(menuBootstrapDOS);
-    menuBootstrap.add(serialConfigAction);
+    MenuAction serialConfigBootstrapAction = new MenuAction(Messages.getString("Gui.SerialConfigBootstrap")); //$NON-NLS-1$
+    menuBootstrap.add(serialConfigBootstrapAction);
     menuBootstrap.setEnabled(false);
     JMenu menuHelp = new JMenu(Messages.getString("Gui.Help")); //$NON-NLS-1$
     MenuAction helpAction = new MenuAction(Messages.getString("Gui.Website")); //$NON-NLS-1$
@@ -295,7 +296,7 @@ public final class Gui extends JFrame implements ActionListener
       if ((_properties.getProperty("CommPortSpeed") == null) ||
           (_properties.getProperty("CommPort") == null))
       {
-        serialConfigGui();
+        serialConfigGui(0);
         if (SerialConfig.getSingleton().getExitStatus() == SerialConfig.OK)
         {
           _serialButton.doClick();
@@ -405,11 +406,12 @@ public final class Gui extends JFrame implements ActionListener
     Log.println(false,"Gui.getWorkingDirectory(): " + _workingDirectory);
     return _workingDirectory;
   }
-  public void serialConfigGui()
+
+  public void serialConfigGui(int tab)
   {
     SerialConfig.getSingleton();
     SerialConfig.setProperties(_properties);
-    SerialConfig.showSingleton(this);
+    SerialConfig.showSingleton(this, tab);
   }
 
   public byte setWorkingDirectory(String cwd)
@@ -607,9 +609,17 @@ public final class Gui extends JFrame implements ActionListener
                 }
               }
               else
-                if ((e.getActionCommand().equals(Messages.getString("Gui.SerialConfig"))))
+                if (((e.getActionCommand().equals(Messages.getString("Gui.SerialConfig")))) ||
+                    ((e.getActionCommand().equals(Messages.getString("Gui.SerialConfigBootstrap")))))
                 {
-                  serialConfigGui();
+                  if ((e.getActionCommand().equals(Messages.getString("Gui.SerialConfigBootstrap"))))
+                  {
+                    serialConfigGui(1);
+                  }
+                  else
+                  {
+                    serialConfigGui(0);
+                  }
                   if (SerialConfig.getSingleton().getExitStatus() == SerialConfig.OK)
                   {
                     if ((_commsThread != null) && (_commsThread.transportType() == ATransport.TRANSPORT_TYPE_SERIAL))
