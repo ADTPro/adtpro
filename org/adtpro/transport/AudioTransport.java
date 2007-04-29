@@ -364,8 +364,14 @@ public class AudioTransport extends ATransport
       ret = ret.replaceFirst("%1%", endAddrHex);
     }
     else
-      if (guiString.equals(Messages.getString("Gui.BS.ProDOS"))) ret = Messages
-          .getString("Gui.BS.DumpProDOSAudioInstructions");
+      if (guiString.equals(Messages.getString("Gui.BS.ProDOS")))
+      {
+        ret = Messages.getString("Gui.BS.DumpProDOSAudioInstructions");
+        endAddr = fileSize - 1 + 8192;
+        String endAddrHex = UnsignedByte.toString(UnsignedByte.hiByte(endAddr))
+            + UnsignedByte.toString(UnsignedByte.loByte(endAddr));
+        ret = ret.replaceFirst("%1%", endAddrHex);
+      }
       else
         if (guiString.equals(Messages.getString("Gui.BS.ProDOS2"))) ret = Messages
             .getString("Gui.BS.DumpProDOSAudioInstructions2");
@@ -377,9 +383,7 @@ public class AudioTransport extends ATransport
             String endAddrHex = UnsignedByte.toString(UnsignedByte.hiByte(endAddr))
                 + UnsignedByte.toString(UnsignedByte.loByte(endAddr));
             ret = ret.replaceFirst("%1%", endAddrHex);
-            ret = ret.replaceFirst("0.0", "0."); // Remove the unsightly
-                                                  // leading
-            // zero
+            ret = ret.replaceFirst("0.0", "0."); // Remove the unsightly leading zero
           }
           else
             if (guiString.equals(Messages.getString("Gui.BS.DOS2"))) ret = Messages
