@@ -6,27 +6,22 @@
 
 ADTPro Audio Bootstrapping
 
- Audio bootstrapping is actually quite a bit faster than the standard
- 300-baud {{{bootstrap.html}serial bootstrap procedure}}.  That's
- because the cassette port of the Apple II runs at something close to 
- 1800 baud.  While you probably don't want to use the audio version of ADTPro
- for diskette transfers, it is definitely useful for the inital bootstrap
- steps.  Please note that neither the IIgs or the IIc have cassette ports, 
- so this will only work on the II, II+, and IIe.
+ Please note that neither the IIgs or the IIc have cassette ports, 
+ so these procedures will only work on the II, II+, and IIe computers.
 
-    <<Note:>> At this point, you can't get all the way from metal to ProDOS
-    exclusively through audio transfers.  I cheat and use serial to get the
-    ADTPro image across.  We can push DOS, we can push ADT, and we can push
-    ADTPro clients through the audio port.  We just can't push ProDOS itself.
+ The goal here is to get the ADTPro client
+ down to the Apple so that you can easily transfer all the rest of the
+ great Apple II software that is available on the Internet.
+ Getting to that goal will take a series of steps, depending on where
+ you are starting from.  
+ You may be able to save yourself some of those steps, depending on 
+ what software you currently have available to you.  
 
-  If you don't use DOS ADT now, or don't have software for your Apple yet, 
-more bootstrapping scenarios and configurations are detailed below.
+ Choose a bootstrapping scenario below that matches your situation.
 
  * {{{bootstrapaudio.html#If you already have ProDOS}If you already have ProDOS}}
 
- * {{{bootstrapaudio.html#If you already have DOS 3.3, but no ProDOS}If you already have DOS 3.3, but no ProDOS}}
-
- * {{{bootstrapaudio.html#Starting from bare metal}If you have no Apple software on disk at all... starting from bare metal}}
+ * {{{bootstrapaudio.html#Starting from bare metal}If you have no ProDOS software on disk at all... starting from bare metal}}
 
  [] 
 
@@ -44,47 +39,61 @@ more bootstrapping scenarios and configurations are detailed below.
       so you may want to set that now.  If you don't, it will be saved to 
       whatever the current prefix is set to.
 
-    [[1]] On the Apple, type in the following command:
-
-    * <<<CALL -151>>> (The Apple will respond with the asterisk ("<<<*>>>") prompt.)
-
-    []
-
     [[1]] On the ADTPro server, push the "Audio" button.
       
-    [[1]] On the ADTPro server, decide which version of the client you wish to send.
-      You can send the audio ("Bootstrapping->Send ADTPro Audio Client"), serial
-      ("Bootstrapping->Send ADTPro Serial Client"), or ethernet
-      ("Bootstrapping->Send ADTPro Ethernet Client").  You don't have to stick
+    [[1]] {Decide which version} of the client you wish to send, and click that menu option.
+      You can send the audio version ("Bootstrapping->ProDOS->Send ADTPro Audio Client"),
+      the serial version
+      ("Bootstrapping->ProDOS->Send ADTPro Serial Client"), or the ethernet version
+      ("Bootstrapping->ProDOS->Send ADTPro Ethernet Client").  You don't have to stick
       to the same method of communicating with your Apple once you've finished
-      with the initial bootstrapping, but you certainly can if you want.
+      with the initial bootstrapping, but you certainly can if you want to.
 
-    [[1]] A dialog box will come up instructing you to type the command above
-      plus one more:
+    [[1]] A dialog box will come up instructing you to type a set of commands
+      on the Apple.  They will be similar to the following:
+
+    * <<<CALL -151>>> (The Apple should respond with the asterisk ("<<<*>>>") prompt.)
 
     * <<<803.xxxxR>>> (Note the "<<<0>>>" is a zero, not the letter "O.")
 
     []
-      Back on the Apple... fill in the real numbers for the four "x"
-      characters above as given.  Hit return on the Apple; the blinking cursor 
-      should go away.
+      Back on the Apple... the first command (<<<CALL -151>>>) will place
+      the Apple into its machine language "monitor."  
+      That will allow you enter some commands that are not
+      available to you in the Apple's normal BASIC mode.
+      
+      The second command (<<<803.xxxxR>>>) will instruct the Apple to start 
+      listening for data on its
+      cassette-in port.  Fill in the real numbers for the four "x"
+      characters above as given in the ADTPro server dialog box.
+      When you hit return on the Apple after this command,
+      the blinking cursor should disappear.
 
     [[1]] Dismiss the dialog on the ADTPro server.
-      The progress bar will show how far along 
-      the transfer is.  After the transfer finishes, you should
-      hear a "beep" and be returned to the asterisk prompt ("<<<*>>>").
+      That will start the flow of data over the audio/cassete link
+      that the Apple is waiting for.
+      The progress bar will show how far along the transfer is.  
+      After the transfer finishes, you should
+      hear a "beep" at the Apple end and be returned to the asterisk prompt ("<<<*>>>").
       
-      * If instead it says "<<<ERR>>>" or never returns you to a prompt,
-        either the Apple isn't hearing 
+      * Note: If instead the Apple says "<<<ERR>>>" or never returns you to 
+        a prompt, either the Apple isn't hearing 
         anything at all ({{{connectionsaudio.html}check}} the audio cable)
-        or it isn't hearing things
-        loudly enough.  Make sure your sound volume is set at close to 75% 
-        of maximum and try again.  Hit Ctrl-Reset on the Apple to regain control
-        and start again at step 3 above.
+        or it isn't hearing things loudly enough.
+        Make sure your sound volume is set at close to 75% 
+        of maximum and try again.  
+        Hit Ctrl-Reset on the Apple to regain control and start again at
+        {{{bootstrapaudio.html#Decide which version}step 4 above}}.
 
-    [[1]] Start the ADTPro client with the command <<<803G>>> 
-      from the asterisk prompt at the Apple.  Go to ADTPro's configuration 
+    [[1]] Once the transfer completes successfully,
+      start the ADTPro client with the command <<<803G>>>
+      from the asterisk prompt at the Apple.
+      Or, if you put yourself back at the Applesoft prompt,
+      you can start the ADTPro client with the <<<CALL 2051>>> command.
+      Go to ADTPro's configuration 
       menu by hitting the <<<G>>> key and save it to your current drive prefix.
+      See the {{{configaudio.html}client configuration}} section for
+      details on saving ADTPro.
 
     [[1]] 
       Start transferring 5.25", 3.5", Ram drive, or hard drive images to your
@@ -92,169 +101,171 @@ more bootstrapping scenarios and configurations are detailed below.
 
       []
 
-* {If you already have DOS 3.3, but no ProDOS}
-
-    Start following the "bare metal" instructions below from
-    {{{bootstrapaudio.html#With a freshly formatted DOS floppy in the Apple drive}step 15, "With a freshly formatted DOS floppy..." }}.
-    You will first send the ADT DOS client over to a DOS diskette, then
-    use that DOS ADT client to transfer a new ProDOS-formatted floppy 
-    containing the ADTPro client.
-
 * {Starting from bare metal}
-
-    At this point, you can't get all the way from metal to ProDOS exclusively 
-    through the audio port.  I cheat and use serial to get the ADTPro image
-    across.  We can push DOS, we can push ADT, and we can push ADTPro clients
-    through the audio port.  We just can't push ProDOS itself.
 
   The full process looks like this:
 
     [[1]] {{{connectionsaudio.html}Connect}} the two computers through their audio ports.
 
-    [[1]] Boot your Apple; hit Ctrl-Reset before it reads anything from the disk drive
-      (you don't have any software, right?).  Put a double sided, double density 
-      diskette in the drive and close the door; it doesn't matter if it's formatted or not.
-
-    [[1]] Type in the following commands at the Apple:
-      
-    * <<<HOME>>> (This is important because a message will appear as part of the
-     transfer, and this command will help prevent it getting pushed off the top of the screen)
-    
-    * <<<CALL -151>>> (The Apple will respond with the asterisk ("<<<*>>>") prompt.)
-
-    []
+    [[1]] Boot your Apple; hit Ctrl-Reset before it reads anything from the disk drive.
+      It's important that it not load any OS, even DOS 3.3.
+      Put a double sided, double density diskette in the drive and close the door.
+      It doesn't matter if it's formatted or not, but it will save a little time if it is.
 
     [[1]] On the ADTPro server, click the big "Audio" button.
-      Click on the "Bootstrapping->Send EsDOS ][" menu item.
-      
-    [[1]] A dialog box will come up instructing you to type the commands above
-      plus one more:
 
-    * <<<3D0.xxxR>>> (Note the "<<<0>>>" is a zero, not the letter "O.")
+    [[1]] Click on the "Bootstrapping->ProDOS->{Send ProDOS part 1}" menu item.
+      
+    [[1]] A dialog box will come up instructing you to type a set of commands
+      on the Apple.  They will be similar to the following:
+
+    * <<<CALL -151>>>
+
+    * <<<2000.xxxxR>>> (Note the "<<<0>>>" is a zero, not the letter "O.")
+
+      Back on the Apple... the first command (<<<CALL -151>>>) will place
+      the Apple into its machine language "monitor."  
+      That will allow you enter some commands that are not
+      available to you in the Apple's normal BASIC mode.
+      
+      The second command (<<<2000.xxxxR>>>) will instruct the Apple to start 
+      listening for data on its
+      cassette-in port.  Fill in the real numbers for the four "x"
+      characters above as given in the ADTPro server dialog box.
+      When you hit return on the Apple after this command,
+      the blinking cursor should disappear.
 
     []
-
-    [[1]] Back on the Apple... fill in the real numbers for the three "x"
-      characters above as given.  Hit return on the Apple; the blinking cursor 
-      should go away.
-
-    [[1]] Dismiss the dialog on the ADTPro server.  
-      The progress bar will show how far along 
-      the transfer is.  After the transfer finishes, you should
-      hear a "beep" and be returned to the asterisk prompt ("<<<*>>>").
-      
-      * If instead it says "<<<ERR>>>" or never returns you to a prompt,
-        either the Apple isn't hearing 
-        anything at all ({{{connectionsaudio.html}check}} the audio cable)
-        or it isn't hearing things
-        loudly enough.  Make sure your sound volume is set at close to 75% 
-        of maximum and try again.  Hit Ctrl-Reset on the Apple to regain control
-        and start again at step 3 above.
-
-      []
-      
-      A message will be displayed across the top of the screen for a
-      command you will need soon; just write it down for now:
-
-    * <<<9D84G>>> (But don't type it in now!)
-
-    []
-
-    [[1]] On the ADTPro server, click on the "Bootstrapping->Send EsDOS ][ part 2" menu item.
-      
-    [[1]] A dialog box will come up instructing you to type more commands at
-      the Apple.  The only one you really need to enter if you're already at
-      the asterisk prompt ("<<<*>>>") is this:
-
-    * <<<9D00.BFFFR>>> (Note the "<<<0>>>" is a zero, not the letter "O.")
-
-    []
-
-    [[1]] Enter <<<9D00.BFFFR>>> on the Apple and hit Return.  The blinking
-      cursor should go away.
 
     [[1]] Dismiss the dialog on the ADTPro server.
-      The progress bar will show how far along the transfer is.
-      After the transfer finishes, you should hear a "beep" and
-      be returned to the asterisk prompt ("<<<*>>>").
-
-    [[1]] Back on the Apple, enter this command (the one you wrote down
-     just a minute ago):
-
-    * <<<9D84G>>>
-
-    []
-
-    [[1]] The Apple should change from the asterisk prompt ("<<<*>>>")
-      to the Applesoft prompt ("<<<]>>>").
-
-      You now have EsDOS II <in memory only> on your Apple until you 
-      format a floppy.  Do this now with the <<<INIT>>> command on the Apple:
-      <<<INIT HELLO>>>.  Once the <<<INIT>>> operation completes, you now have
-      a bootable DOS diskette.  Go ahead and reboot with it now with a
-      <<<PR#6>>> command.
-
-    [[1]] You might 'init' another floppy now to get a second floppy formatted
-      now that you have a working version of DOS.  Remove your EsDOS diskette,
-      insert a blank diskette, and type the command <<<INIT HELLO>>>
-      on the Apple to format it.
-
-    [[1]] {With a freshly formatted DOS floppy in the Apple drive}, send over the
-      DOS version of ADT to the Apple.  On the Apple, prepare it to listen to the
-      cassette port again:
+      That will start the flow of data over the audio/cassete link
+      that the Apple is waiting for.
+      The progress bar will show how far along the transfer is.  
+      After the transfer finishes, you should
+      hear a "beep" at the Apple end and be returned to the asterisk prompt ("<<<*>>>").
       
-      * <<<CALL -151>>> (The Apple will respond with the asterisk ("<<<*>>>") prompt.)
+      * Note: If instead the Apple says "<<<ERR>>>" or never returns you to 
+        a prompt, either the Apple isn't hearing 
+        anything at all ({{{connectionsaudio.html}check}} the audio cable)
+        or it isn't hearing things loudly enough.
+        Make sure your sound volume is set at close to 75% 
+        of maximum and try again.  
+        Hit Ctrl-Reset on the Apple to regain control and start again at
+        {{{bootstrapaudio.html#Decide which version}step 4 above}}.
 
+    [[1]] Once the transfer completes successfully, the kernel of ProDOS is sitting
+      at memory location 2000 (hex) on your Apple.  Back on the Apple,
+      enter the command: <<<2000G>>> from the asterisk prompt.
+      The first boot stage should leave your screen looking like this:
+
+      *
+
+[images/pd1.png]      
+
+    [[1]] Click on the "Bootstrapping->ProDOS->Send ProDOS part 2" menu item.
+      
+    [[1]] A dialog box will come up instructing you to type a command
+      on the Apple.  It will be similar to the following:
+
+      * <<<2000.xxxxR>>> (Note the "<<<0>>>" is a zero, not the letter "O.")
+
+        Back on the Apple... the command (<<<2000.xxxxR>>>) will instruct
+        the Apple to start listening for data on its cassette-in port.
+        Fill in the real numbers for the four "x" characters above as given
+        in the ADTPro server dialog box.
+        When you hit return on the Apple after this command,
+        the blinking cursor should disappear.
+        
       []
 
-    [[1]] On the ADTPro server, click on "Bootstrapping->Send DOS ADT Client."
-      The dialog box that pops up will give you the command to type next on the 
-      Apple:
+    [[1]] Dismiss the dialog on the ADTPro server.
+      That will start the flow of data over the audio/cassete link
+      that the Apple is waiting for.
+      The progress bar will show how far along the transfer is.  
+      After the transfer finishes, you should
+      hear a "beep" at the Apple end and be returned to the asterisk prompt ("<<<*>>>").
       
-    * <<<803.xxxxR>>> (Note the "<<<0>>>" is a zero, not the letter "O.")
+      * Note: If instead the Apple says "<<<ERR>>>" or never returns you to 
+        a prompt, either the Apple isn't hearing 
+        anything at all ({{{connectionsaudio.html}check}} the audio cable)
+        or it isn't hearing things loudly enough.
+        Make sure your sound volume is set at close to 75% 
+        of maximum and try again.  
+        Hit Ctrl-Reset on the Apple to regain control and start again at
+        {{{bootstrapaudio.html#Decide which version}step 4 above}}.
+
+    [[1]] Once the transfer completes successfully, the BASIC Interpreter of ProDOS
+      is sitting at memory location 2000 (hex) on your Apple.  Back on the Apple,
+      enter the command: <<<2000G>>> from the asterisk prompt.
+      The second boot stage should leave your screen looking like this:
+
+      *
+
+[images/pd2.png]
+
+    [[1]] Now you have fully functional ProDOS running on your Apple.  It's 
+      default slot/drive is currently set to 6, but you can change that with 
+      the <<<PREFIX>>> command (or <<<CAT,S5>>> or whatever).
+
+    [[1]] Now you need a formatted floppy to write stuff to.  ProDOS doesn't include
+      a <<<FORMAT>>> or <<<INIT>>> command, though.  No problem: ADTPro can send
+      just such a utility down to the Apple.  Click on the 
+      "Bootstrapping->ProDOS->Send ProDOS Format Utility" menu item.
+
+    [[1]] A dialog box will come up instructing you to type a set of commands
+      on the Apple.  They will be similar to the following:
+
+    * <<<CALL -151>>>
+
+    * <<<5000.xxxxR>>> (Note the "<<<0>>>" is a zero, not the letter "O.")
 
     []
-      Back on the Apple... fill in the real numbers for the four "x"
-      characters above as given.  Hit return on the Apple; the blinking cursor 
-      should go away.
+      Back on the Apple... the first command (<<<CALL -151>>>) will place
+      the Apple into its machine language "monitor."  
+      That will allow you enter some commands that are not
+      available to you in the Apple's normal BASIC mode.
 
-    [[1]] Dismiss the dialog on the ADTPro server.  
-      The progress bar will show how far along the transfer is.
-      After the transfer finishes, you should hear a "beep" and 
-      be returned to the asterisk prompt ("<<<*>>>").
+      The second command (<<<5000.xxxxR>>>) will instruct the Apple to start 
+      listening for data on its
+      cassette-in port.  Fill in the real numbers for the four "x"
+      characters above as given in the ADTPro server dialog box.
+      When you hit return on the Apple after this command,
+      the blinking cursor should disappear.
+
+    [[1]] Dismiss the dialog on the ADTPro server.
+      That will start the flow of data over the audio/cassete link
+      that the Apple is waiting for.
+      The progress bar will show how far along the transfer is.  
+      After the transfer finishes, you should
+      hear a "beep" at the Apple end and be returned to the asterisk prompt ("<<<*>>>").
       
-      * If instead it says "<<<ERR>>>" or never returns you to a prompt,
-        either the Apple isn't hearing 
+      * Note: If instead the Apple says "<<<ERR>>>" or never returns you to 
+        a prompt, either the Apple isn't hearing 
         anything at all ({{{connectionsaudio.html}check}} the audio cable)
-        or it isn't hearing things
-        loudly enough.  Make sure your sound volume is set at close to 75% 
-        of maximum and try again.  Hit Ctrl-Reset on the Apple to regain control
-        and start again at step 15 above.
+        or it isn't hearing things loudly enough.
+        Make sure your sound volume is set at close to 75% 
+        of maximum and try again.  
+        Hit Ctrl-Reset on the Apple to regain control and start again at
+        {{{bootstrapaudio.html#Decide which version}step 4 above}}.
 
-    [[1]] Start the DOS ADT client with the command <<<803G>>> 
-      from the asterisk prompt at the Apple.  Go to ADT's configuration 
-      menu by hitting the <<<C>>> key and save it to the floppy drive.
+    [[1]] Once the transfer completes successfully,
+      start the Format utility with the command <<<5000G>>>
+      from the asterisk prompt at the Apple.
+      If you put yourself back at the Applesoft prompt, you can start the 
+      Format utility with the <<<CALL 20480>>> command.
+      Follow the prompts to format your floppy - this particular utility
+      can format both 5-1/4" and 3-1/2" floppies.  You probably want to format
+      a couple: one to hold an image of the ADTPro-v.r.m.dsk that ships as 
+      part of ADTPro, and another to hold whatever other software you want
+      to transfer.
 
-    [[1]] You probably want to write-protect your new DOS ADT diskette by
-      covering the write notch with tape to be sure you don't ever have to send
-      all that stuff over the cassete port line again.
+    [[1]] Put (or leave) your freshly formatted floppy in the drive.
 
-    [[1]] With DOS ADT running, remove the DOS ADT diskette from the drive,
-      and insert another formatted, blank floppy.
-      If you need to change the default communications prameters,
-      (ADT assumes a Super Serial card in slot #2, at 115k baud) hit the 
-      <<<C>>> key.  You can change the SSC slot or or IIgs Modem port from there,
-      as well as the baud rate, disk defaults, etc.
-
-    [[1]] On the ADTPro server, switch from audio to serial communications
-      by pushing the "Serial" button.
-
-    [[1]] From the Apple, hit the <<<R>>> key when you're ready to receive
-      the ADTPro client disk, ADTPro-v.r.m.dsk.
+    [[1]] From the Apple, hit the <<<R>>> key to receive the
+      full ADTPro client disk, ADTPro-v.r.m.dsk.
 
     [[1]] Boot ADTPro's newly minted disk.
 
-    [[1]] Start transferring 5.25", 3.5", Ram drive, or hard drive images 
-      to your heart's content!
-
-    []
+    [[1]] 
+      Start transferring 5.25", 3.5", Ram drive, or hard drive images to your
+      heart's content!

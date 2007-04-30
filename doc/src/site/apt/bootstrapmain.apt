@@ -16,8 +16,7 @@ or don't have a serial card, more bootstrapping scenarios and configurations
 are detailed below.  Please note that you will need to use 
 {{{bootstrap.html}serial}} or
 {{{bootstrapaudio.html}audio}} communications 
-(not ethernet) for this task.  The audio procedure requires a little more 
-typing on your part, but is substantially faster than serial.
+(not ethernet) for this task.
 
  * {{{bootstrap.html#If you already have ProDOS}[serial}}|{{{bootstrapaudio.html#If you already have ProDOS}audio]}} If you already have ProDOS
 
