@@ -61,6 +61,8 @@ ADTPro Audio Bootstrapping
       the Apple into its machine language "monitor."  
       That will allow you enter some commands that are not
       available to you in the Apple's normal BASIC mode.
+      You should expect the prompt character change from the right-bracket
+      (<<<]>>>) to the asterisk (<<<*>>>).
       
       The second command (<<<803.xxxxR>>>) will instruct the Apple to start 
       listening for data on its
@@ -103,9 +105,8 @@ ADTPro Audio Bootstrapping
 
 * {Starting from bare metal}
 
-  The full process looks like this:
-
     [[1]] {{{connectionsaudio.html}Connect}} the two computers through their audio ports.
+      Make sure the volume is turned up on the host computer!
 
     [[1]] Boot your Apple; hit Ctrl-Reset before it reads anything from the disk drive.
       It's important that it not load any OS, even DOS 3.3.
@@ -246,7 +247,7 @@ ADTPro Audio Bootstrapping
         Make sure your sound volume is set at close to 75% 
         of maximum and try again.  
         Hit Ctrl-Reset on the Apple to regain control and start again at
-        {{{bootstrapaudio.html#Decide which version}step 4 above}}.
+        {{{bootstrapaudio.html#Decide which version}step 13 above}}.
 
     [[1]] Once the transfer completes successfully,
       start the Format utility with the command <<<5000G>>>
@@ -261,11 +262,4 @@ ADTPro Audio Bootstrapping
 
     [[1]] Put (or leave) your freshly formatted floppy in the drive.
 
-    [[1]] From the Apple, hit the <<<R>>> key to receive the
-      full ADTPro client disk, ADTPro-v.r.m.dsk.
-
-    [[1]] Boot ADTPro's newly minted disk.
-
-    [[1]] 
-      Start transferring 5.25", 3.5", Ram drive, or hard drive images to your
-      heart's content!
+    [[1]] Continue with the step above starting with, "{{{bootstrapaudio.html#Decide which version}Decide which version...}}"

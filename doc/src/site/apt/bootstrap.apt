@@ -95,7 +95,7 @@ more bootstrapping scenarios and configurations are detailed below.
         you have your Super Serial Card plugged into.  An IIgs' modem port is always in
         "virtual" slot #2, and an IIc's serial port is always "virtual" slot #2 as well.)
 
-      * <<< <ctrl-A>15B>>> (The number will depend on the speed you have chosen from the bootstrapping 
+      * <<< <ctrl-A>14B>>> (The number will depend on the speed you have chosen from the bootstrapping 
         tab on the serial configuration dialog box.  
         When you hit <<< <ctrl-A> >>>, the Apple Super Serial card will respond with "<<<APPLE SSC:>>>" and the
         IIgs will respond with "<<<?>>>".  At that prompt, enter the number in your dialog box and the <<<B>>>
@@ -135,7 +135,7 @@ more bootstrapping scenarios and configurations are detailed below.
 
 * {Starting from bare metal}
 
-    [[1]] {{{connectionsserial.html}Connect}} the two computers through their audio ports.
+    [[1]] {{{connectionsserial.html}Connect}} the two computers through their serial ports.
 
     [[1]] Boot your Apple; hit Ctrl-Reset before it reads anything from the disk drive.
       It's important that it not load any OS, even DOS 3.3.
@@ -155,7 +155,7 @@ more bootstrapping scenarios and configurations are detailed below.
       you have your Super Serial Card plugged into.  An IIgs' modem port is always in
       "virtual" slot #2, and an IIc's serial port is always "virtual" slot #2 as well.)
 
-    * <<< <ctrl-A>15B>>> (The number will depend on the speed you have chosen from the bootstrapping 
+    * <<< <ctrl-A>14B>>> (The number will depend on the speed you have chosen from the bootstrapping 
       tab on the serial configuration dialog box.  
       When you hit <<< <ctrl-A> >>>, the Apple Super Serial card will respond with "<<<APPLE SSC:>>>" and the
       IIgs will respond with "<<<?>>>".  At that prompt, enter the number in your dialog box and the <<<B>>>
@@ -175,6 +175,8 @@ more bootstrapping scenarios and configurations are detailed below.
 
     [[1]] Dismiss the dialog box on the ADTPro server.
       You should start to see text flowing across the Apple screen now.
+      The progress bar on the ADTPro server will show how far along the
+      transfer is.
 
     [[1]] Once the transfer completes successfully, the kernel of ProDOS will
       start.
@@ -190,9 +192,10 @@ more bootstrapping scenarios and configurations are detailed below.
       on the Apple.  They will be similar to the following:
 
       * <<< 2<ctrl-K> >>> (This is the equivalent of <<<IN#2>>>, but since
-      BASIC is no longer available - you have to do it from the monitor.)
+      BASIC is no longer available - you have to do it from the monitor.
+      You will need to hit the <<<Return>>> key after entering this command.)
 
-      * <<< <ctrl-A>15B >>> (The number will depend on the speed you have
+      * <<< <ctrl-A>14B >>> (The number will depend on the speed you have
       chosen from the bootstrapping tab on the serial configuration dialog box.  
       When you hit <<< <ctrl-A> >>>, the Apple Super Serial card will respond 
       with "<<<APPLE SSC:>>>" and the IIgs will respond with "<<<?>>>".  
@@ -230,7 +233,7 @@ more bootstrapping scenarios and configurations are detailed below.
         you have your Super Serial Card plugged into.  An IIgs' modem port is always in
         "virtual" slot #2, and an IIc's serial port is always "virtual" slot #2 as well.)
 
-      * <<< <ctrl-A>15B>>> (The number will depend on the speed you have chosen from the bootstrapping 
+      * <<< <ctrl-A>14B>>> (The number will depend on the speed you have chosen from the bootstrapping 
         tab on the serial configuration dialog box.  
         When you hit <<< <ctrl-A> >>>, the Apple Super Serial card will respond with "<<<APPLE SSC:>>>" and the
         IIgs will respond with "<<<?>>>".  At that prompt, enter the number in your dialog box and the <<<B>>>
