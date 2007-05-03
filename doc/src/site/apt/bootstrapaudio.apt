@@ -110,7 +110,7 @@ ADTPro Audio Bootstrapping
     [[1]] Boot your Apple; hit Ctrl-Reset before it reads anything from the disk drive.
       It's important that it not load any OS, even DOS 3.3.
       Put a double sided, double density diskette in the drive and close the door.
-      It doesn't matter if it's formatted or not, but it will save a little time if it is.
+      It doesn't matter if it's formatted or not.
 
     [[1]] On the ADTPro server, click the big "Audio" button.
 

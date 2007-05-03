@@ -74,12 +74,16 @@ You bring up the IIgs control panel with the key sequence
       default.  Default values have a little checkmark beside them in the
       control panel:
 
+      *
+
 [images/iigsControl1.png]
 
     [[1]] Use the IIgs control panel to set the Modem Port to all defaults.  
       Remember, default values will have a little checkmark beside them in the
       control panel.  You can optionally set the baud rate to 300 to ensure 
       trouble-free operation in the bootstrap step:
+
+      *
 
 [images/iigsControl2.png]
 
