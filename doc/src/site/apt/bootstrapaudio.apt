@@ -157,11 +157,12 @@ ADTPro Audio Bootstrapping
     [[1]] Once the transfer completes successfully, the kernel of ProDOS is sitting
       at memory location 2000 (hex) on your Apple.  Back on the Apple,
       enter the command: <<<2000G>>> from the asterisk prompt.
-      The first boot stage should leave your screen looking like this:
+      This first boot stage should leave your screen looking something like this,
+      with an asterisk (<<<*>>>) prompt:
 
       *
 
-[images/pd1.png]      
+[images/pd1.png]
 
     [[1]] Click on the "Bootstrapping->ProDOS->Send ProDOS part 2" menu item.
       
@@ -262,4 +263,5 @@ ADTPro Audio Bootstrapping
 
     [[1]] Put (or leave) your freshly formatted floppy in the drive.
 
-    [[1]] Continue with the step above starting with, "{{{bootstrapaudio.html#Decide which version}Decide which version...}}"
+    [[1]] Continue with the step above starting with 
+      {{{bootstrapaudio.html#Decide which version}Decide which version...}}.
