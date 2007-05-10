@@ -19,7 +19,7 @@ to emulators.  Points to remember:
 no matter what it is named.  To work correctly with most emulators, it 
 should be named with a ".dsk" or ".do" suffix.  
 
-  * ADTPro will save <any other> disk image 800k, 3-1/2" disk, hard drive, etc.
+  * ADTPro will save <any other> disk image (3-1/2" disk, hard drive, ram disk, etc.)
     in "ProDOS order," and so they should be named with a ".po" suffix.
 
   * Keeping to these naming conventions will ensure your images will work with
@@ -41,7 +41,7 @@ block contains 512 bytes of data.  So, typical disk sizes are:
 *-------:-----+
 |   127 | 64k RAM disk (128k Apples) |
 *-------:-----+
-|   280 | 5-1/4" Floppy disk (140k) |
+|   280 | 5-1/4" Floppy disk (140k) (Note: these are saved in DOS order) |
 *-------:-----+
 |  1600 | 3-1/2" Floppy disk (800k) |
 *-------:-----+
