@@ -38,19 +38,23 @@ more bootstrapping scenarios and configurations are detailed below.
  ADTPro lets you control how fast bootstrapping data gets sent to the
  Apple, as well as how long to pause after finishing sending a line of
  text.
- Historically, this operation has happened at 300 baud because that's
- the fastest the Apple could handle without some measure of line pacing
- or flow control.
+ Historically, this entire operation has happened at 300 baud because
+ that's the fastest the Apple could handle without some measure of line
+ pacing or flow control.
+ Having DOS 3.3 booted substantially slows down the pace at which the
+ Apple can respond to data, so it's important to leave the Apple un-
+ booted (i.e. hit reset before any DOS loads when turning the machine on).
+
  The defaults now are to send bootstrapping data at 9600 baud, with 
- a 75 millisecond delay after each line.  The first few (and the last
- few) lines slow down even more than that because they rely on the 
+ a 100 millisecond delay after each line.  The first few (and the last
+ few) lines slow down much more than that because they rely on the 
  BASIC interpreter, which takes extra time to process.
  The defaults should work for all Apples; those containing accelerators
  will be able to go even faster.
  But the net result is substantially faster bootstrapping than before.
  Using the serial configuration dialog box, bootstrapping tab
- (<<<Bootstrapping->Serial Configuration>>>)
- lets you control speed and pacing specificially for the bootstrapping
+ (<<<Bootstrapping->Serial Pacing>>>)
+ lets you control pacing and speed specificially for the bootstrapping
  operations:
 
 [images/serialConfig2.png]
@@ -61,9 +65,11 @@ more bootstrapping scenarios and configurations are detailed below.
 
 [images/serialConfig.png]
 
- The defaults for speed and pacing should work fine for communications to any Apple.
+ The defaults for pacing and speed should work fine for communications to any Apple.
  If you have trouble with these bootstrapping operations, you may find it necessary
  to slow down the baud rate, increase the pacing interval, or both.
+ Again, the important thing is to not have DOS 3.3 loaded when going through
+ bootstrapping operations.
 
 * {If you already have ProDOS}
 
@@ -109,7 +115,7 @@ more bootstrapping scenarios and configurations are detailed below.
         or <<<"?">>> is the one that you want.
 
         If you get any syntax errors or anything, hit Return a bunch of
-        times and start again.
+        times and start this step over again.
 
       []
 
@@ -169,7 +175,7 @@ more bootstrapping scenarios and configurations are detailed below.
       or <<<"?">>> is the one that you want.
 
     If you get any syntax errors or anything, hit Return a bunch of
-    times and start again.
+    times and start this step over again.
 
     []
 
@@ -181,7 +187,7 @@ more bootstrapping scenarios and configurations are detailed below.
     [[1]] Once the transfer completes successfully, the kernel of ProDOS will
       start.
       This first boot stage should leave your screen looking something like this,
-      with an asterisk (<<<*>>>) prompt:
+      with the cursor blinking after an asterisk (<<<*>>>) prompt:
 
       *
 
@@ -192,9 +198,12 @@ more bootstrapping scenarios and configurations are detailed below.
     [[1]] A dialog box will come up instructing you to type two commands
       on the Apple.  They will be similar to the following:
 
-      * <<< 2<ctrl-K> >>> (This is the equivalent of <<<IN#2>>>, but since
-      BASIC is no longer available - you have to do it from the asterisk prompt.
-      You will need to hit the <<<Return>>> key after entering this command.)
+      * <<< 2<ctrl-K> >>> (The number will depend on which slot
+      you have your Super Serial Card plugged into.  An IIgs' modem port is always in
+      "virtual" slot #2, and an IIc's serial port is always "virtual" slot #2 as well.
+      This is the equivalent of the BASIC command <<<IN#2>>>, but since
+      BASIC is not available right now - you have to use this form from the asterisk prompt.
+      You will need to hit the <<<Return>>> key after entering this sequence.)
 
       * <<< <ctrl-A>14B >>> (The number will depend on the speed you have
       chosen from the bootstrapping tab on the serial configuration dialog box.  
@@ -212,7 +221,8 @@ more bootstrapping scenarios and configurations are detailed below.
 
     [[1]] Once the transfer completes successfully, the BASIC Interpreter of ProDOS
       should start.
-      The second boot stage should leave your screen looking like this:
+      The second boot stage should leave your screen looking like this, with 
+      the cursor blinking after an Applesoft prompt (<<<]>>>):
 
       *
 
@@ -220,7 +230,7 @@ more bootstrapping scenarios and configurations are detailed below.
 
     [[1]] Now you have fully functional ProDOS running on your Apple.  It's 
       default slot/drive is currently set to 6, but you can change that with 
-      the <<<PREFIX>>> command (or <<<CAT,S5>>> or whatever).
+      the <<<PREFIX,S5>>> command (or <<<CAT,S5>>> or whatever).
 
     [[1]] Now you need a formatted floppy to write stuff to.  ProDOS doesn't include
       a <<<FORMAT>>> or <<<INIT>>> command, though.  No problem: ADTPro can send
@@ -260,5 +270,5 @@ more bootstrapping scenarios and configurations are detailed below.
      The disk formatted with this utility isn't bootable yet, so don't 
      reboot now - or you'll have to re-send the two ProDOS stages again.
 
-    [[1]] Contine following directions above, at
+    [[1]] Continue with the step above starting with
      {{{bootstrap.html#Decide which version}Decide which version...}}.

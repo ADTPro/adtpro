@@ -99,7 +99,11 @@ ADTPro Audio Bootstrapping
 
     [[1]] 
       Start transferring 5.25", 3.5", Ram drive, or hard drive images to your
-      heart's content!
+      heart's content!  If you just went through bare-metal bootstrapping, be
+      sure one of the first physical disks you create is a full copy of the 
+      ADTPro distribution disk (ADTPro-v.r.m.dsk).  It itself is bootable,
+      so you won't have to go through the manual bootstrapping process any more 
+      once you have one of those built (and write-protected).
 
       []
 
@@ -115,7 +119,8 @@ ADTPro Audio Bootstrapping
 
     [[1]] On the ADTPro server, click the big "Audio" button.
 
-    [[1]] Click on the "Bootstrapping->ProDOS->{Send ProDOS part 1}" menu item.
+    [[1]] On the ADTPro server, click on the "Bootstrapping->ProDOS->{Send ProDOS part 1}"
+      menu item.
       
     [[1]] A dialog box will come up instructing you to type a set of commands
       on the Apple.  They will be similar to the following:
@@ -152,19 +157,20 @@ ADTPro Audio Bootstrapping
         Make sure your sound volume is set at close to 75% 
         of maximum and try again.  
         Hit Ctrl-Reset on the Apple to regain control and start again at
-        {{{bootstrapaudio.html#Decide which version}step 4 above}}.
+        {{{bootstrapaudio.html#Send ProDOS part 1}step 4 above}}.
 
     [[1]] Once the transfer completes successfully, the kernel of ProDOS is sitting
-      at memory location 2000 (hex) on your Apple.  Back on the Apple,
+      at memory location 2000 on your Apple, and needs to be booted.  Back on the Apple,
       enter the command: <<<2000G>>> from the asterisk prompt.
       This first boot stage should leave your screen looking something like this,
-      with an asterisk (<<<*>>>) prompt:
+      with the cursor blinking after an asterisk (<<<*>>>) prompt:
 
       *
 
 [images/pd1.png]
 
-    [[1]] Click on the "Bootstrapping->ProDOS->Send ProDOS part 2" menu item.
+    [[1]] On the ADTPro server, click on the "Bootstrapping->ProDOS->{Send ProDOS part 2}"
+      menu item.
       
     [[1]] A dialog box will come up instructing you to type a command
       on the Apple.  It will be similar to the following:
@@ -194,12 +200,13 @@ ADTPro Audio Bootstrapping
         Make sure your sound volume is set at close to 75% 
         of maximum and try again.  
         Hit Ctrl-Reset on the Apple to regain control and start again at
-        {{{bootstrapaudio.html#Decide which version}step 4 above}}.
+        {{{bootstrapaudio.html#Send ProDOS part 2}step 8 above}}.
 
     [[1]] Once the transfer completes successfully, the BASIC Interpreter of ProDOS
-      is sitting at memory location 2000 (hex) on your Apple.  Back on the Apple,
-      enter the command: <<<2000G>>> from the asterisk prompt.
-      The second boot stage should leave your screen looking like this:
+      is sitting at memory location 2000 (hex) on your Apple, ready to be booted.
+      Back on the Apple, enter the command: <<<2000G>>> from the asterisk prompt.
+      The second boot stage should leave your screen looking like this, with the
+      cursor blinking after an Applesoft prompt (<<<]>>>):
 
       *
 
@@ -207,12 +214,12 @@ ADTPro Audio Bootstrapping
 
     [[1]] Now you have fully functional ProDOS running on your Apple.  It's 
       default slot/drive is currently set to 6, but you can change that with 
-      the <<<PREFIX>>> command (or <<<CAT,S5>>> or whatever).
+      the <<<PREFIX,S5>>> command (or <<<CAT,S5>>> or whatever).
 
     [[1]] Now you need a formatted floppy to write stuff to.  ProDOS doesn't include
       a <<<FORMAT>>> or <<<INIT>>> command, though.  No problem: ADTPro can send
       just such a utility down to the Apple.  Click on the 
-      "Bootstrapping->ProDOS->Send ProDOS Format Utility" menu item.
+      "Bootstrapping->ProDOS->{Send ProDOS Format Utility}" menu item.
 
     [[1]] A dialog box will come up instructing you to type a set of commands
       on the Apple.  They will be similar to the following:
@@ -248,7 +255,7 @@ ADTPro Audio Bootstrapping
         Make sure your sound volume is set at close to 75% 
         of maximum and try again.  
         Hit Ctrl-Reset on the Apple to regain control and start again at
-        {{{bootstrapaudio.html#Decide which version}step 13 above}}.
+        {{{bootstrapaudio.html#Send ProDOS Format Utility}step 13 above}}.
 
     [[1]] Once the transfer completes successfully,
       start the Format utility with the command <<<5000G>>>
@@ -256,12 +263,21 @@ ADTPro Audio Bootstrapping
       If you put yourself back at the Applesoft prompt, you can start the 
       Format utility with the <<<CALL 20480>>> command.
       Follow the prompts to format your floppy - this particular utility
-      can format both 5-1/4" and 3-1/2" floppies.  You probably want to format
-      a couple: one to hold an image of the ADTPro-v.r.m.dsk that ships as 
+      can format both 5-1/4" and 3-1/2" floppies.
+      You probably want to format a couple of disks:
+      one to hold a full image of the ADTPro-v.r.m.dsk that ships as 
       part of ADTPro, and another to hold whatever other software you want
       to transfer.
 
+      Here is an example formatting run:
+
+      *
+
+[images/format.png]
+      
     [[1]] Put (or leave) your freshly formatted floppy in the drive.
+     The disk formatted with this utility isn't bootable yet, so don't 
+     reboot now - or you'll have to re-send the two ProDOS stages again.
 
     [[1]] Continue with the step above starting with 
-      {{{bootstrapaudio.html#Decide which version}Decide which version...}}.
+     {{{bootstrapaudio.html#Decide which version}Decide which version...}}.

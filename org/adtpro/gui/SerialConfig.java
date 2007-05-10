@@ -235,8 +235,8 @@ public class SerialConfig extends JDialog implements ActionListener
     _theSingleton.comboSpeed.setSelectedItem(properties.getProperty("CommPortSpeed", "115200")); //$NON-NLS-1$ //$NON-NLS-2$
     _theSingleton.iicCheckBox.setSelected(properties.getProperty("HardwareHandshaking", "false").compareTo("true") == 0); //$NON-NLS-1$ //$NON-NLS-2$
     _theSingleton.comboComPort.setSelectedItem(properties.getProperty("CommPort", "COM1")); //$NON-NLS-1$ //$NON-NLS-2$
-    _theSingleton.comboBootstrapSpeed.setSelectedItem(properties.getProperty("CommPortBootstrapSpeed", "300")); //$NON-NLS-1$ //$NON-NLS-2$
-    _theSingleton.comboBootstrapPacing.setSelectedItem(properties.getProperty("CommPortBootstrapPacing", "500")); //$NON-NLS-1$ //$NON-NLS-2$
+    _theSingleton.comboBootstrapSpeed.setSelectedItem(properties.getProperty("CommPortBootstrapSpeed", "9600")); //$NON-NLS-1$ //$NON-NLS-2$
+    _theSingleton.comboBootstrapPacing.setSelectedItem(properties.getProperty("CommPortBootstrapPacing", "100")); //$NON-NLS-1$ //$NON-NLS-2$
   }
 
   public static String getPort()
@@ -256,6 +256,7 @@ public class SerialConfig extends JDialog implements ActionListener
 
   public static void showSingleton(Gui parent, int tab)
   {
+    Log.println(false,"SerialConfig.showSingleton() showing tab "+tab+".");
     _theSingleton.setModal(true);
     _theSingleton.setBounds(FrameUtils.center(_theSingleton.getSize(),parent.getBounds()));
     _theSingleton._tabbedPane.setSelectedIndex(tab);
