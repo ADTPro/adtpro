@@ -11,8 +11,19 @@ you want saved at the host:
 
 [images/send.png]
 
- No matter what you name the file, it will be saved in ProDOS order at the host
-(by convention, images in ProDOS order are named with a suffix of ".po").
+ By convention, there is a correlation between the filename suffix and the
+"order" in which the bits are stored; something that is only of consequence
+to emulators.  Points to remember:
+
+  * ADTPro will save any 140k, 5-1/4" disk image in "DOS order"
+no matter what it is named.  To work correctly with most emulators, it 
+should be named with a ".dsk" or ".do" suffix.  
+
+  * ADTPro will save <any other> disk image 800k, 3-1/2" disk, hard drive, etc.
+    in "ProDOS order," and so they should be named with a ".po" suffix.
+
+  * Keeping to these naming conventions will ensure your images will work with
+    emulators that only distinguish between bit ordering formats by filename.
 
  After hitting Return to specify the file name, ADTPro will present you with
 a screen to pick a "volume" (a slot/drive combination).  The slot and drive 

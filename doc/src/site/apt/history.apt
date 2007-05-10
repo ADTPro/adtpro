@@ -18,6 +18,9 @@ ADTPro Release History
  * Included a ProDOS disk formatting utility (because you don't have any
    formatted disks yet, remember?)
 
+ * Saving any 140k disk always builds DOS order disks; this increases
+   compatibility with older emulators that can't understand ProDOS order.
+
  []
 
 * 0.2.3 - April 26, 2007
