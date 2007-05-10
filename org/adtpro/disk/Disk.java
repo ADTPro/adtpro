@@ -29,7 +29,9 @@ import java.io.OutputStream;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
+import org.adtpro.utilities.Log;
 import org.adtpro.utilities.StreamUtil;
+import org.adtpro.utilities.UnsignedByte;
 
 /**
  * Abstract representation of an Apple2 disk (floppy, 800k, hard disk).
@@ -89,7 +91,7 @@ public class Disk
   /**
    * Construct a Disk with the given byte array.
    */
-  protected Disk(String filename, ImageOrder imageOrder)
+  public Disk(String filename, ImageOrder imageOrder)
   {
     this.imageOrder = imageOrder;
     this.filename = filename;
@@ -115,13 +117,11 @@ public class Disk
     byte[] diskImage = diskImageByteArray.toByteArray();
     boolean is2img = false;
     /* Does it have the 2IMG header? */
-    if ((diskImage[00] == 0x32) && (diskImage[01] == 0x49) && (diskImage[02] == 0x4D) && (diskImage[03])== 0x47)
-      is2img = true;
+    if ((diskImage[00] == 0x32) && (diskImage[01] == 0x49) && (diskImage[02] == 0x4D) && (diskImage[03]) == 0x47) is2img = true;
     int offset = UniversalDiskImageLayout.OFFSET;
-    if (is2img == true
-        || diskImage.length == APPLE_800KB_DISK + offset || diskImage.length == APPLE_5MB_HARDDISK + offset
-        || diskImage.length == APPLE_10MB_HARDDISK + offset || diskImage.length == APPLE_20MB_HARDDISK + offset
-        || diskImage.length == APPLE_32MB_HARDDISK + offset)
+    if (is2img == true || diskImage.length == APPLE_800KB_DISK + offset
+        || diskImage.length == APPLE_5MB_HARDDISK + offset || diskImage.length == APPLE_10MB_HARDDISK + offset
+        || diskImage.length == APPLE_20MB_HARDDISK + offset || diskImage.length == APPLE_32MB_HARDDISK + offset)
     {
       diskImageManager = new UniversalDiskImageLayout(diskImage);
     }
@@ -129,20 +129,69 @@ public class Disk
     {
       diskImageManager = new ByteArrayImageLayout(diskImage);
     }
-    if (isProdosOrder())
+
+    /*
+     * First step: start physical disk orders and look for viable filesystems.
+     */
+    int rc = -1;
+    imageOrder = new ProdosOrder(diskImageManager);
+    rc = testImageOrder();
+    if (rc != 0)
     {
-      imageOrder = new ProdosOrder(diskImageManager);
-    }
-    else
-      if (isDosOrder())
+      imageOrder = new DosOrder(diskImageManager);
+      rc = testImageOrder();
+      if (rc != 0)
       {
-        imageOrder = new DosOrder(diskImageManager);
+        /*
+         * Couldn't find anything recognizable. Second step: start testing
+         * filenames.
+         */
+        if (isProdosOrder() || is2ImgOrder())
+        {
+          imageOrder = new ProdosOrder(diskImageManager);
+          Log.println(false, "Disk constructor found a ProdosOrder image (but by name).");
+        }
+        else
+          if (isDosOrder())
+          {
+            imageOrder = new DosOrder(diskImageManager);
+            Log.println(false, "Disk constructor found a DosOrder image (by name).");
+          }
+          else
+            if (isNibbleOrder())
+            {
+              imageOrder = new NibbleOrder(diskImageManager);
+              Log.println(false, "Disk constructor found a NibbleOrder image (by name).");
+            }
+            else
+            {
+              imageOrder = new ProdosOrder(diskImageManager);
+              Log.println(false, "Disk constructor couldn't find much of anything; defaulting to ProdosOrder image.");
+            }
       }
       else
-        if (isNibbleOrder())
-        {
-          imageOrder = new NibbleOrder(diskImageManager);
-        }
+        Log.println(false, "Disk constructor found a DosOrder image.");
+    }
+    else
+      Log.println(false, "Disk constructor found a ProdosOrder image.");
+    if (is140KbDisk() && (imageOrder.getClass() == ProdosOrder.class))
+    {
+      Log.println(false, "Disk constructor found a 140k disk, making it DOS order.");
+      makeDosOrder();
+      // imageOrder = new DosOrder(diskImageManager);
+    }
+  }
+
+  /**
+   * Test the image order to see if we can recognize a filesystem. Returns: 0 on
+   * recognition; -1 on failure.
+   */
+  public int testImageOrder()
+  {
+    int rc = -1;
+    if ((isProdosFormat()) || (isDosFormat()) || (isCpmFormat()) || (isUniDosFormat()) || (isPascalFormat())
+        || (isOzDosFormat())) rc = 0;
+    return rc;
   }
 
   /**
@@ -151,6 +200,7 @@ public class Disk
   public void save() throws IOException
   {
     File file = new File(getFilename());
+    Log.println(false, "Disk.save() saving filename " + filename + " as order " + getImageOrder());
     if (!file.exists())
     {
       file.createNewFile();
@@ -297,6 +347,182 @@ public class Disk
   }
 
   /**
+   * Test the disk format to see if this is a ProDOS formatted disk.
+   */
+  public boolean isProdosFormat()
+  {
+    byte[] prodosVolumeDirectory = readBlock(2);
+    int volDirEntryLength = UnsignedByte.intValue(prodosVolumeDirectory[23]);
+    int volDirEntriesPerBlock = UnsignedByte.intValue(prodosVolumeDirectory[24]);
+    return ((prodosVolumeDirectory[0] == 0 && prodosVolumeDirectory[1] == 0)
+        && ((prodosVolumeDirectory[4] & 0xf0) == 0xf0) && ((prodosVolumeDirectory[4] & 0x0f) != 0) && ((volDirEntryLength
+        * volDirEntriesPerBlock <= 512)));
+  }
+
+  /**
+   * Test the disk format to see if this is a DOS 3.3 formatted disk. This is a
+   * little nasty - since 800KB and 140KB images have different characteristics.
+   * This just tests 140KB images.
+   */
+  public boolean isDosFormat()
+  {
+    boolean retval = true;
+    int foundGood = 0;
+    if (!is140KbDisk()) return false;
+    byte[] vtoc = readSector(17, 0);
+    int catTrack = UnsignedByte.intValue(vtoc[0x01]);
+    int catSect = UnsignedByte.intValue(vtoc[0x02]);
+    int numTracks = UnsignedByte.intValue(vtoc[0x34]);
+    int numSectors = UnsignedByte.intValue(vtoc[0x35]);
+    if ((imageOrder.isSizeApprox(APPLE_140KB_DISK) || imageOrder.isSizeApprox(APPLE_140KB_NIBBLE_DISK))
+        && vtoc[0x01] == 17 // expect catalog to start on track 17
+        // can vary && vtoc[0x02] == 15 // expect catalog to start on sector 15
+        // (140KB disk only!)
+        && vtoc[0x27] == 122 // expect 122 tract/sector pairs per sector
+        && vtoc[0x34] == 35 // expect 35 tracks per disk (140KB disk only!)
+        && vtoc[0x35] == 16 && (catTrack < numTracks && catSect < numSectors)) foundGood++;
+
+    int iterations = 0;
+    while (catTrack != 0 && catSect != 0 && iterations < 32 /* max sectors */)
+    {
+      byte[] sctBuf = readSector(catTrack, catSect);
+      int tmpTrack = UnsignedByte.intValue(sctBuf[1]);
+      int tmpSect = UnsignedByte.intValue(sctBuf[2]) + 1;
+      if (catTrack == tmpTrack && catSect == sctBuf[2] + 1) foundGood++;
+      else if (catTrack == tmpTrack && catSect == tmpSect)
+      {
+        Log.println(false,"Disk.isDosFormat() detected a self-reference on catalog ("+tmpTrack+","+tmpSect);
+        break;
+      }
+      catTrack = UnsignedByte.intValue(sctBuf[1]);
+      catSect = UnsignedByte.intValue(sctBuf[2]);
+      iterations++;
+    }
+    if (iterations >= 32 /* max sectors */)
+      retval = false;
+    else
+    {
+      if (foundGood < 3)
+        retval = false;
+    }
+    return (retval);
+  }
+
+  /**
+   * Test the disk format to see if this is a UniDOS formatted disk. UniDOS
+   * creates two logical disks on an 800KB physical disk. The first logical disk
+   * takes up the first 400KB and the second logical disk takes up the second
+   * 400KB.
+   */
+  public boolean isUniDosFormat()
+  {
+    if (!is800KbDisk()) return false;
+    byte[] vtoc1 = readSector(17, 0); // logical disk #1
+    byte[] vtoc2 = readSector(67, 0); // logical disk #2
+    return
+    // LOGICAL DISK #1
+    vtoc1[0x01] == 17 // expect catalog to start on track 17
+        && vtoc1[0x02] == 31 // expect catalog to start on sector 31
+        && vtoc1[0x27] == 122 // expect 122 tract/sector pairs per sector
+        && vtoc1[0x34] == 50 // expect 50 tracks per disk
+        && vtoc1[0x35] == 32 // expect 32 sectors per disk
+        && vtoc1[0x36] == 0 // bytes per sector (low byte)
+        && vtoc1[0x37] == 1 // bytes per sector (high byte)
+        // LOGICAL DISK #2
+        && vtoc2[0x01] == 17 // expect catalog to start on track 17
+        && vtoc2[0x02] == 31 // expect catalog to start on sector 31
+        && vtoc2[0x27] == 122 // expect 122 tract/sector pairs per sector
+        && vtoc2[0x34] == 50 // expect 50 tracks per disk
+        && vtoc2[0x35] == 32 // expect 32 sectors per disk
+        && vtoc2[0x36] == 0 // bytes per sector (low byte)
+        && vtoc2[0x37] == 1; // bytes per sector (high byte)
+  }
+
+  /**
+   * Test the disk format to see if this is a OzDOS formatted disk. OzDOS
+   * creates two logical disks on an 800KB physical disk. The first logical disk
+   * takes the first half of each block and the second logical disk takes the
+   * second half of each block.
+   */
+  public boolean isOzDosFormat()
+  {
+    if (!is800KbDisk()) return false;
+    byte[] vtoc = readBlock(544); // contains BOTH VTOCs!
+    return
+    // LOGICAL DISK #1
+    vtoc[0x001] == 17 // expect catalog to start on track 17
+        && vtoc[0x002] == 31 // expect catalog to start on sector 31
+        && vtoc[0x027] == 122 // expect 122 tract/sector pairs per sector
+        && vtoc[0x034] == 50 // expect 50 tracks per disk
+        && vtoc[0x035] == 32 // expect 32 sectors per disk
+        && vtoc[0x036] == 0 // bytes per sector (low byte)
+        && vtoc[0x037] == 1 // bytes per sector (high byte)
+        // LOGICAL DISK #2
+        && vtoc[0x137] == 1 // bytes per sector (high byte)
+        && vtoc[0x101] == 17 // expect catalog to start on track 17
+        && vtoc[0x102] == 31 // expect catalog to start on sector 31
+        && vtoc[0x127] == 122 // expect 122 tract/sector pairs per sector
+        && vtoc[0x134] == 50 // expect 50 tracks per disk
+        && vtoc[0x135] == 32 // expect 32 sectors per disk
+        && vtoc[0x136] == 0 // bytes per sector (low byte)
+        && vtoc[0x137] == 1; // bytes per sector (high byte)
+  }
+
+  /**
+   * Test the disk format to see if this is a Pascal formatted disk.
+   */
+  public boolean isPascalFormat()
+  {
+    if (!is140KbDisk()) return false;
+    byte[] directory = readBlock(2);
+    return directory[0] == 0 && directory[1] == 0 && directory[2] == 6 && directory[3] == 0 && directory[4] == 0
+        && directory[5] == 0;
+  }
+
+  /**
+   * Test the disk format to see if this is a CP/M formatted disk. Check the
+   * first 256 bytes of the CP/M directory for validity.
+   */
+  public boolean isCpmFormat()
+  {
+    if (!is140KbDisk()) return false;
+    byte[] directory = readSector(3, 0);
+    int bytes[] = new int[256];
+    for (int i = 0; i < directory.length; i++)
+    {
+      bytes[i] = UnsignedByte.intValue(directory[i]);
+    }
+    int offset = 0;
+    int ENTRY_LENGTH = 0x20;
+    while (offset < directory.length)
+    {
+      // Check if this is an empty directory entry (and ignore it)
+      int e5count = 0;
+      for (int i = 0; i < ENTRY_LENGTH; i++)
+      {
+        e5count += bytes[offset + i] == 0xe5 ? 1 : 0;
+      }
+      if (e5count != ENTRY_LENGTH)
+      { // Not all bytes were 0xE5
+        // Check user number. Should be 0-15 or 0xE5
+        if (bytes[offset] > 15 && bytes[offset] != 0xe5) return false;
+        // Validate filename has highbit off
+        for (int i = 0; i < 8; i++)
+        {
+          if (bytes[offset + 1 + i] > 127) return false;
+        }
+        // Extent should be 0-31 (low = 0-31 and high = 0)
+        if (bytes[offset + 0xc] > 31 || bytes[offset + 0xe] > 0) return false;
+        // Number of used records cannot exceed 0x80
+        if (bytes[offset + 0xf] > 0x80) return false;
+      }
+      // Next entry
+      offset += ENTRY_LENGTH;
+    }
+    return true;
+  }
+
+  /**
    * Answers true if this disk image is within the expected 140K disk size. Can
    * vary if a header has been applied or if this is a nibblized disk image.
    */
@@ -343,8 +569,85 @@ public class Disk
   /**
    * Set the physical ordering of the disk.
    */
-  protected void setImageOrder(ImageOrder imageOrder)
+  public void setImageOrder(ImageOrder imageOrder)
   {
     this.imageOrder = imageOrder;
   }
+
+  protected static boolean sameSectorsPerDisk(ImageOrder sourceOrder, ImageOrder targetOrder)
+  {
+    return sourceOrder.getSectorsPerDisk() == targetOrder.getSectorsPerDisk();
+  }
+
+  /**
+   * Change to a different ImageOrder. Remains in DOS 3.3 format but the
+   * underlying order can chage.
+   * 
+   * @see ImageOrder
+   */
+  public void makeDosOrder()
+  {
+    DosOrder doso = new DosOrder(new ByteArrayImageLayout(Disk.APPLE_140KB_DISK));
+    changeImageOrderByTrackAndSector(getImageOrder(), doso);
+    setImageOrder(doso);
+  }
+
+  /**
+   * Change to a different ImageOrder. Remains in ProDOS format but the
+   * underlying order can chage.
+   * 
+   * @see ImageOrder
+   */
+  public void makeProdosOrder()
+  {
+    ProdosOrder pdo = new ProdosOrder(new ByteArrayImageLayout(Disk.APPLE_140KB_DISK));
+    changeImageOrderByBlock(getImageOrder(), pdo);
+    setImageOrder(pdo);
+  }
+
+  /**
+   * Change ImageOrder from source order to target order by copying sector by
+   * sector.
+   */
+  public static void changeImageOrderByTrackAndSector(ImageOrder sourceOrder, ImageOrder targetOrder)
+  {
+    if (!sameSectorsPerDisk(sourceOrder, targetOrder))
+    {
+      Log.println(false, "Disk.changeImageOrderByTrackAndSector() expected equal sized images.");
+    }
+    for (int track = 0; track < sourceOrder.getTracksPerDisk(); track++)
+    {
+      for (int sector = 0; sector < sourceOrder.getSectorsPerTrack(); sector++)
+      {
+        byte[] data = sourceOrder.readSector(track, sector);
+        targetOrder.writeSector(track, sector, data);
+      }
+    }
+  }
+
+  /**
+   * Change ImageOrder from source order to target order by copying block by
+   * block.
+   */
+  public static void changeImageOrderByBlock(ImageOrder sourceOrder, ImageOrder targetOrder)
+  {
+    if (!sameBlocksPerDisk(sourceOrder, targetOrder))
+    {
+      Log.println(false, "Disk.changeImageOrderByBlock() expected equal sized images.");
+    }
+    for (int block = 0; block < sourceOrder.getBlocksOnDevice(); block++)
+    {
+      byte[] blockData = sourceOrder.readBlock(block);
+      targetOrder.writeBlock(block, blockData);
+    }
+  }
+
+  /**
+   * Answers true if the two disks have the same number of blocks per disk.
+   */
+  protected static boolean sameBlocksPerDisk(ImageOrder sourceOrder, ImageOrder targetOrder)
+  {
+    return sourceOrder.getBlocksOnDevice() == targetOrder.getBlocksOnDevice();
+  }
+
 }

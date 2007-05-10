@@ -31,6 +31,8 @@ import org.adtpro.transport.TransportTimeoutException;
 import org.adtpro.transport.UDPTransport;
 
 import org.adtpro.disk.Disk;
+import org.adtpro.disk.DosOrder;
+import org.adtpro.disk.ProdosOrder;
 import org.adtpro.gui.Gui;
 import org.adtpro.utilities.Log;
 import org.adtpro.utilities.UnsignedByte;
@@ -461,6 +463,13 @@ public class CommsThread extends Thread
             }
           }
           fos.close();
+          Log.println(false, "CommsThread.receiveDisk() length: "+length+" Disk.APPLE_140KB_DISK: "+Disk.APPLE_140KB_DISK);
+          if ((length * 512) == Disk.APPLE_140KB_DISK)
+          {
+            Disk disk = new Disk(name);
+            disk.save();
+            Log.println(false, "CommsThread.receiveDisk() found a 140k disk; saved as DOS order format.");
+          }
         }
         else
         {
@@ -962,6 +971,9 @@ public class CommsThread extends Thread
               if (packetResult != 0) break;
             }
             fos.close();
+            Disk disk = new Disk(name);
+            disk.save();
+            Log.println(false, "CommsThread.receive140kDisk() saved as DOS order format.");
             if (packetResult == 0)
             {
               report = waitForData(15);
@@ -1347,8 +1359,8 @@ public class CommsThread extends Thread
             if (resource.equals(Messages.getString("Gui.BS.DOS")))
             {
               resourceName = "org/adtpro/resources/EsDOS.dmp";
-              slowFirstLines = 5;
-              slowLastLines = 9;
+              slowFirstLines = 3;
+              slowLastLines = 0;
             }
             else
               if (resource.equals(Messages.getString("Gui.BS.ADT")))
@@ -1513,23 +1525,21 @@ public class CommsThread extends Thread
           _transport.setSlowSpeed(_speed);
           int numLines = 0;
           /*
-           * Go through once and just count the number of lines in the file.
-           * We use that to determine when to start slowing down the pacing.
+           * Go through once and just count the number of lines in the file. We
+           * use that to determine when to start slowing down the pacing.
            */
           for (int i = 0; i < buffer.length; i++)
           {
-            if (buffer[i] == 0x0d)
-              numLines ++;
+            if (buffer[i] == 0x0d) numLines++;
           }
           int currentLine = 0;
           /*
-           * "Slow" pacing is 500ms.  If they asked for pacing even slower
-           * than that, we need to respect that too.  So take the max of
-           * their pacing and 500ms.
+           * "Slow" pacing is 500ms. If they asked for pacing even slower than
+           * that, we need to respect that too. So take the max of their pacing
+           * and 500ms.
            */
           int slowPacing = 500;
-          if (slowPacing < _pacing)
-            slowPacing = _pacing;
+          if (slowPacing < _pacing) slowPacing = _pacing;
           /*
            * Start sending the file.
            */
@@ -1549,19 +1559,17 @@ public class CommsThread extends Thread
               try
               {
                 /*
-                 * Are we within the boundaries of what was supposed
-                 * to be send with slower pacing - at the beginning
-                 * or end of the file?
+                 * Are we within the boundaries of what was supposed to be send
+                 * with slower pacing - at the beginning or end of the file?
                  */
-                if ((_slowFirst > currentLine) ||
-                    (currentLine > (numLines - _slowLast)))
+                if ((_slowFirst > currentLine) || (currentLine > (numLines - _slowLast)))
                 {
-                  Log.println(false,"slow pacing: "+slowPacing);
+                  Log.println(false, "slow pacing: " + slowPacing);
                   sleep(slowPacing);
                 }
                 else
                 {
-                  Log.println(false,"fast pacing: "+_pacing);                  
+                  Log.println(false, "fast pacing: " + _pacing);
                   sleep(_pacing);
                 }
               }
@@ -1574,7 +1582,7 @@ public class CommsThread extends Thread
                   break;
                 }
               }
-              currentLine ++;
+              currentLine++;
             }
             else
               if (buffer[i] != 0x0a) _transport.writeByte(buffer[i]);
@@ -1613,7 +1621,9 @@ public class CommsThread extends Thread
     int _speed;
 
     int _pacing;
+
     int _slowFirst = 0;
+
     int _slowLast = 0;
   }
 
