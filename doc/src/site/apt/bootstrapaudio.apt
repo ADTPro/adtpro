@@ -21,7 +21,9 @@ ADTPro Audio Bootstrapping
 
  * {{{bootstrapaudio.html#If you already have ProDOS}If you already have ProDOS}}
 
- * {{{bootstrapaudio.html#Starting from bare metal}If you have no ProDOS software on disk at all... starting from bare metal}}
+ * {{{bootstrapaudio.html#Starting from bare metal}If you have no ProDOS software at all - starting ADTPro from bare metal}}
+
+ * {{{bootstrapaudio.html#Bootstrapping DOS}If you have no software now and only want to start DOS 3.3 over the cassette port}}
 
  [] 
 
@@ -281,3 +283,144 @@ ADTPro Audio Bootstrapping
 
     [[1]] Continue with the step above starting with 
      {{{bootstrapaudio.html#Decide which version}Decide which version...}}.
+
+* {Bootstrapping DOS}
+
+  If you don't need or want the ADTPro client, or if you just want to get
+  DOS bootstrapped using the audio connection - this procedure's for you.
+  If instead you intend to do ADTPro client and server disk transfers, 
+  you really want to do the ProDOS bare-metal bootstrapping procedure
+  {{{bootstrapaudio.html#Starting from bare metal}above}}.
+
+  The full process looks like this:
+
+    [[1]] {{{connectionsaudio.html}Connect}} the two computers through their audio ports.
+
+    [[1]] Boot your Apple; hit Ctrl-Reset before it reads anything from the disk drive
+      (you don't have any software, right?).  Put a double sided, double density 
+      diskette in the drive and close the door; it doesn't matter if it's formatted or not.
+
+    [[1]] On the ADTPro server, click the big "Audio" button.
+      Click on the "Bootstrapping->EsDOS ][ ->Send EsDOS ][" menu item.
+      
+    [[1]] A dialog box will come up instructing you to type commands like the following
+      on the Apple:
+
+    * <<<HOME>>> (This is important because a message will appear as part of the
+     transfer, and this command will help prevent it getting pushed off the top of the screen)
+    
+    * <<<CALL -151>>> (The Apple will respond with the asterisk ("<<<*>>>") prompt.)
+
+    * <<<3D0.xxxR>>> (Note the "<<<0>>>" is a zero, not the letter "O.")
+
+    []
+
+    [[1]] Back on the Apple... fill in the real numbers for the three "x"
+      characters above as given.  Hit return on the Apple; the blinking cursor 
+      should go away.
+
+    [[1]] Dismiss the dialog on the ADTPro server.  
+      The progress bar will show how far along 
+      the transfer is.  After the transfer finishes, you should
+      hear a "beep" and be returned to the asterisk prompt ("<<<*>>>").
+      
+      * If instead it says "<<<ERR>>>" or never returns you to a prompt,
+        either the Apple isn't hearing 
+        anything at all ({{{connectionsaudio.html}check}} the audio cable)
+        or it isn't hearing things
+        loudly enough.  Make sure your sound volume is set at close to 75% 
+        of maximum and try again.  Hit Ctrl-Reset on the Apple to regain control
+        and start again at step 3 above.
+
+      []
+      
+      A message will be displayed across the top of the screen for a
+      command you will need soon; just write it down for now:
+
+    * <<<9D84G>>> (But don't type it in now!)
+
+    []
+
+    [[1]] On the ADTPro server, click on the "Bootstrapping->EsDOS ][ ->Send EsDOS ][ part 2" menu item.
+      
+    [[1]] A dialog box will come up instructing you to type more commands at
+      the Apple.  The only one you really need to enter if you're already at
+      the asterisk prompt ("<<<*>>>") is this:
+
+    * <<<9D00.BFFFR>>> (Note the "<<<0>>>" is a zero, not the letter "O.")
+
+    []
+
+    [[1]] Enter <<<9D00.BFFFR>>> on the Apple and hit Return.  The blinking
+      cursor should go away.
+
+    [[1]] Dismiss the dialog on the ADTPro server.
+      The progress bar will show how far along the transfer is.
+      After the transfer finishes, you should hear a "beep" and
+      be returned to the asterisk prompt ("<<<*>>>").
+
+    [[1]] Back on the Apple, enter this command (the one you wrote down
+     just a minute ago):
+
+    * <<<9D84G>>>
+
+    []
+
+    [[1]] The Apple should change from the asterisk prompt ("<<<*>>>")
+      to the Applesoft prompt ("<<<]>>>").
+
+      You now have EsDOS II <in memory only> on your Apple until you 
+      format a floppy.  Do this now with the <<<INIT>>> command on the Apple:
+      <<<INIT HELLO>>>.  Once the <<<INIT>>> operation completes, you now have
+      a bootable DOS diskette.
+
+    [[1]] You might 'init' another floppy now to get a second floppy formatted
+      now that you have a working version of DOS.  Remove your EsDOS diskette,
+      insert a blank diskette, and type the command <<<INIT HELLO>>>
+      on the Apple to format it.
+
+    [[1]] Remember, DOS ADT can't do audio transfers because it requires a serial card.
+      If you want to do audio transfers, you really want to use the
+      ProDOS bare-metal bootstrapping procedure
+      {{{bootstrapaudio.html#Starting from bare metal}above}}.
+
+    [[1]] You may wish to create a disk with the DOS version of ADT on it now.
+      {With a freshly formatted DOS floppy in the Apple drive}, send over the
+      DOS version of ADT to the Apple.
+      
+    [[1]] On the ADTPro server, click on "Bootstrapping->EsDOS ][ ->Send DOS ADT Client."
+      The dialog box that pops up will give you commands to like these to type on the Apple.
+      Do them now:
+      
+      * <<<CALL -151>>> (The Apple will respond with the asterisk ("<<<*>>>") prompt.)
+
+      * <<<803.xxxxR>>> (Note the "<<<0>>>" is a zero, not the letter "O.")
+
+      []
+      Back on the Apple... fill in the real numbers for the four "x"
+      characters above as given.  Hit return on the Apple; the blinking cursor 
+      should go away.
+
+    [[1]] Dismiss the dialog on the ADTPro server.  
+      The progress bar will show how far along the transfer is.
+      After the transfer finishes, you should hear a "beep" and 
+      be returned to the asterisk prompt ("<<<*>>>").
+
+      * If instead it says "<<<ERR>>>" or never returns you to a prompt,
+        either the Apple isn't hearing 
+        anything at all ({{{connectionsaudio.html}check}} the audio cable)
+        or it isn't hearing things
+        loudly enough.  Make sure your sound volume is set at close to 75% 
+        of maximum and try again.  Hit Ctrl-Reset on the Apple to regain control
+        and start again at step 15 above.
+
+    [[1]] Start the DOS ADT client with the command <<<803G>>> 
+      from the asterisk prompt at the Apple.  Go to ADT's configuration 
+      menu by hitting the <<<C>>> key.  Use the space bar to navigate down
+      to the <<<SAVE CONFIG>>> menu item.  Hit an arrow key to change
+      <<<NO>>> to <<<YES>>> and hit Return on the Apple.  That will save
+      the DOS ADT client to the floppy drive.
+
+    [[1]] You probably want to write-protect your new DOS ADT diskette by
+      covering the write notch with tape to be sure you don't ever have to send
+      all that stuff over the cassete port line again.

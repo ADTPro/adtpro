@@ -16,7 +16,9 @@ more bootstrapping scenarios and configurations are detailed below.
 
  * {{{bootstrap.html#If you already have ProDOS}If you already have ProDOS}}
 
- * {{{bootstrap.html#Starting from bare metal}If you have no Apple software on disk at all... starting from bare metal}}
+ * {{{bootstrap.html#Starting from bare metal}If you have no Apple software at all - starting ADTPro from bare metal}}
+
+ * {{{bootstrap.html#Bootstrapping DOS}If you have no software now and only want to run DOS ADT, not ADTPro}}
 
  []
 
@@ -46,7 +48,7 @@ more bootstrapping scenarios and configurations are detailed below.
  booted (i.e. hit reset before any DOS loads when turning the machine on).
 
  The defaults now are to send bootstrapping data at 9600 baud, with 
- a 100 millisecond delay after each line.  The first few (and the last
+ a 75 millisecond delay after each line.  The first few (and the last
  few) lines slow down much more than that because they rely on the 
  BASIC interpreter, which takes extra time to process.
  The defaults should work for all Apples; those containing accelerators
@@ -272,3 +274,126 @@ more bootstrapping scenarios and configurations are detailed below.
 
     [[1]] Continue with the step above starting with
      {{{bootstrap.html#Decide which version}Decide which version...}}.
+
+* {Bootstrapping DOS}
+
+  If you don't need or want the extra features the ADTPro client provides
+  beyond the DOS ADT client, you may only want to get started with the DOS
+  ADT program.  The ADTPro server is compatible with both the DOS ADT and 
+  ADTPro clients.
+
+    [[1]] {{{connectionsserial.html}Connect}} the two computers through their serial ports.
+
+    [[1]] Boot your Apple; hit Ctrl-Reset before it reads anything from the disk drive.
+      It's important that it not load any OS, even DOS 3.3.
+      Put a double sided, double density diskette in the drive and close the door.
+      It doesn't matter if it's formatted or not.
+
+    [[1]] On the ADTPro server, push the "Serial" button.  if this is the first time
+      you've connected via the serial port, you will be presented with the serial configuration
+      dialog box, where you'll need to set up the serial connection.
+
+    [[1]] Click on Bootstrapping->Serial Pacing.
+      You should be able to run with 75ms pacing and 9600 baud on an 
+      unaccelerated Apple:
+
+      *
+
+[images/serialConfig2.png]
+
+      Click on Ok with these values.
+
+    [[1]] Click on the "Bootstrapping->EsDOS ][->{Send EsDOS ][ Part 1}" menu item.
+      (Serial bootstrapping won't require EsDOS ][ Part 2.)
+      
+    [[1]] A dialog box will come up instructing you to type a set of commands
+      on the Apple.  They will be similar to the following:
+
+    * <<<IN#2>>> (The number will depend on which slot
+      you have your Super Serial Card plugged into.  An IIgs' modem port is always in
+      "virtual" slot #2, and an IIc's serial port is always "virtual" slot #2 as well.)
+
+    * <<< <ctrl-A>14B>>> (The number will depend on the speed you have chosen from the bootstrapping 
+      tab on the serial configuration dialog box.  
+      When you hit <<< <ctrl-A> >>>, the Apple Super Serial card will respond with "<<<APPLE SSC:>>>" and the
+      IIgs will respond with "<<<?>>>".  At that prompt, enter the number in your dialog box and the <<<B>>>
+      key with no spaces.  The Super Serial card will require you to hit the <<<Return>>> key, but the IIgs 
+      will not.) 
+
+    * Note: with some configurations, you will need
+      to hit <<< <ctrl-I> >>> instead of <<< <ctrl-A> >>>. (Where <<<I>>> is the capital letter I.)
+      If you hit <<< <ctrl-A> >>> and nothing happens, just hit the
+      Return key and try <<< <ctrl-I> >>> instead.  The one that greets you with the "<<<APPLE SSC:>>>" 
+      or <<<"?">>> is the one that you want.
+
+    If you get any syntax errors or anything, hit Return a bunch of
+    times and start this step over again.
+
+    []
+
+    [[1]] Dismiss the dialog box on the ADTPro server.
+      You should start to see text flowing across the Apple screen now.
+      The progress bar on the ADTPro server will show how far along the
+      transfer is.
+
+    [[1]] Once the transfer completes successfully, EsDOS ][ will be running on 
+      your Apple in memory only.
+      Instructions will be left on the Apple screen for initializing
+      the floppy disk in your drive.  You may wish to format (<<<INIT>>>)
+      more than one now.
+
+    [[1]] Now that DOS is running, it will be necessary to slow down the transfer
+      speed.  Click on the ADTPro menu item Bootstrapping->Serial Pacing and set
+      the transfer speed down to 2400 to be safe:
+
+      *
+
+[images/serialConfig3.png]
+
+      Click on Ok with these values.
+
+    [[1]] Put a freshly formatted disk in the Apple drive and close the drive door.
+
+    [[1]] Click on the "Bootstrapping->EsDOS ][->{Send DOS ADT Client}" menu item.
+      
+    [[1]] A dialog box will come up instructing you to type a set of commands
+      on the Apple.  They will be similar to the following:
+
+    * <<<IN#2>>> (The number will depend on which slot
+      you have your Super Serial Card plugged into.  An IIgs' modem port is always in
+      "virtual" slot #2, and an IIc's serial port is always "virtual" slot #2 as well.)
+
+    * <<< <ctrl-A>10B>>> (The number will depend on the speed you have chosen from the bootstrapping 
+      tab on the serial configuration dialog box.  If it still says 14B, you haven't re-set
+      the transfer speed to slow down yet.  Go back and do that first.
+      When you hit <<< <ctrl-A> >>>, the Apple Super Serial card will respond with "<<<APPLE SSC:>>>" and the
+      IIgs will respond with "<<<?>>>".  At that prompt, enter the number in your dialog box and the <<<B>>>
+      key with no spaces.  The Super Serial card will require you to hit the <<<Return>>> key, but the IIgs 
+      will not.) 
+
+    * Note: with some configurations, you will need
+      to hit <<< <ctrl-I> >>> instead of <<< <ctrl-A> >>>. (Where <<<I>>> is the capital letter I.)
+      If you hit <<< <ctrl-A> >>> and nothing happens, just hit the
+      Return key and try <<< <ctrl-I> >>> instead.  The one that greets you with the "<<<APPLE SSC:>>>" 
+      or <<<"?">>> is the one that you want.
+
+    If you get any syntax errors or anything, hit Return a bunch of
+    times and start this step over again.
+
+    []
+
+    [[1]] Dismiss the dialog box on the ADTPro server.
+      You should start to see text flowing across the Apple screen now.
+      The progress bar on the ADTPro server will show how far along the
+      transfer is.
+
+    [[1]] Once it's done, it will automatically save the DOS ADT program
+      to the floppy in the drive.  
+      You probably want to write-protect your new DOS ADT diskette by
+      covering the write notch with tape to be sure you don't ever have to send
+      all that stuff over the serial line again.
+      
+    [[1]] Boot your DOS ADT floppy.  The Apple command 
+      <<<BRUN ADT>>> will start the DOS ADT client up.  You may want to
+      go one extra step and transfer the ADT131.dsk image to a new floppy,
+      as it has an autostart program already set up. to run ADT upon booting.

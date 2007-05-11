@@ -41,7 +41,7 @@ ADTPro Audio Connections
 
  If you are only going to use audio to {{{bootstrapaudio.html}bootstrap}}, 
  you only need to connect your host's audio out to the Apple's cassette in
- (the white wire in this example).
+ (the white wire in these examples).
 
  In these images, I have a convention for white and black wires.  The white cable
  connects the host audio out to the Apple cassette in.  The black cable connects

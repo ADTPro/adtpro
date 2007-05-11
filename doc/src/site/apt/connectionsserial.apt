@@ -19,6 +19,9 @@ ADTPro Serial Connections
 
  []
 
+ Once you have your computers connected, you can move on to 
+{{{bootstrap.html}bootstrapping}}.
+
 * {Super Serial cabling}
 
   The serial cable can either be straight-through or of the
@@ -80,8 +83,7 @@ You bring up the IIgs control panel with the key sequence
 
     [[1]] Use the IIgs control panel to set the Modem Port to all defaults.  
       Remember, default values will have a little checkmark beside them in the
-      control panel.  You can optionally set the baud rate to 300 to ensure 
-      trouble-free operation in the bootstrap step:
+      control panel:
 
       *
 

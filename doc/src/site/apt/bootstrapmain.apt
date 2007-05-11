@@ -20,7 +20,9 @@ are detailed below.  Please note that you will need to use
 
  * {{{bootstrap.html#If you already have ProDOS}[serial}}|{{{bootstrapaudio.html#If you already have ProDOS}audio]}} If you already have ProDOS
 
- * {{{bootstrap.html#Starting from bare metal}[serial}}|{{{bootstrapaudio.html#Starting from bare metal}audio]}} If you have no Apple software on disk at all... starting from bare metal
+ * {{{bootstrap.html#Starting from bare metal}[serial}}|{{{bootstrapaudio.html#Starting from bare metal}audio]}} If you have no Apple software at all - starting ADTPro from bare metal
+
+ * {{{bootstrap.html#Bootstrapping DOS}[serial}}|{{{bootstrapaudio.html#Bootstrapping DOS}audio]}} If you have no Apple software at all and only want to boot DOS, not ProDOS or ADTPro
 
  []
  
