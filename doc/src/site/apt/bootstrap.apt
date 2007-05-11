@@ -121,7 +121,7 @@ more bootstrapping scenarios and configurations are detailed below.
 
       []
 
-    [[1]] Dismiss the dialog on the ADTPro server.
+    [[1]] Dismiss the ADTPro server dialog by clicking on the <<<Ok>>> button.
       You should start to see text flowing across the Apple screen now.
       After a few minutes, it will save the ADTPro client program to the current drive
       without you needing to hit <<<RETURN>>>, so make sure the floppy drive 
@@ -181,7 +181,7 @@ more bootstrapping scenarios and configurations are detailed below.
 
     []
 
-    [[1]] Dismiss the dialog box on the ADTPro server.
+    [[1]] Dismiss the ADTPro server dialog by clicking on the <<<Ok>>> button.
       You should start to see text flowing across the Apple screen now.
       The progress bar on the ADTPro server will show how far along the
       transfer is.
@@ -217,7 +217,7 @@ more bootstrapping scenarios and configurations are detailed below.
 
       []
 
-    [[1]] Dismiss the dialog on the ADTPro server.
+    [[1]] Dismiss the ADTPro server dialog by clicking on the <<<Ok>>> button.
       You should start to see text flowing across the Apple screen now.
       The progress bar will show how far along the transfer is.  
 
@@ -255,7 +255,7 @@ more bootstrapping scenarios and configurations are detailed below.
 
       []
 
-    [[1]] Dismiss the dialog box on the ADTPro server.
+    [[1]] Dismiss the ADTPro server dialog by clicking on the <<<Ok>>> button.
       You should start to see text flowing across the Apple screen now.
       The progress bar will show how far along the transfer is.  
       
@@ -293,7 +293,8 @@ more bootstrapping scenarios and configurations are detailed below.
       you've connected via the serial port, you will be presented with the serial configuration
       dialog box, where you'll need to set up the serial connection.
 
-    [[1]] Click on Bootstrapping->Serial Pacing.
+    [[1]] If the dialog box doesn't come up on it own, 
+      click on Bootstrapping->Serial Pacing.
       You should be able to run with 75ms pacing and 9600 baud on an 
       unaccelerated Apple:
 
@@ -331,7 +332,7 @@ more bootstrapping scenarios and configurations are detailed below.
 
     []
 
-    [[1]] Dismiss the dialog box on the ADTPro server.
+    [[1]] Dismiss the ADTPro server dialog by clicking on the <<<Ok>>> button.
       You should start to see text flowing across the Apple screen now.
       The progress bar on the ADTPro server will show how far along the
       transfer is.
@@ -343,8 +344,9 @@ more bootstrapping scenarios and configurations are detailed below.
       more than one now.
 
     [[1]] Now that DOS is running, it will be necessary to slow down the transfer
-      speed.  Click on the ADTPro menu item Bootstrapping->Serial Pacing and set
-      the transfer speed down to 2400 to be safe:
+      speed for the next step.  
+      Click on the ADTPro menu item Bootstrapping->Serial Pacing and set
+      the speed down to 2400 to be safe:
 
       *
 
@@ -382,7 +384,7 @@ more bootstrapping scenarios and configurations are detailed below.
 
     []
 
-    [[1]] Dismiss the dialog box on the ADTPro server.
+    [[1]] Dismiss the ADTPro server dialog by clicking on the <<<Ok>>> button.
       You should start to see text flowing across the Apple screen now.
       The progress bar on the ADTPro server will show how far along the
       transfer is.
@@ -395,5 +397,7 @@ more bootstrapping scenarios and configurations are detailed below.
       
     [[1]] Boot your DOS ADT floppy.  The Apple command 
       <<<BRUN ADT>>> will start the DOS ADT client up.  You may want to
-      go one extra step and transfer the ADT131.dsk image to a new floppy,
-      as it has an autostart program already set up. to run ADT upon booting.
+      go one extra step and use ADT now to transfer the full DOS ADT .dsk image
+      that comes as part of the ADTPro distribution
+      to a new floppy, as it has a <<<HELLO>>> program already set up
+      to autostart ADT upon booting.

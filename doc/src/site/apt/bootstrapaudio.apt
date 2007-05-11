@@ -73,7 +73,7 @@ ADTPro Audio Bootstrapping
       When you hit return on the Apple after this command,
       the blinking cursor should disappear.
 
-    [[1]] Dismiss the dialog on the ADTPro server.
+    [[1]] Dismiss the ADTPro server dialog by clicking on the <<<Ok>>> button.
       That will start the flow of data over the audio/cassete link
       that the Apple is waiting for.
       The progress bar will show how far along the transfer is.  
@@ -145,7 +145,7 @@ ADTPro Audio Bootstrapping
 
     []
 
-    [[1]] Dismiss the dialog on the ADTPro server.
+    [[1]] Dismiss the ADTPro server dialog by clicking on the <<<Ok>>> button.
       That will start the flow of data over the audio/cassete link
       that the Apple is waiting for.
       The progress bar will show how far along the transfer is.  
@@ -188,7 +188,7 @@ ADTPro Audio Bootstrapping
         
       []
 
-    [[1]] Dismiss the dialog on the ADTPro server.
+    [[1]] Dismiss the ADTPro server dialog by clicking on the <<<Ok>>> button.
       That will start the flow of data over the audio/cassete link
       that the Apple is waiting for.
       The progress bar will show how far along the transfer is.  
@@ -243,7 +243,7 @@ ADTPro Audio Bootstrapping
       When you hit return on the Apple after this command,
       the blinking cursor should disappear.
 
-    [[1]] Dismiss the dialog on the ADTPro server.
+    [[1]] Dismiss the ADTPro server dialog by clicking on the <<<Ok>>> button.
       That will start the flow of data over the audio/cassete link
       that the Apple is waiting for.
       The progress bar will show how far along the transfer is.  
@@ -319,7 +319,7 @@ ADTPro Audio Bootstrapping
       characters above as given.  Hit return on the Apple; the blinking cursor 
       should go away.
 
-    [[1]] Dismiss the dialog on the ADTPro server.  
+    [[1]] Dismiss the ADTPro server dialog by clicking on the <<<Ok>>> button.
       The progress bar will show how far along 
       the transfer is.  After the transfer finishes, you should
       hear a "beep" and be returned to the asterisk prompt ("<<<*>>>").
@@ -354,7 +354,7 @@ ADTPro Audio Bootstrapping
     [[1]] Enter <<<9D00.BFFFR>>> on the Apple and hit Return.  The blinking
       cursor should go away.
 
-    [[1]] Dismiss the dialog on the ADTPro server.
+    [[1]] Dismiss the ADTPro server dialog by clicking on the <<<Ok>>> button.
       The progress bar will show how far along the transfer is.
       After the transfer finishes, you should hear a "beep" and
       be returned to the asterisk prompt ("<<<*>>>").
@@ -401,7 +401,7 @@ ADTPro Audio Bootstrapping
       characters above as given.  Hit return on the Apple; the blinking cursor 
       should go away.
 
-    [[1]] Dismiss the dialog on the ADTPro server.  
+    [[1]] Dismiss the ADTPro server dialog by clicking on the <<<Ok>>> button.
       The progress bar will show how far along the transfer is.
       After the transfer finishes, you should hear a "beep" and 
       be returned to the asterisk prompt ("<<<*>>>").
