@@ -95,6 +95,8 @@ public class ByteArrayImageLayout
    */
   public byte[] readBytes(int start, int length)
   {
+    if ((start + length) > diskImage.length)
+      throw new IllegalArgumentException();
     byte[] buffer = new byte[length];
     System.arraycopy(diskImage, start, buffer, 0, length);
     return buffer;

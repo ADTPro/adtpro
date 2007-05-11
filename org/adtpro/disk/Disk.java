@@ -109,6 +109,7 @@ public class Disk
     InputStream input = new FileInputStream(file);
     if (isCompressed())
     {
+      Log.println(false,"Disk contructor found a compressed image.");
       input = new GZIPInputStream(input);
     }
     int diskSize = (int) file.length();
@@ -123,10 +124,12 @@ public class Disk
         || diskImage.length == APPLE_5MB_HARDDISK + offset || diskImage.length == APPLE_10MB_HARDDISK + offset
         || diskImage.length == APPLE_20MB_HARDDISK + offset || diskImage.length == APPLE_32MB_HARDDISK + offset)
     {
+      Log.println(false,"Disk contructor found a 2img header.");
       diskImageManager = new UniversalDiskImageLayout(diskImage);
     }
     else
     {
+      Log.println(false,"Disk contructor found unadorned disk image data.");
       diskImageManager = new ByteArrayImageLayout(diskImage);
     }
 
@@ -138,6 +141,7 @@ public class Disk
     rc = testImageOrder();
     if (rc != 0)
     {
+      Log.println(false,"Disk contructor didn't find formatted data in ProDOS order; trying DOS order.");
       imageOrder = new DosOrder(diskImageManager);
       rc = testImageOrder();
       if (rc != 0)
@@ -351,12 +355,16 @@ public class Disk
    */
   public boolean isProdosFormat()
   {
+    Log.println(false,"Disk.isProdosFormat() testing for ProDOS format.");
     byte[] prodosVolumeDirectory = readBlock(2);
     int volDirEntryLength = UnsignedByte.intValue(prodosVolumeDirectory[23]);
     int volDirEntriesPerBlock = UnsignedByte.intValue(prodosVolumeDirectory[24]);
-    return ((prodosVolumeDirectory[0] == 0 && prodosVolumeDirectory[1] == 0)
+    boolean retval = ((prodosVolumeDirectory[0] == 0 && prodosVolumeDirectory[1] == 0)
         && ((prodosVolumeDirectory[4] & 0xf0) == 0xf0) && ((prodosVolumeDirectory[4] & 0x0f) != 0) && ((volDirEntryLength
-        * volDirEntriesPerBlock <= 512)));
+            * volDirEntriesPerBlock <= 512)));
+    
+    Log.println(false,"Disk.isProdosFormat() returning "+retval+".");
+    return retval;
   }
 
   /**
@@ -366,6 +374,7 @@ public class Disk
    */
   public boolean isDosFormat()
   {
+    Log.println(false,"Disk.isDosFormat() testing for DOS format.");
     boolean retval = true;
     int foundGood = 0;
     if (!is140KbDisk()) return false;
@@ -383,19 +392,32 @@ public class Disk
         && vtoc[0x35] == 16 && (catTrack < numTracks && catSect < numSectors)) foundGood++;
 
     int iterations = 0;
+    byte[] sctBuf;
     while (catTrack != 0 && catSect != 0 && iterations < 32 /* max sectors */)
     {
-      byte[] sctBuf = readSector(catTrack, catSect);
-      int tmpTrack = UnsignedByte.intValue(sctBuf[1]);
-      int tmpSect = UnsignedByte.intValue(sctBuf[2]) + 1;
-      if (catTrack == tmpTrack && catSect == sctBuf[2] + 1) foundGood++;
-      else if (catTrack == tmpTrack && catSect == tmpSect)
+      try
       {
-        Log.println(false,"Disk.isDosFormat() detected a self-reference on catalog ("+tmpTrack+","+tmpSect);
+        sctBuf = readSector(catTrack, catSect);
+        int tmpTrack = UnsignedByte.intValue(sctBuf[1]);
+        int tmpSect = UnsignedByte.intValue(sctBuf[2]) + 1;
+        if (catTrack == tmpTrack && catSect == sctBuf[2] + 1)
+        {
+          foundGood++;
+        }
+        else if (catTrack == tmpTrack && catSect == tmpSect)
+        {
+          Log.println(false,"Disk.isDosFormat() detected a self-reference on catalog ("+tmpTrack+","+tmpSect);
+          break;
+        }
+        catTrack = UnsignedByte.intValue(sctBuf[1]);
+        catSect = UnsignedByte.intValue(sctBuf[2]);
+      }
+      catch (IllegalArgumentException e)
+      {
+        foundGood = 0;
+        iterations = 33;
         break;
       }
-      catTrack = UnsignedByte.intValue(sctBuf[1]);
-      catSect = UnsignedByte.intValue(sctBuf[2]);
       iterations++;
     }
     if (iterations >= 32 /* max sectors */)
@@ -405,6 +427,7 @@ public class Disk
       if (foundGood < 3)
         retval = false;
     }
+    Log.println(false,"Disk.isDosFormat() returning "+retval+".");
     return (retval);
   }
 
@@ -416,10 +439,11 @@ public class Disk
    */
   public boolean isUniDosFormat()
   {
+    Log.println(false,"Disk.isUniDosFormat() testing for UniDOS format.");
     if (!is800KbDisk()) return false;
     byte[] vtoc1 = readSector(17, 0); // logical disk #1
     byte[] vtoc2 = readSector(67, 0); // logical disk #2
-    return
+    boolean retval =
     // LOGICAL DISK #1
     vtoc1[0x01] == 17 // expect catalog to start on track 17
         && vtoc1[0x02] == 31 // expect catalog to start on sector 31
@@ -436,6 +460,8 @@ public class Disk
         && vtoc2[0x35] == 32 // expect 32 sectors per disk
         && vtoc2[0x36] == 0 // bytes per sector (low byte)
         && vtoc2[0x37] == 1; // bytes per sector (high byte)
+    Log.println(false,"Disk.isUniDosFormat() returning "+retval+".");
+    return retval;
   }
 
   /**
@@ -446,9 +472,10 @@ public class Disk
    */
   public boolean isOzDosFormat()
   {
+    Log.println(false,"Disk.isOzDosFormat() testing for OzDOS format.");
     if (!is800KbDisk()) return false;
     byte[] vtoc = readBlock(544); // contains BOTH VTOCs!
-    return
+    boolean retval = 
     // LOGICAL DISK #1
     vtoc[0x001] == 17 // expect catalog to start on track 17
         && vtoc[0x002] == 31 // expect catalog to start on sector 31
@@ -466,6 +493,8 @@ public class Disk
         && vtoc[0x135] == 32 // expect 32 sectors per disk
         && vtoc[0x136] == 0 // bytes per sector (low byte)
         && vtoc[0x137] == 1; // bytes per sector (high byte)
+    Log.println(false,"Disk.isOzDosFormat() returning "+retval+".");
+    return retval;
   }
 
   /**
@@ -473,10 +502,13 @@ public class Disk
    */
   public boolean isPascalFormat()
   {
+    Log.println(false,"Disk.isPascalFormat() testing for Pascal format.");
     if (!is140KbDisk()) return false;
     byte[] directory = readBlock(2);
-    return directory[0] == 0 && directory[1] == 0 && directory[2] == 6 && directory[3] == 0 && directory[4] == 0
-        && directory[5] == 0;
+    boolean retval = directory[0] == 0 && directory[1] == 0 && directory[2] == 6 && directory[3] == 0 && directory[4] == 0
+    && directory[5] == 0;
+    Log.println(false,"Disk.isPascalFormat() returning "+retval+".");
+    return retval;
   }
 
   /**
@@ -485,6 +517,7 @@ public class Disk
    */
   public boolean isCpmFormat()
   {
+    Log.println(false,"Disk.isCpmFormat() testing for CPM format.");
     if (!is140KbDisk()) return false;
     byte[] directory = readSector(3, 0);
     int bytes[] = new int[256];
@@ -519,6 +552,7 @@ public class Disk
       // Next entry
       offset += ENTRY_LENGTH;
     }
+    Log.println(false,"Disk.isCpmFormat() returning true.");
     return true;
   }
 

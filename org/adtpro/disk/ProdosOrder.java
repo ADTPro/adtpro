@@ -87,6 +87,8 @@ public class ProdosOrder extends ImageOrder
    */
   public byte[] readSector(int track, int sector) throws IllegalArgumentException
   {
+    if (sector >= blockInterleave.length)
+      throw new IllegalArgumentException();
     int block = track * 8 + blockInterleave[sector];
     byte[] blockData = readBlock(block);
     int offset = blockOffsets[sector];
