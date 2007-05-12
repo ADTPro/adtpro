@@ -150,7 +150,7 @@ PRnum:	tax
 	sta PRTPTR
 	lda CAPBLKS+1,X
 	sta PRTPTR+1
-	jsr PRTNUMB
+	jsr PRTNUMSP
 
 PRVODONE:
 	jsr CROUT
@@ -338,7 +338,11 @@ HMOK:
 ; Prints a right-justified, zero-padded 5-digit number from
 ; a pointer in PRTPTR/PRTPTR+1 (lo/hi)
 ;---------------------------------------------------------
-PRTNUMB:
+PRTNUMSP:		; Entry: assumes printing 5 digits long, space-padded
+	lda #CHR_SP
+	sta PADCHR
+	jmp PRTIT
+PRTNUMB:		; Entry: assumes printing a single byte, space-padded, three spaces wide
 	lda #CHR_SP
 	sta PADCHR
 	jmp ByteEntry
