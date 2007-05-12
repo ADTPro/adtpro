@@ -73,7 +73,7 @@ public class AppleDump extends Task
           ps.println("");
           ps.println("");
         }
-        ps.print(_startAddrHex);
+        ps.println(_startAddrHex+":");
         int max = fis.available();
         for (int j = 0; j < max; j++)
         {

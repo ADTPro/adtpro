@@ -50,6 +50,8 @@ INITUTHER:
 	bcc @UTHEROK
 	ldy #PMUTHBAD
 	jsr SHOWM1
+	jsr PATCHNULL
+	rts
 @UTHEROK:
 	ldax #UDPDISPATCH
 	stax udp_callback
@@ -78,6 +80,22 @@ PATCHUTHER:
 	sta RESETIO+1
 	lda #>RESETUTHER
 	sta RESETIO+2
+	rts
+
+;---------------------------------------------------------
+; PATCHNULL - Patch in a null reset routine
+;---------------------------------------------------------
+PATCHNULL:
+	lda #<NULLUTHER
+	sta RESETIO+1
+	lda #>NULLUTHER
+	sta RESETIO+2
+	rts
+
+;---------------------------------------------------------
+; NULLUTHER - Do-nothing "reset" routine
+;---------------------------------------------------------
+NULLUTHER:
 	rts
 
 ;---------------------------------------------------------

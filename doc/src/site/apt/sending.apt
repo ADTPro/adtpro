@@ -11,22 +11,25 @@ you want saved at the host:
 
 [images/send.png]
 
- By convention, there is a correlation between the filename suffix and the
-"order" in which the bits are stored; something that is only of consequence
-to emulators.  Points to remember:
+ By convention, there is a correlation between the filename suffix of a
+ diskette image and the "order" in which the bits are stored; something 
+ that is really only of consequence to emulators.  Points to remember:
 
-  * ADTPro will save any 140k, 5-1/4" disk image in "DOS order"
-no matter what it is named.  To work correctly with most emulators, it 
-should be named with a ".dsk" or ".do" suffix.  
+  * When saving disk images at the host, ADTPro will save any 140k, 
+    5-1/4" disk image in "DOS order" no matter what it is named.  
+    To work correctly with emulators, disk images should be named
+    with a ".dsk" or ".do" suffix.  
 
   * ADTPro will save <any other> disk image (3-1/2" disk, hard drive, ram disk, etc.)
     in "ProDOS order," and so they should be named with a ".po" suffix.
+    Note that the AppleWin emulator expects a ".hdv" instead of ".po"
+    extension for any non-140k disk image.
 
   * Keeping to these naming conventions will ensure your images will work with
     emulators that only distinguish between bit ordering formats by filename.
 
  After hitting Return to specify the file name, ADTPro will present you with
-a screen to pick a "volume" (a slot/drive combination).  The slot and drive 
+a screen to pick a "volume" (a slot/drive combination) to read.  The slot and drive 
 numbers are the first two columns; if the volume happens to be formatted with
 ProDOS, its name will appear in the Volume Name column.  You can use the arrow
 keys or the space bar to pick the volume to be sent to the host:
@@ -41,7 +44,7 @@ block contains 512 bytes of data.  So, typical disk sizes are:
 *-------:-----+
 |   127 | 64k RAM disk (128k Apples) |
 *-------:-----+
-|   280 | 5-1/4" Floppy disk (140k) (Note: these are saved in DOS order) |
+|   280 | 5-1/4" Floppy disk (140k) (Note: these are saved in DOS order at the host) |
 *-------:-----+
 |  1600 | 3-1/2" Floppy disk (800k) |
 *-------:-----+

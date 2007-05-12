@@ -20,6 +20,23 @@ selections.
  You can rotate through the options of a particular selection with the right and
 left arrow keys.  Your Apple has right and left arrow keys; trust me.
 
+ <<Note>>: if you ever end up saving a configuration that is not compatible
+ with the Apple you're trying to run ADTPro on (because you move your
+ serial card to a different slot, for example) you may need to reset
+ ADTPro to factory defaults.  To do that, boot your Apple without
+ starting <<<ADTPRO>>>, and type in the following commands:
+
+ * <<<BLOAD ADTPRO>>>
+
+ * <<<POKE 2052,1>>>
+
+ * <<<CALL 2051>>>
+
+ []
+
+ That will reset everything to defaults and you should be able to bring
+ up the configuration screen, make corrections, then re-save it.
+
 * Comms Device
 
  Select the slot your communications card is in.

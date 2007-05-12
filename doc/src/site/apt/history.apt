@@ -6,7 +6,7 @@
 
 ADTPro Release History
 
-* 0.2.4 - (Unreleased)
+* 0.2.4 - May 12, 2007
 
  New functionality:
 
@@ -21,6 +21,16 @@ ADTPro Release History
  * Saving any 140k disk at the host always creates DOS order images;
    this increases compatibility with older emulators that can't understand
    ProDOS order images
+
+ []
+
+ Bug fixes:
+
+ * Better recovery from initialization when there's no Uthernet card in
+   the default slot
+
+ * Cosmetic right-justification issue with online
+   volume block number display (extant since 0.1.1)
 
  []
 

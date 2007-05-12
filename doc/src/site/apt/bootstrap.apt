@@ -14,11 +14,11 @@ you're ready to go.
   If you don't use DOS ADT now, or don't have software for your Apple yet, 
 more bootstrapping scenarios and configurations are detailed below.
 
- * {{{bootstrap.html#If you already have ProDOS}If you already have ProDOS}}
-
  * {{{bootstrap.html#Starting from bare metal}If you have no Apple software at all - starting ADTPro from bare metal}}
 
- * {{{bootstrap.html#Bootstrapping DOS}If you have no software now and only want to run DOS ADT, not ADTPro}}
+ * {{{bootstrap.html#If you already have ProDOS}If you already have ProDOS}}
+
+ * {{{bootstrap.html#Bootstrapping DOS}If you have no software now and only want to run DOS 3.3, not ADTPro}}
 
  []
 
@@ -61,17 +61,20 @@ more bootstrapping scenarios and configurations are detailed below.
 
 [images/serialConfig2.png]
 
+ The defaults for pacing and speed should work fine for communications to any Apple.
+ If you have trouble with these bootstrapping operations, you may find it necessary
+ to slow down the baud rate, increase the pacing interval, or both.
+ Again, the important thing is to not have DOS 3.3 loaded when going through
+ bootstrapping operations.
+
  Once you've gotten everything transferred and are using the ADTPro client
  program down on the Apple, the speed set on the port tab of the serial
  configuration dialog box takes over:
 
 [images/serialConfig.png]
 
- The defaults for pacing and speed should work fine for communications to any Apple.
- If you have trouble with these bootstrapping operations, you may find it necessary
- to slow down the baud rate, increase the pacing interval, or both.
- Again, the important thing is to not have DOS 3.3 loaded when going through
- bootstrapping operations.
+ And if you are using an Apple IIc, don't forget to check the "Apple IIc Serial"
+ box on the Port tab.
 
 * {If you already have ProDOS}
 
@@ -136,7 +139,7 @@ more bootstrapping scenarios and configurations are detailed below.
 
     [[1]] Boot ADTPro's newly minted disk.
 
-    [[1]] Start transferring 5.25", 3.5", Ram drive, or hard drive images to your
+    [[1]] Start transferring 5.25", 3.5", RAM drive, or hard drive images to your
       heart's content!
 
     []
@@ -205,7 +208,7 @@ more bootstrapping scenarios and configurations are detailed below.
       "virtual" slot #2, and an IIc's serial port is always "virtual" slot #2 as well.
       This is the equivalent of the BASIC command <<<IN#2>>>, but since
       BASIC is not available right now - you have to use this form from the asterisk prompt.
-      You will need to hit the <<<Return>>> key after entering this sequence.)
+      You will need to hit the <<<Return>>> key after entering this key sequence.)
 
       * <<< <ctrl-A>14B >>> (The number will depend on the speed you have
       chosen from the bootstrapping tab on the serial configuration dialog box.  
@@ -394,7 +397,7 @@ more bootstrapping scenarios and configurations are detailed below.
       You probably want to write-protect your new DOS ADT diskette by
       covering the write notch with tape to be sure you don't ever have to send
       all that stuff over the serial line again.
-      
+
     [[1]] Boot your DOS ADT floppy.  The Apple command 
       <<<BRUN ADT>>> will start the DOS ADT client up.  You may want to
       go one extra step and use ADT now to transfer the full DOS ADT .dsk image

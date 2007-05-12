@@ -215,6 +215,8 @@ ENDCFG:
 	sta ip_parms,y
 	dey
 	bpl :-
+	lda #$01
+	sta CONFIGYET
 
 	lda PARMS+BSAVEP	; Did they ask to save?
 	bne NOSAVE
@@ -235,10 +237,14 @@ NOSAVE:
 ; PARMINT - INTERPRET PARAMETERS
 ;---------------------------------------------------------
 PARMINT:
+	lda CONFIGYET
+	beq NOPE
 	jsr INITUTHER
 	jsr PINGREQUEST
 	jsr PINGREQUEST
-	rts
+	jmp :+
+NOPE:	jsr PATCHNULL
+:	rts
 
 ;---------------------------------------------------------
 ; PARMDFT - Set parameters to last saved values (uses A,X)
@@ -260,6 +266,8 @@ DFTLOOP:
 	jmp PARMDFTNEXT
 
 FACTORYLOOP:
+	lda #$00		; Don't touch the Uther until
+	sta CONFIGYET		; user confirms settings
 	lda FACTORY,X
 	sta PARMS,X
 	dex
@@ -387,5 +395,6 @@ IPMsg05:	ascz "DNS ADDRESS"
 
 DEFAULT:	.byte 2,0,1	; Default parm indices
 FACTORY:	.byte 2,0,1	; Factory default parm indices
+CONFIGYET:	.byte 0		; Has the user configged yet?
 YSAVE:	.byte $00
 BSAVEP	= $02		; Index to the 'Save parameters' parameter

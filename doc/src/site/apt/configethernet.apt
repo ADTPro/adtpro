@@ -19,6 +19,23 @@ ADTPro Ethernet Configuration
  address assigned to the Uthernet card by ADTPro is
  <<<00:80:10:6d:76:30>>>.
 
+ <<Note>>: if you ever end up saving a configuration that is not compatible
+ with the Apple you're trying to run ADTPro on (because you move your
+ Uthernet card to a different slot, for example) you may need to reset
+ ADTPro to factory defaults.  To do that, boot your Apple without
+ starting <<<ADTPROETH>>>, and type in the following commands:
+
+ * <<<BLOAD ADTPROETH>>>
+
+ * <<<POKE 2052,1>>>
+
+ * <<<CALL 2051>>>
+
+ []
+
+ That will reset everything to defaults and you should be able to bring
+ up the configuration screen, make corrections, then re-save it.
+
 {Client IP Configuration}
 
  The ethernet version of the ADTPro client program is named <<<ADTPROETH>>> on the 
