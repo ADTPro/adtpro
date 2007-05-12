@@ -10,7 +10,7 @@ ADTPro Release History
 
  New functionality:
 
- * Bootstrapping from bare metal directly to ProDOS now possible
+ * Bootstrapping from bare metal directly to ProDOS
 
  * Made serial bootstrapping pacing and speed configurable - making much
    higher baud rates possible (and reliable)
@@ -19,7 +19,7 @@ ADTPro Release History
    formatted disks yet, remember?)
 
  * Saving any 140k disk at the host always creates DOS order images;
-   this increases compatibility with older emulators that can't understand
+   this increases compatibility with older emulators that don't understand
    ProDOS order images
 
  []
