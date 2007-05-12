@@ -467,6 +467,7 @@ public class CommsThread extends Thread
           if ((length * 512) == Disk.APPLE_140KB_DISK)
           {
             Disk disk = new Disk(name);
+            disk.makeDosOrder();
             disk.save();
             Log.println(false, "CommsThread.receiveDisk() found a 140k disk; saved as DOS order format.");
           }

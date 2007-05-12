@@ -104,12 +104,22 @@ public class Disk
    */
   public Disk(String filename) throws IOException
   {
+    this(filename, false);
+  }
+
+  /**
+   * Construct a Disk and load the specified file. Read in the entire contents
+   * of the file.
+   */
+  public Disk(String filename, boolean forceProDosOrder) throws IOException
+  {
+    Log.println(false, "Disk contructor looking for file named " + filename + ".");
     this.filename = filename;
     File file = new File(filename);
     InputStream input = new FileInputStream(file);
     if (isCompressed())
     {
-      Log.println(false,"Disk contructor found a compressed image.");
+      Log.println(false, "Disk contructor found a compressed image.");
       input = new GZIPInputStream(input);
     }
     int diskSize = (int) file.length();
@@ -124,12 +134,12 @@ public class Disk
         || diskImage.length == APPLE_5MB_HARDDISK + offset || diskImage.length == APPLE_10MB_HARDDISK + offset
         || diskImage.length == APPLE_20MB_HARDDISK + offset || diskImage.length == APPLE_32MB_HARDDISK + offset)
     {
-      Log.println(false,"Disk contructor found a 2img header.");
+      Log.println(false, "Disk contructor found a 2img header.");
       diskImageManager = new UniversalDiskImageLayout(diskImage);
     }
     else
     {
-      Log.println(false,"Disk contructor found unadorned disk image data.");
+      Log.println(false, "Disk contructor found unadorned disk image data.");
       diskImageManager = new ByteArrayImageLayout(diskImage);
     }
 
@@ -138,51 +148,48 @@ public class Disk
      */
     int rc = -1;
     imageOrder = new ProdosOrder(diskImageManager);
-    rc = testImageOrder();
-    if (rc != 0)
+    if (!forceProDosOrder)
     {
-      Log.println(false,"Disk contructor didn't find formatted data in ProDOS order; trying DOS order.");
-      imageOrder = new DosOrder(diskImageManager);
       rc = testImageOrder();
       if (rc != 0)
       {
-        /*
-         * Couldn't find anything recognizable. Second step: start testing
-         * filenames.
-         */
-        if (isProdosOrder() || is2ImgOrder())
+        Log.println(false, "Disk contructor didn't find formatted data in ProDOS order; trying DOS order.");
+        imageOrder = new DosOrder(diskImageManager);
+        rc = testImageOrder();
+        if (rc != 0)
         {
-          imageOrder = new ProdosOrder(diskImageManager);
-          Log.println(false, "Disk constructor found a ProdosOrder image (but by name).");
-        }
-        else
-          if (isDosOrder())
+          /*
+           * Couldn't find anything recognizable. Second step: start testing
+           * filenames.
+           */
+          if (isProdosOrder() || is2ImgOrder())
           {
-            imageOrder = new DosOrder(diskImageManager);
-            Log.println(false, "Disk constructor found a DosOrder image (by name).");
+            imageOrder = new ProdosOrder(diskImageManager);
+            Log.println(false, "Disk constructor found a ProdosOrder image (by name).");
           }
           else
-            if (isNibbleOrder())
+            if (isDosOrder())
             {
-              imageOrder = new NibbleOrder(diskImageManager);
-              Log.println(false, "Disk constructor found a NibbleOrder image (by name).");
+              imageOrder = new DosOrder(diskImageManager);
+              Log.println(false, "Disk constructor found a DosOrder image (by name).");
             }
             else
-            {
-              imageOrder = new ProdosOrder(diskImageManager);
-              Log.println(false, "Disk constructor couldn't find much of anything; defaulting to ProdosOrder image.");
-            }
+              if (isNibbleOrder())
+              {
+                imageOrder = new NibbleOrder(diskImageManager);
+                Log.println(false, "Disk constructor found a NibbleOrder image (by name).");
+              }
+              else
+              {
+                imageOrder = new ProdosOrder(diskImageManager);
+                Log.println(false, "Disk constructor couldn't find much of anything; defaulting to ProdosOrder image.");
+              }
+        }
+        else
+          Log.println(false, "Disk constructor found a DosOrder image.");
       }
       else
-        Log.println(false, "Disk constructor found a DosOrder image.");
-    }
-    else
-      Log.println(false, "Disk constructor found a ProdosOrder image.");
-    if (is140KbDisk() && (imageOrder.getClass() == ProdosOrder.class))
-    {
-      Log.println(false, "Disk constructor found a 140k disk, making it DOS order.");
-      makeDosOrder();
-      // imageOrder = new DosOrder(diskImageManager);
+        Log.println(false, "Disk constructor found a ProdosOrder image.");
     }
   }
 
@@ -355,15 +362,15 @@ public class Disk
    */
   public boolean isProdosFormat()
   {
-    Log.println(false,"Disk.isProdosFormat() testing for ProDOS format.");
+    Log.println(false, "Disk.isProdosFormat() testing for ProDOS format.");
     byte[] prodosVolumeDirectory = readBlock(2);
     int volDirEntryLength = UnsignedByte.intValue(prodosVolumeDirectory[23]);
     int volDirEntriesPerBlock = UnsignedByte.intValue(prodosVolumeDirectory[24]);
     boolean retval = ((prodosVolumeDirectory[0] == 0 && prodosVolumeDirectory[1] == 0)
         && ((prodosVolumeDirectory[4] & 0xf0) == 0xf0) && ((prodosVolumeDirectory[4] & 0x0f) != 0) && ((volDirEntryLength
-            * volDirEntriesPerBlock <= 512)));
-    
-    Log.println(false,"Disk.isProdosFormat() returning "+retval+".");
+        * volDirEntriesPerBlock <= 512)));
+
+    Log.println(false, "Disk.isProdosFormat() returning " + retval + ".");
     return retval;
   }
 
@@ -374,7 +381,7 @@ public class Disk
    */
   public boolean isDosFormat()
   {
-    Log.println(false,"Disk.isDosFormat() testing for DOS format.");
+    Log.println(false, "Disk.isDosFormat() testing for DOS format.");
     boolean retval = true;
     int foundGood = 0;
     if (!is140KbDisk()) return false;
@@ -404,11 +411,12 @@ public class Disk
         {
           foundGood++;
         }
-        else if (catTrack == tmpTrack && catSect == tmpSect)
-        {
-          Log.println(false,"Disk.isDosFormat() detected a self-reference on catalog ("+tmpTrack+","+tmpSect);
-          break;
-        }
+        else
+          if (catTrack == tmpTrack && catSect == tmpSect)
+          {
+            Log.println(false, "Disk.isDosFormat() detected a self-reference on catalog (" + tmpTrack + "," + tmpSect);
+            break;
+          }
         catTrack = UnsignedByte.intValue(sctBuf[1]);
         catSect = UnsignedByte.intValue(sctBuf[2]);
       }
@@ -420,14 +428,12 @@ public class Disk
       }
       iterations++;
     }
-    if (iterations >= 32 /* max sectors */)
-      retval = false;
+    if (iterations >= 32 /* max sectors */) retval = false;
     else
     {
-      if (foundGood < 3)
-        retval = false;
+      if (foundGood < 3) retval = false;
     }
-    Log.println(false,"Disk.isDosFormat() returning "+retval+".");
+    Log.println(false, "Disk.isDosFormat() returning " + retval + ".");
     return (retval);
   }
 
@@ -439,7 +445,7 @@ public class Disk
    */
   public boolean isUniDosFormat()
   {
-    Log.println(false,"Disk.isUniDosFormat() testing for UniDOS format.");
+    Log.println(false, "Disk.isUniDosFormat() testing for UniDOS format.");
     if (!is800KbDisk()) return false;
     byte[] vtoc1 = readSector(17, 0); // logical disk #1
     byte[] vtoc2 = readSector(67, 0); // logical disk #2
@@ -460,7 +466,7 @@ public class Disk
         && vtoc2[0x35] == 32 // expect 32 sectors per disk
         && vtoc2[0x36] == 0 // bytes per sector (low byte)
         && vtoc2[0x37] == 1; // bytes per sector (high byte)
-    Log.println(false,"Disk.isUniDosFormat() returning "+retval+".");
+    Log.println(false, "Disk.isUniDosFormat() returning " + retval + ".");
     return retval;
   }
 
@@ -472,10 +478,10 @@ public class Disk
    */
   public boolean isOzDosFormat()
   {
-    Log.println(false,"Disk.isOzDosFormat() testing for OzDOS format.");
+    Log.println(false, "Disk.isOzDosFormat() testing for OzDOS format.");
     if (!is800KbDisk()) return false;
     byte[] vtoc = readBlock(544); // contains BOTH VTOCs!
-    boolean retval = 
+    boolean retval =
     // LOGICAL DISK #1
     vtoc[0x001] == 17 // expect catalog to start on track 17
         && vtoc[0x002] == 31 // expect catalog to start on sector 31
@@ -493,7 +499,7 @@ public class Disk
         && vtoc[0x135] == 32 // expect 32 sectors per disk
         && vtoc[0x136] == 0 // bytes per sector (low byte)
         && vtoc[0x137] == 1; // bytes per sector (high byte)
-    Log.println(false,"Disk.isOzDosFormat() returning "+retval+".");
+    Log.println(false, "Disk.isOzDosFormat() returning " + retval + ".");
     return retval;
   }
 
@@ -502,12 +508,12 @@ public class Disk
    */
   public boolean isPascalFormat()
   {
-    Log.println(false,"Disk.isPascalFormat() testing for Pascal format.");
+    Log.println(false, "Disk.isPascalFormat() testing for Pascal format.");
     if (!is140KbDisk()) return false;
     byte[] directory = readBlock(2);
-    boolean retval = directory[0] == 0 && directory[1] == 0 && directory[2] == 6 && directory[3] == 0 && directory[4] == 0
-    && directory[5] == 0;
-    Log.println(false,"Disk.isPascalFormat() returning "+retval+".");
+    boolean retval = directory[0] == 0 && directory[1] == 0 && directory[2] == 6 && directory[3] == 0
+        && directory[4] == 0 && directory[5] == 0;
+    Log.println(false, "Disk.isPascalFormat() returning " + retval + ".");
     return retval;
   }
 
@@ -517,7 +523,7 @@ public class Disk
    */
   public boolean isCpmFormat()
   {
-    Log.println(false,"Disk.isCpmFormat() testing for CPM format.");
+    Log.println(false, "Disk.isCpmFormat() testing for CPM format.");
     if (!is140KbDisk()) return false;
     byte[] directory = readSector(3, 0);
     int bytes[] = new int[256];
@@ -552,7 +558,7 @@ public class Disk
       // Next entry
       offset += ENTRY_LENGTH;
     }
-    Log.println(false,"Disk.isCpmFormat() returning true.");
+    Log.println(false, "Disk.isCpmFormat() returning true.");
     return true;
   }
 
