@@ -10,7 +10,7 @@ ADTPro Release History
 
  New functionality:
 
- * Bootstrapping from iron directly to ProDOS now possible
+ * Bootstrapping from bare metal directly to ProDOS now possible
 
  * Made serial bootstrapping pacing and speed configurable - making much
    higher baud rates possible (and reliable)
