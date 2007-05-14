@@ -6,6 +6,15 @@
 
 ADTPro Release History
 
+* 0.2.5 - Unreleased
+
+ Bug fixes:
+
+ * Bumped Java heap size in startup scripts with -Xmx128m (Windows) and
+   -Xmx256m (*ix) to support 32M images
+
+ []
+
 * 0.2.4 - May 12, 2007
 
  New functionality:

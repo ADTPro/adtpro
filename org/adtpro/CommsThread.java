@@ -39,6 +39,8 @@ public class CommsThread extends Thread
 {
   private boolean _shouldRun = true;
 
+  private boolean _busy = false;
+
   protected boolean _client01xCompatibleProtocol = false;
 
   private ATransport _transport;
@@ -124,6 +126,7 @@ public class CommsThread extends Thread
     {
       Log.println(false, "CommsThread.commandLoop() Waiting for command from Apple."); //$NON-NLS-1$
       readYet = false;
+      _busy = false;
       while (_shouldRun && !readYet)
         try
         {
@@ -142,61 +145,79 @@ public class CommsThread extends Thread
         switch (oneByte)
         {
           case (byte) 195: // "C": CD
+            _busy = true;
             _parent.setMainText(Messages.getString("CommsThread.2")); //$NON-NLS-1$
             _parent.setSecondaryText(""); //$NON-NLS-1$
             Log.println(false, "CommsThread.commandLoop() Received CD command."); //$NON-NLS-1$
             changeDirectory();
             _parent.setSecondaryText(_parent.getWorkingDirectory()); //$NON-NLS-1$
+            _busy = false;
             break;
           case (byte) 196: // "D": DIR
+            _busy = true;
             _parent.setMainText(Messages.getString("CommsThread.1")); //$NON-NLS-1$
             _parent.setSecondaryText(_parent.getWorkingDirectory()); //$NON-NLS-1$
             Log.println(false, "CommsThread.commandLoop() Received DIR command."); //$NON-NLS-1$
             sendDirectory();
             _parent.setSecondaryText(_parent.getWorkingDirectory()); //$NON-NLS-1$
+            _busy = false;
             break;
           case (byte) 208: // "P": Put (Send)
+            _busy = true;
             _parent.setMainText(Messages.getString("CommsThread.16")); //$NON-NLS-1$
             _parent.setSecondaryText(""); //$NON-NLS-1$
             Log.println(false, "CommsThread.commandLoop() Received Put/Send command."); //$NON-NLS-1$
             receiveDisk(false);
+            _busy = false;
             break;
           case (byte) 199: // "G": Get (Receive)
+            _busy = true;
             _parent.setMainText(Messages.getString("CommsThread.3")); //$NON-NLS-1$
             _parent.setSecondaryText(""); //$NON-NLS-1$
             Log.println(false, "CommsThread.commandLoop() Received Get/Receive command."); //$NON-NLS-1$
             sendDisk();
+            _busy = false;
             break;
           case (byte) 194: // "B": Batch send
+            _busy = true;
             _parent.setMainText(Messages.getString("CommsThread.3")); //$NON-NLS-1$
             _parent.setSecondaryText(""); //$NON-NLS-1$
             Log.println(false, "CommsThread.commandLoop() Received Batch command."); //$NON-NLS-1$
             receiveDisk(true);
+            _busy = false;
             break;
           case (byte) 217: // "Y": Ping
+            _busy = true;
             _parent.setMainText(Messages.getString("CommsThread.23")); //$NON-NLS-1$
             _parent.setSecondaryText(""); //$NON-NLS-1$
             Log.println(false, "CommsThread.commandLoop() Received Ping command."); //$NON-NLS-1$
             _transport.pushBuffer();
             _transport.flushReceiveBuffer();
+            _busy = false;
             break;
           case (byte) 218: // "Q": Size
+            _busy = true;
             _parent.setMainText(Messages.getString("CommsThread.14")); //$NON-NLS-1$
             _parent.setSecondaryText(""); //$NON-NLS-1$
             Log.println(false, "CommsThread.commandLoop() Received Query File Size command."); //$NON-NLS-1$
             queryFileSize();
+            _busy = false;
             break;
           case (byte) 210: // "R": Receive (Legacy ADT style)
+            _busy = true;
             _parent.setMainText(Messages.getString("CommsThread.11")); //$NON-NLS-1$
             _parent.setSecondaryText(""); //$NON-NLS-1$
             Log.println(false, "CommsThread.commandLoop() Received ADT Receive command."); //$NON-NLS-1$
             send140kDisk();
+            _busy = false;
             break;
           case (byte) 211: // "S": Send (Legacy ADT style)
+            _busy = true;
             _parent.setMainText(Messages.getString("CommsThread.15")); //$NON-NLS-1$
             _parent.setSecondaryText(""); //$NON-NLS-1$
             Log.println(false, "CommsThread.commandLoop() Received ADT Send command."); //$NON-NLS-1$
             receive140kDisk();
+            _busy = false;
             break;
           default:
             Log.println(false, "CommsThread.commandLoop() Received unknown command: " + UnsignedByte.toString(oneByte)); //$NON-NLS-1$
@@ -1461,6 +1482,11 @@ public class CommsThread extends Thread
     Log.println(false, "CommsThread.requestStop() exit.");
   }
 
+  public boolean isBusy()
+  {
+    return _busy;
+  }
+
   /*
    * Worker class is a thread that sends bootstrapping data.
    */
@@ -1483,6 +1509,7 @@ public class CommsThread extends Thread
       Log.println(false, "CommsThread.Worker.run() entry.");
       int bytesRead, bytesAvailable;
       _startTime = new GregorianCalendar();
+      _busy = true;
       if (_transport.transportType() == ATransport.TRANSPORT_TYPE_AUDIO)
       {
         try
@@ -1608,11 +1635,13 @@ public class CommsThread extends Thread
       }
       if (_shouldRun) _transport.flushReceiveBuffer();
       Log.println(false, "CommsThread.Worker.run() exit.");
+      _busy = false;
     }
 
     public void requestStop()
     {
       _shouldRun = false;
+      _busy = false;
     }
 
     InputStream _is;

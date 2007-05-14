@@ -260,26 +260,24 @@ public final class Gui extends JFrame implements ActionListener
     int coord = Integer.parseInt(_properties.getProperty("CoordH", "0"));
     if (coord > 0)
     {
-      Rectangle r = new Rectangle(
-          Integer.parseInt(_properties.getProperty("CoordX", "0")),
-          Integer.parseInt(_properties.getProperty("CoordY", "0")),
-          Integer.parseInt(_properties.getProperty("CoordW", "0")),
+      Rectangle r = new Rectangle(Integer.parseInt(_properties.getProperty("CoordX", "0")), Integer
+          .parseInt(_properties.getProperty("CoordY", "0")), Integer.parseInt(_properties.getProperty("CoordW", "0")),
           Integer.parseInt(_properties.getProperty("CoordH", "0")));
       if (((r.height == 0) || (r.width == 0)) || // Anything was zero
           (!FrameUtils.fits(r))) // Dimensions put us outside current view
       {
-        Log.println(false,"Gui setting screen coordinates to defaults; properties file coords weren't good.");
+        Log.println(false, "Gui setting screen coordinates to defaults; properties file coords weren't good.");
         setBounds(FrameUtils.center(this.getSize()));
       }
       else
       {
-        Log.println(false,"Gui setting screen coordinates from properties file values.");
+        Log.println(false, "Gui setting screen coordinates from properties file values.");
         setBounds(r);
       }
     }
     else
     {
-      Log.println(false,"Gui setting screen coordinates to defaults; properties file height was zero.");
+      Log.println(false, "Gui setting screen coordinates to defaults; properties file height was zero.");
       setBounds(FrameUtils.center(this.getSize()));
     }
     this.show();
@@ -289,12 +287,12 @@ public final class Gui extends JFrame implements ActionListener
 
   public void actionPerformed(ActionEvent e)
   {
-    Log.println(false, "Gui.actionPerformed() entry, responding to " + e.getActionCommand()+"; previous button is "+_previousButton.getText());
+    Log.println(false, "Gui.actionPerformed() entry, responding to " + e.getActionCommand() + "; previous button is "
+        + _previousButton.getText());
     // _serialButton clicked
     if ((e.getSource() == _serialButton) && (_previousButton != _serialButton))
     {
-      if ((_properties.getProperty("CommPortSpeed") == null) ||
-          (_properties.getProperty("CommPort") == null))
+      if ((_properties.getProperty("CommPortSpeed") == null) || (_properties.getProperty("CommPort") == null))
       {
         serialConfigGui(0);
         if (SerialConfig.getSingleton().getExitStatus() == SerialConfig.OK)
@@ -310,13 +308,22 @@ public final class Gui extends JFrame implements ActionListener
       {
         try
         {
-          String msg = Messages.getString("Gui.ServingSerialTitle");
-          msg = msg.replaceAll("%1",_properties.getProperty("CommPort"));
-          msg = msg.replaceAll("%2",_properties.getProperty("CommPortSpeed"));
-          setTitle(msg);
-          Log.println(false,"Gui.actionPerformed setting previous button to _serialButton.");
-          _previousButton = _serialButton; // Remember last button state
-          startComms(new SerialTransport(_properties.getProperty("CommPort"), _properties.getProperty("CommPortSpeed"), _properties.getProperty("HardwareHandshaking", "false").compareTo("true") == 0));
+          boolean success = startComms(new SerialTransport(_properties.getProperty("CommPort"), _properties
+              .getProperty("CommPortSpeed"),
+              _properties.getProperty("HardwareHandshaking", "false").compareTo("true") == 0));
+          if (success == true)
+          {
+            String msg = Messages.getString("Gui.ServingSerialTitle");
+            msg = msg.replaceAll("%1", _properties.getProperty("CommPort"));
+            msg = msg.replaceAll("%2", _properties.getProperty("CommPortSpeed"));
+            setTitle(msg);
+            Log.println(false, "Gui.actionPerformed setting previous button to _serialButton.");
+            _previousButton = _serialButton; // Remember last button state
+          }
+          else
+          {
+            _previousButton.doClick();
+          }
         }
         catch (gnu.io.PortInUseException e1)
         {
@@ -333,32 +340,46 @@ public final class Gui extends JFrame implements ActionListener
       // _ethernetButton clicked
       if ((e.getSource() == _ethernetButton) && (_previousButton != _ethernetButton))
       {
-        Log.println(false,"Gui.actionPerformed acting on the ethernet button.");
+        Log.println(false, "Gui.actionPerformed acting on the ethernet button.");
         try
         {
-          String msg = Messages.getString("Gui.ServingEthernetTitle");
-          msg = msg.replaceAll("%1",InetAddress.getLocalHost().getHostAddress());
-          setTitle(msg);
-          Log.println(false,"Gui.actionPerformed ethernet button connected.");
-          _previousButton = _ethernetButton; // Remember last button state
-          startComms(new UDPTransport("6502"));
+          boolean success = startComms(new UDPTransport("6502"));
+          if (success)
+          {
+            String msg = Messages.getString("Gui.ServingEthernetTitle");
+            msg = msg.replaceAll("%1", InetAddress.getLocalHost().getHostAddress());
+            setTitle(msg);
+            Log.println(false, "Gui.actionPerformed ethernet button connected.");
+            _previousButton = _ethernetButton; // Remember last button state
+          }
+          else
+          {
+            _previousButton.doClick();
+          }
         }
         catch (Exception e1)
         {
           Log.printStackTrace(e1);
           setTitle(Messages.getString("Gui.Title") + " " + Messages.getString("Version.Number")); //$NON-NLS-1$ //$NON-NLS-2$
           _disconnectButton.doClick();
-          Log.println(false,"Gui.actionPerformed ethernet button can't connect.");
+          Log.println(false, "Gui.actionPerformed ethernet button can't connect.");
         }
       }
       else
         // _audioButton clicked
         if ((e.getSource() == _audioButton) && (_previousButton != _audioButton))
         {
-          setTitle(Messages.getString("Gui.Title") + " " + Messages.getString("Version.Number")); //$NON-NLS-1$ //$NON-NLS-2$
-          setTitle(Messages.getString("Gui.ServingAudioTitle"));
-          _previousButton = _audioButton; // Remember last button state
-          startComms(new AudioTransport());
+          boolean success = startComms(new AudioTransport());
+          if (success)
+          {
+            setTitle(Messages.getString("Gui.Title") + " " + Messages.getString("Version.Number")); //$NON-NLS-1$ //$NON-NLS-2$
+            setTitle(Messages.getString("Gui.ServingAudioTitle"));
+            _previousButton = _audioButton; // Remember last button state
+          }
+          else
+          {
+            _previousButton.doClick();
+          }
         }
         else
           // _disconnectButton clicked
@@ -366,27 +387,34 @@ public final class Gui extends JFrame implements ActionListener
           {
             if (_previousButton != _disconnectButton)
             {
-              setTitle(Messages.getString("Gui.Title") + " " + Messages.getString("Version.Number")); //$NON-NLS-1$ //$NON-NLS-2$
-              startComms(null);
+              boolean success = startComms(null);
+              if (success)
+              {
+                setTitle(Messages.getString("Gui.Title") + " " + Messages.getString("Version.Number")); //$NON-NLS-1$ //$NON-NLS-2$
+                _previousButton = _disconnectButton;
+              }
+              else
+              {
+                _previousButton.doClick();
+              }
             }
-            Log.println(false,"Gui.actionPerformed setting previous button to _disconnectButton.");
-            _previousButton = _disconnectButton;
-          }
-        else
-          if (e.getActionCommand().equals(Messages.getString("Gui.ProtocolCompatability"))) //$NON-NLS-1$
-          {
-            if (_commsThread != null)
-            {
-              _commsThread.setProtocolCompatibility(_protoCompatMenuItem.isSelected());
-            }
-            saveProperties();
+            Log.println(false, "Gui.actionPerformed setting previous button to _disconnectButton.");
           }
           else
-            if (e.getActionCommand().equals(Messages.getString("Gui.Trace"))) //$NON-NLS-1$
+            if (e.getActionCommand().equals(Messages.getString("Gui.ProtocolCompatability"))) //$NON-NLS-1$
             {
-              Log.getSingleton().setTrace(_traceMenuItem.isSelected());
+              if (_commsThread != null)
+              {
+                _commsThread.setProtocolCompatibility(_protoCompatMenuItem.isSelected());
+              }
               saveProperties();
             }
+            else
+              if (e.getActionCommand().equals(Messages.getString("Gui.Trace"))) //$NON-NLS-1$
+              {
+                Log.getSingleton().setTrace(_traceMenuItem.isSelected());
+                saveProperties();
+              }
     Log.println(false, "Gui.actionPerformed() exit.");
   }
 
@@ -401,9 +429,9 @@ public final class Gui extends JFrame implements ActionListener
     }
     if (!_workingDirectory.endsWith(File.separator))
     {
-      _workingDirectory = _workingDirectory + File.separator; 
+      _workingDirectory = _workingDirectory + File.separator;
     }
-    Log.println(false,"Gui.getWorkingDirectory(): " + _workingDirectory);
+    Log.println(false, "Gui.getWorkingDirectory(): " + _workingDirectory);
     return _workingDirectory;
   }
 
@@ -456,7 +484,7 @@ public final class Gui extends JFrame implements ActionListener
     {
       if (!_workingDirectory.endsWith(File.separator))
       {
-        _workingDirectory = _workingDirectory + File.separator; 
+        _workingDirectory = _workingDirectory + File.separator;
       }
       _workingDirectory = tempWorkingDirectory;
       saveProperties();
@@ -596,21 +624,21 @@ public final class Gui extends JFrame implements ActionListener
                 {
                   speed = 300;
                 }
-                Log.println(false,"Gui.actionPerformed getting instructions with speed = "+speed);
+                Log.println(false, "Gui.actionPerformed getting instructions with speed = " + speed);
                 message = _commsThread.getInstructions(e.getActionCommand(), size, speed);
                 /* Ask the user if she is sure */
                 int ret = JOptionPane.showOptionDialog(_parent, message, Messages.getString("Gui.Name"),
                     JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE, null, buttons, buttons[0]);
                 if (ret == JOptionPane.YES_OPTION)
                 {
-                  _commsThread.requestSend(e.getActionCommand(), true,
-                    _properties.getProperty("CommPortBootstrapPacing", "500"), //$NON-NLS-1$ //$NON-NLS-2$
-                    _properties.getProperty("CommPortBootstrapSpeed", "300")); //$NON-NLS-1$ //$NON-NLS-2$
+                  _commsThread.requestSend(e.getActionCommand(), true, _properties.getProperty(
+                      "CommPortBootstrapPacing", "500"), //$NON-NLS-1$ //$NON-NLS-2$
+                      _properties.getProperty("CommPortBootstrapSpeed", "300")); //$NON-NLS-1$ //$NON-NLS-2$
                 }
               }
               else
-                if (((e.getActionCommand().equals(Messages.getString("Gui.SerialConfig")))) ||
-                    ((e.getActionCommand().equals(Messages.getString("Gui.SerialConfigBootstrap")))))
+                if (((e.getActionCommand().equals(Messages.getString("Gui.SerialConfig"))))
+                    || ((e.getActionCommand().equals(Messages.getString("Gui.SerialConfigBootstrap")))))
                 {
                   if ((e.getActionCommand().equals(Messages.getString("Gui.SerialConfigBootstrap"))))
                   {
@@ -624,10 +652,12 @@ public final class Gui extends JFrame implements ActionListener
                   {
                     if ((_commsThread != null) && (_commsThread.transportType() == ATransport.TRANSPORT_TYPE_SERIAL))
                     {
-                      _commsThread.setParms(_properties.getProperty("CommPort"),Integer.parseInt(_properties.getProperty("CommPortSpeed")),_properties.getProperty("HardwareHandshaking", "false").compareTo("true") == 0);
+                      _commsThread.setParms(_properties.getProperty("CommPort"), Integer.parseInt(_properties
+                          .getProperty("CommPortSpeed")), _properties.getProperty("HardwareHandshaking", "false")
+                          .compareTo("true") == 0);
                       String msg = Messages.getString("Gui.ServingSerialTitle");
-                      msg = msg.replaceAll("%1",_properties.getProperty("CommPort"));
-                      msg = msg.replaceAll("%2",_properties.getProperty("CommPortSpeed"));
+                      msg = msg.replaceAll("%1", _properties.getProperty("CommPort"));
+                      msg = msg.replaceAll("%2", _properties.getProperty("CommPortSpeed"));
                       setTitle(msg);
                     }
                   }
@@ -636,34 +666,45 @@ public final class Gui extends JFrame implements ActionListener
     }
   }
 
-  public void startComms(ATransport transport)
+  public boolean startComms(ATransport transport)
   {
+    boolean success = true;
     Log.println(false, "Gui.startComms() entry.");
     if (_commsThread != null)
     {
+      if (_commsThread.isBusy())
+      {
+        // Something is going on. Ask if we want to interrupt.
+        int n = JOptionPane.showConfirmDialog(this, Messages.getString("Gui.Busy"),
+            Messages.getString("Gui.BusyTitle"), JOptionPane.YES_NO_CANCEL_OPTION);
+        if (n != JOptionPane.YES_OPTION) success = false;
+      }
       /*
        * If there was a comms thread existing before, get rid of it.
        */
-      try
+      if (success == true)
       {
-        Log.println(false, "Gui.startComms() about to interrupt existing comms thread...");
-        _commsThread.interrupt();
-        Log.println(false, "Gui.startComms() about to request stop of comms thread...");
-        _commsThread.requestStop();
-        Log.println(false, "Gui.startComms() about clean up window...");
-        cleanupWindow();
+        try
+        {
+          Log.println(false, "Gui.startComms() about to interrupt existing comms thread...");
+          _commsThread.interrupt();
+          Log.println(false, "Gui.startComms() about to request stop of comms thread...");
+          _commsThread.requestStop();
+          Log.println(false, "Gui.startComms() about clean up window...");
+          cleanupWindow();
+        }
+        catch (Throwable throwable)
+        {
+          Log.printStackTrace(throwable);
+        }
+        menuBootstrap.setEnabled(false);
+        _commsThread = null;
+        Log.println(false, "Gui.startComms() done with old thread.");
       }
-      catch (Throwable throwable)
-      {
-        Log.printStackTrace(throwable);
-      }
-      menuBootstrap.setEnabled(false);
-      _commsThread = null;
-      Log.println(false, "Gui.startComms() done with old thread.");
     }
     else
       Log.println(false, "Gui.startComms() didn't have an old thread to stop.");
-    if (transport != null)
+    if ((transport != null) && (success == true))
     {
       /*
        * They want a new thread (and associated transport).
@@ -681,27 +722,23 @@ public final class Gui extends JFrame implements ActionListener
         _dosAction2.setEnabled(_commsThread.transportType() == ATransport.TRANSPORT_TYPE_AUDIO);
       }
     }
-    Log.println(false, "Gui.startComms() exit.");
+    Log.println(false, "Gui.startComms() exit; returning " + success + ".");
+    return success;
   }
 
   public void cancelCommsThread(String msgId)
   {
     // The comms thread complained the port was in use.
     _disconnectButton.doClick();
-    Log.println(false,"Gui.cancelCommsThread() About to show dialog...");
+    Log.println(false, "Gui.cancelCommsThread() About to show dialog...");
     JOptionPane.showMessageDialog(this, Messages.getString(msgId));
-    Log.println(false,"Gui.cancelCommsThread() Done showing dialog.");
+    Log.println(false, "Gui.cancelCommsThread() Done showing dialog.");
     if (msgId.equals("Gui.PortDoesNotExist"))
     {
       /*
-      serialConfigGui();
-      if (SerialConfig.getSingleton().getExitStatus() == SerialConfig.OK)
-      {
-        _serialButton.doClick();
-      }
-      else
-        cleanupWindow();
-      */
+       * serialConfigGui(); if (SerialConfig.getSingleton().getExitStatus() ==
+       * SerialConfig.OK) { _serialButton.doClick(); } else cleanupWindow();
+       */
     }
     else
       cleanupWindow();
@@ -733,10 +770,10 @@ public final class Gui extends JFrame implements ActionListener
     Rectangle r = this.getBounds();
     if (r.height > 0)
     {
-      _properties.setProperty("CoordX", ""+r.x);
-      _properties.setProperty("CoordY", ""+r.y);
-      _properties.setProperty("CoordH", ""+r.height);
-      _properties.setProperty("CoordW", ""+r.width);
+      _properties.setProperty("CoordX", "" + r.x);
+      _properties.setProperty("CoordY", "" + r.y);
+      _properties.setProperty("CoordH", "" + r.height);
+      _properties.setProperty("CoordW", "" + r.width);
     }
     _properties.save();
   }
@@ -746,7 +783,7 @@ public final class Gui extends JFrame implements ActionListener
     public void windowClosing(WindowEvent e)
     {
       Window w = e.getWindow();
-      Gui parent = (Gui)e.getSource();
+      Gui parent = (Gui) e.getSource();
       parent.saveProperties();
       w.setVisible(false);
       w.dispose();
