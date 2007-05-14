@@ -31,8 +31,6 @@ import org.adtpro.transport.TransportTimeoutException;
 import org.adtpro.transport.UDPTransport;
 
 import org.adtpro.disk.Disk;
-import org.adtpro.disk.DosOrder;
-import org.adtpro.disk.ProdosOrder;
 import org.adtpro.gui.Gui;
 import org.adtpro.utilities.Log;
 import org.adtpro.utilities.UnsignedByte;
