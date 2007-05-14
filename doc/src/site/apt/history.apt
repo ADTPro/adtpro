@@ -10,6 +10,9 @@ ADTPro Release History
 
  Bug fixes:
 
+ * Switching a protocol or hitting the disconnect button puts up
+   a confirmation dialog box if there is an active transfer going on
+
  * Bumped Java heap size in startup scripts with -Xmx128m (Windows) and
    -Xmx256m (*ix) to support 32M images
 

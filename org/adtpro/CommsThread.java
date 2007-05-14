@@ -132,11 +132,11 @@ public class CommsThread extends Thread
         {
           oneByte = waitForData(1);
           readYet = true;
-          Log.println(false, "CommsThread.commandLoop() Received data.");
+          Log.println(false, "CommsThread.commandLoop() Received data."); //$NON-NLS-1$
         }
         catch (TransportTimeoutException e)
         {
-          Log.println(false, "CommsThread.commandLoop() Timeout in command...");
+          Log.println(false, "CommsThread.commandLoop() Timeout in command..."); //$NON-NLS-1$
         }
       if (_shouldRun)
       {
@@ -1323,10 +1323,10 @@ public class CommsThread extends Thread
 
   public int requestSend(String resource)
   {
-    return requestSend(resource, false, null, null);
+    return requestSend(resource, false, 0, 0);
   }
 
-  public int requestSend(String resource, boolean reallySend, String pacing, String speed)
+  public int requestSend(String resource, boolean reallySend, int pacing, int speed)
   {
     int fileSize = 0;
     int slowFirstLines = 0;
@@ -1429,27 +1429,9 @@ public class CommsThread extends Thread
       {
         // Run this on a thread...
         Log.println(false, "CommsThread.requestSend() Reading " + resourceName);
-        int iPacing = 100; // 100 ms default
-        int iSpeed = 9600; // 9600 baud default
-        try
-        {
-          iPacing = Integer.parseInt(pacing);
-        }
-        catch (NumberFormatException e)
-        {
-          iPacing = 100;
-        }
-        try
-        {
-          iSpeed = Integer.parseInt(speed);
-        }
-        catch (NumberFormatException e)
-        {
-          iSpeed = 9600;
-        }
         _parent.setMainText(Messages.getString("CommsThread.4")); //$NON-NLS-1$
         _parent.setSecondaryText(resourceName); //$NON-NLS-1$
-        _worker = new Worker(is, iPacing, iSpeed, slowFirstLines, slowLastLines);
+        _worker = new Worker(is, pacing, speed, slowFirstLines, slowLastLines);
         _worker.start();
       }
       else
