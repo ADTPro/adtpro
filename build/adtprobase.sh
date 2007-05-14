@@ -11,5 +11,4 @@
 # export MY_JAVA_HOME=/usr/local/java/bin/ (need final slash)
 # export ADTPRO_HOME=~/myuser/adtpro/  (need final slash)
 #
-@start /min $MY_JAVA_HOMEjava -jar $ADTPRO_HOME"%ADTPRO_VERSION%
-"$MY_JAVA_HOME"java -jar "$ADTPRO_HOME"%ADTPRO_VERSION% &
+"$MY_JAVA_HOME"java -Xms256m -jar "$ADTPRO_HOME"%ADTPRO_VERSION% &
