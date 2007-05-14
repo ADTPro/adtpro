@@ -15,7 +15,7 @@ ADTPro Release History
  * Made serial bootstrapping pacing and speed configurable - making much
    higher baud rates possible (and reliable)
 
- * Included a ProDOS disk formatting utility (because you don't have any
+ * Included a ProDOS floppy formatting utility (because you don't have any
    formatted disks yet, remember?)
 
  * Saving any 140k disk at the host always creates DOS order images;
