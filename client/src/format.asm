@@ -1,21 +1,20 @@
-;
 ; ADTPro - Apple Disk Transfer ProDOS
 ; Copyright (C) 2007 by David Schmidt
 ; david__schmidt at users.sourceforge.net
 ;
 ; This program is free software; you can redistribute it and/or modify it 
 ; under the terms of the GNU General Public License as published by the 
-; Free Software Foundation; either version 2 of the License,$ or (at your 
+; Free Software Foundation; either version 2 of the License, or (at your 
 ; option) any later version.
 ;
-; This program is distributed in the hope that it will be useful,$ but 
+; This program is distributed in the hope that it will be useful, but 
 ; WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY 
 ; or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License 
 ; for more details.
 ;
 ; You should have received a copy of the GNU General Public License along 
-; with this program; if not,$ write to the Free Software Foundation,$ Inc.,$ 
-; 59 Temple Place,$ Suite 330,$ Boston,$ MA 02111-1307 USA
+; with this program; if not, write to the Free Software Foundation, Inc., 
+; 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 ;
 
 .include "applechr.i"
@@ -126,7 +125,7 @@ LConvert:
 	jsr   DOTWO			;Print two carriage returns
 	lda   Buffer			;Fetch the SLOT number
 	and   #$0F			;Mask off the upper 4 bits
-	rol   a			;Move lower 4 bits to upper 4 bits
+	rol   a				;Move lower 4 bits to upper 4 bits
 	rol   a
 	rol   a
 	rol   a
@@ -195,7 +194,7 @@ Loop8:
 	beq   Loop9
 	jmp   NoUnit
 Loop9:
-	lda   #<ItIsRam3			;Tell the preson that you think it is a
+	lda   #<ItIsRam3		;Tell the preson that you think it is a
 	ldy   #>ItIsRam3		; /Ram and if they want to continue
 	jsr   STROUT
 	jsr   GetYN
@@ -207,7 +206,7 @@ Jump2:
 YesSmart:
 	tya
 	and   #$0F
-	rol   a			;Move lower 4 bits to upper 4 bits
+	rol   a				;Move lower 4 bits to upper 4 bits
 	rol   a
 	rol   a
 	rol   a
@@ -237,7 +236,7 @@ YesSmart1:
 	ldy   #$07			;Test last signiture byte for the
 	lda   (Buffer),y		; Protocol Converter.
 	cmp   #$00
-	bne   NoUnit			;It isn't so its no device I know.
+	bne   NoUnit			;It isn't so it's no device I know.
 	lda   #<ItIsSmart		;Tell them you think it is a SmartPort
 	ldy   #>ItIsSmart		; device. and ask if they want to Format.
 	jsr   STROUT
@@ -245,7 +244,7 @@ YesSmart1:
 	bne   Jump3
 	jsr   OldName			;Show old name and ask if proper Disk
 	jsr   LName			;Get New name
-	jsr   SmartForm			;Jump too routine to format Smart Drive
+	jsr   SmartForm			;Jump to routine to format Smart Drive
 	lda   ListSlot
 	and   #$F0
 	sta   Slot
@@ -332,7 +331,7 @@ LSetLEN:
 	jsr   CLRLN			;Erase the rest of the line
 	clc
 	txa				;Add $F0 to Volume Name length
-	adc   #$F0			;Create STORAGE_TYPE,$ NAME_LENGTH byte
+	adc   #$F0			;Create STORAGE_TYPE, NAME_LENGTH byte
 	sta   VolLen
 	rts
 
@@ -357,7 +356,7 @@ CodeWr:	lda   #$81			;Set Opcode to WRITE
 ;*                                *
 ;**********************************
 AskBlk0:
-	lda   #<BootCode			;Set MLIbuf to BootCode
+	lda   #<BootCode		;Set MLIbuf to BootCode
 	ldy   #>BootCode
 	sta   MLIbuf
 	STY   MLIbuf+1
@@ -376,7 +375,7 @@ AskBlk0:
 Fill:
 	lda   #$05			;Block 5 on Disk
 	sta   MLIBlk
-	lda   #$00			;Set Buffer,$ MLIbuf to $6800
+	lda   #$00			;Set Buffer, MLIbuf to $6800
 	ldx   #$68
 	sta   MLIbuf
 	sta   Buffer
@@ -418,8 +417,8 @@ BlkCount:
 	ldx   VolBlks
 	ldy   VolBlks+2			;Can't deal with block devices this big
 	bne   Jump10
-	stx   Count+1			;Devide the # of blocks by 8 for bitmap
-	lsr   a			; calculation
+	stx   Count+1			;Divide the # of blocks by 8 for bitmap
+	lsr   a				; calculation
 	ror   Count+1
 	lsr   a
 	ror   Count+1
@@ -470,7 +469,7 @@ Jump18:	rts
 ;*************************************
 ;*                                   *
 ;* VERIFY - Verify each block on the *
-;* disk,$ and flag bad ones in BITMAP *
+;* disk, and flag bad ones in BITMAP *
 ;*                                   *
 ;*************************************
 Verify:
@@ -608,7 +607,7 @@ GetYN:
 	cmp   #$D9			;is it a Y?
 	beq   LShow
 	lda   #$BE			;Otherwise default to "No"
-LShow:	jsr   COUT			;Print char,$ Z flag contains status
+LShow:	jsr   COUT			;Print char, Z flag contains status
 	cmp   #$D9			;Condition flag
 	rts
 
@@ -638,7 +637,7 @@ Error:      				;(this will be changed to RTS by VERIFY)
 ;*                                    *
 ;**************************************
 DOTWO:
-	lda   #$8D			;(we don't need an explanation,$ do we?)
+	lda   #$8D			;(we don't need an explanation, do we?)
 	jsr   COUT
 	jsr   COUT
 	rts
@@ -661,7 +660,7 @@ LDivide:
 	cmp   #$0A			;Value > or = to 10?
 	bcc   LPlus
 	SBC   #$0A			;Subtract 10 from the value
-LPlus:	rol   IN+20			;Shift values in IN+20,$ IN+21 one bit left
+LPlus:	rol   IN+20			;Shift values in IN+20, IN+21 one bit left
 	rol   IN+21
 	dex
 	bne   LDivide
@@ -716,7 +715,7 @@ LDrive1:
 Write:
 	jsr   Calc			;Calculate new track/sector/checksum values
 	jsr   Trans			;Transfer track in memory to disk
-	bcs   DiedII			;If carry set,$ something died
+	bcs   DiedII			;If carry set, something died
 MInc:	inc   Track			;Add 1 to Track value
 	lda   Track			;Is Track > ending track # (TRKend)?
 	cmp   TRKend
@@ -800,7 +799,7 @@ Trans:
 	cmp   DiskRD,x
 	nop				;(kill some time for WRITE sync...)
 	jmp   LSync2
-LSync1:	eor   #$80			;Set MSB,$ converting $7F to $FF (sync byte)
+LSync1:	eor   #$80			;Set MSB, converting $7F to $FF (sync byte)
 	nop				;(kill time...)
 	nop
 	jmp   MStore
@@ -849,7 +848,7 @@ Build:
 	lda   #$10			;Set Count for 16 loops
 	sta   Count
 LImage:	ldx   #$00			;Build a sector image in the Buffer area
-ELoop:	lda   LAddr,x			;Store Address header,$ info & sync bytes
+ELoop:	lda   LAddr,x			;Store Address header, info & sync bytes
 	beq   LInfo
 	sta   (Buffer),y
 	jsr   LInc			;Add 1 to Buffer offset address
@@ -862,7 +861,7 @@ LInfo:	ldx   #$AB			;Move 343 bytes into data area
 	ldx   #$AC
 	jsr   LFill
 	ldx   #$00
-YLoop:	lda   LData,x 		;Store Data Trailer and GAP3 sync bytes
+YLoop:	lda   LData,x 			;Store Data Trailer and GAP3 sync bytes
 	beq   LDecCnt
 	sta   (Buffer),y
 	jsr   LInc
@@ -887,7 +886,7 @@ LDone:	rts
 
 ;***********************************
 ;*                                 *
-;* CALC - Calculate Track,$ Sector,$ *
+;* CALC - Calculate Track, Sector, *
 ;* and Checksum values of the next *
 ;* track using 4&4 encoding        *
 ;*                                 *
@@ -902,7 +901,7 @@ Calc:
 ZLoop:	ldy   #$00			;Reset Y offset to 0
 	lda   #$FE			;Set Volume # to 254 in 4&4 encoding
 	jsr   LEncode
-	lda   Track			;Set Track,$ Sector to 4&4 encoding
+	lda   Track			;Set Track, Sector to 4&4 encoding
 	jsr   LEncode
 	lda   Sector
 	jsr   LEncode
@@ -956,9 +955,9 @@ LMove:	sta   Count			;Store track value in Count
 	asl   LInOut			;Shift left for .Table offset
 	ldy   LInOut
 ALoop:	lda   LTable,y			;Fetch motor phase to turn on
-	jsr   phase			;Turn on stepper motor
+	jsr   Phase			;Turn on stepper motor
 	lda   LTable+1,y		;Fetch next phase
-	jsr   phase			;Turn on stepper motor
+	jsr   Phase			;Turn on stepper motor
 	tya
 	eor   #$02			;Adjust Y offset into LTable
 	tay
@@ -970,17 +969,17 @@ LExit:	rts				;Return to calling routine
 
 ;**********************************
 ;*                                *
-;* phaSE - Turn the stepper motor *
+;* PHASE - Turn the stepper motor *
 ;* on and off to move the head    *
 ;*                                *
 ;**********************************
-phase:
-	ora   SlotF			;OR Slot value to phaSE
+Phase:
+	ora   SlotF			;OR Slot value to PHASE
 	tax
-	lda   Step1,x			;phaSE on...
+	lda   Step1,x			;PHASE on...
 	lda   #$56			;20 ms. delay
 	jsr   WAIT
-	lda   Step0,x			;phaSE off...
+	lda   Step0,x			;PHASE off...
 	rts
 
 ;**********************************
@@ -1000,11 +999,11 @@ Ram3Form:
 	lda   #$67			; and high byte
 	sta   $45
 
-	lda   $C08B			;Read and write Ram,$ using Bank 1
+	lda   $C08B			;Read and write Ram, using Bank 1
 	lda   $C08B
 
 	jsr   Ram3Dri
-	bit   $C082			;Read ROM,$ use Bank 2(Put back on line)
+	bit   $C082			;Read ROM, use Bank 2(Put back on line)
 	bcs   Ram3Err
 	plp
 	rts
@@ -1120,7 +1119,7 @@ Info:
 	.res 1
 	.addr VolLen
 Parms:	.byte $03			;Parameter count = 3
-Slot:	.byte $60			;Default to S6,$D1
+Slot:	.byte $60			;Default to S6,D1
 MLIbuf:	.addr BootCode			;Default buffer address
 MLIBlk:	.byte $00,$00			;Default block number of 0
 QSlot:	.res 1				;Quit Slot number
@@ -1136,8 +1135,8 @@ NetParms:
 	.addr $0000			;Buffer High word
 NetDev:	.byte $00			;Number of entries returned here
 LByte:	.res 1				;Storage for byte value used in Fill
-LAddr:	.byte $D5,$AA,$96 ; dc    H'D5 AA 96'              ;Address header
-	.byte $AA,$AA,$AA,$AA,$AA,$AA,$AA,$AA ;dc    8i1'$AA'                 ;Volume #,$ Track,$ Sector,$ Checksum
+LAddr:	.byte $D5,$AA,$96		;Address header
+	.byte $AA,$AA,$AA,$AA,$AA,$AA,$AA,$AA ;Volume #, Track, Sector, Checksum
 	.byte $DE,$AA,$EB		;Address trailer
 	.byte $7f,$7f,$7f,$7f,$7f,$7f	;GAP2 sync bytes
 	.byte $D5,$AA,$AD		;Buffer header
@@ -1165,7 +1164,7 @@ Verif:	.byte $8d,$8d
 	ascz "the Volume BitMap as unusable? (Y/N): "
 TheOld1:
 	.byte $8d
-	asc "Do You Want To Write Over"
+	asc "Do you want to write over"
 	.byte $8D,$A0,$AF,$00
 TheOld2:
 	.byte $A0,$BF
@@ -1177,7 +1176,7 @@ Dead:	.byte $8D
 	ascz "-- Check disk or drive door --"
 Protect:
 	.byte $8D
-	ascz "Disk is write protected, you bozo!"
+	ascz "Disk is write protected!"
 Bad:	.byte $8d,$8d
 	ascz " bad block(s) marked"
 Good:	.byte $8d,$8d
@@ -1188,7 +1187,7 @@ Nuther:	.byte $8d,$8d
 	ascz "Format another disk? (Y/N): "
 TooLarge:
 	.byte $8D
-	ascz "Unit Size Is To Large For this Program"
+	ascz "Unit size is too large for this program"
 UnitNone:
 	.byte $8d
 	asccr "No Unit in that slot and drive"
@@ -1198,24 +1197,24 @@ ItIsRam3:
 	asccr "This is a Ram3 disk"
 	ascz  "Continue with Format? (Y/N): "
 ItsaII:	.byte $8D
-	asc "This is a Disk II"
+	asc "This is a Disk II."
 	.byte $8D
 	ascz "Continue with Format? (Y/N): "
 ItIsSmart:
 	.byte $8D
-	asccr "This is a SmartPort device"
+	asccr "This is a SmartPort device."
 	ascz  "Continue with Format? (Y/N): "
 Appletalk:
 	.byte $8D
 	asc "Number of Appletalk devices is = "
 NetNum:
 	.byte $00,$00,$00,$8D
-	asccr "AppleTalk is installed this Program may"
-	asccr "not work properly do you want to"
-	ascz  "Continue (Y/N)"
+	asccr "AppleTalk installed. This Program may"
+	asccr "not work properly. Do you want to"
+	ascz  "continue (Y/N)?"
 Block2:	.byte $00,$00,$03,$00
 VolLen:	.res 1				;$F0 + length of Volume Name
-VOLnam:	.res 15 ; .byte 15, 28 ; DS    15           28          ;Volume Name,$ Reserved,$ Creation,$ Version
+VOLnam:	.res 15 ; .byte 15, 28 		;Volume Name, Reserved, Creation, Version
 Reserved:
 	.res 6
 UpLowCase:
