@@ -48,9 +48,10 @@ public class AppleDump extends Task
     {
       byte datum;
       int fileLength = 0;
+      FileInputStream fis = null;
       try
       {
-        FileInputStream fis = new FileInputStream(_inFileName);
+        fis = new FileInputStream(_inFileName);
         PrintStream ps;
         try
         {
@@ -101,6 +102,8 @@ public class AppleDump extends Task
           ps.println(_executeAddrHex+"G");
         }
         ps.println();
+        ps.close();
+        fis.close();
       }
       catch (FileNotFoundException e)
       {

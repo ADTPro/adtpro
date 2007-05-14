@@ -181,13 +181,15 @@ public class AudioTransport extends ATransport
     }
     if (_receiveBuffer != null)
     {
+      /*
       if ((_inPacketPtr <= _receiveBuffer.length) && (_receiveBuffer.length > 0))
       {
         int myByte = _receiveBuffer[_inPacketPtr];
         if (myByte < 0) myByte += 256;
-        // Log.println(false, "AudioTransport.readByte() exit with " +
-        // UnsignedByte.toString(UnsignedByte.loByte(myByte)));
+        Log.println(false, "AudioTransport.readByte() exit with " +
+        UnsignedByte.toString(UnsignedByte.loByte(myByte)));
       }
+      */
       if (_receiveBuffer.length > 0) retByte = _receiveBuffer[_inPacketPtr++];
       else
         retByte = 0;

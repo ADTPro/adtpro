@@ -74,12 +74,12 @@ public class DosOrder extends ImageOrder
    */
   protected int getOffset(int track, int sector) throws IllegalArgumentException
   {
-    if (!isSizeApprox(Disk.APPLE_140KB_DISK) && !isSizeApprox(Disk.APPLE_800KB_DISK)
-        && !isSizeApprox(Disk.APPLE_800KB_2IMG_DISK) && track != 0 && sector != 0)
-    { // HACK: Allows boot sector writing
+    //if (!isSizeApprox(Disk.APPLE_140KB_DISK) && !isSizeApprox(Disk.APPLE_800KB_DISK)
+    //    && !isSizeApprox(Disk.APPLE_800KB_2IMG_DISK) && track != 0 && sector != 0)
+    //{  HACK: Allows boot sector writing
     // throw new IllegalArgumentException(
     // textBundle.get("DosOrder.UnrecognizedFormatError")); //$NON-NLS-1$
-    }
+    //}
     int offset = (track * getSectorsPerTrack() + sector) * Disk.SECTOR_SIZE;
     if (offset > getPhysicalSize())
     {

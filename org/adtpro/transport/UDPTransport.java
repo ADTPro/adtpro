@@ -99,9 +99,6 @@ public class UDPTransport extends ATransport
       {
       }
     }
-    int myByte = _receiveBuffer[_inPacketPtr];
-    if (myByte < 0)
-      myByte += 256;
     return _receiveBuffer[_inPacketPtr++];
   }
 
