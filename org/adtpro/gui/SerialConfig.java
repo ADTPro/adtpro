@@ -11,6 +11,7 @@ import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 import javax.swing.SwingConstants;
@@ -274,7 +275,17 @@ public class SerialConfig extends JDialog implements ActionListener
     Log.println(false,"SerialConfig.actionPerformed() entry, responding to "+e.getActionCommand());
     if (e.getSource() == okButton)
     {
-      _properties.setProperty("CommPort", (String) comboComPort.getSelectedItem());
+      String selectedPort = (String) comboComPort.getSelectedItem();
+      if (selectedPort != null)
+      {
+        _properties.setProperty("CommPort", selectedPort);
+      }
+      else
+      {
+        // Something is going on. Ask if we want to interrupt.
+        JOptionPane.showMessageDialog(this, Messages.getString("Gui.NoRXTXDialogText"),
+            Messages.getString("Gui.NoRXTXDialogTitle"), JOptionPane.OK_OPTION);
+      }
       _properties.setProperty("CommPortSpeed", (String) comboSpeed.getSelectedItem());
       _properties.setProperty("CommPortBootstrapPacing", (String) comboBootstrapPacing.getSelectedItem());
       _properties.setProperty("CommPortBootstrapSpeed", (String) comboBootstrapSpeed.getSelectedItem());

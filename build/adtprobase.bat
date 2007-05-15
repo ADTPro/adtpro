@@ -7,7 +7,8 @@
 @REM
 @REM e.g.
 @REM
-@REM SET MY_JAVA_HOME=C:\Progra~1\IBM\Java142\bin\ (need final backslash)
+@SET ADTPRO_HOME=.\
 @REM SET ADTPRO_HOME=C:\src\workspace\311\adtpro\build\  (need final backslash)
+@REM SET MY_JAVA_HOME=C:\Progra~1\IBM\Java142\bin\ (need final backslash)
 @REM
-@start /min %MY_JAVA_HOME%java -Xms128m -jar %ADTPRO_HOME%%ADTPRO_VERSION%
+@start /min %MY_JAVA_HOME%java -Xms128m -cp %ADTPRO_HOME%%ADTPRO_VERSION%;%ADTPRO_HOME%lib\RXTXcomm.jar org.adtpro.ADTPro
