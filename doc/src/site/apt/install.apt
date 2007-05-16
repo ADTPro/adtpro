@@ -87,6 +87,22 @@ ADTPro Server version v.r.m
 RXTX: Serial library not installed.
 +-------
 
+ On Unix systems, you may receive a message similar to the following:
+
++-------
+java.lang.UnsatisfiedLinkError: Can't find library rxtxSerial (librxtxSerial.so)
+  in sun.boot.library.path or java.library.path
+sun.boot.library.path=/opt/IBMJava2-142/jre/bin
+java.library.path=/opt/IBMJava2-142/jre/bin:
+ /opt/IBMJava2-142/jre/bin/classic:
+ /opt/IBMJava2-142/jre/bin:/usr/lib
+ thrown while loading gnu.io.RXTXCommDriver
++-------
+
+ This means the system didn't find or load the correct rxtx library.
+ Edit the startup script <<<adtpro.sh>>> and follow instructions for
+ specifying library locations for your platform.
+
  If you don't use DOS ADT now, don't have software for your Apple yet, 
 or don't have a serial card, there's lots of help available.
 Start at ADTPro's {{{bootstrapmain.html}bootstrapping}} page.
