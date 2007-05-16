@@ -40,9 +40,9 @@ ADTPro Installation
  One place to get a downloadable Java distribution is from Sun Microsystems:
  {{{http://java.sun.com/j2se/1.5.0/download.jsp}Sun JRE download}}.
  When you get there, look for a "Java Runtime Environment (JRE)"
- download for your platform.
+ download for your platform and install it.
 
- You should be able to download the distribution zip file to your 
+ After downloading the ADTPro-v.r.m.zip distribution file to your 
  desktop, unpack it using your operating system's native facilities,
  and double-click on the icon of the startup program for your platform:
 
@@ -56,8 +56,8 @@ ADTPro Installation
  Instructions are included in the <<<adtpro.sh>>> file.
 
  You may see the following information echoed back on your 
-console (if one is produced - it varies by platform)
-as the GUI is coming up:
+ console (if one is produced - it varies by platform)
+ as the GUI is coming up:
 
 +-------
 ADTPro Server version v.r.m
@@ -68,8 +68,8 @@ Native lib Version = RXTX-2.1-7
 Java lib Version   = RXTX-2.1-7
 +-------
 
- Click one of the three connection buttons to choose
- your communications type.
+ When the ADTPro GUI comes up, click one of the three
+ connection buttons to choose your communications type.
 
  If you currently use the DOS ADT program, select the
  Serial button.  You can transfer the ADTPro-v.r.m.dsk
@@ -86,22 +86,6 @@ ADTPro Server version v.r.m
 
 RXTX: Serial library not installed.
 +-------
-
- On Unix systems, you may receive a message similar to the following:
-
-+-------
-java.lang.UnsatisfiedLinkError: Can't find library rxtxSerial (librxtxSerial.so)
-  in sun.boot.library.path or java.library.path
-sun.boot.library.path=/opt/IBMJava2-142/jre/bin
-java.library.path=/opt/IBMJava2-142/jre/bin:
- /opt/IBMJava2-142/jre/bin/classic:
- /opt/IBMJava2-142/jre/bin:/usr/lib
- thrown while loading gnu.io.RXTXCommDriver
-+-------
-
- This means the system didn't find or load the correct rxtx library.
- Edit the startup script <<<adtpro.sh>>> and follow instructions for
- specifying library locations for your platform.
 
  If you don't use DOS ADT now, don't have software for your Apple yet, 
 or don't have a serial card, there's lots of help available.
@@ -127,6 +111,21 @@ Unix RXTX Considerations
  The <<<adtpro.sh>>> file should be {customized} to suit your environment.
  The main thing to do is to choose your platform for rxtx support.
  Edit the <<<adtpro.sh>>> file with your favorite editor and follow the
- instructions.  You need to uncomment the line(s) for your platform and 
- make sure the other platform support statements are commented out.
+ instructions.  You need to uncomment the appropriate <<<RXTXLIB>>> line for
+ your platform and make sure the other platform support statements are commented out.
 
+ If you don't specify the right one, or if your platform is unsupported by rxtx,
+ you will get an error similar to the one below on startup:
+
++-------
+java.lang.UnsatisfiedLinkError: Can't find library rxtxSerial (librxtxSerial.so)
+  in sun.boot.library.path or java.library.path
+sun.boot.library.path=/opt/IBMJava2-142/jre/bin
+java.library.path=/opt/IBMJava2-142/jre/bin:
+ /opt/IBMJava2-142/jre/bin/classic:/opt/IBMJava2-142/jre/bin:/usr/lib
+ thrown while loading gnu.io.RXTXCommDriver
++-------
+
+ Keep working at the <<<adtpro.sh>>> startup script or take a look at the rxtx
+ install instructions in the rxtx directory.  Remember, you can always 
+ {{{https://sourceforge.net/forum/forum.php?forum_id=582337}ask for help}}.

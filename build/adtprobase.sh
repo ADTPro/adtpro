@@ -26,8 +26,10 @@ export TWEAK1="-Djava.library.path="
 export TWEAK=$TWEAK1$ADTPRO_HOME$RXTXLIB
 #
 # Set up a comfortable Java execution environment.
-# We want to execute Java (1), set a larger-than-default heap size (2), tell the OS where to find a 
-# native library to support rxtx (3), set the classpath to include ADTPro (4) and RXTXcomm (5), 
-# tell Java what the class to execute is, then finally put it all in the background.  To wit:
+# We want to execute Java (1), set a larger-than-default heap size (2),
+# tell the OS where to find a native library to support rxtx (3), set
+# the classpath to include ADTPro (4) and RXTXcomm (5), tell Java what
+# the class to execute is, then finally put it all in the background (7).  
+# To wit:
 "$MY_JAVA_HOME"java -Xms256m -Xmx512m $TWEAK -cp "$ADTPRO_HOME"%ADTPRO_VERSION%:"$ADTPRO_HOME"rxtx/RXTXcomm.jar org.adtpro.ADTPro &
 #               (1)     (2)     (2)     (3)                              (4)                            (5)            (6)        (7)
