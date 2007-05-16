@@ -23,6 +23,7 @@
 		<delete file="${builddir}/ADTPRO" />
 		<delete file="${builddir}/ADTPROAUD" />
 		<delete file="${builddir}/ADTPROETH" />
+		<delete file="${builddir}/FORMAT" />
 		<delete file="${builddir}/adtpro.bat" />
 		<delete file="${builddir}/adtpro.sh" />
 		<delete file="${builddir}/${distName}.dsk" />
@@ -221,7 +222,7 @@
 		<!-- zip up the whole sheebang -->
 		<zip destfile="${builddir}/${distName}.zip" 
 			basedir="${builddir}" 
-			includes="${distName}.jar ${distName}.dsk ${dosDistName}.dsk rxtx/rxtx-2.1-7-bins-r2.zip rxtx/fixperm.sh LICENSE README adtpro.bat adtpro.sh" />
+			includes="${distName}.jar ${distName}.dsk ${dosDistName}.dsk rxtx/** LICENSE README adtpro.bat adtpro.sh" />
 	</target>
 
 </project>

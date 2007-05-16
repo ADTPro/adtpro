@@ -13,6 +13,9 @@ ADTPro Release History
  * Switching a protocol or hitting the disconnect button puts up
    a confirmation dialog box if there is an active transfer going on
 
+ * Removed the requirement to "install" rxtx - we just point the
+   startup scripts at the unpacked location
+
  * Bumped Java heap size in startup scripts with -Xmx128m (Windows) and
    -Xmx256m (*ix) to support 32M images
 

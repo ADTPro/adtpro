@@ -18,7 +18,7 @@
    export TWEAK1="-Djava.library.path="
    export TWEAK2="rxtx/Mac_OS_X"
    export TWEAK=$TWEAK1$ADTPRO_HOME$TWEAK2
-# (Also remember to run fixperm.sh in the rxtx directory for OSX...)
+# (Also remember to run fixperm.sh in the rxtx directory once on OSX...)
 #
 # For Solaris, uncomment this:
 #  export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:"$ADTPRO_HOME"rxtx/Solaris/sparc-solaris/sparc32-sun-solaris2.8
