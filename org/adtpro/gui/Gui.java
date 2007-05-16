@@ -519,7 +519,7 @@ public final class Gui extends JFrame implements ActionListener
 
   public void setSerialAvailable(boolean avail)
   {
-
+    _isSerialAvailable = avail;
   }
 
   public void setProgressMaximum(int max)

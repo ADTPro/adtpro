@@ -291,6 +291,7 @@ public class SerialConfig extends JDialog implements ActionListener
         // Hrm - can't find any serial stuff at all.
         JOptionPane.showMessageDialog(this, Messages.getString("Gui.NoRXTXDialogText"),
             Messages.getString("Gui.NoRXTXDialogTitle"), JOptionPane.OK_OPTION);
+        _parent.setSerialAvailable(false);
       }
       _properties.setProperty("CommPortSpeed", (String) comboSpeed.getSelectedItem());
       _properties.setProperty("CommPortBootstrapPacing", (String) comboBootstrapPacing.getSelectedItem());
