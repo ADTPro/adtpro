@@ -56,7 +56,8 @@ public class SerialConfig extends JDialog implements ActionListener
   
   public JButton okButton = new JButton(Messages.getString("Gui.Ok"));
   public JButton cancelButton = new JButton(Messages.getString("Gui.Cancel"));
-  
+  public static Gui _parent;
+
   public static final int CANCEL = 0, OK = 1;
 
   /**
@@ -106,12 +107,15 @@ public class SerialConfig extends JDialog implements ActionListener
                                          // hardware...
         comboComPort.addItem(nextName);
       }
+      _parent.setSerialAvailable(true);
+      Log.println(false, "SerialConfig Constructor completed instantiating rxtx library.");
     }
     catch (Throwable t)
     {
       Log.println(true, Messages.getString("Gui.NoRXTX")); //$NON-NLS-1$
+      Log.println(false, "SerialConfig Constructor could not instantiate the rxtx library.");
+      _parent.setSerialAvailable(false);
     }
-    Log.println(false, "SerialConfig Constructor completed instantiating rxtx library.");
 
     comboSpeed = new JComboBox();
     comboSpeed.addItem("9600"); //$NON-NLS-1$
@@ -120,12 +124,13 @@ public class SerialConfig extends JDialog implements ActionListener
 
     comboBootstrapSpeed = new JComboBox();
     comboBootstrapSpeed.addItem("300"); //$NON-NLS-1$
+    comboBootstrapSpeed.addItem("1200"); //$NON-NLS-1$
     comboBootstrapSpeed.addItem("2400"); //$NON-NLS-1$
     comboBootstrapSpeed.addItem("9600"); //$NON-NLS-1$
     comboBootstrapSpeed.addItem("19200"); //$NON-NLS-1$
 
     comboBootstrapPacing = new JComboBox();
-    comboBootstrapPacing.addItem("10"); //$NON-NLS-1$
+    comboBootstrapPacing.addItem("15"); //$NON-NLS-1$
     comboBootstrapPacing.addItem("25"); //$NON-NLS-1$
     comboBootstrapPacing.addItem("50"); //$NON-NLS-1$
     comboBootstrapPacing.addItem("75"); //$NON-NLS-1$
@@ -212,10 +217,11 @@ public class SerialConfig extends JDialog implements ActionListener
    * 
    * @return Log
    */
-  public static SerialConfig getSingleton()
+  public static SerialConfig getSingleton(Gui parent)
   {
+    _parent = parent;
     if (null == _theSingleton)
-      SerialConfig.allocateSingleton();
+      SerialConfig.allocateSingleton(parent);
     return _theSingleton;
   }
 
@@ -225,7 +231,7 @@ public class SerialConfig extends JDialog implements ActionListener
    * 
    * synchronized on a static method locks the class
    */
-  private synchronized static void allocateSingleton()
+  private synchronized static void allocateSingleton(Gui parent)
   {
     if (null == _theSingleton) _theSingleton = new SerialConfig();
   }
@@ -282,7 +288,7 @@ public class SerialConfig extends JDialog implements ActionListener
       }
       else
       {
-        // Something is going on. Ask if we want to interrupt.
+        // Hrm - can't find any serial stuff at all.
         JOptionPane.showMessageDialog(this, Messages.getString("Gui.NoRXTXDialogText"),
             Messages.getString("Gui.NoRXTXDialogTitle"), JOptionPane.OK_OPTION);
       }
