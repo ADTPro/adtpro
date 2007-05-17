@@ -27,7 +27,7 @@ if [ "$OS" = "Darwin" ]; then
 fi
 
 # For Solaris, use this:
-if [ "$OS" = "Solaris" ]; then
+if [ "$OS" = "SunOS" ]; then
   export RXTXLIB=rxtx/Solaris/sparc-solaris/sparc32-sun-solaris2.8
 fi
 
