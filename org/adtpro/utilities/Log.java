@@ -104,10 +104,12 @@ public class Log
     }
     else // Trace turned off
     {
-      _out.flush();
-      if (_out.getClass() == PrintStream.class)
+      if (_out.getClass() == FileOutputStream.class)
+      {
+        _out.flush();
         _out.close();
-      _out = System.out;
+        _out = System.out;
+      }
     }
   }
 
