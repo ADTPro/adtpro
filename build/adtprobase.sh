@@ -6,25 +6,33 @@
 #   1. $MY_JAVA_HOME - to pick a particular java to run under
 #   2. $ADTPRO_HOME - to say where you installed ADTPro
 #
-# e.g.
+# e.g. uncomment and modify one or both of the lines below:
 #
 # export MY_JAVA_HOME=/usr/local/java/bin/ (need final slash)
 # export ADTPRO_HOME=~/myuser/adtpro/  (need final slash)
 #
-# For Linux, uncomment this line:
-#  export RXTXLIB=rxtx/Linux/i686-unknown-linux-gnu
-#
-# For OSX, uncomment this line:
-   export RXTXLIB=rxtx/Mac_OS_X
+OS=`uname`
+
+# For Linux, use this:
+if [ "$OS" = "Linux" ]; then
+  export RXTXLIB=rxtx/Linux/i686-unknown-linux-gnu
+fi
+
+# For OSX, use this:
 # (Also remember to run fixperm.sh in the rxtx directory once on OSX...)
-#
-# For Solaris, uncomment this:
-#  export RXTXLIB=rxtx/Solaris/sparc-solaris/sparc32-sun-solaris2.8
-#
+if [ "$OS" = "Darwin" ]; then
+  export RXTXLIB=rxtx/Mac_OS_X
+fi
+
+# For Solaris, use this:
+if [ "$OS" = "Solaris" ]; then
+  export RXTXLIB=rxtx/Solaris/sparc-solaris/sparc32-sun-solaris2.8
+fi
+
 # Set up the library location.
 export TWEAK1="-Djava.library.path="
 export TWEAK=$TWEAK1$ADTPRO_HOME$RXTXLIB
-#
+
 # Set up a comfortable Java execution environment.
 # We want to execute Java (1), set a larger-than-default heap size (2),
 # tell the OS where to find a native library to support rxtx (3), set
