@@ -221,6 +221,8 @@
 			manifest="${builddir}/manifest.mf" 
 			basedir="${projdir}" 
 			includes="org/**/*.class org/**/*.java org/**/*.properties org/**/*.png org/**/*.dmp org/**/*.raw LICENSE" />
+		<chmod dir="${builddir}" perm="ugo+rx" 
+			includes="**/*.sh **/*.command"/>
 		<!-- zip up the whole sheebang -->
 		<zip destfile="${builddir}/${distName}.zip" 
 			basedir="${builddir}" 
