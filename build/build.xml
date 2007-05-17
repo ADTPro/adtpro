@@ -26,6 +26,7 @@
 		<delete file="${builddir}/FORMAT" />
 		<delete file="${builddir}/adtpro.bat" />
 		<delete file="${builddir}/adtpro.sh" />
+		<delete file="${builddir}/adtpro.command" />
 		<delete file="${builddir}/${distName}.dsk" />
 		<delete file="${builddir}/${distName}.jar" />
 		<delete file="${builddir}/${distName}.zip" />
@@ -134,6 +135,7 @@
 		<replace file="${builddir}/adtpro.bat" token="%ADTPRO_VERSION%" value="${distName}.jar"/>
 		<copy file="${builddir}/adtprobase.sh" tofile="${builddir}/adtpro.sh" />
 		<replace file="${builddir}/adtpro.sh" token="%ADTPRO_VERSION%" value="${distName}.jar"/>
+		<copy file="${builddir}/adtpro.sh" tofile="${builddir}/adtpro.command" />
 	</target>
 
 	<target name="builddsk">
@@ -222,7 +224,7 @@
 		<!-- zip up the whole sheebang -->
 		<zip destfile="${builddir}/${distName}.zip" 
 			basedir="${builddir}" 
-			includes="${distName}.jar ${distName}.dsk ${dosDistName}.dsk rxtx/** LICENSE README adtpro.bat adtpro.sh" />
+			includes="${distName}.jar ${distName}.dsk ${dosDistName}.dsk rxtx/** LICENSE README adtpro.bat adtpro.sh adtpro.command" />
 	</target>
 
 </project>

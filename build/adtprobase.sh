@@ -21,6 +21,8 @@ fi
 # For OSX, use this:
 # (Also remember to run fixperm.sh in the rxtx directory once on OSX...)
 if [ "$OS" = "Darwin" ]; then
+  here="`dirname \"$0\"`"
+  cd "$here"
   export RXTXLIB=rxtx/Mac_OS_X
 fi
 

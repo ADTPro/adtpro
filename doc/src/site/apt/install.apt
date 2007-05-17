@@ -43,20 +43,22 @@ ADTPro Installation
  download for your platform and install it.
 
  After downloading the ADTPro-v.r.m.zip distribution file to your 
- desktop, unpack it using your operating system's native facilities,
- and double-click on the icon of the startup program for your platform:
+ desktop, unpack it using your operating system's native facilities.
+ You can either run the startup program from the command line or,
+ in Windows and OSX, double-click on the icon of the startup program:
 
   [Windows:] adtpro.bat
 
-  [Linux, OSX, Solaris:] adtpro.sh
+  [OSX:] adtpro.command
+
+  [Linux, Solaris:] adtpro.sh
 
  You can modify the startup program to suit your 
- environment.  Especially for the Unix variants - each will need
+ environment.  Especially for the Unix variants - it may need
  a little {{{install.html#customized}tweaking}} to get the correct native serial library connected.
- Instructions are included in the <<<adtpro.sh>>> file.
 
- You may see the following information echoed back on your 
- console (if one is produced - it varies by platform)
+ When starting, you will see the following information echoed back on
+ your console (if one is produced - it varies by platform)
  as the GUI is coming up:
 
 +-------
@@ -108,11 +110,12 @@ Unix RXTX Considerations
  For other Unix variants, make sure the user that will be running 
  ADTPro is in the group <<<lock>>> or <<<uucp>>> so that lockfiles can work.
 
- The <<<adtpro.sh>>> file should be {customized} to suit your environment.
+ The <<<adtpro.sh>>> file can be {customized} to suit your environment.
  The main thing to do is to choose your platform for rxtx support.
- Edit the <<<adtpro.sh>>> file with your favorite editor and follow the
- instructions.  You need to uncomment the appropriate <<<RXTXLIB>>> line for
- your platform and make sure the other platform support statements are commented out.
+ Edit the <<<adtpro.sh>>> file with your favorite editor.  You may need
+ to tweak the check for what your operating system returns from the
+ <<<uname>>> command, and connect that to the appropriate rxtx library
+ directory.
 
  If you don't specify the right one, or if your platform is unsupported by rxtx,
  you will get an error similar to the one below on startup:
