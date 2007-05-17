@@ -37,7 +37,7 @@ keys or the space bar to pick the volume to be sent to the host:
 [images/adtpropick.png]
 
  The "Blocks" column is the count of ProDOS blocks present on the disk.  Each 
-block contains 512 bytes of data.  So, typical disk sizes are:
+block contains 512 bytes of data.  Typical disk sizes are:
 
 *-------:-----+
 | <<Blocks>> | <<Disk>> |

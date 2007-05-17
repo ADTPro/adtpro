@@ -30,7 +30,7 @@ keys or the space bar to pick the volume to be sent to the host:
 [images/sendBatch1.png]
 
  The "Blocks" column is the count of ProDOS blocks present on the disk.  Each 
-block contains 512 bytes of data.  So, typical disk sizes are:
+block contains 512 bytes of data.  Typical disk sizes are:
 
 *-------:-----+
 | <<Blocks>> | <<Disk>> |
@@ -70,4 +70,5 @@ read and sent to the ADTPro server (presumably, with a different diskette that
 you inserted).  The numeric prefix will be incremented with each disk you send;
 the ADTPro server will show the current disk name on its window.
 
- You can hit the Escape key at any time to bring you back to the main ADTPro menu.
+ You can hit the Escape key at any time to stop the batch sending process
+ and bring you back to the main ADTPro menu.
