@@ -229,7 +229,14 @@
 			includes="${distName}.jar ${distName}.dsk ${dosDistName}.dsk rxtx/** LICENSE README adtpro.bat adtpro.sh adtpro.command" />
 		<tar destfile="${builddir}/${distName}.tar"
 			basedir="${builddir}"
-			includes="${distName}.jar ${distName}.dsk ${dosDistName}.dsk rxtx/** LICENSE README adtpro.bat adtpro.sh adtpro.command" />
+			includes="${distName}.jar ${distName}.dsk ${dosDistName}.dsk rxtx/** LICENSE README adtpro.bat"
+			excludes="rxtx/fixperm.command">
+			<tarfileset dir="${builddir}" mode="755">
+				<include name="rxtx/fixperm.command"/>
+				<include name="adtpro.command"/>
+				<include name="adtpro.sh"/>
+			</tarfileset>
+		</tar>
 		<gzip destfile="${builddir}/${distName}.tar.gz"
 			src="${builddir}/${distName}.tar" />
 	</target>
