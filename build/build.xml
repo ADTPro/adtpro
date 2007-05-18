@@ -217,16 +217,21 @@
 
 	<target name="jar">
 		<!-- jar up the source, object and properties files -->
-		<jar jarfile="${builddir}/${distName}.jar" 
-			manifest="${builddir}/manifest.mf" 
-			basedir="${projdir}" 
+		<jar jarfile="${builddir}/${distName}.jar"
+			manifest="${builddir}/manifest.mf"
+			basedir="${projdir}"
 			includes="org/**/*.class org/**/*.java org/**/*.properties org/**/*.png org/**/*.dmp org/**/*.raw LICENSE" />
-		<chmod dir="${builddir}" perm="ugo+rx" 
+		<chmod dir="${builddir}" perm="ugo+rx"
 			includes="**/*.sh **/*.command"/>
 		<!-- zip up the whole sheebang -->
-		<zip destfile="${builddir}/${distName}.zip" 
-			basedir="${builddir}" 
+		<zip destfile="${builddir}/${distName}.zip"
+			basedir="${builddir}"
 			includes="${distName}.jar ${distName}.dsk ${dosDistName}.dsk rxtx/** LICENSE README adtpro.bat adtpro.sh adtpro.command" />
+		<tar destfile="${builddir}/${distName}.tar"
+			basedir="${builddir}"
+			includes="${distName}.jar ${distName}.dsk ${dosDistName}.dsk rxtx/** LICENSE README adtpro.bat adtpro.sh adtpro.command" />
+		<gzip destfile="${builddir}/${distName}.tar.gz"
+			src="${builddir}/${distName}.tar" />
 	</target>
 
 </project>
