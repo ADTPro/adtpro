@@ -11,13 +11,15 @@ ADTPro Installation
  The ADTPro distribution comes as a single .zip file, named 
 <<<ADTPro-v.r.m.zip>>>.  After unpacking the .zip file, you will find:
 
+ * <<<adtpro.bat>>>       - A Windows server startup batch file
+
+ * <<<adtpro.command>>>   - An OSX server startup command file (double-clickable)
+
+ * <<<adtpro.sh>>>        - A Linux/Solaris server startup shell script
+
  * <<<ADTPro-v.r.m.jar>>> - ADTPro server-side software (a Java .jar file)
  
- * <<<ADTPro-v.r.m.dsk>>> - ADTPro client-side software (an Apple disk image)
-
- * <<<adtpro.bat>>>       - A Windows batch file to start the server
-
- * <<<adtpro.sh>>>        - A Linux/OSX/Solaris shell script to start the server
+ * <<<ADTPro-v.r.m.dsk>>> - ADTPro client-side software (an Apple 140K disk image)
 
  * <<<ADTvrm.dsk>>> - An enhanced legacy Apple DOS ADT client, capable 
    of running on both Super Serial hardware as well as on the IIgs serial
@@ -44,8 +46,8 @@ ADTPro Installation
 
  After downloading the ADTPro-v.r.m.zip distribution file to your 
  desktop, unpack it using your operating system's native facilities.
- You can either run the startup program from the command line or,
- in Windows and OSX, double-click on the icon of the startup program:
+ You can either run the server startup program from the command line
+ or, in Windows and OSX, double-click on the icon of the startup program:
 
   [Windows:] adtpro.bat
 
@@ -55,7 +57,7 @@ ADTPro Installation
 
  You can modify the startup program to suit your 
  environment.  Especially for the Unix variants - it may need
- a little {{{install.html#customized}tweaking}} to get the correct native serial library connected.
+ a little tweaking to get the correct native serial library connected.
 
  When starting, you will see the following information echoed back on
  your console (if one is produced - it varies by platform)
@@ -79,19 +81,10 @@ Java lib Version   = RXTX-2.1-7
  ADTPro server.  Reboot your Apple with the new ADTPro client 
  diskette in the disk drive and you're ready to go!
 
- If you aren't using serial communications or for some reason 
- it's not finding the included native rxtx library, you will see
- these messages when starting the server:
- 
-+-------
-ADTPro Server version v.r.m
-
-RXTX: Serial library not installed.
-+-------
-
- If you don't use DOS ADT now, don't have software for your Apple yet, 
-or don't have a serial card, there's lots of help available.
-Start at ADTPro's {{{bootstrapmain.html}bootstrapping}} page.
+ If you aren't already using DOS ADT, or if you don't 
+ have any software for your Apple yet, there's lots of help available.
+ Start at ADTPro's {{{bootstrapmain.html}bootstrapping}} page
+ to get the software transferred to your Apple.
 
  Please report troubles, bugs, requests for help, etc. on the Help 
 forum for ADTPro at SourceForge:
