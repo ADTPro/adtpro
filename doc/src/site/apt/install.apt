@@ -8,8 +8,10 @@ ADTPro Installation
 
  Welcome to ADTPro!
 
- The ADTPro distribution comes as a single .zip file, named 
-<<<ADTPro-v.r.m.zip>>>.  After unpacking the .zip file, you will find:
+ The ADTPro distribution comes as a single file named 
+<<<ADTPro-v.r.m>>> with either a <<<.zip>>> (Windows) or a <<<.tar.gz>>>
+(Linux/OSX/Solaris) extension.
+After unpacking the distribution file, you will find:
 
  * <<<adtpro.bat>>>       - A Windows server startup batch file
 
@@ -29,12 +31,15 @@ ADTPro Installation
 
  * <<<README>>> - The page you're looking at now, mostly
 
- * <<<rxtx/fixperm.sh>>> - A script to help OSX users fix a permission problem
+ * <<<rxtx/fixperm.command>>> - A command to help OSX users enable the RXTX library
 
  * <<<rxtx/...>>> - Library files to help Java see serial ports.
 
  []
 
+ In all cases above, <<<v.r.m>>> is replaced with the version, release
+ and modification numbers of the distribution.
+ 
  First of all, you will need a Java installation you can call from the
  command line.  This means that if you type the command 
  "<<<java -version>>>" from a terminal window it ought to produce 
@@ -44,24 +49,23 @@ ADTPro Installation
  When you get there, look for a "Java Runtime Environment (JRE)"
  download for your platform and install it.
 
- After downloading the ADTPro-v.r.m.zip distribution file to your 
+ After downloading the ADTPro distribution file to your 
  desktop, unpack it using your operating system's native facilities.
  You can either run the server startup program from the command line
  or, in Windows and OSX, double-click on the icon of the startup program:
 
-  [Windows:] adtpro.bat
+  [Windows:] <<<adtpro.bat>>>
 
-  [OSX:] adtpro.command
+  [OSX:] <<<adtpro.command>>>
 
-  [Linux, Solaris:] adtpro.sh
+  [Linux, Solaris:] <<<adtpro.sh>>>
 
  You can modify the startup program to suit your 
  environment.  Especially for the Unix variants - it may need
  a little tweaking to get the correct native serial library connected.
 
  When starting, you will see the following information echoed back on
- your console (if one is produced - it varies by platform)
- as the GUI is coming up:
+ your console as the GUI is coming up:
 
 +-------
 ADTPro Server version v.r.m
@@ -95,7 +99,7 @@ forum for ADTPro at SourceForge:
 
 Unix RXTX Considerations
 
- Mac OSX users should run the <<<fixperm.sh>>> script that is in 
+ Mac OSX users should run the <<<fixperm.command>>> script that is in 
  the <<<rxtx>>> directory.  This will correct some permissions to
  enable the serial library to work.  You will need your administrator
  password.
@@ -103,15 +107,15 @@ Unix RXTX Considerations
  For other Unix variants, make sure the user that will be running 
  ADTPro is in the group <<<lock>>> or <<<uucp>>> so that lockfiles can work.
 
- The <<<adtpro.sh>>> file can be {customized} to suit your environment.
- The main thing to do is to choose your platform for rxtx support.
- Edit the <<<adtpro.sh>>> file with your favorite editor.  You may need
- to tweak the check for what your operating system returns from the
- <<<uname>>> command, and connect that to the appropriate rxtx library
- directory.
+ The <<<adtpro.sh>>> and <<<adtpro.command>>> files can be customized 
+ to suit your environment.
+ The main thing to do is to choose your platform for RXTX support.
+ You may need to tweak the check for what your operating system returns
+ from the <<<uname>>> command, and connect that to the appropriate RXTX
+ library directory.
 
- If you don't specify the right one, or if your platform is unsupported by rxtx,
- you will get an error similar to the one below on startup:
+ If you don't specify the right one, or if your platform is unsupported
+ by RXTX, you will get an error similar to the one below on startup:
 
 +-------
 java.lang.UnsatisfiedLinkError: Can't find library rxtxSerial (librxtxSerial.so)
@@ -122,6 +126,6 @@ java.library.path=/opt/IBMJava2-142/jre/bin:
  thrown while loading gnu.io.RXTXCommDriver
 +-------
 
- Keep working at the <<<adtpro.sh>>> startup script or take a look at the rxtx
- install instructions in the rxtx directory.  Remember, you can always 
+ Keep working at your startup script or take a look at the RXTX
+ install instructions in the <<<rxtx>>> directory.  Remember, you can always 
  {{{https://sourceforge.net/forum/forum.php?forum_id=582337}ask for help}}.

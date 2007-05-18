@@ -524,7 +524,7 @@ MSGTBL:
 	.addr MUTHBAD, MPREFIX, MINSERTDISK
 	.addr MNULL
 
-MSG01:	ascz "v.r.m"
+MSG01:	ascz "0.2.5"
 MSG02:	asccr "(S)END (R)ECEIVE (D)IR (B)ATCH (C)D"
 	.byte $8d,$00
 MSG03:	ascz "(V)OLUMES CONFI(G) (?)ABOUT (Q)UIT:"

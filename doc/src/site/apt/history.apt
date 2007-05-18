@@ -6,15 +6,22 @@
 
 ADTPro Release History
 
-* 0.2.5 - Unreleased
+* 0.2.5 - May 18, 2007
+
+ New functionality:
+
+ * Removed the requirement to "install" RXTX - we just point the
+   startup scripts at the unpacked location
+
+ * Made an OSX startup script (adtpro.command) and made it 
+   double-clickable to start the server
+
+ []
 
  Bug fixes:
 
  * Switching a protocol or hitting the disconnect button puts up
    a confirmation dialog box if there is an active transfer going on
-
- * Removed the requirement to "install" rxtx - we just point the
-   startup scripts at the unpacked location
 
  * Bumped Java heap size in startup scripts with -Xmx128m (Windows) and
    -Xmx256m (*ix) to support 32M images

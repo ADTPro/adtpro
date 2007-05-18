@@ -19,7 +19,7 @@ if [ "$OS" = "Linux" ]; then
 fi
 
 # For OSX, use this:
-# (Also remember to run fixperm.sh in the rxtx directory once on OSX...)
+# (Also remember to run fixperm.command in the rxtx directory once on OSX...)
 if [ "$OS" = "Darwin" ]; then
   here="`dirname \"$0\"`"
   cd "$here"
