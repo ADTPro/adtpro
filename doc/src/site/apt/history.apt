@@ -6,6 +6,15 @@
 
 ADTPro Release History
 
+* 0.2.6 - (Unreleased)
+
+ Bug fixes:
+
+ * Fixed formatter code to more correctly format disks larger than
+   140k and to recognize and format hard drives/CFFA cards
+
+ []
+
 * 0.2.5 - May 18, 2007
 
  New functionality:

@@ -16,3 +16,5 @@ adtpro.sh
 adtpro.command
 go.bat
 FORMAT
+*.tar
+*.gz
