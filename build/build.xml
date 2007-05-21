@@ -29,6 +29,7 @@
 		<delete file="${builddir}/adtpro.command" />
 		<delete file="${builddir}/disks/${distName}.dsk" />
 		<delete file="${builddir}/lib/${distName}.jar" />
+		<delete file="${builddir}/lib/ADTPro.properties" />
 		<delete file="${builddir}/${distName}.zip" />
 		<delete file="${builddir}/${distName}.tar.gz" />
 		<delete file="${builddir}/disks/${dosDistName}.dsk" />
