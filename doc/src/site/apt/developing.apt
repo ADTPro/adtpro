@@ -101,9 +101,9 @@ and it probably looks mad (see the red X marks):
 [images/eclipse5.jpg]
 
  The problem is that the Java code can't automatically compile in the
-workspace because the project needs to resolve a couple of support jars
-right away: Ant and rxtx.  So, we need to go into the project properties
-and tell it where to find both of those things.
+workspace because the project needs to resolve a support jar
+right away: Ant.jar.  So, we need to go into the project properties
+and tell it where to find it.
 
 * {Configuring the Project Properties}
 
@@ -115,7 +115,7 @@ then click on the Libraries tab:
 
 [images/eclipse6.jpg]
 
- Now, we need to build "User Libraries" to match <<<ANT_JAR>>> and <<<RXTX_JAR>>>.
+ Now, we need to build "User Libraries" to match <<<ANT_JAR>>>.
 Click on the "Add Libarary..." button, and select the "User Library" item
 when the "Add Library" dialog box comes up:
 
@@ -133,7 +133,7 @@ when the "Add Library" dialog box comes up:
 
 [images/eclipse11.jpg]
 
- We'll fill in <<<ANT_JAR>>> first.  Type <<<ANT_JAR>>> in as the name, and
+ Now we'll fill in <<<ANT_JAR>>>.  Type <<<ANT_JAR>>> in as the name, and
  hit the "OK" button.  The Preferences/User Libraries dialog box will come back
  up, and will now have the <<<ANT_JAR>>> user library name in it:
 
@@ -141,9 +141,9 @@ when the "Add Library" dialog box comes up:
 
  Click on the "Add JARs..." button, and the "JAR Selection" dialog box will
  come up.
- Navigate to where you have an <<<ant.jar>>>
- file.  Eclipse has one in the <<<eclipse/plugins/org.apache.ant_1.6.5>>>
- directory by default:
+ Navigate to where you have an <<<ant.jar>>> file in your local filesystem.
+ The very Eclipse you're using now will have one in its
+ <<<eclipse/plugins/org.apache.ant_1.6.5/lib>>> directory:
  
 [images/eclipse13.jpg]
 
@@ -151,10 +151,6 @@ when the "Add Library" dialog box comes up:
  <<<ANT_JAR>>> user library:
 
 [images/eclipse14.jpg]
-
- Now, go through the same set of steps to add an RXTX_JAR user library.
- You will find the <<<RXTXcomm.jar>>> in the <<<rxtx-2.1-7-bins-r2.zip>>>
- package that comes with ADTPro.
 
  The main Eclipse window should no longer show any red errors, though it may still
 have yellow warnings (depending on how tidy the repository happens to be right then).
