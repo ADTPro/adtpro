@@ -226,10 +226,10 @@
 		<!-- zip up the whole sheebang -->
 		<zip destfile="${builddir}/${distName}.zip"
 			basedir="${builddir}"
-			includes="${distName}.jar ${distName}.dsk ${dosDistName}.dsk rxtx/** LICENSE README adtpro.bat adtpro.sh adtpro.command" />
+			includes="${distName}.jar ${distName}.dsk ${dosDistName}.dsk rxtx/** LICENSE README adtpro.bat adtpro.sh adtpro.command ADTPro.html" />
 		<tar destfile="${builddir}/${distName}.tar"
 			basedir="${builddir}"
-			includes="${distName}.jar ${distName}.dsk ${dosDistName}.dsk rxtx/** LICENSE README adtpro.bat"
+			includes="${distName}.jar ${distName}.dsk ${dosDistName}.dsk rxtx/** LICENSE README adtpro.bat ADTPro.html"
 			excludes="rxtx/fixperm.command">
 			<tarfileset dir="${builddir}" mode="755">
 				<include name="rxtx/fixperm.command"/>
