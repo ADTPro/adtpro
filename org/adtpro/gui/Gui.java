@@ -100,7 +100,7 @@ public final class Gui extends JFrame implements ActionListener
     }
     catch (Throwable ex)
     {}
-    String tempDir = _properties.getProperty("WorkingDirectory", null); //$NON-NLS-1$
+    String tempDir = _properties.getProperty("WorkingDirectory","../disks"); //$NON-NLS-1$
     if (tempDir != null) setWorkingDirectory(tempDir);
 
     JMenuBar menuBar = new JMenuBar();

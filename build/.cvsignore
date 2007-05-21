@@ -3,6 +3,8 @@
 *.hdv
 ADTPro-*.zip
 ADTPro-*.jar
+ADTPro-*.tar
+ADTPro-*.gz
 ADT
 ADTPRO
 ADTPROAUD
@@ -16,5 +18,3 @@ adtpro.sh
 adtpro.command
 go.bat
 FORMAT
-*.tar
-*.gz

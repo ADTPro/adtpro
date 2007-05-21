@@ -5,11 +5,18 @@
 @REM   1. %JAVA_HOME% - to pick a particular java to run under
 @REM   2. %ADTPRO_HOME% - to say where you installed ADTPro
 @REM
-@REM e.g.
-@REM
-@SET ADTPRO_HOME=.\
-@REM SET ADTPRO_HOME=C:\src\workspace\311\adtpro\build\  (need final backslash)
-@REM SET MY_JAVA_HOME=C:\Progra~1\IBM\Java142\bin\ (need final backslash)
-@REM
+@REM e.g. uncomment (remove the "@REM" from in front) and customize
+@REM      the following two SET statements.  
+@REM Note: They must have a trailing backslash as in the examples!
+
+@REM SET ADTPRO_HOME=C:\src\workspace\311\adtpro\build\
+@REM SET MY_JAVA_HOME=C:\Progra~1\IBM\Java142\bin\
+
+@REM Note: The following statement needs a trailing backslash!
+@SET ADTPRO_HOME=.\lib\
+
 @PATH=%PATH%;%ADTPRO_HOME%rxtx\Windows\i368-mingw32;
-@start /min %MY_JAVA_HOME%java -Xms128m -cp %ADTPRO_HOME%%ADTPRO_VERSION%;%ADTPRO_HOME%rxtx\RXTXcomm.jar org.adtpro.ADTPro
+@SET CWD=%CD%
+@CD %ADTPRO_HOME%
+@start /min %MY_JAVA_HOME%java -Xms128m -cp %ADTPRO_VERSION%;rxtx\RXTXcomm.jar org.adtpro.ADTPro
+@CD %CWD%

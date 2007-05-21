@@ -15,7 +15,7 @@ OS=`uname`
 
 # For Linux, use this:
 if [ "$OS" = "Linux" ]; then
-  export RXTXLIB=rxtx/Linux/i686-unknown-linux-gnu
+  export RXTXLIB=lib/rxtx/Linux/i686-unknown-linux-gnu
 fi
 
 # For OSX, use this:
@@ -23,12 +23,12 @@ fi
 if [ "$OS" = "Darwin" ]; then
   here="`dirname \"$0\"`"
   cd "$here"
-  export RXTXLIB=rxtx/Mac_OS_X
+  export RXTXLIB=lib/rxtx/Mac_OS_X
 fi
 
 # For Solaris, use this:
 if [ "$OS" = "SunOS" ]; then
-  export RXTXLIB=rxtx/Solaris/sparc-solaris/sparc32-sun-solaris2.8
+  export RXTXLIB=lib/rxtx/Solaris/sparc-solaris/sparc32-sun-solaris2.8
 fi
 
 # Set up the library location.
@@ -41,5 +41,5 @@ export TWEAK=$TWEAK1$ADTPRO_HOME$RXTXLIB
 # the classpath to include ADTPro (4) and RXTXcomm (5), and finally
 # tell Java what the class to execute is.  
 # To wit:
-"$MY_JAVA_HOME"java -Xms256m -Xmx512m $TWEAK -cp "$ADTPRO_HOME"%ADTPRO_VERSION%:"$ADTPRO_HOME"rxtx/RXTXcomm.jar org.adtpro.ADTPro
+"$MY_JAVA_HOME"java -Xms256m -Xmx512m $TWEAK -cp "$ADTPRO_HOME"lib/%ADTPRO_VERSION%:"$ADTPRO_HOME"lib/rxtx/RXTXcomm.jar org.adtpro.ADTPro
 #               (1)     (2)     (2)     (3)                              (4)                            (5)            (6)
