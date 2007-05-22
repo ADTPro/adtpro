@@ -28,7 +28,7 @@ ADTPro Serial Connections
 null modem variety; there is a jumper block on the Super Serial card that will take
 care of signal switching for you if you have one or the other and need to switch.
 
-  If you have a stright-through cable, set the super serial card's block to point
+  If you have a straight-through cable, set the super serial card's block to point
 downwards toward the word "Terminal," as in this picture:
 
 [images/ss1.jpg]
