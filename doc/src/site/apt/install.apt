@@ -19,11 +19,9 @@ After unpacking the distribution file, you will find:
 
  * <<<adtpro.sh>>>        - A Linux/Solaris server startup shell script
 
- * <<<ADTPro-v.r.m.jar>>> - ADTPro server-side software (a Java .jar file)
- 
- * <<<ADTPro-v.r.m.dsk>>> - ADTPro client-side software (an Apple 140K disk image)
+ * <<<disks/ADTPro-v.r.m.dsk>>> - ADTPro client-side software (an Apple 140K disk image)
 
- * <<<ADTvrm.dsk>>> - An enhanced legacy Apple DOS ADT client, capable 
+ * <<<disks/ADTvrm.dsk>>> - An enhanced legacy Apple DOS ADT client, capable 
    of running on both Super Serial hardware as well as on the IIgs serial
    (modem) port
 
@@ -31,14 +29,16 @@ After unpacking the distribution file, you will find:
 
  * <<<README>>> - The page you're looking at now, mostly
 
- * <<<rxtx/fixperm.command>>> - A command to help OSX users enable the RXTX library
+ * <<<lib/ADTPro-v.r.m.jar>>> - ADTPro server-side software (a Java .jar file)
+ 
+ * <<<lib/rxtx/fixperm.command>>> - A command to help OSX users enable the RXTX library
 
- * <<<rxtx/...>>> - Library files to help Java see serial ports.
+ * <<<lib/rxtx/...>>> - Library files to help Java see serial ports.
 
  []
 
- In all cases above, <<<v.r.m>>> is replaced with the version, release
- and modification numbers of the distribution.
+ In all cases above, <<<v.r.m>>> and <<<vrm>>> are replaced with the
+ version, release and modification numbers of the distribution.
  
  First of all, you will need a Java installation you can call from the
  command line.  This means that if you type the command 
@@ -100,7 +100,7 @@ forum for ADTPro at SourceForge:
 Unix RXTX Considerations
 
  Mac OSX users should run the <<<fixperm.command>>> script that is in 
- the <<<rxtx>>> directory.  This will correct some permissions to
+ the <<<lib/rxtx>>> directory.  This will correct some permissions to
  enable the serial library to work.  You will need your administrator
  password.
 

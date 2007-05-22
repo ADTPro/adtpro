@@ -235,8 +235,8 @@ YesSmart1:
 	beq NoUnit		; must be a smart device.
 	ldy #$07		;Test last signiture byte for the
 	lda (Buffer),y		; Protocol Converter.
-	cmp #$3C		;Found a hard drive, CFFA, etc.
-	jmp YesSmart2
+	cmp #$3C
+	beq YesSmart2		;Found a hard drive, CFFA, etc.
 	cmp #$00
 	bne NoUnit		;It isn't so it's no device I know.
 YesSmart2:

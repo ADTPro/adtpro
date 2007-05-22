@@ -6,12 +6,17 @@
 #   1. $MY_JAVA_HOME - to pick a particular java to run under
 #   2. $ADTPRO_HOME - to say where you installed ADTPro
 #
-# e.g. uncomment and modify one or both of the lines below:
+# Setting default ADTPRO_HOME to be the current working directory.
+export ADTPRO_HOME="`dirname \"$0\"`/"
+
+# Uncomment and modify one or both of the lines below.
+# NOTE: you need a trailing slash.
 #
-# export MY_JAVA_HOME=/usr/local/java/bin/ (need final slash)
-# export ADTPRO_HOME=~/myuser/adtpro/  (need final slash)
-#
+# export MY_JAVA_HOME=/usr/local/java/bin/
+# export ADTPRO_HOME=~/myuser/adtpro/
+
 OS=`uname`
+CWD="`dirname \"$0\"`"
 
 # For Linux, use this:
 if [ "$OS" = "Linux" ]; then
@@ -21,8 +26,6 @@ fi
 # For OSX, use this:
 # (Also remember to run fixperm.command in the rxtx directory once on OSX...)
 if [ "$OS" = "Darwin" ]; then
-  here="`dirname \"$0\"`"
-  cd "$here"
   export RXTXLIB=lib/rxtx/Mac_OS_X
 fi
 
@@ -35,6 +38,7 @@ fi
 export TWEAK1="-Djava.library.path="
 export TWEAK=$TWEAK1$ADTPRO_HOME$RXTXLIB
 
+cd "$ADTPRO_HOME/lib"
 # Set up a comfortable Java execution environment.
 # We want to execute Java (1), set a larger-than-default heap size (2),
 # tell the OS where to find a native library to support rxtx (3), set
@@ -43,3 +47,4 @@ export TWEAK=$TWEAK1$ADTPRO_HOME$RXTXLIB
 # To wit:
 "$MY_JAVA_HOME"java -Xms256m -Xmx512m $TWEAK -cp "$ADTPRO_HOME"lib/%ADTPRO_VERSION%:"$ADTPRO_HOME"lib/rxtx/RXTXcomm.jar org.adtpro.ADTPro
 #               (1)     (2)     (2)     (3)                              (4)                            (5)            (6)
+cd $CWD
