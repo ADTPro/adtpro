@@ -415,4 +415,49 @@ public class AudioTransport extends ATransport
     Log.println(false, "AudioTransport.getInstructions() returning:\n" + ret);
     return ret;
   }
+
+  public String getInstructionsDone(String guiString)
+  {
+    String ret = "AudioTransport.getInstructionsDone() - returned null!";
+    if (guiString.equals(Messages.getString("Gui.BS.ProDOSFormat")))
+    {
+      ret = Messages.getString("Gui.BS.DumpProDOSFormatAudioInstructionsDone");
+    }
+    else
+      if (guiString.equals(Messages.getString("Gui.BS.ProDOS")))
+      {
+        ret = Messages.getString("Gui.BS.DumpProDOSAudioInstructionsDone");
+      }
+      else
+        if (guiString.equals(Messages.getString("Gui.BS.ProDOS2"))) ret = Messages
+            .getString("Gui.BS.DumpProDOSAudioInstructions2Done");
+        else
+          if (guiString.equals(Messages.getString("Gui.BS.DOS")))
+          {
+            ret = Messages.getString("Gui.BS.DumpDOSAudioInstructionsDone");
+          }
+          else
+            if (guiString.equals(Messages.getString("Gui.BS.DOS2"))) ret = Messages
+                .getString("Gui.BS.DumpDOSAudioInstructions2Done");
+            else
+              if ((guiString.equals(Messages.getString("Gui.BS.ADT")))
+                  || (guiString.equals(Messages.getString("Gui.BS.ADTPro")))
+                  || (guiString.equals(Messages.getString("Gui.BS.ADTProAudio")))
+                  || (guiString.equals(Messages.getString("Gui.BS.ADTProEthernet"))))
+              {
+                if (guiString.equals(Messages.getString("Gui.BS.ADT"))) ret = Messages
+                    .getString("Gui.BS.DumpADTAudioInstructionsDone");
+                else
+                  if (guiString.equals(Messages.getString("Gui.BS.ADTPro"))) ret = Messages
+                      .getString("Gui.BS.DumpProAudioInstructionsDone");
+                  else
+                    if (guiString.equals(Messages.getString("Gui.BS.ADTProAudio"))) ret = Messages
+                        .getString("Gui.BS.DumpProAudioAudioInstructionsDone");
+                    else
+                      if (guiString.equals(Messages.getString("Gui.BS.ADTProEthernet"))) ret = Messages
+                          .getString("Gui.BS.DumpProEthernetAudioInstructionsDone");
+              }
+    Log.println(false, "AudioTransport.getInstructionsDone() returning:\n" + ret);
+    return ret;
+  }
 }

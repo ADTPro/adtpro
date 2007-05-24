@@ -21,6 +21,7 @@
 package org.adtpro.gui;
 
 import java.awt.BorderLayout;
+import java.awt.Component;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
@@ -695,6 +696,12 @@ public final class Gui extends JFrame implements ActionListener
                 }
       Log.println(false, "Gui.MenuAction.actionPerformed() exit.");
     }
+  }
+
+  public void requestSendFinished(String message)
+  {
+    JOptionPane.showMessageDialog(_parent, message, Messages.getString("Gui.BS.DoneTitle"),
+        JOptionPane.INFORMATION_MESSAGE);
   }
 
   public boolean startComms(ATransport transport)

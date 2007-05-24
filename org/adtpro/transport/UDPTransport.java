@@ -294,4 +294,11 @@ public class UDPTransport extends ATransport
       Messages.getString("Gui.BS.DumpProInstructions");
     return ret;
   }
+
+  public String getInstructionsDone(String guiString)
+  {
+    // Shouldn't be needed unless we eventually support bootstrapping over UDP.
+    return "";
+  }
+
 }

@@ -415,6 +415,11 @@ public class SerialTransport extends ATransport
       port.setFlowControlMode(SerialPort.FLOWCONTROL_RTSCTS_IN);
   }
 
+  public String getInstructionsDone(String guiString)
+  {
+    return "";
+  }
+
   public String getInstructions(String guiString, int fileSize, int speed)
   {
     String ret = "'SerialTransport.getInstructions() - returned null!'";
@@ -458,7 +463,7 @@ public class SerialTransport extends ATransport
     }
     ret = ret.replaceFirst("%1%", baudCommand);
 
-    Log.println(false, "SerialTransport.getInstructions() returning:\n" + ret);
+    Log.println(false, "SerialTransport.getInstructionsDone() returning:\n" + ret);
     return ret;
   }
 }

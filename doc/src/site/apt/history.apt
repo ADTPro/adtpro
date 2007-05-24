@@ -12,6 +12,10 @@ ADTPro Release History
 
  * Added a simple Applesoft menu when booting the distribution diskette
 
+ * Server gives instruction messages at the end as well as at the beginning
+   of bootstrap sends for Audio transfers - so you don't have to have the
+   website up in front of you to succeed
+
  []
 
  Bug fixes:

@@ -1431,7 +1431,7 @@ public class CommsThread extends Thread
         Log.println(false, "CommsThread.requestSend() Reading " + resourceName);
         _parent.setMainText(Messages.getString("CommsThread.4")); //$NON-NLS-1$
         _parent.setSecondaryText(resourceName); //$NON-NLS-1$
-        _worker = new Worker(is, pacing, speed, slowFirstLines, slowLastLines);
+        _worker = new Worker(resource, is, pacing, speed, slowFirstLines, slowLastLines);
         _worker.start();
       }
       else
@@ -1475,7 +1475,7 @@ public class CommsThread extends Thread
   public class Worker extends Thread
   {
 
-    public Worker(InputStream is, int pacing, int speed, int slowFirstLines, int slowLastLines)
+    public Worker(String resource, InputStream is, int pacing, int speed, int slowFirstLines, int slowLastLines)
     {
       Log.println(false, "CommsThread Worker inner class instantiation.");
       Log.println(false, "CommsThread Worker Pacing = " + pacing + ", speed = " + speed);
@@ -1484,6 +1484,7 @@ public class CommsThread extends Thread
       _speed = speed;
       _slowFirst = slowFirstLines;
       _slowLast = slowLastLines;
+      _resource = resource;
     }
 
     public void run()
@@ -1508,6 +1509,11 @@ public class CommsThread extends Thread
           }
           ((AudioTransport) _transport).writeBigBytes(buffer);
           ((AudioTransport) _transport).pushBigBuffer(_parent);
+          String message = _transport.getInstructionsDone(_resource);
+          if (!message.equals(""))
+          {
+            _parent.requestSendFinished(message);
+          }
         }
         catch (Exception e)
         {
@@ -1635,6 +1641,8 @@ public class CommsThread extends Thread
     int _slowFirst = 0;
 
     int _slowLast = 0;
+    
+    String _resource = null;
   }
 
   public int transportType()
