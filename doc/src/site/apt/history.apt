@@ -8,10 +8,21 @@ ADTPro Release History
 
 * 0.2.6 - (Unreleased)
 
+ New functionality:
+
+ * Added a simple Applesoft menu when booting the distribution diskette
+
+ []
+
  Bug fixes:
 
  * Fixed formatter code to more correctly format disks larger than
    140k and to recognize and format hard drives/CFFA cards
+
+ * Switched diskette image and bootstrapping data to use Apple's 
+   publicly available ProDOS version 1.9, BASIC 1.4.1 as
+   downloaded from Apple
+   {{{http://download.info.apple.com/Apple_Support_Area/Apple_Software_Updates/English-North_American/Apple_II/Apple_II_Supplemental/Apple_II_System_Disk_3.2.sea.bin}here.}}
 
  []
 
