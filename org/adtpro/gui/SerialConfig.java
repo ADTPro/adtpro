@@ -209,6 +209,9 @@ public class SerialConfig extends JDialog implements ActionListener
 
     this.pack();
     this.setBounds(FrameUtils.center(this.getSize()));
+    okButton.requestFocus();
+    getRootPane().setDefaultButton(okButton);
+
     Log.println(false,"SerialConfig Constructor exit.");
   }
 
