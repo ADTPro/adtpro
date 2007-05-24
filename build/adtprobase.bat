@@ -15,7 +15,7 @@
 @REM Note: The following statement needs a trailing backslash!
 @SET ADTPRO_HOME=%CD%
 
-@PATH=%PATH%;%ADTPRO_HOME%lib\rxtx\Windows\i368-mingw32
+@PATH=%PATH%;%ADTPRO_HOME%\lib\rxtx\Windows\i368-mingw32
 @SET CWD=%CD%
 @CD %ADTPRO_HOME%\lib
 @start /min %MY_JAVA_HOME%java -Xms128m -cp %ADTPRO_VERSION%;rxtx\RXTXcomm.jar org.adtpro.ADTPro
