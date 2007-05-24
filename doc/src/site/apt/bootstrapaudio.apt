@@ -92,8 +92,9 @@ ADTPro Audio Bootstrapping
     [[1]] Once the transfer completes successfully,
       start the ADTPro client with the command <<<803G>>>
       from the asterisk prompt at the Apple.
-      Or, if you put yourself back at the Applesoft prompt,
-      you can start the ADTPro client with the <<<CALL 2051>>> command.
+      Or, if you happen to put yourself back at the Applesoft prompt,
+      you can also start the ADTPro client with the <<<CALL 2051>>> command
+      from Applesoft.
       Go to ADTPro's configuration 
       menu by hitting the <<<G>>> key and save it to your current drive prefix.
       See the {{{configaudio.html}client configuration}} section for
@@ -262,10 +263,12 @@ ADTPro Audio Bootstrapping
     [[1]] Once the transfer completes successfully,
       start the Format utility with the command <<<5000G>>>
       from the asterisk prompt at the Apple.
-      If you put yourself back at the Applesoft prompt, you can start the 
-      Format utility with the <<<CALL 20480>>> command.
+      If you happen put yourself back at the Applesoft prompt, you can
+      also start the 
+      Format utility with the <<<CALL 20480>>> command from Applesoft.
       Follow the prompts to format your floppy - this particular utility
-      can format both 5-1/4" and 3-1/2" floppies.
+      can format 5-1/4" and 3-1/2" floppies, and any other storage 
+      device ProDOS sees connected to your Apple.
       You probably want to format a couple of disks:
       one to hold a full image of the ADTPro-v.r.m.dsk that ships as 
       part of ADTPro, and another to hold whatever other software you want
@@ -281,8 +284,8 @@ ADTPro Audio Bootstrapping
      The disk formatted with this utility isn't bootable yet, so don't 
      reboot now - or you'll have to re-send the two ProDOS stages again.
 
-    [[1]] Continue with the step above starting with 
-     {{{bootstrapaudio.html#Decide which version}Decide which version...}}.
+    [[1]] Continue in the "If you already have ProDOS..." section above 
+    starting with {{{bootstrapaudio.html#Decide which version}Decide which version...}}.
 
 * {Bootstrapping DOS}
 
