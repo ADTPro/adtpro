@@ -65,16 +65,16 @@ between the host and the Apple ][:
 
 [images/serverBusy.png]
 
- The server's primary role is to send and receive disk images from the
-client.  But if you have recently acquired
-an Apple and a disk drive, but you have no software for it - you're in a
+ The server's primary role is to send and receive disk images as
+requested from the {{{index.html#Client}client}}.  But if you have recently acquired
+an Apple and a disk drive, and you have no software for it - you're in a
 bit of a tricky situation if you want to move software from the Internet
 all the way to your shiny new Apple.  ADTPro's server can help get you
 get {{{bootstrapmain.html}bootstrapped}}.
 
 [images/serverBoot.png]
 
-* Client
+* {Client}
 
  The client side runs on the Apple ][.  It handles most of the 
 user interaction:
