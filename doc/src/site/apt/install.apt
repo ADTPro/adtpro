@@ -22,8 +22,8 @@ After unpacking the distribution file, you will find:
  * <<<disks/ADTPro-v.r.m.dsk>>> - ADTPro client-side software (an Apple 140K disk image)
 
  * <<<disks/ADTvrm.dsk>>> - An enhanced legacy Apple DOS ADT client, capable 
-   of running on both Super Serial hardware as well as on the IIgs serial
-   (modem) port
+   of running on both Super Serial hardware as well as on the IIgs
+   modem port (an Apple 140K disk image)
 
  * <<<LICENSE>>> - The GNU Public License file
 
@@ -33,7 +33,7 @@ After unpacking the distribution file, you will find:
  
  * <<<lib/rxtx/fixperm.command>>> - A command to help OSX users enable the RXTX library
 
- * <<<lib/rxtx/...>>> - Library files to help Java see serial ports.
+ * <<<lib/rxtx/...>>> - Library files to help Java use serial ports.
 
  []
 
@@ -77,7 +77,8 @@ Java lib Version   = RXTX-2.1-7
 +-------
 
  When the ADTPro GUI comes up, click one of the three
- connection buttons to choose your communications type.
+ connection buttons to choose the way you want to 
+ communicate with your Apple II.
 
  If you currently use the DOS ADT program, select the
  Serial button.  You can transfer the ADTPro-v.r.m.dsk
@@ -91,13 +92,13 @@ Java lib Version   = RXTX-2.1-7
  to get the software transferred to your Apple.
 
  Please report troubles, bugs, requests for help, etc. on the Help 
-forum for ADTPro at SourceForge:
+ forum for ADTPro at SourceForge:
 
  {{https://sourceforge.net/forum/forum.php?forum_id=582337}}
 
  Good luck - and have fun!
 
-Unix RXTX Considerations
+Unix/Mac OSX RXTX Considerations
 
  Mac OSX users should run the <<<fixperm.command>>> script that is in 
  the <<<lib/rxtx>>> directory.  This will correct some permissions to
