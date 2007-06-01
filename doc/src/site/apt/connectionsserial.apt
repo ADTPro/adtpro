@@ -89,10 +89,27 @@ You bring up the IIgs control panel with the key sequence
 
 [images/iigsControl2.png]
 
-  One possible setup that connects a male DB9 serial port to the IIgs' 8-pin
+  One possible setup that connects a male DE9 serial port to the IIgs' 8-pin
 mini-din connector with a null modem in between looks like this:
 
 [images/nullModem.jpg]
+
+  If you're wiring one yourself, a single cable to go between a typical
+  PC serial port to the IIgs' 8-pin mini-din connector has this pinout:
+
+---
+Apple            PC
+DIN8      DB-25  or  DE-9
+
+ 1 ------- 4+20 ----- 7+4
+ 2 -------- 5 -------- 8
+ 3 -------- 2 -------- 3
+ 4 -------- 7 -------- 5
+ 5 -------- 3 -------- 2
+ 6 ------- n/c ------ n/c
+ 7 ------- n/c ------ n/c
+ 8 -------- 7 -------- 5
+---
 
   The cables are getting harder to find in stores, but eBay, swap meets, Jameco, etc.
 will have what you need.
