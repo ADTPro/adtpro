@@ -1,6 +1,6 @@
 ;
 ; ADTPro - Apple Disk Transfer ProDOS
-; Copyright (C) 2006 by David Schmidt
+; Copyright (C) 2006, 2007 by David Schmidt
 ; david__schmidt at users.sourceforge.net
 ;
 ; This program is free software; you can redistribute it and/or modify it 
@@ -80,16 +80,23 @@ PATCHUTHER:
 	sta RESETIO+1
 	lda #>RESETUTHER
 	sta RESETIO+2
+	lda #$A9
+	sta RECEIVE_LOOP	; First byte: #$A9 (lda)
+	lda #$8D
+	sta PUTC		; First byte: #$8D (sta)
 	rts
 
 ;---------------------------------------------------------
-; PATCHNULL - Patch in a null reset routine
+; PATCHNULL - Patch in null comms routines
 ;---------------------------------------------------------
 PATCHNULL:
 	lda #<NULLUTHER
-	sta RESETIO+1
+	sta RESETIO+1		; No-op the reset routine
 	lda #>NULLUTHER
 	sta RESETIO+2
+	lda #$60		; No-op the rx/tx routines
+	sta PUTC
+	sta RECEIVE_LOOP
 	rts
 
 ;---------------------------------------------------------
@@ -104,7 +111,6 @@ NULLUTHER:
 RESETUTHER:
 	jsr ip65_process
 	rts
-
 
 cnt:		.res 1
 replyaddr:	.res 4

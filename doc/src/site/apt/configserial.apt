@@ -28,7 +28,7 @@ left arrow keys.  Your Apple has right and left arrow keys; trust me.
 
  * <<<BLOAD ADTPRO>>>
 
- * <<<POKE 2052,1>>>
+ * <<<POKE 2053,1>>>
 
  * <<<CALL 2051>>>
 
@@ -43,8 +43,10 @@ left arrow keys.  Your Apple has right and left arrow keys; trust me.
 
 [images/configSlot.png]
 
- The most common slot is 2, but it 
-could be any slot from 1 to 7.  Pull off your Apple's lid to check if you need to.
+ The Apple's slots will
+ be scanned for a serial card or port automatically (until you explicitly
+ {{{configserial.html#Save Configuration}save}} a configuration).
+ The lowest-numbered slot with a card will be selected by default.
 If you have an IIgs and you want to use a Super Serial card in it, ensure you select
 "Your Card" in the IIgs' control panel for the slot your SSC card is in,
 and select that same slot number here.
@@ -98,7 +100,7 @@ If you can't get 9600 to work reliably, something else is wrong.
 things finish or abort.  I personally think computers should be seen and not
 heard, but not everyone feels that way.  Express your own personal feelings here.
 
-* Save Configuration
+* {Save Configuration}
 
  Hit the "Return" key to work with these parameters.  Once you get a 
 configuration that works for you, select "YES" for SAVE CONFIG and hit Return.

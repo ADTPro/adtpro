@@ -28,7 +28,7 @@ ADTPro Ethernet Configuration
 
  * <<<BLOAD ADTPROETH>>>
 
- * <<<POKE 2052,1>>>
+ * <<<POKE 2053,1>>>
 
  * <<<CALL 2051>>>
 
@@ -61,9 +61,13 @@ left arrow keys.  Your Apple has right and left arrow keys; trust me.
 [images/ethconfigSlot.png]
 
  The most common slot is 3, but it 
-could be any slot from 1 to 7.  Pull off your Apple's lid to check if you need to.
-If you have an IIgs, ensure you select "Your Card" in the IIgs' control panel for
-the slot your Uthernet card is in, and select that same slot number here.
+could be any slot from 1 to 7.  ADTPro will scan the slots to guess where
+it is for you.  But if you have multiple Uthernet cards in your system,
+you will need to choose which one to talk to.
+Pull off your Apple's lid to check if you need to.
+If you have an IIgs, ensure you select "Your Card" in the IIgs' control
+panel for the slot your Uthernet card is in, and select that same slot
+number here.
 
 * Enable Sound
 

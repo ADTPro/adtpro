@@ -1,6 +1,6 @@
 ;
 ; ADTPro - Apple Disk Transfer ProDOS
-; Copyright (C) 2006 by David Schmidt
+; Copyright (C) 2006, 2007 by David Schmidt
 ; david__schmidt at users.sourceforge.net
 ;
 ; This program is free software; you can redistribute it and/or modify it 
@@ -257,6 +257,10 @@ NOPE:	jsr PATCHNULL
 ;---------------------------------------------------------
 PARMDFT:
 	bne FACTORYLOOP
+	lda CONFIGYET
+	bne WARMER	; If no manual config yet, scan the slots
+	jsr FindSlot
+WARMER:
 	ldx #PARMNUM-1
 DFTLOOP:
 	lda DEFAULT,X
@@ -356,6 +360,38 @@ ENDVAL:	dex
 	cpx #PARMNUM
 	bcc NXTLINE	; Loop PARMNUM times
 	rts
+
+;---------------------------------------------------------
+; FindSlot - Find an uther card
+;---------------------------------------------------------
+FindSlot:
+	lda PSSC
+	sta OrigSlot
+	ldx #$00	; Slot number - start at 1 and work up
+FindSlotLoop:
+	stx PSSC
+	jsr ip65_init
+	ldx PSSC
+	inx
+	bcs FindSlotNext
+	stx TempSlot
+FindSlotNext:
+	cpx #$08
+	bne FindSlotLoop
+
+; All done now, so clean up
+	ldx TempSlot
+	beq :+
+	dex		; Subtract 1 to match slot# to parm index
+	stx PSSC
+	stx DEFAULT
+	rts
+:	ldx OrigSlot
+	stx PSSC
+FindSlotDone:
+	rts
+OrigSlot:	.byte 0
+TempSlot:	.byte 0
 
 ;---------------------------------------------------------
 ; Configuration

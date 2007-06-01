@@ -10,6 +10,12 @@ ADTPro Release History
 
  New functionality:
 
+ * The client will scan slots for communications devices if the 
+   manual configuration hasn't been done yet; 
+   preference is given to SSC cards
+   over IIgs ports if both exist, and slots are scanned high-to-low,
+   last-one-found-wins
+
  * Added a simple Applesoft menu when booting the distribution diskette
 
  * Added an 800k distribution disk image
@@ -272,6 +278,8 @@ ADTPro Release History
  * Ability to "cold start" by resetting configuration parameters back to "factory defaults"
    (useful when a configuration as saved is incompatible with a particular machine:
    <<<bload adtpro:poke 2052,1:call 2051>>>)
+   Later versions moved this poke by one byte:
+   <<<bload adtpro:poke 2053,1:call 2051>>>)
 
  []
 

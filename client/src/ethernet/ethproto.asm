@@ -100,7 +100,11 @@ UDPSKIP:
 ; RECEIVE_LOOP - Wait for an incoming packet to come along
 ;---------------------------------------------------------
 RECEIVE_LOOP:
-	lda #$00
+				; Note: the first byte of
+				; this routine needs to be
+				; kept in sync with the
+				; byte kept in uther.asm,
+	lda #$00		; PATCHUTHER.
 	sta TIMEOUT
 	sta TIMEOUT+1
 	sta TMOT
@@ -630,7 +634,11 @@ RCVEND:
 ; PUTC - Send a single byte as a packet
 ;---------------------------------------------------------
 PUTC:
-	sta PUTCMSG
+				; Note: the first byte of
+				; this routine needs to be
+				; kept in sync with the
+				; byte kept in uther.asm,
+	sta PUTCMSG		; PATCHUTHER.
 	ldax #PUTCMSGEND-PUTCMSG
 	stax udp_send_len
 	ldax #PUTCMSG

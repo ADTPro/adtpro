@@ -218,6 +218,8 @@ PARMRST:
 	bpl PARMRST
 	jmp NOSAVE
 ENDCFG:
+	lda #$01
+	sta CONFIGYET
 	lda PARMS+BSAVEP	; Did they ask to save?
 	bne NOSAVE
 
@@ -243,16 +245,13 @@ OLDPARM:	.byte $00,$00,$00,$00	; There must be PARMNUM bytes here...
 ; PARMINT - INTERPRET PARAMETERS
 ;---------------------------------------------------------
 PARMINT:
-	ldy PSSC	; GET SSC SLOT# (0..6)
-	iny		; NOW 1..7
+	ldy PSSC	; Get parm index# (0..7)
+	iny		; Now slot# = 1..8 (where 8=IIgs)
 	tya
 	cmp #$08
 	bpl IIGS
 	jmp INITSSC	; Y holds slot number
-
 IIGS:
-	lda #$02
-	sta PGSSLOT
 	jmp INITZGS
 
 ;---------------------------------------------------------
@@ -266,6 +265,10 @@ IIGS:
 ;---------------------------------------------------------
 PARMDFT:
 	bne FACTORYLOOP
+	lda CONFIGYET
+	bne WARMER	; If no manual config yet, scan the slots
+	jsr FindSlot
+WARMER:
 	ldx #PARMNUM-1
 DFTLOOP:
 	lda DEFAULT,X
@@ -275,6 +278,8 @@ DFTLOOP:
 	jmp PARMDFTNEXT
 
 FACTORYLOOP:
+	lda #$00
+	sta CONFIGYET
 	lda FACTORY,X
 	sta PARMS,X
 	dex
@@ -286,6 +291,71 @@ PARMDFTNEXT:
 	lda #$01	; Index for 'NO' save
 	sta PARMS+BSAVEP
 	rts
+
+;---------------------------------------------------------
+; FindSlot - Find a comms device
+;---------------------------------------------------------
+FindSlot:
+	lda #$00
+	sta UTILPTR
+	sta TempSlot
+	sta TempIIgsSlot
+	ldx #$07 ; Slot number
+FindSlotLoop:
+	clc
+	txa
+	adc #$c0
+	sta UTILPTR+1
+	ldy #$05	; Lookup offset
+	lda (UTILPTR),y
+	cmp #$38	; Is $Cn05 == $38?
+	bne FindSlotNext
+	ldy #$07	; Lookup offset
+	lda (UTILPTR),y
+	cmp #$18	; Is $Cn07 == $18?
+	bne FindSlotNext
+	ldy #$0b	; Lookup offset
+	lda (UTILPTR),y
+	cmp #$01	; Is $Cn0B == $01?
+	bne FindSlotNext
+	ldy #$0c	; Lookup offset
+	lda (UTILPTR),y
+	cmp #$31	; Is $Cn0C == $31?
+	bne FindSlotNext
+; Ok, we have a set of signature bytes for a comms card (or IIgs).
+	ldy #$1b	; Lookup offset
+	lda (UTILPTR),y
+	cmp #$eb	; Do we have a goofy XBA instruction?
+	bne FoundSSC	; If not, it's an SSC.
+	cpx #$02	; Only bothering to check IIgs Modem slot (2)
+	bne FindSlotNext
+	lda #$07	; We found the IIgs modem port, so store it
+	sta TempIIgsSlot
+	jmp FindSlotNext
+FoundSSC:
+	stx TempSlot
+FindSlotNext:
+	dex
+	bne FindSlotLoop
+; All done now, so clean up
+	sec
+	ldx TempSlot
+	beq :+
+	dex		; Subtract 1 to match slot# to parm index
+	stx PSSC
+	stx DEFAULT
+	clc
+	rts
+:	lda TempIIgsSlot
+	beq FindSlotDone	; Didn't find either SSC or IIgs Modem, so leave carry set
+	sta PSSC
+	sta DEFAULT
+	clc
+FindSlotDone:
+	rts
+TempSlot:	.byte 0
+TempIIgsSlot:	.byte 0
+
 ;---------------------------------------------------------
 ; Configuration
 ;---------------------------------------------------------
@@ -316,11 +386,9 @@ PSSC:	.byte 1		; Comms slot (2)
 PSPEED:	.byte 2		; Comms speed (115200)
 PSOUND:	.byte 0		; Sounds? (YES)
 PSAVE:	.byte 1		; Save parms? (NO)
-PGSSLOT:
-	.byte 1		; IIgs slot (2)
-
 DEFAULT:	.byte 1,2,0,1	; Default parm indices
 FACTORY:	.byte 1,2,0,1	; Factory default parm indices
+CONFIGYET:	.byte 0		; Has the user configged yet?
 BPSCTRL:	.byte $1E,$1F,$10
 YSAVE:		.byte $00
 BSAVEP		= $03	; Index to the 'Save parameters' parameter
