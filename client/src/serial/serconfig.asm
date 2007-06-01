@@ -338,13 +338,11 @@ FindSlotNext:
 	dex
 	bne FindSlotLoop
 ; All done now, so clean up
-	sec
 	ldx TempSlot
 	beq :+
 	dex		; Subtract 1 to match slot# to parm index
 	stx PSSC
 	stx DEFAULT
-	clc
 	rts
 :	lda TempIIgsSlot
 	beq FindSlotDone	; Didn't find either SSC or IIgs Modem, so leave carry set
