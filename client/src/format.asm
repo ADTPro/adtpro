@@ -477,28 +477,18 @@ BlkWriteLoop:
 	lda MLIBlk
 	cmp #$05
 	beq BlkRemainder	; Break out if we're done
-	cmp #$15
-	beq BlkBig
 	cmp #$06		; Is this the first page?
-	bne BlkNext
+	bne BlkWrite
 	lda #$00		; If so, mark first blocks used
 	sta $6800
 	sta $6801
 	lda #$03
 	sta $6802
 	jmp BlkWrite
-BlkNext:
-	lda #$ff
-	sta $69ff
 BlkWrite:
 	jsr Call2MLI		; Write Buffer (BitMap) to block on the disk
 	dec MLIBlk
 	jmp BlkWriteLoop
-
-BlkBig:
-	lda #$fe		; If so...
-	sta $69ff		;  tick off the very last block
-	jmp BlkWrite
 
 BlkRemainder:
 	jsr ZeroFill6800
