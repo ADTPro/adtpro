@@ -1,7 +1,7 @@
 	.include "applechr.i"
 
 ;--------------------------------
-; Apple Disk Transfer 1.31
+; Apple Disk Transfer
 ; By Paul Guertin
 ; pg@sff.net
 ; DISTRIBUTE FREELY
@@ -15,6 +15,11 @@
 ; SSC, IIgs or compatible hardware is required.
 
 ; Version History:
+
+; Version 1.32 June 2007
+; David Schmidt
+; - Scan slots for initial/default comms device
+; - Managed interrupt disabling/enabling correctly
 
 ; Version 1.31 December 2006
 ; David Schmidt
@@ -275,6 +280,67 @@ dircont:
 	jmp	putc		; ESCAPE, SEND 00 AND RETURN
 
 ;---------------------------------------------------------
+; FindSlot - Find a comms device
+;---------------------------------------------------------
+FindSlot:
+	lda #$00
+	sta msgptr		; Borrow msgptr
+	sta TempSlot
+	sta TempIIgsSlot
+	ldx #$07		; Slot number - start high
+FindSlotLoop:
+	clc
+	txa
+	adc #$c0
+	sta msgptr+1
+	ldy #$05		; Lookup offset
+	lda (msgptr),y
+	cmp #$38		; Is $Cn05 == $38?
+	bne FindSlotNext
+	ldy #$07		; Lookup offset
+	lda (msgptr),y
+	cmp #$18		; Is $Cn07 == $18?
+	bne FindSlotNext
+	ldy #$0b		; Lookup offset
+	lda (msgptr),y
+	cmp #$01		; Is $Cn0B == $01?
+	bne FindSlotNext
+	ldy #$0c		; Lookup offset
+	lda (msgptr),y
+	cmp #$31		; Is $Cn0C == $31?
+	bne FindSlotNext
+; Ok, we have a set of signature bytes for a comms card (or IIgs).
+	ldy #$1b		; Lookup offset
+	lda (msgptr),y
+	cmp #$eb		; Do we have a goofy XBA instruction?
+	bne FoundSSC		; If not, it's an SSC.
+	cpx #$02		; Only bothering to check IIgs Modem slot (2)
+	bne FindSlotNext
+	lda #$07		; We found the IIgs modem port, so store it
+	sta TempIIgsSlot
+	jmp FindSlotNext
+FoundSSC:
+	stx TempSlot
+FindSlotNext:
+	dex
+	bne FindSlotLoop
+; All done now, so clean up
+	ldx TempSlot
+	beq :+
+	dex			; Subtract 1 to match slot# to parm index
+	stx pssc
+	stx default+2		; Store the slot number discovered as default
+	rts
+:	lda TempIIgsSlot
+	beq FindSlotDone	; Didn't find either SSC or IIgs Modem
+	sta pssc
+	sta default+2		; Store the slot number discovered as default
+FindSlotDone:
+	rts
+TempSlot:	.byte 0
+TempIIgsSlot:	.byte 0
+
+;---------------------------------------------------------
 ; CONFIG - ADT CONFIGURATION
 ;---------------------------------------------------------
 config:
@@ -463,96 +529,84 @@ oldparm:
 	.res	parmnum		; Old parameters saved here
 
 ;---------------------------------------------------------
-; BSAVE - Save a copy of ADT in memory
+; bsave - Save a copy of ADT in memory
 ;---------------------------------------------------------
 bsave:
-	lda length+1
-	lsr
-	lsr
-	lsr
-	lsr
-	clc
-	cmp #$09
-	bcc bs1			; A is greater than 9
-	adc #$B6
-	jmp bs2
-bs1:
-	ora #$B0
-bs2:
-	sta nybble1
-	lda length+1
-	and #$0F
-	clc
-	cmp #$09
-	bcc bs3			; A is greater than 9
-	adc #$B6
-	jmp bs4
-bs3:
-	ora #$B0
-bs4:
-	sta nybble2
-
-	lda length
-	lsr
-	lsr
-	lsr
-	lsr
-	clc
-	cmp #$09
-	bcc bs5			; A is greater than 9
-	adc #$B6
-	jmp bs6
-bs5:
-	ora #$B0
-bs6:
-	sta nybble3
-	lda length
-	and #$0F
-	clc
-	cmp #$09
-	bcc bs7			; A is greater than 9
-	adc #$B6
-	jmp bs8
-bs7:
-	ora #$B0
-bs8:
-	sta nybble4
+	lda	length+1	; Convert 16-bit length to a hex string
+	pha
+	jsr	tochrhi		; Hi nybble, hi byte
+	sta	nybble1
+	pla
+	jsr	tochrlo		; Lo nybble, hi byte
+	sta	nybble2
+	lda	length
+	pha
+	jsr	tochrhi		; Hi nybble, lo byte
+	sta	nybble3
+	pla
+	jsr	tochrlo		; Lo nybble, lo byte
+	sta	nybble4
 
 patch:				; Patch in our "error handler:"
-	lda #$85		; It saves the DOS error code in $DE
-	sta $A6D2
-	lda #$DE		; sta $DE
-	sta $A6D3
-	lda #$60		; rts - return from error
-	sta $A6D4
+	lda	#$85		; It saves the DOS error code in $DE
+	sta	$A6D2
+	lda	#$DE		; sta $DE
+	sta	$A6D3
+	lda	#$60		; rts - return from error
+	sta	$A6D4
 
-	ldx #$00
-	stx $DE
-lewp:
-	lda command,X
-	beq :+
-	jsr cout
+	ldx	#$00
+	stx	$DE
+
+cmdloop:			; Send BSAVE command to DOS
+	lda	command,X
+	beq	:+
+	jsr	cout
 	inx
-	jmp lewp
+	jmp	cmdloop
 :
-	lda $DE
-	beq bsavedone
+	lda	$DE		; Everything cool?
+	beq	bsavedone	; All done
 err:
-	ldy #mdoserr
-	jsr showm1
-	cmp #$0a		; File locked?
-	bne :+
-	ldy #mdos0a
-	jmp ermsg
-:	cmp #$04		; Write protected?
-	bne :+
-	ldy #mdos04
-	jmp ermsg
-:	ldy #mdos08		; Catch-all: I/O error
-ermsg:	jsr showm1
+	ldy	#mdoserr
+	jsr	showm1
+	cmp	#$0a		; File locked?
+	bne	:+
+	ldy	#mdos0a
+	jmp	ermsg
+:	cmp	#$04		; Write protected?
+	bne	:+
+	ldy	#mdos04
+	jmp	ermsg
+:	ldy	#mdos08		; Catch-all: I/O error
+ermsg:	jsr	showm1
 
 bsavedone:
-	jsr pause
+	jsr	pause
+	rts
+
+;---------------------------------------------------------
+; tochrlo/hi:
+; Convert a nybble in A to a character representing its
+; hex value, returned in A
+;---------------------------------------------------------
+tochrlo:
+	and	#$0f
+	jmp	tochrgo
+tochrhi:
+	lsr
+	lsr
+	lsr
+	lsr
+tochrgo:
+	clc
+	cmp	#$09
+	bcc	gt9		; A is greater than 9
+	adc	#$B6
+	jmp	tochrdone
+gt9:
+	ora	#$B0
+tochrdone:
 	rts
 
 command:
@@ -664,8 +718,6 @@ rwtsmod:
 	jmp	initssc		; Y holds slot number
 
 iigs:
-	lda	#$02
-	sta	pgsslot
 	jmp	initzgs
 	rts
 
@@ -1142,6 +1194,10 @@ crcsave:
 ; PARMDFT - RESET PARAMETERS TO DEFAULT VALUES (USES AX)
 ;---------------------------------------------------------
 parmdft:
+	lda	configyet
+	bne	warmer		; If no manual config yet, scan the slots
+	jsr	FindSlot
+warmer:
 	ldx	#parmnum-1
 dftloop:
 	lda	default,x
@@ -1261,9 +1317,9 @@ msgtbl: .addr	msg01,msg02,msg03,msg04,msg05,msg06,msg07
 
 msg01:	asc	"SSC:S"
 mtssc:	asc	" ,"
-mtspd:	asc	"       "
-	inv	"+ ADT 1.31 +"
-	asc	"   DISK:S"
+mtspd:	asc	"        "
+	inv	" ADT 1.32 "
+	asc	"    DISK:S"
 mtslt:	asc	" ,D"
 mtdrv:	asc	" "
 	.byte	$8d,$8d,$8d
@@ -1322,7 +1378,7 @@ msg18:	ascz	"  ANY KEY: "
 
 msg19:	ascz	"<- DO NOT CHANGE"
 
-msg20:	asccr	"APPLE DISK TRANSFER 1.31     2006-12-20"
+msg20:	asccr	"APPLE DISK TRANSFER 1.32      2007-6-1"
 	ascz	"PAUL GUERTIN (SSC AND IIGS COMPATIBLE)"
 
 msg21:	ascz	"TESTING DISK FORMAT."
@@ -1341,9 +1397,10 @@ msg27:	ascz	"I/O ERROR"
 
 ;----------------------- PARAMETERS ----------------------
 
+configyet:
+	.byte	0		; Has the user configged yet?
 parmsiz:
 	.byte	7,2,8,7,8,8,2,2,2 ;#OPTIONS OF EACH PARM
-
 parmtxt:
 	.byte	_'1',0,_'2',0,_'3',0,_'4',0,_'5',0,_'6',0,_'7',0
 	.byte	_'1',0,_'2',0
@@ -1374,14 +1431,12 @@ parmtxt:
 parms:
 pdslot: .byte	5		; DISK SLOT (6)
 pdrive: .byte	0		; DISK DRIVE (1)
-pssc:	.byte	1		; SSC SLOT (2)
-pspeed: .byte	6		; SSC SPEED (115.2K)
+pssc:	.byte	1		; COMMS SLOT (2)
+pspeed: .byte	6		; COMMS SPEED (115k)
 pretry: .byte	1,0		; READ/WRITE MAX RETRIES (1,0)
 pcksum: .byte	0		; USE RWTS CHECKSUMS? (Y)
 psound: .byte	0		; SOUND AT END OF TRANSFER? (Y)
 psave:	.byte	1		; SAVE? (N)
-pgsslot:
-	.byte 1			; IIgs slot (2)
 
 ;-------------------------- IOB --------------------------
 

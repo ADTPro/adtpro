@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project name="ADTPro" default="all" basedir="..">
-	<property name="versionString" value="v.r.m" />
+	<property name="versionString" value="0.2.6" />
 	<property name="distName" value="ADTPro-${versionString}" />
 	<property name="volName" value="ADTPro.${versionString}" />
-	<property name="dosVersionString" value="131" />
+	<property name="dosVersionString" value="132" />
 	<property name="dosDistName" value="ADT${dosVersionString}" />
 	<property name="projdir" value="${basedir}" />
 	<property name="builddir" value="${basedir}/build" />
@@ -90,7 +90,7 @@
 			<fileset dir="${projdir}/client/src/ip65" includes="**/*.s"/>
 		</apply>
 		<!--
-		Package the IP65 stack library
+		sPackage the IP65 stack library
 		-->
 		<apply executable="${assemblerPath}/ar65" dir="${projdir}/client/src/ip65">
 			<arg line="a ip65.lib "/>

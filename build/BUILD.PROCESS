@@ -10,14 +10,16 @@ the stuff that gets uploaded to sourceforge.
 
 1. Make sure the version number is updated.  Places where 
    the version number is encoded:
-	*	build/build.xml: <property name="versionString" value="v.r.m" />
-	*	client/src/print.asm: MSG01 .as -'v.r.m'
-	*	org/adtpro/resources/messages.properties: Version.Number=v.r.m
-	*	org/adtpro/resources/messages.properties: Gui.AboutText=Apple Disk Transfer ProDOS (ADTPro) v.r.m
+	* build/build.xml: <property name="versionString" value="v.r.m" />
+	* DOS version number, if necessary: <property name="dosVersionString" value="vrm" />
+	* client/src/print.asm: MSG01 .as -'v.r.m'
+	* org/adtpro/resources/messages.properties: Version.Number=v.r.m
+	* org/adtpro/resources/messages.properties: Gui.AboutText=Apple Disk Transfer ProDOS (ADTPro) v.r.m
 
 2. Make sure you've got the latest DOS ADT from the Berlios project;
    ensure the default baud rate is changed to 115k (Search for pspeed:
-   and make it 6, not 5)
+   and make it 6, not 5; search for default: and make the '5' in position
+   4 be '6')
 
 3. Perform a build
 
