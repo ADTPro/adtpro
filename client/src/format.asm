@@ -32,44 +32,44 @@
 ;* erating System.  These routines *<----------------------------|   *
 ;* can be included within your own * Except it now includes code for *
 ;* software as long as you give us * the 3.5 Disk and the Ram3 Disk. *
-;* credit for developing them.     *  Please don't use this for any  *
+;* credit for developing them.     * (Please don't use this for any  *
 ;*                                 * SmartPort volumes bigger than   *
-;*       Updated on: 23Aug85       * 2.1 Meg. Look under Hyper-FORMAT*
-;*                                 * in you local BB Library for the *
-;*********************************** original code for Hyper-FORMAT  *
-;                                  *                                 *
+;*       Updated on: 23Aug85       * 2.1 Meg.) - fixed to a certain  *
+;*                                 * extent in ADTPro version        *
+;***********************************                                 *
 ;                                  *      Updated on: 22Dec89        *
+;                                  *     Updated on: 02Jun2007       *
 ;                                  *                                 *
 ;                                  ***********************************
 
-Home     =  $FC58		;Monitor clear screen and home cursor
-DevCnt   =  $BF31		;Prodos device count
-DevList  =  $BF32		;List of devices for ProDOS
-DevAdr   =  $BF10		;Given slot this is the address of driver
-Buffer   =  $0  		;Address pointer for FORMAT data
-CH       =  $24 		;Storage for Horizontal Cursor value
-IN       =  $200		;Keyboard input buffer
-WARMDOS  =  $BE00		;BASIC Warm-start vector
-MLI      =  $BF00		;ProDOS Machine Language Interface
-LAST     =  $BF30		;Last device accessed by ProDOS
-STROUT   =  $DB3A		;Applesoft's string printer
-WAIT     =  $FCA8		;Delay routine
-CLRLN    =  $FC9C		;Clear Line routine
-RDKEY    =  $FD0C		;Character input routine  (read keyboard)
-PRBYTE   =  $FDDA		;Print Byte routine (HEX value)
-COUT     =  $FDED		;Character output routine (print to screen)
-Step0    =  $C080		;Drive stepper motor positions
-Step1    =  $C081		;  |      |      |       |
-Step2    =  $C082		;  |      |      |       |
-Step4    =  $C084		;  |      |      |       |
-Step6    =  $C086		;  |      |      |       |
-DiskOFF  =  $C088		;Drive OFF  softswitch
-DiskON   =  $C089		;Drive ON   softswitch
-Select   =  $C08A		;Starting offset for target device
-DiskRD   =  $C08C		;Disk READ  softswitch
-DiskWR   =  $C08D		;Disk WRITE softswitch
-ModeRD   =  $C08E		;Mode READ  softswitch
-ModeWR   =  $C08F		;Mode WRITE softswitch
+Home     =  $FC58		; Monitor clear screen and home cursor
+DevCnt   =  $BF31		; Prodos device count
+DevList  =  $BF32		; List of devices for ProDOS
+DevAdr   =  $BF10		; Given slot this is the address of driver
+Buffer   =  $07 		; Address pointer for FORMAT data
+CH       =  $24 		; Storage for Horizontal Cursor value
+IN       =  $200		; Keyboard input buffer
+WARMDOS  =  $BE00		; BASIC Warm-start vector
+MLI      =  $BF00		; ProDOS Machine Language Interface
+LAST     =  $BF30		; Last device accessed by ProDOS
+STROUT   =  $DB3A		; Applesoft's string printer
+WAIT     =  $FCA8		; Delay routine
+CLRLN    =  $FC9C		; Clear Line routine
+RDKEY    =  $FD0C		; Character input routine  (read keyboard)
+PRBYTE   =  $FDDA		; Print Byte routine (HEX value)
+COUT     =  $FDED		; Character output routine (print to screen)
+Step0    =  $C080		; Drive stepper motor positions
+Step1    =  $C081		;   |      |      |       |
+Step2    =  $C082		;   |      |      |       |
+Step4    =  $C084		;   |      |      |       |
+Step6    =  $C086		;   |      |      |       |
+DiskOFF  =  $C088		; Drive OFF  softswitch
+DiskON   =  $C089		; Drive ON   softswitch
+Select   =  $C08A		; Starting offset for target device
+DiskRD   =  $C08C		; Disk READ  softswitch
+DiskWR   =  $C08D		; Disk WRITE softswitch
+ModeRD   =  $C08E		; Mode READ  softswitch
+ModeWR   =  $C08F		; Mode WRITE softswitch
 ;**********************************************************
 ; Equates
 ;**********************************************************
@@ -77,95 +77,97 @@ ModeWR   =  $C08F		;Mode WRITE softswitch
 HypForm:
 	tsx
 	stx Stack
-	lda LAST		;Store current slot/drive # in Slot
-	sta QSlot		;Save Prodos's last device accessed
-	jsr Home		;Clears screen
+	lda LAST		; Store current slot/drive # in Slot
+	sta QSlot		; Save Prodos's last device accessed
+	jsr Home		; Clears screen
 	jsr MLI
 	.byte $42
-	.addr NetParms		;Call for Appletalk which isn't wanted
+	.addr NetParms		; Call for Appletalk which isn't wanted
 	bcc NotError
-	cmp #$01		;Even though everyone said that this
-	beq Reentry		; should happen I never could get it.
-	cmp #$04		;Got this but don't try to change the
-	beq Reentry		; parameter count to 1 or #$%@&*^()
+	cmp #$01		; Even though everyone said that this
+	beq Reentry		;  should happen I never could get it.
+	cmp #$04		; Got this but don't try to change the
+	beq Reentry		;  parameter count to 1 or #$%@&*^()
 NotError:
 	lda NetDev
 	jsr HexDec
-	lda #<Appletalk	;Prompt to continue or not
-	ldy #>Appletalk	;because Appletalk is installed
+	lda #<Appletalk		; Prompt to continue or not
+	ldy #>Appletalk		;  because Appletalk is installed
 	jsr STROUT
 	jsr GetYN
 	beq Reentry
 	jmp MExit
 Reentry:
-	jsr Home		;Clears screen
-	lda #<TargSlt		;Prompt for slot
+	lda #$DD
+	sta $33			; Set Applesoft prompt
+	jsr Home		; Clears screen
+	lda #<TargSlt		; Prompt for slot
 	ldy #>TargSlt
 	jsr STROUT
 LSlot:
-	jsr RDKEY		;Get a keypress
-	cmp #$B0		;Less than slot #1?
+	jsr RDKEY		; Get a keypress
+	cmp #$B0		; Less than slot #1?
 	bcc LSlot
-	cmp #$B8		;Greater than slot #7?
+	cmp #$B8		; Greater than slot #7?
 	bcs LSlot
-	sta Buffer		;Store SLOT number in Buffer
-	jsr COUT		;Print it on the screen
-	lda #<TargDrv		;Prompt for drive
+	sta Buffer		; Store SLOT number in Buffer
+	jsr COUT		; Print it on the screen
+	lda #<TargDrv		; Prompt for drive
 	ldy #>TargDrv
 	jsr STROUT
 LDrive:
-	jsr RDKEY		;Get a keypress
-	cmp #$B1		;Drive #1?
+	jsr RDKEY		; Get a keypress
+	cmp #$B1		; Drive #1?
 	beq LConvert
-	cmp #$B2		;Drive #2?
+	cmp #$B2		; Drive #2?
 	bne LDrive
 LConvert:
-	sta Buffer+1		;Store DRIVE number in Buffer+1
-	jsr COUT		;Print it on the screen
-	jsr DOTWO		;Print two carriage returns
-	lda Buffer		;Fetch the SLOT number
-	and #$0F		;Mask off the upper 4 bits
-	rol a			;Move lower 4 bits to upper 4 bits
-	rol a
-	rol a
-	rol a
-	sta Slot		;Store result in FORMAT slot
+	sta Buffer+1		; Store DRIVE number in Buffer+1
+	jsr COUT		; Print it on the screen
+	jsr DOTWO		; Print two carriage returns
+	lda Buffer		; Fetch the SLOT number
+	and #$0F		; Mask off the upper 4 bits
+	asl a			; Move lower 4 bits to upper 4 bits
+	asl a
+	asl a
+	asl a
+	sta Slot		; Store result in FORMAT slot
 	tax
-	lda Buffer+1		;Fetch the DRIVE number
-	cmp #$B1		;Does Slot need conditioning?
-	beq Jump5		;Nope
+	lda Buffer+1		; Fetch the DRIVE number
+	cmp #$B1		; Does Slot need conditioning?
+	beq Jump5		; Nope
 Jump1:
-	lda Slot		;Fetch FORMAT slot
-	ora #$80		;Set MSB to indicate drive #2
+	lda Slot		; Fetch FORMAT slot
+	ora #$80		; Set MSB to indicate drive #2
 	sta Slot
 	tax
 Jump5:
-	ldy DevCnt		;Load how many devices
+	ldy DevCnt		; Load how many devices
 FLoop:
-	lda DevList,y		; since this isn't a sequential
-	sta ListSlot		; list then must go through each one
-	and #$F0		; must also store what is there for later
+	lda DevList,y		;  since this isn't a sequential
+	sta ListSlot		;  list then must go through each one
+	and #$F0		;  must also store what is there for later
 	cmp Slot
 	beq ItIsNum
 	dey
 	bpl FLoop
-	jmp NoUnit		;Used to be bmi
+	jmp NoUnit		; Used to be bmi
 ItIsNum:
-	txa			;Make the slot the indexed register
-	lsr a			; for getting device drive controller
+	txa			; Make the slot the indexed register
+	lsr a			;  for getting device drive controller
 	lsr a
 	lsr a
 	tay
-	lda DevAdr,y		;Get it
-	sta Addr		; and save it
+	lda DevAdr,y		; Get it
+	sta Addr		;  and save it
 	lda DevAdr+1,y
 	sta Addr+1
 	tay
-	and #$F0		;Next see if it begins with a C0
+	and #$F0		; Next see if it begins with a C0
 	cmp #$C0
-	beq YesSmart		; and if it does is a very smart device
+	beq YesSmart		;  and if it does is a very smart device
 	txa
-	cmp #$B0		;If it isn't smart test for /Ram
+	cmp #$B0		; If it isn't smart test for /Ram
 	beq YesRam3
 	clc
 	ror a
@@ -174,13 +176,13 @@ ItIsNum:
 	ror a
 	and #$07
 	ora #$C0
-	sta Addr+1		;if it isn't either then treat it as
-	jmp YesSmart1		; smart and save what bank it is in.
+	sta Addr+1		; if it isn't either then treat it as
+	jmp YesSmart1		;  smart and save what bank it is in.
 
 YesRam3:
-	lda Addr+1		;If you think it is a /Ram then check
-	cmp #$FF		; the bits that tell you so.
-	beq Loop7		; Does the Address pointer start with FF
+	lda Addr+1		; If you think it is a /Ram then check
+	cmp #$FF		;  the bits that tell you so.
+	beq Loop7		;  Does the Address pointer start with FF
 	jmp NoUnit
 Loop7:
 	lda Addr		; And end with 00
@@ -194,8 +196,8 @@ Loop8:
 	beq Loop9
 	jmp NoUnit
 Loop9:
-	lda #<ItIsRam3		;Tell the preson that you think it is a
-	ldy #>ItIsRam3		; /Ram and if they want to continue
+	lda #<ItIsRam3		; Tell the person that you think it is a
+	ldy #>ItIsRam3		;  /Ram and ask if they want to continue
 	jsr STROUT
 	jsr GetYN
 	bne Jump2
@@ -206,14 +208,14 @@ Jump2:
 YesSmart:
 	tya
 	and #$0F
-	rol a			;Move lower 4 bits to upper 4 bits
+	rol a			; Move lower 4 bits to upper 4 bits
 	rol a
 	rol a
 	rol a
-	sta Slot		;Store result in FORMAT slot
+	sta Slot		; Store result in FORMAT slot
 YesSmart1:
-	lda Addr+1		;Check signiture bytes in the Cn page
-	sta Buffer+1		; for a smart device.
+	lda Addr+1		; Check signiture bytes in the Cn page
+	sta Buffer+1		;  for a smart device.
 	lda #$00
 	sta Buffer
 	ldy #$01
@@ -229,36 +231,40 @@ YesSmart1:
 	bne NoUnit
 	ldy #$FF
 	lda (Buffer),y
-	cmp #$00		;Apples DiskII
+	cmp #$00		; Apples DiskII
 	beq DiskII
-	cmp #$FF		;Wrong DiskII
-	beq NoUnit		; must be a smart device.
-	ldy #$07		;Test last signiture byte for the
-	lda (Buffer),y		; Protocol Converter.
+	cmp #$FF		; Wrong DiskII
+	beq NoUnit		;  must be a smart device.
+	ldy #$07		; Test last signiture byte for the
+	lda (Buffer),y		;  Protocol Converter.
 	cmp #$3C
-	beq YesSmart2		;Found a hard drive, CFFA, etc.
+	beq YesSmart2		; Found a hard drive, CFFA, etc.
 	cmp #$00
-	bne NoUnit		;It isn't so it's no device I know.
+	bne NoUnit		; It isn't so it's no device I know.
 YesSmart2:
-	lda #<ItIsSmart		;Tell them you think it is a SmartPort
-	ldy #>ItIsSmart		; device. and ask if they want to Format.
+	lda #<ItIsSmart		; Tell them you think it is a SmartPort
+	ldy #>ItIsSmart		;  device. and ask if they want to Format.
 	jsr STROUT
 	jsr GetYN
 	bne Jump3
-	jsr OldName		;Show old name and ask if proper Disk
-	jsr LName		;Get New name
-	jsr SmartForm		;Jump to routine to format Smart Drive
+	jsr OldName		; Show old name and ask if proper Disk
+	jsr LName		; Get New name
+	ldy #$FE
+	lda (Buffer),y
+	and #$08
+	sta ShouldLLFormat
+	jsr SmartForm		; Jump to routine to format Smart Drive
 	lda ListSlot
 	and #$F0
 	sta Slot
-	jsr CodeWr		;Jump to routine to produce Bit map
-	jmp Catalog		;Write Directory information to the disk
+	jsr CodeWr		; Jump to routine to produce Bit map
+	jmp Catalog		; Write Directory information to the disk
 Jump3:	jmp Again
 
 
 NoUnit:
-	lda #<UnitNone		;Prompt to continue or not Because
-	ldy #>UnitNone		;There is no unit number like that
+	lda #<UnitNone		; Prompt to continue or not Because
+	ldy #>UnitNone		; There is no unit number like that
 	jsr STROUT
 	jsr GetYN
 	bne Jump4
@@ -266,95 +272,95 @@ NoUnit:
 Jump4:	jmp MExit
 
 DiskII:
-	lda #<ItsaII		;Tell them you think it is a DiskII
+	lda #<ItsaII		; Tell them you think it is a DiskII
 	ldy #>ItsaII
 	jsr STROUT
 	jsr GetYN
 	bne Jump3
-	lda #$18		;Set VolBlks to 280 ($118)
-	ldx #$01		; Just setting default settings
+	lda #$18		; Set VolBlks to 280 ($118)
+	ldx #$01		;  Just setting default settings
 	ldy #$00
 	sta VolBlks
 	stx VolBlks+1
 	sty VolBlks+2
-	jsr OldName		;Prompt for proper disk.
-	jsr LName		;Get new name
-	jmp DIIForm		;Format DiskII
+	jsr OldName		; Prompt for proper disk.
+	jsr LName		; Get new name
+	jmp DIIForm		; Format DiskII
 
 LName:
 	lda #<VolName
 	ldy #>VolName
 	jsr STROUT
 LRdname:
-	lda #$0E		;Reset CH to 14
+	lda #$0E		; Reset CH to 14
 	sta CH
 	ldx #$00
-	beq LInput		;Always taken
+	beq LInput		; Always taken
 LBackup:
-	cpx #0  		;Handle backspaces
+	cpx #0  		; Handle backspaces
 	beq LRdname
 	dex
-	lda #$88		;<--
+	lda #$88		; <--
 	jsr COUT
 LInput:
-	jsr RDKEY		;Get a keypress
-	cmp #$88		;Backspace?
+	jsr RDKEY		; Get a keypress
+	cmp #$88		; Backspace?
 	beq LBackup
-	cmp #$FF		;Delete?
+	cmp #$FF		; Delete?
 	beq LBackup
-	cmp #$8D		;C/R is end of input
+	cmp #$8D		; C/R is end of input
 	beq LFormat
-	cmp #$AE		;(periods are ok...)
+	cmp #$AE		; (periods are ok...)
 	beq LStore
-	cmp #$B0		;Less than '0'?
+	cmp #$B0		; Less than '0'?
 	bcc LInput
-	cmp #$BA		;Less than ':'?
-	bcc LStore		;Valid. Store the keypress
-	and #$DF		;Force any lower case to upper case
-	cmp #$C0		;Less than 'A'?
+	cmp #$BA		; Less than ':'?
+	bcc LStore		; Valid. Store the keypress
+	and #$DF		; Force any lower case to upper case
+	cmp #$C0		; Less than 'A'?
 	beq LInput
-	cmp #$DB		;Greater than 'Z'?
+	cmp #$DB		; Greater than 'Z'?
 	bcs LInput
 LStore:
-	jsr COUT		;Print keypress on the screen
-	and #$7F		;Clear MSB
-	sta VOLnam,x		;Store character in VOLnam
+	jsr COUT		; Print keypress on the screen
+	and #$7F		; Clear MSB
+	sta VOLnam,x		; Store character in VOLnam
 	inx
-	cpx #$0E		;Have 15 characters been entered?
+	cpx #$0E		; Have 15 characters been entered?
 	bcc LInput
 LFormat:
-	txa			;See if default VOLUME_NAME was taken
+	txa			; See if default VOLUME_NAME was taken
 	bne LSetLEN
 WLoop:
-	lda Blank,x		;Transfer 'BLANK' to VOLnam
-	and #$7F		;Clear MSB
+	lda Blank,x		; Transfer 'BLANK' to VOLnam
+	and #$7F		; Clear MSB
 	sta VOLnam,x
 	inx
-	cpx #$05		;End of transfer?
+	cpx #$05		; End of transfer?
 	bcc WLoop
-	lda #$13		;Reset CH to 19
+	lda #$13		; Reset CH to 19
 	sta CH
 LSetLEN:
-	jsr CLRLN		;Erase the rest of the line
+	jsr CLRLN		; Erase the rest of the line
 	clc
-	txa			;Add $F0 to Volume Name length
-	adc #$F0		;Create STORAGE_TYPE, NAME_LENGTH byte
+	txa			; Add $F0 to Volume Name length
+	adc #$F0		; Create STORAGE_TYPE, NAME_LENGTH byte
 	sta VolLen
 	rts
 
 DIIForm:
-	jsr Format		;Format the disk
-	jsr CodeWr		;Form Bitmap
-	jmp Catalog		;Write Directory information to the disk
+	jsr Format		; Format the disk
+	jsr CodeWr		; Form Bitmap
+	jmp Catalog		; Write Directory information to the disk
 
 ;**********************************
 ;*                                *
 ;* Write Block0, Block1 to disk   *
 ;*                                *
 ;**********************************
-CodeWr:	lda #$81		;Set Opcode to WRITE
+CodeWr:	lda #$81		; Set Opcode to WRITE
 	sta Opcode
-	lda #$00		;Set MLIBlk to 0
+	lda #$00		; Set MLIBlk to 0
 	sta MLIBlk
 	sta MLIBlk+1
 	lda #$00
@@ -389,21 +395,21 @@ Block1Loop:			; Block 1 has alternating pattern of $42, $48 on HDs
 	dex
 	bne Block1Loop
 
-	lda #$01		;Set MLIBlk to 1
+	lda #$01		; Set MLIBlk to 1
 	sta MLIBlk
-	jsr CallMLI		;Write block #1 to target disk	
+	jsr CallMLI		; Write block #1 to target disk	
 	jmp Fill
 
 NoHD:
-	lda #<BootCode		;Set MLIbuf to BootCode
+	lda #<BootCode		; Set MLIbuf to BootCode
 	ldy #>BootCode
 	sta MLIbuf
 	sty MLIbuf+1
-	jsr CallMLI		;Write block #0 to target disk
+	jsr CallMLI		; Write block #0 to target disk
 	jsr ZeroFill6800
-	lda #$01		;Set MLIBlk to 1
+	lda #$01		; Set MLIBlk to 1
 	sta MLIBlk
-	jsr CallMLI		;Write block #1 to target disk	
+	jsr CallMLI		; Write block #1 to target disk	
 
 ;**************************************
 ;*                                    *
@@ -412,26 +418,26 @@ NoHD:
 ;*                                    *
 ;**************************************
 Fill:
-	lda #$05		;Block 5 on Disk
+	lda #$05		; Block 5 on Disk
 	sta MLIBlk
 	jsr ZeroFill6800
-	lda #$05		;Length of DirTbl
+	lda #$05		; Length of DirTbl
 	sta Count
 LLink:
 	ldx Count
-	lda DirTbl,x		;Move Directory Link values into Buffer
-	sta $6802		;Store next Directory block #
+	lda DirTbl,x		; Move Directory Link values into Buffer
+	sta $6802		; Store next Directory block #
 	dex
-	lda DirTbl,x		;Fetch another # from DirTbl
-	sta $6800		;Store previous Directory block #
+	lda DirTbl,x		; Fetch another # from DirTbl
+	sta $6800		; Store previous Directory block #
 	dex
 	stx Count
-	jsr CallMLI		;Write Directory Link values to disk
+	jsr CallMLI		; Write Directory Link values to disk
 LDec:
-	dec MLIBlk		;Decrement MLI block number
-	lda MLIBlk		;See if MLIBlk = 2
+	dec MLIBlk		; Decrement MLI block number
+	lda MLIBlk		; See if MLIBlk = 2
 	cmp #$02
-	bne LLink		;Process another Link block
+	bne LLink		; Process another Link block
 
 ;**********************************
 ;*                                *
@@ -439,7 +445,6 @@ LDec:
 ;*                                *
 ;**********************************
 BlkCount:
-; fred
 ; Fill full pages first, then do remainder page
 	clc
 	lda VolBlks+1
@@ -472,23 +477,34 @@ BlkWriteLoop:
 	lda MLIBlk
 	cmp #$05
 	beq BlkRemainder	; Break out if we're done
+	cmp #$15
+	beq BlkBig
 	cmp #$06		; Is this the first page?
-	bne BlkWrite
+	bne BlkNext
 	lda #$00		; If so, mark first blocks used
 	sta $6800
 	sta $6801
 	lda #$03
 	sta $6802
+	jmp BlkWrite
+BlkNext:
+	lda #$ff
+	sta $69ff
 BlkWrite:
 	jsr Call2MLI		; Write Buffer (BitMap) to block on the disk
 	dec MLIBlk
 	jmp BlkWriteLoop
 
+BlkBig:
+	lda #$fe		; If so...
+	sta $69ff		;  tick off the very last block
+	jmp BlkWrite
+
 BlkRemainder:
 	jsr ZeroFill6800
-	lda VolBlks+1		;Where # of blocks are stored
+	lda VolBlks+1		; Where # of blocks are stored
 	ldx VolBlks
-	ldy VolBlks+2		;Can't deal with block devices this big
+	ldy VolBlks+2		; Can't deal with block devices this big
 	stx Count+1		; Divide the # of blocks by 8 for bitmap
 	lsr a			;  calculation
 	ror Count+1
@@ -549,13 +565,13 @@ Jump18:
 ;*                                   *
 ;*************************************
 Catalog:
-	lda #$81		;Change Opcode to $81 (WRITE)
+	lda #$81		; Change Opcode to $81 (WRITE)
 	sta Opcode
 	clc
 	lda #$06
 	adc FullPages
 	sta MLIBlk
-	lda #$00		;Reset MLIbuf to $6800
+	lda #$00		; Reset MLIbuf to $6800
 	ldx #$68
 	sta MLIbuf
 	stx MLIbuf+1
@@ -573,29 +589,29 @@ Catalog:
 	lda $BF93
 	sta Datime+3
 	jsr ZeroFill6800
-	ldy #$2A		;Move Block2 information to $6800
+	ldy #$2A		; Move Block2 information to $6800
 CLoop:
 	lda Block2,y
 	sta (Buffer),y
 	dey
 	bpl CLoop
-	lda #$02		;Write block #2 to the disk
+	lda #$02		; Write block #2 to the disk
 	sta MLIBlk
 	jsr Call2MLI
 Again:
-	lda #<Nuther		;Display 'Format another' string
+	lda #<Nuther		; Display 'Format another' string
 	ldy #>Nuther
 	jsr STROUT
-	jsr GetYN		;Get a Yes or No answer
-	bne MExit		;Answer was No...
-	jmp Reentry		;Format another disk
+	jsr GetYN		; Get a Yes or No answer
+	bne MExit		; Answer was No...
+	jmp Reentry		; Format another disk
 MExit:
-	jsr DOTWO		;Two final carriage returns...
+	jsr DOTWO		; Two final carriage returns...
 	lda QSlot
 	sta LAST
-	ldx Stack		;Just because I am human to and might
-	txs			;have messed up also.
-	jmp WARMDOS		;Exit to BASIC
+	ldx Stack		; Just because I am human to and might
+	txs			; have messed up also.
+	jmp WARMDOS		; Exit to BASIC
 Call2MLI:
 	jsr CallMLI
 	rts
@@ -607,14 +623,14 @@ Call2MLI:
 ;*                         *
 ;***************************
 GetYN:
-	jsr RDKEY		;Get a keypress
-	and #$DF		;Mask lowercase
-	cmp #$D9		;is it a Y?
+	jsr RDKEY		; Get a keypress
+	and #$DF		; Mask lowercase
+	cmp #$D9		; is it a Y?
 	beq LShow
-	lda #$BE		;Otherwise default to "No"
+	lda #$BE		; Otherwise default to "No"
 LShow:	
-	jsr COUT		;Print char, Z flag contains status
-	cmp #$D9		;Condition flag
+	jsr COUT		; Print char, Z flag contains status
+	cmp #$D9		; Condition flag
 	rts
 
 ;*************************************
@@ -625,8 +641,8 @@ LShow:
 ;*                                   *
 ;*************************************
 CallMLI:
-	jsr MLI 		;Call the ProDOS Machine Langauge Interface
-Opcode:	.byte $81		;Default MLI opcode = $81 (WRITE)
+	jsr MLI 		; Call the ProDOS Machine Langauge Interface
+Opcode:	.byte $81		; Default MLI opcode = $81 (WRITE)
 	.addr Parms
 	bcs Error
 	rts
@@ -654,26 +670,26 @@ DOTWO:
 ;*                                 *
 ;***********************************
 HexDec:
-	sta IN+20		;Store number in Keyboard Input Buffer
+	sta IN+20		; Store number in Keyboard Input Buffer
 	lda #$00
 	sta IN+21
-	ldy #$02		;Result will be three digits long
+	ldy #$02		; Result will be three digits long
 DLoop:
-	ldx #$11		;16 bits to process
+	ldx #$11		; 16 bits to process
 	lda #$00
 	clc
 LDivide:
 	rol a
-	cmp #$0A		;Value > or = to 10?
+	cmp #$0A		; Value > or = to 10?
 	bcc LPlus
-	SBC #$0A		;Subtract 10 from the value
+	SBC #$0A		; Subtract 10 from the value
 LPlus:	
-	rol IN+20		;Shift values in IN+20, IN+21 one bit left
+	rol IN+20		; Shift values in IN+20, IN+21 one bit left
 	rol IN+21
 	dex
 	bne LDivide
-	ora #$B0		;Convert value to high ASCII character
-	sta IN,y		;Store it in the input buffer
+	ora #$B0		; Convert value to high ASCII character
+	sta IN,y		; Store it in the input buffer
 	sta NetNum,y
 	dey
 	bpl DLoop
@@ -687,33 +703,33 @@ LPlus:
 Format:
 	php
 	sei
-	lda Slot		;Fetch target drive SLOTNUM value
-	pha			;Store it on the stack
-	and #$70		;Mask off bit 7 and the lower 4 bits
-	sta SlotF		;Store result in FORMAT slot storage
-	tax			;Assume value of $60 (drive #1)
-	pla			;Retrieve value from the stack
-	bpl LDrive1		;If < $80 the disk is in drive #1
-	inx			;Set X offset to $61 (drive #2)
+	lda Slot		; Fetch target drive SLOTNUM value
+	pha			; Store it on the stack
+	and #$70		; Mask off bit 7 and the lower 4 bits
+	sta SlotF		; Store result in FORMAT slot storage
+	tax			; Assume value of $60 (drive #1)
+	pla			; Retrieve value from the stack
+	bpl LDrive1		; If < $80 the disk is in drive #1
+	inx			; Set X offset to $61 (drive #2)
 LDrive1:
-	lda Select,x		;Set softswitch for proper drive
-	ldx SlotF		;Set X offset to FORMAT slot/drive
-	lda DiskON,x		;Turn the drive on
-	lda ModeRD,x		;Set Mode softswitch to READ
-	lda DiskRD,x		;Read a byte
-	lda #$23		;Assume head is on track 35
+	lda Select,x		; Set softswitch for proper drive
+	ldx SlotF		; Set X offset to FORMAT slot/drive
+	lda DiskON,x		; Turn the drive on
+	lda ModeRD,x		; Set Mode softswitch to READ
+	lda DiskRD,x		; Read a byte
+	lda #$23		; Assume head is on track 35
 	sta TRKcur
-	lda #$00		;Destination is track 0
+	lda #$00		; Destination is track 0
 	sta TRKdes
-	jsr Seek		;Move head to track 0
-	ldx SlotF		;Turn off all drive phases
+	jsr Seek		; Move head to track 0
+	ldx SlotF		; Turn off all drive phases
 	lda Step0,x
 	lda Step2,x
 	lda Step4,x
 	lda Step6,x
-	lda TRKbeg		;Move TRKbeg value (0) to Track
+	lda TRKbeg		; Move TRKbeg value (0) to Track
 	sta Track
-	jsr Build		;Build a track in memory at $6700
+	jsr Build		; Build a track in memory at $6700
 
 ;*******************************
 ;*                             *
@@ -721,29 +737,29 @@ LDrive1:
 ;*                             *
 ;*******************************
 Write:
-	jsr Calc		;Calculate new track/sector/checksum values
-	jsr Trans		;Transfer track in memory to disk
-	bcs DiedII		;If carry set, something died
+	jsr Calc		; Calculate new track/sector/checksum values
+	jsr Trans		; Transfer track in memory to disk
+	bcs DiedII		; If carry set, something died
 MInc:
-	inc Track		;Add 1 to Track value
-	lda Track		;Is Track > ending track # (TRKend)?
+	inc Track		; Add 1 to Track value
+	lda Track		; Is Track > ending track # (TRKend)?
 	cmp TRKend
-	beq LNext		;More tracks to FORMAT
-	bcs Done		;Finished.  Exit FORMAT routine
+	beq LNext		; More tracks to FORMAT
+	bcs Done		; Finished.  Exit FORMAT routine
 LNext:
-	sta TRKdes		;Move next track to FORMAT to TRKdes
-	jsr Seek		;Move head to that track
-	jmp Write		;Write another track
+	sta TRKdes		; Move next track to FORMAT to TRKdes
+	jsr Seek		; Move head to that track
+	jmp Write		; Write another track
 Done:
-	ldx SlotF		;Turn the drive off
+	ldx SlotF		; Turn the drive off
 	lda DiskOFF,x
 	plp
-	rts			;FORMAT is finished. Return to calling routine
+	rts			; FORMAT is finished. Return to calling routine
 DiedII:
-	pha			;Save MLI error code on the stack
+	pha			; Save MLI error code on the stack
 	jsr Done
-	pla			;Retrieve error code from the stack
-	jmp Died		;Prompt for another FORMAT...
+	pla			; Retrieve error code from the stack
+	jmp Died		; Prompt for another FORMAT...
 
 ;**************************************
 ;*                                    *
@@ -753,7 +769,7 @@ DiedII:
 ;*                                    *
 ;**************************************
 Died:
-	cmp #$4D		;Save MLI error code on the stack
+	cmp #$4D		; Save MLI error code on the stack
 	beq RangeError
 	cmp #$27
 	beq DriveOpen
@@ -779,16 +795,16 @@ Protected:
 	ldy #>Protect
 	jmp DiedOut
 NoDied:
-	pha			;Save MLI error code on the stack
+	pha			; Save MLI error code on the stack
 	lda #<UnRecog
 	ldy #>UnRecog
 	jsr STROUT
-	pla			;Retrieve error code from the stack
-	jsr PRBYTE		;Print the MLI error code
+	pla			; Retrieve error code from the stack
+	jsr PRBYTE		; Print the MLI error code
 	jmp Again
 DiedOut:
 	jsr STROUT
-	jmp Again		;Prompt for another FORMAT...
+	jmp Again		; Prompt for another FORMAT...
 
 ;************************************
 ;*                                  *
@@ -797,54 +813,54 @@ DiedOut:
 ;*                                  *
 ;************************************
 Trans:
-	lda #$00		;Set Buffer to $6700
+	lda #$00		; Set Buffer to $6700
 	ldx #$67
 	sta Buffer
 	stx Buffer+1
-	ldy #$32		;Set Y offset to 1st sync byte (max=50)
-	ldx SlotF		;Set X offset to FORMAT slot/drive
-	sec			;(assum the disk is write protected)
-	lda DiskWR,x		;Write something to the disk
-	lda ModeRD,x		;Reset Mode softswitch to READ
-	bmi LWRprot		;If > $7F then disk was write protected
-	lda #$FF		;Write a sync byte to the disk
+	ldy #$32		; Set Y offset to 1st sync byte (max=50)
+	ldx SlotF		; Set X offset to FORMAT slot/drive
+	sec			; (assum the disk is write protected)
+	lda DiskWR,x		; Write something to the disk
+	lda ModeRD,x		; Reset Mode softswitch to READ
+	bmi LWRprot		; If > $7F then disk was write protected
+	lda #$FF		; Write a sync byte to the disk
 	sta ModeWR,x
 	cmp DiskRD,x
-	nop			;(kill some time for WRITE sync...)
+	nop			; (kill some time for WRITE sync...)
 	jmp LSync2
 LSync1:
-	eor #$80		;Set MSB, converting $7F to $FF (sync byte)
-	nop			;(kill time...)
+	eor #$80		; Set MSB, converting $7F to $FF (sync byte)
+	nop			; (kill time...)
 	nop
 	jmp MStore
 LSync2:
-	pha			;(kill more time... [ sheesh! ])
+	pha			; (kill more time... [ sheesh! ])
 	pla
 LSync3:
-	lda (Buffer),y	;Fetch byte to WRITE to disk
-	cmp #$80		;Is it a sync byte? ($7F)
-	bcc LSync1		;Yep. Turn it into an $FF
+	lda (Buffer),y		; Fetch byte to WRITE to disk
+	cmp #$80		;  Is it a sync byte? ($7F)
+	bcc LSync1		;  Yep. Turn it into an $FF
 	nop
 MStore:
-	sta DiskWR,x		;Write byte to the disk
-	cmp DiskRD,x		;Set Read softswitch
-	iny			;Increment Y offset
+	sta DiskWR,x		; Write byte to the disk
+	cmp DiskRD,x		; Set Read softswitch
+	iny			; Increment Y offset
 	bne LSync2
-	inc Buffer+1		;Increment Buffer by 255
-	bpl LSync3		;If < $8000 get more FORMAT data
-	lda ModeRD,x		;Restore Mode softswitch to READ
-	lda DiskRD,x		;Restore Read softswitch to READ
+	inc Buffer+1		; Increment Buffer by 255
+	bpl LSync3		; If < $8000 get more FORMAT data
+	lda ModeRD,x		; Restore Mode softswitch to READ
+	lda DiskRD,x		; Restore Read softswitch to READ
 	clc
 	rts
 LWRprot:
-	clc			;Disk is write protected! (Nerd!)
-	jsr Done		;Turn the drive off
+	clc			; Disk is write protected! (Nerd!)
+	jsr Done		; Turn the drive off
 	lda #$2B
 	pla
 	pla
 	pla
 	pla
-	jmp Died		;Prompt for another FORMAT...
+	jmp Died		; Prompt for another FORMAT...
 
 ;************************************
 ;*                                  *
@@ -853,36 +869,36 @@ LWRprot:
 ;*                                  *
 ;************************************
 Build:
-	lda #$10		;Set Buffer to $6710
+	lda #$10		; Set Buffer to $6710
 	ldx #$67
 	sta Buffer
 	stx Buffer+1
-	ldy #$00		;(Y offset always zero)
-	ldx #$F0		;Build GAP1 using $7F (sync byte)
+	ldy #$00		; (Y offset always zero)
+	ldx #$F0		; Build GAP1 using $7F (sync byte)
 	lda #$7F
 	sta LByte
-	jsr LFill		;Store sync bytes from $6710 to $6800
-	lda #$10		;Set Count for 16 loops
+	jsr LFill		; Store sync bytes from $6710 to $6800
+	lda #$10		; Set Count for 16 loops
 	sta Count
 LImage:
-	ldx #$00		;Build a sector image in the Buffer area
+	ldx #$00		; Build a sector image in the Buffer area
 ELoop:
-	lda LAddr,x		;Store Address header, info & sync bytes
+	lda LAddr,x		; Store Address header, info & sync bytes
 	beq LInfo
 	sta (Buffer),y
-	jsr LInc		;Add 1 to Buffer offset address
+	jsr LInc		; Add 1 to Buffer offset address
 	inx
 	bne ELoop
 LInfo:
-	ldx #$AB		;Move 343 bytes into data area
-	lda #$96		;(4&4 encoded version of hex $00)
+	ldx #$AB		; Move 343 bytes into data area
+	lda #$96		; (4&4 encoded version of hex $00)
 	sta LByte
 	jsr LFill
 	ldx #$AC
 	jsr LFill
 	ldx #$00
 YLoop:
-	lda LData,x 		;Store Data Trailer and GAP3 sync bytes
+	lda LData,x 		; Store Data Trailer and GAP3 sync bytes
 	beq LDecCnt
 	sta (Buffer),y
 	jsr LInc
@@ -892,17 +908,17 @@ LDecCnt:
 	clc
 	dec Count
 	bne LImage
-	rts			;Return to write track to disk (WRITE)
+	rts			; Return to write track to disk (WRITE)
 LFill:
 	lda LByte
-	sta (Buffer),y		;Move A register to Buffer area
-	jsr LInc		;Add 1 to Buffer offset address
+	sta (Buffer),y		; Move A register to Buffer area
+	jsr LInc		; Add 1 to Buffer offset address
 	dex
 	bne LFill
 	rts
 LInc:
 	clc
-	inc Buffer		;Add 1 to Buffer address vector
+	inc Buffer		; Add 1 to Buffer address vector
 	bne LDone
 	inc Buffer+1
 LDone:	rts
@@ -915,45 +931,45 @@ LDone:	rts
 ;*                                 *
 ;***********************************
 Calc:
-	lda #$03		;Set Buffer to $6803
+	lda #$03		; Set Buffer to $6803
 	ldx #$68
 	sta Buffer
 	stx Buffer+1
-	lda #$00		;Set Sector to 0
+	lda #$00		; Set Sector to 0
 	sta Sector
 ZLoop:
-	ldy #$00		;Reset Y offset to 0
-	lda #$FE		;Set Volume # to 254 in 4&4 encoding
+	ldy #$00		; Reset Y offset to 0
+	lda #$FE		; Set Volume # to 254 in 4&4 encoding
 	jsr LEncode
-	lda Track		;Set Track, Sector to 4&4 encoding
+	lda Track		; Set Track, Sector to 4&4 encoding
 	jsr LEncode
 	lda Sector
 	jsr LEncode
-	lda #$FE		;Calculate the Checksum using 254
+	lda #$FE		; Calculate the Checksum using 254
 	eor Track
 	eor Sector
 	jsr LEncode
-	clc			;Add 385 ($181) to Buffer address
+	clc			; Add 385 ($181) to Buffer address
 	lda Buffer
 	adc #$81
 	sta Buffer
 	lda Buffer+1
 	adc #$01
 	sta Buffer+1
-	inc Sector		;Add 1 to Sector value
-	lda Sector		;If Sector > 16 then quit
+	inc Sector		; Add 1 to Sector value
+	lda Sector		; If Sector > 16 then quit
 	cmp #$10
 	bcc ZLoop
-	rts			;Return to write track to disk (WRITE)
+	rts			; Return to write track to disk (WRITE)
 LEncode:
-	pha			;Put value on the stack
-	lsr a   		;Shift everything right one bit
-	ora #$AA		;OR it with $AA
-	sta (Buffer),y		;Store 4&4 result in Buffer area
+	pha			; Put value on the stack
+	lsr a   		; Shift everything right one bit
+	ora #$AA		; OR it with $AA
+	sta (Buffer),y		; Store 4&4 result in Buffer area
 	iny
-	pla			;Retrieve value from the stack
-	ora #$AA		;OR it with $AA
-	sta(Buffer),y		;Store 4&4 result in Buffer area
+	pla			; Retrieve value from the stack
+	ora #$AA		; OR it with $AA
+	sta(Buffer),y		; Store 4&4 result in Buffer area
 	iny
 	rts
 
@@ -963,36 +979,36 @@ LEncode:
 ;*                                   *
 ;*************************************
 Seek:
-	lda #$00		;Set InOut flag to 0
+	lda #$00		; Set InOut flag to 0
 	sta LInOut
-	lda TRKcur		;Fetch current track value
+	lda TRKcur		; Fetch current track value
 	SEC
-	SBC TRKdes		;Subtract destination track value
-	beq LExit		;If = 0 we're done
+	SBC TRKdes		; Subtract destination track value
+	beq LExit		; If = 0 we're done
 	bcs LMove
-	eor #$FF		;Convert resulting value to a positive number
+	eor #$FF		; Convert resulting value to a positive number
 	adc #$01
 LMove:
-	sta Count		;Store track value in Count
-	rol LInOut		;Condition InOut flag
-	lsr TRKcur		;Is track # odd or even?
-	rol LInOut		;Store result in InOut
-	asl LInOut		;Shift left for .Table offset
+	sta Count		; Store track value in Count
+	rol LInOut		; Condition InOut flag
+	lsr TRKcur		; Is track # odd or even?
+	rol LInOut		; Store result in InOut
+	asl LInOut		; Shift left for .Table offset
 	ldy LInOut
 ALoop:
-	lda LTable,y		;Fetch motor phase to turn on
-	jsr Phase		;Turn on stepper motor
-	lda LTable+1,y		;Fetch next phase
-	jsr Phase		;Turn on stepper motor
+	lda LTable,y		; Fetch motor phase to turn on
+	jsr Phase		; Turn on stepper motor
+	lda LTable+1,y		; Fetch next phase
+	jsr Phase		; Turn on stepper motor
 	tya
-	eor #$02		;Adjust Y offset into LTable
+	eor #$02		; Adjust Y offset into LTable
 	tay
-	dec Count		;Subtract 1 from track count
+	dec Count		; Subtract 1 from track count
 	bne ALoop
-	lda TRKdes		;Move current track location to TRKcur
+	lda TRKdes		; Move current track location to TRKcur
 	sta TRKcur
 LExit:
-	rts			;Return to calling routine
+	rts			; Return to calling routine
 
 ;**********************************
 ;*                                *
@@ -1001,12 +1017,12 @@ LExit:
 ;*                                *
 ;**********************************
 Phase:
-	ora SlotF		;OR Slot value to PHASE
+	ora SlotF		; OR Slot value to PHASE
 	tax
-	lda Step1,x		;PHASE on...
-	lda #$56		;20 ms. delay
+	lda Step1,x		; PHASE on...
+	lda #$56		; 20 ms. delay
 	jsr WAIT
-	lda Step0,x		;PHASE off...
+	lda Step0,x		; PHASE off...
 	rts
 
 ;**********************************
@@ -1017,20 +1033,20 @@ Phase:
 Ram3Form:
 	php
 	sei
-	lda #3			;Format Request number
+	lda #3			; Format Request number
 	sta $42
-	lda Slot		;Slot of /Ram
+	lda Slot		; Slot of /Ram
 	sta $43
-	lda #$00		;Buffer space if needed Low byte
+	lda #$00		; Buffer space if needed Low byte
 	sta $44
-	lda #$67		; and high byte
+	lda #$67		;  and high byte
 	sta $45
 
-	lda $C08B		;Read and write Ram, using Bank 1
+	lda $C08B		; Read and write Ram, using Bank 1
 	lda $C08B
 
 	jsr Ram3Dri
-	bit $C082		;Read ROM, use Bank 2(Put back on line)
+	bit $C082		; Read ROM, use Bank 2(Put back on line)
 	bcs Ram3Err
 	plp
 	rts
@@ -1053,36 +1069,39 @@ Ram3Err:
 SmartForm:
 	php
 	sei
-	lda #0			;Request Protocol converter for a Status
+	lda #0			; Request Protocol converter for a Status
 	sta $42
-	lda ListSlot		;Give it the ProDOS Slot number
+	lda ListSlot		; Give it the ProDOS Slot number
 	and #$F0
 	sta $43
 	lda #$00		; Give it a buffer may not be needed by
 	sta $44			; give it to it anyways
 	lda #$68
 	sta $45
-	lda #$03		;The Blocks of Device
+	lda #$03		; The Blocks of Device
 	sta $46
 	jsr SmartDri
-	txa			;Low in X register
-	sta VolBlks		; Save it
-	tya			;High in Y register
-	sta VolBlks+1		; Save it
+	txa			; Low in X register
+	sta VolBlks		;  Save it
+	tya			; High in Y register
+	sta VolBlks+1		;  Save it
 	lda #$00
 	sta VolBlks+2
-	lda #3  		;Give Protocol Converter a Format Request
-	sta $42 		;Give it Slot number
+	lda ShouldLLFormat	; Will be $08 if so
+	beq SmartFormDone
+	lda #3  		; Give Protocol Converter a Format Request
+	sta $42 		; Give it Slot number
 	lda ListSlot
 	and #$F0
 	sta $43
-	lda #$00		;Give a buffer which probably won't be
-	sta $44 		; used.
+	lda #$00		; Give a buffer which probably won't be
+	sta $44 		;  used.
 	lda #$68
 	sta $45
 
 	jsr SmartDri
 	bcs SmartErr
+SmartFormDone:
 	plp
 	rts
 
@@ -1095,6 +1114,9 @@ SmartErr:
 	pla
 	txa
 	jmp Died
+
+ShouldLLFormat:
+	.res 1
 
 ;**********************************
 ;*                                *
@@ -1122,9 +1144,9 @@ OldName1:
 	lda #<TheOld1
 	ldy #>TheOld1
 	jsr STROUT
-	lda #<VolLen		;Get Name Length
+	lda #<VolLen		; Get Name Length
 	ldy #>VolLen
-	jsr STROUT		;Print old name
+	jsr STROUT		; Print old name
 	lda #<TheOld2
 	ldy #>TheOld2
 	jsr STROUT
@@ -1149,14 +1171,14 @@ ZeroFill6800:
 	lda #$00
 	pha
 Fill6800Go:
-	lda #$00		;Set Buffer, MLIbuf to $6800
+	lda #$00		; Set Buffer, MLIbuf to $6800
 	ldx #$68
 	sta MLIbuf
 	sta Buffer
 	stx MLIbuf+1
 	stx Buffer+1
-	tay			;Fill $6800-$69FF with zeros
-	ldx #$01		;Fill 2 pages of 256 bytes
+	tay			; Fill $6800-$69FF with zeros
+	ldx #$01		; Fill 2 pages of 256 bytes
 	pla
 LZero:
 	sta (Buffer),y
@@ -1165,7 +1187,7 @@ LZero:
 	inc Buffer+1
 	dex
 	bpl LZero
-	lda #$68		;Reset Buffer to $6800
+	lda #$68		; Reset Buffer to $6800
 	sta Buffer+1
 	rts
 
@@ -1178,39 +1200,39 @@ Info:
 	.byte $02
 	.res 1
 	.addr VolLen
-Parms:	.byte $03		;Parameter count = 3
-Slot:	.byte $60		;Default to S6,D1
-MLIbuf:	.addr BootCode	;Default buffer address
-MLIBlk:	.byte $00,$00	;Default block number of 0
-QSlot:	.res 1			;Quit Slot number
+Parms:	.byte $03		; Parameter count = 3
+Slot:	.byte $60		; Default to S6,D1
+MLIbuf:	.addr BootCode		; Default buffer address
+MLIBlk:	.byte $00,$00		; Default block number of 0
+QSlot:	.res 1			; Quit Slot number
 ListSlot:
-	.res 1			;Saving the slot total from the list
+	.res 1			; Saving the slot total from the list
 Addr:	.res 2
 NetParms:
 	.byte $00
-	.byte $2F		;Command for FIListSessions
-	.addr $0000		;Appletalk Result Code returned here
-	.addr $0100		;Length of string
-	.addr $6700		;Buffer low word
-	.addr $0000		;Buffer High word
-NetDev:	.byte $00		;Number of entries returned here
-LByte:	.res 1			;Storage for byte value used in Fill
+	.byte $2F		; Command for FIListSessions
+	.addr $0000		; Appletalk Result Code returned here
+	.addr $0100		; Length of string
+	.addr $6700		; Buffer low word
+	.addr $0000		; Buffer High word
+NetDev:	.byte $00		; Number of entries returned here
+LByte:	.res 1			; Storage for byte value used in Fill
 LAddr:
-	.byte $D5,$AA,$96	;Address header
-	.byte $AA,$AA,$AA,$AA,$AA,$AA,$AA,$AA ;Volume #, Track, Sector, Checksum
-	.byte $DE,$AA,$EB	;Address trailer
-	.byte $7f,$7f,$7f,$7f,$7f,$7f	;GAP2 sync bytes
-	.byte $D5,$AA,$AD	;Buffer header
-	.byte $00			;End of Address information
+	.byte $D5,$AA,$96	; Address header
+	.byte $AA,$AA,$AA,$AA,$AA,$AA,$AA,$AA ; Volume #, Track, Sector, Checksum
+	.byte $DE,$AA,$EB	; Address trailer
+	.byte $7f,$7f,$7f,$7f,$7f,$7f	; GAP2 sync bytes
+	.byte $D5,$AA,$AD	; Buffer header
+	.byte $00		; End of Address information
 LData:
-	.byte $DE,$AA,$EB	;Data trailer
+	.byte $DE,$AA,$EB	; Data trailer
 	.byte $7f,$7f,$7f,$7f,$7f,$7f,$7f,$7f,$7f,$7f,$7f,$7f,$7f,$7f,$7f,$7f  ;GAP3 sync bytes
-	.byte $00     		;End of Data information
+	.byte $00     		; End of Data information
 
-LInOut:	.res 1   		;Inward/Outward phase for stepper motor
+LInOut:	.res 1   		; Inward/Outward phase for stepper motor
 LTable:
-	.byte $02,$04,$06,$00	;Phases for moving head inward
-	.byte $06,$04,$02,$00	;   |    |    |      |  outward
+	.byte $02,$04,$06,$00	; Phases for moving head inward
+	.byte $06,$04,$02,$00	;    |    |    |      |  outward
 
 TargSlt:
 	.byte $8D,$8D
@@ -1269,8 +1291,8 @@ NetNum:
 	asccr "NOT WORK PROPERLY. DO YOU WANT TO"
 	ascz  "CONTINUE (Y/N)?"
 Block2:	.byte $00,$00,$03,$00
-VolLen:	.res 1			;$F0 + length of Volume Name
-VOLnam:	.res 15			;Volume Name, Reserved, Creation, Version
+VolLen:	.res 1			; $F0 + length of Volume Name
+VOLnam:	.res 15			; Volume Name, Reserved, Creation, Version
 Reserved:
 	.res 6
 UpLowCase:
@@ -1282,12 +1304,12 @@ Version:
 	.byte $00,$C3,$27,$0D
 	.byte $00,$00,$06,$00
 VolBlks:
-	.res 3			;Number of blocks available
+	.res 3			; Number of blocks available
 DirTbl:
-	.byte $02,$04,$03	;Linked list for directory blocks
+	.byte $02,$04,$03	; Linked list for directory blocks
 	.byte $05,$04,$00
 BitTbl:
-	.byte $7f ; dc B'01111111'	;BitMap mask for bad blocks
+	.byte $7f ; dc B'01111111'	; BitMap mask for bad blocks
 	.byte $bf ; dc B'10111111'
 	.byte $df ; dc B'11011111'
 	.byte $ef ; dc B'11101111'
@@ -1295,17 +1317,17 @@ BitTbl:
 	.byte $fb ; dc B'11111011'
 	.byte $fd ; dc B'11111101'
 	.byte $fe ; dc B'11111110'
-Stack:	.res 1	 		;Entrance stack pointer
-Count:	.res 3	 		;General purpose counter/storage byte
+Stack:	.res 1	 		; Entrance stack pointer
+Count:	.res 3	 		; General purpose counter/storage byte
 Pointer:
-	.res 2	 		;Storage for track count (8 blocks/track)
-Track:	.res 2	 		;Track number being FORMATted
-Sector:	.res 2			;Current sector number (max=16)
-SlotF:	.res 2			;Slot/Drive of device to FORMAT
-TRKcur:	.res 2			;Current track position
-TRKdes:	.res 2 			;Destination track position
-TRKbeg:	.byte 00		;Starting track number
-TRKend:	.byte 35		;Ending track number
+	.res 2	 		; Storage for track count (8 blocks/track)
+Track:	.res 2	 		; Track number being FORMATted
+Sector:	.res 2			; Current sector number (max=16)
+SlotF:	.res 2			; Slot/Drive of device to FORMAT
+TRKcur:	.res 2			; Current track position
+TRKdes:	.res 2 			; Destination track position
+TRKbeg:	.byte 00		; Starting track number
+TRKend:	.byte 35		; Ending track number
 FullPages:
 	.res 1			; Number of BAM pages to fill
 IsHD:	.res 1			; Are we greater than $0700 blocks?  Say it's a hard drive.
