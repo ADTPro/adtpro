@@ -446,6 +446,8 @@ LDec:
 ;**********************************
 BlkCount:
 ; Fill full pages first, then do remainder page
+	lda #$06		; First block to deal with: $06
+	sta MLIBlk
 	clc
 	lda VolBlks+1
 	sta FullPages
@@ -457,8 +459,7 @@ BlkCount:
 	lsr FullPages		; ... by 2048
 	lsr FullPages		; ... by 4096
 
-	lda FullPages
-	beq BlkRemainder	; No full blocks?  Skip to remainder part.
+	beq LastBlock		; No full blocks?  Skip to remainder part.
 
 	jsr FFFill6800		; Set up to fill pages
 	lda #$81		; Change Opcode to $81 (WRITE)
@@ -468,27 +469,30 @@ BlkCount:
 	sta MLIbuf
 	stx MLIbuf+1
 	sta MLIBlk+1
-
-	lda FullPages
-	clc
-	adc #$05
-	sta MLIBlk
-BlkWriteLoop:
-	lda MLIBlk
-	cmp #$05
-	beq BlkRemainder	; Break out if we're done
-	cmp #$06		; Is this the first page?
-	bne BlkWrite
-	lda #$00		; If so, mark first blocks used
+	lda #$00		; Mark first blocks as used
 	sta $6800
 	sta $6801
 	lda #$03
 	sta $6802
-	jmp BlkWrite
-BlkWrite:
-	jsr Call2MLI		; Write Buffer (BitMap) to block on the disk
-	dec MLIBlk
-	jmp BlkWriteLoop
+
+	lda #$00
+	sta Curblk
+
+:	jsr Call2MLI		; Write Buffer (BitMap) to block on the disk
+	lda #$ff		; Mark first blocks as unused again
+	sta $6800
+	sta $6801
+	sta $6802
+	inc MLIBlk
+	inc Curblk
+	lda Curblk
+	cmp FullPages
+	bne :-
+
+LastBlock:
+	jsr BlkRemainder
+	jsr Call2MLI
+	rts
 
 BlkRemainder:
 	jsr ZeroFill6800
@@ -548,6 +552,7 @@ Jump19:
 Jump18:
 	rts
 
+Curblk:	.res 1
 
 ;*************************************
 ;*                                   *
@@ -1177,6 +1182,8 @@ LZero:
 	inc Buffer+1
 	dex
 	bpl LZero
+	lda #$00
+	sta Buffer
 	lda #$68		; Reset Buffer to $6800
 	sta Buffer+1
 	rts
@@ -1319,7 +1326,7 @@ TRKdes:	.res 2 			; Destination track position
 TRKbeg:	.byte 00		; Starting track number
 TRKend:	.byte 35		; Ending track number
 FullPages:
-	.res 1			; Number of BAM pages to fill
+	.byte 00		; Number of BAM pages to fill
 IsHD:	.res 1			; Are we greater than $0700 blocks?  Say it's a hard drive.
 
 BootCode:
