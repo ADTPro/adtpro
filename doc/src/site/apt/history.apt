@@ -6,7 +6,7 @@
 
 ADTPro Release History
 
-* 0.2.6 - (Unreleased)
+* 0.2.6 - June 3, 2007
 
  New functionality:
 
@@ -15,6 +15,8 @@ ADTPro Release History
    preference is given to SSC cards
    over IIgs ports if both exist, and slots are scanned high-to-low,
    last-one-found-wins
+
+ * Included DOS ADT similarly enhanced to scan for serial ports
 
  * Added a simple Applesoft menu when booting the distribution diskette
 
