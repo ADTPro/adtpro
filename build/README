@@ -6,30 +6,32 @@ ADTPro-v.r.m with either a .zip (Windows) or a .tar.gz
 (Linux/OSX/Solaris) extension. After unpacking the
 distribution file, you will find:
 
- * adtpro.bat       - A Windows server startup batch file
- * adtpro.command   - An OSX server startup command file 
-                      (double-clickable)
- * adtpro.sh        - A Linux/Solaris server startup shell script
- * ADTPro-v.r.m.jar - ADTPro server-side software (a Java .jar file)
- * ADTPro-v.r.m.dsk - ADTPro client-side software (an Apple 140K
-                      disk image)
- * ADTvrm.dsk       - An enhanced legacy Apple DOS ADT client, 
-                      capable of running on both Super Serial 
-                      hardware as well as on the IIgs serial (modem)
-                      port
- * LICENSE          - The GNU Public License file
- * README           - The page you're looking at now, mostly
- * rxtx/fixperm.command - A command to help OSX users enable the
-                      RXTX library
- * rxtx/...         - Library files to help Java see serial ports.
-
-You'll need a couple of things to run the server.
+ * adtpro.bat             - A Windows server batch file
+ * adtpro.command         - An OSX server startup command
+                            file (double-clickable)
+ * adtpro.sh              - A Linux/Solaris server startup
+                            shell script
+ * LICENSE                - The GNU Public License file
+ * README                 - The page you're looking at now
+ * disks/ADTPro-v.r.m.dsk - ADTPro client-side software
+                            (an Apple 140K disk image)
+ * disks/ADTPro-v.r.m.po  - ADTPro client-side software
+                            (an Apple 800K disk image)
+ * disks/ADTvrm.dsk       - An enhanced legacy Apple DOS ADT
+                            client, capable of running on both
+                            Super Serial hardware as well as on
+                            the IIgs serial (modem) port
+ * lib/ADTPro-v.r.m.jar   - ADTPro server-side software
+                            (a Java .jar file)
+ * lib/rxtx/...           - Java serial library files
+ * lib/rxtx/fixperm.command - A command to help OSX users enable
+                              the RXTX library
 
 In all cases above, v.r.m is replaced with the version, release 
 and modification numbers of the distribution.
 
-First of all, you will need a Java installation you can call from
-the command line. This means that if you type the command
+To get started, you will need a Java installation you can call
+from the command line. This means that if you type the command
 "java -version" from a terminal window it ought to produce output
 other than complaints. One place to get a downloadable Java
 distribution is from Sun Microsystems: Sun JRE download. When you
@@ -78,7 +80,9 @@ forum for ADTPro at SourceForge:
 https://sourceforge.net/forum/forum.php?forum_id=582337
 
 Good luck - and have fun!
+
 Unix RXTX Considerations
+------------------------
 
 Mac OSX users should run the fixperm.command script that is in the
 rxtx directory. This will correct some permissions to enable the

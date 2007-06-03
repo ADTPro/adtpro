@@ -19,28 +19,30 @@ After unpacking the distribution file, you will find:
 
  * <<<adtpro.sh>>>        - A Linux/Solaris server startup shell script
 
+ * <<<LICENSE>>> - The GNU Public License file
+
+ * <<<README>>> - The page you're looking at now, mostly
+
  * <<<disks/ADTPro-v.r.m.dsk>>> - ADTPro client-side software (an Apple 140K disk image)
+
+ * <<<disks/ADTPro-v.r.m.po>>> - ADTPro client-side software (an Apple 800K disk image)
 
  * <<<disks/ADTvrm.dsk>>> - An enhanced legacy Apple DOS ADT client, capable 
    of running on both Super Serial hardware as well as on the IIgs
    modem port (an Apple 140K disk image)
 
- * <<<LICENSE>>> - The GNU Public License file
-
- * <<<README>>> - The page you're looking at now, mostly
-
  * <<<lib/ADTPro-v.r.m.jar>>> - ADTPro server-side software (a Java .jar file)
  
- * <<<lib/rxtx/fixperm.command>>> - A command to help OSX users enable the RXTX library
+ * <<<lib/rxtx/...>>> - Java serial library files
 
- * <<<lib/rxtx/...>>> - Library files to help Java use serial ports.
+ * <<<lib/rxtx/fixperm.command>>> - A command to help OSX users enable the RXTX library
 
  []
 
  In all cases above, <<<v.r.m>>> and <<<vrm>>> are replaced with the
  version, release and modification numbers of the distribution.
  
- First of all, you will need a Java installation you can call from the
+ To get started, you will need a Java installation you can call from the
  command line.  This means that if you type the command 
  "<<<java -version>>>" from a terminal window it ought to produce 
  output other than complaints.
