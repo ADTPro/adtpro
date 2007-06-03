@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project name="ADTPro" default="all" basedir="..">
-	<property name="versionString" value="1.0.0" />
+	<property name="versionString" value="v.r.m" />
 	<property name="distName" value="ADTPro-${versionString}" />
 	<property name="volName" value="ADTPro.${versionString}" />
 	<property name="dosVersionString" value="132" />
@@ -10,6 +10,8 @@
 	<property file="${builddir}/ADTProBuild.properties"/>
 	<property file="${builddir}/ADTProBuild-default.properties"/>
 	<property name="acJar" value="AppleCommander-1.3.4d-ac.jar" />
+	<property name="rxtxVersion" value="rxtx-2.1-7-bins-r2" />
+	<property name="rxtxZip" value="rxtx-2.1-7-bins-r2.zip" />
 	<taskdef name="appleDump" classname="org.adtpro.utilities.AppleDump" classpath="${projdir}"/>
 
 	<target name="all" depends="clean, assemble, builddsk, scripts, jar">
@@ -24,16 +26,6 @@
 		<delete file="${builddir}/ADTPROAUD" />
 		<delete file="${builddir}/ADTPROETH" />
 		<delete file="${builddir}/FORMAT" />
-		<delete file="${builddir}/adtpro.bat" />
-		<delete file="${builddir}/adtpro.sh" />
-		<delete file="${builddir}/adtpro.command" />
-		<delete file="${builddir}/disks/${distName}.dsk" />
-		<delete file="${builddir}/disks/${distName}.po" />
-		<delete file="${builddir}/lib/${distName}.jar" />
-		<delete file="${builddir}/lib/ADTPro.properties" />
-		<delete file="${builddir}/${distName}.zip" />
-		<delete file="${builddir}/${distName}.tar.gz" />
-		<delete file="${builddir}/disks/${dosDistName}.dsk" />
 		<delete file="${projdir}/org/adtpro/resources/adt.dmp" />
 		<delete file="${projdir}/org/adtpro/resources/adtpro.dmp" />
 		<delete file="${projdir}/org/adtpro/resources/adtproaud.dmp" />
@@ -52,9 +44,11 @@
 			<fileset dir="${projdir}/client/src" includes="**/*.lst"/>
 			<fileset dir="${projdir}/client/src" includes="**/*.lib"/>
 		</delete>
+		<delete dir="${builddir}/${distName}" />
 	</target>
 
 	<target name="assemble" depends="clean">
+		<mkdir dir="${builddir}/${distName}"/>
 		<!--
 		Assemble the ADTPro source
 		-->
@@ -134,64 +128,66 @@
 	</target>
 
 	<target name="scripts">
-		<copy file="${builddir}/adtprobase.bat" tofile="${builddir}/adtpro.bat" />
-		<replace file="${builddir}/adtpro.bat" token="%ADTPRO_VERSION%" value="${distName}.jar"/>
-		<copy file="${builddir}/adtprobase.sh" tofile="${builddir}/adtpro.sh" />
-		<replace file="${builddir}/adtpro.sh" token="%ADTPRO_VERSION%" value="${distName}.jar"/>
-		<copy file="${builddir}/adtpro.sh" tofile="${builddir}/adtpro.command" />
+		<copy file="${builddir}/adtprobase.bat" tofile="${builddir}/${distName}/adtpro.bat" />
+		<replace file="${builddir}/${distName}/adtpro.bat" token="%ADTPRO_VERSION%" value="${distName}.jar"/>
+		<replace file="${builddir}/${distName}/adtpro.bat" token="%RXTX_VERSION%" value="${rxtxVersion}"/>
+		<copy file="${builddir}/adtprobase.sh" tofile="${builddir}/${distName}/adtpro.sh" />
+		<replace file="${builddir}/${distName}/adtpro.sh" token="%ADTPRO_VERSION%" value="${distName}.jar"/>
+		<replace file="${builddir}/${distName}/adtpro.sh" token="%RXTX_VERSION%" value="${rxtxVersion}"/>
+		<copy file="${builddir}/adtpro.sh" tofile="${builddir}/${distName}/adtpro.command" />
 	</target>
 
 	<target name="builddsk">
 		<!--
 		Start disk images containing the release number
 		-->
-		<copy file="${builddir}/ADTProBase.dsk" tofile="${builddir}/disks/${distName}.dsk" />
-		<copy file="${builddir}/ADTProBase.po" tofile="${builddir}/disks/${distName}.po" />
-		<copy file="${builddir}/ADTBase.dsk" tofile="${builddir}/disks/${dosDistName}.dsk" />
+		<copy file="${builddir}/ADTProBase.dsk" tofile="${builddir}/${distName}/disks/${distName}.dsk" />
+		<copy file="${builddir}/ADTProBase.po" tofile="${builddir}/${distName}/disks/${distName}.po" />
+		<copy file="${builddir}/ADTBase.dsk" tofile="${builddir}/${distName}/disks/${dosDistName}.dsk" />
 		<!--
 		Put the assembled programs on the disk images
 		-->
 		<exec dir="${builddir}" executable="java" input="${builddir}/ADTPRO">
-			<arg line="-jar ${acJar} -p ADTPRO bin 2051 disks/${distName}.dsk" />
+			<arg line="-jar ${acJar} -p ADTPRO bin 2051 ${distName}/disks/${distName}.dsk" />
 		</exec>
 		<exec dir="${builddir}" executable="java" input="${builddir}/FORMAT">
-			<arg line="-jar ${acJar} -p FORMAT bin 20480 disks/${distName}.dsk" />
+			<arg line="-jar ${acJar} -p FORMAT bin 20480 ${distName}/disks/${distName}.dsk" />
 		</exec>
 		<exec dir="${builddir}" executable="java" input="${builddir}/ADTPROAUD">
-			<arg line="-jar ${acJar} -p ADTPROAUD bin 2051 disks/${distName}.dsk" />
+			<arg line="-jar ${acJar} -p ADTPROAUD bin 2051 ${distName}/disks/${distName}.dsk" />
 		</exec>
 		<exec dir="${builddir}" executable="java" input="${builddir}/ADTPROETH">
-			<arg line="-jar ${acJar} -p ADTPROETH bin 2051 disks/${distName}.dsk" />
+			<arg line="-jar ${acJar} -p ADTPROETH bin 2051 ${distName}/disks/${distName}.dsk" />
 		</exec>
 		<!--
 		And the .po version...
 		-->
 		<exec dir="${builddir}" executable="java" input="${builddir}/ADTPRO">
-			<arg line="-jar ${acJar} -p ADTPRO bin 2051 disks/${distName}.po" />
+			<arg line="-jar ${acJar} -p ADTPRO bin 2051 ${distName}/disks/${distName}.po" />
 		</exec>
 		<exec dir="${builddir}" executable="java" input="${builddir}/FORMAT">
-			<arg line="-jar ${acJar} -p FORMAT bin 20480 disks/${distName}.po" />
+			<arg line="-jar ${acJar} -p FORMAT bin 20480 ${distName}/disks/${distName}.po" />
 		</exec>
 		<exec dir="${builddir}" executable="java" input="${builddir}/ADTPROAUD">
-			<arg line="-jar ${acJar} -p ADTPROAUD bin 2051 disks/${distName}.po" />
+			<arg line="-jar ${acJar} -p ADTPROAUD bin 2051 ${distName}/disks/${distName}.po" />
 		</exec>
 		<exec dir="${builddir}" executable="java" input="${builddir}/ADTPROETH">
-			<arg line="-jar ${acJar} -p ADTPROETH bin 2051 disks/${distName}.po" />
+			<arg line="-jar ${acJar} -p ADTPROETH bin 2051 ${distName}/disks/${distName}.po" />
 		</exec>
 		<!--
 		Put the assembled DOS ADT program on the .dsk image
 		-->
 		<exec dir="${builddir}" executable="java" input="${builddir}/ADT">
-			<arg line="-jar ${acJar} -p ADT bin 2051 disks/${dosDistName}.dsk" />
+			<arg line="-jar ${acJar} -p ADT bin 2051 ${distName}/disks/${dosDistName}.dsk" />
 		</exec>
 		<exec dir="${builddir}" executable="java" input="${builddir}/ADT">
-			<arg line="-jar ${acJar} -p ADT.BACKUP bin 2051 disks/${dosDistName}.dsk" />
+			<arg line="-jar ${acJar} -p ADT.BACKUP bin 2051 ${distName}/disks/${dosDistName}.dsk" />
 		</exec>
 		<!--
 		Lock the backup ADT version
 		-->
 		<exec dir="${builddir}" executable="java">
-			<arg line="-jar ${acJar} -k ADT.BACKUP disks/${dosDistName}.dsk" />
+			<arg line="-jar ${acJar} -k ADT.BACKUP ${distName}/disks/${dosDistName}.dsk" />
 		</exec>
 		<!--
 		Build a little unit test disk that is 64k (128 blocks) long
@@ -220,35 +216,44 @@
 		Put a nice volume name on the disk images
 		-->
 		<exec dir="${builddir}" executable="java">
-			<arg line="-jar ${acJar} -v disks/${distName}.dsk ${volName}" />
+			<arg line="-jar ${acJar} -v ${distName}/disks/${distName}.dsk ${volName}" />
 		</exec>
 		<exec dir="${builddir}" executable="java">
-			<arg line="-jar ${acJar} -v disks/${distName}.po ${volName}" />
+			<arg line="-jar ${acJar} -v ${distName}/disks/${distName}.po ${volName}" />
 		</exec>
 	</target>
 
 	<target name="jar">
+		<unzip src="${builddir}/lib/${rxtxZip}"
+			dest="${builddir}/${distName}/lib"/>
+		<move file="${builddir}/${distName}/lib/${rxtxVersion}"
+			tofile="${builddir}/${distName}/lib/rxtx"/>
+		<copy file="${builddir}/fixperm.command" todir="${builddir}/${distName}/lib/rxtx" />
+		<copy file="${builddir}/README" todir="${builddir}/${distName}" />
+		<copy file="${builddir}/LICENSE" todir="${builddir}/${distName}" />
+		<copy file="${builddir}/ADTPro.html" todir="${builddir}/${distName}" />
 		<!-- jar up the source, object and properties files -->
-		<jar jarfile="${builddir}/lib/${distName}.jar"
+		<jar jarfile="${builddir}/${distName}/lib/${distName}.jar"
 			manifest="${builddir}/manifest.mf"
 			basedir="${projdir}"
 			includes="org/**/*.class org/**/*.java org/**/*.properties org/**/*.png org/**/*.dmp org/**/*.raw LICENSE" />
-		<chmod dir="${builddir}" perm="ugo+rx"
+		<chmod dir="${builddir}/${distName}" perm="ugo+rx"
 			includes="**/*.sh **/*.command"/>
 		<!-- zip up the whole sheebang -->
 		<zip destfile="${builddir}/${distName}.zip"
 			basedir="${builddir}"
-			includes="lib/${distName}.jar disks/${distName}.dsk disks/${distName}.po disks/${dosDistName}.dsk lib/rxtx/** LICENSE README adtpro.bat adtpro.sh adtpro.command ADTPro.html" />
+			includes="${distName}/**"/>
 		<tar destfile="${builddir}/${distName}.tar"
 			basedir="${builddir}"
-			includes="lib/${distName}.jar disks/${distName}.dsk disks/${distName}.po disks/${dosDistName}.dsk lib/rxtx/** LICENSE README adtpro.bat ADTPro.html"
-			excludes="lib/rxtx/fixperm.command">
-			<tarfileset dir="${builddir}" mode="755">
-				<include name="lib/rxtx/fixperm.command"/>
-				<include name="adtpro.command"/>
-				<include name="adtpro.sh"/>
-			</tarfileset>
+			includes="${distName}/**"
+			excludes="${distName}/adtpro.sh ${distName}/adtpro.command ${distName}/lib/rxrx/fixperm.command">
 		</tar>
+		<!--
+		<tarfileset dir="${builddir}" mode="755">
+			<include name="${distName}/lib/rxrx/fixperm.command"/>
+			<include name="${distName}/adtpro.command"/>
+			<include name="${distName}/adtpro.sh"/>
+		</tarfileset> -->
 		<gzip destfile="${builddir}/${distName}.tar.gz"
 			src="${builddir}/${distName}.tar" />
 		<delete file="${builddir}/${distName}.tar" />
