@@ -35,7 +35,7 @@ the stuff that gets uploaded to sourceforge.
 8. Release the file
 
 9. Upload updated web contents:
-   sftp sf_user@adtpro.sourceforge.net
+   psftp sf_user@adtpro.sourceforge.net
    cd /home/groups/a/ad/adtpro
    put adtpro.zip (or whatever you call the package)
    (quit)
