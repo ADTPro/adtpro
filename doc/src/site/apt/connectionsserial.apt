@@ -98,7 +98,7 @@ mini-din connector with a null modem in between looks like this:
   PC serial port to the IIgs' 8-pin mini-din connector has this pinout:
 
 ---
-Apple            PC
+Apple     Host       Host
 DIN8      DB-25  or  DE-9
 
  1 ------- 4+20 ----- 7+4
