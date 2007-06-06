@@ -21,11 +21,11 @@
 		<!--
 		Clean up everything
 		-->
+		<!-- <delete file="${projdir}/client/src/dos/ADT" /> -->
 		<delete file="${builddir}/ADT" />
 		<delete file="${builddir}/ADTPRO" />
 		<delete file="${builddir}/ADTPROAUD" />
 		<delete file="${builddir}/ADTPROETH" />
-		<delete file="${builddir}/FORMAT" />
 		<delete file="${projdir}/org/adtpro/resources/adt.dmp" />
 		<delete file="${projdir}/org/adtpro/resources/adtpro.dmp" />
 		<delete file="${projdir}/org/adtpro/resources/adtproaud.dmp" />
@@ -45,7 +45,7 @@
 		<delete dir="${builddir}/${distName}" />
 	</target>
 
-	<target name="assemble" depends="clean">
+	<target name="assemble">
 		<mkdir dir="${builddir}/${distName}"/>
 		<!--
 		Assemble the ADTPro source

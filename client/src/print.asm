@@ -35,28 +35,18 @@ SHOWLOGO:
 	lda #$03
 	jsr TABV
 
-	ldy #PMLOGO1	; Main title - Line 1
+	lda #<PMLOGO1	; Start with MLOGO1 message
+	sta ZP
+    	ldx #$0d	; Get ready to HTAB $0d chars over
+LogoLoop:
+	stx CH		; Tab over to starting position
+	tay
 	jsr SHOWMSG
-
-    	lda #$0d
-	sta CH
-	ldy #PMLOGO2	; Main title - line 2
-	jsr SHOWMSG
-
-    	lda #$0d
-	sta CH
-	ldy #PMLOGO3	; Main title - line 3
-	jsr SHOWMSG
-
-    	lda #$0d
-	sta CH
-	ldy #PMLOGO4	; Main title - line 4
-	jsr SHOWMSG
-
-    	lda #$0d
-	sta CH
-	ldy #PMLOGO5	; Main title - line 5
-	jsr SHOWMSG
+	inc ZP
+	inc ZP		; Get next logo message
+	lda ZP
+	cmp #<PMLOGO5+2	; Stop at MLOGO5 message
+	bne LogoLoop
 
 	jsr CROUT
     	lda #$12
@@ -313,7 +303,8 @@ MSGLOOP:
 	jsr COUT1
 	iny
 	bne MSGLOOP
-MSGEND:	rts
+MSGEND:
+	rts
 
 
 ;---------------------------------------------------------
