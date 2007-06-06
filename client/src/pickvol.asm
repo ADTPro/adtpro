@@ -20,11 +20,11 @@
 
 ;---------------------------------------------------------
 ; PICKVOL
+;   On entry: Y holds the pointer to the top line message
 ;
 ; Returns:
 ;   Index into the device table in A
 ;   $FF in A if escape was hit
-;   Y holds the pointer to the top line message
 ;---------------------------------------------------------
 PICKVOL:
 	jsr PRINTVOL

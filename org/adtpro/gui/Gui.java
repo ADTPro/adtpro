@@ -128,8 +128,6 @@ public final class Gui extends JFrame implements ActionListener
     menuBootstrapProDOS.add(proDOSAction);
     MenuAction proDOSAction2 = new MenuAction(Messages.getString("Gui.BS.ProDOS2")); //$NON-NLS-1$
     menuBootstrapProDOS.add(proDOSAction2);
-    MenuAction proDOSFormatAction = new MenuAction(Messages.getString("Gui.BS.ProDOSFormat")); //$NON-NLS-1$
-    menuBootstrapProDOS.add(proDOSFormatAction);
     MenuAction dosAction = new MenuAction(Messages.getString("Gui.BS.DOS")); //$NON-NLS-1$
     menuBootstrapDOS.add(dosAction);
     MenuAction dosAction2 = new MenuAction(Messages.getString("Gui.BS.DOS2")); //$NON-NLS-1$

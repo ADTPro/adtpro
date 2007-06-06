@@ -1,4 +1,3 @@
-; ADTPro - Apple Disk Transfer ProDOS
 ; Copyright (C) 2007 by David Schmidt
 ; david__schmidt at users.sourceforge.net
 ;
@@ -16,8 +15,6 @@
 ; with this program; if not, write to the Free Software Foundation, Inc., 
 ; 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 ;
-
-.include "applechr.i"
 
 ;*********************************************************************
 ;*                                 *            Movie:               *
@@ -42,20 +39,19 @@
 ;                                  *                                 *
 ;                                  ***********************************
 
+	.segment "FORMAT"
+
 Home     =  $FC58		; Monitor clear screen and home cursor
 DevCnt   =  $BF31		; Prodos device count
 DevList  =  $BF32		; List of devices for ProDOS
 DevAdr   =  $BF10		; Given slot this is the address of driver
 Buffer   =  $07 		; Address pointer for FORMAT data
-CH       =  $24 		; Storage for Horizontal Cursor value
 IN       =  $200		; Keyboard input buffer
 WARMDOS  =  $BE00		; BASIC Warm-start vector
-MLI      =  $BF00		; ProDOS Machine Language Interface
 LAST     =  $BF30		; Last device accessed by ProDOS
 STROUT   =  $DB3A		; Applesoft's string printer
 WAIT     =  $FCA8		; Delay routine
 CLRLN    =  $FC9C		; Clear Line routine
-RDKEY    =  $FD0C		; Character input routine  (read keyboard)
 PRBYTE   =  $FDDA		; Print Byte routine (HEX value)
 COUT     =  $FDED		; Character output routine (print to screen)
 Step0    =  $C080		; Drive stepper motor positions
@@ -73,75 +69,24 @@ ModeWR   =  $C08F		; Mode WRITE softswitch
 ;**********************************************************
 ; Equates
 ;**********************************************************
-	.org $5000
-HypForm:
-	tsx
-	stx Stack
-	lda LAST		; Store current slot/drive # in Slot
-	sta QSlot		; Save Prodos's last device accessed
-	jsr Home		; Clears screen
-	jsr MLI
-	.byte $42
-	.addr NetParms		; Call for Appletalk which isn't wanted
-	bcc NotError
-	cmp #$01		; Even though everyone said that this
-	beq Reentry		;  should happen I never could get it.
-	cmp #$04		; Got this but don't try to change the
-	beq Reentry		;  parameter count to 1 or #$%@&*^()
-NotError:
-	lda NetDev
-	jsr HexDec
-	lda #<Appletalk		; Prompt to continue or not
-	ldy #>Appletalk		;  because Appletalk is installed
-	jsr STROUT
-	jsr GetYN
-	beq Reentry
-	jmp MExit
-Reentry:
-	lda #$DD
-	sta $33			; Set Applesoft prompt
-	jsr Home		; Clears screen
-	lda #<TargSlt		; Prompt for slot
-	ldy #>TargSlt
-	jsr STROUT
-LSlot:
-	jsr RDKEY		; Get a keypress
-	cmp #$B0		; Less than slot #1?
-	bcc LSlot
-	cmp #$B8		; Greater than slot #7?
-	bcs LSlot
-	sta Buffer		; Store SLOT number in Buffer
-	jsr COUT		; Print it on the screen
-	lda #<TargDrv		; Prompt for drive
-	ldy #>TargDrv
-	jsr STROUT
-LDrive:
-	jsr RDKEY		; Get a keypress
-	cmp #$B1		; Drive #1?
-	beq LConvert
-	cmp #$B2		; Drive #2?
-	bne LDrive
-LConvert:
-	sta Buffer+1		; Store DRIVE number in Buffer+1
-	jsr COUT		; Print it on the screen
-	jsr DOTWO		; Print two carriage returns
-	lda Buffer		; Fetch the SLOT number
-	and #$0F		; Mask off the upper 4 bits
-	asl a			; Move lower 4 bits to upper 4 bits
-	asl a
-	asl a
-	asl a
-	sta Slot		; Store result in FORMAT slot
-	tax
-	lda Buffer+1		; Fetch the DRIVE number
-	cmp #$B1		; Does Slot need conditioning?
-	beq Jump5		; Nope
-Jump1:
-	lda Slot		; Fetch FORMAT slot
-	ora #$80		; Set MSB to indicate drive #2
+FormatDone:
+	rts
+AgainCloser:
+	jmp Again
+FormatEntry:
+	ldy #PMFORMAT	; Format title line
+	jsr PICKVOL	; A now has index into DEVICES table
+	bmi FormatDone
+	jsr WHATUNIT
 	sta Slot
+	lda #<MNULL
+	ldy #>MNULL
+	ldx #$14
+	jsr PRTMSGAREA
+	lda Slot
 	tax
-Jump5:
+HypForm:
+LSlot:
 	ldy DevCnt		; Load how many devices
 FLoop:
 	lda DevList,y		;  since this isn't a sequential
@@ -196,11 +141,6 @@ Loop8:
 	beq Loop9
 	jmp NoUnit
 Loop9:
-	lda #<ItIsRam3		; Tell the person that you think it is a
-	ldy #>ItIsRam3		;  /Ram and ask if they want to continue
-	jsr STROUT
-	jsr GetYN
-	bne Jump2
 	jsr OldName
 	jsr Ram3Form
 Jump2:
@@ -242,11 +182,6 @@ YesSmart1:
 	cmp #$00
 	bne NoUnit		; It isn't so it's no device I know.
 YesSmart2:
-	lda #<ItIsSmart		; Tell them you think it is a SmartPort
-	ldy #>ItIsSmart		;  device. and ask if they want to Format.
-	jsr STROUT
-	jsr GetYN
-	bne Jump3
 	jsr OldName		; Show old name and ask if proper Disk
 	jsr LName		; Get New name
 	ldy #$FE
@@ -265,18 +200,11 @@ Jump3:	jmp Again
 NoUnit:
 	lda #<UnitNone		; Prompt to continue or not Because
 	ldy #>UnitNone		; There is no unit number like that
-	jsr STROUT
-	jsr GetYN
-	bne Jump4
-	jmp Reentry
-Jump4:	jmp MExit
+	ldx #$16
+	jsr PRTMSGAREA
+	jmp Again
 
 DiskII:
-	lda #<ItsaII		; Tell them you think it is a DiskII
-	ldy #>ItsaII
-	jsr STROUT
-	jsr GetYN
-	bne Jump3
 	lda #$18		; Set VolBlks to 280 ($118)
 	ldx #$01		;  Just setting default settings
 	ldy #$00
@@ -290,7 +218,8 @@ DiskII:
 LName:
 	lda #<VolName
 	ldy #>VolName
-	jsr STROUT
+	ldx #$16
+	jsr PRTMSGAREA
 LRdname:
 	lda #$0E		; Reset CH to 14
 	sta CH
@@ -363,44 +292,6 @@ CodeWr:	lda #$81		; Set Opcode to WRITE
 	lda #$00		; Set MLIBlk to 0
 	sta MLIBlk
 	sta MLIBlk+1
-	lda #$00
-	sta IsHD
-	lda VolBlks+1
-	cmp #$07		; Less than $0700?  Let's not call it a HD.
-	bcc NoHD
-
-	lda #<BootCodeHD	; Set MLIbuf to BootCode for hard disks
-	ldy #>BootCodeHD
-	sta MLIbuf
-	sty MLIbuf+1
-	jsr CallMLI		; Write block #0 to target disk
-
-	ldx #$02
-	lda #$68
-	sta Buffer+1
-	sta MLIbuf+1
-	ldy #$00
-	sty Buffer
-	sty MLIbuf
-
-Block1Loop:			; Block 1 has alternating pattern of $42, $48 on HDs
-	lda #$42
-	sta (Buffer),y
-	iny
-	lda #$48
-	sta (Buffer),y
-	iny
-	bne Block1Loop
-	inc Buffer+1
-	dex
-	bne Block1Loop
-
-	lda #$01		; Set MLIBlk to 1
-	sta MLIBlk
-	jsr CallMLI		; Write block #1 to target disk	
-	jmp Fill
-
-NoHD:
 	lda #<BootCode		; Set MLIbuf to BootCode
 	ldy #>BootCode
 	sta MLIbuf
@@ -596,36 +487,15 @@ CLoop:
 Again:
 	lda #<Nuther		; Display 'Format another' string
 	ldy #>Nuther
-	jsr STROUT
-	jsr GetYN		; Get a Yes or No answer
-	bne MExit		; Answer was No...
-	jmp Reentry		; Format another disk
+	ldx #$17
+	jsr PRTMSGAREA
+	jsr YNLOOP		; Get a Yes or No answer
+	beq MExit		; Answer was No...
+	jmp FormatEntry		; Format another disk
 MExit:
-	jsr DOTWO		; Two final carriage returns...
-	lda QSlot
-	sta LAST
-	ldx Stack		; Just because I am human to and might
-	txs			; have messed up also.
-	jmp WARMDOS		; Exit to BASIC
+	rts
 Call2MLI:
 	jsr CallMLI
-	rts
-
-;***************************
-;*                         *
-;* GetYN - Get a Yes or No *
-;* answer from the user    *
-;*                         *
-;***************************
-GetYN:
-	jsr RDKEY		; Get a keypress
-	and #$DF		; Mask lowercase
-	cmp #$D9		; is it a Y?
-	beq LShow
-	lda #$BE		; Otherwise default to "No"
-LShow:	
-	jsr COUT		; Print char, Z flag contains status
-	cmp #$D9		; Condition flag
 	rts
 
 ;*************************************
@@ -639,56 +509,14 @@ CallMLI:
 	jsr MLI 		; Call the ProDOS Machine Langauge Interface
 Opcode:	.byte $81		; Default MLI opcode = $81 (WRITE)
 	.addr Parms
-	bcs Error
+	bcs MLIError
 	rts
-Error:
+MLIError:
 	pla
 	pla
 	pla
 	pla
 	jmp Died
-
-;**************************************
-;*                                    *
-;* DOTWO - Print two carriage returns *
-;*                                    *
-;**************************************
-DOTWO:
-	lda #$8D		;(we don't need an explanation, do we?)
-	jsr COUT
-	jsr COUT
-	rts
-
-;***********************************
-;*                                 *
-;* Hexdec - Convert HEX to decimal *
-;*                                 *
-;***********************************
-HexDec:
-	sta IN+20		; Store number in Keyboard Input Buffer
-	lda #$00
-	sta IN+21
-	ldy #$02		; Result will be three digits long
-DLoop:
-	ldx #$11		; 16 bits to process
-	lda #$00
-	clc
-LDivide:
-	rol a
-	cmp #$0A		; Value > or = to 10?
-	bcc LPlus
-	SBC #$0A		; Subtract 10 from the value
-LPlus:	
-	rol IN+20		; Shift values in IN+20, IN+21 one bit left
-	rol IN+21
-	dex
-	bne LDivide
-	ora #$B0		; Convert value to high ASCII character
-	sta IN,y		; Store it in the input buffer
-	sta NetNum,y
-	dey
-	bpl DLoop
-	rts
 
 ;***********************************
 ;*                                 *
@@ -764,8 +592,6 @@ DiedII:
 ;*                                    *
 ;**************************************
 Died:
-	cmp #$4D		; Save MLI error code on the stack
-	beq RangeError
 	cmp #$27
 	beq DriveOpen
 	cmp #$2F
@@ -773,10 +599,6 @@ Died:
 	cmp #$2B
 	beq Protected
 	jmp NoDied
-RangeError:
-	lda #<TooLarge
-	ldy #>TooLarge
-	jmp DiedOut
 DiskError:
 	lda #<NoDisk
 	ldy #>NoDisk
@@ -793,12 +615,15 @@ NoDied:
 	pha			; Save MLI error code on the stack
 	lda #<UnRecog
 	ldy #>UnRecog
-	jsr STROUT
+	ldx #$16
+	jsr PRTMSGAREA
 	pla			; Retrieve error code from the stack
 	jsr PRBYTE		; Print the MLI error code
 	jmp Again
 DiedOut:
-	jsr STROUT
+	ldx #$16
+	jsr PRTMSGAREA
+	brk
 	jmp Again		; Prompt for another FORMAT...
 
 ;************************************
@@ -1138,15 +963,16 @@ OldName1:
 	sta VolLen
 	lda #<TheOld1
 	ldy #>TheOld1
-	jsr STROUT
+	ldx #$14
+	jsr PRTMSGAREA
 	lda #<VolLen		; Get Name Length
 	ldy #>VolLen
 	jsr STROUT		; Print old name
 	lda #<TheOld2
 	ldy #>TheOld2
 	jsr STROUT
-	jsr GetYN
-	beq OldError
+	jsr YNLOOP
+	bne OldError
 	pla
 	pla
 	jmp Again
@@ -1205,14 +1031,6 @@ QSlot:	.res 1			; Quit Slot number
 ListSlot:
 	.res 1			; Saving the slot total from the list
 Addr:	.res 2
-NetParms:
-	.byte $00
-	.byte $2F		; Command for FIListSessions
-	.addr $0000		; Appletalk Result Code returned here
-	.addr $0100		; Length of string
-	.addr $6700		; Buffer low word
-	.addr $0000		; Buffer High word
-NetDev:	.byte $00		; Number of entries returned here
 LByte:	.res 1			; Storage for byte value used in Fill
 LAddr:
 	.byte $D5,$AA,$96	; Address header
@@ -1231,62 +1049,25 @@ LTable:
 	.byte $02,$04,$06,$00	; Phases for moving head inward
 	.byte $06,$04,$02,$00	;    |    |    |      |  outward
 
-TargSlt:
-	.byte $8D,$8D
-	ascz "FORMAT DISK IN SLOT# "
-TargDrv:
-	ascz " DRIVE# "
 VolName:
-	.byte $8d
 	asc "VOLUME NAME: /"
 Blank:	asc "BLANK"
 	ascz "__________"
 TheOld1:
-	.byte $8d
 	asc "DO YOU WANT TO WRITE OVER"
 	.byte $8D,$A0,$AF,$00
 TheOld2:
 	.byte $A0,$BF
 	ascz " (Y/N)"
 UnRecog:
-	.byte $8D
-	ascz "UNRECOGNIZABLE ERROR = "
-Dead:	.byte $8D
-	ascz "-- CHECK DISK OR DRIVE DOOR --"
+	ascz "UNRECOGNIZED ERROR = "
+Dead:	ascz "CHECK DISK OR DRIVE DOOR!"
 Protect:
-	.byte $8D
 	ascz "DISK IS WRITE PROTECTED!"
-NoDisk:	.byte $8D
-	ascz "NO DISK IN THE DRIVE"
-Nuther:	.byte $8d,$8d
-	ascz "FORMAT ANOTHER DISK? (Y/N): "
-TooLarge:
-	.byte $8D
-	ascz "UNIT SIZE IS TOO LARGE FOR THIS PROGRAM"
+NoDisk:	ascz "NO DISK IN THE DRIVE!"
+Nuther:	ascz "FORMAT ANOTHER? (Y/N): "
 UnitNone:
-	.byte $8d
-	asccr "NO UNIT IN THAT SLOT AND DRIVE"
-	ascz  "FORMAT ANOTHER DISK? (Y/N): "
-ItIsRam3:
-	.byte $8d
-	asccr "THIS IS A RAM3 DISK"
-	ascz  "CONTINUE WITH FORMAT? (Y/N): "
-ItsaII:	.byte $8D
-	asc "THIS IS A DISK II."
-	.byte $8D
-	ascz "CONTINUE WITH FORMAT? (Y/N): "
-ItIsSmart:
-	.byte $8D
-	asccr "THIS IS A SMARTPORT DEVICE."
-	ascz  "CONTINUE WITH FORMAT? (Y/N): "
-Appletalk:
-	.byte $8D
-	asc "NUMBER OF APPLETALK DEVICES IS = "
-NetNum:
-	.byte $00,$00,$00,$8D
-	asccr "APPLETALK INSTALLED. THIS PROGRAM MAY"
-	asccr "NOT WORK PROPERLY. DO YOU WANT TO"
-	ascz  "CONTINUE (Y/N)?"
+	ascz "NO UNIT IN THAT SLOT AND DRIVE"
 Block2:	.byte $00,$00,$03,$00
 VolLen:	.res 1			; $F0 + length of Volume Name
 VOLnam:	.res 15			; Volume Name, Reserved, Creation, Version
@@ -1314,7 +1095,6 @@ BitTbl:
 	.byte $fb ; dc B'11111011'
 	.byte $fd ; dc B'11111101'
 	.byte $fe ; dc B'11111110'
-Stack:	.res 1	 		; Entrance stack pointer
 Count:	.res 3	 		; General purpose counter/storage byte
 Pointer:
 	.res 2	 		; Storage for track count (8 blocks/track)
@@ -1329,6 +1109,7 @@ FullPages:
 	.byte 00		; Number of BAM pages to fill
 IsHD:	.res 1			; Are we greater than $0700 blocks?  Say it's a hard drive.
 
+BootCodeHD:
 BootCode:
 ; Floppy boot code at block 0; block 1 is zeroed out
 	.byte $01,$38,$B0,$03,$4C,$32,$A1,$86,$43,$C9,$03,$08,$8A,$29,$70,$4A,$4A,$4A,$4A,$09,$C0,$85,$49,$A0
@@ -1352,29 +1133,4 @@ BootCode:
 	.byte $3D,$E6,$3D,$B0,$03,$20,$BC,$09,$BC,$88,$C0,$60,$A5,$40,$0A,$85,$53,$A9,$00,$85,$54,$A5,$53,$85
 	.byte $50,$38,$E5,$51,$F0,$14,$B0,$04,$E6,$53,$90,$02,$C6,$53,$38,$20,$6D,$09,$A5,$50,$18,$20,$6F,$09
 	.byte $D0,$E3,$A0,$7F,$84,$52,$08,$28,$38,$C6,$52,$F0,$CE,$18,$08,$88,$F0,$F5,$BD,$8C,$C0,$10,$FB,$00
-	.byte $00,$00,$00,$00,$00,$00,$00,$00
-
-BootCodeHD:
-; Hard drive boot code at block 0; block 1 is filled with a repeating pattern of $42,$48
-	.byte $01,$38,$b0,$03,$4c,$1c,$09,$78,$86,$43,$c9,$03,$08,$8a,$29,$70,$4a,$4a,$4a,$4a,$09,$c0,$85,$49
-	.byte $a0,$ff,$84,$48,$28,$c8,$b1,$48,$d0,$3a,$b0,$0e,$a9,$03,$8d,$00,$08,$e6,$3d,$a5,$49,$48,$a9,$5b
-	.byte $48,$60,$85,$40,$85,$48,$a0,$5e,$b1,$48,$99,$94,$09,$c8,$c0,$eb,$d0,$f6,$a2,$06,$bc,$32,$09,$bd
-	.byte $39,$09,$99,$f2,$09,$bd,$40,$09,$9d,$7f,$0a,$ca,$10,$ee,$a9,$09,$85,$49,$a9,$86,$a0,$00,$c9,$f9
-	.byte $b0,$2f,$85,$48,$84,$60,$84,$4a,$84,$4c,$84,$4e,$84,$47,$c8,$84,$42,$c8,$84,$46,$a9,$0c,$85,$61
-	.byte $85,$4b,$20,$27,$09,$b0,$66,$e6,$61,$e6,$61,$e6,$46,$a5,$46,$c9,$06,$90,$ef,$ad,$00,$0c,$0d,$01
-	.byte $0c,$d0,$52,$a9,$04,$d0,$02,$a5,$4a,$18,$6d,$23,$0c,$a8,$90,$0d,$e6,$4b,$a5,$4b,$4a,$b0,$06,$c9
-	.byte $0a,$f0,$71,$a0,$04,$84,$4a,$ad,$20,$09,$29,$0f,$a8,$b1,$4a,$d9,$20,$09,$d0,$db,$88,$10,$f6,$a0
-	.byte $16,$b1,$4a,$4a,$6d,$1f,$09,$8d,$1f,$09,$a0,$11,$b1,$4a,$85,$46,$c8,$b1,$4a,$85,$47,$a9,$00,$85
-	.byte $4a,$a0,$1e,$84,$4b,$84,$61,$c8,$84,$4d,$20,$27,$09,$b0,$35,$e6,$61,$e6,$61,$a4,$4e,$e6,$4e,$b1
-	.byte $4a,$85,$46,$b1,$4c,$85,$47,$11,$4a,$d0,$18,$a2,$01,$a9,$00,$a8,$91,$60,$c8,$d0,$fb,$e6,$61,$ea
-	.byte $ea,$ca,$10,$f4,$ce,$1f,$09,$f0,$07,$d0,$d8,$ce,$1f,$09,$d0,$ca,$58,$4c,$00,$20,$4c,$47,$09,$02
-	.byte $26,$50,$52,$4f,$44,$4f,$53,$a5,$60,$85,$44,$a5,$61,$85,$45,$6c,$48,$00,$08,$1e,$24,$3f,$45,$47
-	.byte $76,$f4,$d7,$d1,$b6,$4b,$b4,$ac,$a6,$2b,$18,$60,$4c,$bc,$09,$20,$58,$fc,$a0,$14,$b9,$58,$09,$99
-	.byte $b1,$05,$88,$10,$f7,$4c,$55,$09,$d5,$ce,$c1,$c2,$cc,$c5,$a0,$d4,$cf,$a0,$cc,$cf,$c1,$c4,$a0,$d0
-	.byte $d2,$cf,$c4,$cf,$d3,$a5,$53,$29,$03,$2a,$05,$2b,$aa,$bd,$80,$c0,$a9,$2c,$a2,$11,$ca,$d0,$fd,$e9
-	.byte $01,$d0,$f7,$a6,$2b,$60,$a5,$46,$29,$07,$c9,$04,$29,$03,$08,$0a,$28,$2a,$85,$3d,$a5,$47,$4a,$a5
-	.byte $46,$6a,$4a,$4a,$85,$41,$0a,$85,$51,$a5,$45,$85,$27,$a6,$2b,$bd,$89,$c0,$20,$bc,$09,$e6,$27,$e6
-	.byte $3d,$e6,$3d,$b0,$03,$20,$bc,$09,$bc,$88,$c0,$60,$a5,$40,$0a,$85,$53,$a9,$00,$85,$54,$a5,$53,$85
-	.byte $50,$38,$e5,$51,$f0,$14,$b0,$04,$e6,$53,$90,$02,$c6,$53,$38,$20,$6d,$09,$a5,$50,$18,$20,$6f,$09
-	.byte $d0,$e3,$a0,$7f,$84,$52,$08,$28,$38,$c6,$52,$f0,$ce,$18,$08,$88,$f0,$f5,$00,$00,$00,$00,$00,$00
 	.byte $00,$00,$00,$00,$00,$00,$00,$00

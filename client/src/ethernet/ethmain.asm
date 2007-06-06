@@ -38,4 +38,4 @@
 	.include "ethernet/ethbsave.asm"
 	.include "ethernet/ethproto.asm"
 	.include "ethernet/ipconfig.asm"
-	
+	.include "format.asm"		; Note: format.asm is its own segment

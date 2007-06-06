@@ -614,10 +614,6 @@ RC2:
 			; ...else done
 RCVEND:
 	ldy UDPI
-;	iny
-;	cpy #$00
-;	bne ;:+
-;	inc UTILPTR+1	; Point at next 256 bytes
 	lda (UTILPTR),Y	; Get next byte out of UDP packet buffer
 	sta PCCRC	; Receive the CRC of that block
 	iny

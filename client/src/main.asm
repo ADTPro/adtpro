@@ -1,6 +1,6 @@
 ;
 ; ADTPro - Apple Disk Transfer ProDOS
-; Copyright (C) 2006 by David Schmidt
+; Copyright (C) 2006, 2007 by David Schmidt
 ; david__schmidt at users.sourceforge.net
 ;
 ; This program is free software; you can redistribute it and/or modify it 
@@ -51,12 +51,9 @@ PBEGIN:
 	jsr PARMDFT	; Set up parameters
 	lda #$00
 	sta COLDSTART	; Reset coldstart in case we get bsaved
-	jsr HOME
 	jsr PARMINT	; INTERPRET PARAMETERS
 
 	; And off we go!
-
-	jmp MAINL
 
 ;---------------------------------------------------------
 ; Main loop
@@ -77,7 +74,7 @@ RESETIO:
 	ldy #PMSG02	; Prompt line 1
 	jsr SHOWMSG
 
-    	lda #$02
+    	lda #$00
 	sta <CH
 	ldy #PMSG03	; Prompt line 2
 	jsr SHOWMSG
@@ -142,20 +139,19 @@ KCD:	cmp #CHR_C	; CD?
 KCONF:	cmp #CHR_G	; Configure?
 	bne :+		; Nope
 	jsr CONFIG      ; YES, DO CONFIGURE ROUTINE
-	jsr HOME
 	jsr PARMINT     ; AND INTERPRET PARAMETERS
-	jmp MAINL
+	jmp MAINLUP
 
 :
 KABOUT:	cmp #$9F	; ABOUT MESSAGE? ("?" KEY)
 	bne :+		; Nope
-	lda #$08
-        ldx #$15
+	lda #$03
+        ldx #$1C
 	ldy #$10
 	jsr INVERSE
     	lda #$00
 	sta <CH
-	lda #$14
+	lda #$15
 	jsr TABV
 	ldy #PMSG17	; "About" message
 	jsr SHOWMSG
@@ -167,6 +163,12 @@ KVOLUMS:
 	bne :+		; Nope
 	ldy #PMNULL	; No title line
 	jsr PICKVOL	; Pick a volume - A has index into DEVICES table
+	jmp MAINLUP
+:
+KFORMAT:
+	cmp #CHR_F	; Format?
+	bne :+		; Nope
+	jsr FormatEntry	; Run formatter
 	jmp MAINLUP
 :
 KQUIT:

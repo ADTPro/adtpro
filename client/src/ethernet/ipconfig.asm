@@ -21,7 +21,6 @@
 	.export cfg_ip
 	.export cfg_netmask
 	.export cfg_gateway
-	.export cfg_dns
 
 raw_x:		.byte $00
 raw_y:		.byte $00
@@ -34,12 +33,10 @@ serverip:	.byte 192, 168,   0,   2
 cfg_ip:		.byte 192, 168,   0, 123
 cfg_netmask:	.byte 255, 255, 248,   0
 cfg_gateway:	.byte 192, 168,   0,   1
-cfg_dns:	.byte 192, 168,   0,   1
 ip_parms_temp:
 		.byte 192, 168,   0,   2
 		.byte 192, 168,   0, 123
 		.byte 255, 255, 248,   0
-		.byte 192, 168,   0,   1
 		.byte 192, 168,   0,   1
 		
 Hundred = $64
@@ -81,7 +78,7 @@ IPConfig:
 	inc <CH
 	jsr COUT1
 	iny
-	cpy #$0c
+	cpy #$0b
 	beq :+
 	tya
 	jsr TABV
@@ -107,7 +104,7 @@ IPConfig:
 	sta raw_x
 	inc raw_y
 	lda raw_y
-	cmp #$05
+	cmp #$04
 	bne @PLoop
 	lda #$00
 	sta raw_x
@@ -124,7 +121,7 @@ IPConfigTopEntry:
 IPConfigBottomEntry:
 	lda #$00
 	sta raw_x
-	lda #$04
+	lda #$03
 	sta raw_y
 	jmp IPConfigReEntry
 
@@ -188,9 +185,10 @@ ExitDown:
 	lda #$01
 	clc
 	adc raw_y
-	cmp #$05
+	cmp #$04
 	bmi :+
 	ldx #$00	; Head back to upper config items - top
+	txa
 	rts
 :	sta raw_y
 	jmp IPConfigReEntry

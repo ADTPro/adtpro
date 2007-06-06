@@ -34,8 +34,6 @@
 		<delete file="${projdir}/org/adtpro/resources/adtpro.raw" />
 		<delete file="${projdir}/org/adtpro/resources/adtproaud.raw" />
 		<delete file="${projdir}/org/adtpro/resources/adtproeth.raw" />
-		<delete file="${projdir}/org/adtpro/resources/format.raw" />
-		<delete file="${projdir}/org/adtpro/resources/format.dmp" />
 		<delete file="${projdir}/org/adtpro/resources/PD1.dmp" />
 		<delete file="${projdir}/org/adtpro/resources/PD2.dmp" />
 		<delete>
@@ -71,12 +69,6 @@
 			<arg line="-l -t none adt.s -o ADT" />
 		</exec>
 		<!--
-		Assemble and link the ProDOS Formatter source
-		-->
-		<exec dir="${projdir}/client/src" executable="${assemblerPath}/cl65">
-			<arg line="-l -t none format.asm -o FORMAT" />
-		</exec>
-		<!--
 		Assemble the IP65 stack source
 		-->
 		<apply executable="${assemblerPath}/ca65" dir="${projdir}/client/src/ip65">
@@ -84,7 +76,7 @@
 			<fileset dir="${projdir}/client/src/ip65" includes="**/*.s"/>
 		</apply>
 		<!--
-		sPackage the IP65 stack library
+		Package the IP65 stack library
 		-->
 		<apply executable="${assemblerPath}/ar65" dir="${projdir}/client/src/ip65">
 			<arg line="a ip65.lib "/>
@@ -105,8 +97,6 @@
 		<!--
 		Move the object code to the build directory
 		-->
-		<move file="${projdir}/client/src/FORMAT" tofile="${builddir}/FORMAT" />
-		<copy file="${builddir}/FORMAT" tofile="${basedir}/org/adtpro/resources/format.raw" />
 		<move file="${projdir}/client/src/ADTPRO" tofile="${builddir}/ADTPRO" />
 		<copy file="${builddir}/ADTPRO" tofile="${basedir}/org/adtpro/resources/adtpro.raw" />
 		<move file="${projdir}/client/src/ADTPROAUD" tofile="${builddir}/ADTPROAUD" />
@@ -120,7 +110,6 @@
 		-->
 		<appleDump infilename="${projdir}/org/adtpro/resources/PD1.raw" outfilename="${basedir}/org/adtpro/resources/PD1.dmp" applename="PD1" startaddrhex="2000" numbyteswide="12" decoration="begin" executeaddrhex="2000"/>
 		<appleDump infilename="${projdir}/org/adtpro/resources/PD2.raw" outfilename="${basedir}/org/adtpro/resources/PD2.dmp" applename="PD2" startaddrhex="2000" numbyteswide="12" decoration="no" executeaddrhex="2000" />
-		<appleDump infilename="${builddir}/FORMAT" outfilename="${basedir}/org/adtpro/resources/format.dmp" applename="FORMAT" startaddrhex="5000" numbyteswide="12" decoration="begin" executeaddrhex="5000"/>
 		<appleDump infilename="${builddir}/ADTPROETH" outfilename="${basedir}/org/adtpro/resources/adtproeth.dmp" applename="ADTPROETH" startaddrhex="803" numbyteswide="12" decoration="yes" />
 		<appleDump infilename="${builddir}/ADTPROAUD" outfilename="${basedir}/org/adtpro/resources/adtproaud.dmp" applename="ADTPROAUD" startaddrhex="803" numbyteswide="12" decoration="yes" />
 		<appleDump infilename="${builddir}/ADTPRO" outfilename="${basedir}/org/adtpro/resources/adtpro.dmp" applename="ADTPRO" startaddrhex="803" numbyteswide="12" decoration="yes" />
@@ -150,9 +139,6 @@
 		<exec dir="${builddir}" executable="java" input="${builddir}/ADTPRO">
 			<arg line="-jar ${acJar} -p ADTPRO bin 2051 ${distName}/disks/${distName}.dsk" />
 		</exec>
-		<exec dir="${builddir}" executable="java" input="${builddir}/FORMAT">
-			<arg line="-jar ${acJar} -p FORMAT bin 20480 ${distName}/disks/${distName}.dsk" />
-		</exec>
 		<exec dir="${builddir}" executable="java" input="${builddir}/ADTPROAUD">
 			<arg line="-jar ${acJar} -p ADTPROAUD bin 2051 ${distName}/disks/${distName}.dsk" />
 		</exec>
@@ -164,9 +150,6 @@
 		-->
 		<exec dir="${builddir}" executable="java" input="${builddir}/ADTPRO">
 			<arg line="-jar ${acJar} -p ADTPRO bin 2051 ${distName}/disks/${distName}.po" />
-		</exec>
-		<exec dir="${builddir}" executable="java" input="${builddir}/FORMAT">
-			<arg line="-jar ${acJar} -p FORMAT bin 20480 ${distName}/disks/${distName}.po" />
 		</exec>
 		<exec dir="${builddir}" executable="java" input="${builddir}/ADTPROAUD">
 			<arg line="-jar ${acJar} -p ADTPROAUD bin 2051 ${distName}/disks/${distName}.po" />
@@ -189,29 +172,6 @@
 		<exec dir="${builddir}" executable="java">
 			<arg line="-jar ${acJar} -k ADT.BACKUP ${distName}/disks/${dosDistName}.dsk" />
 		</exec>
-		<!--
-		Build a little unit test disk that is 64k (128 blocks) long
-		-->
-		<!--
-		<exec dir="${builddir}" executable="java">
-			<arg line="-jar ${acJar} -d ADTPROETH RAM5.PO" />
-		</exec>
-		<exec dir="${builddir}" executable="java" input="${builddir}/ADTPROETH">
-			<arg line="-jar ${acJar} -p ADTPROETH bin 2051 RAM5.PO" />
-		</exec>
-		<exec dir="${builddir}" executable="java">
-			<arg line="-jar ${acJar} -d ADTPRO RAM5.PO" />
-		</exec>
-		<exec dir="${builddir}" executable="java" input="${builddir}/ADTPRO">
-			<arg line="-jar ${acJar} -p ADTPRO bin 2051 RAM5.PO" />
-		</exec>
-		<exec dir="${builddir}" executable="java">
-			<arg line="-jar ${acJar} -d ADTPROAUD RAM5.PO" />
-		</exec>
-		<exec dir="${builddir}" executable="java" input="${builddir}/ADTPROAUD">
-			<arg line="-jar ${acJar} -p ADTPROAUD bin 2051 RAM5.PO" />
-		</exec>
-		-->
 		<!--
 		Put a nice volume name on the disk images
 		-->
@@ -260,7 +220,6 @@
 		<delete file="${builddir}/ADTPRO" />
 		<delete file="${builddir}/ADTPROAUD" />
 		<delete file="${builddir}/ADTPROETH" />
-		<delete file="${builddir}/FORMAT" />
 	</target>
 
 </project>

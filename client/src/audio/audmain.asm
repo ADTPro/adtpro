@@ -36,6 +36,7 @@
 	.include "audio/audconfig.asm"
 	.include "hostfns.asm"
 	.include "audio/audbsave.asm"
+	.include "format.asm"
 
 PEND:
 	.segment "DATA"

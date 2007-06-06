@@ -21,7 +21,7 @@
 .global CAPBLKS, DEVICES, PARMBUF, BLKLO, BLKHI, BIGBUF, CRCTBLL, CRCTBLH
 .global NUMBLKS, HOSTBLX, UNITNBR
 .global PARMS, PSSC, PSPEED, PSOUND, PSAVE, PGSSLOT, SR_WR_C, SLOWA, SLOWX, SLOWY
-.global PCCRC, L0EF8, COLDSTART, BAUD
+.global PCCRC, COLDSTART, BAUD
 
 .globalzp ZP, UTILPTR, COL_SAV, RLEPREV, UNUSED1, BLKPTR, CRC
 
@@ -29,12 +29,10 @@
 ; Variables - memory written to
 ;------------------------------------
 
-CAPBLKS:
-	.res $20, $00
-DEVICES:
-	.res $100, $00	; ($100 bytes)
+DEVICES = BIGBUF	; ($100 bytes)
+CAPBLKS = DEVICES + $100; ($20 bytes)
 PARMBUF:
-	.res $100, $00
+	.res $10, $00
 BLKLO	= PARMBUF+$04	; Part of PARMBUF structure
 BLKHI	= PARMBUF+$05	; Part of PARMBUF structure
 
@@ -70,8 +68,6 @@ SLOWA:	.byte $00	; A place to save the Accumulator, speed is not important
 SLOWX:	.byte $00	; A place to save the X register, speed is not important
 SLOWY:	.byte $00	; A place to save the Y register, speed is not important
 PCCRC:	.byte $00,$00	; CRC received from PC
-L0EF8:	.byte $05,$07,$09
-	.byte $0B,$0D,$0E,$00,$00
 
 COLDSTART:
 	.byte $00

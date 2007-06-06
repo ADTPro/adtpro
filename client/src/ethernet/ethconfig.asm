@@ -52,8 +52,9 @@ SAVPARM:
 	sta <CH
 	lda #$03	; Row
 	jsr TABV
-	ldy #PMSG26	; 'COMMS SLOT'
-	jsr SHOWMSG
+	lda #<MSG26	; 'UTHER SLOT'
+	ldy #>MSG26
+	jsr STROUT
 
 	lda #$05	; Column
 	sta <CH
@@ -97,13 +98,6 @@ SAVPARM:
 	ldax #IPMsg04
 	jsr IPShowMsg	; 'GATEWAY ADDR'
 	
-	lda #$05
-	sta <CH
-	lda #$0b
-	jsr TABV
-	ldax #IPMsg05
-	jsr IPShowMsg	; 'DNS ADDRESS'
-
 	lda #$04	; Column
 	sta <CH
 	lda #$14	; Row
@@ -259,7 +253,7 @@ PARMDFT:
 	bne FACTORYLOOP
 	lda CONFIGYET
 	bne WARMER	; If no manual config yet, scan the slots
-	jsr FindSlot
+	;jsr FindSlot	; Seems to be failing on emulators?
 WARMER:
 	ldx #PARMNUM-1
 DFTLOOP:
@@ -406,13 +400,13 @@ CURVAL:		.byte 00		; VALUE OF ACTIVE PARAMETER
 OLDPARM:	.byte $00,$00,$00	; There must be PARMNUM bytes here...
 
 PARMTXT:
-	ascz "UTH SLOT 1"
-	ascz "UTH SLOT 2"
-	ascz "UTH SLOT 3"
-	ascz "UTH SLOT 4"
-	ascz "UTH SLOT 5"
-	ascz "UTH SLOT 6"
-	ascz "UTH SLOT 7"
+	ascz "1"
+	ascz "2"
+	ascz "3"
+	ascz "4"
+	ascz "5"
+	ascz "6"
+	ascz "7"
 	ascz "YES"
 	ascz "NO"
 	ascz "YES"
@@ -427,7 +421,7 @@ IPMsg01:	ascz "SERVER IP ADDR"
 IPMsg02:	ascz "LOCAL IP ADDR"
 IPMsg03:	ascz "NETMASK"
 IPMsg04:	ascz "GATEWAY ADDR"
-IPMsg05:	ascz "DNS ADDRESS"
+MSG26:	ascz "UTHER SLOT"
 
 DEFAULT:	.byte 2,0,1	; Default parm indices
 FACTORY:	.byte 2,0,1	; Factory default parm indices

@@ -49,15 +49,17 @@ SAVPARM:
 	sta <CH
 	lda #$03	; Row
 	jsr TABV
-	ldy #PMSG26	; 'COMMS DEVICE'
-	jsr SHOWMSG
+	lda #<MSG26	; 'COMMS DEVICE'
+	ldy #>MSG26
+	jsr STROUT
 
 	lda #$08	; Column
 	sta <CH
 	lda #$04	; Row
 	jsr TABV
-	ldy #PMSG27	; 'BAUD RATE'
-	jsr SHOWMSG
+	lda #<MSG27	; 'BAUD RATE'
+	ldy #>MSG27
+	jsr STROUT
 
 	lda #$08	; Column
 	sta <CH
@@ -378,6 +380,9 @@ PARMTXT:
 	ascz "NO"
 	ascz "YES"
 	ascz "NO"
+
+MSG26:	ascz "COMMS DEVICE"
+MSG27:	ascz "BAUD RATE"
 
 PARMS:
 PSSC:	.byte 1		; Comms slot (2)

@@ -10,7 +10,7 @@
 ;
 ; This program is distributed in the hope that it will be useful, but 
 ; WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY 
-; or FITNESS FOR A PARTIULAR PURPOSE. See the GNU General Public License 
+; or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License 
 ; for more details.
 ;
 ; You should have received a copy of the GNU General Public License along 
@@ -24,7 +24,6 @@
 ONLINE:
 	LDA #$00
 	sta LASTVOL
-
 	tax
 OCLEAN:
 	sta CAPBLKS,X	; Clear out capacity-in-blocks table
@@ -98,7 +97,6 @@ OERROR:
 	LDA #$FF
 	STA PARMBUF+1
 	RTS
-abt:	brk
 
 ; DEVMSG - Add a message to the "Volume name" area of the device
 DEVMSG:

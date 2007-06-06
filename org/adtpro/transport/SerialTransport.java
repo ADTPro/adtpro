@@ -386,7 +386,7 @@ public class SerialTransport extends ATransport
 
   public void setSlowSpeed(int speed)
   {
-    Log.println(false,"SerialTransport.setSlowSpeed() setting speed to "+speed);
+    Log.println(false, "SerialTransport.setSlowSpeed() setting speed to " + speed);
     try
     {
       port.setSerialPortParams(speed, 8, 1, 0);
@@ -423,43 +423,60 @@ public class SerialTransport extends ATransport
   public String getInstructions(String guiString, int fileSize, int speed)
   {
     String ret = "'SerialTransport.getInstructions() - returned null!'";
-    if (guiString.equals(Messages.getString("Gui.BS.ProDOSFormat"))) ret = Messages
-        .getString("Gui.BS.DumpProDOSFormatInstructions");
+    if (guiString.equals(Messages.getString("Gui.BS.ProDOS"))) ret = Messages
+        .getString("Gui.BS.DumpProDOSInstructions");
     else
-      if (guiString.equals(Messages.getString("Gui.BS.ProDOS"))) ret = Messages
-          .getString("Gui.BS.DumpProDOSInstructions");
+      if (guiString.equals(Messages.getString("Gui.BS.ProDOS2"))) ret = Messages
+          .getString("Gui.BS.DumpProDOSInstructions2");
       else
-        if (guiString.equals(Messages.getString("Gui.BS.ProDOS2"))) ret = Messages
-            .getString("Gui.BS.DumpProDOSInstructions2");
+        if (guiString.equals(Messages.getString("Gui.BS.DOS"))) ret = Messages.getString("Gui.BS.DumpDOSInstructions");
         else
-          if (guiString.equals(Messages.getString("Gui.BS.DOS"))) ret = Messages
-              .getString("Gui.BS.DumpDOSInstructions");
+          if (guiString.equals(Messages.getString("Gui.BS.ADT"))) ret = Messages
+              .getString("Gui.BS.DumpADTInstructions");
           else
-            if (guiString.equals(Messages.getString("Gui.BS.ADT"))) ret = Messages
-                .getString("Gui.BS.DumpADTInstructions");
+            if (guiString.equals(Messages.getString("Gui.BS.ADTPro"))) ret = Messages
+                .getString("Gui.BS.DumpProInstructions");
             else
-              if (guiString.equals(Messages.getString("Gui.BS.ADTPro"))) ret = Messages
-                  .getString("Gui.BS.DumpProInstructions");
+              if (guiString.equals(Messages.getString("Gui.BS.ADTProAudio"))) ret = Messages
+                  .getString("Gui.BS.DumpProAudioSerialInstructions");
               else
-                if (guiString.equals(Messages.getString("Gui.BS.ADTProAudio"))) ret = Messages
-                    .getString("Gui.BS.DumpProAudioSerialInstructions");
-                else
-                  if (guiString.equals(Messages.getString("Gui.BS.ADTProEthernet"))) ret = Messages
-                      .getString("Gui.BS.DumpProEthernetInstructions");
+                if (guiString.equals(Messages.getString("Gui.BS.ADTProEthernet"))) ret = Messages
+                    .getString("Gui.BS.DumpProEthernetInstructions");
     String baudCommand;
     switch (speed)
     {
-      case 300: baudCommand = "6"; break;
-      case 600: baudCommand = "7"; break;
-      case 1200: baudCommand = "8"; break;
-      case 1800: baudCommand = "9"; break;
-      case 2400: baudCommand = "10"; break;
-      case 3600: baudCommand = "11"; break;
-      case 4800: baudCommand = "12"; break;
-      case 7200: baudCommand = "13"; break;
-      case 9600: baudCommand = "14"; break;
-      case 19200: baudCommand = "15"; break;
-      default: baudCommand = "6";
+      case 300:
+        baudCommand = "6";
+        break;
+      case 600:
+        baudCommand = "7";
+        break;
+      case 1200:
+        baudCommand = "8";
+        break;
+      case 1800:
+        baudCommand = "9";
+        break;
+      case 2400:
+        baudCommand = "10";
+        break;
+      case 3600:
+        baudCommand = "11";
+        break;
+      case 4800:
+        baudCommand = "12";
+        break;
+      case 7200:
+        baudCommand = "13";
+        break;
+      case 9600:
+        baudCommand = "14";
+        break;
+      case 19200:
+        baudCommand = "15";
+        break;
+      default:
+        baudCommand = "6";
     }
     ret = ret.replaceFirst("%1%", baudCommand);
 
