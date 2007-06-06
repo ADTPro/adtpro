@@ -48,6 +48,7 @@ NXTCHAR	= $FD75	; Line input
 COUT1	= $FDF0	; Character output
 CROUT	= $FD8E	; Output return character
 PRDEC	= $ED24	; Print pointer as decimal
+DELAY	= $FCA8 ; Monitor delay: # cycles = (5*A*A + 27*A + 26)/2
 
 ;---------------------------------------------------------
 ; Horizontal tabs for volume display

@@ -38,8 +38,8 @@ PBEGIN:
 	cld
 
 	; Prepare the system for our expecations -
-	; Basic, 64k Apple ][.  That's all it should
-	; take.
+	; Basic, 64k Applesoft Apple ][.  That's all it
+	; should take.
 
 	jsr $FE84	; NORMAL TEXT
 	jsr $FB2F	; TEXT MODE, FULL WINDOW
@@ -205,13 +205,12 @@ ABORT:	ldx #$FF	; Pop goes the stackptr
 AWBEEP:
 	lda PSOUND	; IF SOUND OFF, RETURN NOW
 	bne NOBEEP
-	lda #$80	; STRAIGHT FROM APPLE WRITER ][
-	jsr BEEP1	; (CANNIBALISM IS THE SINCEREST
-	lda #$A0	; FORM OF FLATTERY)
-BEEP1:	ldy #$80
-BEEP2:	tax
-BEEP3:	dex
-	bne BEEP3
+	ldx #$0d	; Tone isn't quite the same as
+	jsr BEEP1	; Apple Writer ][, but at least
+	ldx #$0f	; it's the same on all CPU speeds.
+BEEP1:	ldy #$85
+BEEP2:	txa
+BEEP3:	jsr DELAY
 	bit $C030	; WHAP SPEAKER
 	dey
 	bne BEEP2
