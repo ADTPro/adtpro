@@ -94,7 +94,7 @@ public class AppleDump extends Task
             (_decoration.equalsIgnoreCase("end")))
         {
           ps.println();
-          ps.println("BSAVE " + _appleName + ",A$" + _startAddrHex + ",L" + fileLength);
+          ps.println(_startAddrHex + "G");
         }
         if (_executeAddrHex != null)
         {
