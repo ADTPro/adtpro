@@ -182,8 +182,8 @@ YesSmart1:
 	cmp #$00
 	bne NoUnit		; It isn't so it's no device I know.
 YesSmart2:
-	jsr OldName		; Show old name and ask if proper Disk
 	jsr LName		; Get New name
+	jsr OldName		; Ask if ready
 	ldy #$FE
 	lda (Buffer),y
 	and #$08
@@ -195,7 +195,6 @@ YesSmart2:
 	jsr CodeWr		; Jump to routine to produce Bit map
 	jmp Catalog		; Write Directory information to the disk
 Jump3:	jmp Again
-
 
 NoUnit:
 	lda #<UnitNone		; Prompt to continue or not Because
@@ -211,14 +210,14 @@ DiskII:
 	sta VolBlks
 	stx VolBlks+1
 	sty VolBlks+2
-	jsr OldName		; Prompt for proper disk.
 	jsr LName		; Get new name
+	jsr OldName		; Ask if ready
 	jmp DIIForm		; Format DiskII
 
 LName:
 	lda #<VolName
 	ldy #>VolName
-	ldx #$16
+	ldx #$14
 	jsr PRTMSGAREA
 LRdname:
 	lda #$0E		; Reset CH to 14
@@ -239,6 +238,8 @@ LInput:
 	beq LBackup
 	cmp #$8D		; C/R is end of input
 	beq LFormat
+	cmp #CHR_ESC		; Escape bails out
+	beq LAbort
 	cmp #$AE		; (periods are ok...)
 	beq LStore
 	cmp #$B0		; Less than '0'?
@@ -276,6 +277,10 @@ LSetLEN:
 	adc #$F0		; Create STORAGE_TYPE, NAME_LENGTH byte
 	sta VolLen
 	rts
+LAbort:
+	pla
+	pla
+	jmp Again
 
 DIIForm:
 	jsr Format		; Format the disk
@@ -512,10 +517,12 @@ Opcode:	.byte $81		; Default MLI opcode = $81 (WRITE)
 	bcs MLIError
 	rts
 MLIError:
+	sta ZP
 	pla
 	pla
 	pla
 	pla
+	lda ZP
 	jmp Died
 
 ;***********************************
@@ -594,6 +601,8 @@ DiedII:
 Died:
 	cmp #$27
 	beq DriveOpen
+	cmp #$28
+	beq DriveOpen
 	cmp #$2F
 	beq DiskError
 	cmp #$2B
@@ -623,7 +632,6 @@ NoDied:
 DiedOut:
 	ldx #$16
 	jsr PRTMSGAREA
-	brk
 	jmp Again		; Prompt for another FORMAT...
 
 ;************************************
@@ -639,7 +647,7 @@ Trans:
 	stx Buffer+1
 	ldy #$32		; Set Y offset to 1st sync byte (max=50)
 	ldx SlotF		; Set X offset to FORMAT slot/drive
-	sec			; (assum the disk is write protected)
+	sec			; (assume the disk is write protected)
 	lda DiskWR,x		; Write something to the disk
 	lda ModeRD,x		; Reset Mode softswitch to READ
 	bmi LWRprot		; If > $7F then disk was write protected
@@ -673,7 +681,7 @@ MStore:
 	clc
 	rts
 LWRprot:
-	clc			; Disk is write protected! (Nerd!)
+	clc			; Disk is write protected
 	jsr Done		; Turn the drive off
 	lda #$2B
 	pla
@@ -944,39 +952,16 @@ ShouldLLFormat:
 ;*                                *
 ;**********************************
 OldName:
-	lda ListSlot
-	and #$F0
-	sta Info+1
-	jsr MLI
-	.byte $C5
-	.addr Info
-	lda VolLen
-	and #$0F
-	bne OldName1
-	lda VolLen+1
-	cmp #$28
-	bne OldError
-	pla
-	pla
-	jmp NoUnit
-OldName1:
-	sta VolLen
-	lda #<TheOld1
-	ldy #>TheOld1
-	ldx #$14
-	jsr PRTMSGAREA
-	lda #<VolLen		; Get Name Length
-	ldy #>VolLen
-	jsr STROUT		; Print old name
-	lda #<TheOld2
-	ldy #>TheOld2
+	lda #<TheOld
+	ldy #>TheOld
+	;ldx #$14
 	jsr STROUT
 	jsr YNLOOP
-	bne OldError
+	bne OldDone
 	pla
 	pla
 	jmp Again
-OldError:
+OldDone:
 	rts
 
 ;***********************************
@@ -1053,24 +1038,20 @@ VolName:
 	asc "VOLUME NAME: /"
 Blank:	asc "BLANK"
 	ascz "__________"
-TheOld1:
-	asc "DO YOU WANT TO WRITE OVER"
-	.byte $8D,$A0,$AF,$00
-TheOld2:
-	.byte $A0,$BF
-	ascz " (Y/N)"
+TheOld:	.byte $8D
+	ascz "READY TO FORMAT? (Y/N):"
 UnRecog:
 	ascz "UNRECOGNIZED ERROR = "
 Dead:	ascz "CHECK DISK OR DRIVE DOOR!"
 Protect:
 	ascz "DISK IS WRITE PROTECTED!"
 NoDisk:	ascz "NO DISK IN THE DRIVE!"
-Nuther:	ascz "FORMAT ANOTHER? (Y/N): "
+Nuther:	ascz "FORMAT ANOTHER? (Y/N):"
 UnitNone:
 	ascz "NO UNIT IN THAT SLOT AND DRIVE"
 Block2:	.byte $00,$00,$03,$00
 VolLen:	.res 1			; $F0 + length of Volume Name
-VOLnam:	.res 15			; Volume Name, Reserved, Creation, Version
+VOLnam:	.res 15			; Volume Name
 Reserved:
 	.res 6
 UpLowCase:
@@ -1107,9 +1088,7 @@ TRKbeg:	.byte 00		; Starting track number
 TRKend:	.byte 35		; Ending track number
 FullPages:
 	.byte 00		; Number of BAM pages to fill
-IsHD:	.res 1			; Are we greater than $0700 blocks?  Say it's a hard drive.
 
-BootCodeHD:
 BootCode:
 ; Floppy boot code at block 0; block 1 is zeroed out
 	.byte $01,$38,$B0,$03,$4C,$32,$A1,$86,$43,$C9,$03,$08,$8A,$29,$70,$4A,$4A,$4A,$4A,$09,$C0,$85,$49,$A0
