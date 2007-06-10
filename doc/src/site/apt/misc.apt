@@ -6,6 +6,23 @@
 
 Miscellaneous Functions
 
+* {Format} Volumes (disks)
+
+ The ADTPro client has built-in disk formatting capabilities.
+ProDOS itself doesn't include an <<<INIT>>> or <<<FORMAT>>> command
+natively, so this is the place to get your media initially formatted.
+Choosing <<<F>>> from the main menu brings up the volume selection
+screen:
+
+[images/format1.png]
+
+ From this screen, choose the volume (slot/drive) you want to format.
+When you make your choice, you will be asked for a confirmation and
+for the new disk's name, then will be given a chance to format another
+volume:
+ 
+[images/format2.png]
+
 * Change Working Directory
 
  Whatever directory the host software starts in will be the "Current working
@@ -23,12 +40,12 @@ example, changing to a full directory specification:
 * Directory
 
  Hitting the "D" key from the main menu will ask for a directory listing of the
-current working directory.  If the contents don't fit on one Apple screen, 
+host's current working directory.  If the contents don't fit on one Apple screen, 
 you can hit a key to see the next screenful of information, until the last
 screenful is shown.  Hitting a key at that point will return you to the main
 menu.
 
-* Volumes
+* Volume List
 
  Hitting the "V" key from the main menu will bring up a list of all volumes that
 ProDOS can see:

@@ -6,6 +6,21 @@
 
 ADTPro Release History
 
+* 1.0.0 - Unreleased
+
+ New functionality:
+
+ * The formatting utility has been integrated into the client
+
+ []
+
+ Bug fixes:
+
+ * Used a MHz-insensitive loop to make the delightful beeping noise
+   sound the same no matter how fast the CPU is going
+
+ []
+
 * 0.2.6 - June 3, 2007
 
  New functionality:

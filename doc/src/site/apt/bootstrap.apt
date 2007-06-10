@@ -126,18 +126,13 @@ more bootstrapping scenarios and configurations are detailed below.
 
     [[1]] Dismiss the ADTPro server dialog by clicking on the <<<Ok>>> button.
       You should start to see text flowing across the Apple screen now.
-      After a few minutes, it will save the ADTPro client program to the current drive
-      without you needing to hit <<<RETURN>>>, so make sure the floppy drive 
-      door is closed (if you're saving to floppy).
+      After a few minutes, it will finish and automatically start the ADTPro
+      client program.
 
-    [[1]] You can now start the ADTPro client with the <<<BRUN ADTPRO>>> 
-      command at the Apple.  Or more simply, the <<<-ADTPRO>>> command, since
-      you're using ProDOS.
-      
-    [[1]] If you want to make a bootable ADTPro diskette, hit the <<<R>>>
-      key on the ADTPro client and receive the ADTPro client disk, ADTPro-v.r.m.dsk.
-
-    [[1]] Boot ADTPro's newly minted disk.
+    [[1]] Now that the client is running, you can use it to
+      {{{receiving.html}tansfer}} more disks (like the bootable ADTPro
+      distribution diskette), {{{misc.html#Format}format}} new diskettes,
+      or {{{configserial.html#Save Configuration}save itself}} to the current disk.
 
     [[1]] Start transferring 5.25", 3.5", RAM drive, or hard drive images to your
       heart's content!
@@ -234,46 +229,9 @@ more bootstrapping scenarios and configurations are detailed below.
 [images/pd2.png]
 
     [[1]] Now you have fully functional ProDOS running on your Apple.  It's 
-      default slot/drive is currently set to 6, but you can change that with 
-      the <<<PREFIX,S5>>> command (or <<<CAT,S5>>> or whatever).
-
-    [[1]] Now you need a formatted floppy to write stuff to.  ProDOS doesn't include
-      a <<<FORMAT>>> or <<<INIT>>> command, though.  No problem: ADTPro can send
-      just such a utility down to the Apple.  Click on the 
-      "Bootstrapping->ProDOS->Send ProDOS Format Utility" menu item.
-
-    [[1]] A dialog box will come up instructing you to type a set of commands
-      on the Apple.  They will be similar to the following:
-
-      * <<<IN#2>>> (The number will depend on which slot
-        you have your Super Serial Card plugged into.  An IIgs' modem port is always in
-        "virtual" slot #2, and an IIc's serial port is always "virtual" slot #2 as well.)
-
-      * <<< <ctrl-A>14B>>> (The number will depend on the speed you have chosen from the bootstrapping 
-        tab on the serial configuration dialog box.  
-        When you hit <<< <ctrl-A> >>>, the Apple Super Serial card will respond with "<<<APPLE SSC:>>>" and the
-        IIgs will respond with "<<<?>>>".  At that prompt, enter the number in your dialog box and the <<<B>>>
-        key with no spaces.  The Super Serial card will require you to hit the <<<Return>>> key, but the IIgs 
-        will not.) 
-
-      []
-
-    [[1]] Dismiss the ADTPro server dialog by clicking on the <<<Ok>>> button.
-      You should start to see text flowing across the Apple screen now.
-      The progress bar will show how far along the transfer is.  
-      
-    [[1]] Once the transfer completes successfully,
-      the Format utility should start.
-      Insert your floppy in the drive and follow the prompts to format it.
-      Here is an example formatting run:
-
-      *
-
-[images/format.png]
-
-    [[1]] Put/leave your freshly formatted floppy in the drive.
-     The disk formatted with this utility isn't bootable yet, so don't 
-     reboot now - or you'll have to re-send the two ProDOS stages again.
+      default slot/drive is currently set to 6, but you will be able to change
+      that with the <<<PREFIX,S5>>> command (or <<<CAT,S5>>> or whatever)
+      once you get some formatted media in your drive.
 
     [[1]] Continue with the step above starting with
      {{{bootstrap.html#Decide which version}Decide which version...}}.

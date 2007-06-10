@@ -109,7 +109,7 @@ will say what IP address it is currently serving:
 taken.  If your home network has IP addresses assigned by DHCP, this number might
 be tricky to come by.  But the final suffix of .123 is as likely a candidate as any.
 
- For <<<NETMASK>>>, <<<GATEWAY ADDR>>>, and <<<DNS ADDRESS>>>, these will be the 
+ For <<<NETMASK>>> and <<<GATEWAY ADDR>>>, these will be the 
 same for the server computer as for your Apple, assuming you're on the same network.
 If the server is running Windows,
 you can find this information by issuing the command: <<<ipconfig /all>>> from the 
