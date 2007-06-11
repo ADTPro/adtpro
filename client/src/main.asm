@@ -51,9 +51,9 @@ PBEGIN:
 	jsr PARMDFT	; Set up parameters
 	lda #$00
 	sta COLDSTART	; Reset coldstart in case we get bsaved
+	jsr HOME	; Clear screen; PARMINT may leave a complaint
 	jsr PARMINT	; INTERPRET PARAMETERS
-
-	; And off we go!
+	jmp MAINL	; And off we go!
 
 ;---------------------------------------------------------
 ; Main loop
@@ -139,8 +139,9 @@ KCD:	cmp #CHR_C	; CD?
 KCONF:	cmp #CHR_G	; Configure?
 	bne :+		; Nope
 	jsr CONFIG      ; YES, DO CONFIGURE ROUTINE
+	jsr HOME	; Clear screen; PARMINT may leave a complaint
 	jsr PARMINT     ; AND INTERPRET PARAMETERS
-	jmp MAINLUP
+	jmp MAINL
 
 :
 KABOUT:	cmp #$9F	; ABOUT MESSAGE? ("?" KEY)

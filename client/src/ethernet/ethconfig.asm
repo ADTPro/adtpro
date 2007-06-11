@@ -253,7 +253,7 @@ PARMDFT:
 	bne FACTORYLOOP
 	lda CONFIGYET
 	bne WARMER	; If no manual config yet, scan the slots
-	;jsr FindSlot	; Seems to be failing on emulators?
+	jsr FindSlot	; Seems to be failing on emulators?
 WARMER:
 	ldx #PARMNUM-1
 DFTLOOP:
@@ -360,31 +360,28 @@ ENDVAL:	dex
 ;---------------------------------------------------------
 FindSlot:
 	lda PSSC
-	sta OrigSlot
-	ldx #$00	; Slot number - start at 1 and work up
+	sta TempSlot
+	ldx #$00	; Slot number - start at index 0 and work up
 FindSlotLoop:
-	stx PSSC
+	stx PSSC	; ip65_init looks for PSSC to be the index
+	clc
 	jsr ip65_init
+	bcc FoundSlot
 	ldx PSSC
 	inx
-	bcs FindSlotNext
-	stx TempSlot
-FindSlotNext:
-	cpx #$08
+	stx PSSC
+	cpx #$07
 	bne FindSlotLoop
-
+	jmp FindSlotDone
+FoundSlot:
+	lda PSSC
+	sta TempSlot
+FindSlotDone:
 ; All done now, so clean up
 	ldx TempSlot
-	beq :+
-	dex		; Subtract 1 to match slot# to parm index
 	stx PSSC
 	stx DEFAULT
 	rts
-:	ldx OrigSlot
-	stx PSSC
-FindSlotDone:
-	rts
-OrigSlot:	.byte 0
 TempSlot:	.byte 0
 
 ;---------------------------------------------------------

@@ -26,6 +26,8 @@
 		<delete file="${builddir}/ADTPRO" />
 		<delete file="${builddir}/ADTPROAUD" />
 		<delete file="${builddir}/ADTPROETH" />
+		<delete file="${builddir}/${distName}.tar.gz" />
+		<delete file="${builddir}/${distName}.zip" />
 		<delete file="${projdir}/org/adtpro/resources/adt.dmp" />
 		<delete file="${projdir}/org/adtpro/resources/adtpro.dmp" />
 		<delete file="${projdir}/org/adtpro/resources/adtproaud.dmp" />
