@@ -35,7 +35,6 @@
 ;*                                 * extent in ADTPro integration    *
 ;***********************************                                 *
 ;                                  *      Updated on: 22Dec89        *
-;                                  *     Updated on: 02Jun2007       *
 ;                                  *                                 *
 ;                                  ***********************************
 
@@ -214,6 +213,11 @@ DiskII:
 	jsr OldName		; Ask if ready
 	jmp DIIForm		; Format DiskII
 
+;*******************************
+;*                             *
+;* LName: Prompt for unit name *
+;*                             *
+;*******************************
 LName:
 	lda #<VolName
 	ldy #>VolName
@@ -256,7 +260,7 @@ LStore:
 	and #$7F		; Clear MSB
 	sta VOLnam,x		; Store character in VOLnam
 	inx
-	cpx #$0E		; Have 15 characters been entered?
+	cpx #$0F		; Have 15 characters been entered?
 	bcc LInput
 LFormat:
 	txa			; See if default VOLUME_NAME was taken
@@ -278,7 +282,7 @@ LSetLEN:
 	sta VolLen
 	rts
 LAbort:
-	pla
+	pla			; Pop return address off the stack
 	pla
 	jmp Again
 

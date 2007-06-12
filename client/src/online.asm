@@ -536,7 +536,9 @@ HOWBIG2:
 	tax
 	rts
 
-VOLNAME:	.res 16,$00
+VOLNAME:	.res 17,$00		; One byte for length
+					; One byte for leading slash
+					; 15 bytes for name
 
 LASTVOL:	.byte $00
 onlineUnit:	.byte $00
@@ -547,8 +549,4 @@ SPCount:	.byte $03
 SPUnitNo:	.byte $00
 SPListPtr:	.addr DSB
 SPCode:		.byte $03
-DSB:	.byte $00,$00,$00,$00,$00,$00,$00,$00  ; Probably way too much space, but you never know...
-	.byte $00,$00,$00,$00,$00,$00,$00,$00
-	.byte $00,$00,$00,$00,$00,$00,$00,$00
-	.byte $00,$00,$00,$00,$00,$00,$00,$00
-	.byte $00,$00,$00,$00,$00,$00,$00,$00
+DSB:		.res $28,$00		; Probably way too much space, but you never know...

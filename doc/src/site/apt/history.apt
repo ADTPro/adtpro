@@ -19,6 +19,11 @@ ADTPro Release History
  * Used a MHz-insensitive loop to make the delightful beeping noise
    sound the same no matter how fast the CPU is going
 
+ * Made the Uther slot-scanning algorithm a little less intrusive
+
+ * Fix 15-character volume name bugs: one in the formatter, one in
+   the online displayer/picker
+
  []
 
 * 0.2.6 - June 3, 2007
