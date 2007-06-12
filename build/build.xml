@@ -91,7 +91,7 @@
 			<arg line="-m adtproser.map -C serial/adtpro.cfg -o ADTPRO serial/sermain.o tail.o" />
 		</exec>
 		<exec dir="${projdir}/client/src" executable="${assemblerPath}/ld65">
-			<arg line="-m adtproser.map -C serial/adtpro.cfg -o ADTPROAUD audio/audmain.o tail.o" />
+			<arg line="-m adtproaud.map -C serial/adtpro.cfg -o ADTPROAUD audio/audmain.o tail.o" />
 		</exec>
 		<exec dir="${projdir}/client/src" executable="${assemblerPath}/ld65">
 			<arg line="-m adtproeth.map -C ethernet/adtpro.cfg -o ADTPROETH ethernet/ethmain.o ip65/ip65.lib tail.o" />

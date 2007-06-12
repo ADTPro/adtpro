@@ -32,7 +32,7 @@
 ;* credit for developing them.     * (Please don't use this for any  *
 ;*                                 * SmartPort volumes bigger than   *
 ;*       Updated on: 23Aug85       * 2.1 Meg.) - fixed to a certain  *
-;*                                 * extent in ADTPro version        *
+;*                                 * extent in ADTPro integration    *
 ;***********************************                                 *
 ;                                  *      Updated on: 22Dec89        *
 ;                                  *     Updated on: 02Jun2007       *
