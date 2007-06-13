@@ -15,6 +15,11 @@ ADTPro Audio Connections
 
 [images/audiopatch.jpg]
 
+ In the example images below, I have a convention for white and black wires.
+ The white wire connects the host audio out to the Apple cassette in.
+ The black wire connects the host audio in to the Apple cassette out.
+ Just like serial connections, the transmit and recieve lines are "crossed."
+
  Host operating systems differ in how they control the audio in/out devices.
  However you control yours, you need to need to direct your sound card to 
  listen and speak on the plugs you will be using.  For example, cards often
@@ -24,14 +29,28 @@ ADTPro Audio Connections
  50%-75% of the maximum; this is probably substantially louder than you would 
  normally listen to your computer's speakers.
 
- You then connect the host computer's audio to the Apple's cassette ports with
- the two patch wires:
+* Connections at the Apple
 
-[images/audioappleclose.jpg] Apple IIe cassette ports
- 
+ Connect the host computer's audio to the Apple's cassette ports with
+ two patch wires:
+
 [images/audioiiplus.jpg] Apple II+ cassette ports
 
 [images/audiobh.jpg] Bell+Howell cassette ports
+
+ Please note that the in- and out-"ness" of the Apple //e cassette port 
+ icons are counter-intuitive.  They seem to be reversed from what you might expect,
+ doing a literal transliteration of the picture (i.e. Cassette-out means
+ arrow away from cassette, right?  Wrong!).  Be sure to follow the example
+ carefully.
+
+[images/audioappleclose.jpg] Apple IIe cassette ports
+
+ The circuit board layout on the //e is identical to the Apple II+ with
+ respect to the cassette ports - so just 
+ follow the white wire ("white to the right") and you'll be ok.
+
+* Connections at the Host
 
  Host computer examples:
  
@@ -42,11 +61,6 @@ ADTPro Audio Connections
  If you are only going to use audio to {{{bootstrapaudio.html}bootstrap}}, 
  you only need to connect your host's audio out to the Apple's cassette in
  (the white wire in these examples).
-
- In these images, I have a convention for white and black wires.  The white cable
- connects the host audio out to the Apple cassette in.  The black cable connects
- the host audio in to the Apple cassette out.  Just like serial connections, the 
- transmit and recieve lines are "crossed."
 
  <<Note:>> The host's output volume control should be set at 
  50%-75% of the maximum; this is probably substantially louder than you would 
