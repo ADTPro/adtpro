@@ -98,15 +98,23 @@ UDPSKIP:
 
 ;---------------------------------------------------------
 ; RECEIVE_LOOP - Wait for an incoming packet to come along
+; 
 ;---------------------------------------------------------
+RECEIVE_LOOP_FAST:
+	lda #$1f		; Short delay
+	sta RECEIVE_LOOP_PAUSE+1
+	lda #$00
+	jmp RECEIVE_LOOP_ENTRY2
+
 RECEIVE_LOOP:
 				; Note: the first byte of
 				; this routine needs to be
 				; kept in sync with the
 				; byte kept in uther.asm,
 	lda #$00		; PATCHUTHER.
+	sta RECEIVE_LOOP_PAUSE+1; Long pause
+RECEIVE_LOOP_ENTRY2:
 	sta TIMEOUT
-	sta TIMEOUT+1
 	sta TMOT
 
 RECEIVE_LOOP_WARM:
@@ -117,20 +125,21 @@ RECEIVE_LOOP_WARM:
 	jmp BABORT
 :	inc TIMEOUT	; Increment our counter
 	bne :+
-	inc TIMEOUT+1
-	lda #$60	; Timeout should be $40 for approx. 1 sec on IIe
-	cmp TIMEOUT+1
-	bne :+
 	inc TMOT
 	jsr UDPDISPATCH
-	rts 
-
-:	lda state
-	cmp #STATE_IDLE
-	bne RECEIVE_LOOP_WARM
 	rts
 
-TIMEOUT:	.res 2
+:	lda state
+	cmp #STATE_IDLE		; Are we done/idle now?
+	bne RECEIVE_LOOP_PAUSE	; No, so pause a bit then retry
+	rts
+
+RECEIVE_LOOP_PAUSE:
+	lda #$7f
+	jsr DELAY
+	jmp RECEIVE_LOOP_WARM
+
+TIMEOUT:	.res 1
 
 ;---------------------------------------------------------
 ; PINGREQUEST - Send out a ping
@@ -394,7 +403,7 @@ SENDMORE:
 	jsr SENDHBLK
 	lda #STATE_PUT	; Set up callback to PUTREPLY1
 	sta state
-	jsr RECEIVE_LOOP
+	jsr RECEIVE_LOOP_FAST
 SENDMORE2:
 	lda QUERYRC
 	cmp #CHR_ACK	; Is it ACK?  Loop back if NAK ($17) or timeout ($08).
@@ -513,7 +522,7 @@ CLRLOOP:
 
 	lda #STATE_RECVHBLK	; Set up callback to RECVHBLK
 	sta state
-	jsr RECEIVE_LOOP
+	jsr RECEIVE_LOOP_FAST
 
 RECVBLK2:
 	lda <CRCY
