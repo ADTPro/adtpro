@@ -84,8 +84,7 @@ ADTPro Audio Bootstrapping
         a prompt, either the Apple isn't hearing 
         anything at all ({{{connectionsaudio.html}check}} the audio cable)
         or it isn't hearing things loudly enough.
-        Make sure your sound volume is set at close to 75% 
-        of maximum and try again.  
+        Make sure your sound volume is set at 50% of maximum and try again.  
         Hit Ctrl-Reset on the Apple to regain control and start again at
         {{{bootstrapaudio.html#Decide which version}step 4 above}}.
 
@@ -162,8 +161,7 @@ ADTPro Audio Bootstrapping
         a prompt, either the Apple isn't hearing 
         anything at all ({{{connectionsaudio.html}check}} the audio cable)
         or it isn't hearing things loudly enough.
-        Make sure your sound volume is set at close to 75% 
-        of maximum and try again.  
+        Make sure your sound volume is set at 50% of maximum and try again.  
         Hit Ctrl-Reset on the Apple to regain control and start again at
         {{{bootstrapaudio.html#Send ProDOS part 1}step 4 above}}.
 
@@ -205,8 +203,7 @@ ADTPro Audio Bootstrapping
         a prompt, either the Apple isn't hearing 
         anything at all ({{{connectionsaudio.html}check}} the audio cable)
         or it isn't hearing things loudly enough.
-        Make sure your sound volume is set at close to 75% 
-        of maximum and try again.  
+        Make sure your sound volume is set at 50% of maximum and try again.  
         Hit Ctrl-Reset on the Apple to regain control and start again at
         {{{bootstrapaudio.html#Send ProDOS part 2}step 8 above}}.
 
@@ -267,9 +264,9 @@ ADTPro Audio Bootstrapping
       * If instead it says "<<<ERR>>>" or never returns you to a prompt,
         either the Apple isn't hearing 
         anything at all ({{{connectionsaudio.html}check}} the audio cable)
-        or it isn't hearing things
-        loudly enough.  Make sure your sound volume is set at close to 75% 
-        of maximum and try again.  Hit Ctrl-Reset on the Apple to regain control
+        or it isn't hearing things loudly enough.  
+        Make sure your sound volume is set at 50% of maximum and try again.  
+        Hit Ctrl-Reset on the Apple to regain control
         and start again at step 3 above.
 
       []
@@ -349,9 +346,9 @@ ADTPro Audio Bootstrapping
       * If instead it says "<<<ERR>>>" or never returns you to a prompt,
         either the Apple isn't hearing 
         anything at all ({{{connectionsaudio.html}check}} the audio cable)
-        or it isn't hearing things
-        loudly enough.  Make sure your sound volume is set at close to 75% 
-        of maximum and try again.  Hit Ctrl-Reset on the Apple to regain control
+        or it isn't hearing things loudly enough.  
+        Make sure your sound volume is set at 50% of maximum and try again.  
+        Hit Ctrl-Reset on the Apple to regain control
         and start again at step 15 above.
 
     [[1]] Start the DOS ADT client with the command <<<803G>>> 

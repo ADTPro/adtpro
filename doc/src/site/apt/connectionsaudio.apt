@@ -26,7 +26,7 @@ ADTPro Audio Connections
  have two different inputs: line in and  microphone in.  You would need to
  use your sound card's control panel to specify which one you will be using for 
  this exercise.  Note that the host's output volume control should be set at 
- 50%-75% of the maximum; this is probably substantially louder than you would 
+ 50% of the maximum; this is probably substantially louder than you would 
  normally listen to your computer's speakers.
 
 * Connections at the Apple
@@ -38,13 +38,16 @@ ADTPro Audio Connections
 
 [images/audiobh.jpg] Bell+Howell cassette ports
 
+ But beware the Apple //e's questionable iconography - they were still 
+ learning to be user-friendly:
+
+[images/audioappleclose.jpg] Apple IIe cassette ports
+
  Please note that the in- and out-"ness" of the Apple //e cassette port 
  icons are counter-intuitive.  They seem to be reversed from what you might expect,
  doing a literal transliteration of the picture (i.e. Cassette-out means
  arrow away from cassette, right?  Wrong!).  Be sure to follow the example
  carefully.
-
-[images/audioappleclose.jpg] Apple IIe cassette ports
 
  The circuit board layout on the //e is identical to the Apple II+ with
  respect to the cassette ports - so just 
@@ -63,5 +66,5 @@ ADTPro Audio Connections
  (the white wire in these examples).
 
  <<Note:>> The host's output volume control should be set at 
- 50%-75% of the maximum; this is probably substantially louder than you would 
+ 50% of the maximum; this is probably substantially louder than you would 
  normally listen to your computer's speakers.
