@@ -27,6 +27,7 @@ fi
 # (Also remember to run fixperm.command in the rxtx directory once on OSX...)
 if [ "$OS" = "Darwin" ]; then
   export RXTXLIB=lib/rxtx/Mac_OS_X
+  cd $CWD
 fi
 
 # For Solaris, use this:
@@ -38,7 +39,6 @@ fi
 export TWEAK1="-Djava.library.path="
 export TWEAK=$TWEAK1$ADTPRO_HOME$RXTXLIB
 
-cd "$ADTPRO_HOME/lib"
 # Set up a comfortable Java execution environment.
 # We want to execute Java (1), set a larger-than-default heap size (2),
 # tell the OS where to find a native library to support rxtx (3), set
@@ -47,4 +47,3 @@ cd "$ADTPRO_HOME/lib"
 # To wit:
 "$MY_JAVA_HOME"java -Xms256m -Xmx512m $TWEAK -cp "$ADTPRO_HOME"lib/%ADTPRO_VERSION%:"$ADTPRO_HOME"lib/rxtx/RXTXcomm.jar org.adtpro.ADTPro
 #               (1)     (2)     (2)     (3)                              (4)                            (5)            (6)
-cd $CWD
