@@ -11,6 +11,7 @@ Miscellaneous Functions
  The ADTPro client has built-in disk formatting capabilities.
 ProDOS itself doesn't include an <<<INIT>>> or <<<FORMAT>>> command
 natively, so this is the place to get your media initially formatted.
+Note that formatting a disk does not make it <bootable>.
 Choosing <<<F>>> from the main menu brings up the volume selection
 screen:
 
@@ -22,6 +23,13 @@ for the new disk's name, then will be given a chance to format another
 volume:
  
 [images/format2.png]
+
+ <<Note:>> The act of formatting a floppy or other drive does not 
+ make it <bootable>.  When you get done formatting a disk, you might
+ want to write an image to it that will ultimately make it bootable
+ to ProDOS.  This is different from the way DOS 3.3 and it's variants
+ worked, where the <<<INIT>>> command would make a disk bootable.
+ In ProDOS, it's a whole different process.
 
 * Change Working Directory
 

@@ -39,15 +39,14 @@ ADTPro Audio Connections
 [images/audiobh.jpg] Bell+Howell cassette ports
 
  But beware the Apple //e's questionable iconography - they were still 
- learning to be user-friendly:
-
-[images/audioappleclose.jpg] Apple IIe cassette ports
-
- Please note that the in- and out-"ness" of the Apple //e cassette port 
+ learning to be user-friendly.
+ Note that the in- and out-"ness" of the Apple //e cassette port 
  icons are counter-intuitive.  They seem to be reversed from what you might expect,
  doing a literal transliteration of the picture (i.e. Cassette-out means
  arrow away from cassette, right?  Wrong!).  Be sure to follow the example
- carefully.
+ carefully. 
+
+[images/audioappleclose.jpg] Apple IIe cassette ports
 
  The circuit board layout on the //e is identical to the Apple II+ with
  respect to the cassette ports - so just 

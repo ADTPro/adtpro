@@ -35,40 +35,46 @@ to a specific Java JRE, for example, you can modify the scripts.
  
  During development of version 0.2.1 of the server and client software,
  there was a {change} in the transfer protocol.  
- Servers and clients in the 0.2.x family are of course compatible
- with one another; and a 0.2.x server can be made compatible with a 0.1.x 
- client by checking the "Client 0.1.x protocol" checkbox:
+ Servers and clients numbered 0.2.x and above are of course compatible
+ with one another; and a 0.2.x server and above can be made compatible
+ with a 0.1.x client by checking the "Client 0.1.x protocol" checkbox:
 
 [images/clientCompat.png]
 
- A 0.2.x client will not communicate correctly with a 0.1.x server.
- Upgrade both at the same time to minimize confusion.
+ A client numbered 0.2.x and above will not communicate correctly with
+ a 0.1.x server.  Upgrade both at the same time to minimize confusion.
 
 Starting the Client
 
- When you boot your Apple ][ from the ADTPro disk, it will start the serial
-version of ADTPro by default.  But all three versions are actually on your disk:
+ When you boot your Apple ][ from the ADTPro disk, it will start a simple
+ menu where you can pick which version of ADTPro you wish to start:
 
-  * <<<ADTPRO>>> - for serial cards, the IIgs modem port, or the IIc serial port
-  
-  * <<<ADTPROETH>>> - for the Ethernet communications via the Uthernet card
-  
-  * <<<ADTPROAUD>>> - for Audio communications via sound card/cassette ports
+[images/hello.png]
 
-  []
+ You can navigate among the choices by pressing the first letter of the program,
+ or by using arrow keys and hitting enter to select one.
 
  Be sure to choose a client program at the Apple II end to match the communications
  device being used at the host end.
- You can choose which one will start by default by modifying the
-supplied <<<STARTUP>>> program on the disk.  The <<<STARTUP>>> program is simply this:
+ You can choose which one will start by default by replacing the
+ supplied <<<STARTUP>>> program on the disk.  
+ Your very simple autostart <<<STARTUP>>> program could look like this:
 
 +-------------+
 10 PRINT CHR$(4)"BRUN ADTPRO"
 +-------------+
 
- Just change <<<ADTPRO>>> specified in line 10 to the program of your choice.
- Get to an Applesoft prompt (hit <<<Q>>> to exit ADTPro), type <<<LOAD STARTUP>>>,
- type in the name of the version you want to run by default; for example, to always
+ Just change <<<ADTPRO>>> specified in line 10 to the program of your choice:
+ 
+  * <<<ADTPRO>>> - for serial cards, the IIgs modem port, or the IIc serial port
+  
+  * <<<ADTPROAUD>>> - for Audio communications via sound card/cassette ports
+
+  * <<<ADTPROETH>>> - for the Ethernet communications via the Uthernet card
+  
+  []
+
+ For example, to always
  run <<<ADTPROAUD>>>, the program should look like this:
 
 +-------------+
@@ -83,10 +89,6 @@ supplied <<<STARTUP>>> program on the disk.  The <<<STARTUP>>> program is simply
  program by <<<LIST>>>ing it and checking the disk's contents with the <<<CAT>>>
  command.
 
- <<IIgs Note:>> users running GSOS are advised to hit the '8' key while booting.
-That has the effect of starting the IIgs in 8-bit ProDOS (BASIC) mode.  
-The less contention for the serial hardware, the better.
-
  However you start it, the main screen comes up:
 
 [images/adtpro.png]
@@ -96,7 +98,13 @@ ask for a directory listing at the host.  If the client "hangs" waiting for
 a response from the host, or if garbled data comes back, it will be necessary
 to check the physical connections, port names and speeds on both host and
 client ends.  The ethernet version of ADTPro (<<<ADTPROETH>>>) often needs 
-a couple of directory queries to find the server.  If you're using the audio
+a couple of directory queries to find the server after setting up its 
+{{{configethernet.html#Client IP Configuration}configuration}}.
+If you're using the audio
 version of ADTPro (<<<ADTPROAUD>>>), ensure the volume setting for your sound
-card is set to at least halfway up the scale (i.e. much louder than you'd 
+card is set to halfway up the scale (i.e. much louder than you'd 
 generally listen to computer speakers).
+
+ <<IIgs Note:>> users running GSOS are advised to hit the '8' key while booting.
+That has the effect of starting the IIgs in 8-bit ProDOS (BASIC) mode.  
+The less contention for the serial hardware, the better.

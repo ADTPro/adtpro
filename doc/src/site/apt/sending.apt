@@ -17,13 +17,13 @@ you want saved at the host:
 
   * When saving disk images at the host, ADTPro will save any 140k, 
     5-1/4" disk image in "DOS order" no matter what it is named.  
-    To work correctly with emulators, disk images should be named
+    To work correctly with emulators, 140k disk images should be named
     with a ".dsk" or ".do" suffix.  
 
   * ADTPro will save <any other> disk image (3-1/2" disk, hard drive, ram disk, etc.)
     in "ProDOS order," and so they should be named with a ".po" suffix.
     Note that the AppleWin emulator expects a ".hdv" instead of ".po"
-    extension for any non-140k disk image.
+    extension for any large disk image.
 
   * Keeping to these naming conventions will ensure your images will work with
     emulators that only distinguish between bit ordering formats by filename.

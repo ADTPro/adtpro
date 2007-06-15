@@ -8,12 +8,16 @@ ADTPro Installation
 
  Welcome to ADTPro!
 
- The ADTPro distribution comes as a single file named 
+ The ADTPro distribution comes as a single file named something similar to
 <<<ADTPro-v.r.m>>> with either a <<<.zip>>> (Windows) or a <<<.tar.gz>>>
-(Linux/OSX/Solaris) extension.
+(Linux/OSX/Solaris) extension.  (The <<<"v.r.m">>> part signifies the 
+Version, Release, and Modification numbers of the particular release 
+you're looking at.)
 After unpacking the distribution file, you will find:
 
  * <<<adtpro.bat>>>       - A Windows server startup batch file
+
+ * <<<adtpro.cmd>>>       - An OS/2 server startup command file
 
  * <<<adtpro.command>>>   - An OSX server startup command file (double-clickable)
 
@@ -54,13 +58,15 @@ After unpacking the distribution file, you will find:
  After downloading the ADTPro distribution file to your 
  desktop, unpack it using your operating system's native facilities.
  You can either run the server startup program from the command line
- or, in Windows and OSX, double-click on the icon of the startup program:
+ or double-click on the icon of the appropriate startup program:
 
-  [Windows:] <<<adtpro.bat>>>
+  [Linux, Solaris:] <<<adtpro.sh>>>
+
+  [OS/2:] <<<adtpro.cmd>>>
 
   [OSX:] <<<adtpro.command>>>
 
-  [Linux, Solaris:] <<<adtpro.sh>>>
+  [Windows:] <<<adtpro.bat>>>
 
  You can modify the startup program to suit your 
  environment.  Especially for the Unix variants - it may need
@@ -132,3 +138,10 @@ java.library.path=/opt/IBMJava2-142/jre/bin:
  Keep working at your startup script or take a look at the RXTX
  install instructions in the <<<rxtx>>> directory.  Remember, you can always 
  {{{https://sourceforge.net/forum/forum.php?forum_id=582337}ask for help}}.
+
+OS/2 RXTX Considerations
+
+ OS/2 doesn't have a native RXTX library.  It would be a relatively easy
+ thing to snap in the original Sun/IBM serial library, but just hasn't been
+ done yet.  Holler if you want it.  Otherwise, the audio and UDP/Ethernet
+ versions will still work fine in OS/2.
