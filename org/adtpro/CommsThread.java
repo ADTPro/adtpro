@@ -879,16 +879,19 @@ public class CommsThread extends Thread
           ok = waitForData(15);
           if ((preamble) && (_client01xCompatibleProtocol == false))
           {
-            int incomingBlock = waitForData(15);
-            incomingBlock += (waitForData(15) * 256);
+            int incomingBlock = 0;
+            incomingBlock = UnsignedByte.intValue(waitForData(15));
+            incomingBlock += (UnsignedByte.intValue(waitForData(15)) * 256);
             byte appleHalf = waitForData(15);
             byte hostHalf = UnsignedByte.loByte(2 - (offset / 256));
-            Log.println(false, "CommsThread.sendPacket() BlockNum: " + block + " host lsb: "
-                + UnsignedByte.toString(UnsignedByte.loByte(block)) + " Apple lsb: "
-                + UnsignedByte.toString(UnsignedByte.loByte(incomingBlock)) + " host msb: "
-                + UnsignedByte.toString(UnsignedByte.hiByte(block)) + " Apple msb: "
-                + UnsignedByte.toString(UnsignedByte.hiByte(incomingBlock)) + " host halfNum: "
-                + UnsignedByte.loByte(2 - (offset / 256)) + " Apple halfNum: " + appleHalf);
+            Log.println(false, "CommsThread.sendPacket() Host BlockNum: " + block 
+                + " Apple BlockNum: " + incomingBlock);
+            Log.println(false, "CommsThread.sendPacket() Host lsb: " + UnsignedByte.toString(UnsignedByte.loByte(block))
+                + " Apple lsb: " + UnsignedByte.toString(UnsignedByte.loByte(incomingBlock))
+                + " Host msb: " + UnsignedByte.toString(UnsignedByte.hiByte(block))
+                + " Apple msb: " + UnsignedByte.toString(UnsignedByte.hiByte(incomingBlock))
+                + " Host halfNum: " + UnsignedByte.loByte(2 - (offset / 256))
+                + " Apple halfNum: " + appleHalf);
             if (ok == NAK)
             {
               if (((block == incomingBlock) && (appleHalf - hostHalf != 0)) || ((block + 1 == incomingBlock))

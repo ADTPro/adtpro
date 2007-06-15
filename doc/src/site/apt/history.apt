@@ -16,12 +16,17 @@ ADTPro Release History
 
  Bug fixes:
 
- * Used a MHz-insensitive loop to make the delightful beeping noise
-   sound the same no matter how fast the CPU is going
+ * Used a MHz-insensitive timing loop to make the delightful beeping
+   noise sound the same no matter how fast the CPU is going
 
- * Made the Uther slot-scanning algorithm a little less intrusive
+ * Made the Uther slot-scanning algorithm a little less intrusive,
+   and used another MHz-insensitive timing loop to make UDP timeouts
+   a little more reasonable on accelerated machines
 
- * Fix 15-character volume name bugs: one in the formatter, one in
+ * (Finally) fixed audio transfer retry logic - darn Java and its
+   signed bytes!
+
+ * Fixed 15-character volume name bugs: one in the formatter, one in
    the online displayer/picker
 
  []
