@@ -13,5 +13,8 @@
 @REM SET ADTPRO_HOME=C:\src\workspace\311\adtpro\build\
 @REM SET MY_JAVA_HOME=C:\Progra~1\IBM\Java142\bin\
 
+@SET CWD=%CD%
+@CD %ADTPRO_HOME%disks
 @PATH=%PATH%;%ADTPRO_HOME%\lib\rxtx\Windows\i368-mingw32
-@start /min %MY_JAVA_HOME%java -Xms128m -Xmx256m -cp %ADTPRO_HOME%%ADTPRO_VERSION%;%ADTPRO_HOME%rxtx\RXTXcomm.jar org.adtpro.ADTPro
+@start /min %MY_JAVA_HOME%java -Xms128m -Xmx256m -cp %ADTPRO_HOME%lib\%ADTPRO_VERSION%;%ADTPRO_HOME%lib\rxtx\RXTXcomm.jar org.adtpro.ADTPro
+@CD %CWD%
