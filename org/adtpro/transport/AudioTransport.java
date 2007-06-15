@@ -219,6 +219,17 @@ public class AudioTransport extends ATransport
     _sendThread = new PlaybackThread(stuff);
     _sendThread.start();
     _outPacketPtr = 0;
+    try
+    {
+      // We have to wait for the thread to finish; it was happening
+      // that some stray data would come in during output, and confuse
+      // the issue.  So just plug our ears until it's done playing.
+      _sendThread.join();
+    }
+    catch (InterruptedException e)
+    {
+      Log.printStackTrace(e);
+    }
     Log.println(false, "AudioTransport.pushBuffer() exit.");
     _inPacketLen = 0;
     _receiveBuffer = null;

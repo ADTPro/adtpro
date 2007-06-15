@@ -1,5 +1,4 @@
 /*
- * ADTPro - Apple Disk Transfer ProDOS
  * Copyright (C) 2006, 2007 by David Schmidt
  * david__schmidt at users.sourceforge.net
  *
@@ -917,6 +916,21 @@ public class CommsThread extends Thread
         {
           _transport.flushReceiveBuffer();
           currentRetries++;
+          Log.println(false, "CommsThread.sendPacket() didn't work; will retry #" + currentRetries+".");
+          // For audio transport, pause for an increasing amount of time each time we retry.
+          // What's that called - progressive backoff/fallback?
+          if (_transport.transportType() == ATransport.TRANSPORT_TYPE_AUDIO)
+          {
+            try
+            {
+              Log.println(false, "CommsThread.sendPacket() audio backoff sleeping for " + (currentRetries * 2) + " seconds.");
+              sleep(currentRetries * 200); // Sleep 2 seconds for each time we have to retry
+            }
+            catch (InterruptedException e)
+            {
+              Log.println(false, "CommsThread.sendPacket() audio backoff sleep was interrupted.");
+            }
+          }
         }
       }
     }
@@ -1213,14 +1227,30 @@ public class CommsThread extends Thread
           _transport.flushReceiveBuffer();
           _transport.flushSendBuffer();
           retries++;
+          Log.println(false, "CommsThread.receivePacket() didn't work - out-of-sync packet received.");
         }
         else
         {
           _transport.flushReceiveBuffer();
           _transport.flushSendBuffer();
+          retries++;
+          Log.println(false, "CommsThread.receivePacket() didn't work; will retry #" + retries+".");
+          // For audio transport, pause for an increasing amount of time each time we retry.
+          // What's that called - progressive backoff?
+          if (_transport.transportType() == ATransport.TRANSPORT_TYPE_AUDIO)
+          {
+            try
+            {
+              Log.println(false, "CommsThread.receivePacket() audio backoff sleeping for " + (retries * 200) + " seconds.");
+              sleep(retries * 200); // Sleep 2 seconds for each time we have to retry
+            }
+            catch (InterruptedException e)
+            {
+              Log.println(false, "CommsThread.receivePacket() audio backoff sleep was interrupted.");
+            }
+          }
           _transport.writeByte(NAK);
           _transport.pushBuffer();
-          retries++;
         }
     }
     while ((rc != 0) && (_shouldRun == true) && (retries < _maxRetries));
