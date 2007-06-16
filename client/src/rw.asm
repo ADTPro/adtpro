@@ -1,6 +1,6 @@
 ;
 ; ADTPro - Apple Disk Transfer ProDOS
-; Copyright (C) 2006 by David Schmidt
+; Copyright (C) 2006, 2007 by David Schmidt
 ; david__schmidt at users.sourceforge.net
 ;
 ; This program is free software; you can redistribute it and/or modify it 
@@ -106,16 +106,12 @@ RWCALL:
 	lda #H_NUM1
 	sta <CH
 
-	lda BLKLO
 	clc
+	lda BLKLO	; Increment the 16-bit block number
 	adc #$01
-	tax
-	stx PRTPTR
+	sta PRTPTR
 	lda BLKHI
-	bcc RWNEXT
-	clc
-	adc #$01
-RWNEXT:
+	adc #$00
 	sta PRTPTR+1
 	jsr PRTNUM	; Print block number in decimal
 
