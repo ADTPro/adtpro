@@ -108,7 +108,7 @@ ADTPro Audio Bootstrapping
       Start transferring 5.25", 3.5", Ram drive, or hard drive images to your
       heart's content!  If you just went through bare-metal bootstrapping, be
       sure one of the first physical disks you create is a full copy of the 
-      ADTPro distribution disk (ADTPro-v.r.m.dsk).  It itself is bootable,
+      ADTPro distribution disk (ADTPRO-v.r.m.DSK).  It itself is bootable,
       so you won't have to go through the manual bootstrapping process any more 
       once you have one of those built (and write-protected).
 
@@ -217,9 +217,48 @@ ADTPro Audio Bootstrapping
 
 [images/pd2.png]
 
-    [[1]] Now you have fully functional ProDOS running on your Apple.
-    Continue in the "If you already have ProDOS..." section above 
-    starting with {{{bootstrapaudio.html#Decide which version}Decide which version...}}.
+    [[1]] Now you have fully functional ProDOS running on your Apple.  It's 
+      default slot/drive is currently set to 6, but you will be able to change
+      that with the <<<PREFIX,S5>>> command (or <<<CAT,S5>>> or whatever)
+      once you get some formatted media in your drive.
+
+    [[1]] {Now send a copy} of the ADTPro client program to the Apple.  You'll use
+      it soon to format floppies and to receive the full, bootable ADTPro 
+      distribution diskette at the Apple.  On the ADTPro server, click on 
+      "Bootstrapping->ProDOS->Send ADTPro Audio Client".
+
+    [[1]] A dialog box will come up instructing you to type a set of commands
+      on the Apple.  They will be similar to the following:
+
+    * <<<CALL -151>>> (The Apple should respond with the asterisk ("<<<*>>>") prompt.)
+
+    * <<<803.xxxxR>>> (Note the "<<<0>>>" is a zero, not the letter "O.")
+
+    []
+
+    Enter those commands at your Apple.
+
+    [[1]] Dismiss the ADTPro server dialog by clicking on the <<<Ok>>> button.
+
+    [[1]] Once the transfer completes successfully,
+      start the ADTPro client with the command <<<803G>>>
+      from the asterisk prompt at the Apple.
+      Or, if you happen to put yourself back at the Applesoft prompt,
+      you can also start the ADTPro client with the <<<CALL 2051>>> command
+      from Applesoft.
+      
+    [[1]] Use the ADTPro client's {{{misc.html#Format}format}} function to
+      format a diskette or two.  Note that in the ProDOS world, formatting
+      a diskette doesn't make it bootable - it just prepares the filesystem
+      for writing.
+      The next step of sending the ADTPro distribution diskette will create
+      bootable diskette for you.
+
+    [[1]] You are now ready to {{{receiving.html}receive}} the ADTPRO-v.r.m.DSK
+      disk image from the host.  Once you've done that, you've got a bootable
+      ProDOS diskette that contains all the ADTPro client programs.  If you have
+      a 3-1/2" disk drive, you can receive the ADTPRO-v.r.m.PO disk image to
+      get a bootable 3-1/2" disk.
 
 * {Bootstrapping DOS}
 

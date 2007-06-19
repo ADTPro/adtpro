@@ -8,7 +8,7 @@ ADTPro Serial Bootstrapping
 
   If you already use the DOS version of ADT, you can use it to transfer the 
 virtual floppy containing ADTPro that comes with this project
-(ADTPro-v.r.m.dsk) to your Apple.  Reboot the Apple with the ADTPro floppy, and
+(ADTPRO-v.r.m.DSK) to your Apple.  Reboot the Apple with the ADTPro floppy, and
 you're ready to go.
 
   If you don't use DOS ADT now, or don't have software for your Apple yet, 
@@ -233,8 +233,29 @@ more bootstrapping scenarios and configurations are detailed below.
       that with the <<<PREFIX,S5>>> command (or <<<CAT,S5>>> or whatever)
       once you get some formatted media in your drive.
 
-    [[1]] Continue with the step above starting with
-     {{{bootstrap.html#Decide which version}Decide which version...}}.
+    [[1]] Now send a copy of the ADTPro client program to the Apple.  You'll use
+      it soon to format floppies and to receive the full, bootable ADTPro
+      distribution diskette at the Apple.  On the ADTPro server, click on 
+      "Bootstrapping->ProDOS->Send ADTPro Serial Client".
+
+    [[1]] Follow the instructions in the dialog box as usual.  Once the transfer
+      is complete, it will automatically start the ADTPro client program.
+      Once the ADTPro client program is running, take a look at the 
+      {{{configserial.html}configuration}} screen and make
+      sure it has picked the correct serial device for you.
+      
+    [[1]] Use the ADTPro client's {{{misc.html#Format}format}} function to
+      format a diskette or two.  Note that in the ProDOS world, formatting
+      a diskette doesn't make it bootable - it just prepares the filesystem
+      for writing.
+      The next step of sending the ADTPro distribution diskette will create
+      bootable diskette for you.
+
+    [[1]] You are now ready to {{{receiving.html}receive}} the ADTPRO-v.r.m.DSK disk
+      image from the host.  Once you've done that, you've got a bootable ProDOS 
+      diskette that contains all the ADTPro client programs.  If you have
+      a 3-1/2" disk drive, you can receive the ADTPRO-v.r.m.PO disk image to
+      get a bootable 3-1/2" disk.
 
 * {Bootstrapping DOS}
 

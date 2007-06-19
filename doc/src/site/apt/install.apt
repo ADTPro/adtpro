@@ -27,11 +27,11 @@ After unpacking the distribution file, you will find:
 
  * <<<README>>> - The page you're looking at now, mostly
 
- * <<<disks/ADTPro-v.r.m.dsk>>> - ADTPro client-side software (an Apple 140K disk image)
+ * <<<disks/ADTPRO-v.r.m.DSK>>> - ADTPro client-side software (an Apple 140K disk image)
 
- * <<<disks/ADTPro-v.r.m.po>>> - ADTPro client-side software (an Apple 800K disk image)
+ * <<<disks/ADTPRO-v.r.m.PO>>> - ADTPro client-side software (an Apple 800K disk image)
 
- * <<<disks/ADTvrm.dsk>>> - An enhanced legacy Apple DOS ADT client, capable 
+ * <<<disks/ADTvrm.DSK>>> - An enhanced legacy Apple DOS ADT client, capable 
    of running on both Super Serial hardware as well as on the IIgs
    modem port (an Apple 140K disk image)
 
@@ -89,7 +89,7 @@ Java lib Version   = RXTX-2.1-7
  communicate with your Apple II.
 
  If you currently use the DOS ADT program, select the
- Serial button.  You can transfer the ADTPro-v.r.m.dsk
+ Serial button.  You can transfer the ADTPRO-v.r.m.DSK
  file to your apple using the DOS ADT client and 
  ADTPro server.  Reboot your Apple with the new ADTPro client 
  diskette in the disk drive and you're ready to go!
