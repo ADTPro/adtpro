@@ -19,7 +19,7 @@ After unpacking the distribution file, you will find:
 
  * <<<adtpro.cmd>>>       - An OS/2 server startup command file
 
- * <<<adtpro.command>>>   - An OSX server startup command file (double-clickable)
+ * <<<adtpro.command>>>   - An OSX server startup command file
 
  * <<<adtpro.sh>>>        - A Linux/Solaris server startup shell script
 
@@ -43,9 +43,10 @@ After unpacking the distribution file, you will find:
 
  []
 
- In all cases above, <<<v.r.m>>> and <<<vrm>>> are replaced with the
- version, release and modification numbers of the distribution.
- 
+ In all cases above, "<<<v.r.m>>>" and "<<<vrm>>>" are replaced with the
+ version, release and modification numbers of the distribution (which 
+ increment as ADTPro updates are released).
+
  To get started, you will need a Java installation you can call from the
  command line.  This means that if you type the command 
  "<<<java -version>>>" from a terminal window it ought to produce 
