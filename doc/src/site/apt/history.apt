@@ -10,24 +10,29 @@ ADTPro Release History
 
  New functionality:
 
- * The formatting utility has been integrated into the client
+ * [Client] The formatting function is now integrated instead of being a
+   separate program
 
  []
 
  Bug fixes:
 
- * Used a MHz-insensitive timing loop to make the delightful beeping
-   noise sound the same no matter how fast the CPU is going
+ * [Client] (Finally) fixed audio transfer retry logic - darn Java and its
+   signed bytes!  Audio transfers are reliable at last.  Slow as ever,
+   but reliable.
 
- * Made the Uther slot-scanning algorithm a little less intrusive,
-   and used another MHz-insensitive timing loop to make UDP timeouts
+ * [Client] Fixed 15-character volume name bugs: one in the formatter, one in
+   the online displayer/picker
+
+ * [Client] Made the Uther slot-scanning algorithm a little less intrusive,
+   and used a MHz-insensitive timing loop to make UDP timeouts
    a little more reasonable on accelerated machines
 
- * (Finally) fixed audio transfer retry logic - darn Java and its
-   signed bytes!
+ * [Client] Used a MHz-insensitive timing loop to make the delightful beeping
+   noise sound the same no matter how fast the CPU is going
 
- * Fixed 15-character volume name bugs: one in the formatter, one in
-   the online displayer/picker
+ * [Server] Better flow control for serial bootstrapping - improves life for
+   serial interfaces that do their own buffering (i.e. Keyspan USA-28)
 
  []
 

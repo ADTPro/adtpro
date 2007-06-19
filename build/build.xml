@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project name="ADTPro" default="all" basedir="..">
-	<property name="versionString" value="v.r.m" />
+	<property name="versionString" value="1.0.0" />
 	<property name="distName" value="ADTPro-${versionString}" />
+	<property name="diskName" value="ADTPRO-${versionString}" />
 	<property name="volName" value="ADTPro.${versionString}" />
 	<property name="dosVersionString" value="132" />
 	<property name="dosDistName" value="ADT${dosVersionString}" />
@@ -132,56 +133,56 @@
 		<!--
 		Start disk images containing the release number
 		-->
-		<copy file="${builddir}/ADTProBase.dsk" tofile="${builddir}/${distName}/disks/${distName}.dsk" />
-		<copy file="${builddir}/ADTProBase.po" tofile="${builddir}/${distName}/disks/${distName}.po" />
-		<copy file="${builddir}/ADTBase.dsk" tofile="${builddir}/${distName}/disks/${dosDistName}.dsk" />
+		<copy file="${builddir}/ADTProBase.dsk" tofile="${builddir}/${distName}/disks/${diskName}.DSK" />
+		<copy file="${builddir}/ADTProBase.po" tofile="${builddir}/${distName}/disks/${diskName}.PO" />
+		<copy file="${builddir}/ADTBase.dsk" tofile="${builddir}/${distName}/disks/${dosDistName}.DSK" />
 		<!--
 		Put the assembled programs on the disk images
 		-->
 		<exec dir="${builddir}" executable="java" input="${builddir}/ADTPRO">
-			<arg line="-jar ${acJar} -p ADTPRO bin 2051 ${distName}/disks/${distName}.dsk" />
+			<arg line="-jar ${acJar} -p ADTPRO bin 2051 ${distName}/disks/${diskName}.DSK" />
 		</exec>
 		<exec dir="${builddir}" executable="java" input="${builddir}/ADTPROAUD">
-			<arg line="-jar ${acJar} -p ADTPROAUD bin 2051 ${distName}/disks/${distName}.dsk" />
+			<arg line="-jar ${acJar} -p ADTPROAUD bin 2051 ${distName}/disks/${diskName}.DSK" />
 		</exec>
 		<exec dir="${builddir}" executable="java" input="${builddir}/ADTPROETH">
-			<arg line="-jar ${acJar} -p ADTPROETH bin 2051 ${distName}/disks/${distName}.dsk" />
+			<arg line="-jar ${acJar} -p ADTPROETH bin 2051 ${distName}/disks/${diskName}.DSK" />
 		</exec>
 		<!--
 		And the .po version...
 		-->
 		<exec dir="${builddir}" executable="java" input="${builddir}/ADTPRO">
-			<arg line="-jar ${acJar} -p ADTPRO bin 2051 ${distName}/disks/${distName}.po" />
+			<arg line="-jar ${acJar} -p ADTPRO bin 2051 ${distName}/disks/${diskName}.PO" />
 		</exec>
 		<exec dir="${builddir}" executable="java" input="${builddir}/ADTPROAUD">
-			<arg line="-jar ${acJar} -p ADTPROAUD bin 2051 ${distName}/disks/${distName}.po" />
+			<arg line="-jar ${acJar} -p ADTPROAUD bin 2051 ${distName}/disks/${diskName}.PO" />
 		</exec>
 		<exec dir="${builddir}" executable="java" input="${builddir}/ADTPROETH">
-			<arg line="-jar ${acJar} -p ADTPROETH bin 2051 ${distName}/disks/${distName}.po" />
+			<arg line="-jar ${acJar} -p ADTPROETH bin 2051 ${distName}/disks/${diskName}.PO" />
 		</exec>
 		<!--
 		Put the assembled DOS ADT program on the .dsk image
 		-->
 		<exec dir="${builddir}" executable="java" input="${builddir}/ADT">
-			<arg line="-jar ${acJar} -p ADT bin 2051 ${distName}/disks/${dosDistName}.dsk" />
+			<arg line="-jar ${acJar} -p ADT bin 2051 ${distName}/disks/${dosDistName}.DSK" />
 		</exec>
 		<exec dir="${builddir}" executable="java" input="${builddir}/ADT">
-			<arg line="-jar ${acJar} -p ADT.BACKUP bin 2051 ${distName}/disks/${dosDistName}.dsk" />
+			<arg line="-jar ${acJar} -p ADT.BACKUP bin 2051 ${distName}/disks/${dosDistName}.DSK" />
 		</exec>
 		<!--
 		Lock the backup ADT version
 		-->
 		<exec dir="${builddir}" executable="java">
-			<arg line="-jar ${acJar} -k ADT.BACKUP ${distName}/disks/${dosDistName}.dsk" />
+			<arg line="-jar ${acJar} -k ADT.BACKUP ${distName}/disks/${dosDistName}.DSK" />
 		</exec>
 		<!--
 		Put a nice volume name on the disk images
 		-->
 		<exec dir="${builddir}" executable="java">
-			<arg line="-jar ${acJar} -v ${distName}/disks/${distName}.dsk ${volName}" />
+			<arg line="-jar ${acJar} -v ${distName}/disks/${diskName}.DSK ${volName}" />
 		</exec>
 		<exec dir="${builddir}" executable="java">
-			<arg line="-jar ${acJar} -v ${distName}/disks/${distName}.po ${volName}" />
+			<arg line="-jar ${acJar} -v ${distName}/disks/${diskName}.PO ${volName}" />
 		</exec>
 	</target>
 
@@ -194,6 +195,7 @@
 		<copy file="${builddir}/README" todir="${builddir}/${distName}" />
 		<copy file="${builddir}/LICENSE" todir="${builddir}/${distName}" />
 		<copy file="${builddir}/ADTPro.html" todir="${builddir}/${distName}" />
+		<copy file="${projdir}/org/adtpro/resources/ADTPro.ico" todir="${builddir}/${distName}/lib" />
 		<!-- jar up the source, object and properties files -->
 		<jar jarfile="${builddir}/${distName}/lib/${distName}.jar"
 			manifest="${builddir}/manifest.mf"
