@@ -1603,6 +1603,7 @@ public class CommsThread extends Thread
             if (buffer[i] == 0x0d)
             {
               _transport.writeByte(0x8d);
+              _transport.flushSendBuffer();
               try
               {
                 /*
@@ -1611,12 +1612,10 @@ public class CommsThread extends Thread
                  */
                 if ((_slowFirst > currentLine) || (currentLine > (numLines - _slowLast)))
                 {
-                  Log.println(false, "slow pacing: " + slowPacing);
                   sleep(slowPacing);
                 }
                 else
                 {
-                  Log.println(false, "fast pacing: " + _pacing);
                   sleep(_pacing);
                 }
               }
@@ -1643,10 +1642,15 @@ public class CommsThread extends Thread
             _transport.pushBuffer();
             _endTime = new GregorianCalendar();
             _diffMillis = (float) (_endTime.getTimeInMillis() - _startTime.getTimeInMillis()) / (float) 1000;
+            //sleep(1000);
             _parent.setSecondaryText(Messages.getString("CommsThread.22") + " in " + _diffMillis + " seconds.");
             Log.println(true, "Text file sent in "
                 + (float) (_endTime.getTimeInMillis() - _startTime.getTimeInMillis()) / (float) 1000 + " seconds.");
-            _transport.setFullSpeed();
+            String message = _transport.getInstructionsDone(_resource);
+            if (!message.equals(""))
+            {
+              _parent.requestSendFinished(message);
+            }
           }
         }
         catch (Exception e)
@@ -1655,8 +1659,9 @@ public class CommsThread extends Thread
         }
       }
       if (_shouldRun) _transport.flushReceiveBuffer();
-      Log.println(false, "CommsThread.Worker.run() exit.");
+      _transport.setFullSpeed();
       _busy = false;
+      Log.println(false, "CommsThread.Worker.run() exit.");
     }
 
     public void requestStop()

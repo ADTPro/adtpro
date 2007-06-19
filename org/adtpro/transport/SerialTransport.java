@@ -178,7 +178,7 @@ public class SerialTransport extends ATransport
    * parameters.
    * 
    * @exception IOException
-   *              thrown when a problem occurs with flushing the stream.
+   *              thrown when a problem occurs with opening the stream.
    */
   public void open(String portName, int portSpeed, boolean hardware) throws Exception
   {
@@ -369,7 +369,14 @@ public class SerialTransport extends ATransport
 
   public void flushSendBuffer()
   {
-  // Serial port is byte-by-byte, no buffering
+    try
+    {
+      outputStream.flush();
+    }
+    catch (IOException e)
+    {
+      Log.println(false,"SerialTransport.flushSendBuffer() failed to flush the stream.");
+    }
   }
 
   public void setFullSpeed()
@@ -417,7 +424,24 @@ public class SerialTransport extends ATransport
 
   public String getInstructionsDone(String guiString)
   {
-    return "";
+    Log.println(false,"SerialTransport.getInstructionsDone() getting instructions for: "+guiString);
+    String ret = "";
+    if (guiString.equals(Messages.getString("Gui.BS.ProDOS")))
+    {
+      ret = Messages.getString("Gui.BS.DumpProDOSInstructionsDone");
+    }
+    else
+      if (guiString.equals(Messages.getString("Gui.BS.ProDOS2")))
+      {
+        ret = Messages.getString("Gui.BS.DumpProDOSInstructions2Done");
+      }
+      else
+        if (guiString.equals(Messages.getString("Gui.BS.DOS")))
+        {
+          ret = Messages.getString("Gui.BS.DumpDOSInstructionsDone");
+        }
+    Log.println(false,"SerialTransport.getInstructionsDone() returning: "+ret);
+    return ret;
   }
 
   public String getInstructions(String guiString, int fileSize, int speed)

@@ -418,6 +418,7 @@ public class AudioTransport extends ATransport
 
   public String getInstructionsDone(String guiString)
   {
+    Log.println(false, "AudioTransport.getInstructionsDone() entry for command: "+guiString);
     String ret = "AudioTransport.getInstructionsDone() - returned null!";
     if (guiString.equals(Messages.getString("Gui.BS.ProDOS")))
     {

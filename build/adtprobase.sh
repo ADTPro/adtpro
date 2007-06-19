@@ -45,5 +45,7 @@ export TWEAK=$TWEAK1$ADTPRO_HOME$RXTXLIB
 # the classpath to include ADTPro (4) and RXTXcomm (5), and finally
 # tell Java what the class to execute is.  
 # To wit:
-"$MY_JAVA_HOME"java -Xms256m -Xmx512m $TWEAK -cp "$ADTPRO_HOME"lib/%ADTPRO_VERSION%:"$ADTPRO_HOME"lib/rxtx/RXTXcomm.jar org.adtpro.ADTPro
+cd "$ADTPRO_HOME"disks
+"$MY_JAVA_HOME"java -Xms256m -Xmx512m $TWEAK -cp ../lib/%ADTPRO_VERSION%:../lib/rxtx/RXTXcomm.jar org.adtpro.ADTPro
 #               (1)     (2)     (2)     (3)                              (4)                            (5)            (6)
+cd $CWD
