@@ -104,8 +104,20 @@ VENTER:	cmp #$8d	; Process enter
 	lda VCURROW	; Extract unit number
 	jsr WHATUNIT
 	sta UNITNBR
+	and #$70	; Mask off just slot
+	lsr
+	lsr
+	lsr
+	lsr
+	sta BISLOT	; Save default slot number in BI page
+	lda #$01
+	sta BIDRIVE	; Save default drive number in BI page
+	lda UNITNBR
+	and #$80	; Wait, was that drive 2?
+	beq :+
+	inc BIDRIVE
 
-	lda VCURROW	; Extract unit capacity
+:	lda VCURROW	; Extract unit capacity
 	clc
 	rol		; Multiply by 2
 	tax		; X is now the index into blocks table

@@ -74,15 +74,14 @@ AgainCloser:
 	jmp Again
 FormatEntry:
 	ldy #PMFORMAT	; Format title line
-	jsr PICKVOL	; A now has index into DEVICES table
+	jsr PICKVOL	; A now has index into DEVICES table; UNITNBR holds chosen unit
 	bmi FormatDone
-	jsr WHATUNIT
-	sta Slot
 	lda #<MNULL
 	ldy #>MNULL
 	ldx #$14
 	jsr PRTMSGAREA
-	lda Slot
+	lda UNITNBR
+	sta Slot
 	tax
 HypForm:
 LSlot:
