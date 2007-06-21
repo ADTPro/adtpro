@@ -53,7 +53,7 @@ you can hit a key to see the next screenful of information, until the last
 screenful is shown.  Hitting a key at that point will return you to the main
 menu.
 
-* Volume List
+* {Volume List}
 
  Hitting the "V" key from the main menu will bring up a list of all volumes that
 ProDOS can see:

@@ -87,6 +87,8 @@ configuration that works for you, select "YES" for SAVE CONFIG and hit Return.
 [images/ethconfigSave.png]
 
  This will save <<<ADTPROETH>>> back out to the current slot/disk (volume).
+You can choose a different slot/drive to save to by first choosing a volume
+from the {{{misc.html#Volume List}Volumes}} screen.
 When you start <<<ADTPROETH>>> again, it will start with the configuration parameters you 
 saved last.
 

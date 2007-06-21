@@ -108,5 +108,7 @@ configuration that works for you, select "YES" for SAVE CONFIG and hit Return.
 [images/configSave.png]
 
  This will save ADTPRO back out to the current slot/disk (volume).
+You can choose a different slot/drive to save to by first choosing a volume
+from the {{{misc.html#Volume List}Volumes}} screen.
 When you start ADTPRO again, it will start with the configuration parameters you 
 saved last.
