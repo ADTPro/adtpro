@@ -49,4 +49,4 @@ export TWEAK=$TWEAK1$ADTPRO_HOME/$RXTXLIB
 # To wit:
 cd "$ADTPRO_HOME"/disks
 "$MY_JAVA_HOME"java -Xms256m -Xmx512m $TWEAK -cp ../lib/%ADTPRO_VERSION%:../lib/rxtx/RXTXcomm.jar org.adtpro.ADTPro
-#               (1)     (2)     (2)     (3)                              (4)                            (5)            (6)
+#               (1)     (2)     (2)     (3)                    (4)                   (5)              (6)
