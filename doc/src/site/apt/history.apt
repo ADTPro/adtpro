@@ -13,6 +13,9 @@ ADTPro Release History
  * [Client] The formatting function is now integrated instead of being a
    separate program
 
+ * [Client] Volume picker screen sets the default slot/drive for the 
+   BASIC interpreter
+
  []
 
  Bug fixes:
