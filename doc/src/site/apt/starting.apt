@@ -6,18 +6,33 @@
 
 Starting the Server
 
- Start the ADTPro server from your host computer's command line:
+ Start the ADTPro server from your host computer's command line
+ or by clicking on the startup program for your host operating
+ system:
+
+  [Linux, Solaris:] <<<adtpro.sh>>>
+
+  [OS/2:] <<<adtpro.cmd>>>
+
+  [OSX:] <<<adtpro.command>>>
+
+  [Windows:] <<<adtpro.bat>>>
+
+ You can modify the startup program to suit your 
+ environment.  Especially for the Unix variants - it may need
+ a little tweaking to get the correct native serial library connected.
+
+ When starting, you will see the following information echoed back on
+ your console as the GUI is coming up:
 
 +-------
-java -jar ADTPro-v.r.m.jar
+ADTPro Server version v.r.m
+
+RXTX: Stable Library
+=========================================
+Native lib Version = RXTX-2.1-7
+Java lib Version   = RXTX-2.1-7
 +-------
-
- (Where v.r.m represents the release number of ADTPro).
-
- ADTPro also comes with a batch file (<<<adtpro.bat>>>) for Windows
-and a shell script (<<<adtpro.sh>>>) for Linux and OSX.  They don't
-do much more than issue the command above, but if you need to point
-to a specific Java JRE, for example, you can modify the scripts.
 
  Once started, the server program's GUI comes up:
 
@@ -37,7 +52,7 @@ to a specific Java JRE, for example, you can modify the scripts.
  there was a {change} in the transfer protocol.  
  Servers and clients numbered 0.2.x and above are of course compatible
  with one another; and a 0.2.x server and above can be made compatible
- with a 0.1.x client by checking the "Client 0.1.x protocol" checkbox:
+ with a 0.1.x client by checking the "Old ADTPro 0.1.x protocol" checkbox:
 
 [images/clientCompat.png]
 

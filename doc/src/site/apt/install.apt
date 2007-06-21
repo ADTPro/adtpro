@@ -58,47 +58,9 @@ After unpacking the distribution file, you will find:
 
  After downloading the ADTPro distribution file to your 
  desktop, unpack it using your operating system's native facilities.
- You can either run the server startup program from the command line
- or double-click on the icon of the appropriate startup program:
-
-  [Linux, Solaris:] <<<adtpro.sh>>>
-
-  [OS/2:] <<<adtpro.cmd>>>
-
-  [OSX:] <<<adtpro.command>>>
-
-  [Windows:] <<<adtpro.bat>>>
-
- You can modify the startup program to suit your 
- environment.  Especially for the Unix variants - it may need
- a little tweaking to get the correct native serial library connected.
-
- When starting, you will see the following information echoed back on
- your console as the GUI is coming up:
-
-+-------
-ADTPro Server version v.r.m
-
-RXTX: Stable Library
-=========================================
-Native lib Version = RXTX-2.1-7
-Java lib Version   = RXTX-2.1-7
-+-------
-
- When the ADTPro GUI comes up, click one of the three
- connection buttons to choose the way you want to 
- communicate with your Apple II.
-
- If you currently use the DOS ADT program, select the
- Serial button.  You can transfer the ADTPRO-v.r.m.DSK
- file to your apple using the DOS ADT client and 
- ADTPro server.  Reboot your Apple with the new ADTPro client 
- diskette in the disk drive and you're ready to go!
-
- If you aren't already using DOS ADT, or if you don't 
- have any software for your Apple yet, there's lots of help available.
- Start at ADTPro's {{{bootstrapmain.html}bootstrapping}} page
- to get the software transferred to your Apple.
+ {{{starting.html}Start the ADTPro server}} from your host computer's command line
+ or by clicking on the startup program for your host operating
+ system.
 
  Please report troubles, bugs, requests for help, etc. on the Help 
  forum for ADTPro at SourceForge:
