@@ -121,8 +121,11 @@
 
 	<target name="scripts">
 		<copy file="${builddir}/adtprobase.bat" tofile="${builddir}/${distName}/adtpro.bat" />
+		<copy file="${builddir}/adtprobase.cmd" tofile="${builddir}/${distName}/adtpro.cmd" />
 		<replace file="${builddir}/${distName}/adtpro.bat" token="%ADTPRO_VERSION%" value="${distName}.jar"/>
 		<replace file="${builddir}/${distName}/adtpro.bat" token="%RXTX_VERSION%" value="${rxtxVersion}"/>
+		<replace file="${builddir}/${distName}/adtpro.cmd" token="%ADTPRO_VERSION%" value="${distName}.jar"/>
+		<replace file="${builddir}/${distName}/adtpro.cmd" token="%RXTX_VERSION%" value="${rxtxVersion}"/>
 		<copy file="${builddir}/adtprobase.sh" tofile="${builddir}/${distName}/adtpro.sh" />
 		<replace file="${builddir}/${distName}/adtpro.sh" token="%ADTPRO_VERSION%" value="${distName}.jar"/>
 		<replace file="${builddir}/${distName}/adtpro.sh" token="%RXTX_VERSION%" value="${rxtxVersion}"/>
