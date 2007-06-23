@@ -4,7 +4,9 @@
  David Schmidt (david__schmidt at users dot souceforge dot net)
  -----
 
-Starting the Server
+Starting ADTPro
+
+* Starting the Server
 
  Start the ADTPro server from your host computer's command line
  or by clicking on the startup program for your host operating
@@ -59,7 +61,7 @@ Java lib Version   = RXTX-2.1-7
  A client numbered 0.2.x and above will not communicate correctly with
  a 0.1.x server.  Upgrade both at the same time to minimize confusion.
 
-Starting the Client
+* Starting the Client
 
  When you boot your Apple ][ from the ADTPro disk, it will start a simple
  menu where you can pick which version of ADTPro you wish to start:
