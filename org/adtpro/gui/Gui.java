@@ -100,7 +100,7 @@ public final class Gui extends JFrame implements ActionListener
     }
     catch (Throwable ex)
     {}
-    String tempDir = _properties.getProperty("WorkingDirectory","../disks"); //$NON-NLS-1$
+    String tempDir = _properties.getProperty("WorkingDirectory", "../disks"); //$NON-NLS-1$
     if (tempDir != null) setWorkingDirectory(tempDir);
 
     JMenuBar menuBar = new JMenuBar();
@@ -595,8 +595,9 @@ public final class Gui extends JFrame implements ActionListener
       else
         if (e.getActionCommand().equals(Messages.getString("Gui.About"))) //$NON-NLS-1$
         {
-
-          JOptionPane.showMessageDialog(null, Messages.getString("Gui.AboutText"), Messages.getString("Gui.About"),
+          String aboutString = Messages.getString("Gui.AboutText");
+          aboutString = aboutString.replace("%1", Messages.getString("Version.Number"));
+          JOptionPane.showMessageDialog(null, aboutString, Messages.getString("Gui.About"),
               JOptionPane.INFORMATION_MESSAGE);
         }
         else

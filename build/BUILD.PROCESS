@@ -14,7 +14,6 @@ the stuff that gets uploaded to sourceforge.
 	* DOS version number, if necessary: <property name="dosVersionString" value="vrm" />
 	* client/src/print.asm: MSG01 .as -'v.r.m'
 	* org/adtpro/resources/messages.properties: Version.Number=v.r.m
-	* org/adtpro/resources/messages.properties: Gui.AboutText=Apple Disk Transfer ProDOS (ADTPro) v.r.m
 
 2. Make sure you've got the latest DOS ADT from the Berlios project;
    ensure the default baud rate is changed to 115k (Search for pspeed:
