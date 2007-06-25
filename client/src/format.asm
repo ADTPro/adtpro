@@ -83,6 +83,12 @@ FormatEntry:
 	lda UNITNBR
 	sta Slot
 	tax
+	lda NUMBLKS
+	sta VolBlks
+	lda NUMBLKS+1
+	sta VolBlks+1
+	lda #$00
+	sta VolBlks+2
 HypForm:
 LSlot:
 	ldy DevCnt		; Load how many devices
@@ -202,12 +208,12 @@ NoUnit:
 	jmp Again
 
 DiskII:
-	lda #$18		; Set VolBlks to 280 ($118)
-	ldx #$01		;  Just setting default settings
-	ldy #$00
-	sta VolBlks
-	stx VolBlks+1
-	sty VolBlks+2
+;	lda #$18		; Set VolBlks to 280 ($118)
+;	ldx #$01		;  Just setting default settings
+;	ldy #$00
+;	sta VolBlks
+;	stx VolBlks+1
+;	sty VolBlks+2
 	jsr LName		; Get new name
 	jsr OldName		; Ask if ready
 	jmp DIIForm		; Format DiskII
@@ -535,7 +541,6 @@ MLIError:
 ;***********************************
 Format:
 	php
-	sei
 	lda Slot		; Fetch target drive SLOTNUM value
 	pha			; Store it on the stack
 	and #$70		; Mask off bit 7 and the lower 4 bits
@@ -863,7 +868,6 @@ Phase:
 ;**********************************
 Ram3Form:
 	php
-	sei
 	lda #3			; Format Request number
 	sta $42
 	lda Slot		; Slot of /Ram
@@ -899,25 +903,6 @@ Ram3Err:
 ;**********************************
 SmartForm:
 	php
-	sei
-	lda #0			; Request Protocol converter for a Status
-	sta $42
-	lda ListSlot		; Give it the ProDOS Slot number
-	and #$F0
-	sta $43
-	lda #$00		; Give it a buffer may not be needed by
-	sta $44			; give it to it anyways
-	lda #$68
-	sta $45
-	lda #$03		; The Blocks of Device
-	sta $46
-	jsr SmartDri
-	txa			; Low in X register
-	sta VolBlks		;  Save it
-	tya			; High in Y register
-	sta VolBlks+1		;  Save it
-	lda #$00
-	sta VolBlks+2
 	lda ShouldLLFormat	; Will be $08 if so
 	beq SmartFormDone
 	lda #3  		; Give Protocol Converter a Format Request
