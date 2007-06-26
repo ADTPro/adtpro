@@ -31,6 +31,13 @@ volume:
  worked, where the <<<INIT>>> command would make a disk bootable.
  In ProDOS, it's a whole different process.
 
+ <<Note:>> Version 1.0.0 of the formatting routine contained a mistake
+ for 3-1/2" (800k) disks.  When these disks were formatted for the very
+ first time, they would erroneously report they had a capacity of zero
+ blocks.  This has been corrected in subsequent releases, but version
+ 1.0.0 can still overcome this problem by formatting these disks a second
+ time.  They will then correctly report their capacity of 1600 blocks.
+
 * Change Working Directory
 
  Whatever directory the host software starts in will be the "Current working

@@ -9,8 +9,8 @@ ADTPro Installation
  Welcome to ADTPro!
 
  The ADTPro distribution comes as a single file named something similar to
-<<<ADTPro-v.r.m>>> with either a <<<.zip>>> (Windows) or a <<<.tar.gz>>>
-(Linux/OSX/Solaris) extension.  (The <<<"v.r.m">>> part signifies the 
+<<<ADTPro-v.r.m>>> with either a <<<.zip>>> (for Windows or OS/2) or a <<<.tar.gz>>>
+(for Linux/OSX/Solaris) extension.  (The <<<"v.r.m">>> part signifies the 
 Version, Release, and Modification numbers of the particular release 
 you're looking at.)
 After unpacking the distribution file, you will find:
