@@ -42,7 +42,7 @@ public class AppleDump extends Task
       "-startaddrhex", _startAddrHex,
       "-numbyteswide", _numBytesString,
       "-decoration", _decoration,
-      "-executeaddrhex", _executeAddrHex
+      "-finalline", _finalLine
     };
     if (checkArgs(args) == true)
     {
@@ -99,10 +99,10 @@ public class AppleDump extends Task
           ps.println();
           ps.println(_startAddrHex + "G");
         }
-        if (_executeAddrHex != null)
+        if (_finalLine != null)
         {
           ps.println();
-          ps.println(_executeAddrHex+"G");
+          ps.println(_finalLine);
         }
         ps.println();
         ps.close();
@@ -166,9 +166,9 @@ public class AppleDump extends Task
     _decoration = decoration;
   }
 
-  public void setExecuteAddrHex(String executeAddrHex)
+  public void setFinalLine(String finalLine)
   {
-    _executeAddrHex = executeAddrHex;
+    _finalLine = finalLine;
   }
 
   String _inFileName = null;
@@ -183,7 +183,7 @@ public class AppleDump extends Task
 
   String _decoration = "yes";
 
-  String _executeAddrHex = null;
+  String _finalLine = null;
 
   int _numBytes = 32;
 }

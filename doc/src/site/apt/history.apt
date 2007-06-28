@@ -13,6 +13,13 @@ ADTPro Release History
  * [Client] Unformatted media in an 800k drive would get an incorrect 
    free block count after formatting.
 
+ * [Client] Changed bootstrapping to rely less on pure Apple-isms in the
+   monitor.  This enables Laser compatibles.
+
+ * [Client] Improved ProDOS stage 1 bootstrapping to not require the 
+   tricky control key sequence to get at the comms card from the monitor.
+   This enables Laser and Franklin compatibles.
+
  []
 
 * 1.0.0 - June 21, 2007

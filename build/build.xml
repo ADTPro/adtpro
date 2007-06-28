@@ -111,8 +111,8 @@
 		<!--
 		Make dumpable versions
 		-->
-		<appleDump infilename="${projdir}/org/adtpro/resources/PD1.raw" outfilename="${basedir}/org/adtpro/resources/PD1.dmp" applename="PD1" startaddrhex="2000" numbyteswide="10" decoration="begin" executeaddrhex="2000"/>
-		<appleDump infilename="${projdir}/org/adtpro/resources/PD2.raw" outfilename="${basedir}/org/adtpro/resources/PD2.dmp" applename="PD2" startaddrhex="2000" numbyteswide="10" decoration="no" executeaddrhex="2000" />
+		<appleDump infilename="${projdir}/org/adtpro/resources/PD1.raw" outfilename="${basedir}/org/adtpro/resources/PD1.dmp" applename="PD1" startaddrhex="2000" numbyteswide="10" decoration="begin" finalline="2000G E000G"/>
+		<appleDump infilename="${projdir}/org/adtpro/resources/PD2.raw" outfilename="${basedir}/org/adtpro/resources/PD2.dmp" applename="PD2" startaddrhex="2000" numbyteswide="10" decoration="no" finalline="2000G" />
 		<appleDump infilename="${builddir}/ADTPROETH" outfilename="${basedir}/org/adtpro/resources/adtproeth.dmp" applename="ADTPROETH" startaddrhex="803" numbyteswide="10" decoration="yes" />
 		<appleDump infilename="${builddir}/ADTPROAUD" outfilename="${basedir}/org/adtpro/resources/adtproaud.dmp" applename="ADTPROAUD" startaddrhex="803" numbyteswide="10" decoration="yes" />
 		<appleDump infilename="${builddir}/ADTPRO" outfilename="${basedir}/org/adtpro/resources/adtpro.dmp" applename="ADTPRO" startaddrhex="803" numbyteswide="10" decoration="yes" />

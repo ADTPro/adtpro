@@ -188,24 +188,20 @@ more bootstrapping scenarios and configurations are detailed below.
 
     [[1]] Once the transfer completes successfully, the kernel of ProDOS will
       start.
-      This first boot stage should leave your screen looking something like this,
-      with the cursor blinking after an asterisk (<<<*>>>) prompt:
+      This first boot stage should leave your screen looking something like this:
 
       *
 
-[images/pd1.png]      
+[images/pd1a.png]      
 
     [[1]] Click on the "Bootstrapping->ProDOS->Send ProDOS part 2" menu item.
       
     [[1]] A dialog box will come up instructing you to type two commands
       on the Apple.  They will be similar to the following:
 
-      * <<< 2<ctrl-K> >>> (The number will depend on which slot
+      * <<<IN#2>>> (The number will depend on which slot
       you have your Super Serial Card plugged into.  An IIgs' modem port is always in
-      "virtual" slot #2, and an IIc's serial port is always "virtual" slot #2 as well.
-      This is the equivalent of the BASIC command <<<IN#2>>>, but since
-      BASIC is not available right now - you have to use this form from the asterisk prompt.
-      You will need to hit the <<<Return>>> key after entering this key sequence.)
+      "virtual" slot #2, and an IIc's serial port is always "virtual" slot #2 as well.)
 
       * <<< <ctrl-A>14B>>> (The number will depend on the speed you have chosen from the bootstrapping 
       tab on the serial configuration dialog box.  
@@ -223,8 +219,7 @@ more bootstrapping scenarios and configurations are detailed below.
 
     [[1]] Once the transfer completes successfully, the BASIC Interpreter of ProDOS
       should start.
-      The second boot stage should leave your screen looking like this, with 
-      the cursor blinking after an Applesoft prompt (<<<]>>>):
+      The second boot stage should leave your screen looking like this:
 
       *
 
