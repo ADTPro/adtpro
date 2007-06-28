@@ -596,7 +596,7 @@ public final class Gui extends JFrame implements ActionListener
         if (e.getActionCommand().equals(Messages.getString("Gui.About"))) //$NON-NLS-1$
         {
           String aboutString = Messages.getString("Gui.AboutText");
-          aboutString = aboutString.replace("%1", Messages.getString("Version.Number"));
+          aboutString = aboutString.replaceAll("%1", Messages.getString("Version.Number"));
           JOptionPane.showMessageDialog(null, aboutString, Messages.getString("Gui.About"),
               JOptionPane.INFORMATION_MESSAGE);
         }
