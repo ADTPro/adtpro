@@ -74,8 +74,9 @@ public class AppleDump extends Task
           ps.println("");
           ps.println("");
         }
-        ps.println(_startAddrHex+":");
+        int addr = Integer.parseInt(_startAddrHex,16);
         int max = fis.available();
+        String address = null;
         for (int j = 0; j < max; j++)
         {
           datum = (byte) fis.read();
@@ -83,7 +84,9 @@ public class AppleDump extends Task
           {
             if (j > 0)
               ps.println();
-            ps.print(":");
+            address = Integer.toHexString(addr);
+            ps.print(address.toUpperCase() + ":");
+            addr += _numBytes;
           }
           ps.print(UnsignedByte.toString(datum));
           fileLength++;

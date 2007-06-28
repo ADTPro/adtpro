@@ -44,3 +44,16 @@ the stuff that gets uploaded to sourceforge.
    putty sf_user@adtpro.sourceforge.net
    cd /home/groups/a/ad/adtpro/htdocs
    unzip ../adtpro.zip (or whatever you call the package)
+
+Need to do a batch renumber of dump files?
+/* */
+infile = "dump.in"
+outfile = "dump.out"
+counter = 40192 /* or wherever */
+do while lines(infile) > 0
+  str = LINEIN(infile)
+  counthex = d2x(counter)
+  str = counthex || str
+  call LINEOUT outfile, str
+  counter = counter + 10
+end
