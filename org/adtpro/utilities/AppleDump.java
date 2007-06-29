@@ -101,7 +101,6 @@ public class AppleDump extends Task
           ps.println();
           ps.println(_finalLine);
         }
-        ps.println();
         ps.close();
         fis.close();
       }

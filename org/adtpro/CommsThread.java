@@ -340,7 +340,7 @@ public class CommsThread extends Thread
       }
       else
         if (disk.getImageOrder() == null) rc = 0x04; // Unrecognized file
-        // format
+                                                      // format
         else
         {
           length = disk.getImageOrder().getBlocksOnDevice();
@@ -481,7 +481,8 @@ public class CommsThread extends Thread
             }
           }
           fos.close();
-          Log.println(false, "CommsThread.receiveDisk() length: "+length+" Disk.APPLE_140KB_DISK: "+Disk.APPLE_140KB_DISK);
+          Log.println(false, "CommsThread.receiveDisk() length: " + length + " Disk.APPLE_140KB_DISK: "
+              + Disk.APPLE_140KB_DISK);
           if ((length * 512) == Disk.APPLE_140KB_DISK)
           {
             Disk disk = new Disk(name);
@@ -884,14 +885,15 @@ public class CommsThread extends Thread
             incomingBlock += (UnsignedByte.intValue(waitForData(15)) * 256);
             byte appleHalf = waitForData(15);
             byte hostHalf = UnsignedByte.loByte(2 - (offset / 256));
-            Log.println(false, "CommsThread.sendPacket() Host BlockNum: " + block 
-                + " Apple BlockNum: " + incomingBlock);
-            Log.println(false, "CommsThread.sendPacket() Host lsb: " + UnsignedByte.toString(UnsignedByte.loByte(block))
-                + " Apple lsb: " + UnsignedByte.toString(UnsignedByte.loByte(incomingBlock))
-                + " Host msb: " + UnsignedByte.toString(UnsignedByte.hiByte(block))
-                + " Apple msb: " + UnsignedByte.toString(UnsignedByte.hiByte(incomingBlock))
-                + " Host halfNum: " + UnsignedByte.loByte(2 - (offset / 256))
-                + " Apple halfNum: " + appleHalf);
+            Log
+                .println(false, "CommsThread.sendPacket() Host BlockNum: " + block + " Apple BlockNum: "
+                    + incomingBlock);
+            Log.println(false, "CommsThread.sendPacket() Host lsb: "
+                + UnsignedByte.toString(UnsignedByte.loByte(block)) + " Apple lsb: "
+                + UnsignedByte.toString(UnsignedByte.loByte(incomingBlock)) + " Host msb: "
+                + UnsignedByte.toString(UnsignedByte.hiByte(block)) + " Apple msb: "
+                + UnsignedByte.toString(UnsignedByte.hiByte(incomingBlock)) + " Host halfNum: "
+                + UnsignedByte.loByte(2 - (offset / 256)) + " Apple halfNum: " + appleHalf);
             if (ok == NAK)
             {
               if (((block == incomingBlock) && (appleHalf - hostHalf != 0)) || ((block + 1 == incomingBlock))
@@ -919,15 +921,18 @@ public class CommsThread extends Thread
         {
           _transport.flushReceiveBuffer();
           currentRetries++;
-          Log.println(false, "CommsThread.sendPacket() didn't work; will retry #" + currentRetries+".");
-          // For audio transport, pause for an increasing amount of time each time we retry.
+          Log.println(false, "CommsThread.sendPacket() didn't work; will retry #" + currentRetries + ".");
+          // For audio transport, pause for an increasing amount of time each
+          // time we retry.
           // What's that called - progressive backoff/fallback?
           if (_transport.transportType() == ATransport.TRANSPORT_TYPE_AUDIO)
           {
             try
             {
-              Log.println(false, "CommsThread.sendPacket() audio backoff sleeping for " + (currentRetries * 2) + " seconds.");
-              sleep(currentRetries * 200); // Sleep 2 seconds for each time we have to retry
+              Log.println(false, "CommsThread.sendPacket() audio backoff sleeping for " + (currentRetries * 2)
+                  + " seconds.");
+              sleep(currentRetries * 200); // Sleep 2 seconds for each time we
+              // have to retry
             }
             catch (InterruptedException e)
             {
@@ -1237,15 +1242,18 @@ public class CommsThread extends Thread
           _transport.flushReceiveBuffer();
           _transport.flushSendBuffer();
           retries++;
-          Log.println(false, "CommsThread.receivePacket() didn't work; will retry #" + retries+".");
-          // For audio transport, pause for an increasing amount of time each time we retry.
+          Log.println(false, "CommsThread.receivePacket() didn't work; will retry #" + retries + ".");
+          // For audio transport, pause for an increasing amount of time each
+          // time we retry.
           // What's that called - progressive backoff?
           if (_transport.transportType() == ATransport.TRANSPORT_TYPE_AUDIO)
           {
             try
             {
-              Log.println(false, "CommsThread.receivePacket() audio backoff sleeping for " + (retries * 200) + " seconds.");
-              sleep(retries * 200); // Sleep 2 seconds for each time we have to retry
+              Log.println(false, "CommsThread.receivePacket() audio backoff sleeping for " + (retries * 200)
+                  + " seconds.");
+              sleep(retries * 200); // Sleep 2 seconds for each time we have to
+              // retry
             }
             catch (InterruptedException e)
             {
@@ -1373,28 +1381,26 @@ public class CommsThread extends Thread
       else
         if (resource.equals(Messages.getString("Gui.BS.ProDOS2"))) resourceName = "org/adtpro/resources/PD2.raw";
         else
-          if (resource.equals(Messages.getString("Gui.BS.ProDOSFormat"))) resourceName = "org/adtpro/resources/format.raw";
+          if (resource.equals(Messages.getString("Gui.BS.DOS"))) resourceName = "org/adtpro/resources/EsDOS1.raw";
           else
-            if (resource.equals(Messages.getString("Gui.BS.DOS"))) resourceName = "org/adtpro/resources/EsDOS1.raw";
+            if (resource.equals(Messages.getString("Gui.BS.DOS2"))) resourceName = "org/adtpro/resources/EsDOS2.raw";
             else
-              if (resource.equals(Messages.getString("Gui.BS.DOS2"))) resourceName = "org/adtpro/resources/EsDOS2.raw";
+              if (resource.equals(Messages.getString("Gui.BS.ADT"))) resourceName = "org/adtpro/resources/adt.raw";
               else
-                if (resource.equals(Messages.getString("Gui.BS.ADT"))) resourceName = "org/adtpro/resources/adt.raw";
+                if (resource.equals(Messages.getString("Gui.BS.ADTPro"))) resourceName = "org/adtpro/resources/adtpro.raw";
                 else
-                  if (resource.equals(Messages.getString("Gui.BS.ADTPro"))) resourceName = "org/adtpro/resources/adtpro.raw";
+                  if (resource.equals(Messages.getString("Gui.BS.ADTProAudio"))) resourceName = "org/adtpro/resources/adtproaud.raw";
                   else
-                    if (resource.equals(Messages.getString("Gui.BS.ADTProAudio"))) resourceName = "org/adtpro/resources/adtproaud.raw";
+                    if (resource.equals(Messages.getString("Gui.BS.ADTProEthernet"))) resourceName = "org/adtpro/resources/adtproeth.raw";
                     else
-                      if (resource.equals(Messages.getString("Gui.BS.ADTProEthernet"))) resourceName = "org/adtpro/resources/adtproeth.raw";
-                      else
-                        resourceName = "'CommsThread.requestSend() - not set! (AudioTransport)'";
+                      resourceName = "'CommsThread.requestSend() - not set! (AudioTransport)'";
     }
     else
     {
       if (resource.equals(Messages.getString("Gui.BS.ProDOS")))
       {
         resourceName = "org/adtpro/resources/PD1.dmp";
-        slowFirstLines = 5;
+        slowFirstLines = 4;
       }
       else
         if (resource.equals(Messages.getString("Gui.BS.ProDOS2")))
@@ -1403,48 +1409,42 @@ public class CommsThread extends Thread
           slowFirstLines = 4;
         }
         else
-          if (resource.equals(Messages.getString("Gui.BS.ProDOSFormat")))
+          if (resource.equals(Messages.getString("Gui.BS.DOS")))
           {
-            resourceName = "org/adtpro/resources/format.dmp";
-            slowFirstLines = 5;
+            resourceName = "org/adtpro/resources/EsDOS.dmp";
+            slowFirstLines = 3;
+            slowLastLines = 0;
           }
           else
-            if (resource.equals(Messages.getString("Gui.BS.DOS")))
+            if (resource.equals(Messages.getString("Gui.BS.ADT")))
             {
-              resourceName = "org/adtpro/resources/EsDOS.dmp";
-              slowFirstLines = 3;
-              slowLastLines = 0;
+              resourceName = "org/adtpro/resources/adt.dmp";
+              slowFirstLines = 5;
+              slowLastLines = 4;
             }
             else
-              if (resource.equals(Messages.getString("Gui.BS.ADT")))
+              if (resource.equals(Messages.getString("Gui.BS.ADTPro")))
               {
-                resourceName = "org/adtpro/resources/adt.dmp";
+                resourceName = "org/adtpro/resources/adtpro.dmp";
                 slowFirstLines = 5;
                 slowLastLines = 4;
               }
               else
-                if (resource.equals(Messages.getString("Gui.BS.ADTPro")))
+                if (resource.equals(Messages.getString("Gui.BS.ADTProAudio")))
                 {
-                  resourceName = "org/adtpro/resources/adtpro.dmp";
+                  resourceName = "org/adtpro/resources/adtproaud.dmp";
                   slowFirstLines = 5;
                   slowLastLines = 4;
                 }
                 else
-                  if (resource.equals(Messages.getString("Gui.BS.ADTProAudio")))
+                  if (resource.equals(Messages.getString("Gui.BS.ADTProEthernet")))
                   {
-                    resourceName = "org/adtpro/resources/adtproaud.dmp";
+                    resourceName = "org/adtpro/resources/adtproeth.dmp";
                     slowFirstLines = 5;
                     slowLastLines = 4;
                   }
                   else
-                    if (resource.equals(Messages.getString("Gui.BS.ADTProEthernet")))
-                    {
-                      resourceName = "org/adtpro/resources/adtproeth.dmp";
-                      slowFirstLines = 5;
-                      slowLastLines = 4;
-                    }
-                    else
-                      resourceName = "'CommsThread.requestSend() - not set! (non-AudioTransport)'";
+                    resourceName = "'CommsThread.requestSend() - not set! (non-AudioTransport)'";
     }
     Log.println(false, "CommsThread.requestSend() seeking resource named " + resourceName);
     is = ADTPro.class.getClassLoader().getResourceAsStream(resourceName);
@@ -1642,7 +1642,7 @@ public class CommsThread extends Thread
             _transport.pushBuffer();
             _endTime = new GregorianCalendar();
             _diffMillis = (float) (_endTime.getTimeInMillis() - _startTime.getTimeInMillis()) / (float) 1000;
-            //sleep(1000);
+            // sleep(1000);
             _parent.setSecondaryText(Messages.getString("CommsThread.22") + " in " + _diffMillis + " seconds.");
             Log.println(true, "Text file sent in "
                 + (float) (_endTime.getTimeInMillis() - _startTime.getTimeInMillis()) / (float) 1000 + " seconds.");
@@ -1679,7 +1679,7 @@ public class CommsThread extends Thread
     int _slowFirst = 0;
 
     int _slowLast = 0;
-    
+
     String _resource = null;
   }
 
