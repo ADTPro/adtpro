@@ -166,17 +166,10 @@ ADTPro Audio Bootstrapping
         {{{bootstrapaudio.html#Send ProDOS part 1}step 4 above}}.
 
     [[1]] Once the transfer completes successfully, the kernel of ProDOS is sitting
-      at memory location 2000 on your Apple, and needs to be booted.
-      Back on the Apple, enter the following commands from the asterisk prompt:
-
-      [[1]] <<<2000G>>> (this relocates the ProDOS kernel)
-
-      [[1]] <<<E000G>>> (this returns you to Applesoft)
-      
-      []
-
+      at memory location 2000 on your Apple, and needs to be booted.  Back on the Apple,
+      enter the command: <<<2000G>>> from the asterisk prompt.
       This first boot stage should leave your screen looking something like this,
-      with the cursor blinking after an Applesoft (<<<]>>>) prompt:
+      with the cursor blinking after an asterisk (<<<*>>>) prompt:
 
       *
 
