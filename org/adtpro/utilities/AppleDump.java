@@ -65,13 +65,10 @@ public class AppleDump extends Task
         if ((_decoration.equalsIgnoreCase("yes")) || 
            (_decoration.equalsIgnoreCase("begin")))
         {
-          ps.println("3D0G");
-          ps.println("NEW");
           ps.println("CALL -151");
         }
         else
         {
-          ps.println("");
           ps.println("");
         }
         int addr = Integer.parseInt(_startAddrHex,16);
