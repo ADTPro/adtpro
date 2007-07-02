@@ -63,6 +63,11 @@ Java lib Version   = RXTX-2.1-7
 
 * Starting the Client
 
+ (If you don't have the ADTPro client software on your Apple II yet, 
+ take a look at the 
+ {{{bootstrapmain.html}Bootstrapping}}
+ section to get that started.) 
+
  When you boot your Apple ][ from the ADTPro disk, it will start a simple
  menu where you can pick which version of ADTPro you wish to start:
 
