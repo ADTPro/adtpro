@@ -18,19 +18,24 @@ ADTPro Installation
  download for your platform and install it.
 
  The ADTPro distribution comes as a single file named something similar to
-<<<ADTPro-v.r.m>>> with either a <<<.zip>>> (for Windows or OS/2) or a <<<.tar.gz>>>
-(for Linux/OSX/Solaris) extension.  (The <<<"v.r.m">>> part signifies the 
-Version, Release, and Modification numbers of the particular release 
-you're looking at.)
+ <<<ADTPro-v.r.m>>> with either a <<<.zip>>> (for Windows or OS/2) or a <<<.tar.gz>>>
+ (for Linux/OSX/Solaris) extension.  (The <<<"v.r.m">>> part signifies the 
+ Version, Release, and Modification numbers of the particular release 
+ you're looking at.)
 
- After downloading the ADTPro distribution file, 
- unpack it using your operating system's native facilities.
- Run the <<<fixperm.command>>> command if you're on OSX (see OSX section
- {{{install.html#Considerations}below}}).
- You're now ready to
- {{{starting.html}start the ADTPro server}} from your host computer's
+ Installation steps:
+
+ [[1]] Unpack the ADTPro distribution file using your operating system's native facilities.
+ 
+ [[1]] Run the <<<fixperm.command>>> {{{install.html#Considerations}command}} if you're on OSX.
+
+ [[1]] {{{starting.html}Start the ADTPro server}} from your host computer's
  command line or by clicking on the startup program for your host operating
  system.
+
+ [[1]] {{{bootstrapmain.html}Bootstrap}} the client software on your Apple II.
+
+ []
 
  Please report troubles, bugs, requests for help, etc. on the Help 
  forum for ADTPro at SourceForge:
