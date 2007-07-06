@@ -14,11 +14,11 @@ ADTPro Release History
    free block count after formatting.
 
  * [Client] Changed bootstrapping to rely less on pure Apple-isms in the
-   monitor.  This enables Laser compatibles.
-
- * [Client] Improved ProDOS stage 1 bootstrapping to not require the 
+   monitor.  Improved ProDOS stage 1 bootstrapping to not require the 
    tricky control key sequence to get at the comms card from the monitor.
    This enables Laser and Franklin compatibles.
+
+ * [Server] Slowed down default bootstrap pacing to 150ms.
 
  []
 
