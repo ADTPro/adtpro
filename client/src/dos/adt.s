@@ -121,7 +121,7 @@ mfrecv	= 12			; FILE TO RECEIVE:_
 mfsend	= 14			; FILE TO SEND:_
 mrecv	= 16			; RECEIVING FILE_    (_ = SPACE)
 msend	= 18			; SENDING FILE_
-mconfus	= 20			; NONSENSE FROM PC
+mconfus	= 20			; NONSENSE FROM HOST
 mnot16	= 22			; NOT A 16 SECTOR DISK
 merror	= 24			; ERROR: FILE_
 mcant	= 26			; |CAN'T BE OPENED.     (| = CR)
@@ -132,7 +132,7 @@ manykey	= 34			; __ANY KEY:_
 mdont	= 36			; <- DO NOT CHANGE
 mabout	= 38			; ABOUT ADT...
 mtest	= 40			; TESTING DISK FORMAT
-mpcans	= 42			; AWAITING ANSWER FROM PC
+mpcans	= 42			; AWAITING ANSWER FROM HOST
 mpause	= 44			; HIT ANY KEY TO CONTINUE...
 mdoserr	= 46			; DOS ERROR:_
 mdos0a	= 48			; FILE LOCKED
@@ -224,13 +224,13 @@ kquit:	cmp	#_'Q'		; QUIT?
 
 
 ;---------------------------------------------------------
-; DIR - GET DIRECTORY FROM THE PC AND PRINT IT
-; PC SENDS 0,1 AFTER PAGES 1..N-1, 0,0 AFTER LAST PAGE
+; DIR - GET DIRECTORY FROM THE HOST AND PRINT IT
+; HOST SENDS 0,1 AFTER PAGES 1..N-1, 0,0 AFTER LAST PAGE
 ;---------------------------------------------------------
 dir:
 	ldy	#mpcans
 	jsr	showmsg
-	lda	#_'D'		; SEND DIR COMMAND TO PC
+	lda	#_'D'		; SEND DIR COMMAND TO HOST
 	jsr	putc
 
 	lda	#>tracks	; GET BUFFER POINTER HIGHBYTE
@@ -281,7 +281,7 @@ dircont:
 	jsr	showmsg
 	jsr	rdkey
 	eor	#esc		; NOT ESCAPE, CONTINUE NORMALLY
-	bne	dir		; BY SENDING A "D" TO PC
+	bne	dir		; BY SENDING A "D" TO HOST
 	jmp	putc		; ESCAPE, SEND 00 AND RETURN
 
 ;---------------------------------------------------------
@@ -773,7 +773,7 @@ bpsctrl:
 trytbl: .byte	0,1,2,3,4,5,10,99
 
 ;---------------------------------------------------------
-; GETNAME - GET FILENAME AND SEND TO PC
+; GETNAME - GET FILENAME AND SEND TO HOST
 ;---------------------------------------------------------
 getname:
 	stx	directn		; TFR DIRECTION (0=RECV, 1=SEND)
@@ -809,19 +809,19 @@ fnameok:
 	jsr	rdkey		; WAIT FOR KEY
 	jmp	abort		; AND ABORT
 
-diskok: ldy	#mpcans		;"AWAITING ANSWER FROM PC"
+diskok: ldy	#mpcans		;"AWAITING ANSWER FROM HOST"
 	jsr	showmsg
 	lda	#_'R'		; LOAD ACC WITH "R" OR "S"
 	adc	directn
-	jsr	putc		; AND SEND TO PC
+	jsr	putc		; AND SEND TO HOST
 	ldx	#0
-fnloop: lda	$200,x		; SEND FILENAME TO PC
+fnloop: lda	$200,x		; SEND FILENAME TO HOST
 	jsr	putc
 	beq	getans		; STOP AT NULL
 	inx
 	bne	fnloop
 
-getans: jsr	getc		; ANSWER FROM PC SHOULD BE 0
+getans: jsr	getc		; ANSWER FROM HOST SHOULD BE 0
 	bne	pcerror		; THERE'S A PROBLEM
 
 	jsr	title		; CLEAR STATUS
@@ -861,8 +861,8 @@ tfrtbl: .byte	mrecv,msend
 ; RECEIVE - MAIN RECEIVE ROUTINE
 ;---------------------------------------------------------
 receive:
-	ldx	#0		; DIRECTION = PC-->APPLE
-	jsr	getname		; ASK FOR FILENAME & SEND TO PC
+	ldx	#0		; DIRECTION = HOST-->APPLE
+	jsr	getname		; ASK FOR FILENAME & SEND TO HOST
 	lda	#ack		; 1ST MESSAGE ALWAYS ACK
 	sta	message
 	lda	#0		; START ON TRACK 0
@@ -872,7 +872,7 @@ receive:
 recvlup:
 	sta	savtrk		; SAVE CURRENT TRACK
 	ldx	#1
-	jsr	sr7trk		; RECEIVE 7 TRACKS FROM PC
+	jsr	sr7trk		; RECEIVE 7 TRACKS FROM HOST
 	ldx	#2
 	jsr	rw7trk		; WRITE 7 TRACKS TO DISK
 	lda	iobtrk
@@ -881,15 +881,15 @@ recvlup:
 	lda	message		; SEND LAST ACK
 	jsr	putc
 	lda	errors
-	jsr	putc		; SEND ERROR FLAG TO PC
+	jsr	putc		; SEND ERROR FLAG TO HOST
 	jmp	awbeep		; BEEP AND END
 
 
 ;---------------------------------------------------------
 ; SEND - MAIN SEND ROUTINE
 ;---------------------------------------------------------
-send:	ldx	#1		; DIRECTION = APPLE-->PC
-	jsr	getname		; ASK FOR FILENAME & SEND TO PC
+send:	ldx	#1		; DIRECTION = APPLE-->HOST
+	jsr	getname		; ASK FOR FILENAME & SEND TO HOST
 	lda	#ack		; SEND INITIAL ACK
 	jsr	putc
 	lda	#0		; START ON TRACK 0
@@ -901,12 +901,12 @@ sendlup:
 	ldx	#1
 	jsr	rw7trk		; READ 7 TRACKS FROM DISK
 	ldx	#0
-	jsr	sr7trk		; SEND 7 TRACKS TO PC
+	jsr	sr7trk		; SEND 7 TRACKS TO HOST
 	lda	iobtrk
 	cmp	#$23		; REPEAT UNTIL TRACK $23
 	bcc	sendlup
 	lda	errors
-	jsr	putc		; SEND ERROR FLAG TO PC
+	jsr	putc		; SEND ERROR FLAG TO HOST
 	jmp	awbeep		; BEEP AND END
 
 
@@ -936,7 +936,7 @@ s7sec:	ldx	what2do		; PRINT STATUS CHARACTER
 	jsr	putc
 	lda	crc+1
 	jsr	putc
-	jsr	getc		; GET RESPONSE FROM PC
+	jsr	getc		; GET RESPONSE FROM HOST
 	cmp	#ack		; IS IT ACK?
 	beq	srokay		; YES, ALL RIGHT
 	cmp	#nak		; IS IT NAK?
@@ -1400,7 +1400,7 @@ msg09:	ascz	"RECEIVING FILE "
 msg10:	ascz	"SENDING FILE "
 
 msg11:	inv	"ERROR:"
-	ascz	" NONSENSE FROM PC."
+	ascz	" NONSENSE FROM HOST."
 
 msg12:	inv	"ERROR:"
 	ascz	" NOT A 16-SECTOR DISK."
@@ -1429,7 +1429,7 @@ msg20:	asccr	"APPLE DISK TRANSFER 1.33      2007-7-8"
 
 msg21:	ascz	"TESTING DISK FORMAT."
 
-msg22:	ascz	"AWAITING ANSWER FROM PC."
+msg22:	ascz	"AWAITING ANSWER FROM HOST."
 
 msg23:	ascz	"HIT ANY KEY TO CONTINUE..."
 
@@ -1511,8 +1511,8 @@ stddos: .byte	$00		; ZERO IF "STANDARD" DOS
 savtrk: .byte	$00		; FIRST TRACK OF SEVEN
 savchr: .byte	$00		; CHAR OVERWRITTEN WITH STATUS
 message:
-	.byte	$00		; SECTOR STATUS SENT TO PC
-pccrc:	.byte	$00,$00		; CRC RECEIVED FROM PC
+	.byte	$00		; SECTOR STATUS SENT TO HOST
+pccrc:	.byte	$00,$00		; CRC RECEIVED FROM HOST
 errors: .byte	$00		; NON-0 IF AT LEAST 1 DISK ERROR
 
 ; Inline source for IIgs Serial Communications Controller (SCC)

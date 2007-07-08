@@ -329,33 +329,50 @@ FindSlotLoop:
 	txa
 	adc #$c0
 	sta UTILPTR+1
-	ldy #$05	; Lookup offset
+	ldy #$05		; Lookup offset
 	lda (UTILPTR),y
-	cmp #$38	; Is $Cn05 == $38?
+	cmp #$38		; Is $Cn05 == $38?
 	bne FindSlotNext
-	ldy #$07	; Lookup offset
+	ldy #$07		; Lookup offset
 	lda (UTILPTR),y
-	cmp #$18	; Is $Cn07 == $18?
+	cmp #$18		; Is $Cn07 == $18?
 	bne FindSlotNext
-	ldy #$0b	; Lookup offset
+	ldy #$0b		; Lookup offset
 	lda (UTILPTR),y
-	cmp #$01	; Is $Cn0B == $01?
+	cmp #$01		; Is $Cn0B == $01?
 	bne FindSlotNext
-	ldy #$0c	; Lookup offset
+	ldy #$0c		; Lookup offset
 	lda (UTILPTR),y
-	cmp #$31	; Is $Cn0C == $31?
+	cmp #$31		; Is $Cn0C == $31?
 	bne FindSlotNext
 ; Ok, we have a set of signature bytes for a comms card (or IIgs).
-	ldy #$1b	; Lookup offset
+	ldy #$1b		; Lookup offset
 	lda (UTILPTR),y
-	cmp #$eb	; Do we have a goofy XBA instruction?
-	bne FoundSSC	; If not, it's an SSC.
-	cpx #$02	; Only bothering to check IIgs Modem slot (2)
+	cmp #$eb		; Do we have a goofy XBA instruction?
+	bne FoundNotIIgs	; If not, it's an SSC or a Laser.
+	cpx #$02		; Only bothering to check IIgs Modem slot (2)
 	bne FindSlotNext
-	lda #$07	; We found the IIgs modem port, so store it
+	lda #$07		; We found the IIgs modem port, so store it
 	sta TempIIgsSlot
 	jmp FindSlotNext
-FoundSSC:
+FoundNotIIgs:
+	ldy #$00
+	lda (UTILPTR),y
+	cmp #$da
+	bne NotLaser
+	cpx #$02
+	bne FindSlotNext
+	lda #$09
+	sta TempSlot
+	lda PSPEED
+	cmp #$06
+	bne :+
+	lda #$05
+	sta PSPEED
+	sta DEFAULT+3
+:
+	jmp FindSlotNext
+NotLaser:
 	stx TempSlot
 FindSlotNext:
 	dex
@@ -363,7 +380,7 @@ FindSlotNext:
 ; All done now, so clean up
 	ldx TempSlot
 	beq :+
-	dex		; Subtract 1 to match slot# to parm index
+	dex			; Subtract 1 to match slot# to parm index
 	stx PSSC
 	stx DEFAULT
 	rts
