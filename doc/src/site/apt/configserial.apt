@@ -39,6 +39,8 @@ left arrow keys.  Your Apple has right and left arrow keys; trust me.
 
 * Comms Device
 
+ <<Super Serial Card/IIc Serial>>
+
  Select the slot your communications card is in.
 
 [images/configSlot.png]
@@ -56,6 +58,8 @@ and select that same slot number here.
 connections section.  IIc considerations are discussed 
 {{{connectionsserial.html#IIc serial port cabling}IIc serial port cabling}}
 connections section.
+
+ <<IIgs Modem Port>>
 
  If you want to use the IIgs' native serial modem port, rotate through the 
 <<<COMMS DEVICE>>> selections until "IIGS MODEM" shows up:
@@ -79,6 +83,17 @@ If you normally start with GSOS, you can hit the '8' key as the computer is disp
 the initial "Apple IIgs" screen and it'll start 8-bit ProDOS and drop you into the
 BASIC interpreter, just like the old days.
 
+ <<Laser 128 Modem Port>>
+
+ The Laser 128's modem port is not quite compatible with either the Super
+ Serial card or the IIc.  There is special support just for it: 
+ 
+[images/configLaser.png]
+
+ This value can actually be used for any serial device in slot 2 that conforms
+ to the Pascal entry point API.  All devices in this scheme are limited to 19,200
+ baud.
+ 
 * Baud Rate
 
  Select the highest baud rate that still works reliably.
