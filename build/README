@@ -1,6 +1,9 @@
 Welcome to ADTPro!
 ------------------
 
+Detailed setup instructions are available on the web:
+http://adtpro.sourceforge.net
+
 The ADTPro distribution comes as a single file named 
 ADTPro-v.r.m with either a .zip (Windows) or a .tar.gz
 (Linux/OSX/Solaris) extension. After unpacking the

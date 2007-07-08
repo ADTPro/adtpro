@@ -323,6 +323,9 @@ more bootstrapping scenarios and configurations are detailed below.
       the floppy disk in your drive.  You may wish to format (<<<INIT>>>)
       more than one now.
 
+    [[1]] Reboot your newly formatted floppy with the <<<PR#6>>> command
+      (where <<<6>>> is the number of the slot your Disk ][ card is in).      
+
     [[1]] Now that DOS is running, it will be necessary to slow down the transfer
       speed for the next step.  
       Click on the ADTPro menu item Bootstrapping->Serial Pacing and set

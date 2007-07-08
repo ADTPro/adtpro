@@ -1,3 +1,6 @@
+For detailed build instructions, see:
+http://adtpro.sourceforge.net/developing.html
+
 The ADTPro project is using the ca65 macro assembler from
 the cc65 project (http://www.cc65.org/).  The build.xml file
 will need a pointer to where the assembler lives in your
@@ -10,15 +13,16 @@ the stuff that gets uploaded to sourceforge.
 
 1. Make sure the version number is updated.  Places where 
    the version number is encoded:
-	* build/build.xml: <property name="versionString" value="v.r.m" />
-	* DOS version number, if necessary: <property name="dosVersionString" value="vrm" />
-	* client/src/print.asm: MSG01 .as -'v.r.m'
-	* org/adtpro/resources/messages.properties: Version.Number=v.r.m
+   * build/build.xml: <property name="versionString" value="v.r.m" />
+   * DOS version number, if necessary: <property name="dosVersionString" value="vrm" />
+   * client/src/print.asm: MSG01 .as -'v.r.m'
+   * org/adtpro/resources/messages.properties: Version.Number=v.r.m
 
 2. Make sure you've got the latest DOS ADT from the Berlios project;
-   ensure the default baud rate is changed to 115k (Search for pspeed:
-   and make it 6, not 5; search for default: and make the '5' in position
-   4 be '6')
+   ensure the default baud rate is changed to 115k in adt.s:
+   * Search for pspeed: and make it 6, not 5
+   * Search for svspeed: and make it 6, not 5
+   * Search for default: and make the '5' in position 4 be '6'
 
 3. Perform a build
 
@@ -29,10 +33,11 @@ the stuff that gets uploaded to sourceforge.
 
 5. Commit all changes
 
-6. Tag adtpro project with the version number.  The
-    standard is:  v_[major]_[minor]_[service]
+6. Tag adtpro project with the version number.
+   The standard is:  v_[major]_[minor]_[service]
 
-7. Anonymously FTP ADTPro-v.r.m.zip to upload.sourceforge.net, in the incoming directory
+7. Anonymously FTP ADTPro-v.r.m.zip to upload.sourceforge.net,
+   in the incoming directory.
 
 8. Release the file
 

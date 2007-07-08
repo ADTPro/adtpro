@@ -355,6 +355,9 @@ ADTPro Audio Bootstrapping
       insert a blank diskette, and type the command <<<INIT HELLO>>>
       on the Apple to format it.
 
+    [[1]] Reboot your newly formatted floppy with the <<<PR#6>>> command
+      (where <<<6>>> is the number of the slot your Disk ][ card is in).      
+
     [[1]] Remember, DOS ADT can't do audio transfers because it requires a serial card.
       If you want to do audio transfers, you really want to use the
       ProDOS bare-metal bootstrapping procedure
