@@ -16,6 +16,11 @@
 
 ; Version History:
 
+; Version 1.33 July 2007
+; David Schmidt
+; - Support Laser 128-style serial port via Pascal
+;   entry points
+
 ; Version 1.32 June 2007
 ; David Schmidt
 ; - Scan slots for initial/default comms device
@@ -309,17 +314,34 @@ FindSlotLoop:
 	lda (msgptr),y
 	cmp #$31		; Is $Cn0C == $31?
 	bne FindSlotNext
-; Ok, we have a set of signature bytes for a comms card (or IIgs).
+; Ok, we have a set of signature bytes for a comms card, IIgs or Laser.
 	ldy #$1b		; Lookup offset
 	lda (msgptr),y
 	cmp #$eb		; Do we have a goofy XBA instruction?
-	bne FoundSSC		; If not, it's an SSC.
+	bne FoundNotIIgs	; If not, it's an SSC or a Laser.
 	cpx #$02		; Only bothering to check IIgs Modem slot (2)
 	bne FindSlotNext
 	lda #$07		; We found the IIgs modem port, so store it
 	sta TempIIgsSlot
 	jmp FindSlotNext
-FoundSSC:
+FoundNotIIgs:
+	ldy #$00
+	lda (msgptr),y
+	cmp #$da
+	bne NotLaser
+	cpx #$02
+	bne FindSlotNext
+	lda #$09
+	sta TempSlot
+	lda pspeed
+	cmp #$06
+	bne :+
+	lda #$05
+	sta pspeed
+	sta default+3
+:
+	jmp FindSlotNext
+NotLaser:
 	stx TempSlot
 FindSlotNext:
 	dex
@@ -364,6 +386,23 @@ savparm:
 ;--------------- FIRST PART: DISPLAY SCREEN --------------
 
 refresh:
+	lda pssc
+	cmp #$08		; Are we talking about the Laser/Pascal Entry Points?
+	bmi restore		; No, go on ahead
+	lda pspeed		; Yes - so check baudrate
+	cmp #$06		; Is it too fast?
+	bne refnext		; No, go on ahead
+	sta svspeed
+	lda #$05		; Yes - so slow it down
+	sta pspeed
+	jmp refnext 
+restore:
+	lda svspeed		; Did we have speed previously re-set by Laser?
+	beq refnext		; No, go on ahead
+	sta pspeed		; Yes - so restore it now
+	lda #$00
+	sta svspeed		; Forget about resetting speed until we roll through Laser again
+refnext:
 	lda	#3		; FIRST PARAMETER IS ON LINE 3
 	jsr	tabv
 	ldx	#0		; PARAMETER NUMBER
@@ -500,6 +539,8 @@ parmrst:
 	dey
 	bpl	parmrst
 endcfg:
+	lda	#$01
+	sta	configyet
 	lda	psave		; Did they ask to save parms?
 	bne	nosave
 
@@ -527,6 +568,8 @@ default:
 	.byte	5,0,1,6,1,0,0,0,1 ; DEFAULT PARM VALUES
 oldparm:
 	.res	parmnum		; Old parameters saved here
+svspeed:
+	.byte	$06		; Storage for speed setting
 
 ;---------------------------------------------------------
 ; bsave - Save a copy of ADT in memory
@@ -713,12 +756,15 @@ rwtsmod:
 	ldy	pssc		; GET SLOT# (0..6)
 	iny			; NOW 1..7
 	tya
-	cmp	#$08
-	bpl	iigs
-	jmp	initssc		; Y holds slot number
-
-iigs:
-	jmp	initzgs
+	cmp #$08
+	bpl drivers
+	jmp initssc	; Y holds slot number
+drivers:
+	cmp #$09
+	bpl laser
+	jmp initzgs
+laser:
+	jmp initpas
 	rts
 
 spdtxt: asc	"  003 0021 0042 0084 006900291 K511"
@@ -1315,10 +1361,10 @@ msgtbl: .addr	msg01,msg02,msg03,msg04,msg05,msg06,msg07
 	.addr	msg15,msg16,msg17,msg18,msg19,msg20,msg21
 	.addr	msg22,msg23,msg24,msg25,msg26,msg27
 
-msg01:	asc	"SSC:S"
+msg01:	asc	"COM:S"
 mtssc:	asc	" ,"
 mtspd:	asc	"        "
-	inv	" ADT 1.32 "
+	inv	" ADT 1.33 "
 	asc	"    DISK:S"
 mtslt:	asc	" ,D"
 mtdrv:	asc	" "
@@ -1378,7 +1424,7 @@ msg18:	ascz	"  ANY KEY: "
 
 msg19:	ascz	"<- DO NOT CHANGE"
 
-msg20:	asccr	"APPLE DISK TRANSFER 1.32      2007-6-1"
+msg20:	asccr	"APPLE DISK TRANSFER 1.33      2007-7-8"
 	ascz	"PAUL GUERTIN (SSC AND IIGS COMPATIBLE)"
 
 msg21:	ascz	"TESTING DISK FORMAT."
@@ -1400,7 +1446,7 @@ msg27:	ascz	"I/O ERROR"
 configyet:
 	.byte	0		; Has the user configged yet?
 parmsiz:
-	.byte	7,2,8,7,8,8,2,2,2 ;#OPTIONS OF EACH PARM
+	.byte	7,2,9,7,8,8,2,2,2 ;#OPTIONS OF EACH PARM
 parmtxt:
 	.byte	_'1',0,_'2',0,_'3',0,_'4',0,_'5',0,_'6',0,_'7',0
 	.byte	_'1',0,_'2',0
@@ -1412,6 +1458,7 @@ parmtxt:
 	ascz "SSC SLOT 6"
 	ascz "SSC SLOT 7"
 	ascz "IIGS MODEM"
+	ascz "LASER MODEM"
 	ascz "300"
 	ascz "1200"
 	ascz "2400"
@@ -1473,6 +1520,9 @@ errors: .byte	$00		; NON-0 IF AT LEAST 1 DISK ERROR
 
 ; Inline source for Super Serial Controller (SSC)
 	.include "ssc.s"
+
+; Inline source for Pascal entry points
+	.include "pascalep.s"
 
 				; End of assembly; used to calculate
 endasm:				; length to BSAVE							
