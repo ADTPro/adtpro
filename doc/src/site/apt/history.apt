@@ -8,6 +8,11 @@ ADTPro Release History
 
 * 1.0.1 - Unreleased
 
+ New functionality:
+
+ * [Client] Support added for Laser 128 via generic Pascal entry
+   points on slot 2
+
  Bug fixes:
 
  * [Client] Unformatted media in an 800k drive would get an incorrect 

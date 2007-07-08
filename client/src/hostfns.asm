@@ -37,8 +37,8 @@ DIR:
 	ldy TMOT
 	bne DIRTIMEOUT
 
-	ldy #$00	; Reset counter
 	jsr HOME	; Clear screen
+	ldy #$00	; Reset counter
 
 DIRDISP:
 	lda (BLKPTR),Y	; Get byte from buffer

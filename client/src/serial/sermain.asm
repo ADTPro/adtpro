@@ -37,7 +37,8 @@
 	.include "serial/serconfig.asm"
 	.include "hostfns.asm"
 	.include "serial/serbsave.asm"
-	.include "format.asm"	; Note: format.asm is its own segment
+	.include "serial/pascalep.asm"	; Note: includes PASCALEP segment
+	.include "format.asm"			; Note: includes FORMAT segment
 
 PEND:
 	.segment "DATA"

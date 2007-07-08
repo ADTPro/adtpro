@@ -90,6 +90,23 @@ SAVPARM:
 	jsr SHOWMSG
 
 REFRESH:
+	lda PARMS
+	cmp #$08	; Are we talking about the Laser/Pascal Entry Points?
+	bmi RESTORE		; No, go on ahead
+	lda PSPEED	; Yes - so check baudrate
+	cmp #$02	; Is it too fast?
+	bne REFNEXT		; No, go on ahead
+	sta SVSPEED
+	lda #$01	; Yes - so slow it down
+	sta PSPEED
+	jmp REFNEXT 
+RESTORE:
+	lda SVSPEED	; Did we have speed previously re-set by Laser?
+	beq REFNEXT	; No, go on ahead
+	sta PSPEED	; Yes - so restore it now
+	lda #$00
+	sta SVSPEED	; Forget about resetting speed until we roll through Laser again
+REFNEXT:
 	lda #3		; FIRST PARAMETER IS ON LINE 3
 	jsr TABV
 	ldx #0		; PARAMETER NUMBER
@@ -251,10 +268,14 @@ PARMINT:
 	iny		; Now slot# = 1..8 (where 8=IIgs)
 	tya
 	cmp #$08
-	bpl IIGS
+	bpl DRIVERS
 	jmp INITSSC	; Y holds slot number
-IIGS:
+DRIVERS:
+	cmp #$09
+	bpl LASER
 	jmp INITZGS
+LASER:
+	jmp INITPAS
 
 ;---------------------------------------------------------
 ; PARMDFT - Set parameters to last saved values (uses A,X)
@@ -362,7 +383,7 @@ TempIIgsSlot:	.byte 0
 
 PARMNUM	= $04		; Number of configurable parms
 ;			; Note - add bytes to OLDPARM if this is expanded.
-PARMSIZ: .byte 8,3,2,2	; Number of options for each parm
+PARMSIZ: .byte 9,3,2,2	; Number of options for each parm
 
 PARMTXT:
 	ascz "SSC SLOT 1"
@@ -373,6 +394,7 @@ PARMTXT:
 	ascz "SSC SLOT 6"
 	ascz "SSC SLOT 7"
 	ascz "IIGS MODEM"
+	ascz "LASER MODEM"
 	ascz "9600"
 	ascz "19200"
 	ascz "115200"
@@ -395,3 +417,4 @@ CONFIGYET:	.byte 0		; Has the user configged yet?
 BPSCTRL:	.byte $1E,$1F,$10
 YSAVE:		.byte $00
 BSAVEP		= $03	; Index to the 'Save parameters' parameter
+SVSPEED:	.byte 2		; Storage for speed setting
