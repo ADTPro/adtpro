@@ -9,13 +9,13 @@
   <body>
     <links>
       <item name="Sourceforge Project Page" href="http://sourceforge.net/projects/adtpro"/>
-      <item name="Download" href="https://sourceforge.net/project/showfiles.php?group_id=170262"/>
+      <item name="Download" href="download.html"/>
     </links>
 
     <menu name="ADTPro">
       <item name="Main" href="index.html"/>
       <item name="Credits" href="credits.html"/>
-      <item name="Download" href="https://sourceforge.net/project/showfiles.php?group_id=170262"/>
+      <item name="Download" href="download.html"/>
     </menu>
 
     <menu name="Configuration">
