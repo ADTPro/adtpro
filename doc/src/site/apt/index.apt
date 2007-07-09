@@ -44,6 +44,8 @@ drive types, communications devices, and host operating systems.
 
     * Ability to send floppies in "{{{batch.html}batch}}" mode without having to name each one
 
+    * Integrated media {{{misc.html#Format}formatter}}
+
  ADTPro may be used to transfer either Apple diskette/disk images in DOS or ProDOS format.
 The Apple client side happens to run under ProDOS, but it is perfectly capable
 of reading or writing Apple DOS (or Pascal, or CP/M, or...) diskettes.

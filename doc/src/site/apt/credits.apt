@@ -35,14 +35,16 @@ the rxtx organization: {{http://www.rxtx.org/}}.
  ProDOS assembly programming particulars were divined from the {{{ftp://a2central.com/a2c.essential/A2_BOOKS/Beneath_Apple_ProDOS.pdf}Beneath ProDOS}}
 book by Don Worth and Pieter Lechner, published by Quality Software in 1984.
 
- The original native IIgs serial port work was contributed by Joseph Oswald.  
-It was based on Pascal entry points and firmware stuff, so it was limited to
-19,200 baud.  The code now interfaces directly with the SCC chip.  It was 
-partially borrowed from the "Warp Six BBS" code:
+ The Pascal entry point serial communications code was contributed by Joseph Oswald.
+It was originally used to support the IIgs at 19,200 baud, but is now being used
+to support the Laser 128's serial port (and anything else that can communicate
+using Pascal entry points in slot 2).
+
+ The code to interface directly with the IIgs' Serial Communications Controller
+chip was borrowed partially from the "Warp Six BBS" code:
 {{http://www.apple2.org.za/gswv/a2zine/Utils/Z8530_SCCsamples_info.txt}}.
-Note that the current code is not nearly as nice to the system as either 
-Joseph's or the the BBS code is.  It <<will>> break AppleTalk if it's
-running.
+Note that the current code is not nearly as nice to the system as the BBS code is.
+It <<will>> break AppleTalk if it's running.
 
  The IP stack is taken from MagerValp's tight and fast ip65 project code at 
 {{http://www.paradroid.net/ip65/}}.
