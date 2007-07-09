@@ -13,6 +13,8 @@ ADTPro Release History
  * [Client] Support added for Laser 128 via generic Pascal entry
    points on slot 2; included a copy of DOS ADT similarly enhanced
 
+ []
+
  Bug fixes:
 
  * [Client] Unformatted media in an 800k drive would get an incorrect 
