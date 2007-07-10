@@ -12,11 +12,11 @@ Starting ADTPro
  or by clicking on the startup program for your host operating
  system:
 
-  [Linux, Solaris:] <<<adtpro.sh>>>
+  [Linux, Solaris:] <<<adtpro.sh>>> (You downloaded the .tar.gz package, didn't you?)
 
   [OS/2:] <<<adtpro.cmd>>>
 
-  [OSX:] <<<adtpro.command>>>
+  [OSX:] <<<adtpro.command>>> (You downloaded the .tar.gz package, didn't you?)
 
   [Windows:] <<<adtpro.bat>>>
 
