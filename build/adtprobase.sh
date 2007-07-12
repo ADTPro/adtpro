@@ -9,7 +9,7 @@
 # Set default ADTPRO_HOME to be the fully qualified
 # current working directory.
 export ADTPRO_HOME="`dirname \"$0\"`"
-cd $ADTPRO_HOME
+cd "$ADTPRO_HOME"
 export ADTPRO_HOME=`pwd`
 
 # Uncomment and modify one or both of the lines below if you
