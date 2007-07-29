@@ -103,3 +103,5 @@ PATCHSSC:
 	sta RESETIO+2
 
 	rts
+
+BPSCTRL:	.byte $1E,$1F,$10	

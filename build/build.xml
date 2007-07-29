@@ -143,25 +143,25 @@
 		Put the assembled programs on the disk images
 		-->
 		<exec dir="${builddir}" executable="java" input="${builddir}/ADTPRO">
-			<arg line="-jar ${acJar} -p ADTPRO bin 2051 ${distName}/disks/${diskName}.DSK" />
+			<arg line="-jar ${acJar} -p ADTPRO sys 8192 ${distName}/disks/${diskName}.DSK" />
 		</exec>
 		<exec dir="${builddir}" executable="java" input="${builddir}/ADTPROAUD">
-			<arg line="-jar ${acJar} -p ADTPROAUD bin 2051 ${distName}/disks/${diskName}.DSK" />
+			<arg line="-jar ${acJar} -p ADTPROAUD sys 8192 ${distName}/disks/${diskName}.DSK" />
 		</exec>
 		<exec dir="${builddir}" executable="java" input="${builddir}/ADTPROETH">
-			<arg line="-jar ${acJar} -p ADTPROETH bin 2051 ${distName}/disks/${diskName}.DSK" />
+			<arg line="-jar ${acJar} -p ADTPROETH sys 8192 ${distName}/disks/${diskName}.DSK" />
 		</exec>
 		<!--
 		And the .po version...
 		-->
 		<exec dir="${builddir}" executable="java" input="${builddir}/ADTPRO">
-			<arg line="-jar ${acJar} -p ADTPRO bin 2051 ${distName}/disks/${diskName}.PO" />
+			<arg line="-jar ${acJar} -p ADTPRO sys 8192 ${distName}/disks/${diskName}.PO" />
 		</exec>
 		<exec dir="${builddir}" executable="java" input="${builddir}/ADTPROAUD">
-			<arg line="-jar ${acJar} -p ADTPROAUD bin 2051 ${distName}/disks/${diskName}.PO" />
+			<arg line="-jar ${acJar} -p ADTPROAUD sys 8192 ${distName}/disks/${diskName}.PO" />
 		</exec>
 		<exec dir="${builddir}" executable="java" input="${builddir}/ADTPROETH">
-			<arg line="-jar ${acJar} -p ADTPROETH bin 2051 ${distName}/disks/${diskName}.PO" />
+			<arg line="-jar ${acJar} -p ADTPROETH sys 8192 ${distName}/disks/${diskName}.PO" />
 		</exec>
 		<!--
 		Put the assembled DOS ADT program on the .dsk image

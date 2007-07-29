@@ -423,6 +423,13 @@ PARMTXT:
 MSG26:	ascz "COMMS DEVICE"
 MSG27:	ascz "BAUD RATE"
 
+YSAVE:		.byte $00
+SVSPEED:	.byte 2		; Storage for speed setting
+BSAVEP		= $03	; Index to the 'Save parameters' parameter
+
+CONFIG_FILE_NAME:	.byte 11
+			.byte "ADTPRO.CONF"
+
 PARMS:
 PSSC:	.byte 1		; Comms slot (2)
 PSPEED:	.byte 2		; Comms speed (115200)
@@ -431,7 +438,4 @@ PSAVE:	.byte 1		; Save parms? (NO)
 DEFAULT:	.byte 1,2,0,1	; Default parm indices
 FACTORY:	.byte 1,2,0,1	; Factory default parm indices
 CONFIGYET:	.byte 0		; Has the user configged yet?
-BPSCTRL:	.byte $1E,$1F,$10
-YSAVE:		.byte $00
-BSAVEP		= $03	; Index to the 'Save parameters' parameter
-SVSPEED:	.byte 2		; Storage for speed setting
+PARMSEND:

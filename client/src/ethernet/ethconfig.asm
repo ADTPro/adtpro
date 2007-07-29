@@ -204,7 +204,7 @@ PARMRST:
 	jmp NOSAVE
 ENDCFG:
 	; Save off IP parms
-	ldy #ip_parms_temp-ip_parms-1
+	ldy #ip_parms_temp-ip_parms_temp_done-1
 :	lda ip_parms_temp,y
 	sta ip_parms,y
 	dey
@@ -409,19 +409,29 @@ PARMTXT:
 	ascz "YES"
 	ascz "NO"
 
-PARMS:
-PSSC:	.byte 2		; Comms slot (3)
-PSOUND:	.byte 0		; Sounds? (YES)
-PSAVE:	.byte 1		; Save parms? (NO)
+CONFIG_FILE_NAME:	.byte 14
+			asc "ADTPROAUD.CONF"
 
 IPMsg01:	ascz "SERVER IP ADDR"
 IPMsg02:	ascz "LOCAL IP ADDR"
 IPMsg03:	ascz "NETMASK"
 IPMsg04:	ascz "GATEWAY ADDR"
 MSG26:	ascz "UTHER SLOT"
+YSAVE:	.byte $00
+BSAVEP	= $02		; Index to the 'Save parameters' parameter
+
+PARMS:
+PSSC:	.byte 2		; Comms slot (3)
+PSOUND:	.byte 0		; Sounds? (YES)
+PSAVE:	.byte 1		; Save parms? (NO)
+
+ip_parms:
+serverip:	.byte 192, 168,   0,   2
+cfg_ip:		.byte 192, 168,   0, 123
+cfg_netmask:	.byte 255, 255, 248,   0
+cfg_gateway:	.byte 192, 168,   0,   1
 
 DEFAULT:	.byte 2,0,1	; Default parm indices
 FACTORY:	.byte 2,0,1	; Factory default parm indices
 CONFIGYET:	.byte 0		; Has the user configged yet?
-YSAVE:	.byte $00
-BSAVEP	= $02		; Index to the 'Save parameters' parameter
+PARMSEND:

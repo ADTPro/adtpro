@@ -33,7 +33,7 @@
 READING:
 	lda #PMSG07
 	sta SR_WR_C
-	lda #PD_READ
+	lda #PD_READBLOCK
 	sta RWDIR
 	lda #CHR_R
 	sta RWCHR
@@ -44,7 +44,7 @@ READING:
 WRITING:
 	lda #PMSG08
 	sta SR_WR_C
-	lda #PD_WRIT
+	lda #PD_WRITE
 	sta RWDIR
 	lda #CHR_W
 	sta RWCHR
@@ -65,8 +65,29 @@ RW_COMN:
 	lda #V_BUF
 	jsr TABV
 
-	jsr RWBLOX
+;	jsr RWBLOX
+	jsr READTRAX
 
+	rts
+
+READTRAX:
+	jsr INIT_DISKII
+	lda #$00
+	sta ERR_READ
+;	sta ERR_WRITE
+	jsr GO_TRACK0
+
+	jsr SAV_NBUF2  ; save page 0 space used by denibblizing
+	lda #<BIGBUF
+	sta ZBUFFER
+	lda #>BIGBUF
+	sta ZBUFFER+1
+; Load tracks $00-$04 into memory
+	lda #$00       ; first
+	ldy #$04       ; last
+	jsr LOAD_TRACKS
+	lda DRVOFF     ; drive off
+	jsr RST_NBUF2  ; restore page 0 space used by NBUF2
 	rts
 
 ;------------------------------------
@@ -121,7 +142,7 @@ RWCALL:
 	jsr TABV
 
 	jsr MLI		; MLI call: READ/WRITE
-RWDIR:	.byte PD_READ
+RWDIR:	.byte PD_READBLOCK
 	.addr PARMBUF
 	bne RWBAD
 	lda RWCHROK

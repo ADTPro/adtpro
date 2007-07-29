@@ -28,17 +28,12 @@ xpos:		.byte $14
 ypos:		.byte $07
 current_value:	.byte $00
 new_digit:	.byte $09
-ip_parms:
-serverip:	.byte 192, 168,   0,   2
-cfg_ip:		.byte 192, 168,   0, 123
-cfg_netmask:	.byte 255, 255, 248,   0
-cfg_gateway:	.byte 192, 168,   0,   1
 ip_parms_temp:
 		.byte 192, 168,   0,   2
 		.byte 192, 168,   0, 123
 		.byte 255, 255, 248,   0
 		.byte 192, 168,   0,   1
-		
+ip_parms_temp_done:
 Hundred = $64
 Ten = $0a
 
@@ -49,7 +44,7 @@ Ten = $0a
 ;---------------------------------------------------------
 IPConfig:
 	; Pull in IP parms
-	ldy #ip_parms_temp-ip_parms-1
+	ldy #ip_parms_temp-ip_parms_temp_done-1
 :	lda ip_parms,y
 	sta ip_parms_temp,y
 	dey

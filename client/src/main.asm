@@ -22,15 +22,217 @@
 .include "const.i"
 .include "ip65/common.i"
 
+	.segment "SYS"
+	.org $2000
+
 ;---------------------------------------------------------
-; Code
+; Initialization - free ProDOS BASIC Interpreter memory
+;---------------------------------------------------------
+INIT:
+	STA   ROM        ; Swap in ROM
+	LDX   #23        ; Initialize bitmap
+	LDA   #%00000001 ; $BF00-$BFFF (ProDOS Global Page)
+	STA   BITMAP,X
+	DEX
+	LDA   #0         ; free main memory
+:	STA   BITMAP,X
+	DEX
+	BNE   :-         ; don't touch the $0000-$07FF aera
+
+;---------------------------------------------------------
+; ProDOS SYS relocators
+;---------------------------------------------------------
+PRE_MOVER:		; Need to protect relocation code
+	lda #<MOVER
+	sta A1L
+	lda #>MOVER
+	sta A1H
+	lda #<MOVEREND-1
+	sta A2L
+	lda #>MOVEREND
+	sta A2H
+	lda #$00
+	sta A4L
+	lda #$03
+	sta A4H
+	ldy #$00
+	jsr MEMMOVE
+	jmp $0300
+
+MOVER:			; Relocate full program
+	lda #<MOVEREND
+	sta A1L
+	lda #>MOVEREND
+	sta A1H
+	lda #<(MOVEREND+ASMEND-ASMBEGIN)
+	sta A2L
+	lda #>(MOVEREND+ASMEND-ASMBEGIN)
+	sta A2H
+	lda #$00
+	sta A4L
+	lda #$08
+	sta A4H
+	ldy #$00
+	jsr MEMMOVE
+	jmp $0800
+MOVEREND:
+
+;---------------------------------------------------------
+; Mainline Code
 ;---------------------------------------------------------
 
 	.segment "STARTUP"
+	.org $0800	; After relocation, this orgs at $0800 
 
-	.org $0803
+ASMBEGIN:
+	jmp 	entrypoint
 
-PBEGIN:
+;---------------------------------------------------------
+; calibrat - Calibrate the disk arm to track #0
+; The code is essentially like in the Disk ][ card
+;---------------------------------------------------------
+calibrat:
+	jsr	slot2x		; a = x = slot * 16
+	sta	SLOWX		; store slot * 16 in memory
+	lda	$c08e,x		; prepare latch for input
+	lda	$c08c,x		; strobe data latch for i/o
+	lda	pdrive		; is 0 for drive 1
+	beq	caldriv1
+	inx
+caldriv1:
+	lda	$c08a,x		; engage drive 1 or 2
+	lda	SLOWX
+	tax			; restore x
+	lda	$c089,x		; motor on
+	ldy	#$50		; number of half-tracks
+caldriv3:
+	lda	$c080,x		; stepper motor phase n off
+	tya
+	and	#$03		; make phase from count in y
+	asl			; times 2
+	ora	SLOWX		; make index for i/o address
+	tax
+	lda	$c081,x		; stepper motor phase n on
+	lda	#$56		; param for wait loop
+	jsr	$fca8		; wait specified time units
+	dey			; decrement count
+	bpl	caldriv3	; jump back while y >= 0
+	rts
+
+;---------------------------------------------------------
+; seekabs - copy of standard dos seekabs at $B9A0.
+; By copying it we are independent on the dos version, 
+; while still avoiding rwts in the nibble copy function.
+; On entry, x is slot * 16; A is desired half-track;
+; $478 is current half-track
+;---------------------------------------------------------
+seekabs:
+	stx	$2b
+	sta	$2a
+	cmp	$0478
+	beq	seekabs9
+	lda	#$00
+	sta	$26
+seekabs1:
+	lda	$0478
+	sta	$27
+	sec
+	sbc	$2a
+	beq	seekabs6
+	bcs	seekabs2
+	eor	#$ff
+	inc	$0478
+	bcc	seekabs3
+seekabs2:
+	adc	#$fe
+	dec	$0478
+seekabs3:
+	cmp	$26
+	bcc	seekabs4
+	lda	$26
+seekabs4:
+	cmp	#$0c
+	bcs	seekabs5
+	tay   
+seekabs5:
+	sec   
+	jsr	seekabs7
+	lda	delaytb1,y
+	jsr	armdelay
+	lda	$27
+	clc
+	jsr	seekabs8
+	lda	delaytb2,y
+	jsr	armdelay
+	inc	$26
+	bne	seekabs1
+seekabs6:
+	jsr	armdelay
+	clc
+seekabs7:
+	lda	$0478
+seekabs8:
+	and	#$03
+	rol
+	ora	$2b
+	tax
+	lda	$c080,x
+	ldx	$2b
+seekabs9:
+	rts
+
+;---------------------------------------------------------
+; armdelay - Copy of standard dos armdelay at $BA00
+;---------------------------------------------------------
+armdelay:
+	ldx	#$11
+armdela1:
+	dex
+	bne	armdela1
+	inc	$46
+	bne	armdela3
+	inc	$47
+armdela3:
+	sec
+	sbc	#$01
+	bne	armdelay
+	rts
+
+;---------------------------------------------------------
+; Next are two tables used in the arm movements. They must
+; also lie in one page.
+;---------------------------------------------------------
+delaytb1:
+	.byte $01,$30,$28,$24,$20,$1e 
+	.byte $1d,$1c,$1c,$1c,$1c,$1c
+
+delaytb2:
+	.byte $70,$2c,$26,$22,$1f,$1e
+	.byte $1d,$1c,$1c,$1c,$1c,$1c
+
+;---------------------------------------------------------
+; motoroff - Turn disk drive motor off
+; Preserves y.  Doesn't hurt if motor is already off.
+;---------------------------------------------------------
+motoroff:
+	jsr	slot2x		; a = x = slot * 16
+	lda	$c088,x		; turn motor off
+	rts
+
+;---------------------------------------------------------
+; slot2x - Sets configured slot * 16 in x and in a
+;---------------------------------------------------------
+slot2x:	ldx	pdslot
+	inx			; now 1..7
+	txa
+	asl
+	asl
+	asl
+	asl			; a now contans slot * 16
+	tax			; store in x
+	rts
+
+entrypoint:
 	sei
 	lda #$00	; In general - do a warm start
 	sta COLDSTART	; i.e. don't load up factory defaults
@@ -175,21 +377,11 @@ KFORMAT:
 KQUIT:
 	cmp #CHR_Q	; Quit?
 	bne FORWARD	; No, it was an unknown key
-	jsr CLEANUP
 	cli
-	jmp $03d0	; Bail allllllllllll the way out
+	jmp QUIT	; Head into ProDOS oblivion
 
 FORWARD:
 	jmp MAINL
-
-;---------------------------------------------------------
-; Final message, cleanup
-;---------------------------------------------------------
-CLEANUP:
-	jsr HOME
-	ldy #PMSG04	; Goodbye, and thanks for all the fish!
-	jsr SHOWMSG
-	rts
 
 ;---------------------------------------------------------
 ; ABORT - STOP EVERYTHING (CALL BABORT TO BEEP ALSO)
@@ -216,3 +408,17 @@ BEEP3:	jsr DELAY
 	dey
 	bne BEEP2
 NOBEEP:	rts
+
+;---------------------------------------------------------
+; Quit to ProDOS
+;---------------------------------------------------------
+
+QUIT:
+	sta ROM
+	jsr MLI
+	.byte PD_QUIT
+	.addr QUITL
+
+QUITL:
+	.byte	4
+        .byte	$00,$00,$00,$00,$00,$00

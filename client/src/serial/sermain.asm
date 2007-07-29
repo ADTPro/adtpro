@@ -36,9 +36,10 @@
 	.include "input.asm"
 	.include "serial/serconfig.asm"
 	.include "hostfns.asm"
-	.include "serial/serbsave.asm"
+	.include "diskii.asm"
+	.include "nibble.asm"
 	.include "serial/pascalep.asm"	; Note: includes PASCALEP segment
 	.include "format.asm"			; Note: includes FORMAT segment
+	.include "bsave.asm"
 
-PEND:
 	.segment "DATA"

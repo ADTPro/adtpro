@@ -276,6 +276,12 @@ PARMTXT:
 	ascz "YES"
 	ascz "NO"
 
+YSAVE:		.byte $00
+BSAVEP		= $01	; Index to the 'Save parameters' parameter
+
+CONFIG_FILE_NAME:	.byte 14
+			asc "ADTPROAUD.CONF"
+
 PARMS:
 PSSC:			; Need a reference; not really used in audio version
 PSOUND:	.byte 0		; Sounds? (YES)
@@ -283,5 +289,4 @@ PSAVE:	.byte 1		; Save parms? (NO)
 
 DEFAULT:	.byte 0,1	; Default parm indices
 FACTORY:	.byte 0,1	; Factory default parm indices
-YSAVE:		.byte $00
-BSAVEP		= $01	; Index to the 'Save parameters' parameter
+PARMSEND:

@@ -35,7 +35,12 @@
 	.include "input.asm"
 	.include "ethernet/ethconfig.asm"
 	.include "hostfns.asm"
-	.include "ethernet/ethbsave.asm"
+	.include "diskii.asm"
+	.include "nibble.asm"
 	.include "ethernet/ethproto.asm"
 	.include "ethernet/ipconfig.asm"
 	.include "format.asm"		; Note: format.asm is its own segment
+	.include "bsave.asm"
+
+PEND:
+	.segment "DATA"	

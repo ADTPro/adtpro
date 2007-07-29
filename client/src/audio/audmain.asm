@@ -35,6 +35,8 @@
 	.include "input.asm"
 	.include "audio/audconfig.asm"
 	.include "hostfns.asm"
+	.include "diskii.asm"
+	.include "nibble.asm"
 	.include "audio/audbsave.asm"
 	.include "format.asm"
 

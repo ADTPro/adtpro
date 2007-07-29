@@ -25,14 +25,24 @@ MLI	= $BF00
 MLIADDR	= $BF10
 BISLOT	= $BE3C
 BIDRIVE	= $BE3D
+BITMAP	= $BF58 ; bitmap of low 48k of memory
+DEVICE	= $BF30 ; last drive+slot used, DSSS0000
+DEVCNT	= $BF31 ; Count (minus 1) of active devices
+DEVLST	= $BF32 ; List of active devices (Slot, drive, id =DSSSIIII)
 
 ;---------------------------------------------------------
 ; ProDOS equates
 ;---------------------------------------------------------
-PD_ONL	= $C5
-PD_READ	= $80
-PD_WRIT	= $81
+PD_QUIT	= $65
+PD_READBLOCK	= $80
+PD_WRITE	= $81
 PD_INFO	= $C4
+PD_ONL	= $C5
+PD_SET_PREFIX	= $C6
+PD_GET_PREFIX	= $C7
+PD_OPEN	= $C8
+PD_READFILE	= $CA
+PD_CLOSE	= $CC
 
 ;---------------------------------------------------------
 ; Monitor equates
@@ -41,6 +51,13 @@ CH	= $24		; Character horizontal position
 CV	= $25		; Character vertical position
 BASL	= $28		; Base Line Address
 INVFLG	= $32		; Inverse flag
+A1L	= $3c
+A1H	= $3d
+A2L	= $3e
+A2H	= $3f
+A4L	= $42
+A4H	= $43
+KEYBUFF	= $0280	; Keyboard buffer
 CLREOL	= $FC9C	; Clear to end of line
 CLREOP	= $FC42	; Clear to end of screen
 HOME	= $FC58	; Clear screen
@@ -51,6 +68,25 @@ COUT1	= $FDF0	; Character output
 CROUT	= $FD8E	; Output return character
 PRDEC	= $ED24	; Print pointer as decimal
 DELAY	= $FCA8 ; Monitor delay: # cycles = (5*A*A + 27*A + 26)/2
+MEMMOVE	= $FE2C	; PERFORM MEMORY MOVE A1-A2 TO A4
+ROM	= $C082 ; Enables rom
+
+;---------------------------------------------------------
+; Disk II soft switches
+;---------------------------------------------------------
+DRVSM0OFF	= $C0E0 ; Phase 0 off  Stepper motor
+DRVSM1OFF	= $C0E2 ; Phase 1 off
+DRVSM2OFF	= $C0E4 ; Phase 2 off
+DRVSM3OFF	= $C0E6 ; Phase 3 off
+DRVSM0ON	= $C0E1 ; Phase 0 on   Stepper motor
+DRVSM1ON	= $C0E3 ; Phase 1 on
+DRVSM2ON	= $C0E5 ; Phase 2 on
+DRVSM3ON	= $C0E7 ; Phase 3 on
+DRVOFF		= $C0E8 ; drive off
+DRVON		= $C0E9 ; drive on
+DRVSL1		= $C0EA ; drive selection
+DRVRD		= $C0EC ; Strobe input
+DRVRDM		= $C0EE ; switch on READ mode
 
 ;---------------------------------------------------------
 ; Horizontal tabs for volume display
@@ -116,8 +152,15 @@ CHR_7	= _'7'
 CHR_8	= _'8'
 CHR_9	= _'9'
 CHR_ESC	= $9b
+CHR_ENQ = $05
 CHR_ACK	= $06
 CHR_NAK	= $15
+CHR_CAN = $18
+
+;---------------------------------------------------------
+; Nibble/halftrack stuff
+;---------------------------------------------------------
+NIBPAGES	= $34		; Number of nibble pages to send
 
 ;---------------------------------------------------------
 ; Apple IIgs SCC Z8530 registers and constants

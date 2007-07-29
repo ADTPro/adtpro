@@ -1,6 +1,6 @@
 ;
 ; ADTPro - Apple Disk Transfer ProDOS
-; Copyright (C) 2006 by David Schmidt
+; Copyright (C) 2006, 2007 by David Schmidt
 ; david__schmidt at users.sourceforge.net
 ;
 ; This program is free software; you can redistribute it and/or modify it 
@@ -36,9 +36,9 @@ PARMBUF:
 BLKLO	= PARMBUF+$04	; Part of PARMBUF structure
 BLKHI	= PARMBUF+$05	; Part of PARMBUF structure
 
-BIGBUF	= $4400		; The place where all the action happens
-CRCTBLL	= $9400		; CRC LOW TABLE  ($100 Bytes)
-CRCTBLH	= $9500		; CRC HIGH TABLE ($100 Bytes)
+BIGBUF	= $6D00		; The place where all the action happens
+CRCTBLL	= $BD00		; CRC LOW TABLE  ($100 Bytes)
+CRCTBLH	= $BE00		; CRC HIGH TABLE ($100 Bytes)
 NUMBLKS:
 	.byte $00, $00	; Number of blocks of a chosen volume
 HOSTBLX:
@@ -58,19 +58,26 @@ COL_SAV	= $09		; ($01 byte)
 RLEPREV = $19		; ($01 byte)
 UDPI	= $1a		; ($01 byte) Used by UDP SEND and RECEIVE
 BLKPTR	= $1b		; ($02 bytes) Used by SEND and RECEIVE
+synccnt	= $1d		; ($02 bytes) Used by nibble/halftrack
 CRC	= $1d		; ($02 bytes) Used by ONLINE, SEND and RECEIVE
 CRCY	= $8a		; ($01 byte) Used by UDP SEND
 TMOT    = $8b		; ($01 byte) Timeout indicator
+NIBPTR	= $8c		; ($02 bytes) Used by nibble/halftrack
+NIBPCNT	= $8e		; ($01 byte) Counts nibble pages
 
 SR_WR_C:
 	.byte $00	; A place to save the send/receive/read/write character
 SLOWA:	.byte $00	; A place to save the Accumulator, speed is not important
 SLOWX:	.byte $00	; A place to save the X register, speed is not important
 SLOWY:	.byte $00	; A place to save the Y register, speed is not important
+iobtrk:
 PCCRC:	.byte $00,$00	; CRC received from PC
 
 COLDSTART:
 	.byte $00
+
+pdslot:	.byte $06
+pdrive:	.byte $00
 
 ;---------------------------------------------------------
 ; Default SCC baud rate
