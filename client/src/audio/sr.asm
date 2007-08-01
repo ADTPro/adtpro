@@ -18,6 +18,8 @@
 ; 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 ;
 
+.global NonDiskII
+
 ;---------------------------------------------------------
 ; BATCH
 ;---------------------------------------------------------
@@ -76,6 +78,7 @@ BATCHDONE:
 ;---------------------------------------------------------
 SEND:
 	lda #$00
+	sta NonDiskII	; Clear Disk II flag
 	sta ECOUNT	; Clear error flag
 	jsr GETFN
 	bne @SendValid
@@ -110,7 +113,16 @@ SMSTART:
 	bmi SMDONE1
 	sta SLOWA
 
-	lda UNITNBR	; Set up the unit number
+	lda NUMBLKS+1	; Is this a Disk II?
+	cmp #$01
+	bne :+
+	lda NUMBLKS
+	cmp #$18	; $180 blocks; assume so
+	bne :+
+	lda #$01
+	sta NonDiskII	; $01 = We _have_ a Disk II
+
+:	lda UNITNBR	; Set up the unit number
 	sta PARMBUF+1
 
 	lda #$00
@@ -144,7 +156,10 @@ PCOK:
 	lda #$00
 	sta CURBLK
 	sta CURBLK+1
-
+	lda NonDiskII
+	beq SMMORE
+	jsr INIT_DISKII
+	jsr GO_TRACK0
 SMMORE:
 	lda NUMBLKS
 	sec

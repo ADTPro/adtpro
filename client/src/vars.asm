@@ -21,7 +21,7 @@
 .global CAPBLKS, DEVICES, PARMBUF, BLKLO, BLKHI, BIGBUF, CRCTBLL, CRCTBLH
 .global NUMBLKS, HOSTBLX, UNITNBR
 .global PARMS, PSSC, PSPEED, PSOUND, PSAVE, PGSSLOT, SR_WR_C, SLOWA, SLOWX, SLOWY
-.global PCCRC, COLDSTART, BAUD
+.global PCCRC, COLDSTART, BAUD, NonDiskII
 
 .globalzp ZP, UTILPTR, COL_SAV, RLEPREV, UNUSED1, BLKPTR, CRC
 
@@ -86,3 +86,8 @@ BAUD:	.byte 6	;1=300, 2=1200, 3=2400
 		;4=4800, 5=9600, 6=19200
 		;7=38400, 8=57600.
 
+;---------------------------------------------------------
+; DiskII flag: did the user ask for a Disk II device?
+;---------------------------------------------------------
+NonDiskII:	.byte $00	; $00 = We do _not_ have a Disk II
+				; $01 = We _have_ a Disk II

@@ -313,17 +313,18 @@ GOHTRK:	.BYTE 0          ; to "wanted" half track
 
 ;==============================*
 ;                              *
-;          LOAD TRACKS         *
+;         LOAD 5 TRACKS        *
 ;                              *
 ;==============================*
 
 ; In : acc = first track
-;      Y   = last track
 
 LOAD_TRACKS:
-	STA   TRK        ; first track
-	INY
-	STY   TRACKS_3+1       ; last track+1
+	sta TRK		; first track
+	clc
+	adc #$06
+	sta TRACKS_3+1	; last track+1
+	lda TRK		; Fetch that first track agian
 
 ; Move arm
 

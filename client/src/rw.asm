@@ -65,29 +65,45 @@ RW_COMN:
 	lda #V_BUF
 	jsr TABV
 
-;	jsr RWBLOX
+	lda NonDiskII	; Do we have a Disk II?
+	bne :+		; Yes, branch to the block entry point
 	jsr READTRAX
-
+	rts
+:	jsr RWBLOX
 	rts
 
+;------------------------------------
+; READTRAX
+;
+; Read five tracks starting from BIGBUF
+;
+; Input:
+;   PARMBUF+1: unit number
+;   BLKLO: starting block (lo)
+;   BLKHI: starting block (hi)
+;------------------------------------
+
 READTRAX:
-	jsr INIT_DISKII
 	lda #$00
 	sta ERR_READ
 ;	sta ERR_WRITE
-	jsr GO_TRACK0
 
 	jsr SAV_NBUF2  ; save page 0 space used by denibblizing
 	lda #<BIGBUF
 	sta ZBUFFER
 	lda #>BIGBUF
 	sta ZBUFFER+1
-; Load tracks $00-$04 into memory
-	lda #$00       ; first
-	ldy #$04       ; last
+; Load five tracks into memory
+	lda BLKHI
+	clc
+	ror		; Shift low bit into carry (only care if it's a 1)
+	lda BLKLO
+	ror
+	lsr
+	lsr		; Divide by eight
 	jsr LOAD_TRACKS
-	lda DRVOFF     ; drive off
-	jsr RST_NBUF2  ; restore page 0 space used by NBUF2
+	lda DRVOFF	; drive off
+	jsr RST_NBUF2	; restore page 0 space used by NBUF2
 	rts
 
 ;------------------------------------
