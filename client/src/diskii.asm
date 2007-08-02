@@ -321,67 +321,77 @@ GOHTRK:	.BYTE 0          ; to "wanted" half track
 
 LOAD_TRACKS:
 	sta TRK		; first track
+	ldx #$00
+	stx RELTRK
 	clc
-	adc #$06
+	adc #$05
 	sta TRACKS_3+1	; last track+1
-	lda TRK		; Fetch that first track agian
+	lda TRK		; Fetch that first track again
 
 ; Move arm
 
-	CMP   #0         ; track 0?
-	BEQ   TRACKS_2         ; arm already on it
+	CMP #0		; track 0?
+	BEQ TRACKS_2	; arm already on it
 
 TRACKS_5:
-	LDA   GOHTRK     ; from current half track
-	STA   CURHTRK
-	LDA   TRK        ; to dos 3.3 track
-	JSR   MOVE_ARM   ; move r/w head on the target track
+	LDA GOHTRK	; from current half track
+	STA CURHTRK
+	LDA TRK		; to dos 3.3 track
+	JSR MOVE_ARM	; move r/w head on the target track
 
 ; Calculate HI address where loaded sectors are stored
 
 TRACKS_2:
-	LDX   TRK
-	LDY   #$0F       ; init sector #
+	LDX #$00
+	LDY #$0F	; init sector #
 
 TRACKS_1:
-	TYA              ; sector # in Y reg
+	TYA		; sector # in Y reg
 	CLC
-	ADC   ADR_TRK,X  ; add first HI addr
-	STA   SKT_BUF,Y  ; load to this HI addr
-	STA   SKT_BUF2,Y ; idem
+	ADC ADR_TRK,X	; add first HI addr
+	STA SKT_BUF,Y	; load to this HI addr
+	STA SKT_BUF2,Y	; idem
 	DEY
-	BPL   TRACKS_1
+	BPL TRACKS_1
 
-	LDA   RWCHR       ; print R on track read status
+	LDA RWCHR	; print R on track read status
 	jsr COUT1
 
-	LDA   RWCHROK       ; default=no err
-	STA   ERR_READ_TRK
+	LDA RWCHROK	; default=no err
+	STA ERR_READ_TRK
 
-	JSR   LOAD_TRACK ; load 1 track
+	JSR LOAD_TRACK	; load 1 track
 
-	LDA   ERR_READ_TRK
-	ORA   #%10000000
-	CMP   RWCHROK
-	BEQ   TRACKS_4
+	LDA ERR_READ_TRK
+	ORA #%10000000
+	CMP RWCHROK
+	BEQ TRACKS_4
 
-	PHA              ; save track status
-	INC   ERR_READ   ; a read error occurs
-	JSR   FILLZ      ; fill bad sectors with 0
-	PLA              ; restore track status
+	PHA		; save track status
+	INC ERR_READ	; a read error occurs
+	JSR FILLZ	; fill bad sectors with 0
+	PLA		; restore track status
 
 TRACKS_4:
-	LDX   TRK        ; print final track read status
 	jsr COUT1
-	INX              ; next track
-	STX   TRK
+	jsr COUT1
+	jsr COUT1
+	jsr COUT1
+	jsr COUT1
+	jsr COUT1
+	jsr COUT1
+	inc RELTRK
+	LDX TRK		; print final track read status
+	INX		; next track
+	STX TRK
 TRACKS_3:
-	CPX   #$FF       ; last track?
-	BNE   TRACKS_5
+	CPX #$FF	; last track?
+	BNE TRACKS_5
 
 	RTS
 
 TRK:	.BYTE 0          ; current track
+RELTRK:	.byte 0		; Current track count
 SKT_BUF:
 	.RES  16         ; HI addr of the 16 sectors (working)
 SKT_BUF2:

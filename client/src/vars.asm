@@ -36,9 +36,9 @@ PARMBUF:
 BLKLO	= PARMBUF+$04	; Part of PARMBUF structure
 BLKHI	= PARMBUF+$05	; Part of PARMBUF structure
 
-BIGBUF	= $6D00		; The place where all the action happens
-CRCTBLL	= $BD00		; CRC LOW TABLE  ($100 Bytes)
-CRCTBLH	= $BE00		; CRC HIGH TABLE ($100 Bytes)
+BIGBUF	= $6C00		; The place where all the action happens
+CRCTBLL	= $BC00		; CRC LOW TABLE  ($100 Bytes)
+CRCTBLH	= $BD00		; CRC HIGH TABLE ($100 Bytes)
 NUMBLKS:
 	.byte $00, $00	; Number of blocks of a chosen volume
 HOSTBLX:

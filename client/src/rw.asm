@@ -66,7 +66,7 @@ RW_COMN:
 	jsr TABV
 
 	lda NonDiskII	; Do we have a Disk II?
-	bne :+		; Yes, branch to the block entry point
+	beq :+		; No, branch to the block entry point
 	jsr READTRAX
 	rts
 :	jsr RWBLOX
@@ -84,6 +84,7 @@ RW_COMN:
 ;------------------------------------
 
 READTRAX:
+	jsr INIT_DISKII
 	lda #$00
 	sta ERR_READ
 ;	sta ERR_WRITE
