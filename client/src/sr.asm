@@ -211,6 +211,7 @@ SMDONE:	rts
 RECEIVE:
 	lda #$00
 	sta ECOUNT	; Clear error flag
+	sta NonDiskII	; Clear Disk II flag
 	jsr GETFN
 	bne SRSTART
 	jmp SRDONE

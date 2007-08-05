@@ -327,11 +327,11 @@ LOAD_TRACKS:
 	adc #$05
 	sta TRACKS_3+1	; last track+1
 	lda TRK		; Fetch that first track again
-
+TEMP:
 ; Move arm
 
 	CMP #0		; track 0?
-	BEQ TRACKS_2	; arm already on it
+	BEQ READY_L5TRK	; arm already on it
 
 TRACKS_5:
 	LDA GOHTRK	; from current half track
@@ -341,8 +341,8 @@ TRACKS_5:
 
 ; Calculate HI address where loaded sectors are stored
 
-TRACKS_2:
-	LDX #$00
+READY_L5TRK:
+	ldx RELTRK	; Track counter, 0-4
 	LDY #$0F	; init sector #
 
 TRACKS_1:
@@ -355,7 +355,7 @@ TRACKS_1:
 	BPL TRACKS_1
 
 	LDA RWCHR	; print R on track read status
-	jsr COUT1
+	jsr CHROVER
 
 	LDA RWCHROK	; default=no err
 	STA ERR_READ_TRK
@@ -373,13 +373,6 @@ TRACKS_1:
 	PLA		; restore track status
 
 TRACKS_4:
-	jsr COUT1
-	jsr COUT1
-	jsr COUT1
-	jsr COUT1
-	jsr COUT1
-	jsr COUT1
-	jsr COUT1
 	inc RELTRK
 	LDX TRK		; print final track read status
 	INX		; next track
@@ -387,7 +380,6 @@ TRACKS_4:
 TRACKS_3:
 	CPX #$FF	; last track?
 	BNE TRACKS_5
-
 	RTS
 
 TRK:	.BYTE 0          ; current track
@@ -397,7 +389,8 @@ SKT_BUF:
 SKT_BUF2:
 	.RES  16         ; idem (don't change)
 ADR_TRK:
-	.BYTE $44,$54,$64,$74,$84
+	.BYTE $6C,$7C,$8C,$9C,$AC
+;	.BYTE $44,$54,$64,$74,$84
 ERR_READ:              ; read error flag
 	.BYTE 0
 
@@ -481,6 +474,13 @@ TRACK_LOAD_6:
 TRACK_LOAD_9:
 	DEC   CNT_OK     ; -1 sector to do
 	BNE   TRACK_LOAD_3         ; not finished
+
+	lda #CHR_BLK
+	ldx #$08
+:	jsr COUT1
+	dex
+	bne :-
+
 	RTS              ; keep default ERR_READ_TRK
 
 ; Error while reading data field
@@ -539,7 +539,11 @@ TRACK_LOAD_4:
 ;	LDA   #$01       ; INV 'A'
 ;	LDX   TRK
 ;TODO         JSR   PRINT_T_STAT ; can't read track
-
+	lda #CHR_X
+	ldx #$08
+:	jsr COUT1
+	dex
+	bne :-
 	LDY   #15        ; init counter for each sector
 	LDA   #'*'       ; sector status=error
 TRACK_LOAD_10:

@@ -67,7 +67,10 @@ RW_COMN:
 
 	lda NonDiskII	; Do we have a Disk II?
 	beq :+		; No, branch to the block entry point
-	jsr READTRAX
+	lda RWDIR	; Are we writing?
+	cmp #CHR_W
+	beq :+		; Yes, branch to the block entry point
+	jsr READTRAX	; Ok, we're reading a Disk II - so go fast.
 	rts
 :	jsr RWBLOX
 	rts
@@ -90,10 +93,7 @@ READTRAX:
 ;	sta ERR_WRITE
 
 	jsr SAV_NBUF2  ; save page 0 space used by denibblizing
-	lda #<BIGBUF
-	sta ZBUFFER
-	lda #>BIGBUF
-	sta ZBUFFER+1
+
 ; Load five tracks into memory
 	lda BLKHI
 	clc

@@ -233,6 +233,20 @@ slot2x:	ldx	pdslot
 	rts
 
 entrypoint:
+
+;---------------------------------------------------------
+; Kill the reset vector
+;---------------------------------------------------------
+	lda #$69		; Vector reset to the monitor
+	sta $03f2
+	lda #$ff
+	sta $03f3	; $ff69, aka CALL -151
+	eor #$a5
+	sta $03f4	; Fixup powerup byte 
+
+;---------------------------------------------------------
+; Start us up
+;---------------------------------------------------------
 	sei
 	lda #$00	; In general - do a warm start
 	sta COLDSTART	; i.e. don't load up factory defaults
