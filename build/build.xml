@@ -37,8 +37,7 @@
 		<delete file="${projdir}/org/adtpro/resources/adtpro.raw" />
 		<delete file="${projdir}/org/adtpro/resources/adtproaud.raw" />
 		<delete file="${projdir}/org/adtpro/resources/adtproeth.raw" />
-		<delete file="${projdir}/org/adtpro/resources/PD1.dmp" />
-		<delete file="${projdir}/org/adtpro/resources/PD2.dmp" />
+		<delete file="${projdir}/org/adtpro/resources/PD.dmp" />
 		<delete>
 			<fileset dir="${projdir}/client/src" includes="**/*.o"/>
 			<fileset dir="${projdir}/client/src" includes="**/*.map"/>
@@ -111,11 +110,10 @@
 		<!--
 		Make dumpable versions
 		-->
-		<appleDump infilename="${projdir}/org/adtpro/resources/PD1.raw" outfilename="${basedir}/org/adtpro/resources/PD1.dmp" applename="PD1" startaddrhex="2000" numbyteswide="10" decoration="begin" finalline="2000G E000G"/>
-		<appleDump infilename="${projdir}/org/adtpro/resources/PD2.raw" outfilename="${basedir}/org/adtpro/resources/PD2.dmp" applename="PD2" startaddrhex="2000" numbyteswide="10" decoration="yes"/>
-		<appleDump infilename="${builddir}/ADTPROETH" outfilename="${basedir}/org/adtpro/resources/adtproeth.dmp" applename="ADTPROETH" startaddrhex="803" numbyteswide="10" decoration="yes" />
-		<appleDump infilename="${builddir}/ADTPROAUD" outfilename="${basedir}/org/adtpro/resources/adtproaud.dmp" applename="ADTPROAUD" startaddrhex="803" numbyteswide="10" decoration="yes" />
-		<appleDump infilename="${builddir}/ADTPRO" outfilename="${basedir}/org/adtpro/resources/adtpro.dmp" applename="ADTPRO" startaddrhex="803" numbyteswide="10" decoration="yes" />
+		<appleDump infilename="${projdir}/org/adtpro/resources/PD1.raw" outfilename="${basedir}/org/adtpro/resources/PD.dmp" applename="PD" startaddrhex="2000" numbyteswide="10" decoration="begin" finalline="2000G E000G"/>
+		<appleDump infilename="${builddir}/ADTPROETH" outfilename="${basedir}/org/adtpro/resources/adtproeth.dmp" applename="ADTPROETH" startaddrhex="2000" numbyteswide="10" decoration="begin" finalline="2000G"/>
+		<appleDump infilename="${builddir}/ADTPROAUD" outfilename="${basedir}/org/adtpro/resources/adtproaud.dmp" applename="ADTPROAUD" startaddrhex="2000" numbyteswide="10" decoration="begin" finalline="2000G"/>
+		<appleDump infilename="${builddir}/ADTPRO" outfilename="${basedir}/org/adtpro/resources/adtpro.dmp" applename="ADTPRO" startaddrhex="2000" numbyteswide="10"  decoration="begin" finalline="2000G"/>
 		<appleDump infilename="${builddir}/ADT" outfilename="${basedir}/org/adtpro/resources/adt.dmp" applename="ADT" startaddrhex="803" numbyteswide="10" decoration="yes" />
 	</target>
 

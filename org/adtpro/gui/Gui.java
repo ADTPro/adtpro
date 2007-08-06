@@ -126,8 +126,6 @@ public final class Gui extends JFrame implements ActionListener
     JMenu menuBootstrapDOS = new JMenu(Messages.getString("Gui.BootstrapDOS")); //$NON-NLS-1$
     MenuAction proDOSAction = new MenuAction(Messages.getString("Gui.BS.ProDOS")); //$NON-NLS-1$
     menuBootstrapProDOS.add(proDOSAction);
-    MenuAction proDOSAction2 = new MenuAction(Messages.getString("Gui.BS.ProDOS2")); //$NON-NLS-1$
-    menuBootstrapProDOS.add(proDOSAction2);
     MenuAction dosAction = new MenuAction(Messages.getString("Gui.BS.DOS")); //$NON-NLS-1$
     menuBootstrapDOS.add(dosAction);
     MenuAction dosAction2 = new MenuAction(Messages.getString("Gui.BS.DOS2")); //$NON-NLS-1$
@@ -628,7 +626,6 @@ public final class Gui extends JFrame implements ActionListener
               if ((e.getActionCommand().equals(Messages.getString("Gui.BS.DOS"))) || //$NON-NLS-1$
                   (e.getActionCommand().equals(Messages.getString("Gui.BS.DOS2"))) || //$NON-NLS-1$
                   (e.getActionCommand().equals(Messages.getString("Gui.BS.ProDOS"))) || //$NON-NLS-1$
-                  (e.getActionCommand().equals(Messages.getString("Gui.BS.ProDOS2"))) || //$NON-NLS-1$
                   (e.getActionCommand().equals(Messages.getString("Gui.BS.ProDOSFormat"))) || //$NON-NLS-1$
                   (e.getActionCommand().equals(Messages.getString("Gui.BS.ADT"))) || //$NON-NLS-1$
                   (e.getActionCommand().equals(Messages.getString("Gui.BS.ADTPro"))) || //$NON-NLS-1$

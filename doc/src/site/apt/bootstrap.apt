@@ -48,7 +48,7 @@ more bootstrapping scenarios and configurations are detailed below.
  booted (i.e. hit reset before any DOS loads when turning the machine on).
 
  The defaults now are to send bootstrapping data at 9600 baud, with 
- a 75 millisecond delay after each line.  The first few (and the last
+ a 150 millisecond delay after each line.  The first few (and the last
  few) lines slow down much more than that because they rely on the 
  BASIC interpreter, which takes extra time to process.
  The defaults should work for all Apples; those containing accelerators
@@ -81,9 +81,6 @@ more bootstrapping scenarios and configurations are detailed below.
     [[1]] {{{connectionsserial.html}Connect}} the two computers through their serial ports.
 
     [[1]] Start your Apple with ProDOS booted from floppy (or any bootable partition).
-      The following procedure will write the ADTPro client to the current prefix/directory,
-      so you may want to set that now.  If you don't, it will be saved to 
-      the root of the boot drive.
 
     [[1]] On the ADTPro server, push the "Serial" button.  If this is the first time
       you've connected via the serial port, you will be presented with the serial configuration
@@ -132,8 +129,8 @@ more bootstrapping scenarios and configurations are detailed below.
 
     [[1]] Now that the client is running, you can use it to
       {{{receiving.html}tansfer}} more disks (like the bootable ADTPro
-      distribution diskette), {{{misc.html#Format}format}} new diskettes,
-      or {{{configserial.html#Save Configuration}save itself}} to the current disk.
+      distribution diskette - 5.25" or 3.5" versions are included), or
+      {{{misc.html#Format}format}} new diskettes.
 
     [[1]] Start transferring 5.25", 3.5", RAM drive, or hard drive images to your
       heart's content!
@@ -153,8 +150,8 @@ more bootstrapping scenarios and configurations are detailed below.
       you've connected via the serial port, you will be presented with the serial configuration
       dialog box, where you'll need to set up the serial connection.
 
-    [[1]] Click on the "Bootstrapping->ProDOS->{Send ProDOS part 1}" menu item.
-      
+    [[1]] Click on the "Bootstrapping->ProDOS->{Send ProDOS}" menu item.
+
     [[1]] A dialog box will come up instructing you to type a set of commands
       on the Apple.  They will be similar to the following:
 
@@ -194,42 +191,6 @@ more bootstrapping scenarios and configurations are detailed below.
 
 [images/pd1a.png]      
 
-    [[1]] Click on the "Bootstrapping->ProDOS->Send ProDOS part 2" menu item.
-      
-    [[1]] A dialog box will come up instructing you to type two commands
-      on the Apple.  They will be similar to the following:
-
-      * <<<IN#2>>> (The number will depend on which slot
-      you have your Super Serial Card plugged into.  An IIgs' modem port is always in
-      "virtual" slot #2, and an IIc's serial port is always "virtual" slot #2 as well.)
-
-      * <<< <ctrl-A>14B>>> (The number will depend on the speed you have chosen from the bootstrapping 
-      tab on the serial configuration dialog box.  
-      When you hit <<< <ctrl-A> >>>, the Apple Super Serial card will respond with "<<<APPLE SSC:>>>" and the
-      IIgs and IIc will respond with a blinking "<<<?>>>".  At that prompt, 
-      enter the number in your dialog box and the <<<B>>>
-      key with no spaces.  The Super Serial card will require you to hit the <<<Return>>> key, but the IIgs 
-      and IIc will not.) 
-
-      []
-
-    [[1]] Dismiss the ADTPro server dialog by clicking on the <<<Ok>>> button.
-      You should start to see text flowing across the Apple screen now.
-      The progress bar will show how far along the transfer is.  
-
-    [[1]] Once the transfer completes successfully, the BASIC Interpreter of ProDOS
-      should start.
-      The second boot stage should leave your screen looking like this:
-
-      *
-
-[images/pd2.png]
-
-    [[1]] Now you have fully functional ProDOS running on your Apple.  It's 
-      default slot/drive is currently set to 6, but you will be able to change
-      that with the <<<PREFIX,S5>>> command (or <<<CAT,S5>>> or whatever)
-      once you get some formatted media in your drive.
-
     [[1]] Now send a copy of the ADTPro client program to the Apple.  You'll use
       it soon to format floppies and to receive the full, bootable ADTPro
       distribution diskette at the Apple.  On the ADTPro server, click on 
@@ -248,11 +209,10 @@ more bootstrapping scenarios and configurations are detailed below.
       The next step of sending the ADTPro distribution diskette will create
       bootable diskette for you.
 
-    [[1]] You are now ready to {{{receiving.html}receive}} the ADTPRO-v.r.m.DSK disk
+    [[1]] You are now ready to {{{receiving.html}receive}} the ADTPRO-v.r.m.DSK (5.25" version)
+      or ADTPro-v.r.m.PO (3.5" version) disk
       image from the host.  Once you've done that, you've got a bootable ProDOS 
-      diskette that contains all the ADTPro client programs.  If you have
-      a 3-1/2" disk drive, you can receive the ADTPRO-v.r.m.PO disk image to
-      get a bootable 3-1/2" disk.
+      diskette that contains all the ADTPro client programs.
 
 * {Bootstrapping DOS}
 
