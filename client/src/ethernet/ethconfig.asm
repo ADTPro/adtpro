@@ -204,7 +204,7 @@ PARMRST:
 	jmp NOSAVE
 ENDCFG:
 	; Save off IP parms
-	ldy #ip_parms_temp-ip_parms_temp_done-1
+	ldy #ip_parms_temp_done-ip_parms_temp-1
 :	lda ip_parms_temp,y
 	sta ip_parms,y
 	dey
@@ -242,15 +242,8 @@ NOPE:	jsr PATCHNULL
 
 ;---------------------------------------------------------
 ; PARMDFT - Set parameters to last saved values (uses A,X)
-; Called with the desired operation in A:
-;   00 - defaults last saved by user
-;   01 - defaults set at the factory
-; This becomes important when a user saves off a copy of
-; parms that are incompatible with a machine and (as once
-; happened in my case) it hangs during initialization.
 ;---------------------------------------------------------
 PARMDFT:
-	bne FACTORYLOOP
 	lda CONFIGYET
 	bne WARMER	; If no manual config yet, scan the slots
 	jsr FindSlot	; Seems to be failing on emulators?
@@ -262,14 +255,6 @@ DFTLOOP:
 	dex
 	bpl DFTLOOP
 	jmp PARMDFTNEXT
-
-FACTORYLOOP:
-	lda #$00		; Don't touch the Uther until
-	sta CONFIGYET		; user confirms settings
-	lda FACTORY,X
-	sta PARMS,X
-	dex
-	bpl FACTORYLOOP
 
 PARMDFTNEXT:
 ; No matter what, we put in the default value for 
@@ -410,7 +395,7 @@ PARMTXT:
 	ascz "NO"
 
 CONFIG_FILE_NAME:	.byte 14
-			asc "ADTPROAUD.CONF"
+			asc "ADTPROETH.CONF"
 
 IPMsg01:	ascz "SERVER IP ADDR"
 IPMsg02:	ascz "LOCAL IP ADDR"
@@ -432,6 +417,5 @@ cfg_netmask:	.byte 255, 255, 248,   0
 cfg_gateway:	.byte 192, 168,   0,   1
 
 DEFAULT:	.byte 2,0,1	; Default parm indices
-FACTORY:	.byte 2,0,1	; Factory default parm indices
 CONFIGYET:	.byte 0		; Has the user configged yet?
 PARMSEND:

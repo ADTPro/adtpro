@@ -23,8 +23,6 @@
 ;---------------------------------------------------------
 MLI	= $BF00
 MLIADDR	= $BF10
-BISLOT	= $BE3C
-BIDRIVE	= $BE3D
 BITMAP	= $BF58 ; bitmap of low 48k of memory
 DEVICE	= $BF30 ; last drive+slot used, DSSS0000
 DEVCNT	= $BF31 ; Count (minus 1) of active devices
@@ -35,13 +33,15 @@ DEVLST	= $BF32 ; List of active devices (Slot, drive, id =DSSSIIII)
 ;---------------------------------------------------------
 PD_QUIT	= $65
 PD_READBLOCK	= $80
-PD_WRITE	= $81
+PD_WRITEBLOCK	= $81
+PD_CREATE	= $C0
 PD_INFO	= $C4
 PD_ONL	= $C5
 PD_SET_PREFIX	= $C6
 PD_GET_PREFIX	= $C7
 PD_OPEN	= $C8
 PD_READFILE	= $CA
+PD_WRITEFILE	= $CB
 PD_CLOSE	= $CC
 
 ;---------------------------------------------------------
@@ -74,19 +74,18 @@ ROM	= $C082 ; Enables rom
 ;---------------------------------------------------------
 ; Disk II soft switches
 ;---------------------------------------------------------
-DRVSM0OFF	= $C0E0 ; Phase 0 off  Stepper motor
-DRVSM1OFF	= $C0E2 ; Phase 1 off
-DRVSM2OFF	= $C0E4 ; Phase 2 off
-DRVSM3OFF	= $C0E6 ; Phase 3 off
-DRVSM0ON	= $C0E1 ; Phase 0 on   Stepper motor
-DRVSM1ON	= $C0E3 ; Phase 1 on
-DRVSM2ON	= $C0E5 ; Phase 2 on
-DRVSM3ON	= $C0E7 ; Phase 3 on
-DRVOFF		= $C0E8 ; drive off
-DRVON		= $C0E9 ; drive on
-DRVSL1		= $C0EA ; drive selection
-DRVRD		= $C0EC ; Strobe input
-DRVRDM		= $C0EE ; switch on READ mode
+DRVSM0OFF	= $C080 ; Phase 0 off  Stepper motor
+DRVSM1OFF	= $C082 ; Phase 1 off
+DRVSM2OFF	= $C084 ; Phase 2 off
+DRVSM3OFF	= $C086 ; Phase 3 off
+DRVSM0ON	= $C081 ; Phase 0 on   Stepper motor
+DRVSM1ON	= $C083 ; Phase 1 on
+DRVSM2ON	= $C085 ; Phase 2 on
+DRVSM3ON	= $C087 ; Phase 3 on
+DRVON		= $C089 ; drive on
+DRVSEL		= $C08A ; drive selection
+DRVRD		= $C08C ; Strobe input
+DRVRDM		= $C08E ; switch on READ mode
 
 ;---------------------------------------------------------
 ; Horizontal tabs for volume display

@@ -233,15 +233,8 @@ PARMINT:
 
 ;---------------------------------------------------------
 ; PARMDFT - Set parameters to last saved values (uses A,X)
-; Called with the desired operation in A:
-;   00 - defaults last saved by user
-;   01 - defaults set at the factory
-; This becomes important when a user saves off a copy of
-; parms that are incompatible with a machine and (as once
-; happened in my case) it hangs during initialization.
 ;---------------------------------------------------------
 PARMDFT:
-	bne FACTORYLOOP
 	ldx #PARMNUM-1
 DFTLOOP:
 	lda DEFAULT,X
@@ -249,12 +242,6 @@ DFTLOOP:
 	dex
 	bpl DFTLOOP
 	jmp PARMDFTNEXT
-
-FACTORYLOOP:
-	lda FACTORY,X
-	sta PARMS,X
-	dex
-	bpl FACTORYLOOP
 
 PARMDFTNEXT:
 ; No matter what, we put in the default value for 
@@ -288,5 +275,4 @@ PSOUND:	.byte 0		; Sounds? (YES)
 PSAVE:	.byte 1		; Save parms? (NO)
 
 DEFAULT:	.byte 0,1	; Default parm indices
-FACTORY:	.byte 0,1	; Factory default parm indices
 PARMSEND:

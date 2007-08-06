@@ -73,11 +73,12 @@ SLOWY:	.byte $00	; A place to save the Y register, speed is not important
 iobtrk:
 PCCRC:	.byte $00,$00	; CRC received from PC
 
-COLDSTART:
-	.byte $00
-
 pdslot:	.byte $06
 pdrive:	.byte $00
+pdsoftx:
+	.byte $00
+
+top_stack:	.byte $00
 
 ;---------------------------------------------------------
 ; Default SCC baud rate

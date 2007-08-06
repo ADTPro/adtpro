@@ -44,7 +44,7 @@ READING:
 WRITING:
 	lda #PMSG08
 	sta SR_WR_C
-	lda #PD_WRITE
+	lda #PD_WRITEBLOCK
 	sta RWDIR
 	lda #CHR_W
 	sta RWCHR
@@ -67,7 +67,7 @@ RW_COMN:
 
 	lda NonDiskII	; Do we have a Disk II?
 	beq :+		; No, branch to the block entry point
-	lda RWDIR	; Are we writing?
+	lda RWCHR	; Are we writing?
 	cmp #CHR_W
 	beq :+		; Yes, branch to the block entry point
 	jsr READTRAX	; Ok, we're reading a Disk II - so go fast.
@@ -103,7 +103,7 @@ READTRAX:
 	lsr
 	lsr		; Divide by eight
 	jsr LOAD_TRACKS
-	lda DRVOFF	; drive off
+	jsr motoroff	; drive off
 	jsr RST_NBUF2	; restore page 0 space used by NBUF2
 	rts
 

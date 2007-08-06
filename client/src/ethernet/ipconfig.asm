@@ -1,6 +1,6 @@
 ;
 ; ADTPro - Apple Disk Transfer ProDOS
-; Copyright (C) 2006 by David Schmidt
+; Copyright (C) 2006, 2007 by David Schmidt
 ; david__schmidt at users.sourceforge.net
 ;
 ; This program is free software; you can redistribute it and/or modify it 
@@ -44,7 +44,7 @@ Ten = $0a
 ;---------------------------------------------------------
 IPConfig:
 	; Pull in IP parms
-	ldy #ip_parms_temp-ip_parms_temp_done-1
+	ldy #ip_parms_temp_done-ip_parms_temp-1
 :	lda ip_parms,y
 	sta ip_parms_temp,y
 	dey

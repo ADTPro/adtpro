@@ -398,26 +398,6 @@ public class CommsThread extends Thread
       Log.println(false, " received name: " + name); //$NON-NLS-1$
       File f = null;
       String nameGen, zeroPad;
-      if (generateName)
-      {
-        do
-        {
-          if (lastFileNumber < 10) zeroPad = "000";
-          else
-            if (lastFileNumber < 100) zeroPad = "00";
-            else
-              if (lastFileNumber < 1000) zeroPad = "0";
-              else
-                zeroPad = "";
-          nameGen = zeroPad + lastFileNumber;
-          f = new File(name + nameGen + ".PO");
-          lastFileNumber++;
-        }
-        while (f.exists());
-        name = name + nameGen + ".PO";
-      }
-      else
-        f = new File(name);
       FileOutputStream fos = null;
       byte[] buffer = new byte[20480];
       int part, length, packetResult = 0;
@@ -435,6 +415,33 @@ public class CommsThread extends Thread
       Log.println(false, " received sizeHi: " + UnsignedByte.toString(sizehi)); //$NON-NLS-1$
       length = UnsignedByte.intValue(sizelo, sizehi);
       _parent.setProgressMaximum(length);
+
+      if (generateName)
+      {
+        do
+        {
+          if (lastFileNumber < 10) zeroPad = "000";
+          else
+            if (lastFileNumber < 100) zeroPad = "00";
+            else
+              if (lastFileNumber < 1000) zeroPad = "0";
+              else
+                zeroPad = "";
+          nameGen = zeroPad + lastFileNumber;
+          if ((length * 512) == Disk.APPLE_140KB_DISK)
+            f = new File(name + nameGen + ".DSK");
+          else
+            f = new File(name + nameGen + ".PO");
+          lastFileNumber++;
+        }
+        while (f.exists());
+        if ((length * 512) == Disk.APPLE_140KB_DISK)
+          name = name + nameGen + ".DSK";
+        else
+          name = name + nameGen + ".PO";
+      }
+      else
+        f = new File(name);
       try
       {
         fos = new FileOutputStream(f);

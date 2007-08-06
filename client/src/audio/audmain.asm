@@ -37,7 +37,7 @@
 	.include "hostfns.asm"
 	.include "diskii.asm"
 	.include "nibble.asm"
-	.include "audio/audbsave.asm"
+	.include "bsave.asm"
 	.include "format.asm"
 
 PEND:

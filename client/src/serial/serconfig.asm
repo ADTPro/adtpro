@@ -29,7 +29,7 @@ CONFIG:
 	lda #$01	; Index for 'NO' save
 	sta PARMS+BSAVEP
 
-	ldy #PARMNUM-1	; Save previous parameters
+	ldy #PARMNUM-1	; Save incoming parameters
 SAVPARM:
 	lda PARMS,Y	; in case of abort
 	sta OLDPARM,Y
@@ -279,15 +279,8 @@ LASER:
 
 ;---------------------------------------------------------
 ; PARMDFT - Set parameters to last saved values (uses A,X)
-; Called with the desired operation in A:
-;   00 - defaults last saved by user
-;   01 - defaults set at the factory
-; This becomes important when a user saves off a copy of
-; parms that are incompatible with a machine and (as once
-; happened in my case) it hangs during initialization.
 ;---------------------------------------------------------
 PARMDFT:
-	bne FACTORYLOOP
 	lda CONFIGYET
 	bne WARMER	; If no manual config yet, scan the slots
 	jsr FindSlot
@@ -299,14 +292,6 @@ DFTLOOP:
 	dex
 	bpl DFTLOOP
 	jmp PARMDFTNEXT
-
-FACTORYLOOP:
-	lda #$00
-	sta CONFIGYET
-	lda FACTORY,X
-	sta PARMS,X
-	dex
-	bpl FACTORYLOOP
 
 PARMDFTNEXT:
 ; No matter what, we put in the default value for 
@@ -424,7 +409,6 @@ MSG26:	ascz "COMMS DEVICE"
 MSG27:	ascz "BAUD RATE"
 
 YSAVE:		.byte $00
-SVSPEED:	.byte 2		; Storage for speed setting
 BSAVEP		= $03	; Index to the 'Save parameters' parameter
 
 CONFIG_FILE_NAME:	.byte 11
@@ -436,6 +420,6 @@ PSPEED:	.byte 2		; Comms speed (115200)
 PSOUND:	.byte 0		; Sounds? (YES)
 PSAVE:	.byte 1		; Save parms? (NO)
 DEFAULT:	.byte 1,2,0,1	; Default parm indices
-FACTORY:	.byte 1,2,0,1	; Factory default parm indices
+SVSPEED:	.byte 2		; Storage for speed setting
 CONFIGYET:	.byte 0		; Has the user configged yet?
 PARMSEND:

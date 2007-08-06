@@ -109,23 +109,35 @@ VENTER:	cmp #$8d	; Process enter
 	lsr
 	lsr
 	lsr
-	sta BISLOT	; Save default slot number in BI page
-	lda #$01
-	sta BIDRIVE	; Save default drive number in BI page
+	sta pdslot	; Save default slot
+	dec pdslot
+	jsr slot2x
+	sta pdsoftx	; Save slot * 16 for soft switches
+	inc pdslot
+	lda #$00
+	sta pdrive	; Save default drive number
 	lda UNITNBR
 	and #$80	; Wait, was that drive 2?
 	beq :+
-	inc BIDRIVE
-
+	inc pdrive
 :	lda VCURROW	; Extract unit capacity
 	clc
 	rol		; Multiply by 2
 	tax		; X is now the index into blocks table
+	lda #$00
+	sta NonDiskII	; Assume _no_ Disk II selected
 	lda CAPBLKS,X
 	sta NUMBLKS
 	lda CAPBLKS+1,X
 	sta NUMBLKS+1
-
+	cmp #$01	; Do we have a Disk II selected?
+	bne :+
+	lda NUMBLKS
+	cmp #$18	; $180 blocks; assume so
+	bne :+
+	lda #$01
+	sta NonDiskII	; $01 = We _have_ a Disk II
+:
 	lda VCURROW	; Send the row selection back out
 	rts
 

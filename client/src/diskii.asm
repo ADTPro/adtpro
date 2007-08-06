@@ -19,7 +19,6 @@
 ;
 
 ERRNUM:	.byte 0
-DRVNUM:	.byte 0
 PARM_ADDR_H1:	.byte $D5
 PARM_ADDR_H2:	.byte $AA
 PARM_ADDR_H3:	.byte $96
@@ -28,6 +27,28 @@ ZBUFFER	= $44 ; and $45 : 256 bytes buffer addr
 RD_ERR	= $42 ; read data field err code
 CHECKSUM	= $3A ; sector checksum
 
+;---------------------------------------------------------
+; motoroff - Turn disk drive motor off
+; Preserves y.  Doesn't hurt if motor is already off.
+;---------------------------------------------------------
+motoroff:
+	ldx	pdsoftx		; x = slot * 16
+	lda	$c088,x		; turn motor off
+	rts
+
+;---------------------------------------------------------
+; slot2x - Sets configured slot * 16 in x and in a
+;---------------------------------------------------------
+slot2x:	ldx	pdslot
+	inx			; now 1..7
+	txa
+	asl
+	asl
+	asl
+	asl			; a now contains slot * 16
+	tax			; store in x
+	rts
+
 ;==============================*
 ;                              *
 ; INIT DISK II DRIVE FOR READ  *
@@ -35,22 +56,45 @@ CHECKSUM	= $3A ; sector checksum
 ;==============================*
 
 INIT_DISKII:
-	LDA   DRVON      ; drive on
-	LDX   DRVNUM     ; select drive (1 or 2)
-	LDA   DRVSL1-1,X
-	LDA   DRVRDM     ; set mode to:
-	LDA   DRVRD      ; read
+	ldx pdsoftx		; x = slot * 16
 
-	LDA   DRVSM0OFF  ; set all stepper motor phases to off
-	LDA   DRVSM1OFF
-	LDA   DRVSM2OFF
-	LDA   DRVSM3OFF
+	txa			; Store some self-modifying bytes
+	clc			; Since I'm not sure how timing-sensitive
+	adc #$8C		;   they really are.
+	sta DRVRD_MOD1+1
+	sta DRVRD_MOD2+1
+	sta DRVRD_MOD3+1
+	sta DRVRD_MOD4+1
+	sta DRVRD_MOD5+1
+	sta DRVRD_MOD6+1
+	sta DRVRD_MOD7+1
+	sta DRVRD_MOD8+1
+	sta DRVRD_MOD9+1
+	sta DRVRD_MOD10+1
+	sta DRVRD_MOD11+1
+	sta DRVRD_MOD12+1
+	sta DRVRD_MOD13+1
+	sta DRVRD_MOD14+1
 
-	LDY   #4         ; wait for 300 rpm
-:	LDA   #0
-	JSR   WAIT_SPEED
+	lda pdrive		; select drive (1 or 2)
+	beq :+
+	inx
+:	LDA DRVSEL,x
+	ldx pdsoftx
+	LDA DRVON,x		; drive on
+	LDA DRVRDM,x		; set mode to:
+	LDA DRVRD,x		; read
+
+	LDA DRVSM0OFF,x		; set all stepper motor phases to off
+	LDA DRVSM1OFF,x
+	LDA DRVSM2OFF,x
+	LDA DRVSM3OFF,x
+
+	LDY #4			; wait for 300 rpm
+:	LDA #0
+	JSR WAIT_SPEED
 	DEY
-	BNE   :-
+	BNE :-
 	RTS
 
 WAIT_SPEED:
@@ -58,11 +102,11 @@ WAIT_SPEED:
 SPEED_1:
 	PHA
 SPEED_2:
-	SBC   #1
-	BNE   SPEED_2
+	SBC #1
+	BNE SPEED_2
 	PLA
-	SBC   #1
-	BNE   SPEED_1
+	SBC #1
+	BNE SPEED_1
 	RTS
 
 
@@ -73,33 +117,33 @@ SPEED_2:
 ;==============================*
 
 GO_TRACK0:
-	LDA   #0         ; init MOVE_ARM values
-	STA   CURHTRK
-	STA   GOHTRK
+	LDA #0			; init MOVE_ARM values
+	STA CURHTRK
+	STA GOHTRK
 
-	JSR   READ_ADDR_FD ; read current T/S under R/W head
-	BCC   TRACK0_1         ; no err -> known track
+	JSR READ_ADDR_FD	; read current T/S under R/W head
+	BCC TRACK0_1		; no err -> known track
 
-	                 ; unable to read current track which is unknown
-	LDA   #80        ; Force 80 "tracks" recalibration
-	STA   RS_TRACK   ; (=40 dos 3.3 tracks)
+				; unable to read current track which is unknown
+	LDA #80			; Force 80 "tracks" recalibration
+	STA RS_TRACK		; (=40 dos 3.3 tracks)
 
 TRACK0_1:
-	LDA   RS_TRACK   ; already on track 0?
-	BEQ   TRACK0_3         ; yes
+	LDA RS_TRACK		; already on track 0?
+	BEQ TRACK0_3		; yes
 
-	                 ; go to track 0
-	LDA   RS_TRACK   ; from current track
+				; go to track 0
+	LDA RS_TRACK		; from current track
 TRACK0_2:
-	ASL              ; translate to half track
-	STA   CURHTRK
-	LDA   #0         ; to track 0
-	JSR   MOVE_ARM   ; move r/w head on the target track
-	JSR   READ_ADDR_FD ; check if good track
-	BCS   TRACK0_3         ; can't read but can't do more.
+	ASL			; translate to half track
+	STA CURHTRK
+	LDA #0			; to track 0
+	JSR MOVE_ARM		; move r/w head on the target track
+	JSR READ_ADDR_FD	; check if good track
+	BCS TRACK0_3		; can't read but can't do more.
 
-	LDA   RS_TRACK   ; track 0?
-	BNE   TRACK0_2         ; no, retry
+	LDA RS_TRACK		; track 0?
+	BNE TRACK0_2		; no, retry
 
 TRACK0_3:
 	RTS
@@ -126,93 +170,98 @@ TRACK0_3:
 ;	          2 = bad sector
 
 READ_ADDR_FD:
-	LDX   #0         ; init low/high max counter (10*256 nibbles)
-	LDY   #10
-	JMP   ADDR_FD_1         ; start research
+	LDX #0			; init low/high max counter (10*256 nibbles)
+	LDY #10
+	JMP ADDR_FD_1		; start research
 
 ADDR_FD_2:
-	INX              ; read nibble isn't a marker. Add 1 to counter
-	BNE   ADDR_FD_1         ; and search again
+	INX			; read nibble isn't a marker. Add 1 to counter
+	BNE ADDR_FD_1		; and search again
 	DEY
-	BNE   ADDR_FD_1
-	                 ; counter=max. Stop and set error
-	LDA   #1         ; error : no addr field headers
-	STA   ERRNUM
+	BNE ADDR_FD_1
+				; counter=max. Stop and set error
+	LDA #1			; error : no addr field headers
+	STA ERRNUM
 	SEC
 	RTS
 
-ADDR_FD_1:       LDA   DRVRD      ; read nibble
-	BPL   ADDR_FD_1
-	                 ; Check D5 (1st addr field marker D5 AA 96)
-	CMP   PARM_ADDR_H1
-	BNE   ADDR_FD_2         ; bad nibble -> next
+ADDR_FD_1:
+DRVRD_MOD1:
+	LDA DRVRD		; read nibble
+	BPL ADDR_FD_1
+				; Check D5 (1st addr field marker D5 AA 96)
+	CMP PARM_ADDR_H1
+	BNE ADDR_FD_2		; bad nibble -> next
 
 ADDR_FD_3:
-	LDA   DRVRD      ; read nibble
-	BPL   ADDR_FD_3
-	                 ; Check AA (2nd addr field marker D5 AA 96)
-	CMP   PARM_ADDR_H2
-	BNE   ADDR_FD_2         ; bad nibble -> next
+DRVRD_MOD2:
+	LDA DRVRD		; read nibble
+	BPL ADDR_FD_3
+				; Check AA (2nd addr field marker D5 AA 96)
+	CMP PARM_ADDR_H2
+	BNE ADDR_FD_2		; bad nibble -> next
 
 ADDR_FD_4:
-	LDA   DRVRD      ; read nibble
-	BPL   ADDR_FD_4
-	                 ; Check 96 (3rd addr field marker D5 AA 96)
-	CMP   PARM_ADDR_H3
-	BNE   ADDR_FD_2         ; bad nibble -> next
+DRVRD_MOD3:
+	LDA DRVRD		; read nibble
+	BPL ADDR_FD_4
+				; Check 96 (3rd addr field marker D5 AA 96)
+	CMP PARM_ADDR_H3
+	BNE ADDR_FD_2		; bad nibble -> next
 
 ; Ok header markers found. Now read addr informations.
 ; Read 6 nibbles and get 3 bytes (volume/track/sector)
 
-	LDY   #0         ; Y[0,2] * 2 = 6 nibbles (counter)
+	LDY #0		; Y[0,2] * 2 = 6 nibbles (counter)
 ADDR_FD_5:
-	LDA   DRVRD      ; read 1st nibble
-	BPL   ADDR_FD_5
+DRVRD_MOD4:
+	LDA DRVRD	; read 1st nibble
+	BPL ADDR_FD_5
 
-	STA   RS_TEMP    ; save first nibble (format: 1A1B1C1D)
+	STA RS_TEMP	; save first nibble (format: 1A1B1C1D)
 
 ADDR_FD_6:
-	LDA   DRVRD      ; read 2nd nibble
-	BPL   ADDR_FD_6
-	                 ; acc=1E1F1G1H
-	SEC              ; 4-4 decoding
-	ROL   RS_TEMP    ; mask AND: RS_TEMP=A1B1C1D1
-	AND   RS_TEMP    ; result acc=ABCDEFGH
-	STA   RS_INFOS,Y ; save byte
+DRVRD_MOD5:
+	LDA DRVRD	; read 2nd nibble
+	BPL ADDR_FD_6
+			; acc=1E1F1G1H
+	SEC		; 4-4 decoding
+	ROL RS_TEMP	; mask AND: RS_TEMP=A1B1C1D1
+	AND RS_TEMP	; result acc=ABCDEFGH
+	STA RS_INFOS,Y	; save byte
+	INY		; read next 2 nibbles
+	CPY #3
+	BNE ADDR_FD_5
 
-	INY              ; read next 2 nibbles
-	CPY   #3
-	BNE   ADDR_FD_5
+	LDX RS_PHYSEC	; check sector
+	BMI ADDR_FD_7	; >127 -> bad
+	CPX #16
+	BPL ADDR_FD_7	; >15 -> bad
 
-	LDX   RS_PHYSEC  ; check sector
-	BMI   ADDR_FD_7         ; >127 -> bad
-	CPX   #16
-	BPL   ADDR_FD_7         ; >15 -> bad
-
-	LDA   TSECT,X    ; skewing to get and
-	STA   RS_LOGSEC  ; save logical sector number
-	CLC              ; no err
+	LDA TSECT,X	; skewing to get and
+	STA RS_LOGSEC	; save logical sector number
+	CLC		; no err
 	RTS
 
 ADDR_FD_7:
-	LDA   #2         ; error : bad sector
-	STA   ERRNUM
+	LDA #2		; error : bad sector
+	STA ERRNUM
 	SEC
 	RTS
 
 
 RS_TEMP:
-	.BYTE 0          ; building byte (work aera)
-RS_INFOS:                  ; Sector informations (read)
+	.BYTE 0		; building byte (work aera)
+RS_INFOS:		; Sector informations (read)
 RS_VOLUME:
-	.BYTE  0          ; volume number
+	.BYTE 0		; volume number
 RS_TRACK:
-	.BYTE 0          ; track number
+	.BYTE 0		; track number
 RS_PHYSEC:
-	.BYTE  0          ; physical sector number
+	.BYTE 0	; physical sector number
 RS_LOGSEC:
-	.BYTE  0          ; sector number
-	                 ; skewing
+	.BYTE 0		; sector number
+			; skewing
 TSECT:	.byte $0, $8, $1, $9, $2, $a, $3, $b, $4, $c, $5, $d, $6, $e, $7, $f
 ;             0l  0h  1l  1h  2l  2h  3l  3h  4l  4h  5l  5h  6l  6h  7l  7h
 
@@ -225,7 +274,7 @@ TSECT:	.byte $0, $8, $1, $9, $2, $a, $3, $b, $4, $c, $5, $d, $6, $e, $7, $f
 ; In : CURHTRK  "from" current half track [0,68]
 ;      Acc     "to"   dos 3.3 track [0,34]
 ;
-; Assume slot 6 (no slot indexation)
+; Assume slot * 16 is in pdsoftx
 ;
 ; E.g 1: from T$22 (half=$44) to T$20 (half=$40)  >> DESC <<
 ;        GOHTRK :$40
@@ -252,63 +301,67 @@ TSECT:	.byte $0, $8, $1, $9, $2, $a, $3, $b, $4, $c, $5, $d, $6, $e, $7, $f
 ;        CURHTRK:$22 = GOHTRK ==> END
 
 MOVE_ARM:
-	ASL              ; *2 (dos 3.3 track -> half track)
-	STA   GOHTRK     ; wanted half track
+	ASL		; *2 (dos 3.3 track -> half track)
+	STA GOHTRK	; wanted half track
 
-ARM_1:	LDA   CURHTRK    ; start from current half track
-	STA   SAVHTRK    ; save current half track
+ARM_1:	LDA CURHTRK	; start from current half track
+	STA SAVHTRK	; save current half track
 
-	SEC              ; current half track - wanted half track
-	SBC   GOHTRK
-	BEQ   ARM_OK     ; we're on it -> end
+	SEC		; current half track - wanted half track
+	SBC GOHTRK
+	BEQ ARM_OK	; we're on it -> end
 
-	BCS   ARM_2         ; CURHTRK > GOHTRK
+	BCS ARM_2	; CURHTRK > GOHTRK
 
-	                 ; track ASC, phase ASC
-	INC   CURHTRK    ; position to next half track
-	BCC   ARM_3
-	                 ; track DESC, phase DESC
-ARM_2:	DEC   CURHTRK    ; position to previous half track
+			; track ASC, phase ASC
+	INC CURHTRK	; position to next half track
+	BCC ARM_3
+			; track DESC, phase DESC
+ARM_2:	DEC CURHTRK	; position to previous half track
 
-ARM_3:	JSR   SEEK1      ; first phase (=current half track +/- 1)
-	JSR   WAIT_ARM   ; delay
-	LDA   SAVHTRK    ; saved track : 2nd phase (=current track)
-	AND   #%00000011 ; reduce half track to phase 0 or 1 or 2 or 3
-	ASL              ; *2: now 0 or 2 or 4 or 6. Ready for softswitch
+ARM_3:	JSR SEEK1	; first phase (=current half track +/- 1)
+	JSR WAIT_ARM	; delay
+	LDA SAVHTRK	; saved track : 2nd phase (=current track)
+	AND #%00000011	; reduce half track to phase 0 or 1 or 2 or 3
+	ASL		; *2: now 0 or 2 or 4 or 6. Ready for softswitch
+	clc
+	adc pdsoftx
 	TAX
-	LDA   DRVSM0OFF,X ; phase off
-	                 ; $C0E0 or $C0E2 or $C0E4 or $C0E6
-	JSR   WAIT_ARM   ; delay
-	BEQ   ARM_1         ; always
+	LDA DRVSM0OFF,X	; phase off
+			; $C0x0 or $C0x2 or $C0x4 or $C0x6
+	JSR WAIT_ARM	; delay
+	BEQ ARM_1	; always
 
-SEEK1:	LDA   CURHTRK    ; use next/previous half track
-	AND   #%00000011 ; reduce half track to phase 0 or 1 or 2 or 3
-	ASL              ; *2: now 0 or 2 or 4 or 6
-	TAX              ; use it as index
-	LDA   DRVSM0ON,X ; for phase on: 1 or 3 or 5 or 7
-	                 ; $C0E1 or $C0E3 or $C0E5 or $C0E7
+SEEK1:	LDA CURHTRK	; use next/previous half track
+	AND #%00000011	; reduce half track to phase 0 or 1 or 2 or 3
+	ASL		; *2: now 0 or 2 or 4 or 6
+	clc
+	adc pdsoftx
+	TAX		; use it as index
+	LDA DRVSM0ON,X	; for phase on: 1 or 3 or 5 or 7
+			; $C0x1 or $C0x3 or $C0x5 or $C0x7
 ARM_OK:	RTS
 
 WAIT_ARM:
-	LDA   #$28       ; delay (stepper motor)
+	LDA #$28	; delay (stepper motor)
 	SEC
 ARM_1_2:
 	PHA
 ARM_2_2:
-	SBC   #1         ; first loop
-	BNE   ARM_2_2
+	SBC #1		; first loop
+	BNE ARM_2_2
 
 	PLA
-	SBC   #1         ; second loop
-	BNE   ARM_1_2
+	SBC #1		; second loop
+	BNE ARM_1_2
 
-	RTS              ; acc=0
+	RTS		; acc=0
 
 CURHTRK:
-	.BYTE 0          ; from current half track
+	.BYTE 0		; from current half track
 SAVHTRK:
-	.BYTE 0          ;  saved current half track
-GOHTRK:	.BYTE 0          ; to "wanted" half track
+	.BYTE 0		;  saved current half track
+GOHTRK:	.BYTE 0		; to "wanted" half track
 
 
 ;==============================*
@@ -327,13 +380,17 @@ LOAD_TRACKS:
 	adc #$05
 	sta TRACKS_3+1	; last track+1
 	lda TRK		; Fetch that first track again
-TEMP:
+
 ; Move arm
 
 	CMP #0		; track 0?
 	BEQ READY_L5TRK	; arm already on it
 
 TRACKS_5:
+	lda $C000
+	cmp #CHR_ESC	; ESCAPE = ABORT
+	beq TRKABORT
+
 	LDA GOHTRK	; from current half track
 	STA CURHTRK
 	LDA TRK		; to dos 3.3 track
@@ -382,6 +439,10 @@ TRACKS_3:
 	BNE TRACKS_5
 	RTS
 
+TRKABORT:
+	jsr motoroff
+	jmp BABORT
+
 TRK:	.BYTE 0          ; current track
 RELTRK:	.byte 0		; Current track count
 SKT_BUF:
@@ -407,73 +468,73 @@ ERR_READ:              ; read error flag
 ;                          '*' bad sector
 
 LOAD_TRACK:
-	LDY   #15        ; init counter for each sector
-	LDA   #'0'
+	LDY #15        ; init counter for each sector
+	LDA #'0'
 TRACK_LOAD_1:
-	STA   SKT_RCOUNT,Y
+	STA SKT_RCOUNT,Y
 	DEY
-	BPL   TRACK_LOAD_1
+	BPL TRACK_LOAD_1
 
-	LDA   #16
-	STA   CNT_BAD    ; init bad sector number counter (read addr field)
-	STA   CNT_OK     ; init correct sector count (read data field)
+	LDA #16
+	STA CNT_BAD    ; init bad sector number counter (read addr field)
+	STA CNT_OK     ; init correct sector count (read data field)
 
-	LDA   #32        ; 16 sectors * 2
-	STA   CNT_RAF    ; init read counter of already done sectors
+	LDA #32        ; 16 sectors * 2
+	STA CNT_RAF    ; init read counter of already done sectors
 	                 ; before stop track process
 
 TRACK_LOAD_15:
-	DEC   CNT_RAF
-	BNE   TRACK_LOAD_3
+	DEC CNT_RAF
+	BNE TRACK_LOAD_3
 
-	JMP   TRACK_LOAD_14        ; remaining sectors are bad (can't find addr field)
+	JMP TRACK_LOAD_14        ; remaining sectors are bad (can't find addr field)
 
 TRACK_LOAD_3:
-	JSR   READ_ADDR_FD ; read current T/S under R/W head
-	BCC   TRACK_LOAD_19        ; no err
+	JSR READ_ADDR_FD ; read current T/S under R/W head
+	BCC TRACK_LOAD_19        ; no err
 
-	JMP   TRACK_LOAD_2         ; err
+	JMP TRACK_LOAD_2         ; err
 
 TRACK_LOAD_19:
-	LDX   RS_LOGSEC  ; logical sector
-	LDY   SKT_BUF,X  ; HI addr
-	BEQ   TRACK_LOAD_15        ; already read, try another one
+	LDX RS_LOGSEC  ; logical sector
+	LDY SKT_BUF,X  ; HI addr
+	BEQ TRACK_LOAD_15        ; already read, try another one
 
-	LDA   #32        ; 16 sectors * 2
-	STA   CNT_RAF    ; init read counter of already done sectors
+	LDA #32        ; 16 sectors * 2
+	STA CNT_RAF    ; init read counter of already done sectors
 	                 ; before stop track process
 
-	JSR   READ_SEC_DATA  ; read sector
-	BCS   TRACK_LOAD_5         ; error
+	JSR READ_SEC_DATA  ; read sector
+	BCS TRACK_LOAD_5         ; error
 
-	LDX   RS_LOGSEC
-	LDA   SKT_RCOUNT,X ; first read?
-	CMP   #'0'
-	BEQ   TRACK_LOAD_21        ; yes
+	LDX RS_LOGSEC
+	LDA SKT_RCOUNT,X ; first read?
+	CMP #'0'
+	BEQ TRACK_LOAD_21        ; yes
 	                 ; keep current read number
 	.BYTE $2C        ; false BIT
 TRACK_LOAD_21:
-	LDA   RWCHR       ; ok
+	LDA RWCHR       ; ok
 
 TRACK_LOAD_13:
-	STA   TRACK_LOAD_12+1      ; sector status for display ONLY
-	LDA   #0         ; set sector=ok read
-	STA   SKT_BUF,X
-	LDA   RWCHR      ; sector status
-	STA   SKT_RCOUNT,X
-;	LDA   STAT_LOW,X ; Low screen addr
-;	STA   TRACK_LOAD_6+1
-;	LDA   STAT_HIGH,X ; High screen addr
-;	STA   TRACK_LOAD_6+2
-	LDY   TRK
+	STA TRACK_LOAD_12+1      ; sector status for display ONLY
+	LDA #0         ; set sector=ok read
+	STA SKT_BUF,X
+	LDA RWCHR      ; sector status
+	STA SKT_RCOUNT,X
+;	LDA STAT_LOW,X ; Low screen addr
+;	STA TRACK_LOAD_6+1
+;	LDA STAT_HIGH,X ; High screen addr
+;	STA TRACK_LOAD_6+2
+	LDY TRK
 TRACK_LOAD_12:
-	LDA   RWCHR       ; Write status on screen
+	LDA RWCHR       ; Write status on screen
 TRACK_LOAD_6:
-;	STA   $FFFF,Y
+;	STA $FFFF,Y
 
 TRACK_LOAD_9:
-	DEC   CNT_OK     ; -1 sector to do
-	BNE   TRACK_LOAD_3         ; not finished
+	DEC CNT_OK     ; -1 sector to do
+	BNE TRACK_LOAD_3         ; not finished
 
 	lda #CHR_BLK
 	ldx #$08
@@ -488,98 +549,98 @@ TRACK_LOAD_9:
 TRACK_LOAD_5:
 	TAY              ; save err num
 
-	LDX   RS_LOGSEC
-	INC   SKT_RCOUNT,X ; +1 time
-	LDA   SKT_RCOUNT,X
-	CMP   #':'
-	BNE   TRACK_LOAD_7
+	LDX RS_LOGSEC
+	INC SKT_RCOUNT,X ; +1 time
+	LDA SKT_RCOUNT,X
+	CMP #':'
+	BNE TRACK_LOAD_7
 
-	CPY   #5         ; checksum?
-	BNE   TRACK_LOAD_11        ; no
+	CPY #5         ; checksum?
+	BNE TRACK_LOAD_11        ; no
 
 TRACK_LOAD_11:
-	LDA   CHR_X
-	STA   SKT_RCOUNT,X
-	STA   ERR_READ_TRK
+	LDA CHR_X
+	STA SKT_RCOUNT,X
+	STA ERR_READ_TRK
 
 TRACK_LOAD_7:
-;	LDA   STAT_LOW,X ; Low screen addr
-;	STA   TRACK_LOAD_8+1
-;	LDA   STAT_HIGH,X ; High screen addr
-;	STA   TRACK_LOAD_8+2
-;	LDY   TRK
-;	LDA   SKT_RCOUNT,X ; Write sector status on screen
+;	LDA STAT_LOW,X ; Low screen addr
+;	STA TRACK_LOAD_8+1
+;	LDA STAT_HIGH,X ; High screen addr
+;	STA TRACK_LOAD_8+2
+;	LDY TRK
+;	LDA SKT_RCOUNT,X ; Write sector status on screen
 TRACK_LOAD_8:
-;	STA   $FFFF,Y
-;	CMP   #'*'
-;	BEQ   TRACK_LOAD_20
+;	STA $FFFF,Y
+;	CMP #'*'
+;	BEQ TRACK_LOAD_20
 
-	JMP   TRACK_LOAD_3
+	JMP TRACK_LOAD_3
 
 TRACK_LOAD_20:
-;	LDA   #0         ; set sector=ok read
-;	STA   SKT_BUF,X
-;	BEQ   TRACK_LOAD_9
+;	LDA #0         ; set sector=ok read
+;	STA SKT_BUF,X
+;	BEQ TRACK_LOAD_9
 
 ; Error while reading addr field
 
 TRACK_LOAD_2:
-	CMP   #1         ; no markers
-	BEQ   TRACK_LOAD_4
+	CMP #1         ; no markers
+	BEQ TRACK_LOAD_4
 
 	                 ; bad sector number
-	DEC   CNT_BAD
-	BEQ   TRACK_LOAD_4         ; full track is bad
+	DEC CNT_BAD
+	BEQ TRACK_LOAD_4         ; full track is bad
 
-	JMP   TRACK_LOAD_3         ; not yet 16 errors
+	JMP TRACK_LOAD_3         ; not yet 16 errors
 
 ; Bad Track
 
 TRACK_LOAD_4:
-;	LDA   #$01       ; INV 'A'
-;	LDX   TRK
+;	LDA #$01       ; INV 'A'
+;	LDX TRK
 ;TODO         JSR   PRINT_T_STAT ; can't read track
 	lda #CHR_X
 	ldx #$08
 :	jsr COUT1
 	dex
 	bne :-
-	LDY   #15        ; init counter for each sector
-	LDA   #'*'       ; sector status=error
+	LDY #15        ; init counter for each sector
+	LDA #'*'       ; sector status=error
 TRACK_LOAD_10:
-	STA   SKT_RCOUNT,Y
+	STA SKT_RCOUNT,Y
 	DEY
-	BPL   TRACK_LOAD_10
+	BPL TRACK_LOAD_10
 
-	LDA   #'*'       ; bad track
-	STA   ERR_READ_TRK
+	LDA #'*'       ; bad track
+	STA ERR_READ_TRK
 	RTS
 
 ; Remaining sectors are bad (can't find their addr field)
 
 TRACK_LOAD_14:
-	LDX   #15
-	LDA   #'*'       ; sector status=error
+	LDX #15
+	LDA #'*'       ; sector status=error
 
 TRACK_LOAD_17:
-;	LDY   SKT_BUF,X  ; sector ok
-;	BEQ   TRACK_LOAD_16
+;	LDY SKT_BUF,X  ; sector ok
+;	BEQ TRACK_LOAD_16
 
-;	STA   SKT_RCOUNT,X ; bad sector
-;	LDY   STAT_LOW,X ; Low screen addr
-;	STY   TRACK_LOAD_18+1
-;	LDY   STAT_HIGH,X ; High screen addr
-;	STY   TRACK_LOAD_18+2
-;	LDY   TRK
+;	STA SKT_RCOUNT,X ; bad sector
+;	LDY STAT_LOW,X ; Low screen addr
+;	STY TRACK_LOAD_18+1
+;	LDY STAT_HIGH,X ; High screen addr
+;	STY TRACK_LOAD_18+2
+;	LDY TRK
 TRACK_LOAD_18:
-;	STA   $FFFF,Y    ; write err on screen
+;	STA $FFFF,Y    ; write err on screen
 
 TRACK_LOAD_16:
 ;	DEX
-;	BPL   TRACK_LOAD_17
+;	BPL TRACK_LOAD_17
 
-;	LDA   #'*'       ; bad track
-;	STA   ERR_READ_TRK
+;	LDA #'*'       ; bad track
+;	STA ERR_READ_TRK
 	RTS
 
 
@@ -604,21 +665,21 @@ CNT_RAF:
 ; Save
 
 SAV_NBUF2:
-	LDX  #$AA
-:	LDA   NBUF2-$AA,X
-	STA   SAV_P0_NBUF2-$AA,X
+	LDX #$AA
+:	LDA NBUF2-$AA,X
+	STA SAV_P0_NBUF2-$AA,X
 	INX
-	BNE   :-
+	BNE :-
 	RTS
 
 ; Restore
 
 RST_NBUF2:
-	LDX  #$AA
-:	LDA   SAV_P0_NBUF2-$AA,X
-	STA   NBUF2-$AA,X
+	LDX #$AA
+:	LDA SAV_P0_NBUF2-$AA,X
+	STA NBUF2-$AA,X
 	INX
-	BNE   :-
+	BNE :-
 	RTS
 
 SAV_P0_NBUF2:
@@ -632,33 +693,33 @@ SAV_P0_NBUF2:
 ;==============================*
 
 FILLZ:
-	LDA   $EC        ; save used addr page 0
-	STA   FILLZ_SV
-	LDA   $ED
-	STA   FILLZ_SV+1
+	LDA $EC        ; save used addr page 0
+	STA FILLZ_SV
+	LDA $ED
+	STA FILLZ_SV+1
 
 FILLZ2:
-	LDX   #$0F       ; begin with sector $0F
+	LDX #$0F       ; begin with sector $0F
 FILLZ_2:
-	LDA   SKT_RCOUNT,X ; sector status
-	CMP   #'*'       ; err?
-	BNE   FILLZ_1         ; no, skip this sector
+	LDA SKT_RCOUNT,X ; sector status
+	CMP #'*'       ; err?
+	BNE FILLZ_1         ; no, skip this sector
 
 	                 ; prepare pointer for write
-	LDA   SKT_BUF2,X ; HI
-	STA   $ED
-	LDA   #0         ; LO
-	STA   $EC
+	LDA SKT_BUF2,X ; HI
+	STA $ED
+	LDA #0         ; LO
+	STA $EC
 	                 ; acc=0
 	TAY              ; Y=0
 FILLZ_3:
-	STA   ($EC),Y    ; fill with 0
+	STA ($EC),Y    ; fill with 0
 	INY
-	BNE   FILLZ_3
+	BNE FILLZ_3
 
 FILLZ_1:
 	DEX              ; previous sector
-	BPL   FILLZ_2         ; not finished
+	BPL FILLZ_2         ; not finished
 
 	RTS
 
@@ -758,60 +819,63 @@ FILLZ_SV:
 
 READ_SEC_DATA:
 	                 ; Get data buffer pointers
-	STY   STORE3+2   ; +4c. Provides access to top 3rd of buffer
+	STY STORE3+2   ; +4c. Provides access to top 3rd of buffer
 	DEY              ; +2c.
-	STY   STORE2+2   ; +4c. Provides access to middle 3rd of buffer
-	STY   STORE1+2   ; +4c. Provides access to bottom 3rd of buffer
+	STY STORE2+2   ; +4c. Provides access to middle 3rd of buffer
+	STY STORE1+2   ; +4c. Provides access to bottom 3rd of buffer
 
 ;-------------------------------
 ; Data field identification
 ;-------------------------------
 
-	LDY   #$20       ; +2c. Initialize must find count at $20
+	LDY #$20       ; +2c. Initialize must find count at $20
 	                 ; search data headers
 SEARCH_DH:
 	DEY              ; +2c. Decrement count - more to do?
-	BEQ   EXIT_ERR   ; (+2c). No, then exit
+	BEQ EXIT_ERR   ; (+2c). No, then exit
 
 RDNIBLOOP1:
-	LDA $C0EC        ; +4c. Read a nibble
-	BPL   RDNIBLOOP1
+DRVRD_MOD6:
+	LDA DRVRD        ; +4c. Read a nibble
+	BPL RDNIBLOOP1
 
 MARKER_DH1:
-	EOR   #$D5       ; +2c. Is it 1st header mark?
-	BNE   SEARCH_DH  ; (+2c). No, try again
+	EOR #$D5       ; +2c. Is it 1st header mark?
+	BNE SEARCH_DH  ; (+2c). No, try again
 
-	LDA   #5         ; +2c. Init err # (checksum err)
-	STA   RD_ERR     ; +3c.
+	LDA #5         ; +2c. Init err # (checksum err)
+	STA RD_ERR     ; +3c.
 
 RDNIBLOOP2:
-	LDA $C0EC      ; +4c. Read a nibble
-	BPL   RDNIBLOOP2
+DRVRD_MOD7:
+	LDA DRVRD      ; +4c. Read a nibble
+	BPL RDNIBLOOP2
 
 MARKER_DH2:
-	CMP   #$AA       ; +2c. Is it 2nd header mark?
-	BNE   MARKER_DH1 ; (+2c). No, see if it is 1st header mark
+	CMP #$AA       ; +2c. Is it 2nd header mark?
+	BNE MARKER_DH1 ; (+2c). No, see if it is 1st header mark
 
-	LDY   STORE3+2   ; +4c.
-	STY   ZBUFFER+1  ; +3c. high
-	LDA   #0         ; +2c.
-	STA   ZBUFFER    ; +3c. low
+	LDY STORE3+2   ; +4c.
+	STY ZBUFFER+1  ; +3c. high
+	LDA #0         ; +2c.
+	STA ZBUFFER    ; +3c. low
 
 RDNIBLOOP3:
-	LDA $C0EC      ; +4. Read a nibble
-	BPL   RDNIBLOOP3
+DRVRD_MOD8:
+	LDA DRVRD      ; +4. Read a nibble
+	BPL RDNIBLOOP3
 
 MARKER_DH3:
-	CMP   #$AD       ; +2c. Is it 3rd header mark?
-	BNE   MARKER_DH1 ; (+2c). No, see if it is 1st header mark
+	CMP #$AD       ; +2c. Is it 3rd header mark?
+	BNE MARKER_DH1 ; (+2c). No, see if it is 1st header mark
 
 ;-------------------------------
 ; A running checksum is initialized
 ;-------------------------------
 
-	LDY   #$AA       ; +2c. Y [$AA,$FF] = $56 nibbles to read
-	LDA   #0         ; +2c. Init checksum
-READ1:	STA   CHECKSUM   ; +3c.
+	LDY #$AA       ; +2c. Y [$AA,$FF] = $56 nibbles to read
+	LDA #0         ; +2c. Init checksum
+READ1:	STA CHECKSUM   ; +3c.
 
 ;-------------------------------
 ; 86 disk words (6&2 complement nibbles) are read,
@@ -820,16 +884,17 @@ READ1:	STA   CHECKSUM   ; +3c.
 ;-------------------------------
 
 RDNIBLOOP4:
-	LDX $C0EC      ; +4c. Read a nibble [$96-$FF]
-	BPL   RDNIBLOOP4
+DRVRD_MOD9:
+	LDX DRVRD      ; +4c. Read a nibble [$96-$FF]
+	BPL RDNIBLOOP4
 
-	LDA   NIB_2_6BB-$96,X ; +4c. Translate to 6-bits byte XXXXXX00
+	LDA NIB_2_6BB-$96,X ; +4c. Translate to 6-bits byte XXXXXX00
 	                 ; $96 is the first valid nibble value
 	                 ; Y [$AA,$FF]
-	STA   NBUF2-$AA,Y ; +5c. And store it.
-	EOR   CHECKSUM   ; +3c. Compute running checksum
+	STA NBUF2-$AA,Y ; +5c. And store it.
+	EOR CHECKSUM   ; +3c. Compute running checksum
 	INY              ; +2c. Next nibble
-	BNE   READ1      ; (+2c). Not finished
+	BNE READ1      ; (+2c). Not finished
 
 ;-------------------------------
 ; The bottom third, middle third, and top third of the
@@ -848,97 +913,102 @@ RDNIBLOOP4:
 
 ; Read 86 nibbles (bottom third)
 
-	LDY   #$AA       ; +2c. Y [$AA,$FF] = $56 nibble to read
-	BNE   RDNIBLOOP5 ; +2c. Branch always taken
+	LDY #$AA       ; +2c. Y [$AA,$FF] = $56 nibble to read
+	BNE RDNIBLOOP5 ; +2c. Branch always taken
 
 EXIT_ERR:
-	LDA   #4         ; +2c. Init err #
-	STA   RD_ERR     ; +3c.
+	LDA #4         ; +2c. Init err #
+	STA RD_ERR     ; +3c.
 	SEC              ; set carry flag indicating error
-	BCS   LDA_RD_ERR ; return to caller
+	BCS LDA_RD_ERR ; return to caller
 
 	                 ; first loop Y=$AB. Last loop Y=$FF.
-STORE1:  STA   $FF55,Y    ; +5c. Store byte in bottom third
+STORE1:	STA $FF55,Y    ; +5c. Store byte in bottom third
 
 
 RDNIBLOOP5:
-	LDX $C0EC      ; +4c. Read a nibble
-	BPL   RDNIBLOOP5
+DRVRD_MOD10:
+	LDX DRVRD      ; +4c. Read a nibble
+	BPL RDNIBLOOP5
 
 	                 ; acc used as running checksum
-	EOR   NIB_2_6BB-$96,X ; +4c. Translate nibble to 6-bit byte+checksum
-	LDX   NBUF2-$AA,Y ; +4c. Bits from auxiliary buffer
-	EOR   BIT_PAIR_TBL,X ; +4c. Merge in
+	EOR NIB_2_6BB-$96,X ; +4c. Translate nibble to 6-bit byte+checksum
+	LDX NBUF2-$AA,Y ; +4c. Bits from auxiliary buffer
+	EOR BIT_PAIR_TBL,X ; +4c. Merge in
 	INY              ; +2c. Next nibble
-	BNE   STORE1     ; (+2c). Not finished
+	BNE STORE1     ; (+2c). Not finished
 
 	PHA              ; +3c. Save last byte for later, no time now
-	AND   #$FC       ; +2c. Trip off last two bits XXXXXX00
+	AND #$FC       ; +2c. Trip off last two bits XXXXXX00
 
 ; Read 86 nibbles (middle third)
 
-	LDY   #$AA       ; +2c. Y [$AA,$FF] = $56 nibbles to read
+	LDY #$AA       ; +2c. Y [$AA,$FF] = $56 nibbles to read
 
 RDNIBLOOP6:
-	LDX $C0EC      ; +4c. Read a nibble
-	BPL   RDNIBLOOP6
+DRVRD_MOD11:
+	LDX DRVRD      ; +4c. Read a nibble
+	BPL RDNIBLOOP6
 
-	EOR   NIB_2_6BB-$96,X ; +4c. Translate nibble to 6-bit byte+checksum
-	LDX   NBUF2-$AA,Y ; +4c. Bits from auxiliary buffer
-	EOR   BIT_PAIR_TBL+1,X ; +4c. Merge in
+	EOR NIB_2_6BB-$96,X ; +4c. Translate nibble to 6-bit byte+checksum
+	LDX NBUF2-$AA,Y ; +4c. Bits from auxiliary buffer
+	EOR BIT_PAIR_TBL+1,X ; +4c. Merge in
 STORE2:
-	STA   $FFAC,Y    ; +5c. Store byte in middle third
+	STA $FFAC,Y    ; +5c. Store byte in middle third
 	INY              ; +2c. Next nibble
-	BNE   RDNIBLOOP6 ; (+2c). Not finished
+	BNE RDNIBLOOP6 ; (+2c). Not finished
 
 ; Read 84 nibbles (top third)
 	                 ; Y=0
 RDNIBLOOP7:
-	LDX $C0EC      ; +4c. Read 1st nibble
-	BPL   RDNIBLOOP7
+DRVRD_MOD12:
+	LDX DRVRD      ; +4c. Read 1st nibble
+	BPL RDNIBLOOP7
 
-	AND   #$FC       ; +2c. Strip off last two bits XXXXXX00
+	AND #$FC       ; +2c. Strip off last two bits XXXXXX00
 
-	LDY   #$AC       ; +2c. Y [$AC,$FF] = $54 nibbles to read
+	LDY #$AC       ; +2c. Y [$AC,$FF] = $54 nibbles to read
 DECODE:
-	EOR   NIB_2_6BB-$96,X ; +4c. Translate nibble to 6-bit byte+checksum
-	LDX   NBUF2-$AC,Y ; +4c. Bits from auxiliary buffer
-	EOR   BIT_PAIR_TBL+2,X ; +4c. Merge in
+	EOR NIB_2_6BB-$96,X ; +4c. Translate nibble to 6-bit byte+checksum
+	LDX NBUF2-$AC,Y ; +4c. Bits from auxiliary buffer
+	EOR BIT_PAIR_TBL+2,X ; +4c. Merge in
 STORE3:
-	STA   $FF00,Y    ; +5c. Store byte in top third
+	STA $FF00,Y    ; +5c. Store byte in top third
 
 RDNIBLOOP8:
-	LDX $C0EC      ; +4c. Read nibble
-	BPL   RDNIBLOOP8
+DRVRD_MOD13:
+	LDX DRVRD      ; +4c. Read nibble
+	BPL RDNIBLOOP8
 
 	INY              ; +2c. Next nibble
-	BNE   DECODE     ; (+2c). Not finished
+	BNE DECODE     ; (+2c). Not finished
 
 ; Last nibble read = checksum
 
-	AND   #$FC       ; +2c. Strip off last two bits XXXXXX00
-	EOR   NIB_2_6BB-$96,X ; +4c. Translate nibble to 6-bit byte+checksum
-	BNE   ERROR      ; (+2c). Checksum not valid
+	AND #$FC       ; +2c. Strip off last two bits XXXXXX00
+	EOR NIB_2_6BB-$96,X ; +4c. Translate nibble to 6-bit byte+checksum
+	BNE ERROR      ; (+2c). Checksum not valid
 
 ; Check 1st trailing mark
 
 RDNIBLOOP9:
-	LDA $C0EC      ; +4c. Read nibble
-	BPL   RDNIBLOOP9
+DRVRD_MOD14:
+	LDA DRVRD      ; +4c. Read nibble
+	BPL RDNIBLOOP9
 
 MARKER_DT1:
-	CMP   #$DE       ; +2c. Check 1st trailing mark
+	CMP #$DE       ; +2c. Check 1st trailing mark
 	CLC              ; +2c.
-	BEQ   OK         ; (+2c). Yes, trailer ok
+	BEQ OK         ; (+2c). Yes, trailer ok
 
-	INC   RD_ERR     ; +5c. 5+1=6 (trailer err)
+	INC RD_ERR     ; +5c. 5+1=6 (trailer err)
 
-ERROR:   SEC              ; +2c. Set carry flag indicating error
-OK:      PLA              ; +4c. Set byte we stored away, we have time now
-	LDY   #$55       ; +2c. Set proper offset
-	STA   (ZBUFFER),Y ; +6c. Store byte
+ERROR:	SEC              ; +2c. Set carry flag indicating error
+OK:	PLA              ; +4c. Set byte we stored away, we have time now
+	LDY #$55       ; +2c. Set proper offset
+	STA (ZBUFFER),Y ; +6c. Store byte
 LDA_RD_ERR:
-	LDA   RD_ERR     ; +3c. acc=err code
+	LDA RD_ERR     ; +3c. acc=err code
 	RTS              ; +6c. Return to caller
 
 

@@ -40,6 +40,16 @@ INIT:
 	BNE   :-         ; don't touch the $0000-$07FF aera
 
 ;---------------------------------------------------------
+; Kill the reset vector
+;---------------------------------------------------------
+	lda #$69		; Vector reset to the monitor
+	sta $03f2
+	lda #$ff
+	sta $03f3	; $ff69, aka CALL -151
+	eor #$a5
+	sta $03f4	; Fixup powerup byte 
+
+;---------------------------------------------------------
 ; ProDOS SYS relocators
 ;---------------------------------------------------------
 PRE_MOVER:		; Need to protect relocation code
@@ -210,49 +220,17 @@ delaytb2:
 	.byte $70,$2c,$26,$22,$1f,$1e
 	.byte $1d,$1c,$1c,$1c,$1c,$1c
 
-;---------------------------------------------------------
-; motoroff - Turn disk drive motor off
-; Preserves y.  Doesn't hurt if motor is already off.
-;---------------------------------------------------------
-motoroff:
-	jsr	slot2x		; a = x = slot * 16
-	lda	$c088,x		; turn motor off
-	rts
-
-;---------------------------------------------------------
-; slot2x - Sets configured slot * 16 in x and in a
-;---------------------------------------------------------
-slot2x:	ldx	pdslot
-	inx			; now 1..7
-	txa
-	asl
-	asl
-	asl
-	asl			; a now contans slot * 16
-	tax			; store in x
-	rts
-
 entrypoint:
-
-;---------------------------------------------------------
-; Kill the reset vector
-;---------------------------------------------------------
-	lda #$69		; Vector reset to the monitor
-	sta $03f2
-	lda #$ff
-	sta $03f3	; $ff69, aka CALL -151
-	eor #$a5
-	sta $03f4	; Fixup powerup byte 
 
 ;---------------------------------------------------------
 ; Start us up
 ;---------------------------------------------------------
 	sei
-	lda #$00	; In general - do a warm start
-	sta COLDSTART	; i.e. don't load up factory defaults
-
 	cld
 
+	tsx		; Get a handle to the stackptr
+	stx top_stack	; Save it for full pops during aborts
+	
 	; Prepare the system for our expecations -
 	; Basic, 64k Applesoft Apple ][.  That's all it
 	; should take.
@@ -262,13 +240,11 @@ entrypoint:
 	jsr $FE89	; INPUT FROM KEYBOARD
 	jsr $FE93	; OUTPUT TO 40-COL SCREEN
 	jsr MAKETBL	; Prepare our CRC tables
-
-	lda COLDSTART	; Decide to cold or warm start
 	jsr PARMDFT	; Set up parameters
-	lda #$00
-	sta COLDSTART	; Reset coldstart in case we get bsaved
-	jsr HOME	; Clear screen; PARMINT may leave a complaint
-	jsr PARMINT	; INTERPRET PARAMETERS
+	jsr GET_PREFIX	; Get our current ProDOS prefix
+	jsr BLOAD	; Load up user parameters, if any
+	jsr HOME	; Clear screen
+	jsr PARMINT	; Interpret parameters - may leave a complaint
 	jmp MAINL	; And off we go!
 
 ;---------------------------------------------------------
@@ -401,7 +377,7 @@ FORWARD:
 ; ABORT - STOP EVERYTHING (CALL BABORT TO BEEP ALSO)
 ;---------------------------------------------------------
 BABORT:	jsr AWBEEP	; Beep!
-ABORT:	ldx #$FF	; Pop goes the stackptr
+ABORT:	ldx top_stack	; Pop goes the stackptr
 	txs
 	bit $C010	; Strobe the keyboard
 	jmp MAINLUP	; ... and restart

@@ -76,7 +76,6 @@ BATCHDONE:
 ;---------------------------------------------------------
 SEND:
 	lda #$00
-	sta NonDiskII	; Clear Disk II flag
 	sta ECOUNT	; Clear error flag
 	jsr GETFN
 	bne @SendValid
@@ -109,16 +108,7 @@ SMSTART:
 	bmi SMDONE1
 	sta SLOWA
 
-	lda NUMBLKS+1	; Is this a Disk II?
-	cmp #$01
-	bne :+
-	lda NUMBLKS
-	cmp #$18	; $180 blocks; assume so
-	bne :+
-	lda #$01
-	sta NonDiskII	; $01 = We _have_ a Disk II
-
-:	lda UNITNBR	; Set up the unit number
+	lda UNITNBR	; Set up the unit number
 	sta PARMBUF+1
 
 	lda #$00
@@ -211,7 +201,6 @@ SMDONE:	rts
 RECEIVE:
 	lda #$00
 	sta ECOUNT	; Clear error flag
-	sta NonDiskII	; Clear Disk II flag
 	jsr GETFN
 	bne SRSTART
 	jmp SRDONE
