@@ -183,13 +183,16 @@ ADTPro Audio Bootstrapping
     [[1]] A dialog box will come up instructing you to type a set of commands
       on the Apple.  They will be similar to the following:
 
-    * <<<CALL -151>>> (The Apple should respond with the asterisk ("<<<*>>>") prompt.)
+    * <<<CALL -151>>> (You don't actually have to type this one in, since the
+      bootstrapping operation will have left you at the asterisk prompt already.
+      It won't hurt anything if you do, but you don't need to.)
 
     * <<<2000.xxxxR>>> (Note the "<<<0>>>" is a zero, not the letter "O.")
 
     []
 
-    Enter those commands at your Apple.
+    In this scenario, you only need to enter the second command (<<<2000.xxxxR>>>)
+    at your Apple.
 
     [[1]] Dismiss the ADTPro server dialog by clicking on the <<<Ok>>> button.
 
