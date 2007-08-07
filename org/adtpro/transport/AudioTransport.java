@@ -373,14 +373,11 @@ public class AudioTransport extends ATransport
           + UnsignedByte.toString(UnsignedByte.loByte(endAddr));
       ret = ret.replaceFirst("%1%", endAddrHex);
     }
-    else
-      if (guiString.equals(Messages.getString("Gui.BS.ProDOS2"))) ret = Messages
-          .getString("Gui.BS.DumpProDOSAudioInstructions2");
       else
         if (guiString.equals(Messages.getString("Gui.BS.DOS")))
         {
           ret = Messages.getString("Gui.BS.DumpDOSAudioInstructions");
-          endAddr = fileSize - 1 + 976;
+          endAddr = fileSize - 1 + 2051;
           String endAddrHex = UnsignedByte.toString(UnsignedByte.hiByte(endAddr))
               + UnsignedByte.toString(UnsignedByte.loByte(endAddr));
           ret = ret.replaceFirst("%1%", endAddrHex);
@@ -407,7 +404,7 @@ public class AudioTransport extends ATransport
                   else
                     if (guiString.equals(Messages.getString("Gui.BS.ADTProEthernet"))) ret = Messages
                         .getString("Gui.BS.DumpProEthernetAudioInstructions");
-              endAddr = fileSize - 1 + 2051;
+              endAddr = fileSize - 1 + 8192;
               String endAddrHex = UnsignedByte.toString(UnsignedByte.hiByte(endAddr))
                   + UnsignedByte.toString(UnsignedByte.loByte(endAddr));
               ret = ret.replaceFirst("%1%", endAddrHex);
