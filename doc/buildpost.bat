@@ -11,7 +11,6 @@ perl -i.orig -p ..\..\removeMaven.re configserialmain.html
 perl -i.orig -p ..\..\removeMaven.re connectionsaudio.html
 perl -i.orig -p ..\..\removeMaven.re connectionsserial.html
 perl -i.orig -p ..\..\removeMaven.re credits.html
-perl -i.orig -p ..\..\removeMaven.re download.html
 perl -i.orig -p ..\..\removeMaven.re developing.html
 perl -i.orig -p ..\..\removeMaven.re history.html
 perl -i.orig -p ..\..\removeMaven.re index.html
