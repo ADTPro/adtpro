@@ -137,11 +137,12 @@ PRLOOP:
 	lsr
 	lsr
 PRnum:	tax
-	lda CAPBLKS,X
-	sta PRTPTR
 	lda CAPBLKS+1,X
-	sta PRTPTR+1
-	jsr PRTNUMSP
+	sta FILL
+	lda CAPBLKS,X
+	ldx FILL
+	ldy #CHR_SP
+	jsr PRD
 
 PRVODONE:
 	jsr CROUT
@@ -228,10 +229,9 @@ PREPPRG:
 	inc CH		; Space over one character
 
 	lda NUMBLKS
-	sta PRTPTR
-	lda NUMBLKS+1
-	sta PRTPTR+1
-	jsr PRTNUM
+	ldx NUMBLKS+1
+	ldy #CHR_0
+	jsr PRD
 
 	lda #$00	; Column
 	sta CH
@@ -344,82 +344,6 @@ HMOK:
 	ldy #$00
 	jmp MSGLOOP	; Call the regular message printer
 	
-
-;---------------------------------------------------------
-; PRTNUM
-;
-; Prints a right-justified, zero-padded 5-digit number from
-; a pointer in PRTPTR/PRTPTR+1 (lo/hi)
-;---------------------------------------------------------
-PRTNUMSP:		; Entry: assumes printing 5 digits long, space-padded
-	lda #CHR_SP
-	sta PADCHR
-	jmp PRTIT
-PRTNUMB:		; Entry: assumes printing a single byte, space-padded, three spaces wide
-	lda #CHR_SP
-	sta PADCHR
-	jmp ByteEntry
-PRTNUM:
-	lda #CHR_0
-	sta PADCHR
-PRTIT:
-	lda PRTPTR+1
-	cmp #$27
-	bcs PRTN1
-	jmp OXXXX	; Number is less than $2700
-PRTN1:	bne PRTNUM1	; Number is > $2700
-	lda PRTPTR
-	cmp #$10
-	bcs PRTN2
-	jmp OXXXX	; Number is less than $2710
-PRTN2:	jmp PRTNUM1	; Number is >= $2710
-
-OXXXX:	lda PADCHR
-	jsr COUT1
-	lda PRTPTR+1
-	cmp #$03
-	bcs PRTN3
-	jmp OOXXX	; Number is less than $0300
-PRTN3:	bne PRTN4	; Number is >= $0300
-	lda PRTPTR
-	cmp #$E8
-	bcs PRTN4
-	jmp OOXXX	; Number is less than $03e8
-PRTN4:	jmp PRTNUM1	; Number is >= $03e8
-
-OOXXX:	lda PADCHR
-	jsr COUT1
-ByteEntry:
-	lda PRTPTR+1
-	cmp #$00
-	bcs PRTN5
-	jmp OOOXX	; Number is less than $0064
-PRTN5:	bne PRTNUM1	; Number is >= $0064
-	lda PRTPTR
-	cmp #$64
-	bcs PRTNUM1
-
-OOOXX:	lda PADCHR
-	jsr COUT1
-	lda PRTPTR
-	cmp #$0a
-	bcs PRTN7
-	jmp OOOOX	; Number is less than $000a
-PRTN7:	jmp PRTNUM1	; Number is >= $000a
-
-OOOOX:	lda PADCHR
-	jsr COUT1
-
-PRTNUM1:
-	ldx PRTPTR	; LO
-	lda PRTPTR+1	; HI
-	jsr PRDEC
-
-	rts
-
-PADCHR:	.byte CHR_0
-PRTPTR:	.byte $00,$00
-
 ;---------------------------------------------------------
 ; ToDecimal
 ; Prints accumulator as a decimal number
@@ -455,6 +379,52 @@ TD4:	jsr COUT1
 DECTBL:	.byte	1,10,100           
 DigitYet:
 	.byte 0
+
+;--------------------------------
+;   By Jan Eugenides and Bob S-C
+;
+;      Call with A, X, and Y as follows:
+;          (A) = low-byte of number to be printed
+;          (X) = high byte of number
+;          (Y) = fill character (or 00 if no fill)
+;--------------------------------
+PRD:	STX NUM+1    ;Store high byte of number
+	STY FILL     ;Store fill character
+	LDX #3       ;FOR X = 3 TO 0
+	STX FLAG     ;Clear bit 7 in leading-zero flag
+@1:	LDY #CHR_0     ;Start with digit = ASCII 0
+@2:	STA NUM      ;Compare number to power of ten
+	CMP TENTBL,X      ;10^(X+1) ... lo-byte
+	LDA NUM+1
+	SBC TENTBH,X      ;10^(X+1) ... hi-byte
+	BCC @3       ;Remainder is smaller than 10^(X+1)
+	STA NUM+1    ;Store remainder hi-byte
+	LDA NUM      ;Get remainder lo-byte
+	SBC TENTBL,X
+	INY          ;Increment ASCII digit
+	BNE @2      ; ...always
+;---Print a digit----------------
+@3:	TYA          ;digit in ASCII
+	CMP #CHR_0     ;Is it a zero?
+	BEQ @4      ; ...yes, might be leading zero
+	STA FLAG     ;...no, so clear leading-zero flag
+@4:	BIT FLAG     ;If this is leading-zero, will be +
+	BMI @5      ; ...not a leading zero
+	LDA FILL     ;...leading zero, so use fill-char
+	BEQ @6      ; ...Oops, no fill-char
+@5:	JSR COUT     ;Print the digit or fill-char
+@6:	LDA NUM      ;Get lo-byte of remainder
+	DEX          ;Next X
+	BPL @1      ; Go get next digit
+	ORA #CHR_0     ;Change remainder to ASCII
+	JMP COUT     ;Print Unit's digit & RTS
+;--------------------------------
+TENTBL:	.byte <10,<100,<1000,<10000
+TENTBH:	.byte >10,>100,>1000,>10000
+;--------------------------------
+FLAG:	.byte $00
+FILL:	.byte $00
+NUM:	.byte $00, $00
 
 ;---------------------------------------------------------
 ; CHROVER - Write new contents without advancing cursor

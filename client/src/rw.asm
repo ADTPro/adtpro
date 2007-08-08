@@ -120,6 +120,8 @@ READTRAX:
 ;------------------------------------
 
 RWBLOX:
+	stx SLOWX
+	sty SLOWY
 	lda #$03	; Set up MLI call - 3 parameters
 	sta PARMBUF
 
@@ -147,11 +149,13 @@ RWCALL:
 	clc
 	lda BLKLO	; Increment the 16-bit block number
 	adc #$01
-	sta PRTPTR
+	sta NUM
 	lda BLKHI
 	adc #$00
-	sta PRTPTR+1
-	jsr PRTNUM	; Print block number in decimal
+	tax
+	lda NUM
+	ldy #CHR_0
+	jsr PRD		; Print block number in decimal
 
 	lda <COL_SAV	; Reposition cursor to previous
 	sta <CH		; buffer row
@@ -177,6 +181,8 @@ RWOK:	inc PARMBUF+3	; Advance buffer $100 bytes
 	inc BLKHI
 RWNOB:	dec BCOUNT
 	bne RWCALL
+	ldy SLOWY
+	ldx SLOWX
 	rts
 
 RABORT:	jmp BABORT

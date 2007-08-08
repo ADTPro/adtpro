@@ -434,14 +434,16 @@ SRCALL:
 	lda BLKLO	; Increment the 16-bit block number
 	clc
 	adc #$01
-	sta PRTPTR
+	sta NUM
 	lda BLKHI
 	bcc SRNEXT
 	clc
 	adc #$01
 SRNEXT:
-	sta PRTPTR+1
-	jsr PRTNUM	; Print block number in decimial
+	tax
+	lda NUM
+	ldy #CHR_0
+	jsr PRD	; Print block number in decimial
 
 	lda <COL_SAV	; Position cursor to next
 	sta <CH		;   buffer row
