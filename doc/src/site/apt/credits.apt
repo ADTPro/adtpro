@@ -15,15 +15,17 @@ server code to Java.  The Win32 GUI code was written by Sean Gugler.  The
 ADTWin project is hosted here:
 {{http://www.apple2.org.za/gswv/a2zine/Sel/ADTWin.html}}
 
+ The routine to read a Disk II device much faster than ProDOS comes from 
+Jean-Marc Boutillon (Deckard) and his FASTDSK program: 
+{{http://boutillon.free.fr/Underground/Docs/Fastdsk/Fastdsk_en.html}}.
+I dumbed-down the display from Deckard's pretty Locksmith-styled
+sector-by-sector status, but added slot independence.
+I also borrowed config file loading and saving from
+the FASTDSK package, and added config file creation as well.
+
  The routine to decide what kind of block device a particular slot/drive 
 combination contains was generously donated by Mark Percival.  It originates
 from his DiskMaker 8 program: {{http://www.gamebits.net/mark/DM8/}}
-
- The routines to read a Disk II device much faster than ProDOS comes from 
-Deckard (Jean-Marc BOUTILLON) and his FASTDSK program: {{http://boutillon.free.fr}}.
-I dumbed-down the display from Deckard's pretty sector-by-sector status, but
-added slot independence.  I also borrowed config file loading and saving from
-the FASTDSK package, but added config file creation as well.
 
  The disk abstraction layer of ADTPro's server software was borrowed from the 
 AppleCommander project: {{http://applecommander.sourceforge.net/}}
