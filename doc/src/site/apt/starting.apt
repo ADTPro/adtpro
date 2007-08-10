@@ -83,7 +83,7 @@ Java lib Version   = RXTX-2.1-7
  Your very simple autostart <<<STARTUP>>> program could look like this:
 
 +-------------+
-10 PRINT CHR$(4)"BRUN ADTPRO"
+10 PRINT CHR$(4)"- ADTPRO"
 +-------------+
 
  Just change <<<ADTPRO>>> specified in line 10 to the program of your choice:
@@ -100,7 +100,7 @@ Java lib Version   = RXTX-2.1-7
  run <<<ADTPROAUD>>>, the program should look like this:
 
 +-------------+
-10 PRINT CHR$(4)"BRUN ADTPROAUD"
+10 PRINT CHR$(4)"- ADTPROAUD"
 +-------------+
 
  When you have the line looking like you want it (remember Applesoft commands

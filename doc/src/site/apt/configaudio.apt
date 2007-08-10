@@ -38,8 +38,7 @@ configuration that works for you, select "YES" for SAVE CONFIG and hit Return.
 
 [images/configaudio2.png]
 
- This will save <<<ADTPROAUD>>> back out to the current slot/disk (volume).
-You can choose a different slot/drive to save to by first choosing a volume
-from the {{{misc.html#Volume List}Volumes}} screen.
-When you start <<<ADTPROAUD>>> again, it will start with the configuration 
+ This will save <<<ADTPROAUD.CONF>>> to the same place where you started
+ADTPro from.
+When you start <<<ADTPROAUD>>> again, it will use the configuration 
 parameters you saved last.

@@ -14,7 +14,8 @@ image sent.
 [images/sendBatch.png]
 
  The prefix you enter will be appended to the current working directory
-of the ADTPro server, and a 4-digit serial number and the suffix "<<<.PO>>>" will
+of the ADTPro server, and a 4-digit serial number and the suffix "<<<.PO>>>" 
+("<<<.DSK>>>" for Disk ][ images) will
 be appended to it.  If the current working directory were <<</apple/disks>>>, 
 the first disk would be saved as <<</apple/disks/BIGUPLOAD0000.PO>>>.
 The next disk would be saved as <<</apple/disks/BIGUPLOAD0001.PO>>>, and so on.

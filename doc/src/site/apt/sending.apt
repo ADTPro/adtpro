@@ -15,7 +15,7 @@ you want saved at the host:
  diskette image and the "order" in which the bits are stored; something 
  that is really only of consequence to emulators.  Points to remember:
 
-  * When saving disk images at the host, ADTPro will save any 140k, 
+  * When saving disk images at the host, ADTPro will save any Disk ][, 140k, 
     5-1/4" disk image in "DOS order" no matter what it is named.  
     To work correctly with emulators, 140k disk images should be named
     with a ".dsk" or ".do" suffix.  

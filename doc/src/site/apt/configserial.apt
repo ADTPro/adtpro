@@ -23,14 +23,11 @@ left arrow keys.  Your Apple has right and left arrow keys; trust me.
  <<Note>>: if you ever end up saving a configuration that is not compatible
  with the Apple you're trying to run ADTPro on (because you move your
  serial card to a different slot, for example) you may need to reset
- ADTPro to factory defaults.  To do that, boot your Apple without
- starting <<<ADTPRO>>>, and type in the following commands:
-
- * <<<BLOAD ADTPRO>>>
-
- * <<<POKE 2053,1>>>
-
- * <<<CALL 2051>>>
+ ADTPro to factory defaults.  To do that, boot the Apple with ProDOS, and 
+ get to a BASIC prompt (perhaps using the
+ ADTPro diskette itself). Delete the configuration file:
+ 
+ * <<<DELETE ADTPRO.CONF>>>
 
  []
 
@@ -122,8 +119,6 @@ configuration that works for you, select "YES" for SAVE CONFIG and hit Return.
 
 [images/configSave.png]
 
- This will save <<<ADTPRO>>> back out to the current slot/disk (volume).
-You can choose a different slot/drive to save to by first choosing a volume
-from the {{{misc.html#Volume List}Volumes}} screen.
-When you start <<<ADTPRO>>> again, it will start with the configuration parameters you 
-saved last.
+ This will save <<<ADTPRO.CONF>>> to the same place where you started
+ADTPro from.  When you start <<<ADTPRO>>> again, it will use the
+configuration parameters you saved last.
