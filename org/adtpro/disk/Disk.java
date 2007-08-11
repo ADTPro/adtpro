@@ -43,9 +43,9 @@ import org.adtpro.utilities.UnsignedByte;
 public class Disk
 {
   /**
-   * Specifies a filter to be used in determining filetypes which are supported.
-   * This works from a file extension, so it may or may not apply to the
-   * Macintosh.
+   * Specifies a filter to be used in determining file types which are
+   * supported. This works from a file extension, so it may or may not apply to
+   * the Macintosh.
    */
 
   public static final int BLOCK_SIZE = 512;
@@ -84,6 +84,7 @@ public class Disk
 
   /**
    * Constructor for a Disk - used only to generate FilenameFilter objects.
+   * Prevent parameter-less instantiation.
    */
   private Disk()
   {}
@@ -113,95 +114,137 @@ public class Disk
    */
   public Disk(String filename, boolean forceProDosOrder) throws IOException
   {
-    Log.println(false, "Disk contructor looking for file named " + filename + ".");
+    Log.println(false, "Disk constructor looking for file named " + filename
+        + ".");
     this.filename = filename;
     File file = new File(filename);
     InputStream input = new FileInputStream(file);
     if (isCompressed())
     {
-      Log.println(false, "Disk contructor found a compressed image.");
+      Log.println(false, "Disk constructor found a compressed image.");
       input = new GZIPInputStream(input);
     }
     int diskSize = (int) file.length();
-    ByteArrayOutputStream diskImageByteArray = new ByteArrayOutputStream(diskSize);
+    ByteArrayOutputStream diskImageByteArray = new ByteArrayOutputStream(
+        diskSize);
     StreamUtil.copy(input, diskImageByteArray);
     byte[] diskImage = diskImageByteArray.toByteArray();
     boolean is2img = false;
     /* Does it have the 2IMG header? */
-    if ((diskImage[00] == 0x32) && (diskImage[01] == 0x49) && (diskImage[02] == 0x4D) && (diskImage[03]) == 0x47) is2img = true;
+    if ((diskImage[00] == 0x32) && (diskImage[01] == 0x49)
+        && (diskImage[02] == 0x4D) && (diskImage[03]) == 0x47) is2img = true;
     int offset = UniversalDiskImageLayout.OFFSET;
     if (is2img == true || diskImage.length == APPLE_800KB_DISK + offset
-        || diskImage.length == APPLE_5MB_HARDDISK + offset || diskImage.length == APPLE_10MB_HARDDISK + offset
-        || diskImage.length == APPLE_20MB_HARDDISK + offset || diskImage.length == APPLE_32MB_HARDDISK + offset)
+        || diskImage.length == APPLE_5MB_HARDDISK + offset
+        || diskImage.length == APPLE_10MB_HARDDISK + offset
+        || diskImage.length == APPLE_20MB_HARDDISK + offset
+        || diskImage.length == APPLE_32MB_HARDDISK + offset)
     {
-      Log.println(false, "Disk contructor found a 2img header.");
+      Log.println(false, "Disk constructor found a 2img header.");
       diskImageManager = new UniversalDiskImageLayout(diskImage);
     }
     else
     {
-      Log.println(false, "Disk contructor found unadorned disk image data.");
+      Log.println(false, "Disk constructor found unadorned disk image data.");
       diskImageManager = new ByteArrayImageLayout(diskImage);
     }
 
+    ImageOrder dosOrder = new DosOrder(diskImageManager);
+    ImageOrder proDosOrder = new ProdosOrder(diskImageManager);
+
     /*
-     * First step: start physical disk orders and look for viable filesystems.
+     * First step: test physical disk orders for viable file systems.
      */
     int rc = -1;
-    imageOrder = new ProdosOrder(diskImageManager);
     if (!forceProDosOrder)
     {
-      rc = testImageOrder();
-      if (rc != 0)
+      if (diskSize == APPLE_140KB_DISK)
       {
-        Log.println(false, "Disk contructor didn't find formatted data in ProDOS order; trying DOS order.");
-        imageOrder = new DosOrder(diskImageManager);
-        rc = testImageOrder();
-        if (rc != 0)
+        // First, test the really-really likely orders/formats for 5-1/4" disks.
+        imageOrder = dosOrder;
+        if (isProdosFormat() || isDosFormat()) rc = 0;
+        else
+        {
+          imageOrder = proDosOrder;
+          if (isProdosFormat() || isDosFormat()) rc = 0;
+        }
+        if (rc == -1)
         {
           /*
-           * Couldn't find anything recognizable. Second step: start testing
+           * Ok, it's not one of those.  Now, let's go back to DOS order,
+           * and see if we recognize other things.  
+           * If not, we'll fall through to other processing later.
+           */
+          imageOrder = dosOrder;
+          rc = testImageOrder();
+        }
+      }
+      if (rc == -1)
+      {
+        imageOrder = proDosOrder;
+        rc = testImageOrder();
+        if (rc == -1)
+        {
+          Log.println(false, "Disk constructor didn't find formatted data in "
+              + imageOrder + " order.");
+          /*
+           * Couldn't find anything recognizable. Next step: start testing
            * filenames.
            */
           if (isProdosOrder() || is2ImgOrder())
           {
-            imageOrder = new ProdosOrder(diskImageManager);
-            Log.println(false, "Disk constructor found a ProdosOrder image (by name).");
+            imageOrder = proDosOrder;
+            Log.println(false, "Disk constructor found a " + imageOrder
+                + " image (by name).");
           }
           else
             if (isDosOrder())
             {
-              imageOrder = new DosOrder(diskImageManager);
-              Log.println(false, "Disk constructor found a DosOrder image (by name).");
+              imageOrder = dosOrder;
+              Log.println(false, "Disk constructor found a " + imageOrder
+                  + " image (by name).");
             }
             else
               if (isNibbleOrder())
               {
                 imageOrder = new NibbleOrder(diskImageManager);
-                Log.println(false, "Disk constructor found a NibbleOrder image (by name).");
+                Log.println(false,
+                    "Disk constructor found a NibbleOrder image (by name).");
               }
               else
               {
-                imageOrder = new ProdosOrder(diskImageManager);
-                Log.println(false, "Disk constructor couldn't find much of anything; defaulting to ProdosOrder image.");
+                imageOrder = proDosOrder;
+                Log.println(false,
+                        "Disk constructor couldn't find much of anything; defaulting to ProdosOrder image.");
               }
         }
         else
-          Log.println(false, "Disk constructor found a DosOrder image.");
+          Log.println(false, "Disk constructor found a " + imageOrder
+              + " image.");
       }
       else
-        Log.println(false, "Disk constructor found a ProdosOrder image.");
+        Log.println(false, "Disk constructor found a " + imageOrder
+                + " image.");
+    }
+    else
+    {
+      imageOrder = proDosOrder;
+      Log.println(false, "Disk constructor forcing a ProDOS image order.");
     }
   }
 
   /**
-   * Test the image order to see if we can recognize a filesystem. Returns: 0 on
-   * recognition; -1 on failure.
+   * Test the image order to see if we can recognize a file system. Returns: 0
+   * on recognition; -1 on failure.
    */
   public int testImageOrder()
   {
-    int rc = -1;
-    if ((isProdosFormat()) || (isDosFormat()) || (isCpmFormat()) || (isUniDosFormat()) || (isPascalFormat())
-        || (isOzDosFormat())) rc = 0;
+    int rc = (true == isProdosFormat() ? 1 : 0)
+        + (true == isDosFormat() ? 2 : 0) + (true == isCpmFormat() ? 4 : 0)
+        + (true == isUniDosFormat() ? 8 : 0)
+        + (true == isPascalFormat() ? 16 : 0)
+        + (true == isOzDosFormat() ? 32 : 0);
+    if (rc == 0) rc = -1;
     return rc;
   }
 
@@ -211,7 +254,8 @@ public class Disk
   public void save() throws IOException
   {
     File file = new File(getFilename());
-    Log.println(false, "Disk.save() saving filename " + filename + " as order " + getImageOrder());
+    Log.println(false, "Disk.save() saving filename " + filename + " as order "
+        + getImageOrder());
     if (!file.exists())
     {
       file.createNewFile();
@@ -321,7 +365,8 @@ public class Disk
    */
   public int getPhysicalSize()
   {
-    if (getDiskImageManager() != null) { return getDiskImageManager().getPhysicalSize(); }
+    if (getDiskImageManager() != null) { return getDiskImageManager()
+        .getPhysicalSize(); }
     return getImageOrder().getPhysicalSize();
   }
 
@@ -344,7 +389,8 @@ public class Disk
   /**
    * Retrieve the specified sector.
    */
-  public byte[] readSector(int track, int sector) throws IllegalArgumentException
+  public byte[] readSector(int track, int sector)
+      throws IllegalArgumentException
   {
     return imageOrder.readSector(track, sector);
   }
@@ -352,7 +398,8 @@ public class Disk
   /**
    * Write the specified sector.
    */
-  public void writeSector(int track, int sector, byte[] bytes) throws IllegalArgumentException
+  public void writeSector(int track, int sector, byte[] bytes)
+      throws IllegalArgumentException
   {
     imageOrder.writeSector(track, sector, bytes);
   }
@@ -365,9 +412,11 @@ public class Disk
     Log.println(false, "Disk.isProdosFormat() testing for ProDOS format.");
     byte[] prodosVolumeDirectory = readBlock(2);
     int volDirEntryLength = UnsignedByte.intValue(prodosVolumeDirectory[23]);
-    int volDirEntriesPerBlock = UnsignedByte.intValue(prodosVolumeDirectory[24]);
+    int volDirEntriesPerBlock = UnsignedByte
+        .intValue(prodosVolumeDirectory[24]);
     boolean retval = ((prodosVolumeDirectory[0] == 0 && prodosVolumeDirectory[1] == 0)
-        && ((prodosVolumeDirectory[4] & 0xf0) == 0xf0) && ((prodosVolumeDirectory[4] & 0x0f) != 0) && ((volDirEntryLength
+        && ((prodosVolumeDirectory[4] & 0xf0) == 0xf0)
+        && ((prodosVolumeDirectory[4] & 0x0f) != 0) && ((volDirEntryLength
         * volDirEntriesPerBlock <= 512)));
 
     Log.println(false, "Disk.isProdosFormat() returning " + retval + ".");
@@ -390,7 +439,8 @@ public class Disk
     int catSect = UnsignedByte.intValue(vtoc[0x02]);
     int numTracks = UnsignedByte.intValue(vtoc[0x34]);
     int numSectors = UnsignedByte.intValue(vtoc[0x35]);
-    if ((imageOrder.isSizeApprox(APPLE_140KB_DISK) || imageOrder.isSizeApprox(APPLE_140KB_NIBBLE_DISK))
+    if ((imageOrder.isSizeApprox(APPLE_140KB_DISK) || imageOrder
+        .isSizeApprox(APPLE_140KB_NIBBLE_DISK))
         && vtoc[0x01] == 17 // expect catalog to start on track 17
         // can vary && vtoc[0x02] == 15 // expect catalog to start on sector 15
         // (140KB disk only!)
@@ -414,7 +464,9 @@ public class Disk
         else
           if (catTrack == tmpTrack && catSect == tmpSect)
           {
-            Log.println(false, "Disk.isDosFormat() detected a self-reference on catalog (" + tmpTrack + "," + tmpSect);
+            Log.println(false,
+                "Disk.isDosFormat() detected a self-reference on catalog ("
+                    + tmpTrack + "," + tmpSect);
             break;
           }
         catTrack = UnsignedByte.intValue(sctBuf[1]);
@@ -511,8 +563,9 @@ public class Disk
     Log.println(false, "Disk.isPascalFormat() testing for Pascal format.");
     if (!is140KbDisk()) return false;
     byte[] directory = readBlock(2);
-    boolean retval = directory[0] == 0 && directory[1] == 0 && directory[2] == 6 && directory[3] == 0
-        && directory[4] == 0 && directory[5] == 0;
+    boolean retval = directory[0] == 0 && directory[1] == 0
+        && directory[2] == 6 && directory[3] == 0 && directory[4] == 0
+        && directory[5] == 0;
     Log.println(false, "Disk.isPascalFormat() returning " + retval + ".");
     return retval;
   }
@@ -568,7 +621,8 @@ public class Disk
    */
   protected boolean is140KbDisk()
   {
-    return getPhysicalSize() >= APPLE_140KB_DISK && getPhysicalSize() <= APPLE_140KB_NIBBLE_DISK;
+    return getPhysicalSize() >= APPLE_140KB_DISK
+        && getPhysicalSize() <= APPLE_140KB_NIBBLE_DISK;
   }
 
   /**
@@ -577,7 +631,8 @@ public class Disk
    */
   protected boolean is800KbDisk()
   {
-    return getPhysicalSize() >= APPLE_800KB_DISK && getPhysicalSize() <= APPLE_800KB_2IMG_DISK;
+    return getPhysicalSize() >= APPLE_800KB_DISK
+        && getPhysicalSize() <= APPLE_800KB_2IMG_DISK;
   }
 
   /**
@@ -614,7 +669,8 @@ public class Disk
     this.imageOrder = imageOrder;
   }
 
-  protected static boolean sameSectorsPerDisk(ImageOrder sourceOrder, ImageOrder targetOrder)
+  protected static boolean sameSectorsPerDisk(ImageOrder sourceOrder,
+      ImageOrder targetOrder)
   {
     return sourceOrder.getSectorsPerDisk() == targetOrder.getSectorsPerDisk();
   }
@@ -627,7 +683,8 @@ public class Disk
    */
   public void makeDosOrder()
   {
-    DosOrder doso = new DosOrder(new ByteArrayImageLayout(Disk.APPLE_140KB_DISK));
+    DosOrder doso = new DosOrder(
+        new ByteArrayImageLayout(Disk.APPLE_140KB_DISK));
     changeImageOrderByTrackAndSector(getImageOrder(), doso);
     setImageOrder(doso);
   }
@@ -640,7 +697,8 @@ public class Disk
    */
   public void makeProdosOrder()
   {
-    ProdosOrder pdo = new ProdosOrder(new ByteArrayImageLayout(Disk.APPLE_140KB_DISK));
+    ProdosOrder pdo = new ProdosOrder(new ByteArrayImageLayout(
+        Disk.APPLE_140KB_DISK));
     changeImageOrderByBlock(getImageOrder(), pdo);
     setImageOrder(pdo);
   }
@@ -649,11 +707,14 @@ public class Disk
    * Change ImageOrder from source order to target order by copying sector by
    * sector.
    */
-  public static void changeImageOrderByTrackAndSector(ImageOrder sourceOrder, ImageOrder targetOrder)
+  public static void changeImageOrderByTrackAndSector(ImageOrder sourceOrder,
+      ImageOrder targetOrder)
   {
     if (!sameSectorsPerDisk(sourceOrder, targetOrder))
     {
-      Log.println(false, "Disk.changeImageOrderByTrackAndSector() expected equal sized images.");
+      Log
+          .println(false,
+              "Disk.changeImageOrderByTrackAndSector() expected equal sized images.");
     }
     for (int track = 0; track < sourceOrder.getTracksPerDisk(); track++)
     {
@@ -669,11 +730,13 @@ public class Disk
    * Change ImageOrder from source order to target order by copying block by
    * block.
    */
-  public static void changeImageOrderByBlock(ImageOrder sourceOrder, ImageOrder targetOrder)
+  public static void changeImageOrderByBlock(ImageOrder sourceOrder,
+      ImageOrder targetOrder)
   {
     if (!sameBlocksPerDisk(sourceOrder, targetOrder))
     {
-      Log.println(false, "Disk.changeImageOrderByBlock() expected equal sized images.");
+      Log.println(false,
+          "Disk.changeImageOrderByBlock() expected equal sized images.");
     }
     for (int block = 0; block < sourceOrder.getBlocksOnDevice(); block++)
     {
@@ -685,7 +748,8 @@ public class Disk
   /**
    * Answers true if the two disks have the same number of blocks per disk.
    */
-  protected static boolean sameBlocksPerDisk(ImageOrder sourceOrder, ImageOrder targetOrder)
+  protected static boolean sameBlocksPerDisk(ImageOrder sourceOrder,
+      ImageOrder targetOrder)
   {
     return sourceOrder.getBlocksOnDevice() == targetOrder.getBlocksOnDevice();
   }

@@ -27,7 +27,10 @@ ADTPro Release History
 
  []
 
- Bug fix:
+ Bug fixes:
+
+ * [Server] The routine to determine physical sector ordering was made
+   more accurate, especially for 5-1/4" disks.
 
  * [Server] Bulk transfers of Disk II images wrote DOS-order images,
    but named them "*.PO," making it easy to mistake them for 
