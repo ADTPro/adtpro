@@ -196,6 +196,23 @@ more bootstrapping scenarios and configurations are detailed below.
       distribution diskette at the Apple.  On the ADTPro server, click on 
       "Bootstrapping->ProDOS->Send ADTPro Serial Client".
 
+    [[1]] A dialog box will come up instructing you to type a set of commands
+      on the Apple.  They will be similar to the following:
+
+    * <<<IN#2>>> (The number will depend on which slot
+      you have your Super Serial Card plugged into.  An IIgs' modem port is always in
+      "virtual" slot #2, and an IIc's serial port is always "virtual" slot #2 as well.)
+
+    * <<< <ctrl-A>14B>>> (The number will depend on the speed you have chosen from the bootstrapping 
+      tab on the serial configuration dialog box.  
+      When you hit <<< <ctrl-A> >>>, the Apple Super Serial card will respond with "<<<APPLE SSC:>>>" and the
+      IIgs and IIc will respond with a blinking "<<<?>>>".  At that prompt, 
+      enter the number in your dialog box and the <<<B>>>
+      key with no spaces.  The Super Serial card will require you to hit the <<<Return>>> key, but the IIgs 
+      and IIc will not.) 
+
+    []
+
     [[1]] Follow the instructions in the dialog box as usual.  Once the transfer
       is complete, it will automatically start the ADTPro client program.
       Once the ADTPro client program is running, take a look at the 
@@ -283,7 +300,7 @@ more bootstrapping scenarios and configurations are detailed below.
       the floppy disk in your drive.  You may wish to format (<<<INIT>>>)
       more than one now.
 
-    [[1]] Reboot your newly formatted floppy with the <<<PR#6>>> command
+    [[1]] <<Reboot>> your newly formatted floppy with the <<<PR#6>>> command
       (where <<<6>>> is the number of the slot your Disk ][ card is in).      
 
     [[1]] Now that DOS is running, it will be necessary to slow down the transfer

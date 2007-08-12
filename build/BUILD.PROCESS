@@ -27,7 +27,6 @@ the stuff that gets uploaded to sourceforge.
 3. Perform a build
 
 4. Tests:
-   * Ensure the client can BSAVE itself - and is the right size afterwards
    * Ensure all files have a current date on the virtual disks
    * Ensure each bootstrap text content works
 
