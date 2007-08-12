@@ -35,19 +35,22 @@ the stuff that gets uploaded to sourceforge.
 6. Tag adtpro project with the version number.
    The standard is:  v_[major]_[minor]_[service]
 
-7. Anonymously FTP ADTPro-v.r.m.zip to upload.sourceforge.net,
-   in the incoming directory.
+7. Ungzip/untar the distro on a Mac; delete the non-Mac stuff,
+   build a ADTPro-v.r.m.dmg of the ADTPro-v.r.m directory  
 
-8. Release the file
+8. Anonymously FTP ADTPro-v.r.m.zip, .dmg and .tar.gz to 
+   upload.sourceforge.net, in the incoming directory.
 
-9. Upload updated web contents:
-   psftp sf_user@adtpro.sourceforge.net
-   cd /home/groups/a/ad/adtpro
-   put adtpro.zip (or whatever you call the package)
-   (quit)
-   putty sf_user@adtpro.sourceforge.net
-   cd /home/groups/a/ad/adtpro/htdocs
-   unzip ../adtpro.zip (or whatever you call the package)
+9. Release the file
+
+10. Upload updated web contents:
+    psftp sf_user@adtpro.sourceforge.net
+    cd /home/groups/a/ad/adtpro
+    put adtpro.zip (or whatever you call the package)
+    (quit)
+    putty sf_user@adtpro.sourceforge.net
+    cd /home/groups/a/ad/adtpro/htdocs
+    unzip ../adtpro.zip (or whatever you call the package)
 
 Need to do a batch renumber of dump files?
 /* */
