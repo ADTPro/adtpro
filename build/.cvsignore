@@ -19,3 +19,4 @@ adtpro.command
 go.bat
 FORMAT
 ADTPro-?.?.?
+buildSmall.xml
