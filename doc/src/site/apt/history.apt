@@ -11,8 +11,8 @@ ADTPro Release History
  New functionality:
 
  * [Client] Borrowed very fast Disk II reading routines from FASTDSK
-   (See: {{http://boutillon.free.fr}}); reduces Disk II transfer time 
-   from Apple II to Host by 25%-33%.
+   (See: {{http://boutillon.free.fr/Underground/Docs/Fastdsk/Fastdsk_en.html}});
+   reduces Disk II transfer time from Apple II to Host by 25%-33%.
 
  * [Client] Refactored client programs as ProDOS 8 system (SYS) 
    applications.  This means that saving a configuration no longer BSAVEs
