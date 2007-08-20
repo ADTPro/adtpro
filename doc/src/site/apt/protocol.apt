@@ -10,7 +10,7 @@ ADTPro Protocol
 
  ["C" - CD]   Change working directory
 
- ["Z" - Size]  Ask for file size (implies existence test)
+ ["Z" - Size]  Ask for file size (implies existence test; used as part of Put protocol)
 
  ["G" - Get]  Initiate download
 
@@ -86,6 +86,17 @@ ADTPro Protocol
 * Put (Send) disk  (from Apple ][ to host)
 
 ------------
+
+Apple sends:
+  One byte: "Z" ($DA)
+  Byte stream: file name (null terminated)
+
+Host sends:
+  Two bytes: file size in blocks (LSB, MSB)
+  One byte: return code:
+    $00 = File exists (and file size is valid)
+    $02 = File does not exist
+    $04 = File exists, not recognized as a valid disk image
 
 Apple sends:
   One byte: "P" ($D0)
