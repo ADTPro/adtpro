@@ -8,23 +8,23 @@ ADTPro Protocol
 
 * Functions
 
- ["C" - CD]   Change working directory
+ [{{{#Change Directory}"C" - CD}}]   Change working directory
 
- ["Z" - Size]  Ask for file size (implies existence test; used as part of Put protocol)
+ [{{{#Put}"Z" - Size}}]  Ask for file size (implies existence test; used as part of Put protocol)
 
- ["G" - Get]  Initiate download
+ [{{{#Get}"G" - Get}}]  Initiate download
 
- ["P" - Put]  Inititate upload (always overwrite)
+ [{{{#Put}"P" - Put}}]  Inititate upload (always overwrite)
 
- ["B" - Batch]  Inititate batch upload (unique suffix added to specified prefix)
+ [{{{#Batch}"B" - Batch}}]  Inititate batch upload (unique suffix added to specified prefix)
 
- ["D" - Dir]  DOS ADT compatible listing of the current directory
+ [{{{#DIR}"D" - DIR}}]  DOS ADT compatible listing of the current directory
 
- ["R" - Receive] DOS ADT compatible download 140k disk
+ [{{{#Receive}"R" - Receive}}] DOS ADT compatible download 140k disk
 
- ["S" - Send] DOS ADT compatible upload 140k disk
+ [{{{#Send}"S" - Send}}] DOS ADT compatible upload 140k disk
 
-* Change Directory
+* {Change Directory}
 
 -------------
 
@@ -38,7 +38,7 @@ ADTPro Protocol
 
 -------------
 
-* Get (Receive) disk (Host -> Apple ][)
+* {Get} (Receive) disk (Host -> Apple ][)
 
 ------------
 
@@ -83,7 +83,7 @@ ADTPro Protocol
 
 -------------
 
-* Put (Send) disk  (from Apple ][ to host)
+* {Put} (Send) disk  (from Apple ][ to host)
 
 ------------
 
@@ -138,7 +138,7 @@ Apple sends: One byte: number of errors encountered
 
 ADT Compatibility
 
-* Receive 140k disk (from host to Apple ][)
+* {Receive} 140k disk (from host to Apple ][)
 
 ------------
 
@@ -170,7 +170,7 @@ Apple sends:
 
 ------------
 
-* Send 140k disk (from Apple ][ to host)
+* {Send} 140k disk (from Apple ][ to host)
 
 ------------
 
@@ -205,7 +205,7 @@ Apple sends:
 
 ------------
 
-* DIR
+* {DIR}
 
 ------------
 
