@@ -330,7 +330,7 @@ SHOWHMSG:
 	beq HGARBAGE
 	tya
 	clc
-	cmp PHMMAX
+	cmp #PHMMAX
 	bcs HGARBAGE	; If it's greater than max, it's garbage
 	jmp HMOK
 HGARBAGE:
