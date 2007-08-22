@@ -257,37 +257,17 @@ HLINE1:	jsr COUT1
 
 
 ;---------------------------------------------------------
-; PRTMSGAREA - SHOW NULL-TERMINATED MESSAGE in the message
-; area, starting on line given in X, cleared from there
-; to below.
-;---------------------------------------------------------
-PRTMSGAREA:
-	pha
-	tya
-	pha
-	lda #$00
-	sta CH
-	txa
-	jsr TABV
-	jsr CLREOP
-	pla
-	tay
-	pla
-PRTMSG2:
-	jsr STROUT
-PMSGEND:	rts
-
-;---------------------------------------------------------
 ; SHOWMSG - SHOW NULL-TERMINATED MESSAGE #Y AT current
 ; cursor location.
 ; Call SHOWM1 to clear/print at message area.
 ;---------------------------------------------------------
 SHOWM1:
 	sty SLOWY
-	lda #$00
-	sta CH
 	lda #$16
 	jsr TABV
+SHOWM2:
+	lda #$00	; TODO: may need to swap back before setting TABV
+	sta CH
 	jsr CLREOP
 	ldy SLOWY
 
@@ -307,6 +287,36 @@ MSGLOOP:
 MSGEND:
 	rts
 
+;---------------------------------------------------------
+; WRITEMSG - Print null-terminated message number in Y
+;---------------------------------------------------------
+WRITEMSGAREA:
+	sty SLOWY
+	lda #$16
+	jsr TABV
+	ldy SLOWY
+WRITEMSGLEFT:
+	sty SLOWY
+	lda #$00
+	sta CH
+	jsr CLREOP
+	ldy SLOWY
+WRITEMSG:
+	lda MSGTBL,Y
+	sta UTILPTR
+	lda MSGTBL+1,Y
+	sta UTILPTR+1
+WRITEMSGRAW:
+	ldy #$00
+:
+	lda (UTILPTR),Y
+	beq WRITEMSGEND
+	jsr COUT1
+	iny
+	bne :-
+WRITEMSGEND:
+	rts
+	
 
 ;---------------------------------------------------------
 ; SHOWHMSG - Show null-terminated host message #Y at current
@@ -505,6 +515,8 @@ MSGTBL:
 	.addr MNODISK,MSG34,MSG35
 	.addr MLOGO1,MLOGO2,MLOGO3,MLOGO4,MLOGO5,MWAIT,MCDIR,MFORC,MFEX
 	.addr MUTHBAD, MPREFIX, MINSERTDISK, MFORMAT, MANALYSIS, MNOCREATE
+	.addr MVolName, MBlank, MTheOld, MUnRecog, MDead
+	.addr MProtect, MNoDisk, MNuther, MUnitNone
 	.addr MNULL
 
 MSG01:	ascz "v.r.m"
@@ -570,6 +582,21 @@ MINSERTDISK:	ascz "INSERT THE NEXT DISK TO SEND."
 MFORMAT:	ascz " CHOOSE VOLUME TO FORMAT"
 MANALYSIS:	ascz "HOST UNABLE TO ANALYZE TRACK."
 MNOCREATE:	ascz "UNABLE TO CREATE CONFIG FILE."
+; Messages from formatter routine
+MVolName:
+	asc "VOLUME NAME: /"
+MBlank:	asc "BLANK"
+	ascz "__________"
+MTheOld:	ascz "READY TO FORMAT? (Y/N):"
+MUnRecog:
+	ascz "UNRECOGNIZED ERROR = "
+MDead:	ascz "CHECK DISK OR DRIVE DOOR!"
+MProtect:
+	ascz "DISK IS WRITE PROTECTED!"
+MNoDisk:	ascz "NO DISK IN THE DRIVE!"
+MNuther:	ascz "FORMAT ANOTHER? (Y/N):"
+MUnitNone:
+	ascz "NO UNIT IN THAT SLOT AND DRIVE"
 MNULL:	.byte $00
 
 ;---------------------------------------------------------
@@ -625,4 +652,13 @@ PMINSERTDISK	= $5a
 PMFORMAT	= $5c
 PMANALYSIS	= $5e
 PMNOCREATE	= $60
-PMNULL	= $62
+PMVolName	= $62
+PMBlank		= $64
+PMTheOld		= $66
+PMUnRecog	= $68
+PMDead		= $6a
+PMProtect	= $6c
+PMNoDisk		= $6e
+PMNuther		= $70
+PMUnitNone	= $72
+PMNULL	= $74

@@ -48,7 +48,6 @@ Buffer   =  $07 		; Address pointer for FORMAT data
 IN       =  $200		; Keyboard input buffer
 WARMDOS  =  $BE00		; BASIC Warm-start vector
 LAST     =  $BF30		; Last device accessed by ProDOS
-STROUT   =  $DB3A		; Applesoft's string printer
 WAIT     =  $FCA8		; Delay routine
 CLRLN    =  $FC9C		; Clear Line routine
 PRBYTE   =  $FDDA		; Print Byte routine (HEX value)
@@ -76,10 +75,8 @@ FormatEntry:
 	ldy #PMFORMAT	; Format title line
 	jsr PICKVOL	; A now has index into DEVICES table; UNITNBR holds chosen unit
 	bmi FormatDone
-	lda #<MNULL
-	ldy #>MNULL
-	ldx #$14
-	jsr PRTMSGAREA
+	ldy #PMNULL
+	jsr SHOWMSG
 	lda UNITNBR
 	sta Slot
 	tax
@@ -145,6 +142,10 @@ Loop8:
 	beq Loop9
 	jmp NoUnit
 Loop9:
+	lda #$13
+	jsr TABV
+	ldy #PMNULL
+	jsr WRITEMSGLEFT
 	jsr OldName
 	jsr Ram3Form
 Jump2:
@@ -201,10 +202,8 @@ YesSmart2:
 Jump3:	jmp Again
 
 NoUnit:
-	lda #<UnitNone		; Prompt to continue or not Because
-	ldy #>UnitNone		; There is no unit number like that
-	ldx #$16
-	jsr PRTMSGAREA
+	ldy #PMUnitNone	; Prompt to continue or not Because
+	jsr WRITEMSGAREA	; There is no unit number like that
 	jmp Again
 
 DiskII:
@@ -224,10 +223,10 @@ DiskII:
 ;*                             *
 ;*******************************
 LName:
-	lda #<VolName
-	ldy #>VolName
-	ldx #$14
-	jsr PRTMSGAREA
+	lda #$14
+	jsr TABV
+	ldy #PMVolName
+	jsr WRITEMSGLEFT
 LRdname:
 	lda #$0E		; Reset CH to 14
 	sta CH
@@ -271,7 +270,7 @@ LFormat:
 	txa			; See if default VOLUME_NAME was taken
 	bne LSetLEN
 WLoop:
-	lda Blank,x		; Transfer 'BLANK' to VOLnam
+	lda MBlank,x		; Transfer 'BLANK' to VOLnam
 	and #$7F		; Clear MSB
 	sta VOLnam,x
 	inx
@@ -499,10 +498,10 @@ CLoop:
 	sta MLIBlk
 	jsr Call2MLI
 Again:
-	lda #<Nuther		; Display 'Format another' string
-	ldy #>Nuther
-	ldx #$17
-	jsr PRTMSGAREA
+	lda #$17
+	jsr TABV
+	ldy #PMNuther
+	jsr WRITEMSGLEFT
 	jsr YNLOOP		; Get a Yes or No answer
 	beq MExit		; Answer was No...
 	jmp FormatEntry		; Format another disk
@@ -617,29 +616,23 @@ Died:
 	beq Protected
 	jmp NoDied
 DiskError:
-	lda #<NoDisk
-	ldy #>NoDisk
+	ldy #PMNoDisk
 	jmp DiedOut
 DriveOpen:
-	lda #<Dead
-	ldy #>Dead
+	ldy #PMDead
 	jmp DiedOut
 Protected:
-	lda #<Protect
-	ldy #>Protect
+	ldy #PMProtect
 	jmp DiedOut
 NoDied:
 	pha			; Save MLI error code on the stack
-	lda #<UnRecog
-	ldy #>UnRecog
-	ldx #$16
-	jsr PRTMSGAREA
+	ldy #PMUnRecog
+	jsr WRITEMSGAREA
 	pla			; Retrieve error code from the stack
 	jsr PRBYTE		; Print the MLI error code
 	jmp Again
 DiedOut:
-	ldx #$16
-	jsr PRTMSGAREA
+	jsr WRITEMSGAREA
 	jmp Again		; Prompt for another FORMAT...
 
 ;************************************
@@ -940,10 +933,10 @@ ShouldLLFormat:
 ;*                                *
 ;**********************************
 OldName:
-	lda #<TheOld
-	ldy #>TheOld
-	;ldx #$14
-	jsr STROUT
+	lda #$15
+	jsr TABV
+	ldy #PMTheOld
+	jsr WRITEMSGLEFT
 	jsr YNLOOP
 	bne OldDone
 	pla
@@ -1022,21 +1015,6 @@ LTable:
 	.byte $02,$04,$06,$00	; Phases for moving head inward
 	.byte $06,$04,$02,$00	;    |    |    |      |  outward
 
-VolName:
-	asc "VOLUME NAME: /"
-Blank:	asc "BLANK"
-	ascz "__________"
-TheOld:	.byte $8D
-	ascz "READY TO FORMAT? (Y/N):"
-UnRecog:
-	ascz "UNRECOGNIZED ERROR = "
-Dead:	ascz "CHECK DISK OR DRIVE DOOR!"
-Protect:
-	ascz "DISK IS WRITE PROTECTED!"
-NoDisk:	ascz "NO DISK IN THE DRIVE!"
-Nuther:	ascz "FORMAT ANOTHER? (Y/N):"
-UnitNone:
-	ascz "NO UNIT IN THAT SLOT AND DRIVE"
 Block2:	.byte $00,$00,$03,$00
 VolLen:	.res 1			; $F0 + length of Volume Name
 VOLnam:	.res 15			; Volume Name
