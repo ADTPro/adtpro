@@ -76,7 +76,7 @@ FormatEntry:
 	jsr PICKVOL	; A now has index into DEVICES table; UNITNBR holds chosen unit
 	bmi FormatDone
 	ldy #PMNULL
-	jsr SHOWMSG
+	jsr WRITEMSG
 	lda UNITNBR
 	sta Slot
 	tax

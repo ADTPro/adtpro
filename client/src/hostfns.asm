@@ -30,7 +30,7 @@
 ;---------------------------------------------------------
 DIR:
 	ldy #PMWAIT
-	jsr SHOWM1
+	jsr WRITEMSGAREA
 
 	jsr DIRREQUEST
 	jsr DIRREPLY
@@ -58,7 +58,7 @@ DIRPAGE:
 	bne DIRCONT
 
 	ldy #PMSG30	; No more files, wait for a key
-	jsr SHOWM1 	; ... and return
+	jsr WRITEMSGAREA 	; ... and return
 	jsr RDKEY;
 	rts
 
@@ -71,7 +71,7 @@ DIRTIMEOUT:
 
 DIRCONT:
 	ldy #PMSG29	; "space to continue, esc to stop"
-	jsr SHOWM1
+	jsr WRITEMSGAREA
 	jsr RDKEY
 	eor #CHR_ESC	; NOT ESCAPE, CONTINUE NORMALLY
 	bne DIR		; BY SENDING A "D" TO PC
@@ -89,13 +89,13 @@ CD:
 
 CDSTART:
 	ldy #PMWAIT
-	jsr SHOWM1	; Tell user to have patience
+	jsr WRITEMSGAREA	; Tell user to have patience
 	jsr CDREQUEST
 	jsr CDREPLY
 	
 	bne CDERROR
 	ldy #PMSG14
-	jsr SHOWM1
+	jsr WRITEMSGAREA
 	jsr PAUSE
 
 CDDONE:

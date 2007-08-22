@@ -1,6 +1,6 @@
 ;
 ; ADTPro - Apple Disk Transfer ProDOS
-; Copyright (C) 2006 by David Schmidt
+; Copyright (C) 2006, 2007 by David Schmidt
 ; david__schmidt at users.sourceforge.net
 ;
 ; This program is free software; you can redistribute it and/or modify it 
@@ -27,11 +27,9 @@ GETFN:
 GETFN1:
 	ldy #PMCDIR
 GETFN2:
-   	lda #$00
-	sta CH
 	lda #$15
 	jsr TABV
-	jsr SHOWMSG
+	jsr WRITEMSGLEFT
 	ldx #0		; Get answer from $200
 	jsr NXTCHAR
 	lda #0		; Null terminate it
@@ -43,13 +41,11 @@ GETFN2:
 ; PAUSE - print 'PRESS A KEY TO CONTINUE...' and wait
 ;---------------------------------------------------------
 PAUSE:
-	lda #$00
-	sta CH
 	lda #$17
 	jsr TABV
 	jsr CLREOP
 	ldy #PMSG16
-	jsr SHOWMSG
+	jsr WRITEMSGLEFT
 	jsr RDKEY
 	cmp #$9B
 	beq PAUSEESC
@@ -65,7 +61,7 @@ PAUSEESC:
 ; A 'N' response leaves a 0 in the accumulator
 ;---------------------------------------------------------
 YN:
-	jsr SHOWM1
+	jsr WRITEMSGAREA
 YNLOOP:
 	jsr RDKEY
 	and #$DF	; Convert to upper case

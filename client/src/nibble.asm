@@ -71,7 +71,7 @@ snibfin:
 ;---------------------------------------------------------
 initsnib:
 	ldy	#PMSG13
-	jsr	SHOWMSG		; Ask filename
+	jsr	WRITEMSG		; Ask filename
 	ldx	#0		; Get answer at $200
 	jsr	NXTCHAR		; Input the line (Apple ROM)
 	lda	#0		; Null-terminate it
@@ -82,7 +82,7 @@ initsnib:
 
 nibnamok:
 	ldy	#PMWAIT		; "awaiting answer from host"
-	jsr	SHOWMSG
+	jsr	WRITEMSG
 	lda	#CHR_N		; Load acc with command code
 	jsr	PUTC		;  and send to pc
 	ldx	#0
@@ -189,7 +189,7 @@ snibtr3:
 	jsr	SHOWHMSG	; Tell bad news
 	jsr	motoroff	; Transfer ended in error
 	ldy	#PMSG16		; Append prompt
-	jsr	SHOWM1
+	jsr	WRITEMSGAREA
 	jsr	AWBEEP
 	jsr	RDKEY		; Wait for key
 	jmp	ABORT		;  and abort
@@ -439,7 +439,7 @@ shlffin:
 ;---------------------------------------------------------
 initshlf:
 	ldy	#PMSG13
-	jsr	SHOWMSG		; Ask for filename
+	jsr	WRITEMSG	; Ask for filename
 	ldx	#0		; Get answer at $200
 	jsr	NXTCHAR		; Input the line (Apple ROM)
 	lda	#0		; Null-terminate it
@@ -450,7 +450,7 @@ initshlf:
 
 hlfnamok:
 	ldy	#PMWAIT		; "awaiting answer from host"
-	jsr	SHOWMSG
+	jsr	WRITEMSG
 	lda	#CHR_V		; Load acc with command code
 	jsr	PUTC		;  ...and send to host
 	ldx	#0

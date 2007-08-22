@@ -259,17 +259,15 @@ RESETIO:
 
 	jsr SHOWLOGO
 
-   	lda #$02
+	lda #$02
 	sta <CH
 	lda #$0e
 	jsr TABV
 	ldy #PMSG02	; Prompt line 1
-	jsr SHOWMSG
+	jsr WRITEMSG
 
-    	lda #$00
-	sta <CH
 	ldy #PMSG03	; Prompt line 2
-	jsr SHOWMSG
+	jsr WRITEMSGLEFT
 
 
 ;---------------------------------------------------------
@@ -342,12 +340,10 @@ KABOUT:	cmp #$9F	; ABOUT MESSAGE? ("?" KEY)
         ldx #$1C
 	ldy #$10
 	jsr INVERSE
-    	lda #$00
-	sta <CH
 	lda #$15
 	jsr TABV
 	ldy #PMSG17	; "About" message
-	jsr SHOWMSG
+	jsr WRITEMSGLEFT
 	jsr RDKEY
 	jmp MAINLUP	; Clear and start over
 :

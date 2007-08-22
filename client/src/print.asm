@@ -42,7 +42,7 @@ SHOWLOGO:
 LogoLoop:
 	stx CH		; Tab over to starting position
 	tay
-	jsr SHOWMSG
+	jsr WRITEMSG
 	inc ZP
 	inc ZP		; Get next logo message
 	lda ZP
@@ -53,7 +53,7 @@ LogoLoop:
     	lda #$12
 	sta CH
 	ldy #PMSG01	; Version number
-	jsr SHOWMSG
+	jsr WRITEMSG
 	rts
 
 ;---------------------------------------------------------
@@ -166,42 +166,42 @@ DRAWBDR:
 	sta CH
 	lda #$00
 	jsr TABV
-	jsr SHOWMSG	; Y holds the top line message number
+	jsr WRITEMSG	; Y holds the top line message number
 
 	lda #$07	; Column
 	sta CH
 	lda #$02	; Row
 	jsr TABV
 	ldy #PMSG19	; 'VOLUMES CURRENTLY ON-LINE:'
-	jsr SHOWMSG
+	jsr WRITEMSG
 
 	lda #H_SL	; "Slot" starting column
 	sta CH
 	lda #$03	; Row
 	jsr TABV
 	ldy #PMSG20	; 'SLOT  DRIVE  VOLUME NAME      BLOCKS'
-	jsr SHOWMSG
+	jsr WRITEMSG
 
 	lda #H_SL	; "Slot" starting column
 	sta CH
 	lda #$04	; Row
 	jsr TABV
 	ldy #PMSG21	; '----  -----  ---------------  ------'
-	jsr SHOWMSG
+	jsr WRITEMSG
 VOLINSTRUCT:
 	lda #$00	; Column
 	sta CH
 	lda #$14	; Row
 	jsr TABV
 	ldy #PMSG22	; 'CHANGE VOLUME/SLOT/DRIVE WITH ARROW KEYS'
-	jsr SHOWMSG
+	jsr WRITEMSG
 
 	lda #$04	; Column
 	sta CH
 	lda #$15	; Row
 	jsr TABV
 	ldy #PMSG23	; 'SELECT WITH RETURN, ESC CANCELS'
-	jsr SHOWMSG
+	jsr WRITEMSG
 
 	lda #$05	; starting row for slot/drive entries
 	jsr TABV
@@ -225,7 +225,7 @@ PREPPRG:
 	lda #V_MSG	; Row
 	jsr TABV
 	ldy #PMSG09
-	jsr SHOWMSG
+	jsr WRITEMSG
 	inc CH		; Space over one character
 
 	lda NUMBLKS
@@ -255,68 +255,41 @@ HLINE1:	jsr COUT1
 	bne HLINE1
 	rts
 
-
-;---------------------------------------------------------
-; SHOWMSG - SHOW NULL-TERMINATED MESSAGE #Y AT current
-; cursor location.
-; Call SHOWM1 to clear/print at message area.
-;---------------------------------------------------------
-SHOWM1:
-	sty SLOWY
-	lda #$16
-	jsr TABV
-SHOWM2:
-	lda #$00	; TODO: may need to swap back before setting TABV
-	sta CH
-	jsr CLREOP
-	ldy SLOWY
-
-SHOWMSG:
-	lda MSGTBL,Y
-	sta UTILPTR
-	lda MSGTBL+1,Y
-	sta UTILPTR+1
-
-	ldy #$00
-MSGLOOP:
-	lda (UTILPTR),Y
-	beq MSGEND
-	jsr COUT1
-	iny
-	bne MSGLOOP
-MSGEND:
-	rts
-
 ;---------------------------------------------------------
 ; WRITEMSG - Print null-terminated message number in Y
 ;---------------------------------------------------------
+; Entry - clear and print at the message area (row $16)
 WRITEMSGAREA:
 	sty SLOWY
 	lda #$16
 	jsr TABV
 	ldy SLOWY
+; Entry - print message at left border, current row
 WRITEMSGLEFT:
 	sty SLOWY
 	lda #$00
 	sta CH
 	jsr CLREOP
 	ldy SLOWY
+; Entry - print message at current cursor pos
 WRITEMSG:
 	lda MSGTBL,Y
 	sta UTILPTR
 	lda MSGTBL+1,Y
 	sta UTILPTR+1
+; Entry - print message at current cursor pos
+;         set UTILPTR to point to null-term message
 WRITEMSGRAW:
 	ldy #$00
-:
+WRITEMSGLOOP:
 	lda (UTILPTR),Y
 	beq WRITEMSGEND
 	jsr COUT1
 	iny
-	bne :-
+	bne WRITEMSGLOOP
 WRITEMSGEND:
 	rts
-	
+
 
 ;---------------------------------------------------------
 ; SHOWHMSG - Show null-terminated host message #Y at current
@@ -352,7 +325,7 @@ HMOK:
 	sta UTILPTR+1
 
 	ldy #$00
-	jmp MSGLOOP	; Call the regular message printer
+	jmp WRITEMSGLOOP	; Call the regular message printer
 	
 ;---------------------------------------------------------
 ; ToDecimal
@@ -391,43 +364,43 @@ DigitYet:
 	.byte 0
 
 ;--------------------------------
-;   By Jan Eugenides and Bob S-C
+;   Decimal printer by Jan Eugenides and Bob S-C
 ;
 ;      Call with A, X, and Y as follows:
 ;          (A) = low-byte of number to be printed
 ;          (X) = high byte of number
 ;          (Y) = fill character (or 00 if no fill)
 ;--------------------------------
-PRD:	STX NUM+1    ;Store high byte of number
-	STY FILL     ;Store fill character
-	LDX #3       ;FOR X = 3 TO 0
-	STX FLAG     ;Clear bit 7 in leading-zero flag
-@1:	LDY #CHR_0     ;Start with digit = ASCII 0
-@2:	STA NUM      ;Compare number to power of ten
-	CMP TENTBL,X      ;10^(X+1) ... lo-byte
+PRD:	stx NUM+1	; Store high byte of number
+	STY FILL	; Store fill character
+	LDX #3		; FOR X = 3 TO 0
+	stx FLAG	; Clear bit 7 in leading-zero flag
+@1:	LDY #CHR_0	; Start with digit = ASCII 0
+@2:	STA NUM		; Compare number to power of ten
+	CMP TENTBL,X	; 10^(X+1) ... lo-byte
 	LDA NUM+1
-	SBC TENTBH,X      ;10^(X+1) ... hi-byte
-	BCC @3       ;Remainder is smaller than 10^(X+1)
-	STA NUM+1    ;Store remainder hi-byte
-	LDA NUM      ;Get remainder lo-byte
+	SBC TENTBH,X	; 10^(X+1) ... hi-byte
+	BCC @3		; Remainder is smaller than 10^(X+1)
+	STA NUM+1	; Store remainder hi-byte
+	LDA NUM		; Get remainder lo-byte
 	SBC TENTBL,X
-	INY          ;Increment ASCII digit
-	BNE @2      ; ...always
+	INY		; Increment ASCII digit
+	BNE @2		;  ...always
 ;---Print a digit----------------
-@3:	TYA          ;digit in ASCII
-	CMP #CHR_0     ;Is it a zero?
-	BEQ @4      ; ...yes, might be leading zero
-	STA FLAG     ;...no, so clear leading-zero flag
-@4:	BIT FLAG     ;If this is leading-zero, will be +
-	BMI @5      ; ...not a leading zero
-	LDA FILL     ;...leading zero, so use fill-char
-	BEQ @6      ; ...Oops, no fill-char
-@5:	JSR COUT     ;Print the digit or fill-char
-@6:	LDA NUM      ;Get lo-byte of remainder
-	DEX          ;Next X
-	BPL @1      ; Go get next digit
-	ORA #CHR_0     ;Change remainder to ASCII
-	JMP COUT     ;Print Unit's digit & RTS
+@3:	TYA		; Digit in ASCII
+	CMP #CHR_0	; Is it a zero?
+	BEQ @4		;  ...yes, might be leading zero
+	STA FLAG	;  ...no, so clear leading-zero flag
+@4:	BIT FLAG	; If this is leading-zero, will be +
+	BMI @5		;  ...not a leading zero
+	LDA FILL	;  ...leading zero, so use fill-char
+	BEQ @6		;  ...Oops, no fill-char
+@5:	JSR COUT	; Print the digit or fill-char
+@6:	LDA NUM		; Get lo-byte of remainder
+	DEX		; Next X
+	BPL @1		; Go get next digit
+	ORA #CHR_0	; Change remainder to ASCII
+	JMP COUT	; Print Unit's digit & RTS
 ;--------------------------------
 TENTBL:	.byte <10,<100,<1000,<10000
 TENTBH:	.byte >10,>100,>1000,>10000
@@ -654,11 +627,11 @@ PMANALYSIS	= $5e
 PMNOCREATE	= $60
 PMVolName	= $62
 PMBlank		= $64
-PMTheOld		= $66
+PMTheOld	= $66
 PMUnRecog	= $68
 PMDead		= $6a
 PMProtect	= $6c
-PMNoDisk		= $6e
-PMNuther		= $70
+PMNoDisk	= $6e
+PMNuther	= $70
 PMUnitNone	= $72
 PMNULL	= $74

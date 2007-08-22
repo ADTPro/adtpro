@@ -58,7 +58,7 @@ RW_COMN:
 	lda #V_MSG	; Message row
 	jsr TABV
 	ldy SR_WR_C
-	jsr SHOWMSG
+	jsr WRITEMSG
 
 	lda #$00	; Reposition cursor to beginning of
 	sta <CH		; buffer row
