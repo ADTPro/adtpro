@@ -7,3 +7,4 @@ s@href="http://hanazam.net/apple/ageofii.htm"@href="http://hanazam.net/apple/age
 s@href="http://a2retrosystems.com/"@href="http://a2retrosystems.com/" target\="_new"@ig;
 s@href="http://adt.berlios.de"@href="http://adt.berlios.de" target\="_new"@ig;
 s@href="http://www.connectworld.net/cgi-bin/iec/05MCAOSerial.html"@href="http://www.connectworld.net/cgi-bin/iec/05MCAOSerial.html" target\="_new"@ig;
+s@webringreplaced@<center><script type="text/javascript"src="http://ss.webring.com/navbar?f=j;y=schmidtd;u=adtpro"></script>Powered by <a href="http://dir.webring.com/rw" target=_top>WebRing</a>.</center>@ig;

@@ -13,6 +13,7 @@ perl -i.orig -p ..\..\removeMaven.re connectionsserial.html
 perl -i.orig -p ..\..\removeMaven.re credits.html
 perl -i.orig -p ..\..\removeMaven.re developing.html
 perl -i.orig -p ..\..\removeMaven.re history.html
+perl -i.orig -p ..\..\removeMaven.re historyold.html
 perl -i.orig -p ..\..\removeMaven.re index.html
 perl -i.orig -p ..\..\removeMaven.re install.html
 perl -i.orig -p ..\..\removeMaven.re misc.html
@@ -20,4 +21,5 @@ perl -i.orig -p ..\..\removeMaven.re protocol.html
 perl -i.orig -p ..\..\removeMaven.re receiving.html
 perl -i.orig -p ..\..\removeMaven.re sending.html
 perl -i.orig -p ..\..\removeMaven.re starting.html
+perl -i.orig -p ..\..\removeMaven.re webring.html
 cd ..\..
