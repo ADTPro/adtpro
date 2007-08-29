@@ -49,7 +49,7 @@ INITUTHER:
 	jsr ip65_init
 	bcc @UTHEROK
 	ldy #PMUTHBAD
-	jsr SHOWM1
+	jsr WRITEMSGAREA
 	jsr PATCHNULL
 	rts
 @UTHEROK:

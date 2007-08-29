@@ -43,12 +43,12 @@ BATCH:
 	jsr CLREOP
 :
 	ldy #PMINSERTDISK	; Tell user to insert the next disk...
-	jsr SHOWM1
+	jsr WRITEMSGAREA
 	jsr PAUSE
 	bcs BATCHDONE
 
 	ldy #PMWAIT
-	jsr SHOWM1	; Tell user to have patience
+	jsr WRITEMSGAREA	; Tell user to have patience
 
 	jsr BATCHREQUEST
 	jsr PUTREPLY
@@ -84,7 +84,7 @@ SEND:
 @SendValid:
 	; Validate the filename won't overwite
 	ldy #PMWAIT
-	jsr SHOWM1	; Tell user to have patience
+	jsr WRITEMSGAREA	; Tell user to have patience
 	jsr QUERYFNREQUEST
 	jsr QUERYFNREPLY
 	cmp #$02	; File doesn't exist - so everything's ok
@@ -97,7 +97,7 @@ SEND:
 	jsr TABV
 	jsr CLREOP
 	ldy #PMFEX
-	jsr SHOWMSG
+	jsr WRITEMSG
 	ldy #PMFORC
 	jsr YN		; Ask to overwrite
 	cmp #$01
@@ -130,7 +130,7 @@ SMSTART:
 	jsr CLREOP
 
 	ldy #PMWAIT
-	jsr SHOWM1	; Tell user to have patience
+	jsr WRITEMSGAREA	; Tell user to have patience
 
 	jsr PUTREQUEST
 	jsr PUTREPLY
@@ -220,7 +220,7 @@ RECEIVE:
 
 SRSTART:
 	ldy #PMWAIT
-	jsr SHOWM1	; Tell user to have patience
+	jsr WRITEMSGAREA	; Tell user to have patience
 	jsr QUERYFNREQUEST
 	jsr QUERYFNREPLY
 	cmp #$00
@@ -253,7 +253,7 @@ SRMISMATCH:
 	lda #$15
 	jsr TABV
 	ldy #PMSG35
-	jsr SHOWMSG
+	jsr WRITEMSG
 	ldy #PMFORC
 	jsr YN
 	bne SROK2
@@ -337,11 +337,11 @@ COMPLETE:
 ;	lda #$16
 ;	jsr TABV
 	ldy #PMSG14
-	jsr SHOWM1
+	jsr WRITEMSGAREA
 	lda ECOUNT
 	beq CNOERR
 	ldy #PMSG15
-	jsr SHOWMSG
+	jsr WRITEMSG
 CNOERR:
 	lda #$a1
 	jsr COUT1
@@ -390,7 +390,7 @@ SR_COMN:
 	lda #V_MSG	; Message row
 	jsr TABV
 	ldy SR_WR_C
-	jsr SHOWMSG
+	jsr WRITEMSG
 
 	lda #$00	; Reposition cursor to beginning of
 	sta <CH		; buffer row

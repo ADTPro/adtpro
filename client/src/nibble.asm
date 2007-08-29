@@ -71,7 +71,7 @@ snibfin:
 ;---------------------------------------------------------
 initsnib:
 	ldy	#PMSG13
-	jsr	WRITEMSG		; Ask filename
+	jsr	WRITEMSG	; Ask filename
 	ldx	#0		; Get answer at $200
 	jsr	NXTCHAR		; Input the line (Apple ROM)
 	lda	#0		; Null-terminate it

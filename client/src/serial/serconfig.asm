@@ -43,51 +43,55 @@ SAVPARM:
 	lda #$00	; Row
 	jsr TABV
 	ldy #PMSG24	; 'CONFIGURE ADTPRO PARAMETERS'
-	jsr SHOWMSG
+	jsr WRITEMSG
 
 	lda #$08	; Column
 	sta <CH
 	lda #$03	; Row
 	jsr TABV
 	lda #<MSG26	; 'COMMS DEVICE'
-	ldy #>MSG26
-	jsr STROUT
+	sta UTILPTR
+	lda #>MSG26
+	sta UTILPTR+1
+	jsr WRITEMSGRAW
 
 	lda #$08	; Column
 	sta <CH
 	lda #$04	; Row
 	jsr TABV
 	lda #<MSG27	; 'BAUD RATE'
-	ldy #>MSG27
-	jsr STROUT
+	sta UTILPTR
+	lda #>MSG27
+	sta UTILPTR+1
+	jsr WRITEMSGRAW
 
 	lda #$08	; Column
 	sta <CH
 	lda #$05	; Row
 	jsr TABV
 	ldy #PMSG28	; 'ENABLE SOUND'
-	jsr SHOWMSG
+	jsr WRITEMSG
 
 	lda #$08	; Column
 	sta <CH
 	lda #$06	; Row
 	jsr TABV
 	ldy #PMSG28a	; 'SAVE CONFIGURATION'
-	jsr SHOWMSG
+	jsr WRITEMSG
 
 	lda #$04	; Column
 	sta <CH
 	lda #$14	; Row
 	jsr TABV
 	ldy #PMSG25	; 'CHANGE PARAMETERS WITH ARROW KEYS'
-	jsr SHOWMSG
+	jsr WRITEMSG
 
 	lda #$05	; Column
 	sta <CH
 	lda #$15	; Row
 	jsr TABV
 	ldy #PMSG23	; 'SELECT WITH RETURN, ESC CANCELS'
-	jsr SHOWMSG
+	jsr WRITEMSG
 
 REFRESH:
 	lda PARMS

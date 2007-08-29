@@ -46,29 +46,31 @@ SAVPARM:
 	lda #$00	; Row
 	jsr TABV
 	ldy #PMSG24	; 'CONFIGURE ADTPRO PARAMETERS'
-	jsr SHOWMSG
+	jsr WRITEMSG
 
 	lda #$05	; Column
 	sta <CH
 	lda #$03	; Row
 	jsr TABV
 	lda #<MSG26	; 'UTHER SLOT'
-	ldy #>MSG26
-	jsr STROUT
+	sta UTILPTR
+	lda #>MSG26
+	sta UTILPTR+1
+	jsr WRITEMSGRAW
 
 	lda #$05	; Column
 	sta <CH
 	lda #$04	; Row
 	jsr TABV
 	ldy #PMSG28	; 'ENABLE SOUND'
-	jsr SHOWMSG
+	jsr WRITEMSG
 
 	lda #$05	; Column
 	sta <CH
 	lda #$05	; Row
 	jsr TABV
 	ldy #PMSG28a	; 'SAVE CONFIGURATION'
-	jsr SHOWMSG
+	jsr WRITEMSG
 
 	lda #$05
 	sta <CH
@@ -103,14 +105,14 @@ SAVPARM:
 	lda #$14	; Row
 	jsr TABV
 	ldy #PMSG25	; 'CHANGE PARAMETERS WITH ARROW KEYS'
-	jsr SHOWMSG
+	jsr WRITEMSG
 
 	lda #$05	; Column
 	sta <CH
 	lda #$15	; Row
 	jsr TABV
 	ldy #PMSG23	; 'SELECT WITH RETURN, ESC CANCELS'
-	jsr SHOWMSG
+	jsr WRITEMSG
 
 	jsr IPConfig	
 	jsr REFRESH
@@ -276,7 +278,8 @@ IPShowMsg:
 	jsr COUT1
 	iny
 	bne @MSGLOOP
-@MSGEND:	rts
+@MSGEND:
+	rts
 
 ;
 ;
