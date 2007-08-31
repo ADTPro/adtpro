@@ -46,7 +46,7 @@ public class CommsThread extends Thread
 
   private Gui _parent;
 
-  private static final byte ACK = 0x06, NAK = 0x15;
+  public static final byte ACK = 0x06, NAK = 0x15, ENQ = 0x05;
 
   private int[] CRCTABLE = new int[256];
 
@@ -207,7 +207,7 @@ public class CommsThread extends Thread
             _transport.flushReceiveBuffer();
             _busy = false;
             break;
-          case (byte) 218: // "Q": Size
+          case (byte) 218: // "Z": Size
             _busy = true;
             _parent.setMainText(Messages.getString("CommsThread.14")); //$NON-NLS-1$
             _parent.setSecondaryText(""); //$NON-NLS-1$
@@ -232,6 +232,15 @@ public class CommsThread extends Thread
             Log.println(false,
                 "CommsThread.commandLoop() Received ADT Send command."); //$NON-NLS-1$
             receive140kDisk();
+            _busy = false;
+            break;
+          case (byte) 206: // "N": Send Nibble Disk
+            _busy = true;
+            _parent.setMainText(Messages.getString("CommsThread.12")); //$NON-NLS-1$
+            _parent.setSecondaryText(""); //$NON-NLS-1$
+            Log.println(false,
+                "CommsThread.commandLoop() Received Nibble Send command."); //$NON-NLS-1$
+            receiveNibbleDisk(false);
             _busy = false;
             break;
           default:
@@ -1055,6 +1064,208 @@ public class CommsThread extends Thread
 
     Log.println(false, "CommsThread.sendPacket() exit, rc = " + rc);
     return rc;
+  }
+
+  public void receiveNibbleDisk(boolean generateName)
+  /* Nibble receive routine - Host <- Apple (Apple sends) */
+  {
+    Log.println(false, "CommsThread.receiveNibbleDisk() entry.");
+    _startTime = new GregorianCalendar();
+    try
+    {
+      Log.print(false, "Waiting for name..."); //$NON-NLS-1$
+      String name = _parent.getWorkingDirectory() + receiveName();
+      Log.println(false, " received name: " + name); //$NON-NLS-1$
+      File f = null;
+      String nameGen, zeroPad;
+      FileOutputStream fos = null;
+      NibbleTrack realTrack1, realTrack2 = null;
+      byte[] rawNibbleBuffer;
+      int part, packetResult = 0;
+      byte report;
+
+      _parent.setProgressMaximum(70);
+      rawNibbleBuffer = new byte[13312];
+      if (generateName)
+      {
+        do
+        {
+          if (lastNibNumber < 10) zeroPad = "000";
+          else
+            if (lastNibNumber < 100) zeroPad = "00";
+            else
+              if (lastNibNumber < 1000) zeroPad = "0";
+              else
+                zeroPad = "";
+          nameGen = zeroPad + lastNibNumber;
+          f = new File(name + nameGen + ".NIB");
+          lastNibNumber++;
+        }
+        while (f.exists());
+      }
+      else
+        f = new File(name);
+      try
+      {
+        fos = new FileOutputStream(f);
+        // ready for transfer
+        _transport.writeByte(0x00);
+        _transport.pushBuffer();
+        Log
+            .println(false,
+                "CommsThread.receiveNibbleDisk() about to wait for ACK from apple...");
+        if (waitForData(15) == ACK)
+        {
+          Log.println(false, "receiveNibbleDisk() received ACK from apple.");
+          _parent.setProgressMaximum(35 * 52); // Tracks
+          _parent.setSecondaryText(name);
+          int numParts = 52;
+          for (int numTracks = 0; numTracks < 35; numTracks++)
+          {
+            for (part = 0; part < numParts; part++)
+            {
+              Log.println(false, "receiveNibbleDisk() Receiving part " + (part + 1) + " of " + numParts + "; "); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+              packetResult = receivePacket(rawNibbleBuffer, part * 256, -1,
+                  false);
+              if (packetResult != 0) break;
+              _parent.setProgressValue((numTracks * 52) + part);
+            }
+            Log.println(false, "Nibble Buffer:");
+            Log.println(false,"");
+            int lineLen = 16;
+            for (int i = 0; i < rawNibbleBuffer.length / lineLen; i++)
+            {
+              for (int j = 0; j < lineLen; j++)
+              {
+                Log.print(false,UnsignedByte.toString(rawNibbleBuffer[i*lineLen + j]));
+                Log.print(false," ");
+              }
+              Log.println(false,"");
+            }
+            // analyze this track
+            realTrack1 = NibbleAnalysis.analyzeNibbleBuffer(rawNibbleBuffer);
+            if (realTrack1 != null)
+            {
+              if (realTrack1.accuracy < 0.9)
+              {
+                // Sleep for a bit
+                try
+                {
+                  Thread.sleep(500);
+                }
+                catch (InterruptedException e)
+                {
+                  Log.println(false,"CommsThread.receiveNibbleDisk() sleep was interrupted.");
+                }
+                _transport.writeByte(ENQ);
+                _transport.pushBuffer();
+                for (part = 0; part < numParts; part++)
+                {
+                  Log.println(false, "receiveNibbleDisk() Re-receiving part " + ((numTracks + 1) * part) + " of " + numParts + "; "); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+                  packetResult = receivePacket(rawNibbleBuffer, part * 256, -1,
+                      false);
+                  if (packetResult != 0) break;
+                  _parent.setProgressValue((numTracks * 52) + part);
+                }
+                // analyze this track
+                realTrack2 = NibbleAnalysis
+                    .analyzeNibbleBuffer(rawNibbleBuffer);
+                if (realTrack2.accuracy > realTrack1.accuracy)
+                {
+                  realTrack1 = realTrack2;
+                }
+              }
+            }
+            else
+            {
+              
+            }
+            _transport.writeByte(ACK);
+            _transport.pushBuffer();
+            Log.println(false,
+                "Writing track " + (numTracks + 1) + " of 35."); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+            fos.write(realTrack1.trackBuffer);
+            Log.println(false,
+                "CommsThread.receiveNibbleDisk() Bottom of for loop... packetResult: "
+                    + packetResult);
+          }
+          fos.close();
+          Log.println(false, "CommsThread.receiveNibbleDisk() closing.");
+          //Disk disk = new Disk(name);
+          //disk.makeNibbleOrder();
+          //disk.save();
+          Log.println(false,
+              "CommsThread.receiveNibbleDisk() saved as NIB order format.");
+        }
+        else
+        {
+          packetResult = -1;
+        }
+        if (packetResult == 0)
+        {
+          report = waitForData(15);
+          _endTime = new GregorianCalendar();
+          _diffMillis = (float) (_endTime.getTimeInMillis() - _startTime
+              .getTimeInMillis())
+              / (float) 1000;
+          if (report == 0x00)
+          {
+            _parent.setSecondaryText(Messages.getString("CommsThread.19")
+                + " in " + _diffMillis + " seconds.");
+            Log.println(true, "Apple sent disk image "
+                + name
+                + " successfully in "
+                + (float) (_endTime.getTimeInMillis() - _startTime
+                    .getTimeInMillis()) / (float) 1000 + " seconds.");
+          }
+          else
+          {
+            _parent.setSecondaryText(Messages.getString("CommsThread.20")
+                + " in " + _diffMillis + " seconds.");
+            Log.println(true,
+                    "Apple sent disk image " + name + " with errors."); //$NON-NLS-1$ //$NON-NLS-2$
+          }
+        }
+        else
+        {
+          Log.println(true, Messages.getString("CommsThread.21"));
+          _parent.setSecondaryText(Messages.getString("CommsThread.21"));
+          _parent.clearProgress();
+          _transport.flushReceiveBuffer();
+          _transport.flushSendBuffer();
+        }
+      }
+      catch (FileNotFoundException ex)
+      {
+        _transport.writeByte(0x02); // New ADT protocol: HMFIL - unable
+        // to write
+        // file
+        _transport.pushBuffer();
+      }
+      catch (IOException ex2)
+      {
+        _transport.writeByte(0x02); // New ADT protocol: HMFIL - unable
+        // to write
+        // file
+        _transport.pushBuffer();
+      }
+      finally
+      {
+        if (fos != null) try
+        {
+          fos.close();
+        }
+        catch (IOException io)
+        {}
+      }
+    }
+    catch (TransportTimeoutException e)
+    {
+      Log.println(false,
+          "CommsThread.receiveNibbleDisk() aborting due to timeout.");
+      _parent.setSecondaryText(Messages.getString("CommsThread.21"));
+    }
+    Log.println(false, "CommsThread.receiveNibbleDisk() exit.");
   }
 
   public void receive140kDisk()
@@ -1926,4 +2137,6 @@ public class CommsThread extends Thread
   }
 
   public static int lastFileNumber = 0;
+
+  public static int lastNibNumber = 0;
 }

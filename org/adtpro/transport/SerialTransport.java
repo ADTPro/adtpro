@@ -209,7 +209,7 @@ public class SerialTransport extends ATransport
   public byte readByte(int seconds) throws TransportTimeoutException
   {
     int collectedTimeouts = 0;
-    Log.println(false, "SerialTransport.readByte() entry, timeout: " + seconds + " seconds.");
+    // Log.println(false, "SerialTransport.readByte() entry, timeout: " + seconds + " seconds.");
     boolean hasData = false;
     byte oneByte = 0;
     while ((hasData == false) && (connected))
@@ -225,9 +225,11 @@ public class SerialTransport extends ATransport
       }
       if (collectedTimeouts / 4 > seconds) throw new TransportTimeoutException();
     }
+    /*
     if (hasData) Log.println(false, "SerialTransport.readByte() exit, byte: " + UnsignedByte.toString(oneByte));
     else
       Log.println(false, "SerialTransport.readByte() exit.");
+      */
     return oneByte;
   }
 
@@ -295,8 +297,11 @@ public class SerialTransport extends ATransport
     try
     {
       /*
-       * for (int i = 0; i < data.length; i++) {
-       * Log.print(UnsignedByte.toString(data[i]) + " "); }
+        Log.println(false, "SerialTransport.writeBytes() writing:");
+        for (int i = 0; i < data.length; i++)
+        {
+          Log.println(false, UnsignedByte.toString(data[i]) + " ");
+        }
        */
       outputStream.write(data, 0, data.length);
     }
