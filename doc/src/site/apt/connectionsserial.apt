@@ -186,23 +186,28 @@ front, numbered in the Apple (not DIN!) standard:
   The main pinout is:
 
 ---
-Laser    Host
-DIN-5    DE-9
-  2  ---  2
-  3  ---  5
-  4  ---  3
----
+Laser      Host
+DIN-5      DE-9
+  2  -----  2
+  3  -----  5
+  4  -----  3
 
-  Then, in the DIN-5 shell, tie together pins:
+Within the DIN-5 shell, tie together pins:
 1-5
 
-  And in the DE-9 shell, tie together pins:
+Within the DE-9 shell, tie together pins:
 1-4-6
 and
 7-8
+---
 
-  Basically, it's tying all the handshaking lines together at the host
-end and at the Laser end. 
+  This null modem cable ties all the handshaking lines together at the host
+end and at the Laser end.
+
+  One thing to note with Laser 128 machines: you will need to keep your 
+  hands off the keyboard while transfers are taking place.  It turns out
+  that keypresses are injected directly into the serial stream, corrupting
+  image transfers.
 
 * {USB cabling}
 
