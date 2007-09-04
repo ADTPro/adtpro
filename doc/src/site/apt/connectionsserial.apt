@@ -15,6 +15,8 @@ ADTPro Serial Connections
 
  * {{{connectionsserial.html#IIc serial port cabling}IIc serial port}}
 
+ * {{{connectionsserial.html#Laser 128 serial port cabling}Laser 128 serial port}}
+
  * {{{connectionsserial.html#USB cabling}USB adapters}}
 
  []
@@ -164,6 +166,44 @@ It looks like this:
  {{{http://www.connectworld.net/cgi-bin/iec/05MCAOSerial.html}there}}
  for the one you need.  No endorsement of this company is expressed or implied.
  
+* {Laser 128 serial port cabling}
+
+  The Laser 128 serial port has a DIN-5 connector similar to some Apple IIc computers.
+I don't have an Apple IIc to test, but I imagine the cable described here will work
+on an IIc as well.  I have verified that this pinout works correctly with the Laser 128.
+The cable will provide null-modem function between the Laser 128 and ADTPro at a
+host computer.  No other signal adaptation should be necessary.
+
+  This pinout describes the male connector (plug) as viewed looking at the pins from the
+front, numbered in the Apple (not DIN!) standard:
+
+---
+1       5
+ 2     4
+    3
+---
+
+  The main pinout is:
+
+---
+Laser    Host
+DIN-5    DE-9
+  2  ---  2
+  3  ---  5
+  4  ---  3
+---
+
+  Then, in the DIN-5 shell, tie together pins:
+1-5
+
+  And in the DE-9 shell, tie together pins:
+1-4-6
+and
+7-8
+
+  Basically, it's tying all the handshaking lines together at the host
+end and at the Laser end. 
+
 * {USB cabling}
 
   Several manufacturers make different types of USB to serial adapters.
