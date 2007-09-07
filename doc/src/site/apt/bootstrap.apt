@@ -251,7 +251,7 @@ more bootstrapping scenarios and configurations are detailed below.
 
     [[1]] If the dialog box doesn't come up on it own, 
       click on Bootstrapping->Serial Pacing.
-      You should be able to run with 75ms pacing and 9600 baud on an 
+      You should be able to run with 150ms pacing and 9600 baud on an 
       unaccelerated Apple:
 
       *
