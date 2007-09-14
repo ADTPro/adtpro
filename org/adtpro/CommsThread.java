@@ -536,11 +536,11 @@ public class CommsThread extends Thread
             }
           }
           fos.close();
-          Log.println(false, "CommsThread.receiveDisk() length: " + length
+          Log.println(false, "CommsThread.receiveDisk() length: " + (length * 512)
               + " Disk.APPLE_140KB_DISK: " + Disk.APPLE_140KB_DISK);
           if ((length * 512) == Disk.APPLE_140KB_DISK)
           {
-            Disk disk = new Disk(name);
+            Disk disk = new Disk(name,true); // Force disk order to start out as ProDOS - because it came from us for sure!
             disk.makeDosOrder();
             disk.save();
             Log.println(false,
@@ -548,7 +548,7 @@ public class CommsThread extends Thread
           }
           else
             Log.println(false,
-                "CommsThread.receiveDisk() found a disk of length "+length * 512+"; left it alone (didn't change to DOS order), because it expected length "+Disk.APPLE_140KB_DISK+" in order to change to DOS order.");
+                "CommsThread.receiveDisk() found a disk of length " + (length * 512) + "; left it alone (didn't change to DOS order), because it expected length "+Disk.APPLE_140KB_DISK+" in order to change to DOS order.");
 
         }
         else
