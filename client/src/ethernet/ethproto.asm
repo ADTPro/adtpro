@@ -229,15 +229,18 @@ GETREPLY:
 
 ;---------------------------------------------------------
 ; PUTREQUEST - Request to send an image to the host
+; Accumulator holds request type:
+; CHR_P - typical put
+; CHR_N - nibble send
+; CHR_H - half track send
 ;---------------------------------------------------------
 PUTREQUEST:
-	lda #<BIGBUF		; Connect the block pointer to the
-	sta BLKPTR		; beginning of the Big Buffer(TM)
-	lda #>BIGBUF
-	sta BLKPTR+1
+	ldy #<BIGBUF		; Connect the block pointer to the
+	sty BLKPTR		; beginning of the Big Buffer(TM)
+	ldy #>BIGBUF
+	sty BLKPTR+1
 	ldy #$00
-	lda #CHR_P		; Tell host we are Putting/Sending
-	sta (BLKPTR),Y
+	sta (BLKPTR),Y		; Accumulator still holds request type
 	iny
 	jsr COPYINPUT
 	lda NUMBLKS		; Send the total block size
@@ -388,6 +391,22 @@ QUERYFNREPLY1:
 QUERYFNREPLY:
 	lda QUERYRC
 QUERYFNREPLYDONE:
+	rts
+
+;---------------------------------------------------------
+; SENDNIBPAGE - Send a nibble page with RLE
+; CRC is computed and stored
+; BLKPTR points to page to send
+;---------------------------------------------------------
+SENDNIBPAGE:
+	ldax #udp_outp + udp_data
+	stax UTILPTR
+	lda #$02
+	sta ZP
+	jsr SENDHBLK
+	lda #STATE_PUT	; Set up callback to PUTREPLY1
+	sta state
+	jsr RECEIVE_LOOP_FAST
 	rts
 
 ;---------------------------------------------------------

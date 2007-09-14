@@ -102,8 +102,7 @@ ASMBEGIN:
 ; The code is essentially like in the Disk ][ card
 ;---------------------------------------------------------
 calibrat:
-	jsr	slot2x		; a = x = slot * 16
-	sta	SLOWX		; store slot * 16 in memory
+	ldx pdsoftx		; Get soft switch offset
 	lda	$c08e,x		; prepare latch for input
 	lda	$c08c,x		; strobe data latch for i/o
 	lda	pdrive		; is 0 for drive 1
@@ -111,8 +110,7 @@ calibrat:
 	inx
 caldriv1:
 	lda	$c08a,x		; engage drive 1 or 2
-	lda	SLOWX
-	tax			; restore x
+	ldx pdsoftx
 	lda	$c089,x		; motor on
 	ldy	#$50		; number of half-tracks
 caldriv3:
@@ -120,13 +118,57 @@ caldriv3:
 	tya
 	and	#$03		; make phase from count in y
 	asl			; times 2
-	ora	SLOWX		; make index for i/o address
+	ora	pdsoftx		; make index for i/o address
 	tax
 	lda	$c081,x		; stepper motor phase n on
 	lda	#$56		; param for wait loop
 	jsr	$fca8		; wait specified time units
 	dey			; decrement count
 	bpl	caldriv3	; jump back while y >= 0
+	rts
+
+;---------------------------------------------------------
+; rdnibtr - read track as nibbles into tracks buffer.
+; total bytes read is NIBPAGES * 256, or about twice
+; the track length.
+; the drive has been calibrated, so we know we are in read
+; mode, the motor is running, and and the correct drive 
+; number is engaged.
+; we wait until we encounter a first nibble after a gap.
+; for this purpose, a gap is at least 4 ff nibbles in a 
+; row. note this is not 100% fool proof; the ff nibble
+; can occur as a regular nibble instead of autosync.
+; but this is conform beneath apple dos, so is
+; probably ok.
+;---------------------------------------------------------
+rdnibtr:
+	ldx pdsoftx		; Load drive index into X
+	lda #0			; a = 0
+	tay			; y = 0 (index)
+	sta BLKPTR		; set running ptr (lo) to 0
+	lda #>BIGBUF		; BIGBUF address high
+	sta BLKPTR+1		; set running ptr (hi)
+	lda #NIBPAGES
+	sta NIBPCNT		; page counter
+; use jmp, not jsr, to perform nibsync. that way we
+; have a bit more breathing room, cycle-wise. the
+; "function" returns with a jmp to rdnibtr8.
+	jmp	nibsync		; find first post-gap byte
+; the read loop must be fast enough to read 1 byte every
+; 32 cycles. it appears the interval is 17 cycles within
+; one data page, and 29 cycles when crossing a data page.
+; these numbers are based on code that does not cross
+; a page boundary.
+rdnibtr7:
+	lda $c08c,x		; read (4 cycles)
+	bpl rdnibtr7		; until byte complete (2c)
+rdnibtr8:
+	sta (BLKPTR),y		; store in buffer (6c)
+	iny			; (2c)
+	bne rdnibtr7		; 256 bytes done? (2 / 3c)
+	inc BLKPTR+1		; next page (5c)
+	dec NIBPCNT		; count (5c)
+	bne rdnibtr7		; and back (3c)
 	rts
 
 ;---------------------------------------------------------
@@ -375,6 +417,7 @@ FORWARD:
 BABORT:	jsr AWBEEP	; Beep!
 ABORT:	ldx top_stack	; Pop goes the stackptr
 	txs
+	jsr motoroff	; Turn potentially active drive off
 	bit $C010	; Strobe the keyboard
 	jmp MAINLUP	; ... and restart
 

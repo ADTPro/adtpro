@@ -36,11 +36,12 @@ BATCH:
 	lda UNITNBR	; Set up the unit number
 	sta PARMBUF+1
 
-	lda #$00
-	sta <CH
-	lda #$14
-	jsr TABV
-	jsr CLREOP
+	lda NonDiskII	; Is this a Disk II?
+	beq :+
+	jsr GetSendType
+	bcs BATCHDONE
+:
+	jsr CLRMSGAREA
 :
 	ldy #PMINSERTDISK	; Tell user to insert the next disk...
 	jsr WRITEMSGAREA
@@ -75,8 +76,6 @@ BATCHDONE:
 ; SEND
 ;---------------------------------------------------------
 SEND:
-	lda #$00
-	sta ECOUNT	; Clear error flag
 	jsr GETFN
 	bne @SendValid
 	jmp SMDONE
@@ -111,15 +110,19 @@ SMSTART:
 	lda UNITNBR	; Set up the unit number
 	sta PARMBUF+1
 
-	lda #$00
-	sta <CH
-	lda #$14
-	jsr TABV
-	jsr CLREOP
+	lda #CHR_P	; Set default send type
+	sta SendType
+	lda NonDiskII	; Is this a Disk II?
+	beq :+
+	jsr GetSendType
+	bcs SMDONE1
+:
+	jsr CLRMSGAREA
 
 	ldy #PMWAIT
 	jsr WRITEMSGAREA	; Tell user to have patience
 
+	lda SendType
 	jsr PUTREQUEST
 	jsr PUTREPLY
 	beq PCOK
@@ -137,13 +140,19 @@ PCERROR:
 PCOK:
 	; Here's where we set up a loop
 	; for all blocks to transfer.
-	jsr PREPPRG	; Prepare the progress screen
-	jsr PUTINITIALACK
 	lda #$00
+	sta ECOUNT	; Clear error flag
 	sta CURBLK
 	sta CURBLK+1
-	lda NonDiskII
-	beq SMMORE
+	lda NonDiskII	; Are we dealing with a Disk II?
+	beq SMMORE	; No, skip all this stuff
+	lda SendType	; Which type of send did they request?
+	cmp #CHR_P	; Normal Put?
+	beq SendStandard
+	jmp sendnib	; No - send nibbles
+SendStandard:		; Send standard 5.25"
+	jsr PREPPRG	; Prepare the progress screen
+	jsr PUTINITIALACK
 	jsr INIT_DISKII
 	jsr GO_TRACK0
 SMMORE:
@@ -231,11 +240,7 @@ SRREENTRY:
 	jmp SROK2
 
 SRMISMATCH:
-	lda #$00
-	sta <CH
-	lda #$14
-	jsr TABV
-	jsr CLREOP
+	jsr CLRMSGAREA
 
 	lda #$15
 	jsr TABV
@@ -319,10 +324,6 @@ SRDONE:
 	rts
 
 COMPLETE:
-;	lda #$00	; Reposition cursor to previous
-;	sta <CH		; buffer row
-;	lda #$16
-;	jsr TABV
 	ldy #PMSG14
 	jsr WRITEMSGAREA
 	lda ECOUNT

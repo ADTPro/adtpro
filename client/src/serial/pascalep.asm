@@ -24,6 +24,7 @@
 ; INITPAS - Do all the Pascal entry point setup stuff
 ;---------------------------------------------------------
 INITPAS:
+	sta $CFFF		; Initialize the bus
 	jsr SELFMOD
 	jsr INITSLOT
 	jsr INITSEND
@@ -59,6 +60,7 @@ INITSLOT:
 	ldx #$C2		; $CN, N=SLOT
 	ldy #$20		; $N0, N=SLOT
 	lda #0
+	stx MSLOT
 MODINIT:
 	jsr $C245		; PASCAL INIT ENTRY POINT
 	rts
@@ -73,12 +75,22 @@ MODINIT:
 ; interpreting any of the binary data.
 ;
 INITSEND:
-	ldy #$b4		; Start with the number 4
+	ldy #$b4		; Start with ascii "4"
 	lda PSPEED
-	beq :+			; Is speed set to low (9600)?
-	iny			; No; so bump command to 5 
+	beq :+			; Is speed set to low (300)?
+	lda #$b0		; Load up ascii "0"
+	sta BAUDR+1
+	lda #$b6		; Load up ascii "6"
+	sta BAUDR+2
+	jmp INITFOUNDSPEED
 :
-	sty BAUDR+2
+	cmp #$02		; Is PSPEED set to 19200?
+	bne :+
+	iny			; Yes, bump "4" to "5"
+:	sty BAUDR+2
+	ldy #$b1		; Load up ascii "1"
+	sty BAUDR+1		; We now have "Ctrl-A1[4|5]B"
+INITFOUNDSPEED:
 	ldy #0
 SILOOP:
 	lda INITSTRING,Y

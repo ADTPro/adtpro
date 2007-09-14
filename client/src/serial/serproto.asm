@@ -76,10 +76,15 @@ CDREQUEST:
 
 ;---------------------------------------------------------
 ; PUTREQUEST - Request to send an image to the host
+; Accumulator holds request type:
+; CHR_P - typical put
+; CHR_N - nibble send
+; CHR_H - half track send
 ;---------------------------------------------------------
 PUTREQUEST:
+	pha
 	jsr PARMINT	; Clean up the comms device
-	lda #CHR_P	; Tell host we are Putting/Sending
+	pla
 	jsr PUTC
 
 	jsr SENDFN	; Send file name
@@ -277,6 +282,19 @@ RC2:
 	bne RC1		; Loop if index <> 0
 			; ...else return
 	clc
+	rts
+
+;---------------------------------------------------------
+; SENDNIBPAGE - Send a nibble page and its CRC
+;---------------------------------------------------------
+SENDNIBPAGE:
+	lda #$02
+	sta ZP
+	jsr SENDHBLK
+	lda <CRC	; Send the CRC of that page
+	jsr PUTC
+	lda <CRC+1
+	jsr PUTC
 	rts
 
 ;---------------------------------------------------------

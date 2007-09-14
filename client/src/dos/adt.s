@@ -8,13 +8,18 @@
 ;--------------------------------
 	.LIST	ON
 
-; This program transfes a 16-sector disk
+; This program transfers a 16-sector disk
 ; to a 140K MS-DOS file and back.  The file
 ; format (dos-ordered, .dsk) is compatible
 ; with most Apple II emulators.
 ; SSC, IIgs or compatible hardware is required.
 
 ; Version History:
+
+; Version v.r.m Unreleased
+; David Schmidt
+; - Nibble disk send by Gerard Putter
+; - Half track disk send by Eric Neilson 
 
 ; Version 1.33 July 2007
 ; David Schmidt
@@ -72,76 +77,262 @@
 
 ; CONSTANTS
 
-esc	= $9b			; ESCAPE KEY
-ack	= $06			; ACKNOWLEDGE
-nak	= $15			; NEGATIVE ACKNOWLEDGE
-parmnum	= 9			; NUMBER OF CONFIGURABLE PARMS
+esc		 = $9b		; ESCAPE KEY
+ack		 = $06		; ACKNOWLEDGE
+nak		 = $15		; NEGATIVE ACKNOWLEDGE
+parmnum 	 = 9		; NUMBER OF CONFIGURABLE PARMS
+nibpages	 = $34		; Number of nibble pages to send
+enq		 = $05		; Request to re-read track
+can		 = $18		; Track not accepted at host
 
 ; ZERO PAGE LOCATIONS (ALL UNUSED BY DOS, BASIC & MONITOR)
 
-msgptr	= $6			; POINTER TO MESSAGE TEXT (2B)
-secptr	= $8			; POINTER TO SECTOR DATA  (2B)
-trkcnt	= $1e			; COUNTS SEVEN TRACKS     (1B)
-crc	= $eb			; TRACK CRC-16            (2B)
-prev	= $ed			; PREVIOUS BYTE FOR RLE   (1B)
-ysave	= $ee			; TEMP STORAGE            (1B)
+msgptr		= $6		; POINTER TO MESSAGE TEXT (2B)
+secptr		= $8		; POINTER TO SECTOR DATA  (2B)
+
+nibptr		= $8		; Pointer to nibble data  (2B)
+hlftrk		= $18		; Half track send enabled (1B)
+nibpcnt		= $1e		; Counts nibble pages     (1B)
+trkcnt		= $1e		; COUNTS SEVEN TRACKS     (1B)
+synccnt		= $eb		; Count bytes during sync (2B)
+crc		= $eb		; TRACK CRC-16            (2B)
+prev		= $ed		; PREVIOUS BYTE FOR RLE   (1B)
+ysave		= $ee		; TEMP STORAGE            (1B)
+xsave		= $ef		; Temp storage for X reg  (1B)
 
 ; BIG FILES
 
-tracks	= $2000			; 7 TRACKS AT 2000-8FFF (28KB)
-crctbll	= $9000			; CRC LOW TABLE         (256B)
-crctblh	= $9100			; CRC HIGH TABLE        (256B)
+tracks		= $2000		; 7 TRACKS AT 2000-8FFF (28KB)
+crctbll		= $9000		; CRC LOW TABLE         (256B)
+crctblh		= $9100		; CRC HIGH TABLE        (256B)
 
 ; MONITOR STUFF
-
-ch	= $24			; CURSOR HORIZONTAL POSITION
-cv	= $25			; CURSOR VERTICAL POSITION
-basl	= $28			; BASE LINE ADDRESS
-invflg	= $32			; INVERSE FLAG
-clreol	= $fc9c			; CLEAR TO END OF LINE
-clreop	= $fc42			; CLEAR TO END OF SCREEN
-home	= $fc58			; CLEAR WHOLE SCREEN
-tabv	= $fb5b			; SET BASL FROM A
-vtab	= $fc22			; SET BASL FROM CV
-rdkey	= $fd0c			; CHARACTER INPUT
-nxtchar	= $fd75			; LINE INPUT
-cout	= $fded			; Monitor output
-cout1	= $fdf0			; CHARACTER OUTPUT
-crout	= $fd8e			; OUTPUT RETURN
+	
+ch		= $24		; CURSOR HORIZONTAL POSITION
+cv		= $25		; CURSOR VERTICAL POSITION
+basl		= $28		; BASE LINE ADDRESS
+invflg		= $32		; INVERSE FLAG
+clreol		= $fc9c		; CLEAR TO END OF LINE
+clreop		= $fc42		; CLEAR TO END OF SCREEN
+home		= $fc58		; CLEAR WHOLE SCREEN
+tabv		= $fb5b		; SET BASL FROM A
+vtab		= $fc22		; SET BASL FROM CV
+rdkey		= $fd0c		; CHARACTER INPUT
+nxtchar		= $fd75		; LINE INPUT
+cout		= $fded		; Monitor output
+cout1		= $fdf0		; CHARACTER OUTPUT
+crout		= $fd8e		; OUTPUT RETURN
 
 ; MESSAGES
 
-mtitle	= 0			; TITLE SCREEN
-mconfig	= 2			; CONFIGURATION TOP OF SCREEN
-mconfg2	= 4			; CONFIGURATION BOTTOM OF SCREEN
-mprompt	= 6			; MAIN PROMPT
-mdircon	= 8			; CONTINUED DIRECTORY PROMPT
-mdirend	= 10			; END OF DIRECTORY PROMPT
-mfrecv	= 12			; FILE TO RECEIVE:_
-mfsend	= 14			; FILE TO SEND:_
-mrecv	= 16			; RECEIVING FILE_    (_ = SPACE)
-msend	= 18			; SENDING FILE_
-mconfus	= 20			; NONSENSE FROM HOST
-mnot16	= 22			; NOT A 16 SECTOR DISK
-merror	= 24			; ERROR: FILE_
-mcant	= 26			; |CAN'T BE OPENED.     (| = CR)
-mexists	= 28			; |ALREADY EXISTS.
-mnot140	= 30			; |IS NOT A 140K IMAGE.
-mfull	= 32			; |DOESN'T FIT ON DISK.
-manykey	= 34			; __ANY KEY:_
-mdont	= 36			; <- DO NOT CHANGE
-mabout	= 38			; ABOUT ADT...
-mtest	= 40			; TESTING DISK FORMAT
-mpcans	= 42			; AWAITING ANSWER FROM HOST
-mpause	= 44			; HIT ANY KEY TO CONTINUE...
-mdoserr	= 46			; DOS ERROR:_
-mdos0a	= 48			; FILE LOCKED
-mdos04	= 50			; WRITE PROTECTED
-mdos08	= 52			; I/O ERROR
+mtitle		= 0		; TITLE SCREEN
+mconfig		= 2		; CONFIGURATION TOP OF SCREEN
+mconfg2		= 4		; CONFIGURATION BOTTOM OF SCREEN
+mprompt		= 6		; MAIN PROMPT
+mdircon		= 8		; CONTINUED DIRECTORY PROMPT
+mdirend		= 10		; END OF DIRECTORY PROMPT
+mfrecv		= 12		; FILE TO RECEIVE:_
+mfsend		= 14		; FILE TO SEND:_
+mrecv		= 16		; RECEIVING FILE_    (_ = SPACE)
+msend		= 18		; SENDING FILE_
+mconfus		= 20		; NONSENSE FROM HOST
+mnot16		= 22		; NOT A 16 SECTOR DISK
+merror		= 24		; ERROR: FILE_
+mcant		= 26		; |CAN'T BE OPENED.     (| = CR)
+mexists		= 28		; |ALREADY EXISTS.
+mnot140		= 30		; |IS NOT A 140K IMAGE.
+mfull		= 32		; |DOESN'T FIT ON DISK.
+manykey		= 34		; __ANY KEY:_
+mdont		= 36		; <- DO NOT CHANGE
+mabout		= 38		; ABOUT ADT...
+mtest		= 40		; TESTING DISK FORMAT
+mpcans		= 42		; AWAITING ANSWER FROM HOST
+mpause		= 44		; HIT ANY KEY TO CONTINUE...
+mdoserr		= 46		; DOS ERROR:_
+mdos0a		= 48		; FILE LOCKED
+mdos04		= 50		; WRITE PROTECTED
+mdos08		= 52		; I/O ERROR
+mnibsend	= 54		; Sending nibble file_
+mnodiskc	= 56		; Slot has no disk card
+manalys		= 58		; Host could not analyze the disk
+mhlfsend	= 60		; Sending halftrack/nibble file
+msendtype	= 62		; Type of send
 
 ;*********************************************************
 
 	.ORG	$803
+
+jmp start			; Skip early stuff
+; Next few functions contain loops that must be within a
+; page for correct timing, so place them at the start.
+;---------------------------------------------------------
+; calibrat - calibrate the disk arm to track #0
+; the code is essentially like in the disk ii card
+;---------------------------------------------------------
+calibrat:
+	jsr	slot2x		; a = x = slot * 16
+	sta	xsave		; store slot * 16 in memory
+	lda	$c08e,x		; prepare latch for input
+	lda	$c08c,x		; strobe data latch for i/o
+	lda	pdrive		; is 0 for drive 1
+	beq	caldriv1
+	inx
+caldriv1:
+	lda	$c08a,x		; engage drive 1 or 2
+	lda	xsave
+	tax			; restore x
+	lda	$c089,x		; motor on
+	ldy	#$50		; number of half-tracks
+caldriv3:
+	lda	$c080,x		; stepper motor phase n off
+	tya
+	and	#$03		; make phase from count in y
+	asl			; times 2
+	ora	xsave		; make index for i/o address
+	tax
+	lda	$c081,x		; stepper motor phase n on
+	lda	#$56		; param for wait loop
+	jsr	$fca8		; wait specified time units
+	dey			; decrement count
+	bpl	caldriv3	; jump back while y >= 0
+	rts
+
+;---------------------------------------------------------
+; rdnibtr - read track as nibbles into tracks buffer.
+; total bytes read is nibpages * 256, or about twice
+; the track length.
+; the drive has been calibrated, so we know we are in read
+; mode, the motor is running, and and the correct drive 
+; number is engaged.
+; we wait until we encounter a first nibble after a gap.
+; for this purpose, a gap is at least 4 ff nibbles in a 
+; row. note this is not 100% fool proof; the ff nibble
+; can occur as a regular nibble instead of autosync.
+; but this is conform beneath apple dos, so is
+; probably ok.
+;---------------------------------------------------------
+rdnibtr:
+	jsr	slot2x		; a = x = slot * 16
+	lda	#0		; a = 0
+	tay			; y = 0 (index)
+	sta	nibptr		; set running ptr (lo) to 0
+	lda	#>tracks	; tracks address high
+	sta	nibptr+1	; set running ptr (hi)
+	lda	#nibpages
+	sta	nibpcnt		; page counter
+; use jmp, not jsr, to perform nibsync. that way we
+; have a bit more breathing room, cycle-wise. the
+; "function" returns with a jmp to rdnibtr8.
+	jmp	nibsync		; find first post-gap byte
+; the read loop must be fast enough to read 1 byte every
+; 32 cycles. it appears the interval is 17 cycles within
+; one data page, and 29 cycles when crossing a data page.
+; these numbers are based on code that does not cross
+; a page boundary.
+rdnibtr7:
+	lda	$c08c,x		; read (4 cycles)
+	bpl	rdnibtr7	; until byte complete (2c)
+rdnibtr8:
+	sta	(nibptr),y	; store in buffer (6c)
+	iny			; (2c)
+	bne	rdnibtr7	; 256 bytes done? (2 / 3c)
+	inc	nibptr+1	; next page (5c)
+	dec	nibpcnt		; count (5c)
+	bne	rdnibtr7	; and back (3c)
+	rts
+
+;---------------------------------------------------------
+; seekabs - copy of standard dos seekabs at b9a0.
+; by copying it we are independent on the dos version, 
+; while still avoiding rwts in the nibble copy function.
+; on entry, x is slot * 16; a is desired half-track;
+; $478 is current half-track
+;---------------------------------------------------------
+seekabs:
+	stx	$2b
+	sta	$2a
+	cmp	$0478
+	beq	seekabs9
+	lda	#$00
+	sta	$26
+seekabs1:
+	lda	$0478
+	sta	$27
+	sec
+	sbc	$2a
+	beq	seekabs6
+	bcs	seekabs2
+	eor	#$ff
+	inc	$0478
+	bcc	seekabs3
+seekabs2:
+	adc	#$fe
+	dec	$0478
+seekabs3:
+	cmp	$26
+	bcc	seekabs4
+	lda	$26
+seekabs4:
+	cmp	#$0c
+	bcs	seekabs5
+	tay   
+seekabs5:
+	sec   
+	jsr	seekabs7
+	lda	delaytb1,y
+	jsr	armdelay
+	lda	$27
+	clc
+	jsr	seekabs8
+	lda	delaytb2,y
+	jsr	armdelay
+	inc	$26
+	bne	seekabs1
+seekabs6:
+	jsr	armdelay
+	clc
+seekabs7:
+	lda	$0478
+seekabs8:
+	and	#$03
+	rol
+	ora	$2b
+	tax
+	lda	$c080,x
+	ldx	$2b
+seekabs9:
+	rts
+
+;---------------------------------------------------------
+; armdelay - copy of standard dos armdelay at $ba00
+;---------------------------------------------------------
+armdelay:
+	ldx	#$11
+armdela1:
+	dex
+	bne	armdela1
+	inc	$46
+	bne	armdela3
+	inc	$47
+armdela3:
+	sec
+	sbc	#$01
+	bne	armdelay
+	rts
+
+;---------------------------------------------------------
+; next are two tables used in the arm movements. they must
+; also lie in one page.
+;---------------------------------------------------------
+delaytb1:
+	.byte $01,$30,$28,$24,$20,$1e 
+	.byte $1d,$1c,$1c,$1c,$1c,$1c
+
+delaytb2:
+	.byte $70,$2c,$26,$22,$1f,$1e
+	.byte $1d,$1c,$1c,$1c,$1c,$1c
+
+; End of the page-bound stuff.
 
 ;---------------------------------------------------------
 ; START - MAIN PROGRAM
@@ -157,6 +348,7 @@ start:
 	lda	#$00
 	sta	secptr		; secptr is always page-aligned
 	sta	stddos		; Assume standard DOS initially
+	sta	hlftrk		; Init hlftrk global to zero
 	lda	$b92e		; Save contents of DOS
 	sta	dosbyte		; Checksum bytes
 	cmp	#$13
@@ -175,6 +367,8 @@ dosok2:
 redraw: jsr	title		; DRAW TITLE SCREEN
 
 mainlup:
+	lda	#0		; Turn hlftrk flag back off
+	sta	hlftrk
 	ldy	#mprompt	; SHOW MAIN PROMPT
 mainl:
 resetio:
@@ -184,8 +378,27 @@ resetio:
 	and	#$df		; CONVERT TO UPPERCASE
 
 	cmp	#_'S'		; SEND?
-	bne	krecv		; NOPE, TRY RECEIVE
+	bne	krecv		; Nope, try receive
+	ldy	#msendtype
+	jsr	showmsg
+	jsr	rdkey		; GET ANSWER
+	and	#$df		; CONVERT TO UPPERCASE
+	cmp	#_'H'		; Half?
+	bne	:+
+	lda	#1		; set hlftrk flag on
+	sta	hlftrk
+	jsr	sendhlf		; yes, do halftrack/nib send
+	jmp	redraw		; changed the screen, so restore
+:
+	cmp	#_'N'		; Nibble?	
+	bne	:+
+	jsr	sendnib		; yes, do send nibble disk
+	jmp	redraw		; changed the screen, so restore
+:
+	cmp	#_'S'		; SEND?
+	bne	:+		; Nope, invalid input
 	jsr	send		; YES, DO SEND ROUTINE
+:
 	jmp	mainlup
 
 krecv:	cmp	#_'R'		; RECEIVE?
@@ -288,75 +501,75 @@ dircont:
 ; FindSlot - Find a comms device
 ;---------------------------------------------------------
 FindSlot:
-	lda #$00
-	sta msgptr		; Borrow msgptr
-	sta TempSlot
-	sta TempIIgsSlot
-	ldx #$07		; Slot number - start high
+	lda	#$00
+	sta	msgptr		; Borrow msgptr
+	sta	TempSlot
+	sta	TempIIgsSlot
+	ldx	#$07		; Slot number - start high
 FindSlotLoop:
 	clc
 	txa
-	adc #$c0
-	sta msgptr+1
-	ldy #$05		; Lookup offset
-	lda (msgptr),y
-	cmp #$38		; Is $Cn05 == $38?
-	bne FindSlotNext
-	ldy #$07		; Lookup offset
-	lda (msgptr),y
-	cmp #$18		; Is $Cn07 == $18?
-	bne FindSlotNext
-	ldy #$0b		; Lookup offset
-	lda (msgptr),y
-	cmp #$01		; Is $Cn0B == $01?
-	bne FindSlotNext
-	ldy #$0c		; Lookup offset
-	lda (msgptr),y
-	cmp #$31		; Is $Cn0C == $31?
-	bne FindSlotNext
+	adc	#$c0
+	sta	msgptr+1
+	ldy	#$05		; Lookup offset
+	lda	(msgptr),y
+	cmp	#$38		; Is $Cn05 == $38?
+	bne	FindSlotNext
+	ldy	#$07		; Lookup offset
+	lda	(msgptr),y
+	cmp	#$18		; Is $Cn07 == $18?
+	bne	FindSlotNext
+	ldy	#$0b		; Lookup offset
+	lda	(msgptr),y
+	cmp	#$01		; Is $Cn0B == $01?
+	bne	FindSlotNext
+	ldy	#$0c		; Lookup offset
+	lda	(msgptr),y
+	cmp	#$31		; Is $Cn0C == $31?
+	bne	FindSlotNext
 ; Ok, we have a set of signature bytes for a comms card, IIgs or Laser.
-	ldy #$1b		; Lookup offset
-	lda (msgptr),y
-	cmp #$eb		; Do we have a goofy XBA instruction?
-	bne FoundNotIIgs	; If not, it's an SSC or a Laser.
-	cpx #$02		; Only bothering to check IIgs Modem slot (2)
-	bne FindSlotNext
-	lda #$07		; We found the IIgs modem port, so store it
-	sta TempIIgsSlot
-	jmp FindSlotNext
+	ldy	#$1b		; Lookup offset
+	lda	(msgptr),y
+	cmp	#$eb		; Do we have a goofy XBA instruction?
+	bne	FoundNotIIgs	; If not, it's an SSC or a Laser.
+	cpx	#$02		; Only bothering to check IIgs Modem slot (2)
+	bne	FindSlotNext
+	lda	#$07		; We found the IIgs modem port, so store it
+	sta	TempIIgsSlot
+	jmp	FindSlotNext
 FoundNotIIgs:
-	ldy #$00
-	lda (msgptr),y
-	cmp #$da
-	bne NotLaser
-	cpx #$02
-	bne FindSlotNext
-	lda #$09
-	sta TempSlot
-	lda pspeed
-	cmp #$06
-	bne :+
-	lda #$05
-	sta pspeed
-	sta default+3
+	ldy	#$00
+	lda	(msgptr),y
+	cmp	#$da
+	bne	NotLaser
+	cpx	#$02
+	bne	FindSlotNext
+	lda	#$09
+	sta	TempSlot
+	lda	pspeed
+	cmp	#$06
+	bne	:+
+	lda	#$05
+	sta	pspeed
+	sta	default+3
 :
-	jmp FindSlotNext
+	jmp	FindSlotNext
 NotLaser:
-	stx TempSlot
+	stx	TempSlot
 FindSlotNext:
 	dex
-	bne FindSlotLoop
+	bne	FindSlotLoop
 ; All done now, so clean up
-	ldx TempSlot
-	beq :+
+	ldx	TempSlot
+	beq	:+
 	dex			; Subtract 1 to match slot# to parm index
-	stx pssc
-	stx default+2		; Store the slot number discovered as default
+	stx	pssc
+	stx	default+2	; Store the slot number discovered as default
 	rts
-:	lda TempIIgsSlot
-	beq FindSlotDone	; Didn't find either SSC or IIgs Modem
-	sta pssc
-	sta default+2		; Store the slot number discovered as default
+:	lda	TempIIgsSlot
+	beq	FindSlotDone	; Didn't find either SSC or IIgs Modem
+	sta	pssc
+	sta	default+2	; Store the slot number discovered as default
 FindSlotDone:
 	rts
 TempSlot:	.byte 0
@@ -386,22 +599,22 @@ savparm:
 ;--------------- FIRST PART: DISPLAY SCREEN --------------
 
 refresh:
-	lda pssc
-	cmp #$08		; Are we talking about the Laser/Pascal Entry Points?
-	bmi restore		; No, go on ahead
-	lda pspeed		; Yes - so check baudrate
-	cmp #$06		; Is it too fast?
-	bne refnext		; No, go on ahead
-	sta svspeed
-	lda #$05		; Yes - so slow it down
-	sta pspeed
-	jmp refnext 
+	lda	pssc
+	cmp	#$08		; Are we talking about the Laser/Pascal Entry Points?
+	bmi	restore		; No, go on ahead
+	lda	pspeed		; Yes - so check baudrate
+	cmp	#$06		; Is it too fast?
+	bne	refnext		; No, go on ahead
+	sta	svspeed
+	lda	#$05		; Yes - so slow it down
+	sta	pspeed
+	jmp	refnext 
 restore:
-	lda svspeed		; Did we have speed previously re-set by Laser?
-	beq refnext		; No, go on ahead
-	sta pspeed		; Yes - so restore it now
-	lda #$00
-	sta svspeed		; Forget about resetting speed until we roll through Laser again
+	lda	svspeed		; Did we have speed previously re-set by Laser?
+	beq	refnext		; No, go on ahead
+	sta	pspeed		; Yes - so restore it now
+	lda	#$00
+	sta	svspeed		; Forget about resetting speed until we roll through Laser again
 refnext:
 	lda	#3		; FIRST PARAMETER IS ON LINE 3
 	jsr	tabv
@@ -539,6 +752,9 @@ parmrst:
 	dey
 	bpl	parmrst
 endcfg:
+	jsr	chekslot	; Verify if slot has disk card
+	bcs	getcmd		; Don't accept slot
+
 	lda	#$01
 	sta	configyet
 	lda	psave		; Did they ask to save parms?
@@ -670,21 +886,65 @@ length:	.word endasm-start
 ; PAUSE - print 'PRESS A KEY TO CONTINUE...' and wait
 ;---------------------------------------------------------
 pause:
-	lda #$00
-	sta ch
-	lda #$17
-	jsr tabv
-	jsr clreop
-	ldy #mpause
-	jsr showmsg
-	jsr rdkey
-	cmp #$9B
-	beq pauseesc
+	lda	#$00
+	sta	ch
+	lda	#$17
+	jsr	tabv
+	jsr	clreop
+	ldy	#mpause
+	jsr	showmsg
+	jsr	rdkey
+	cmp	#$9B
+	beq	pauseesc
 	clc
 	rts
 pauseesc:
 	sec
 	rts
+
+;---------------------------------------------------------
+; checkslot - see if chosen slot has a disk card
+; the check is identical to what is in the autoboot rom
+;---------------------------------------------------------
+chekslot:
+	ldy	pdslot		;get slot# (0..6)
+	iny			;now 1..7
+	tya
+	ora	#$c0		;a now has page address of slot
+	sta	secptr+1	;abuse this pointer
+	lda	#0
+	sta	secptr		;secptr now points to firmware
+	ldy	#7
+checksl1:
+	lda	(secptr),y	;get firmware byte
+	cmp	diskid-1,y	;byte ok?
+	bne	checksl3	;no: report error
+	dey
+	dey
+	bpl	checksl1	;until 4 bytes checked
+	bmi	checksl7	;jump always
+checksl3:
+	jsr	awbeep
+	ldy	#mnodiskc	;error message number
+	jsr	showmsg		;and show message
+checksl5: 
+	jsr	rdkey		;get answer
+	and	#$df		;convert to uppercase
+	cmp	#'Y'
+	beq	checksl7	;user agrees
+	cmp	#'N'
+	bne	checksl5	;wrong answer
+	ldy	#mconfg2
+	jsr	showmsg		;restore default text
+	sec			;indicate error
+	rts
+checksl7:
+	clc			;indicate: no error
+checksl9:
+	rts
+
+; Define diskid ourselves, to be independent of ROM
+diskid:	.byte $20,$ff,$00,$ff,$03,$ff,$3c
 
 ;---------------------------------------------------------
 ; PARMINT - INTERPRET PARAMETERS
@@ -756,15 +1016,15 @@ rwtsmod:
 	ldy	pssc		; GET SLOT# (0..6)
 	iny			; NOW 1..7
 	tya
-	cmp #$08
-	bpl drivers
-	jmp initssc	; Y holds slot number
+	cmp	#$08
+	bpl	drivers
+	jmp	initssc		; Y holds slot number
 drivers:
-	cmp #$09
-	bpl laser
-	jmp initzgs
+	cmp	#$09
+	bpl	laser
+	jmp	initzgs
 laser:
-	jmp initpas
+	jmp	initpas
 	rts
 
 spdtxt: asc	"  003 0021 0042 0084 006900291 K511"
@@ -1144,6 +1404,507 @@ csloop: sta	$ff00,y
 
 
 ;---------------------------------------------------------
+; sendhlf - send entire disk as nibbles with halftracking 
+;
+; this routine is essentially the same as sendnib except
+; the stepper motor is increased only two phases instead
+; of four and there are 70 halftracks instead of the normal
+; 35. file format is .v2h
+;---------------------------------------------------------
+sendhlf:
+	jsr	nibtitle	; adjust screen
+	jsr	initshlf	; ask for filename & send to pc
+	jsr	nibblank	; clear progress to all blanks
+	jsr	calibrat	; calibrate the disk
+
+	lda	#ack		; send initial ack
+	jsr	putc
+
+	lda	#0		; don't actually use rwts...
+	sta	iobtrk		;  ...so use this as just memory
+
+shlfloop:
+	lda	#_'R'
+	jsr	nibshow		; show "R" at current track
+	jsr	rdnibtr		; read track as nibbles
+	jsr	snibtrak	; send nibbles to other side
+	bcs	shlfloop	; re-read same track
+	inc	iobtrk		; next trackno
+	lda	iobtrk
+	cmp	#$46		; repeat while trackno < 70
+	bcs	shlffin		; jump if ready
+	jsr	hlfnextt	; goto next half track
+	jmp	shlfloop
+
+shlffin:
+	lda	#0		; no errors encountered
+	jsr	putc		; send (no) error flag to pc
+	jsr	motoroff	; we're finished with the drive
+	jmp	awbeep		; beep and end
+
+;---------------------------------------------------------
+; initshlf - init send halftrack/nibble disk
+; ask for a filename, then send "V" command and filename
+; to the other side and await an acknowldgement.
+; note we do not check for a valid disk in the drive;
+; basically any disk will do. if there is no disk present,
+; bad luck (behaves the same as when booting).
+;---------------------------------------------------------
+initshlf:
+	ldy	#mfsend
+	jsr	showmsg		; Ask for filename
+	ldx	#0		; Get answer at $200
+	jsr	nxtchar		; Input the line (Apple ROM)
+	lda	#0		; Null-terminate it
+	sta	$200,x
+	txa
+	bne	hlfnamok
+	jmp	abort		; Abort if no filename
+
+hlfnamok:
+	ldy	#mpcans		; "awaiting answer from host"
+	jsr	showmsg
+	lda	#_'V'		; Load acc with command code
+	jsr	putc		;  ...and send to host
+	ldx	#0
+hfloop2:
+	lda	$200,x		; Send filename to host
+	jsr	putc
+	beq	gethans2	; Stop at null
+	inx
+	bne	hfloop2
+
+gethans2:
+; for test only: activate next and deactivate line after
+;	lda	#0		; simulate ok
+	jsr	getc		; answer from host should be 0
+	beq	initsh2
+	jmp	pcerror		; error; exit via getname
+
+initsh2:
+	ldy	#mhlfsend
+	jsr	showmsg		; show transfer message
+	jmp	showfn		; exit via getname
+
+;---------------------------------------------------------
+; hlfnextt - goto next halftrack. we know there is still room
+; to move further. next track is in iobtrk.
+; use copy of dos function seekabs.
+;---------------------------------------------------------
+hlfnextt:
+	jsr	slot2x		; a = x = slot * 16
+	lda	iobtrk		; a = desired halftrack
+	pha			; save on stack
+	sec			; prepare subtract
+	sbc	#1		; a now contains current track
+	sta	$478		; seekabs expects this
+	pla			; desired track in a
+	jsr	seekabs		; let dos function do its thing
+	rts
+
+;---------------------------------------------------------
+; sendnib - send entire disk as nibbles
+; 
+; we don't want to depend on any disk formatting, not even
+; on the track and sector numbers. so don't use rwts; just
+; calibrate the arm to track 0, and send all 35 tracks. we
+; do _not_ support half-tracks. each track is read about
+; twice its length, to give the other side enough data to
+; make the analysis. each track must be acknowledged 
+; before we proceed with the next track.
+;---------------------------------------------------------
+sendnib:
+	jsr	nibtitle	; Adjust screen
+	jsr	initsnib	; Ask for filename & send to pc
+	jsr	nibblank	; Clear progress to all blanks
+	jsr	calibrat	; Calibrate the disk
+
+	lda	#ack		; Send initial ack
+	jsr	putc
+
+	lda	#0		; Don't actually use rwts...
+	sta	iobtrk		; ...so use this as just memory
+
+snibloop:
+	lda	#_'R'
+	jsr	nibshow		; Show 'R' at current track
+	jsr	rdnibtr		; Read track as nibbles
+	jsr	snibtrak	; Send nibbles to other side
+	bcs	snibloop	; Re-read same track
+	inc	iobtrk		; Next trackno
+	lda	iobtrk
+	cmp	#$23		; Repeat while trackno < 35
+	bcs	snibfin		; Jump if ready
+	jsr	nibnextt	; Go to next track
+	jmp	snibloop
+
+snibfin:
+	lda	#0		; No errors encountered
+	jsr	putc		; Send (no) error flag to pc
+
+	jsr	motoroff	; We're finished with the drive
+	jmp	awbeep		; Beep and end
+
+
+;---------------------------------------------------------
+; nibblank - clear progress to all blanks
+;---------------------------------------------------------
+nibblank:
+	lda	cv
+	pha			; Save current vertical pos
+	lda	#5		; Fixed vertical position
+	jsr	tabv		; Calculate basl from a
+	ldy	#2		; Initial horizontal position
+	lda	#_' '		; The character to display
+nibblnk1:
+	sta	(basl),y	; Put on screen
+	iny			; Next horizontal position
+	cpy	#37		; At the end?
+	bcc	nibblnk1	; If not, jump back
+	pla
+	jsr	tabv		; Restore cv
+	rts
+
+;---------------------------------------------------------
+; nibshow - show character in a at current track
+; support for haltracking added
+;---------------------------------------------------------
+nibshow:
+	tay			; Character in y
+	lda	cv
+	pha			; Save cv on stack
+	tya			; accum now contains char
+	pha			; Save char on stack
+	lda	#5		; Fixed vertical position
+	jsr	tabv		; Calculate basl from accum
+	lda	hlftrk 		; Check to see if we're in halftrk
+	cmp	#1		;  mode
+	bne	nibnorm		; No hlftrk, continue normally
+	lda	iobtrk
+	cmp	#0		; Track zero always treated the same
+	beq	nibnorm
+	lsr			; Is track odd or even?
+	bcc	nibeven		; Track is even, continue normally
+	lda	#6		; Increment vertical position
+	jsr	tabv		; Calculate basl from accum
+nibeven:
+	lda	iobtrk		; Current track
+	lsr			; Ccalc horiz pos by
+	clc			;  dividing by two and
+	adc	#2		;  adding 2
+	jmp	nibdisp
+nibnorm:
+	lda	iobtrk		; Current track
+	clc
+	adc	#2		; Calculate horizontal pos
+nibdisp:
+	tay			; Index value in y
+	pla			; Restore character to show
+	sta	(basl),y
+	pla
+	jsr	tabv		; Restore cv
+	rts
+
+
+;---------------------------------------------------------
+; initsnib - init send nibble disk
+; ask for a filename, then send "N" command and filename
+; to the other side and await an acknowldgement.
+; note we do not check for a valid disk in the drive;
+; basically any disk will do. if there is no disk present,
+; bad luck (behaves the same as when booting).
+;---------------------------------------------------------
+initsnib:
+	ldy	#mfsend
+	jsr	showmsg		; Ask filename
+	ldx	#0		; Get answer at $200
+	jsr	nxtchar		; Input the line (Apple ROM)
+	lda	#0		; Null-terminate it
+	sta	$200,x
+	txa
+	bne	nibnamok
+	jmp	abort		; Abort if no filename
+
+nibnamok:
+	ldy	#mpcans		; "awaiting answer from host"
+	jsr	showmsg
+	lda	#_'N'		; Load acc with command code
+	jsr	putc		;  and send to pc
+	ldx	#0
+fnloop2:
+	lda	$200,x		; Send filename to pc
+	jsr	putc
+	beq	getans2		; Stop at null
+	inx
+	bne	fnloop2
+
+getans2:  
+	lda	#$18
+	jsr	putc		; Send disk size lsb
+	lda	#$01
+	jsr	putc		; Send disk size msb
+; for test only: activate next and deactivate line after
+;	lda	#0		; Simulate ok
+	jsr	getc		; Answer from host should be 0
+	beq	initsn2
+	jmp	pcerror		; Error; exit via getname
+
+initsn2:
+	ldy	#mnibsend
+	jsr	showmsg		; Show transfer message
+	jmp	showfn		; Exit via getname
+
+;---------------------------------------------------------
+; snibtrak - send nibble track to the other side
+; and wait for acknowledgement. each 256 byte page is
+; followed by a 16-bit crc.
+; we know the buffer is set up at "tracks", and is
+; nibpages * 256 bytes long. tracks is at page boundary.
+; when the pc answers ack, clear carry. when it answers
+; enq, set carry. when it answers anything else, abort
+; the operation with the appropriate error message.
+;---------------------------------------------------------
+snibtrak:
+	lda	#0		; a = 0
+	sta	iobsec		; Reset sector counter
+	sta	nibptr		; Init running ptr
+	lda	#>tracks	; Tracks address high
+	sta	nibptr+1
+	lda	#nibpages
+	sta	nibpcnt		; Page counter
+	lda	#_'O'
+	jsr	nibshow		; Show 'O' at current track
+snibtr1:
+	jsr	snibpage
+	lda	crc		; followed by crc
+	jsr	putc
+	lda	crc+1
+	jsr	putc
+; for test only: activate next and deactivate line after
+;	lda	#ack		; Simulate response.
+	jsr	getc		; Get response from host
+	cmp	#ack		; Is it ack?
+	beq	snibtr5		; Yes, all right
+	pha			; Save on stack
+	lda	#_I'!'		; Error during send
+	jsr	nibshow		; Show status of current track
+	pla			; Restore response
+	cmp	#nak		; Is it nak?
+	beq	snibtr1		; Yes, send again
+snibtr2:
+	ldy	#mconfus	; Something is wrong
+snibtr3:
+	jsr	showmsg		; Tell bad news
+	jsr	motoroff	; Transfer ended in error
+	ldy	#manykey	; Append prompt
+	jsr	showm1
+	jsr	awbeep
+	jsr	rdkey		; Wait for key
+	jmp	abort		;  and abort
+         
+snibtr5:
+	lda	#_'O'
+	jsr	nibshow		; Show 'O' at current track
+	inc	nibptr+1	; Next page
+	inc	iobsec		; Increment sector counter
+	dec	nibpcnt		; Count
+	bne	snibtr1		; and back if more pages
+; for test only: activate next and deactivate line after
+;	lda	#ack		; Simulate response
+	jsr	getc		; Get response from pc
+	cmp	#ack		; Is it ack?
+	beq	snibtr7		; Ok
+	cmp	#can		; Is it can (unreadable trk)?
+	beq	snibtr8		; Ok
+	cmp	#nak		; Was it nak?
+	beq	snibtr6		; We will abort
+	cmp	#enq
+	bne	snibtr2		; Host is confused; abort
+	sec			; Let caller know what goes on
+	rts
+snibtr6:
+	ldy	#manalys	; Host could not analyze the track
+	bpl	snibtr3		; Branch always
+snibtr7:
+	lda	#_'.'		; Entire track transferred ok
+	jsr	nibshow		; Show status of current track
+	clc			; Indicate success to caller
+	rts
+snibtr8:
+	lda	#_I'U'		; Entire track was unreadable
+	jsr	nibshow		; Probably a half track
+	clc			; Indicate success to caller
+	rts
+
+;---------------------------------------------------------
+; snibpage - send one page with nibble data and calculate
+; crc. nibptr points to first byte to send.
+;---------------------------------------------------------
+snibpage:
+	ldy	#0		; Start index
+	sty	crc		; Zero crc
+	sty	crc+1
+	sty 	prev		; No previous character
+	lda	iobsec
+	jsr	putc		; Send the track number
+	lda	iobtrk
+	jsr	putc		; Send the sector number
+	lda	#$02
+	jsr	putc		; Send a protocol filler
+
+snibpag1:
+	lda	(nibptr),y	; Load byte to send
+	jsr	updcrc		; Update crc
+	tax			; Keep a copy in x
+	sec			; Subtract from previous
+	sbc	prev
+	stx	prev		; Save previous byte
+	jsr	putc		; Send difference
+	beq	snibpag3	; Was it a zero?
+	iny			; No, do next byte
+	bne	snibpag1	; Loop if more in this page
+	rts
+         
+snibpag2:
+	jsr	updcrc
+snibpag3:
+	iny			; Any more bytes?
+	beq	snibpag4	; No, it was 00 up to end
+	lda	(nibptr),y	; Look at next byte
+	cmp	prev
+	beq	snibpag2	; Same as before, continue
+snibpag4:
+	tya			; Difference not a zero
+	jsr	putc		; Send new address
+	bne	snibpag1	;  and go back to main loop
+	rts			; Or return if no more bytes
+
+;---------------------------------------------------------
+; nibnextt - goto next track. we know there is still room
+; to move further. next track is in iobtrk.
+; use copy of dos function seekabs.
+;---------------------------------------------------------
+nibnextt:
+	jsr	slot2x		; a = x = slot * 16
+	lda	iobtrk		; a = desired track
+	asl	a		; a now contains half-track
+	pha			; save on stack
+	sec			; prepare subtract
+	sbc	#2		; a now contains current track
+	sta	$478		; seekabs expects this
+	pla			; desired track in a
+	jsr	seekabs		; let dos function do its thing
+	rts
+
+
+;---------------------------------------------------------
+; motoroff - turn disk drive motor off
+; preserves y. doesn't hurt if motor is already off.
+;---------------------------------------------------------
+motoroff:
+	jsr	slot2x		; a = x = slot * 16
+	lda	$c088,x		; turn motor off
+	rts
+
+
+;---------------------------------------------------------
+; slot2x - sets configured slot * 16 in x and in a
+;---------------------------------------------------------
+slot2x:	ldx	pdslot
+	inx			; now 1..7
+	txa
+	asl
+	asl
+	asl
+	asl			; a now contans slot * 16
+	tax			; store in x
+	rts
+
+;---------------------------------------------------------
+; nibsync - synchronize on first byte after gap
+; this function is only used from rdnibtr, but i had to
+; make it a separate function to keep other stuff in one
+; page (because of instriuction timings).
+; this function is always fast enough to process the
+; nibbles, no matter how it is laid out in memory.
+; it always returns the first nibble after a gap, provided
+; the track has a gap at all. if we don't find a gap, we
+; probably have to do with an unformatted track. in that 
+; case, just return any byte as the first, so the process
+; can continue.
+; on entry, x must contain slot * 16. the disk must spin,
+; and we must be in read mode and on the right track.
+; on exit, the zero flag is 0, and a contains the byte.
+; x and y are preserved.
+; note we check the number of bytes read only when 
+; starting a new sequence; the check takes so long we
+; loose any byte sync we might have (> 32 cycles).
+;---------------------------------------------------------
+nibsync:
+	tya
+	pha			; save y on the stack
+	lda	#0
+	tay			; y=0 (counter)
+	sta	synccnt
+	sta	synccnt+1	; init number of bytes
+nibsync0:
+	jsr	chekscnt
+	bcs	nibsync5	; accept any byte
+nibsync1:
+	lda	$c08c,x		; wait for complete byte
+	bpl	nibsync1
+	iny			; count byte
+	cmp	#$ff		; is it a gap byte?
+	bne	nibsync0
+nibsync2:
+	lda	$c08c,x		; next byte
+	bpl	nibsync2
+	iny			; count byte
+	cmp	#$ff		; is it a gap byte?
+	bne	nibsync0	; only 1 gap byte
+nibsync3:
+	lda	$c08c,x		; next byte
+	bpl	nibsync3
+	iny			; count byte
+	cmp	#$ff		; is it a gap byte?
+	bne	nibsync0	; only 2 gap bytes
+nibsync4:
+	lda	$c08c,x		; next byte
+	bpl	nibsync4
+	iny			; count byte
+	cmp	#$ff		; is it a gap byte?
+	bne	nibsync0	; only 3 gap bytes
+; at this point, we encountered 4 consecutive gap bytes.
+; so now wait for the first non-gap byte.
+nibsync5:
+	pla
+	tay			; restore y
+nibsync6:
+	lda	$c08c,x		; next byte
+	bpl	nibsync6
+	cmp	#$ff		; is it a gap byte?
+	beq	nibsync6	; go read next byte
+	jmp	rdnibtr8	; avoid rts; save some cycles
+
+;---------------------------------------------------------
+; chekscnt - check if we have to continue syncing
+; add y to synccnt (16 bit), and reset y to 0. when
+; synccnt reaches $3400, return carry set, else clear.
+; $3400 is twice the max number of bytes in one track.
+;---------------------------------------------------------
+chekscnt:
+	clc			; add y to 16-bit synccnt
+	tya
+	adc	synccnt		; lo-order part
+	sta	synccnt
+	lda	#0
+	tay			; reset y to 0
+	adc	synccnt+1	; high-order part
+	sta	synccnt+1
+	cmp	#$34		; sets carry when a >= data
+	rts
+
+;---------------------------------------------------------
 ; HOMECUR - RESET CURSOR POSITION TO 1ST SECTOR
 ; CHRREST - RESTORE PREVIOUS CONTENTS & ADVANCE CURSOR
 ; CHRADV  - WRITE NEW CONTENTS & ADVANCE CURSOR
@@ -1274,12 +2035,12 @@ nobeep: rts
 ;---------------------------------------------------------
 ; PUTC - SEND ACC OVER THE SERIAL LINE (AXY UNCHANGED)
 ;---------------------------------------------------------
-putc:	jmp $0000	; Pseudo-indirect JSR - self-modified
+putc:	jmp	$0000	; Pseudo-indirect JSR - self-modified
 
 ;---------------------------------------------------------
 ; GETC - GET A CHARACTER FROM SERIAL LINE (XY UNCHANGED)
 ;---------------------------------------------------------
-getc:	jmp $0000	; Pseudo-indirect JSR - self-modified
+getc:	jmp	$0000	; Pseudo-indirect JSR - self-modified
 
 ;---------------------------------------------------------
 ; ABORT - STOP EVERYTHING (CALL SABORT TO BEEP ALSO)
@@ -1316,7 +2077,7 @@ showsec:
 	inc	cv
 	dex
 	bpl	showsec
-
+showundm: 
 	lda	#_'_'		; SHOW LINE OF UNDERLINES
 	ldx	#38		; ABOVE INVERSE TEXT
 showund:
@@ -1325,6 +2086,47 @@ showund:
 	bpl	showund
 	rts
 
+;---------------------------------------------------------
+; nibtitle - show title screen for nibble disk transfer
+;---------------------------------------------------------
+nibtitle:
+	jsr	home		; clear screen
+	ldy	#mtitle
+	jsr	showm1		; show top part of title screen
+	lda	#5		; show one block left and right
+	sta	cv		; on line 5
+	jsr	vtab
+	lda	#_I' '		; inverse space char
+	ldy	#38		; at end of line
+	sta	(basl),y
+	ldy	#0		; at start of line
+	sta	(basl),y
+	lda	#_I'>'		; inverse character!
+	iny			; next position in line
+	sta	(basl),y
+	lda	#_I'<'		; inverse character!
+	ldy	#37		; one-but-last position in line
+	sta	(basl),y
+	lda	hlftrk		; check to see if we need to
+	cmp	#1		; display halftrack line
+	bne	nibtdone
+	lda	#6		; move one line down
+	sta	cv
+	jsr	vtab
+	lda	#_I'.'		; put an inverse . on screen
+	ldy	#0		;  at horiz pos 0
+	sta	(basl),y
+	lda	#'5'		; and now put a 5 so we see
+	ldy	#1		;  .5 which means halftrk
+	sta	(basl),y
+	lda	#_I' '		; put 2 inverse spaces at the end
+	ldy	#37
+	sta	(basl),y
+	iny
+	sta	(basl),y
+
+nibtdone:
+	bne	showundm	; exit via title
 
 ;---------------------------------------------------------
 ; SHOWMSG - SHOW NULL-TERMINATED MESSAGE #Y AT BOTTOM OF
@@ -1359,16 +2161,17 @@ msgend: rts
 msgtbl: .addr	msg01,msg02,msg03,msg04,msg05,msg06,msg07
 	.addr	msg08,msg09,msg10,msg11,msg12,msg13,msg14
 	.addr	msg15,msg16,msg17,msg18,msg19,msg20,msg21
-	.addr	msg22,msg23,msg24,msg25,msg26,msg27
+	.addr	msg22,msg23,msg24,msg25,msg26,msg27,msg28
+	.addr	msg29,msg30,msg31,msg32
 
 msg01:	asc	"COM:S"
 mtssc:	asc	" ,"
 mtspd:	asc	"        "
-	inv	" ADT 1.33 "
+	inv	" ADT V.R.M "
 	asc	"    DISK:S"
 mtslt:	asc	" ,D"
 mtdrv:	asc	" "
-	.byte	$8d,$8d,$8d
+	.byte	$8d,$8d
 	invcr	"  00000000000000001111111111111111222  "
 	inv	"  "
 hexnum: inv	"0123456789ABCDEF0123456789ABCDEF012  "
@@ -1389,7 +2192,18 @@ msg02:	inv	" ADT CONFIGURATION "
 msg03:	asccr	"USE ARROWS AND SPACE TO CHANGE VALUES,"
 	ascz	"RETURN TO ACCEPT, CTRL-D FOR DEFAULTS."
 
-msg04:	ascz	"SEND, RECEIVE, DIR, CONFIGURE, QUIT? "
+msg04:	inv	"S"
+	asc	"END, "
+	inv	"R"
+	asc	"ECEIVE, "
+	inv	"D"
+	asc	"IR, "
+	inv	"C"
+	asc	"ONFIGURE, "
+	inv	"Q"
+	asc	"UIT, "
+	inv	"?"
+	.byte	00
 msg05:	ascz	"SPACE TO CONTINUE, ESC TO STOP: "
 msg06:	ascz	"END OF DIRECTORY, TYPE SPACE: "
 
@@ -1424,8 +2238,8 @@ msg18:	ascz	"  ANY KEY: "
 
 msg19:	ascz	"<- DO NOT CHANGE"
 
-msg20:	asccr	"APPLE DISK TRANSFER 1.33      2007-7-8"
-	ascz	"PAUL GUERTIN (SSC AND IIGS COMPATIBLE)"
+msg20:	asccr	"APPLE DISK TRANSFER BY PAUL GUERTIN AND"
+	ascz	"OTHERS (SSC, IIGS, LASER COMPATIBLE)"
 
 msg21:	ascz	"TESTING DISK FORMAT."
 
@@ -1440,6 +2254,24 @@ msg25:	ascz	"FILE LOCKED"
 msg26:	ascz	"WRITE PROTECTED"
 
 msg27:	ascz	"I/O ERROR"
+
+msg28:	ascz	"SENDING NIBBLE FILE "
+
+msg29:	ascz	"NO DISK CARD IN SELECTED SLOT."
+	.byte	$8d
+	ascz	"ARE YOU SURE (Y/N)? "
+
+msg30:	inv	"ERROR:"
+	ascz	" CANNOT ANALYZE TRACK."
+
+msg31:	ascz	"SENDING HALFTRACK FILE "
+
+msg32:	inv	"S"
+	asc	"IMPLE, "
+	inv	"N"
+	asc	"IBBLE, "
+	inv	"H"
+	ascz	"ALF TRACKS ?"
 
 ;----------------------- PARAMETERS ----------------------
 

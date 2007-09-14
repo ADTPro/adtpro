@@ -21,7 +21,7 @@
 .global CAPBLKS, DEVICES, PARMBUF, BLKLO, BLKHI, BIGBUF, CRCTBLL, CRCTBLH
 .global NUMBLKS, HOSTBLX, UNITNBR
 .global PARMS, PSSC, PSPEED, PSOUND, PSAVE, PGSSLOT, SR_WR_C, SLOWA, SLOWX, SLOWY
-.global PCCRC, COLDSTART, BAUD, NonDiskII
+.global PCCRC, COLDSTART, BAUD, NonDiskII, SendType
 
 .globalzp ZP, UTILPTR, COL_SAV, RLEPREV, UNUSED1, BLKPTR, CRC
 
@@ -62,8 +62,7 @@ synccnt	= $1d		; ($02 bytes) Used by nibble/halftrack
 CRC	= $1d		; ($02 bytes) Used by ONLINE, SEND and RECEIVE
 CRCY	= $8a		; ($01 byte) Used by UDP SEND
 TMOT    = $8b		; ($01 byte) Timeout indicator
-NIBPTR	= $8c		; ($02 bytes) Used by nibble/halftrack
-NIBPCNT	= $8e		; ($01 byte) Counts nibble pages
+NIBPCNT	= $8c		; ($01 byte) Counts nibble pages
 
 SR_WR_C:
 	.byte $00	; A place to save the send/receive/read/write character
@@ -71,7 +70,9 @@ SLOWA:	.byte $00	; A place to save the Accumulator, speed is not important
 SLOWX:	.byte $00	; A place to save the X register, speed is not important
 SLOWY:	.byte $00	; A place to save the Y register, speed is not important
 iobtrk:
-PCCRC:	.byte $00,$00	; CRC received from PC
+PCCRC:	.byte $00
+maxtrk:
+PCCRC2:	.byte $00	; CRC received from PC
 
 pdslot:	.byte $06
 pdrive:	.byte $00
@@ -92,3 +93,6 @@ BAUD:	.byte 6	;1=300, 2=1200, 3=2400
 ;---------------------------------------------------------
 NonDiskII:	.byte $00	; $00 = We do _not_ have a Disk II
 				; $01 = We _have_ a Disk II
+SendType:	.byte CHR_P	; CHR_P = Normal Put
+				; CHR_N = Nibble send
+				; CHR_H = Half track send

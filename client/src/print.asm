@@ -18,7 +18,7 @@
 ; 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 ;
 
-.global PMSG01, PMSG02, PMSG03, PMSG05, PMSG06, PMSG07, PMSG08
+.global PMSG01, PMSG02, PMSG03, PMSG04, PMSG05, PMSG06, PMSG07, PMSG08
 .global PMSG09, PMSG10, PMSG11, PMSG12, PMSG13, PMSG14, PMSG15, PMSG16
 .global PMSG17, PMSG18, PMSG19, PMSG20, PMSG21, PMSG22, PMSG23, PMSG24
 .global PMSG25, PMSG28, PMSG29, PMSG30, PMSG34, PMSG35
@@ -248,8 +248,9 @@ PREPPRG:
 ; HLINE - Prints a row of underlines at current cursor position
 ;---------------------------------------------------------
 HLINE:
-	lda #$df
 	ldx #$28
+HLINEX:			; Send in your own X for length
+	lda #$df
 HLINE1:	jsr COUT1
 	dex
 	bne HLINE1
@@ -290,6 +291,16 @@ WRITEMSGLOOP:
 WRITEMSGEND:
 	rts
 
+;---------------------------------------------------------
+; CLRMSGAREA - Clear out the bottom part of the screen
+;---------------------------------------------------------
+CLRMSGAREA:
+	lda #$00
+	sta <CH
+	lda #$14
+	jsr TABV
+	jsr CLREOP
+	rts
 
 ;---------------------------------------------------------
 ; SHOWHMSG - Show null-terminated host message #Y at current
@@ -448,6 +459,55 @@ INUM:	.byte $00
 
 
 ;---------------------------------------------------------
+; nibtitle - show title screen for nibble disk transfer
+;---------------------------------------------------------
+nibtitle:
+	jsr HOME
+	jsr SHOWLOGO
+	jsr CROUT
+	jsr CROUT
+	ldx #$27
+	jsr HLINEX
+	jsr CROUT
+	ldy #PMNIBTOP
+	jsr WRITEMSG
+	lda	#$0e		; show one block left and right
+	sta	CV		; on line $0e
+	jsr	VTAB
+	lda	#_I' '		; inverse space char
+	ldy	#38		; at end of line
+	sta	(BASL),y
+	ldy	#0		; at start of line
+	sta	(BASL),y
+	lda	#_I'>'		; inverse character!
+	iny			; next position in line
+	sta	(BASL),y
+	lda	#_I'<'		; inverse character!
+	ldy	#37		; one-but-last position in line
+	sta	(BASL),y
+	lda	SendType	; check to see if we need to
+	cmp	#CHR_H		; display halftrack line
+	bne	nibtdone
+	lda	#$0f		; move one line down
+	sta	CV
+	jsr	VTAB
+	lda	#_I'.'		; put an inverse . on screen
+	ldy	#0		;  at horiz pos 0
+	sta	(BASL),y
+	lda	#'5'		; and now put a 5 so we see
+	ldy	#1		;  .5 which means halftrk
+	sta	(BASL),y
+	lda	#_I' '		; put 2 inverse spaces at the end
+	ldy	#37
+	sta	(BASL),y
+	iny
+	sta	(BASL),y
+
+nibtdone:
+	rts
+
+
+;---------------------------------------------------------
 ; Host messages
 ;---------------------------------------------------------
 
@@ -481,7 +541,7 @@ PHMMAX	= $0a		; This must be two greater than the largest host message
 ;---------------------------------------------------------
 
 MSGTBL:
-	.addr MSG01,MSG02,MSG03,MSG05,MSG06,MSG07,MSG08
+	.addr MSG01,MSG02,MSG03,MSG04,MSG05,MSG06,MSG07,MSG08
 	.addr MSG09,MSG10,MSG11,MSG12,MSG13,MSG14,MSG15,MSG16
 	.addr MSG17,MSGSOU,MSGDST,MSG19,MSG20,MSG21,MSG22,MSG23,MSG24
 	.addr MSG25,MSG28,MSG28a,MSG29,MSG30,MNONAME,MIOERR
@@ -489,13 +549,14 @@ MSGTBL:
 	.addr MLOGO1,MLOGO2,MLOGO3,MLOGO4,MLOGO5,MWAIT,MCDIR,MFORC,MFEX
 	.addr MUTHBAD, MPREFIX, MINSERTDISK, MFORMAT, MANALYSIS, MNOCREATE
 	.addr MVolName, MBlank, MTheOld, MUnRecog, MDead
-	.addr MProtect, MNoDisk, MNuther, MUnitNone
+	.addr MProtect, MNoDisk, MNuther, MUnitNone, MNIBTOP
 	.addr MNULL
 
 MSG01:	ascz "v.r.m"
 MSG02:	asccr "(S)END (R)ECEIVE (D)IR (B)ATCH (C)D"
 	.byte $8d,$00
 MSG03:	ascz "(V)OLUMES CONFI(G) (F)ORMAT (?) (Q)UIT:"
+MSG04:	ascz "(S)TANDARD (N)IBBLE (H)ALF TRACKS:"
 MSG05:	ascz "RECEIVING"
 MSG06:	ascz "  SENDING"
 MSG07:	ascz "  READING"
@@ -570,6 +631,12 @@ MNoDisk:	ascz "NO DISK IN THE DRIVE!"
 MNuther:	ascz "FORMAT ANOTHER? (Y/N):"
 MUnitNone:
 	ascz "NO UNIT IN THAT SLOT AND DRIVE"
+MNIBTOP:
+	inv "  00000000000000001111111111111111222  "
+	.byte $8D
+	inv "  0123456789ABCDEF0123456789ABCDEF012  "
+	.byte $8D, $00
+
 MNULL:	.byte $00
 
 ;---------------------------------------------------------
@@ -579,59 +646,61 @@ MNULL:	.byte $00
 PMSG01	= $00
 PMSG02	= $02
 PMSG03	= $04
-PMSG05	= $06
-PMSG06	= $08
-PMSG07	= $0a
-PMSG08	= $0c
-PMSG09	= $0e
-PMSG10	= $10
-PMSG11	= $12
-PMSG12	= $14
-PMSG13	= $16
-PMSG14	= $18
-PMSG15	= $1a
-PMSG16	= $1c
-PMSG17	= $1e
-PMSGSOU	= $20
-PMSGDST	= $22
-PMSG19	= $24
-PMSG20	= $26
-PMSG21	= $28
-PMSG22	= $2a
-PMSG23	= $2c
-PMSG24	= $2e
-PMSG25	= $30
-PMSG28	= $32
-PMSG28a	= $34
-PMSG29	= $36
-PMSG30	= $38
-PMNONAME	= $3a
-PMIOERR	= $3c
-PMNODISK	= $3e
-PMSG34	= $40
-PMSG35	= $42
-PMLOGO1	= $44
-PMLOGO2	= $46
-PMLOGO3	= $48
-PMLOGO4	= $4a
-PMLOGO5	= $4c
-PMWAIT	= $4e
-PMCDIR	= $50
-PMFORC	= $52
-PMFEX	= $54
-PMUTHBAD	= $56
-PMPREFIX	= $58
-PMINSERTDISK	= $5a
-PMFORMAT	= $5c
-PMANALYSIS	= $5e
-PMNOCREATE	= $60
-PMVolName	= $62
-PMBlank		= $64
-PMTheOld	= $66
-PMUnRecog	= $68
-PMDead		= $6a
-PMProtect	= $6c
-PMNoDisk	= $6e
-PMNuther	= $70
-PMUnitNone	= $72
-PMNULL	= $74
+PMSG04	= $06
+PMSG05	= $08
+PMSG06	= $0a
+PMSG07	= $0c
+PMSG08	= $0e
+PMSG09	= $10
+PMSG10	= $12
+PMSG11	= $14
+PMSG12	= $16
+PMSG13	= $18
+PMSG14	= $1a
+PMSG15	= $1c
+PMSG16	= $1e
+PMSG17	= $20
+PMSGSOU	= $22
+PMSGDST	= $24
+PMSG19	= $26
+PMSG20	= $28
+PMSG21	= $2a
+PMSG22	= $2c
+PMSG23	= $2e
+PMSG24	= $30
+PMSG25	= $32
+PMSG28	= $34
+PMSG28a	= $36
+PMSG29	= $38
+PMSG30	= $3a
+PMNONAME	= $3c
+PMIOERR	= $3e
+PMNODISK	= $40
+PMSG34	= $42
+PMSG35	= $44
+PMLOGO1	= $46
+PMLOGO2	= $48
+PMLOGO3	= $4a
+PMLOGO4	= $4c
+PMLOGO5	= $4e
+PMWAIT	= $50
+PMCDIR	= $52
+PMFORC	= $54
+PMFEX	= $56
+PMUTHBAD	= $58
+PMPREFIX	= $5a
+PMINSERTDISK	= $5c
+PMFORMAT	= $5e
+PMANALYSIS	= $60
+PMNOCREATE	= $62
+PMVolName	= $64
+PMBlank		= $66
+PMTheOld	= $68
+PMUnRecog	= $6a
+PMDead		= $6c
+PMProtect	= $6e
+PMNoDisk	= $70
+PMNuther	= $72
+PMUnitNone	= $74
+PMNIBTOP	= $76
+PMNULL	= $78

@@ -28,7 +28,7 @@
 	.include "print.asm"
 	.include "online.asm"
 	.include "rw.asm"
-	.include "ethernet/sr.asm"
+	.include "sr.asm"
 	.include "ethernet/uther.asm"
 	.include "crc.asm"
 	.include "pickvol.asm"

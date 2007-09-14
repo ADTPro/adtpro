@@ -1,6 +1,6 @@
 ;
 ; ADTPro - Apple Disk Transfer ProDOS
-; Copyright (C) 2006 by David Schmidt
+; Copyright (C) 2006, 2007 by David Schmidt
 ; david__schmidt at users.sourceforge.net
 ;
 ; This program is free software; you can redistribute it and/or modify it 
@@ -31,23 +31,23 @@ INITZGS:
 ; ZCCP - Send accumulator out the SCC serial port
 ;---------------------------------------------------------
 ZCCP:
-	STA	TEMPA
-	STX	TEMPX
+	STA TEMPA
+	STX TEMPX
 
-ZSEND:	LDA	GSCMDB		; rr0
+ZSEND:	LDA GSCMDB		; rr0
 
 	TAX
-	AND	#%00000100	; test bit 2 (hardware handshaking)
-	BEQ	ZSEND
+	AND #%00000100		; test bit 2 (hardware handshaking)
+	BEQ ZSEND
 	TXA
-	AND	#%00100000	; test bit 5 (ready to send?)
-	BEQ	ZSEND
+	AND #%00100000		; test bit 5 (ready to send?)
+	BEQ ZSEND
 
-EXIT0:	LDA	TEMPA		; get char to send
-	STA	GSDATAB		; send the character
+EXIT0:	LDA TEMPA		; get char to send
+	STA GSDATAB		; send the character
 
-EXIT:	LDX	TEMPX
-	LDA	TEMPA
+EXIT:	LDX TEMPX
+	LDA TEMPA
 	RTS
 
 TEMPA:	.byte	1
@@ -100,86 +100,86 @@ INITZSCC:
 	SEI
 	clc
 	lda #$05
-	adc PSPEED	; 0 = 9600, 1=19200, 2=115200
+	adc PSPEED	; 0 = 300, 1 = 9600, 2=19200, 3=115200
 	sta BAUD
 
-	LDA	GSCMDB	;hit rr0 once to sync up
+	LDA GSCMDB	;hit rr0 once to sync up
 
-	LDX	#9	;wr9
-	LDA	#RESETB	;load constant to reset Ch B
+	LDX #9		;wr9
+	LDA #RESETB	;load constant to reset Ch B
 			;for Ch A, use RESETCHA
-	STX	GSCMDB
-	STA	GSCMDB
+	STX GSCMDB
+	STA GSCMDB
 	NOP		;SCC needs 11 pclck to recover
 
-	LDX	#3	;wr3
-	LDA	#%11000000	;8 data bits, receiver disabled
-	STX	GSCMDB	;could be 7 or 6 or 5 data bits
-	STA	GSCMDB	;for 8 bits, bits 7,6 = 1,1
+	LDX #3		;wr3
+	LDA #%11000000	;8 data bits, receiver disabled
+	STX GSCMDB	;could be 7 or 6 or 5 data bits
+	STA GSCMDB	;for 8 bits, bits 7,6 = 1,1
 
-	LDX	#5	;wr5
-	LDA	#%01100010	;DTR enabled 0=/HIGH, 8 data bits
-	STX	GSCMDB	;no BRK, xmit disabled, no SDLC
-	STA	GSCMDB	;RTS ;MUST; be disabled, no crc
+	LDX #5		;wr5
+	LDA %01100010	;DTR enabled 0=/HIGH, 8 data bits
+	STX GSCMDB	;no BRK, xmit disabled, no SDLC
+	STA GSCMDB	;RTS ;MUST; be disabled, no crc
 
-	LDX	#14	;wr14
-	LDA	#%00000000	;null cmd, no loopback
-	STX	GSCMDB	;no echo, /DTR follows wr5
-	STA	GSCMDB	;BRG source is XTAL or RTxC
+	LDX #14		;wr14
+	LDA #%00000000	;null cmd, no loopback
+	STX GSCMDB	;no echo, /DTR follows wr5
+	STA GSCMDB	;BRG source is XTAL or RTxC
 
 	lda PSPEED
-	cmp #$02
-	beq GOFAST
+	cmp #$03	; 115200 baud?
+	beq GOFAST	; Yes, go fast
 
-	LDX	#4	;wr4
-	LDA	#%01000100	;X16 clock mode,
-	STX	GSCMDB	;1 stop bit, no parity
-	STA	GSCMDB	;could be 1.5 or 2 stop bits
+	LDX #4		;wr4
+	LDA #%01000100	;X16 clock mode,
+	STX GSCMDB	;1 stop bit, no parity
+	STA GSCMDB	;could be 1.5 or 2 stop bits
 			;1.5 set bits 3,2 to 1,0
 			;2   set bits 3,2 to 1,1
 
-	LDX	#11	;wr11
-	LDA	#WR11BBRG	;load constant to write
-	STX	GSCMDB
-	STA	GSCMDB
+	LDX #11	;wr11
+	LDA #WR11BBRG	;load constant to write
+	STX GSCMDB
+	STA GSCMDB
 
-	JSR	TIMECON	;set up wr12 and wr13
+	JSR TIMECON	;set up wr12 and wr13
 			;to set baud rate.
 
 ; Enables
-	ORA	#%00000001	;enable baud rate gen
-	LDX	#14	;wr14
-	STX	GSCMDB
-	STA	GSCMDB	;write value
+	ORA #%00000001	;enable baud rate gen
+	LDX #14		;wr14
+	STX GSCMDB
+	STA GSCMDB	;write value
 	jmp INITCOMMON
 
 GOFAST:
-	LDX	#4	;wr4
-	LDA	#%10000100	;X32 clock mode,
-	STX	GSCMDB	;1 stop bit, no parity
-	STA	GSCMDB	;could be 1.5 or 2 stop bits
+	LDX #4		;wr4
+	LDA #%10000100	;X32 clock mode,
+	STX GSCMDB	;1 stop bit, no parity
+	STA GSCMDB	;could be 1.5 or 2 stop bits
 			;1.5 set bits 3,2 to 1,0
 			;2   set bits 3,2 to 1,1
 
-	LDX	#11	;wr11
-	LDA	#WR11BXTAL	;load constant to write
-	STX	GSCMDB
-	STA	GSCMDB
+	LDX #11	;wr11
+	LDA #WR11BXTAL	;load constant to write
+	STX GSCMDB
+	STA GSCMDB
 
 INITCOMMON:
-	LDA	#%11000001	;8 data bits, Rx enable
-	LDX	#3
-	STX	GSCMDB
-	STA	GSCMDB	;write value
+	LDA #%11000001	;8 data bits, Rx enable
+	LDX #3
+	STX GSCMDB
+	STA GSCMDB	;write value
 
-	LDA	#%01101010	;DTR enabled; Tx enable
-	LDX	#5
-	STX	GSCMDB
-	STA	GSCMDB	;write value
+	LDA #%01101010	;DTR enabled; Tx enable
+	LDX #5
+	STX GSCMDB
+	STA GSCMDB	;write value
 
 ; Enable Interrupts
 
-	LDX	#15	;wr15
+	LDX #15		;wr15
 
 ; The next line is commented out. This driver wants
 ; interrupts when GPi changes state, ie. the user
@@ -191,29 +191,29 @@ INITCOMMON:
 
 ; LDA #%00100000 ;allow ext. int. on CTS/HSKi
 
-	LDA	#%00000000	;allow ext. int. on DCD/GPi
+	LDA #%00000000	;allow ext. int. on DCD/GPi
 
-	STX	GSCMDB
-	STA	GSCMDB
+	STX GSCMDB
+	STA GSCMDB
 
-	LDX	#0
-	LDA	#%00010000	;reset ext. stat. ints.
-	STX	GSCMDB
-	STA	GSCMDB	;write it twice
+	LDX #0
+	LDA #%00010000	;reset ext. stat. ints.
+	STX GSCMDB
+	STA GSCMDB	;write it twice
 
-	STX	GSCMDB
-	STA	GSCMDB
+	STX GSCMDB
+	STA GSCMDB
 
-	LDX	#1	;wr1
-	LDA	#%00000000	;Wait Request disabled
-	STX	GSCMDB	;allow IRQs on Rx all & ext. stat
-	STA	GSCMDB	;No transmit interrupts (b1)
+	LDX #1		;wr1
+	LDA #%00000000	;Wait Request disabled
+	STX GSCMDB	;allow IRQs on Rx all & ext. stat
+	STA GSCMDB	;No transmit interrupts (b1)
 
-	LDA GSCMDB		; READ TO RESET channelB POINTER TO 0
+	LDA GSCMDB	; READ TO RESET channelB POINTER TO 0
 	LDA #$09
-	STA GSCMDB		; SET 'POINTER' TO wr9
+	STA GSCMDB	; SET 'POINTER' TO wr9
 	LDA #$00
-	STA GSCMDB		; Anti BluRry's syndrome medication 
+	STA GSCMDB	; Anti BluRry's syndrome medication 
 
 	CLI
 	RTS		;we're done!
@@ -223,16 +223,19 @@ INITCOMMON:
 ; (In other words, set the baud rate.)
 
 TIMECON:
-	LDY	BAUD
-	LDA	#12
-	STA	GSCMDB
-	LDA	BAUDL-1,Y	;load time constant low
-	STA	GSCMDB
+	LDY BAUD	; Start with the 9600/19200 baud rate table index
+	lda PSPEED	; But wait... do they only want 300?
+	bne :+		; Yes!  PSPEED is zero, meaning 300 baud.
+	ldy #$00	; Set our index into the baud rate tables to zero (thus selecting 300 baud).
+:	LDA #12
+	STA GSCMDB
+	LDA BAUDL,Y	;load time constant low
+	STA GSCMDB
 
-	LDA	#13
-	STA	GSCMDB
-	LDA	BAUDH-1,Y	;load time constant high
-	STA	GSCMDB
+	LDA #13
+	STA GSCMDB
+	LDA BAUDH,Y	;load time constant high
+	STA GSCMDB
 	RTS
 
 ; Table of values for different baud rates. There is

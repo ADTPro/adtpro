@@ -253,7 +253,7 @@ public class NibbleBufferMap
   public static final int MAP_TENTATIVE_GAP_MODE = 1;
   public static final int MAP_GAP_MODE = 2;
 
-  public static final int MIN_GAP_LENGTH = 4;
+  public static final int MIN_GAP_LENGTH = 3;
   public static final int BITSLIP_LENGTH = 6; // Number of unreliable bytes just before a gap
   public static final int NIBBLE_TRACK_LENGTH = 6656;
   public static final int MIN_TRACK_LENGTH = 4500; // TODO: Maybe...

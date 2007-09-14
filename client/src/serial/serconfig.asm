@@ -98,10 +98,10 @@ REFRESH:
 	cmp #$08	; Are we talking about the Laser/Pascal Entry Points?
 	bmi RESTORE		; No, go on ahead
 	lda PSPEED	; Yes - so check baudrate
-	cmp #$02	; Is it too fast?
+	cmp #$03	; Is it too fast?
 	bne REFNEXT		; No, go on ahead
 	sta SVSPEED
-	lda #$01	; Yes - so slow it down
+	lda #$02	; Yes - so slow it down
 	sta PSPEED
 	jmp REFNEXT 
 RESTORE:
@@ -351,14 +351,14 @@ FoundNotIIgs:
 	bne NotLaser
 	cpx #$02
 	bne FindSlotNext
-	lda #$09
+	lda #$09		; Ok, this is a Laser 128.
 	sta TempSlot
-	lda PSPEED
-	cmp #$06
+	lda PSPEED		; Were we trying to go too fast (115.2k)?
+	cmp #$03
 	bne :+
-	lda #$05
+	lda #$02		; Yes, slow it down to 19200.
 	sta PSPEED
-	sta DEFAULT+3
+	sta DEFAULT+3		; And make that the default.
 :
 	jmp FindSlotNext
 NotLaser:
@@ -389,7 +389,7 @@ TempIIgsSlot:	.byte 0
 
 PARMNUM	= $04		; Number of configurable parms
 ;			; Note - add bytes to OLDPARM if this is expanded.
-PARMSIZ: .byte 9,3,2,2	; Number of options for each parm
+PARMSIZ: .byte 9,4,2,2	; Number of options for each parm
 
 PARMTXT:
 	ascz "SSC SLOT 1"
@@ -401,6 +401,7 @@ PARMTXT:
 	ascz "SSC SLOT 7"
 	ascz "IIGS MODEM"
 	ascz "LASER MODEM"
+	ascz "300"
 	ascz "9600"
 	ascz "19200"
 	ascz "115200"
@@ -420,10 +421,10 @@ CONFIG_FILE_NAME:	.byte 11
 
 PARMS:
 PSSC:	.byte 1		; Comms slot (2)
-PSPEED:	.byte 2		; Comms speed (115200)
+PSPEED:	.byte 3		; Comms speed (115200)
 PSOUND:	.byte 0		; Sounds? (YES)
 PSAVE:	.byte 1		; Save parms? (NO)
-DEFAULT:	.byte 1,2,0,1	; Default parm indices
-SVSPEED:	.byte 2		; Storage for speed setting
+DEFAULT:	.byte 1,3,0,1	; Default parm indices
+SVSPEED:	.byte 3		; Storage for speed setting
 CONFIGYET:	.byte 0		; Has the user configged yet?
 PARMSEND:

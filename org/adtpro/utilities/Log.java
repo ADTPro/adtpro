@@ -60,8 +60,13 @@ public class Log
     {
       DateFormat longTimestamp = 
         DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.MEDIUM);
-      _out.print(longTimestamp.format(new Date())+" ");
-      _out.println(logString);
+      if ((logString != null) && (logString.length() > 0))
+      {
+        _out.print(longTimestamp.format(new Date())+" ");
+        _out.println(logString);
+      }
+      else
+        _out.println();
     }
   }
 

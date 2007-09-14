@@ -38,8 +38,9 @@ CHECKSUM	= $3A ; sector checksum
 ;---------------------------------------------------------
 motoroff:
 	ldx	pdsoftx		; x = slot * 16
+	beq	:+		; Skip it if it's zero...
 	lda	$c088,x		; turn motor off
-	rts
+:	rts
 
 ;---------------------------------------------------------
 ; slot2x - Sets configured slot * 16 in x and in a

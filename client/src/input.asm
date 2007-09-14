@@ -38,6 +38,38 @@ GETFN2:
 	rts
 
 ;---------------------------------------------------------
+; GetSendType - Get 5.25" disk send type
+;---------------------------------------------------------
+GetSendType:
+	jsr CLRMSGAREA
+	ldy #PMSG04
+	jsr WRITEMSG
+	; (S)TANDARD (N)IBBLE (H)ALF TRACKS:
+GetSendLoop:
+	jsr RDKEY
+	and #$DF	; Convert to upper case
+	cmp #CHR_S
+	beq GetSendFold	; Fold to "P"
+	cmp #CHR_N
+	beq GetSendOk
+	cmp #CHR_H
+	beq GetSendOk
+	cmp #CHR_ESC	; ESCAPE = No
+	beq GetSendCancel
+	jmp GetSendLoop
+GetSendCancel:
+	sec
+	lda #CHR_P
+	sta SendType
+	rts
+GetSendFold:
+	lda #CHR_P
+GetSendOk:
+	clc
+	sta SendType
+	rts
+
+;---------------------------------------------------------
 ; PAUSE - print 'PRESS A KEY TO CONTINUE...' and wait
 ;---------------------------------------------------------
 PAUSE:
