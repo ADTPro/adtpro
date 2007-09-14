@@ -96,25 +96,54 @@ mini-din connector with a null modem in between looks like this:
 
 [images/nullModem.jpg]
 
-  If you're wiring one yourself, a single cable to go between a typical
-  PC serial port to the IIgs' 8-pin mini-din connector has this pinout:
+  If you're wiring one yourself, the following are pinouts you can use.
+  These pinouts describe the round "MiniDIN8" IIgs male connector
+looking into the cable connector/plug at the pins:
 
 ---
-Apple               Host       Host
-DIN8                DB-25 *or* DE-9
+ 6 7 8
+3 4   5
+  1 2    
+---
 
- 1 ----------------- 4+20 ----- 7+4
- 2 ------------------ 5 -------- 8
- 3 ------------------ 2 -------- 3
- 4 ------------------ 7 -------- 5
- 5 ------------------ 3 -------- 2
- 6 ----------------- n/c ------ n/c
- 7 ----------------- n/c ------ n/c
- 8 ------------------ 7 -------- 5
+  A straight-through cable (if you connect through a null modem as pictured above) is wired like this
+  (Apple would call this a "Modem" cable):
+
+---
+  Apple
+ MiniDIN8  DE-9  DB-25  RS-232
+   Pin#    Pin#  Pin#    Name
+ --------  ----  -----  ------
+    3 ----- 3      2     TxD
+    5 ----- 2      3     RxD
+    4 --,-- 5      7     GND
+    8 --'
+    2 ----- 8      5     CTS
+    1 --+-- 7      4     RTS
+        '-- 4     20     DTR
+    7 ----- 1      8     DCD
+---
+
+ A single-cable null-modem is wired like this (Apple would call this a "Printer" cable):
+
+---
+  Apple
+ MiniDIN8  DE-9  DB-25  RS-232
+   Pin#    Pin#  Pin#    Name
+ --------  ----  -----  ------
+    5 ----- 3      2     TxD
+    3 ----- 2      3     RxD
+    4 --,-- 5      7     GND
+    8 --'
+    2 ----- 7      4     RTS
+    1 ----- 8      5     CTS
 ---
 
   The cables are getting harder to find in stores, but eBay, swap meets, Jameco, etc.
-will have what you need.
+will have what you need.  I wired some of these up myself for testing using
+Belkin cables, going from MiniDIN8 to DE-9F. 
+{{{mailto:fixme... david__schmidt at users dot sourceforge dot net}Contact me}}
+if you would like to buy one.
 
  A company in the USA is (as of Spring 2007) selling Apple serial cables and
  adapters.  You might check
@@ -174,8 +203,9 @@ on an IIc as well.  I have verified that this pinout works correctly with the La
 The cable will provide null-modem function between the Laser 128 and ADTPro at a
 host computer.  No other signal adaptation should be necessary.
 
-  This pinout describes the male connector (plug) as viewed looking at the pins from the
-front, numbered in the Apple (not DIN!) standard:
+  This pinout describes the round male connector
+looking into the cable plug at the pins.  Note that this is numbered using
+the Apple (not DIN!) standard:
 
 ---
 1       5
@@ -204,10 +234,14 @@ and
   This null modem cable ties all the handshaking lines together at the host
 end and at the Laser end.
 
+  I wired some of these up myself for testing, going from DIN-5 to DE-9F. 
+{{{mailto:fixme... david__schmidt at users dot sourceforge dot net}Contact me}}
+if you would like to buy one.
+
   One thing to note with Laser 128 machines: you will need to keep your 
-  hands off the keyboard while transfers are taking place.  It turns out
-  that keypresses are injected directly into the serial stream, corrupting
-  image transfers.
+hands off the keyboard while transfers are taking place.  It turns out
+that keypresses are injected directly into the serial stream, corrupting
+image transfers.
 
 * {USB cabling}
 
@@ -242,3 +276,13 @@ ADTPro seems to be able to function normally using either flavor.
   Once connected, ADTPro will be able to operate normally over the USB connection,
 including {{{bootstrap.html#Starting from bare metal}bare metal}} bootstrapping
 operations.
+
+* {Pinout References}
+
+ Be careful - these sometimes disagree with one another:
+
+ * {{http://www.mayin.org/aragorn/computers/serial.html}}
+
+ * {{http://www.netbsd.org/docs/Hardware/Misc/serial.html}}
+
+ * {{http://home.swbell.net/rubywand/Csa2T1TCOM.html#006}}
