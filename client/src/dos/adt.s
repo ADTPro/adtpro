@@ -2048,6 +2048,7 @@ getc:	jmp	$0000	; Pseudo-indirect JSR - self-modified
 babort: jsr	awbeep		; BEEP
 abort:	ldx	#$ff		; POP GOES THE STACKPTR
 	txs
+	jsr	motoroff	; Turn potentially active drive off
 	bit	$c010		; STROBE KEYBOARD
 	jmp	redraw		; AND RESTART
 
