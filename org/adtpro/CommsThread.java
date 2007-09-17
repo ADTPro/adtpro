@@ -505,7 +505,7 @@ public class CommsThread extends Thread
             for (halfBlock = 0; halfBlock < 80; halfBlock++)
             {
               packetResult = receivePacket(buffer, halfBlock * 256,
-                  (part * 80 + halfBlock), true);
+                  (part * 80 + halfBlock), 1);
               if (packetResult != 0) break;
               blocksDone++;
               _parent.setProgressValue(blocksDone);
@@ -524,7 +524,7 @@ public class CommsThread extends Thread
             for (halfBlock = 0; halfBlock < (remainder * 2); halfBlock++)
             {
               packetResult = receivePacket(buffer, halfBlock * 256,
-                  (part * 80 + halfBlock), true);
+                  (part * 80 + halfBlock), 1);
               if (packetResult == -1) break;
               blocksDone++;
               _parent.setProgressValue(blocksDone);
@@ -1127,7 +1127,7 @@ public class CommsThread extends Thread
             for (part = 0; part < numParts; part++)
             {
               Log.println(false, "receiveNibbleDisk() Receiving part " + (part + 1) + " of " + numParts + "; "); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-              packetResult = receivePacket(rawNibbleBuffer, part * 256, -1, true);
+              packetResult = receivePacket(rawNibbleBuffer, part * 256, -1, 2);
               if (packetResult != 0) break;
               _parent.setProgressValue((numTracks * 52) + part + 1);
             }
@@ -1166,7 +1166,7 @@ public class CommsThread extends Thread
                 for (part = 0; part < numParts; part++)
                 {
                   Log.println(false, "receiveNibbleDisk() Re-receiving part " + (part + 1) + " of " + numParts + "; ");
-                  packetResult = receivePacket(rawNibbleBuffer, part * 256, -1, true);
+                  packetResult = receivePacket(rawNibbleBuffer, part * 256, -1, 2);
                   if (packetResult != 0) break;
                   _parent.setProgressValue((numTracks * 52) + part + 1);
                 }
@@ -1329,7 +1329,7 @@ public class CommsThread extends Thread
                 for (sector = 15; sector >= 0; sector--)
                 {
                   packetResult = receivePacket(buffer, (track * 4096)
-                      + (sector * 256), -1, false);
+                      + (sector * 256), -1, 0);
                   if (packetResult != 0) break;
                   sectorsDone++;
                   _parent.setProgressValue(sectorsDone);
@@ -1402,8 +1402,12 @@ public class CommsThread extends Thread
   }
 
   public int receivePacket(byte[] buffer, int offset, int buffNum,
-      boolean preamble)
+      int preambleStyle)
   // Receive a packet with RLE compression
+  // preambleStyle:
+  //   0 = No preamble
+  //   1 = ProDOS packets
+  //   2 = Nibble packets
   // Returns:
   // 0 on successful read - block/halfblock numbers, CRC matched
   // -1 on inability to read a packet successfully (timeouts, retries
@@ -1424,7 +1428,7 @@ public class CommsThread extends Thread
       rc = 0;
       prev = 0;
       restarting = false;
-      if (((preamble) && (_client01xCompatibleProtocol == false))
+      if (((preambleStyle == 1) && (_client01xCompatibleProtocol == false))
           || (_transport.getClass() == UDPTransport.class)
           || (_transport.getClass() == AudioTransport.class))
       /*
@@ -1458,33 +1462,42 @@ public class CommsThread extends Thread
               + UnsignedByte.toString(UnsignedByte.loByte(incomingBlockNum))
               + " halfNum: " + halfNum + " Incoming halfNum: " + incomingHalf);
           */
-          if (false)
+          if (preambleStyle == 1)
           {
-          if ((incomingBlockNum != blockNum) || (incomingHalf != halfNum))
-          {
-            if ((incomingBlockNum == (blockNum - 1) && (incomingHalf == (1 - halfNum))))
+            // Checking for Normal/ProDOS order packets:
+            if ((incomingBlockNum != blockNum) || (incomingHalf != halfNum))
             {
-              rc = -2;
-              Log.println(false,
-                  "Block numbers were close (full); acknowledging.");
-              _transport.pauseIncorrectCRC();
-            }
-            else
-              if ((incomingBlockNum == blockNum)
-                  && (incomingHalf == (1 - halfNum)))
+              if ((incomingBlockNum == (blockNum - 1) && (incomingHalf == (1 - halfNum))))
               {
                 rc = -2;
                 Log.println(false,
-                    "Block numbers were close (half); acknowledging.");
+                    "Block numbers were close (full); acknowledging.");
                 _transport.pauseIncorrectCRC();
               }
               else
               {
-                rc = -1;
-                Log.println(false, "Block numbers didn't match.");
-                _transport.pauseIncorrectCRC();
+                if ((incomingBlockNum == blockNum)
+                    && (incomingHalf == (1 - halfNum)))
+                {
+                  rc = -2;
+                  Log.println(false,
+                      "Block numbers were close (half); acknowledging.");
+                  _transport.pauseIncorrectCRC();
+                }
+                else
+                {
+                  rc = -1;
+                  Log.println(false, "Block numbers didn't match.");
+                  _transport.pauseIncorrectCRC();
+                }
               }
-          }
+            } // End of ProDOS preamble checking
+            else if (preambleStyle == 2)
+            {
+              // Nibble preamble checking
+              Log.println(false, "Nibble-style preamble checking in force.");
+              rc = 0;
+            } // End of Nibble preamble checking
           }
           else
             rc = 0;
