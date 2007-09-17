@@ -19,8 +19,8 @@ public class NibbleBufferEntry
 
   public double weightedCompareWith(NibbleBufferEntry another)
   {
-    int compareLength = (length < another.length) ? length : another.length;
-    int calcLength = (length > another.length) ? length : another.length;
+    int compareLength = (length < another.length) ? length : another.length;    // The smallest
+    int calcLength = (length > another.length) ? length : another.length;       // The biggest
     double sum = 0.0;
     for (int i = 0; i < compareLength; i++)
     {
@@ -34,7 +34,7 @@ public class NibbleBufferEntry
       }
     }
     // If the lengths are unequal, add a "don't know" factor.
-    sum += ((calcLength = compareLength) * 0.5);
+    sum += ((calcLength - compareLength) * 0.5);
     return sum / calcLength;
   }
 
@@ -121,6 +121,25 @@ public class NibbleBufferEntry
       /*0xE8*/0, /*0xE9*/1, /*0xEA*/1, /*0xEB*/1, /*0xEC*/1, /*0xED*/1, /*0xEE*/1, /*0xEF*/1,
       /*0xF0*/0, /*0xF1*/0, /*0xF2*/1, /*0xF3*/1, /*0xF4*/1, /*0xF5*/1, /*0xF6*/1, /*0xF7*/1,
       /*0xF8*/0, /*0xF9*/1, /*0xFA*/1, /*0xFB*/1, /*0xFC*/1, /*0xFD*/1, /*0xFE*/1, /*0xFF*/1
+  };
+
+  /* cGapSequence contains all possible gap sequences. 
+   * When we find one of these sequences in the
+   * byte stream, we HAVE a gap.  See Beneath Apple DOS, 
+   * page 3-9, for an explanation. It is assumed there are at least 5 gap
+   * bytes in each gap. In the worst case, we only get to read 4 of them. */
+
+  static int cGapSequence[][] =
+  {
+    {0xFF, 0xFF, 0xFF, 0xFF},
+    {0xFE, 0xFF, 0xFF, 0xFF, 0xFF},
+    {0xFC, 0xFF, 0xFF, 0xFF, 0xFF},
+    {0xF9, 0xFE, 0xFF, 0xFF, 0xFF},
+    {0xF3, 0xFC, 0xFF, 0xFF, 0xFF},
+    {0xE7, 0xF9, 0xFE, 0xFF, 0xFF},
+    {0xCF, 0xF3, 0xFC, 0xFF, 0xFF},
+    {0x9F, 0xE7, 0xF9, 0xFE, 0xFF},
+    {0x00}                // Must be last
   };
 
   public class SameContentsReturn

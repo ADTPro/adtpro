@@ -145,16 +145,17 @@ PCOK:
 	sta CURBLK
 	sta CURBLK+1
 	lda NonDiskII	; Are we dealing with a Disk II?
-	beq SMMORE	; No, skip all this stuff
+	beq SendPrep	; No, skip all this stuff
 	lda SendType	; Which type of send did they request?
 	cmp #CHR_P	; Normal Put?
 	beq SendStandard
 	jmp sendnib	; No - send nibbles
-SendStandard:		; Send standard 5.25"
-	jsr PREPPRG	; Prepare the progress screen
-	jsr PUTINITIALACK
+SendStandard:
 	jsr INIT_DISKII
 	jsr GO_TRACK0
+SendPrep:		; Send standard 5.25"
+	jsr PREPPRG	; Prepare the progress screen
+	jsr PUTINITIALACK
 SMMORE:
 	lda NUMBLKS
 	sec

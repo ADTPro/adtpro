@@ -56,7 +56,7 @@ snibloop:
 	jsr rdnibtr		; Read track as nibbles
 	jsr snibtrak		; Send nibbles to other side
 	lda <ZP
-	beq snibloop		; Re-read same track
+	bne snibloop		; Re-read same track if not zero
 	inc iobtrk		; Next trackno
 	lda iobtrk
 	cmp maxtrk		; Repeat while trackno < max
@@ -98,10 +98,10 @@ snibtrak:
 	lda #NIBPAGES
 	sta NIBPCNT		; Page counter
 	lda #CHR_S
-	jsr nibshow		; Show 'S' at current track
+	jsr nibshow		; Show "S" at current track
 snibtr1:
 	jsr SENDNIBPAGE
-	jsr GETREPLY
+	jsr GETREPLY		; Get ack for this page
 	cmp #CHR_ACK		; Is it ack?
 	beq snibtr5		; Yes, all right
 	pha			; Save on stack
@@ -119,8 +119,6 @@ snibtr3:
 	jmp ABORT		;  and abort
          
 snibtr5:
-	lda #CHR_S
-	jsr nibshow		; Show 'S' at current track
 	inc BLKPTR+1		; Next page
 	inc BLKLO		; Increment "sector" counter using BLKLO
 	dec NIBPCNT		; Count
@@ -134,9 +132,9 @@ snibtr5:
 	beq snibtr8		; Ok
 	cmp #CHR_NAK		; Was it nak?
 	beq snibtr6		; We will abort
-	cmp #CHR_ENQ
+	cmp #CHR_ENQ		; Need to re-send whole track?
 	bne snibtr2		; Host is confused; abort
-	lda #$01
+	lda #$01		; Reset counter and swing around again
 	sta <ZP
 	sec			; Let caller know what goes on
 	rts

@@ -556,7 +556,7 @@ MSG01:	ascz "v.r.m"
 MSG02:	asccr "(S)END (R)ECEIVE (D)IR (B)ATCH (C)D"
 	.byte $8d,$00
 MSG03:	ascz "(V)OLUMES CONFI(G) (F)ORMAT (?) (Q)UIT:"
-MSG04:	ascz "(S)TANDARD (N)IBBLE (H)ALF TRACKS:"
+MSG04:	ascz "(S)TANDARD OR (N)IBBLE?"
 MSG05:	ascz "RECEIVING"
 MSG06:	ascz "  SENDING"
 MSG07:	ascz "  READING"

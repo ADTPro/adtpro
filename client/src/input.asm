@@ -52,8 +52,8 @@ GetSendLoop:
 	beq GetSendFold	; Fold to "P"
 	cmp #CHR_N
 	beq GetSendOk
-	cmp #CHR_H
-	beq GetSendOk
+;	cmp #CHR_H	; Uncommend when half tracks are ready...
+;	beq GetSendOk
 	cmp #CHR_ESC	; ESCAPE = No
 	beq GetSendCancel
 	jmp GetSendLoop

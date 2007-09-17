@@ -1149,8 +1149,9 @@ public class CommsThread extends Thread
             realTrack1 = NibbleAnalysis.analyzeNibbleBuffer(rawNibbleBuffer);
             if (realTrack1 != null)
             {
-              //if (realTrack1.accuracy < 0.9)
+              if (realTrack1.accuracy < 0.9)
               {
+                Log.println(false,"CommsThread.receiveNibbleDisk() asking to re-send track; accuracy was low.");
                 // Sleep for a bit
                 try
                 {
@@ -1179,11 +1180,14 @@ public class CommsThread extends Thread
                   realTrack1 = realTrack2;
                 }
               }
+              else
+                Log.println(false,"CommsThread.receiveNibbleDisk() successfully received track.");
             }
             else
             {
               Log.println(true,"Unable to analyze track number "+numTracks+" (decimal; zero-based).");
             }
+            Log.println(true,"Acknowledging track number "+numTracks+" (decimal; zero-based).");
             _transport.writeByte(CHR_ACK);
             _transport.pushBuffer();
             Log.println(false,

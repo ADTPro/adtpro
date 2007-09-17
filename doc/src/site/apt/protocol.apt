@@ -16,6 +16,8 @@ ADTPro Protocol
 
  [{{{#Put}"P" - Put}}]  Inititate upload (always overwrite)
 
+ [{{{#Nibble}"N" - Nibble}}]  Inititate nibble upload (always overwrite)
+
  [{{{#Batch}"B" - Batch}}]  Inititate batch upload (unique suffix added to specified prefix)
 
  [{{{#DIR}"D" - DIR}}]  DOS ADT compatible listing of the current directory
@@ -83,6 +85,44 @@ ADTPro Protocol
 
 -------------
 
+* {Nibble} (Send) disk  (from Apple ][ to host)
+
+------------
+
+Apple sends:
+  One byte: "N" ($CE)
+  Byte stream: file name (null terminated)
+  Two bytes:
+    Number of blocks to follow (lsb)
+    Number of blocks to follow (msb)
+
+Host sends: return code:
+  $00 = Ok
+  $02 = Unable to write (Apple aborts)
+
+Apple sends:
+  $06 = ACK
+
+  Apple sends:
+    One byte: current track number (0x00-0x22)
+    One byte: current chunk number (0x00-0x33)
+    One byte: 0x02
+    Chunk, RLE encoded
+    two bytes:
+      CRC (LSB)
+      CRC (MSB)
+
+  Host sends one byte acknowledgement:
+    $06 = ACK (Host understood the chunk, CRC is correct; send next one)
+              (Also: this is a duplicate chunk, already received; acknowledge
+              so the Apple sends the next one)
+    $15 = NAK (Resend the same chunk again)
+
+(end loop)
+
+Apple sends: One byte: number of errors encountered
+
+------------
 * {Put} (Send) disk  (from Apple ][ to host)
 
 ------------

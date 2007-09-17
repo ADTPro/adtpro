@@ -33,6 +33,8 @@ public class NibbleAnalysis
       }
       */
     }
+    else
+      Log.println(false,"NibbleAnalysis.analyzeNibbleBuffer() thought the length was unacceptable?");
     return track;
   }
 
