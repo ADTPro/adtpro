@@ -24,7 +24,7 @@ the stuff that gets uploaded to sourceforge.
    * Search for svspeed: and make it 6, not 5
    * Search for default: and make the '5' in position 4 be '6'
 
-3. Perform a build
+3. Perform a build - ensure you are using the 'all' target, not 'dev'
 
 4. Tests:
    * Ensure all files have a current date on the virtual disks

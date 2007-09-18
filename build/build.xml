@@ -15,7 +15,17 @@
 	<property name="rxtxZip" value="rxtx-2.1-7-bins-r2.zip" />
 	<taskdef name="appleDump" classname="org.adtpro.utilities.AppleDump" classpath="${projdir}"/>
 
-	<target name="all" depends="clean, assemble, builddsk, scripts, jar">
+	<target name="all" depends="wipe, clean, assemble, builddsk, scripts, jar">
+	</target>
+
+	<target name="dev" depends="clean, assemble, builddsk, scripts, jar">
+	</target>
+
+	<target name="wipe">
+		<!--
+		Clean up everything
+		-->
+		<delete dir="${builddir}/${distName}" />
 	</target>
 
 	<target name="clean">
