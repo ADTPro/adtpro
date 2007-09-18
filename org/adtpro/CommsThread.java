@@ -1492,15 +1492,22 @@ public class CommsThread extends Thread
                 }
               }
             } // End of ProDOS preamble checking
-            else if (preambleStyle == 2)
-            {
-              // Nibble preamble checking
-              Log.println(false, "Nibble-style preamble checking in force.");
-              rc = 0;
-            } // End of Nibble preamble checking
           }
+          else if (preambleStyle == 2)
+          {
+            // Nibble preamble checking
+            Log.println(false, "Nibble-style preamble checking in force.");
+            blockNum = buffNum / 2;
+            if (buffNum == UnsignedByte.loByte(incomingBlockNum) + 1)
+            {
+              rc = -2;
+              Log.println(false,
+                "Chunk numbers were close; acknowledging.");
+              _transport.pauseIncorrectCRC();
+            }
+          } // End of Nibble preamble checking
           else
-            rc = 0;
+              rc = 0;
         }
         catch (TransportTimeoutException tte)
         {
