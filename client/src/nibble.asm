@@ -110,6 +110,8 @@ snibtr1:
 	pla			; Restore response
 	cmp #CHR_NAK		; Is it nak?
 	beq snibtr1		; Yes, send again
+	cmp #PHMTIMEOUT		; Is it host timeout?
+	beq snibtr1		; Yes, send again
 snibtr2:
 	ldy #PHMGBG		; Something is wrong
 snibtr3:
@@ -123,14 +125,18 @@ snibtr5:
 	inc BLKLO		; Increment "sector" counter using BLKLO
 	dec NIBPCNT		; Count
 	bne snibtr1		; and back if more pages
+; TODO: Note: maybe we need to send a packet that says the track is done?
+; That gives the client something to resend in case of timeout.
 ; for test only: activate next and deactivate line after
 ;	lda #CHR_ACK		; Simulate response
-	jsr GETREPLY		; Get response from host for whole track
+	jsr GETREPLY2		; Get response from host for whole track
 	cmp #CHR_ACK		; Is it ack?
 	beq snibtr7		; Ok
 	cmp #CHR_CAN		; Is it can (unreadable trk)?
 	beq snibtr8		; Ok
 	cmp #CHR_NAK		; Was it nak?
+	beq snibtr6		; We will abort
+	cmp #PHMTIMEOUT		; Is it host timeout?
 	beq snibtr6		; We will abort
 	cmp #CHR_ENQ		; Need to re-send whole track?
 	bne snibtr2		; Host is confused; abort

@@ -189,19 +189,15 @@ DRAWBDR:
 	ldy #PMSG21	; '----  -----  ---------------  ------'
 	jsr WRITEMSG
 VOLINSTRUCT:
-	lda #$00	; Column
-	sta CH
 	lda #$14	; Row
 	jsr TABV
 	ldy #PMSG22	; 'CHANGE VOLUME/SLOT/DRIVE WITH ARROW KEYS'
-	jsr WRITEMSG
+	jsr WRITEMSGLEFT
 
-	lda #$04	; Column
-	sta CH
 	lda #$15	; Row
 	jsr TABV
 	ldy #PMSG23	; 'SELECT WITH RETURN, ESC CANCELS'
-	jsr WRITEMSG
+	jsr WRITEMSGLEFT
 
 	lda #$05	; starting row for slot/drive entries
 	jsr TABV
@@ -583,8 +579,8 @@ MSGDST:	ascz "SELECT DESTINATION VOLUME"
 MSG19:	ascz "VOLUMES CURRENTLY ON-LINE:"
 MSG20:	ascz "SLOT  DRIVE  VOLUME NAME      BLOCKS"
 MSG21:	ascz "----  -----  ---------------  ------"
-MSG22:	ascz "CHANGE VOLUME/SLOT/DRIVE WITH ARROW KEYS"
-MSG23:	ascz "SELECT WITH RETURN, ESC CANCELS"
+MSG22:	ascz "CHANGE SELECTION WITH ARROW KEYS, RETURN"
+MSG23:	ascz "   R TO RE-SCAN DRIVES, ESC TO CANCEL"
 MSG24:	ascz "CONFIGURE ADTPRO PARAMETERS"
 MSG25:	ascz "CHANGE PARAMETERS WITH ARROW KEYS"
 ; Note: Messages MSG26 and MSG27 are set in 

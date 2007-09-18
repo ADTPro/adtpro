@@ -298,19 +298,7 @@ MAINLUP:
 MAINL:
 RESETIO:
 	jsr $0000	; Pseudo-indirect JSR to reset the IO device
-
-	jsr SHOWLOGO
-
-	lda #$02
-	sta <CH
-	lda #$0e
-	jsr TABV
-	ldy #PMSG02	; Prompt line 1
-	jsr WRITEMSG
-
-	ldy #PMSG03	; Prompt line 2
-	jsr WRITEMSGLEFT
-
+	jsr MainScreen
 
 ;---------------------------------------------------------
 ; KBDLUP
@@ -410,6 +398,24 @@ KQUIT:
 
 FORWARD:
 	jmp MAINL
+
+
+;---------------------------------------------------------
+; MainScreen - Show the main screen
+;---------------------------------------------------------
+MainScreen:
+	jsr SHOWLOGO
+
+	lda #$02
+	sta <CH
+	lda #$0e
+	jsr TABV
+	ldy #PMSG02	; Prompt line 1
+	jsr WRITEMSG
+
+	ldy #PMSG03	; Prompt line 2
+	jsr WRITEMSGLEFT
+	rts
 
 ;---------------------------------------------------------
 ; ABORT - STOP EVERYTHING (CALL BABORT TO BEEP ALSO)

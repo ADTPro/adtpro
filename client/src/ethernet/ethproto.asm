@@ -227,6 +227,13 @@ GETREPLY:
 	lda QUERYRC
 	rts
 
+GETREPLY2:
+	lda #STATE_GET	; Set up for GETREPLY1 callback
+	sta state
+	jsr RECEIVE_LOOP
+	lda QUERYRC
+	rts	
+
 ;---------------------------------------------------------
 ; PUTREQUEST - Request to send an image to the host
 ; Accumulator holds request type:
@@ -406,7 +413,7 @@ SENDNIBPAGE:
 	jsr SENDHBLK
 	lda #STATE_PUT	; Set up callback to PUTREPLY1
 	sta state
-	jsr RECEIVE_LOOP_FAST
+	jsr RECEIVE_LOOP
 	rts
 
 ;---------------------------------------------------------

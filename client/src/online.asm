@@ -22,9 +22,25 @@
 ; Code
 ;---------------------------------------------------------
 ONLINE:
-	LDA #$00
-	sta LASTVOL
+	lda LASTVOL	; Have we already done an online?
+	beq OSTART	; No - spend the time to scan drives
+
+dumpem:			; Just spit out what we already discovered
+	tay
+	iny
+	ldx #$00
+dumploop:
+	jsr PRT1VOL
+	txa
+	clc
+	adc #$10
 	tax
+	dey
+	bne dumploop
+	rts
+
+OSTART:
+	ldx #$00
 OCLEAN:
 	sta CAPBLKS,X	; Clear out capacity-in-blocks table
 	inx
@@ -45,6 +61,7 @@ OCLEAN:
 	BNE OERROR
 
 	ldx #$00	; X is our index into the device table
+	stx LASTVOL
 OLLOOP:
 	lda $C000
 	cmp #CHR_ESC
@@ -90,7 +107,7 @@ skip:
 	tax
 	bcc OLLOOP
 ODONE:	dec LASTVOL	; Save off the last volume number (index)
-	RTS
+	rts
 
 OERROR:
 	sta PARMBUF

@@ -29,8 +29,10 @@
 ; Variables - memory written to
 ;------------------------------------
 
-DEVICES = BIGBUF	; ($100 bytes)
-CAPBLKS = DEVICES + $100; ($20 bytes)
+DEVICES:		; DEVICES and CAPBLKS used to share space
+	.res $100	; with BIGBUF, but we're storing them now
+CAPBLKS:		; for faster volume selection.
+	.res $20
 PARMBUF:
 	.res $10, $00
 BLKLO	= PARMBUF+$04	; Part of PARMBUF structure

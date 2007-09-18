@@ -1,6 +1,6 @@
 ;
 ; ADTPro - Apple Disk Transfer ProDOS
-; Copyright (C) 2006 by David Schmidt
+; Copyright (C) 2006, 2007 by David Schmidt
 ; david__schmidt at users.sourceforge.net
 ;
 ; This program is free software; you can redistribute it and/or modify it 
@@ -27,9 +27,10 @@
 ;   $FF in A if escape was hit
 ;---------------------------------------------------------
 PICKVOL:
+	sty ZP		; Borrow space for the top-line message ptr
 	jsr PRINTVOL
-	lda #$00
-	sta VCURROW
+;	lda #$00
+;	sta VCURROW	; Note - VCURROW always keeps row state around
 	jsr INVROW
 	jsr VOLLOOP
 	rts
@@ -41,7 +42,7 @@ PICKVOL:
 ; which is an index into the device table
 ;---------------------------------------------------------
 VOLLOOP:
-	lda #$23	; Column
+	lda #$25	; Column
 	sta CH
 	lda #$15	; Row
 	jsr TABV
@@ -50,19 +51,19 @@ VOLLOOP:
 	and #$DF	; Convert to upper case
 
 VKEYDN:
-	cmp #$8a
+	cmp #$8a	; Is it a key down?
 	bne VKSPACE
 	jmp VKEYD
 
-VKSPACE:
+VKSPACE:		; Is it a space?
 	cmp #$80
 	bne VKEYR
 	jmp VKEYD
 
-VKEYR:	cmp #$95
-	bne VKEYUP
+VKEYR:	cmp #$95	; Is it a key right?
+	bne VKEYUP	; No - continue with next group
 
-VKEYD:	lda VCURROW
+VKEYD:	lda VCURROW	; All roads lead to down
 	cmp LASTVOL
 	beq LOOPUP	; Loop around to the top again
 	jsr INVROW
@@ -77,14 +78,14 @@ LOOPUP:
 	jsr INVROW
 	jmp VOLLOOP
 
-VKEYUP:	cmp #$8b
+VKEYUP:	cmp #$8b	; Is it a key up?
 	bne VKEYL
 	jmp VKEYU
 
-VKEYL:	cmp #$88
-	bne VENTER
+VKEYL:	cmp #$88	; Is it a key left?
+	bne VENTER	; No - continue with next group
 
-VKEYU:	lda VCURROW
+VKEYU:	lda VCURROW	; All roads lead to up
 	beq LOOPDN	; Loop around to bottom again
 	jsr INVROW
 	dec VCURROW
@@ -98,8 +99,8 @@ LOOPDN:
 	jsr INVROW
 	jmp VOLLOOP
 
-VENTER:	cmp #$8d	; Process enter
-	bne VESC
+VENTER:	cmp #$8d	; Is it Enter?
+	bne VREREAD	; No - process next group
 
 	lda VCURROW	; Extract unit number
 	jsr WHATUNIT
@@ -140,6 +141,16 @@ VENTER:	cmp #$8d	; Process enter
 :
 	lda VCURROW	; Send the row selection back out
 	rts
+
+VREREAD:
+	cmp #CHR_R	; Is it "R" - re-read?
+	bne VESC	; No - continue with next group
+	lda #$00	; Yes - re-read volume information
+	sta LASTVOL	; Reset volume counter
+	ldy ZP		; Get our top-line message back
+	jsr PRINTVOL	; Re-read volume information
+	jsr INVROW	; Invert the current row selection
+	jmp VOLLOOP	; Back to the top of the loop
 
 VESC:	cmp #$9B
 	beq ESCAPE
