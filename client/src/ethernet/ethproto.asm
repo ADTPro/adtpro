@@ -413,7 +413,7 @@ SENDNIBPAGE:
 	jsr SENDHBLK
 	lda #STATE_PUT	; Set up callback to PUTREPLY1
 	sta state
-	jsr RECEIVE_LOOP
+	jsr RECEIVE_LOOP_FAST
 	rts
 
 ;---------------------------------------------------------

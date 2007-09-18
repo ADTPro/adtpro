@@ -111,7 +111,7 @@ SAVPARM:
 	sta <CH
 	lda #$15	; Row
 	jsr TABV
-	ldy #PMSG23	; 'SELECT WITH RETURN, ESC CANCELS'
+	ldy #PMSG23a	; 'SELECT WITH RETURN, ESC CANCELS'
 	jsr WRITEMSG
 
 	jsr IPConfig	
