@@ -6,6 +6,27 @@
 
 ADTPro Release History
 
+* v.r.m - Unreleased
+
+ New functionality:
+
+ * [Client] Apple-to-host nibble (.nib) image creation
+
+ * [Client] Only re-scan drives for volume information the first time, and
+   thereafter only when requested; this saves time (and drive knocking)
+   whenever the volume screen comes up
+
+ []
+
+ Bug fixes:
+
+ * [Client] Removed last dependency on Applesoft string printing; enables
+   running on orignal integer Apple ][ (non-plus) ROM machines
+
+ * [Server] Always record 5-1/4" disks at the host as DOS order images
+
+ []
+
 * 1.0.2 - August 11, 2007
 
  New functionality:

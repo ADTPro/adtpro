@@ -15,6 +15,12 @@ server code to Java.  The Win32 GUI code was written by Sean Gugler.  The
 ADTWin project is hosted here:
 {{http://www.apple2.org.za/gswv/a2zine/Sel/ADTWin.html}}
 
+  The ability to read and analyze tracks at the nibble level was generously
+donated by Gerard Putter from his Virtual ][ project
+{{http://www.virtualii.com}}.  This makes it possible to archive some lightly
+copy-protected disks and put them in .nib format, removing the need to run
+the likes of SST to generate the image.
+   
  The routine to read a Disk II device much faster than ProDOS comes from 
 Jean-Marc Boutillon (Deckard) and his FASTDSK program: 
 {{http://boutillon.free.fr/Underground/Docs/Fastdsk/Fastdsk_en.html}}.
