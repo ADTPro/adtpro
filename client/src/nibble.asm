@@ -125,19 +125,21 @@ snibtr5:
 	inc BLKLO		; Increment "sector" counter using BLKLO
 	dec NIBPCNT		; Count
 	bne snibtr1		; and back if more pages
+snibtrdloop:
+	jsr PUTINITIALACK	; Ready to go again
 ; TODO: Note: maybe we need to send a packet that says the track is done?
 ; That gives the client something to resend in case of timeout.
 ; for test only: activate next and deactivate line after
 ;	lda #CHR_ACK		; Simulate response
 	jsr GETREPLY2		; Get response from host for whole track
 	cmp #CHR_ACK		; Is it ack?
-	beq snibtr7		; Ok
-	cmp #CHR_CAN		; Is it can (unreadable trk)?
-	beq snibtr8		; Ok
-	cmp #CHR_NAK		; Was it nak?
-	beq snibtr6		; We will abort
+	beq snibtr7		; Ok - go ahead after marking track ok
+	cmp #CHR_CAN		; Is it CAN (unreadable trk)?
+	beq snibtr8		; Ok - go ahead after marking track unreadable
+	cmp #CHR_NAK		; Was it NAK?  Might be because host lost our ACK
+	beq snibtr7		; Ok - go ahead after marking track ok
 	cmp #PHMTIMEOUT		; Is it host timeout?
-	beq snibtr6		; We will abort
+	beq snibtrdloop		; Resend track done message
 	cmp #CHR_ENQ		; Need to re-send whole track?
 	bne snibtr2		; Host is confused; abort
 	lda #$01		; Reset counter and swing around again

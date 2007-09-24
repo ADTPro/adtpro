@@ -103,24 +103,34 @@ Host sends: return code:
 Apple sends:
   $06 = ACK
 
+(loop for 0x23 tracks)
+  (loop for 0x34 chunks)
+
+    Apple sends:
+      One byte: current track number (0x00-0x22)
+      One byte: current chunk number (0x00-0x33)
+      One byte: 0x02
+      Chunk, RLE encoded
+      two bytes:
+        CRC (LSB)
+        CRC (MSB)
+
+    Host sends one byte chunk acknowledgement:
+      $06 = ACK (Host understood the chunk, CRC is correct; send next one)
+                (Also: this is a duplicate chunk, already received; acknowledge
+                so the Apple sends the next one)
+      $15 = NAK (Resend the same chunk again)
+
+  (end loop for 0x34 chunks)
+
   Apple sends:
-    One byte: current track number (0x00-0x22)
-    One byte: current chunk number (0x00-0x33)
-    One byte: 0x02
-    Chunk, RLE encoded
-    two bytes:
-      CRC (LSB)
-      CRC (MSB)
+    $06 = ACK (Done with track)
 
-  Host sends one byte acknowledgement:
-    $06 = ACK (Host understood the chunk, CRC is correct; send next one)
-              (Also: this is a duplicate chunk, already received; acknowledge
-              so the Apple sends the next one)
-    $15 = NAK (Resend the same chunk again)
+  Host sends one byte track acknowledgement:
+    $06 = ACK (Host understood the track; send next one)
+    $05 = ENQ (Resend the same track again)
 
-(end loop)
-
-Apple sends: One byte: number of errors encountered
+(end loop for 0x23 tracks)
 
 ------------
 * {Put} (Send) disk  (from Apple ][ to host)
