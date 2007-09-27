@@ -27,6 +27,7 @@ DIRREQUEST:
 	jsr PUTC
 	rts
 
+
 ;---------------------------------------------------------
 ; DIRREPLY - Reply to current directory contents
 ;---------------------------------------------------------
@@ -55,6 +56,7 @@ DIRREPLY:
 	sta BLKPTR+1
 	rts
 
+
 ;---------------------------------------------------------
 ; DIRABORT - Abort current directory contents
 ;---------------------------------------------------------
@@ -73,6 +75,7 @@ CDREQUEST:
 	jsr SENDFN	; Send directory name
 			; Implicit rts from SENDFN
 	rts
+
 
 ;---------------------------------------------------------
 ; PUTREQUEST - Request to send an image to the host
@@ -104,6 +107,7 @@ PUTINITIALACK:
 	jsr PUTC
 	rts
 
+
 ;---------------------------------------------------------
 ; PUTFINALACK - Send error count for PUT request
 ;---------------------------------------------------------
@@ -111,6 +115,18 @@ PUTFINALACK:
 	lda ECOUNT	; Errors during send?
 	jsr PUTC	; Send error flag to host
 	rts
+
+
+;---------------------------------------------------------
+; GETNIBREQUEST - Request a nibble image be sent from the host
+;---------------------------------------------------------
+GETNIBREQUEST:
+	jsr PARMINT	; Clean up the comms device
+	lda #CHR_O	; Tell host we are Getting/Receiving a nibble
+	jsr PUTC
+	jsr SENDFN	; Send file name
+	rts
+
 
 ;---------------------------------------------------------
 ; GETREQUEST - Request an image be sent from the host
@@ -242,6 +258,29 @@ RECOK:	bne RECVMORE
 RECVERR:
 	lda #CHR_NAK	; CRC error, ask for a resend
 	jmp RECVMORE
+
+;---------------------------------------------------------
+; RECVNIBCHUNK - Receive a nibble chunk with RLE
+; Called with Acknowledgement in accumulator
+;---------------------------------------------------------
+RECVNIBCHUNK:
+	jsr PUTC	; Send ack/nak
+	lda BLKLO
+	jsr PUTC	; Send the track number (LSB)
+	lda BLKHI
+	jsr PUTC	; Send the chunk number (MSB)
+	lda <ZP
+	jsr PUTC	; Send protocol filler
+	jsr RECVHBLK
+	bcs :+		; Do we have an error from block count?
+	jsr GETC	; Receive reply
+	sta PCCRC	; Receive the CRC of that block
+	jsr GETC
+	sta PCCRC+1
+	clc
+:
+	rts
+
 
 ;---------------------------------------------------------
 ; RECVHBLK - Receive half a block with RLE

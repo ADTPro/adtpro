@@ -79,7 +79,7 @@ public class NibbleOrder extends DosOrder
   /**
    * Read nibbilized track data.
    */
-  protected byte[] readTrackData(int track)
+  public byte[] readTrackData(int track)
   {
     int trackSize = getPhysicalSize() / getTracksPerDisk();
     return readBytes(track * trackSize, trackSize);

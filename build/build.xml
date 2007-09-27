@@ -39,6 +39,9 @@
 		<delete file="${builddir}/ADTPROETH" />
 		<delete file="${builddir}/${distName}.tar.gz" />
 		<delete file="${builddir}/${distName}.zip" />
+		<delete file="${builddir}/${distName}/disks/${diskName}.DSK" />
+		<delete file="${builddir}/${distName}/disks/${diskName}.PO" />
+		<delete file="${builddir}/${distName}/disks/${dosDistName}.DSK" />
 		<delete file="${projdir}/org/adtpro/resources/adt.dmp" />
 		<delete file="${projdir}/org/adtpro/resources/adtpro.dmp" />
 		<delete file="${projdir}/org/adtpro/resources/adtproaud.dmp" />
@@ -54,7 +57,6 @@
 			<fileset dir="${projdir}/client/src" includes="**/*.lst"/>
 			<fileset dir="${projdir}/client/src" includes="**/*.lib"/>
 		</delete>
-		<delete dir="${builddir}/${distName}" />
 	</target>
 
 	<target name="assemble">

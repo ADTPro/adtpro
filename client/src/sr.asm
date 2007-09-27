@@ -231,7 +231,8 @@ SRSTART:
 SRREENTRY:
 	bmi SMDONE	; Branch backwards... we just need an RTS close by
 	sta SLOWA	; Hang on to the device table index
-
+	jsr CheckForNib	; See if this is a nibble image
+	bcs GoForNib	; It is - so receive it
 	lda HOSTBLX
 	cmp NUMBLKS
 	bne SRMISMATCH
@@ -239,6 +240,9 @@ SRREENTRY:
 	cmp NUMBLKS+1
 	bne SRMISMATCH
 	jmp SROK2
+
+GoForNib:
+	jmp ReceiveNib
 
 SRMISMATCH:
 	jsr CLRMSGAREA
@@ -260,7 +264,6 @@ SROK2:
 
 	jsr GETREQUEST
 	jsr GETREPLY
-	cmp #$00
 	beq SROK3
 	jmp PCERROR
 
@@ -470,6 +473,25 @@ SRBDONE:
 	rts
 
 SRBCNT:	.byte $00
+
+;---------------------------------------------------------
+; CheckForNib - Check if the user has picked a .nib, and 
+;               is wanting to write it to a Disk II drive
+; Sets carry if it is sized as .nib and destination is Disk II
+;---------------------------------------------------------
+CheckForNib:
+	clc
+	lda HOSTBLX
+	cmp #$C7		; LSB of 455 blocks (.nib size)
+	bne NotNib
+	lda HOSTBLX+1
+	cmp #$01		; MSB of 455 blocks (.nib size)
+	bne NotNib
+	lda NonDiskII		; Is this a Disk II?
+	beq NotNib		; No - skip it
+	sec			; Yep - everything matches.
+NotNib:
+	rts
 
 ;---------------------------------------------------------
 ; UNDIFF -  Finish RLE decompression and update CRC

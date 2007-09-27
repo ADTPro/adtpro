@@ -29,6 +29,7 @@ import org.adtpro.transport.TransportTimeoutException;
 import org.adtpro.transport.UDPTransport;
 
 import org.adtpro.disk.Disk;
+import org.adtpro.disk.NibbleOrder;
 import org.adtpro.gui.Gui;
 import org.adtpro.utilities.Log;
 import org.adtpro.utilities.UnsignedByte;
@@ -233,13 +234,22 @@ public class CommsThread extends Thread
             receive140kDisk();
             _busy = false;
             break;
-          case (byte) 206: // "N": Send Nibble Disk
+          case (byte) 206: // "N": Put Nibble Disk
             _busy = true;
             _parent.setMainText(Messages.getString("CommsThread.12")); //$NON-NLS-1$
             _parent.setSecondaryText(""); //$NON-NLS-1$
             Log.println(false,
-                "CommsThread.commandLoop() Received Nibble Send command."); //$NON-NLS-1$
+                "CommsThread.commandLoop() Received Nibble Put command."); //$NON-NLS-1$
             receiveNibbleDisk(false);
+            _busy = false;
+            break;
+          case (byte) 207: // "O": Get Nibble Disk
+            _busy = true;
+            _parent.setMainText(Messages.getString("CommsThread.13")); //$NON-NLS-1$
+            _parent.setSecondaryText(""); //$NON-NLS-1$
+            Log.println(false,
+                "CommsThread.commandLoop() Received Nibble Get command."); //$NON-NLS-1$
+            sendNibbleDisk(false);
             _busy = false;
             break;
           default:
@@ -378,7 +388,10 @@ public class CommsThread extends Thread
         // format
         else
         {
-          length = disk.getImageOrder().getBlocksOnDevice();
+          if (disk.getImageOrder().getClass() == NibbleOrder.class)
+            length = 455;
+          else
+            length = disk.getImageOrder().getBlocksOnDevice();
           sizeLo = UnsignedByte.loByte(length);
           sizeHi = UnsignedByte.hiByte(length);
           rc = 0;
@@ -689,9 +702,7 @@ public class CommsThread extends Thread
           Log.println(false,
               "CommsThread.sendDisk() about to wait for initial ack.");
           ack = waitForData(15);
-          Log
-              .println(
-                  false,
+          Log.println(false,
                   "CommsThread.sendDisk() received initial reply from Apple: " + UnsignedByte.toString(ack)); //$NON-NLS-1$
           if (ack == 0x06)
           {
@@ -714,7 +725,7 @@ public class CommsThread extends Thread
                 Log.println(false,
                     "CommsThread.sendDisk() sending packet for block: " + block
                         + " halfBlock: " + (2 - halfBlock));
-                sendSuccess = sendPacket(buffer, block, halfBlock * 256, true);
+                sendSuccess = sendPacket(buffer, block, halfBlock * 256, 1);
                 if (sendSuccess)
                 {
                   blocksDone++;
@@ -736,17 +747,13 @@ public class CommsThread extends Thread
               {
                 _parent.setSecondaryText(Messages.getString("CommsThread.17")
                     + " in " + _diffMillis + " seconds.");
-                Log
-                    .println(
-                        true,
+                Log.println(true,
                         "Apple received disk image " + name + " successfully in " + (float) (_endTime.getTimeInMillis() - _startTime.getTimeInMillis()) / (float) 1000 + " seconds."); //$NON-NLS-1$ //$NON-NLS-2$
               }
               else
               {
                 _parent.setSecondaryText(Messages.getString("CommsThread.18"));
-                Log
-                    .println(
-                        true,
+                Log.println(true,
                         "Apple received disk image " + name + " with " + report + " errors."); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
               }
             }
@@ -870,7 +877,7 @@ public class CommsThread extends Thread
                     Log.println(false,
                             "Sending track " + (track + (part * 7)) + " sector " + sector + "."); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
                     sendSuccess = sendPacket(buffer, 0,
-                        (track * 4096 + sector * 256), false);
+                        (track * 4096 + sector * 256), 0);
                     if (!sendSuccess) break;
                     sectorsDone++;
                     _parent.setProgressValue(sectorsDone);
@@ -944,25 +951,34 @@ public class CommsThread extends Thread
     Log.println(false, "send140kDisk() exit.");
   }
 
-  public boolean sendPacket(byte[] buffer, int block, int offset,
-      boolean preamble)
+  public boolean sendPacket(byte[] buffer, int block, int offset, int preambleStyle)
+  // Send a packet with RLE compression
+  // preambleStyle:
+  //   0 = No preamble
+  //   1 = ProDOS packets
+  //   2 = Nibble packets
   {
     boolean rc = false;
 
     int byteCount = 0, crc, ok = CHR_NAK, currentRetries = 0;
     byte data, prev, newprev;
 
-    Log
-        .println(false, "CommsThread.sendPacket() entry; offset " + offset
+    Log.println(false, "CommsThread.sendPacket() entry; offset " + offset
             + ".");
     do
     {
       prev = 0;
-      if ((preamble) && (_client01xCompatibleProtocol == false))
+      if ((preambleStyle == 1) && (_client01xCompatibleProtocol == false))
       {
         _transport.writeByte(UnsignedByte.loByte(block));
         _transport.writeByte(UnsignedByte.hiByte(block));
         _transport.writeByte(UnsignedByte.loByte(2 - (offset / 256)));
+      }
+      else if (preambleStyle == 2)
+      {
+        _transport.writeByte(UnsignedByte.loByte(block));
+        _transport.writeByte(UnsignedByte.hiByte(block));
+        _transport.writeByte(2);
       }
       for (byteCount = 0; byteCount < 256;)
       {
@@ -1000,12 +1016,15 @@ public class CommsThread extends Thread
         try
         {
           ok = waitForData(15);
-          if ((preamble) && (_client01xCompatibleProtocol == false))
+          if ((preambleStyle == 1) && (_client01xCompatibleProtocol == false))
           {
             int incomingBlock = 0;
             incomingBlock = UnsignedByte.intValue(waitForData(15));
+            Log.println(false, "First byte received: "+incomingBlock);
             incomingBlock += (UnsignedByte.intValue(waitForData(15)) * 256);
+            Log.println(false, "After first and second byte received, total is: "+incomingBlock);
             byte appleHalf = waitForData(15);
+            Log.println(false, "Half byte received: "+appleHalf);
             byte hostHalf = UnsignedByte.loByte(2 - (offset / 256));
             Log.println(false, "CommsThread.sendPacket() Host BlockNum: "
                 + block + " Apple BlockNum: " + incomingBlock);
@@ -1024,6 +1043,30 @@ public class CommsThread extends Thread
               if (((block == incomingBlock) && (appleHalf - hostHalf != 0))
                   || ((block + 1 == incomingBlock))
                   && (appleHalf - hostHalf != 0))
+              {
+                ok = CHR_ACK;
+                Log.println(false,
+                    "CommsThread.sendPacket() found an old packet; advancing.");
+              }
+            }
+          }
+          else if (preambleStyle == 2)
+          {
+            int hostTrack, hostChunk;
+            int incomingChunk = UnsignedByte.intValue(waitForData(15));
+            Log.println(false, "CommsThread.sendPacket() Incoming (send next) Chunk: "+incomingChunk);
+            int incomingTrack = UnsignedByte.intValue(waitForData(15));
+            Log.println(false, "CommsThread.sendPacket() Incoming (send next) Track: "+incomingTrack);
+            byte appleHalf = waitForData(15);
+            Log.println(false, "CommsThread.sendPacket() Check byte received: "+appleHalf);
+            hostTrack = block/256;
+            hostChunk = block & 0xff;
+            Log.println(false, "CommsThread.sendPacket() host (sent) chunk: "+hostChunk+" host (sent) Track: "+hostTrack);
+            if (ok == CHR_NAK)
+            {
+              //if (((hostTrack == incomingTrack) && (appleHalf == 2))
+              //    || ((hostTrack + 1 == incomingBlock))
+              //    && (appleHalf - hostHalf != 0))
               {
                 ok = CHR_ACK;
                 Log.println(false,
@@ -1061,14 +1104,11 @@ public class CommsThread extends Thread
               Log.println(false,
                   "CommsThread.sendPacket() audio backoff sleeping for "
                       + (currentRetries * 2) + " seconds.");
-              sleep(currentRetries * 200); // Sleep 2 seconds
-              // for each time we
-              // have to retry
+              sleep(currentRetries * 200); // Sleep 2 seconds for each time we have to retry
             }
             catch (InterruptedException e)
             {
-              Log
-                  .println(false,
+              Log.println(false,
                       "CommsThread.sendPacket() audio backoff sleep was interrupted.");
             }
           }
@@ -1080,6 +1120,155 @@ public class CommsThread extends Thread
 
     Log.println(false, "CommsThread.sendPacket() exit, rc = " + rc);
     return rc;
+  }
+
+  public void sendNibbleDisk(boolean generateName)
+  /* Nibble send routine - Apple <- Host (Host sends) */
+  {
+    Log.println(false, "CommsThread.sendNibbleDisk() entry.");
+    Log.println(false, "Current working directory: "
+        + _parent.getWorkingDirectory());
+    byte[] buffer = null;
+    int chunk, chunksDone = 0;
+    byte ack, report;
+    boolean sendSuccess = false;
+    _startTime = new GregorianCalendar();
+    /*
+     * ADT protocol: receive the requested file name
+     */
+    try
+    {
+      String name = receiveName();
+      Disk disk = null;
+      try
+      {
+        Log.println(false, "CommsThread.sendNibbleDisk() looking for file: "
+            + _parent.getWorkingDirectory() + name);
+        disk = new Disk(_parent.getWorkingDirectory() + name);
+      }
+      catch (IOException io)
+      {
+        try
+        {
+          Log.println(false,
+              "CommsThread.sendNibbleDisk() Failed to find that file.  Now looking for: "
+                  + name);
+          disk = new Disk(name);
+        }
+        catch (IOException io2)
+        {}
+      }
+      if (disk != null)
+      {
+        if ((disk.getImageOrder() != null) &&
+            (disk.getImageOrder().getClass() == NibbleOrder.class))
+        {
+          // If the file exists, and we're sure it's a nibble disk, then...
+          _transport.writeByte(0x00); // Tell Apple ][ we're ready to go
+          _transport.pushBuffer();
+          buffer = disk.getDiskImageManager().getDiskImage();
+          Log.println(false, "Dumping the disk image");
+          /*
+           * Dump out the first 64 bytes of each track
+           */
+          for (int j = 0; j < 35; j++)
+          {
+            for (int i = 0; i < 64; i++)
+              Log.print(false, UnsignedByte.toString(buffer[j*6656+i]));
+            Log.println(false, "");
+          }
+          Log.println(false,
+              "CommsThread.sendNibbleDisk() disk length is: " + buffer.length);
+          Log.println(false,
+              "CommsThread.sendNibbleDisk() about to wait for initial ack.");
+          ack = waitForData(15);
+          Log.println(false,
+                  "CommsThread.sendNibbleDisk() received initial reply from Apple: " + UnsignedByte.toString(ack)); //$NON-NLS-1$
+          if (ack == 0x06)
+          {
+            waitForData(15);
+            waitForData(15);
+            waitForData(15);
+            _parent.setProgressMaximum(26*35); // Chunks times tracks
+            _parent.setSecondaryText(disk.getFilename());
+            for (int track = 0; track < 35; track++)
+            {
+              for (chunk = 0; chunk < 26; chunk++)
+              {
+                Log.println(false,
+                    "CommsThread.sendNibbleDisk() sending packet for chunk: " + chunk);
+                sendSuccess = sendPacket(buffer, track*256+chunk, (track*6656 + chunk * 256), 2);
+                if (sendSuccess)
+                {
+                  chunksDone++;
+                  _parent.setProgressValue(chunksDone);
+                }
+                else
+                  break;
+              }
+              if (!sendSuccess) break;
+            }
+            if (sendSuccess)
+            {
+              report = waitForData(15);
+              _endTime = new GregorianCalendar();
+              _diffMillis = (float) (_endTime.getTimeInMillis() - _startTime
+                  .getTimeInMillis())
+                  / (float) 1000;
+              if (report == 0x00)
+              {
+                _parent.setSecondaryText(Messages.getString("CommsThread.17")
+                    + " in " + _diffMillis + " seconds.");
+                Log.println(true,
+                        "Apple received disk image " + name + " successfully in " + (float) (_endTime.getTimeInMillis() - _startTime.getTimeInMillis()) / (float) 1000 + " seconds."); //$NON-NLS-1$ //$NON-NLS-2$
+              }
+              else
+              {
+                _parent.setSecondaryText(Messages.getString("CommsThread.18"));
+                Log.println(true,
+                        "Apple received disk image " + name + " with " + report + " errors."); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+              }
+            }
+            else
+            {
+              Log.println(true, Messages.getString("CommsThread.21"));
+              _parent.setSecondaryText(Messages.getString("CommsThread.21"));
+              _parent.clearProgress();
+              _transport.flushReceiveBuffer();
+              _transport.flushSendBuffer();
+            }
+          }
+          else
+          {
+            // Log.print(false,"No ACK received from the Apple...");
+            // //$NON-NLS-1$
+            _parent.setSecondaryText(Messages.getString("CommsThread.21"));
+            _parent.clearProgress();
+            _transport.flushReceiveBuffer();
+            _transport.flushSendBuffer();
+          }
+        }
+        else
+        {
+          // New ADT protocol: HMFIL - can't open the file
+          _transport.writeByte(0x02);
+          _transport.pushBuffer();
+        }
+      }
+      else
+      {
+        // New ADT protocol: HMFIL - can't open the file
+        _transport.writeByte(0x02);
+        _transport.pushBuffer();
+      }
+    }
+    catch (TransportTimeoutException e)
+    {
+      Log.println(false, "CommsThread.sendNibbleDisk() aborting due to timeout.");
+      _parent.setSecondaryText(Messages.getString("CommsThread.21"));
+    }
+
+    Log.println(false, "CommsThread.sendNibbleDisk() exit.");
   }
 
   public void receiveNibbleDisk(boolean generateName)
@@ -1539,26 +1728,17 @@ public class CommsThread extends Thread
 
           blockNum = buffNum / 2;
           halfNum = buffNum % 2;
-
-          Log.println(false, "CommsThread.receivePacket() Track: "
-              + UnsignedByte.toString(UnsignedByte.hiByte(incomingBlockNum))
-              + " Sector: "
-              + UnsignedByte.toString(UnsignedByte.loByte(incomingBlockNum))
-              + " Check: "
-              + UnsignedByte.toString(UnsignedByte.loByte(data)));
           
-          /*
-          Log.println(false, "CommsThread.receivePacket() BlockNum: "
-              + blockNum + " local lsb: "
-              + UnsignedByte.toString(UnsignedByte.loByte(blockNum))
-              + " Incoming lsb: "
-              + UnsignedByte.toString(UnsignedByte.loByte(incomingBlockNum))
-              + " halfNum: " + halfNum + " Incoming halfNum: " + incomingHalf);
-          */
           if (preambleStyle == 1)
           {
             // ProDOS preamble checking
             Log.println(false, "ProDOS-style preamble checking in force.");
+            Log.println(false, "CommsThread.receivePacket() BlockNum: "
+                + blockNum + " local lsb: "
+                + UnsignedByte.toString(UnsignedByte.loByte(blockNum))
+                + " Incoming lsb: "
+                + UnsignedByte.toString(UnsignedByte.loByte(incomingBlockNum))
+                + " halfNum: " + halfNum + " Incoming halfNum: " + incomingHalf);
             // Checking for Normal/ProDOS order packets:
             if ((incomingBlockNum != blockNum) || (incomingHalf != halfNum))
             {
@@ -1592,6 +1772,12 @@ public class CommsThread extends Thread
           {
             // Nibble preamble checking
             Log.println(false, "Nibble-style preamble checking in force.");
+            Log.println(false, "CommsThread.receivePacket() Track: "
+                + UnsignedByte.toString(UnsignedByte.hiByte(incomingBlockNum))
+                + " Sector: "
+                + UnsignedByte.toString(UnsignedByte.loByte(incomingBlockNum))
+                + " Check: "
+                + UnsignedByte.toString(UnsignedByte.loByte(data)));
             blockNum = buffNum / 2;
             if (buffNum == UnsignedByte.loByte(incomingBlockNum) + 1)
             {
@@ -1713,8 +1899,7 @@ public class CommsThread extends Thread
           _transport.flushReceiveBuffer();
           _transport.flushSendBuffer();
           retries++;
-          Log
-              .println(false,
+          Log.println(false,
                   "CommsThread.receivePacket() didn't work - out-of-sync packet received.");
         }
         else

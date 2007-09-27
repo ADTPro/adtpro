@@ -16,7 +16,9 @@ ADTPro Protocol
 
  [{{{#Put}"P" - Put}}]  Inititate upload (always overwrite)
 
- [{{{#Nibble}"N" - Nibble}}]  Inititate nibble upload (always overwrite)
+ [{{{#NibbleGet}"O" - Nibble Get}}]  Inititate nibble download
+
+ [{{{#NibblePut}"N" - Nibble Put}}]  Inititate nibble upload (always overwrite)
 
  [{{{#Batch}"B" - Batch}}]  Inititate batch upload (unique suffix added to specified prefix)
 
@@ -85,26 +87,72 @@ ADTPro Protocol
 
 -------------
 
-* {Nibble} (Send) disk  (from Apple ][ to host)
+* {NibbleGet} Get nibble disk (Host -> Apple ][)
 
 ------------
 
-Apple sends:
-  One byte: "N" ($CE)
-  Byte stream: file name (null terminated)
-  Two bytes:
-    Number of blocks to follow (lsb)
-    Number of blocks to follow (msb)
+ Apple sends: 
+   One byte: "O" ($CF)
+   Byte stream: file name (null terminated)
 
-Host sends: return code:
-  $00 = Ok
-  $02 = Unable to write (Apple aborts)
+ Host sends: return code:
+   $00 = Ok
+   $02 = File not found (Apple aborts)
 
-Apple sends:
-  $06 = ACK
+ Apple sends:
+   $06 = ACK
 
-(loop for 0x23 tracks)
-  (loop for 0x34 chunks)
+ (loop for 0x23 tracks)
+   (loop for 0x34 chunks)
+
+    Host sends:
+      One byte: current track number (0x00-0x22)
+      One byte: current chunk number (0x00-0x33)
+      One byte: 0x02
+      Chunk, RLE encoded
+      two bytes:
+        CRC (LSB)
+        CRC (MSB)
+
+    Apple sends:
+      One byte acknowledgement:
+        $06 = ACK (Apple understood the chunk, CRC is correct; send next one)
+        $15 = NAK (Resend this same chunk again)
+      One byte: current track number (0x00-0x22)
+      One byte: current chunk number (0x00-0x33)
+      One byte: 0x02
+
+   Note: if the host receives a NAK, and the Apple is expecting a packet 
+         that is one greater than what's just been sent, then an ACK got 
+         lost.  Recovery is for the host to go ahead and advance to the next
+         block and send that.
+
+ (loop end)
+
+ Apple sends: One byte: number of errors encountered
+
+-------------
+
+* {NibblePut} Put Nibble disk  (from Apple ][ to host)
+
+------------
+
+ Apple sends:
+   One byte: "N" ($CE)
+   Byte stream: file name (null terminated)
+   Two bytes:
+     Number of blocks to follow (lsb)
+     Number of blocks to follow (msb)
+
+ Host sends: return code:
+   $00 = Ok
+   $02 = Unable to write (Apple aborts)
+
+ Apple sends:
+   $06 = ACK
+
+ (loop for 0x23 tracks)
+   (loop for 0x34 chunks)
 
     Apple sends:
       One byte: current track number (0x00-0x22)
@@ -133,6 +181,7 @@ Apple sends:
 (end loop for 0x23 tracks)
 
 ------------
+
 * {Put} (Send) disk  (from Apple ][ to host)
 
 ------------

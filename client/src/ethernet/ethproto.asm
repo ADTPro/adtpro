@@ -577,6 +577,12 @@ RECVERR:
 
 ACK_CHAR: .byte CHR_ACK
 
+RECVNIBCHUNK:
+	brk
+
+GETNIBREQUEST:
+	brk
+
 ;---------------------------------------------------------
 ; RECVHBLK - Receive half a block with RLE
 ; CRCY is set to $01 on error, $00 on success

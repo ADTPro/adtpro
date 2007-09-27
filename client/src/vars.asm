@@ -38,7 +38,8 @@ PARMBUF:
 BLKLO	= PARMBUF+$04	; Part of PARMBUF structure
 BLKHI	= PARMBUF+$05	; Part of PARMBUF structure
 
-BIGBUF	= $6C00		; The place where all the action happens
+BIGBUF	= $6600		; The place where all the action happens
+; Note: we now have 6 pages of free space between $B600 and $BC00.
 CRCTBLL	= $BC00		; CRC LOW TABLE  ($100 Bytes)
 CRCTBLH	= $BD00		; CRC HIGH TABLE ($100 Bytes)
 NUMBLKS:

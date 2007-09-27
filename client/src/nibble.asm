@@ -19,6 +19,57 @@
 ;
 
 ;---------------------------------------------------------
+; ReceiveNib - receive nibble image
+;---------------------------------------------------------
+ReceiveNib:
+	jsr nibtitle
+	jsr GETNIBREQUEST
+	jsr GETREPLY
+	beq ReceiveNibOK
+	jmp PCERROR
+
+ReceiveNibOK:
+	; Build Gap bytes
+	lda #<BIGBUF+$10	; Set Buffer to BIGBUF+0x10
+	ldx #>BIGBUF
+	sta Buffer
+	stx Buffer+1
+	ldy #$00		; (Y offset always zero)
+	ldx #$F0
+	lda #$7F		; Build GAP1 using $7F (sync byte)
+	sta LByte
+	jsr LFill		; Store sync bytes from BIGBUF+$10 to BIGBUF+$100
+
+	lda UNITNBR		; Fetch target drive SLOTNUM value
+	and #$70		; Mask off bit 7 and the lower 4 bits
+	sta SlotF		; Store result in FORMAT slot storage
+
+	lda #CHR_N
+	sta SendType	; Configure the nibble screen for output
+	; Here's where we set up a loop
+	; for all chunks to transfer.
+	lda #$00
+	sta ECOUNT	; Clear error flag
+	sta BLKHI
+	jsr calibrat	; Fire up the drive
+:	jsr rnibtrak	; Read a track from the comms device
+	lda #<BIGBUF	; Connect the Buffer pointer to the
+	sta Buffer	; beginning of the Big Buffer(TM)
+	lda #>BIGBUF
+	sta Buffer+1
+	jsr Trans2	; Write track to disk
+	inc BLKHI
+	lda BLKHI
+	cmp #$23
+	beq ReceiveNibDone
+	sta iobtrk
+	jsr nibnextt	; Go to next track
+	jmp :-
+ReceiveNibDone:
+	jsr motoroff	; We're finished with the drive
+	jmp COMPLETE	; Finish using sr.asm's completion code
+
+;---------------------------------------------------------
 ; sendnib - send entire disk as nibbles
 ; 
 ; we don't want to depend on any disk formatting, not even
@@ -51,8 +102,8 @@ sendnib:
 snibloop:
 	lda #$00
 	sta BLKLO		; Reset "sector" number using BLKLO
-	lda #CHR_R
-	jsr nibshow		; Show and "R" at current track
+	lda #CHR_V
+	jsr nibshow		; Show and "V" at current track
 	jsr rdnibtr		; Read track as nibbles
 	jsr snibtrak		; Send nibbles to other side
 	lda <ZP
@@ -78,6 +129,67 @@ snibfin:
 
 	jsr motoroff		; We're finished with the drive
 	jmp COMPLETE		; Finish using sr.asm's completion code
+
+
+;---------------------------------------------------------
+; rnibtrak - receive a nibble track
+; Track number is set in BLKHI
+; Each 256 byte page is followed by a 16-bit crc.
+; we know the buffer is set up at "BIGBUF", and is
+; NIBPAGES * 256 bytes long. BIGBUF is at page boundary.
+;---------------------------------------------------------
+rnibtrak:
+	lda #0			; a = 0
+	sta BLKPTR		; Init running ptr
+	sta BLKLO
+	lda #>BIGBUF+1		; BIGBUF address high
+	sta BLKPTR+1		; We will be storing stuff at BIGBUF+0x100
+	lda #$1A		; Only run for 26 (decimal) pages
+	sta NIBPCNT		; Page counter
+	lda #CHR_R
+	jsr nibshow		; Show "R" at current track
+rnibtr1:
+	lda #$02
+	sta <ZP
+	lda #CHR_ACK
+rnib2:
+	tax
+	ldy #$00	; Clear out the new chunk
+	tya
+rnib3:
+	sta (BLKPTR),Y
+	iny
+	bne rnib3
+	txa
+	jsr RECVNIBCHUNK
+	bcs rnib4	; Error during receive?
+	jsr UNDIFF
+
+	lda <CRC
+	cmp PCCRC
+	bne rnib4
+	lda <CRC+1
+	cmp PCCRC+1
+	bne rnib4
+
+	inc <BLKPTR+1	; Get next 256 bytes
+	inc BLKLO	; Increment chunk number
+	lda BLKLO
+	cmp NIBPCNT	; Have we done all nibble pages?
+	beq rnibdone
+	lda #CHR_ACK
+	jmp rnib2
+rnibdone:
+	lda #CHR_BLK		; Entire track transferred ok
+	jsr nibshow		; Show status of current track
+	lda #$00
+	rts
+
+rnib4:
+	lda #_I'!'		; Error during receive
+	jsr nibshow		; Show status of current track
+	lda #CHR_NAK	; CRC error, ask for a resend
+	jmp rnib2
 
 
 ;---------------------------------------------------------
@@ -127,8 +239,6 @@ snibtr5:
 	bne snibtr1		; and back if more pages
 snibtrdloop:
 	jsr PUTINITIALACK	; Ready to go again
-; TODO: Note: maybe we need to send a packet that says the track is done?
-; That gives the client something to resend in case of timeout.
 ; for test only: activate next and deactivate line after
 ;	lda #CHR_ACK		; Simulate response
 	jsr GETREPLY2		; Get response from host for whole track
@@ -262,7 +372,7 @@ chekscnt:
 	tay			; reset y to 0
 	adc synccnt+1		; high-order part
 	sta synccnt+1
-	cmp	#$34		; sets carry when a >= data
+	cmp #$34		; sets carry when a >= data
 	rts
 
 ;---------------------------------------------------------

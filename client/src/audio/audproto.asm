@@ -29,6 +29,12 @@ LASTIN	= $2f
 TAPEIN	= $C060
 TAPEOUT	= $C020
 
+RECVNIBCHUNK:
+	brk;
+
+GETNIBREQUEST:
+	brk;
+
 ;---------------------------------------------------------
 ; DIRREQUEST - Request current directory contents
 ;---------------------------------------------------------

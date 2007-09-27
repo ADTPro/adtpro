@@ -646,6 +646,9 @@ Trans:
 	ldx #$67
 	sta Buffer
 	stx Buffer+1
+Trans2:
+; Trans2 entry point preconditions:
+;   Buffer set to the start of nibble page to write (with leading sync bytes)
 	ldy #$32		; Set Y offset to 1st sync byte (max=50)
 	ldx SlotF		; Set X offset to FORMAT slot/drive
 	sec			; (assume the disk is write protected)
@@ -675,7 +678,10 @@ MStore:
 	cmp DiskRD,x		; Set Read softswitch
 	iny			; Increment Y offset
 	bne LSync2
-	inc Buffer+1		; Increment Buffer by 255
+	inc Buffer+1		; Increment Buffer by one page
+; We may have to let everybody use the $6600 buffer space after all.
+; That lets us avoid the extra boundary checking, and just use the 'bpl' 
+; method of waiting for the pointer to go above $7f to page $80.
 	bpl LSync3		; If < $8000 get more FORMAT data
 	lda ModeRD,x		; Restore Mode softswitch to READ
 	lda DiskRD,x		; Restore Read softswitch to READ
@@ -690,6 +696,8 @@ LWRprot:
 	pla
 	pla
 	jmp Died		; Prompt for another FORMAT...
+
+TransEnd: .byte $80
 
 ;************************************
 ;*                                  *
