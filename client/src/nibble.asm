@@ -29,17 +29,6 @@ ReceiveNib:
 	jmp PCERROR
 
 ReceiveNibOK:
-	; Build Gap bytes
-	lda #<BIGBUF+$10	; Set Buffer to BIGBUF+0x10
-	ldx #>BIGBUF
-	sta Buffer
-	stx Buffer+1
-	ldy #$00		; (Y offset always zero)
-	ldx #$F0
-	lda #$7F		; Build GAP1 using $7F (sync byte)
-	sta LByte
-	jsr LFill		; Store sync bytes from BIGBUF+$10 to BIGBUF+$100
-
 	lda UNITNBR		; Fetch target drive SLOTNUM value
 	and #$70		; Mask off bit 7 and the lower 4 bits
 	sta SlotF		; Store result in FORMAT slot storage
@@ -57,6 +46,7 @@ ReceiveNibOK:
 	sta Buffer	; beginning of the Big Buffer(TM)
 	lda #>BIGBUF
 	sta Buffer+1
+	ldy #$00	; Start at beginning of buffer
 	jsr Trans2	; Write track to disk
 	inc BLKHI
 	lda BLKHI
@@ -67,6 +57,7 @@ ReceiveNibOK:
 	jmp :-
 ReceiveNibDone:
 	jsr motoroff	; We're finished with the drive
+	jsr PUTFINALACK
 	jmp COMPLETE	; Finish using sr.asm's completion code
 
 ;---------------------------------------------------------
@@ -142,8 +133,8 @@ rnibtrak:
 	lda #0			; a = 0
 	sta BLKPTR		; Init running ptr
 	sta BLKLO
-	lda #>BIGBUF+1		; BIGBUF address high
-	sta BLKPTR+1		; We will be storing stuff at BIGBUF+0x100
+	lda #>BIGBUF		; BIGBUF address high
+	sta BLKPTR+1		; We will be storing stuff at BIGBUF
 	lda #$1A		; Only run for 26 (decimal) pages
 	sta NIBPCNT		; Page counter
 	lda #CHR_R

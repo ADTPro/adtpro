@@ -646,10 +646,10 @@ Trans:
 	ldx #$67
 	sta Buffer
 	stx Buffer+1
+	ldy #$32		; Set Y offset to 1st sync byte (max=50)
 Trans2:
 ; Trans2 entry point preconditions:
 ;   Buffer set to the start of nibble page to write (with leading sync bytes)
-	ldy #$32		; Set Y offset to 1st sync byte (max=50)
 	ldx SlotF		; Set X offset to FORMAT slot/drive
 	sec			; (assume the disk is write protected)
 	lda DiskWR,x		; Write something to the disk
@@ -670,8 +670,8 @@ LSync2:
 	pla
 LSync3:
 	lda (Buffer),y		; Fetch byte to WRITE to disk
-	cmp #$80		;  Is it a sync byte? ($7F)
-	bcc LSync1		;  Yep. Turn it into an $FF
+	cmp #$7f		;  Is it a sync byte? ($7F)
+	beq LSync1		;  Yep. Turn it into an $FF
 	nop
 MStore:
 	sta DiskWR,x		; Write byte to the disk
