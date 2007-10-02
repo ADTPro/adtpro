@@ -1511,6 +1511,13 @@ public class CommsThread extends Thread
             }
             // analyze this track
             realTrack1 = NibbleAnalysis.analyzeNibbleBuffer(rawNibbleBuffer);
+            /*
+             * Dump out the track
+             */
+              Log.println(false, "Dumping out track "+numTracks+": (zero-based)");
+              for (int i = 0; i < 6656; i++)
+                Log.print(false, UnsignedByte.toString(rawNibbleBuffer[i]));
+              Log.println(false, "");
             if (realTrack1 != null)
             {
               if (realTrack1.accuracy < 0.9)
