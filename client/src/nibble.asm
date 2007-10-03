@@ -57,7 +57,7 @@ ReceiveNibOK:
 	jmp :-
 ReceiveNibDone:
 	jsr motoroff	; We're finished with the drive
-	jsr PUTFINALACK
+	jsr GETFINALACK	; Tell host we're done
 	jmp COMPLETE	; Finish using sr.asm's completion code
 
 ;---------------------------------------------------------
