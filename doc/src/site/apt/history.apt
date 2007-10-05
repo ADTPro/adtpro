@@ -10,20 +10,27 @@ ADTPro Release History
 
  New functionality:
 
- * [Client] Apple-to-host nibble (.nib) image creation
+~~ * [Client] Apple-to-host nibble (.nib) image creation
 
- * [Client] Only re-scan drives for volume information the first time, and
-   thereafter only when requested; this saves time (and drive knocking)
-   whenever the volume screen comes up
+ * Support for 300 baud operation to help non-upgraded ROM 255 Apple IIc
+   computers with the serial timing problem
 
  []
 
  Bug fixes:
 
+ * [Client] Only re-scan drives for volume information the first time, and
+   thereafter only when requested; this saves time (and, potentially, drive
+   knocking) whenever the volume screen is shown
+
  * [Client] Removed last dependency on Applesoft string printing; enables
    running on orignal integer Apple ][ (non-plus) ROM machines
 
  * [Server] Always record 5-1/4" disks at the host as DOS order images
+
+ * [Server] Honor the "Apple IIc Serial" checkbox (which disables hardware
+   handshaking) on startup; previously, one had to open the communications
+   dialog box and explicitly hit OK to get it recognized
 
  []
 
