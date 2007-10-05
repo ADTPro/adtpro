@@ -221,15 +221,15 @@ the Apple (not DIN!) standard:
 ---
  Laser/
  Apple
- DIN-5      DE-9  DB-25  RS-232
- Pin#       Pin#  Pin#    Name
- -----      ----  -----  ------
-   2  -----  2      3     RxD
-   3  -----  5      7     GND
-   4  -----  3      2     TxD
-  1-5                     (disables
-            7-8    4-5    hardware
-           1-4-6  6-8-20  handshaking)
+ DIN-5    DE-9  DB-25  RS-232
+ Pin#     Pin#  Pin#    Name
+ -----    ----  -----  ------
+   2 ----- 2      3     RxD
+   3 ----- 5      7     GND
+   4 ----- 3      2     TxD
+  1-5     (nc)   (nc)  (disables
+  (nc)    7-8    4-5    hardware
+  (nc)   1-4-6  6-8-20  handshaking)
 
  Within the DIN-5 shell, tie together pins:
  1-5
