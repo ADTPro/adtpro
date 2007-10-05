@@ -219,23 +219,30 @@ the Apple (not DIN!) standard:
   The main pinout is:
 
 ---
-Laser      Host
-DIN-5      DE-9
-  2  -----  2
-  3  -----  5
-  4  -----  3
+ Laser/
+ Apple
+ DIN-5      DE-9  DB-25  RS-232
+ Pin#       Pin#  Pin#    Name
+ -----      ----  -----  ------
+   2  -----  2      3     RxD
+   3  -----  5      7     GND
+   4  -----  3      2     TxD
+  1-5                     (disables
+            7-8    4-5    hardware
+           1-4-6  6-8-20  handshaking)
 
-Within the DIN-5 shell, tie together pins:
-1-5
+ Within the DIN-5 shell, tie together pins:
+ 1-5
 
-Within the DE-9 shell, tie together pins:
-1-4-6
-and
-7-8
+ Within the DE-9 shell, tie together pins:
+ 1-4-6 and 7-8
+
+ Within the DB-25 shell, tie together pins:
+ 6-8-20 and 4-5 
 ---
 
   This null modem cable ties all the handshaking lines together at the host
-end and at the Laser end.
+end and at the Laser end.  This effectively disables hardware handshaking.
 
   I wired some of these up myself for testing, going from DIN-5 to DE-9F. 
 {{{mailto:fixme... david__schmidt at users dot sourceforge dot net}Contact me}}
