@@ -28,7 +28,6 @@ import java.util.*;
 
 import org.adtpro.resources.Messages;
 import org.adtpro.utilities.Log;
-import org.adtpro.utilities.UnsignedByte;
 
 import gnu.io.*;
 
@@ -168,7 +167,7 @@ public class SerialTransport extends ATransport
     }
     else
     {
-      open(_portName, _currentSpeed, false);
+      open(_portName, _currentSpeed, _hardware);
     }
   }
 

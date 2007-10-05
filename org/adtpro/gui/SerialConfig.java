@@ -271,7 +271,7 @@ public class SerialConfig extends JDialog implements ActionListener
     _theSingleton.setModal(true);
     _theSingleton.setBounds(FrameUtils.center(_theSingleton.getSize(),parent.getBounds()));
     _theSingleton._tabbedPane.setSelectedIndex(tab);
-    _theSingleton.show();
+    _theSingleton.setVisible(true);
   }
 
   /* OK action: */

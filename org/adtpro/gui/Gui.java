@@ -282,7 +282,7 @@ public final class Gui extends JFrame implements ActionListener
       Log.println(false, "Gui setting screen coordinates to defaults; properties file height was zero.");
       setBounds(FrameUtils.center(this.getSize()));
     }
-    this.show();
+    this.setVisible(true);
     SerialConfig.getSingleton(this);
     Log.println(false, "Gui Constructor exit.");
   }
