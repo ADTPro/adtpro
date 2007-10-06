@@ -77,7 +77,7 @@ MODINIT:
 INITSEND:
 	ldy #$b4		; Start with ascii "4"
 	lda PSPEED
-	beq :+			; Is speed set to low (300)?
+	bne :+			; Is speed set to low (300)?
 	lda #$b0		; Load up ascii "0"
 	sta BAUDR+1
 	lda #$b6		; Load up ascii "6"

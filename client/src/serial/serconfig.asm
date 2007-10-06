@@ -358,7 +358,7 @@ FoundNotIIgs:
 	bne :+
 	lda #$02		; Yes, slow it down to 19200.
 	sta PSPEED
-	sta DEFAULT+3		; And make that the default.
+	sta DEFAULT+1		; And make that the default.
 :
 	jmp FindSlotNext
 NotLaser:

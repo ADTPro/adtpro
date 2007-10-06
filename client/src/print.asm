@@ -468,7 +468,7 @@ nibtitle:
 	ldy #PMNIBTOP
 	jsr WRITEMSG
 	lda #$0e		; show one block left and right
-	sta C	V		; on line $0e
+	sta CV			; on line $0e
 	jsr VTAB
 	lda #_I' '		; inverse space char
 	ldy #38			; at end of line

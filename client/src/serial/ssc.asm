@@ -104,4 +104,4 @@ PATCHSSC:
 
 	rts
 
-BPSCTRL:	.byte $16,$1E,$1F,$10	
+BPSCTRL:	.byte $16,$1E,$1F,$10	; 300, 9600, 19200, 115k
