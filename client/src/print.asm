@@ -467,37 +467,37 @@ nibtitle:
 	jsr CROUT
 	ldy #PMNIBTOP
 	jsr WRITEMSG
-	lda	#$0e		; show one block left and right
-	sta	CV		; on line $0e
-	jsr	VTAB
-	lda	#_I' '		; inverse space char
-	ldy	#38		; at end of line
-	sta	(BASL),y
-	ldy	#0		; at start of line
-	sta	(BASL),y
-	lda	#_I'>'		; inverse character!
+	lda #$0e		; show one block left and right
+	sta C	V		; on line $0e
+	jsr VTAB
+	lda #_I' '		; inverse space char
+	ldy #38			; at end of line
+	sta (BASL),y
+	ldy #0			; at start of line
+	sta (BASL),y
+	lda #_I'>'		; inverse character!
 	iny			; next position in line
-	sta	(BASL),y
-	lda	#_I'<'		; inverse character!
-	ldy	#37		; one-but-last position in line
-	sta	(BASL),y
-	lda	SendType	; check to see if we need to
-	cmp	#CHR_H		; display halftrack line
-	bne	nibtdone
-	lda	#$0f		; move one line down
-	sta	CV
-	jsr	VTAB
-	lda	#_I'.'		; put an inverse . on screen
-	ldy	#0		;  at horiz pos 0
-	sta	(BASL),y
-	lda	#'5'		; and now put a 5 so we see
-	ldy	#1		;  .5 which means halftrk
-	sta	(BASL),y
-	lda	#_I' '		; put 2 inverse spaces at the end
-	ldy	#37
-	sta	(BASL),y
+	sta (BASL),y
+	lda #_I'<'		; inverse character!
+	ldy #37			; one-but-last position in line
+	sta (BASL),y
+	lda SendType		; check to see if we need to
+	cmp #CHR_H		; display halftrack line
+	bne nibtdone
+	lda #$0f		; move one line down
+	sta CV
+	jsr VTAB
+	lda #_I'.'		; put an inverse . on screen
+	ldy #0			;  at horiz pos 0
+	sta (BASL),y
+	lda #'5'		; and now put a 5 so we see
+	ldy #1			;  .5 which means halftrk
+	sta (BASL),y
+	lda #_I' '		; put 2 inverse spaces at the end
+	ldy #37
+	sta (BASL),y
 	iny
-	sta	(BASL),y
+	sta (BASL),y
 
 nibtdone:
 	rts
@@ -548,7 +548,7 @@ MSGTBL:
 	.addr MProtect, MNoDisk, MNuther, MUnitNone, MNIBTOP
 	.addr MNULL
 
-MSG01:	ascz "v.r.m"
+MSG01:	ascz "1.0.3"
 MSG02:	asccr "(S)END (R)ECEIVE (D)IR (B)ATCH (C)D"
 	.byte $8d,$00
 MSG03:	ascz "(V)OLUMES CONFI(G) (F)ORMAT (?) (Q)UIT:"
@@ -579,8 +579,8 @@ MSGDST:	ascz "SELECT DESTINATION VOLUME"
 MSG19:	ascz "VOLUMES CURRENTLY ON-LINE:"
 MSG20:	ascz "SLOT  DRIVE  VOLUME NAME      BLOCKS"
 MSG21:	ascz "----  -----  ---------------  ------"
-MSG22:	ascz "CHANGE SELECTION WITH ARROW KEYS, RETURN"
-MSG23:	ascz "   R TO RE-SCAN DRIVES, ESC TO CANCEL"
+MSG22:	ascz "CHANGE SELECTION WITH ARROW KEYS&RETURN "
+MSG23:	ascz " (R) TO RE-SCAN DRIVES, ESC TO CANCEL"
 MSG23a:	ascz "SELECT WITH RETURN, ESC CANCELS"
 MSG24:	ascz "CONFIGURE ADTPRO PARAMETERS"
 MSG25:	ascz "CHANGE PARAMETERS WITH ARROW KEYS"
@@ -640,51 +640,51 @@ MNULL:	.byte $00
 ; Message equates
 ;---------------------------------------------------------
 
-PMSG01	= $00
-PMSG02	= $02
-PMSG03	= $04
-PMSG04	= $06
-PMSG05	= $08
-PMSG06	= $0a
-PMSG07	= $0c
-PMSG08	= $0e
-PMSG09	= $10
-PMSG10	= $12
-PMSG11	= $14
-PMSG12	= $16
-PMSG13	= $18
-PMSG14	= $1a
-PMSG15	= $1c
-PMSG16	= $1e
-PMSG17	= $20
-PMSGSOU	= $22
-PMSGDST	= $24
-PMSG19	= $26
-PMSG20	= $28
-PMSG21	= $2a
-PMSG22	= $2c
-PMSG23	= $2e
-PMSG23a	= $30
-PMSG24	= $32
-PMSG25	= $34
-PMSG28	= $36
-PMSG28a	= $38
-PMSG29	= $3a
-PMSG30	= $3c
+PMSG01		= $00
+PMSG02		= $02
+PMSG03		= $04
+PMSG04		= $06
+PMSG05		= $08
+PMSG06		= $0a
+PMSG07		= $0c
+PMSG08		= $0e
+PMSG09		= $10
+PMSG10		= $12
+PMSG11		= $14
+PMSG12		= $16
+PMSG13		= $18
+PMSG14		= $1a
+PMSG15		= $1c
+PMSG16		= $1e
+PMSG17		= $20
+PMSGSOU		= $22
+PMSGDST		= $24
+PMSG19		= $26
+PMSG20		= $28
+PMSG21		= $2a
+PMSG22		= $2c
+PMSG23		= $2e
+PMSG23a		= $30
+PMSG24		= $32
+PMSG25		= $34
+PMSG28		= $36
+PMSG28a		= $38
+PMSG29		= $3a
+PMSG30		= $3c
 PMNONAME	= $3e
-PMIOERR	= $40
+PMIOERR		= $40
 PMNODISK	= $42
-PMSG34	= $44
-PMSG35	= $46
-PMLOGO1	= $48
-PMLOGO2	= $4a
-PMLOGO3	= $4c
-PMLOGO4	= $4e
-PMLOGO5	= $50
-PMWAIT	= $52
-PMCDIR	= $54
-PMFORC	= $56
-PMFEX	= $58
+PMSG34		= $44
+PMSG35		= $46
+PMLOGO1		= $48
+PMLOGO2		= $4a
+PMLOGO3		= $4c
+PMLOGO4		= $4e
+PMLOGO5		= $50
+PMWAIT		= $52
+PMCDIR		= $54
+PMFORC		= $56
+PMFEX		= $58
 PMUTHBAD	= $5a
 PMPREFIX	= $5c
 PMINSERTDISK	= $5e
@@ -701,4 +701,4 @@ PMNoDisk	= $72
 PMNuther	= $74
 PMUnitNone	= $76
 PMNIBTOP	= $78
-PMNULL	= $7a
+PMNULL		= $7a

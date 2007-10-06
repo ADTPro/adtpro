@@ -16,9 +16,9 @@ ADTPro Protocol
 
  [{{{#Put}"P" - Put}}]  Inititate upload (always overwrite)
 
- [{{{#NibbleGet}"O" - Nibble Get}}]  Inititate nibble download
+ [{{{#NibbleGet}"O" - Nibble Get}}]  (Not implemented yet...) Inititate nibble download 
 
- [{{{#NibblePut}"N" - Nibble Put}}]  Inititate nibble upload (always overwrite)
+ [{{{#NibblePut}"N" - Nibble Put}}]  (Not implemented yet...) Inititate nibble upload (always overwrite)
 
  [{{{#Batch}"B" - Batch}}]  Inititate batch upload (unique suffix added to specified prefix)
 
@@ -87,7 +87,7 @@ ADTPro Protocol
 
 -------------
 
-* {NibbleGet} Get nibble disk (Host -> Apple ][)
+* {NibbleGet} (Not implemented yet...) Get nibble disk (Host -> Apple ][)
 
 ------------
 
@@ -133,7 +133,7 @@ ADTPro Protocol
 
 -------------
 
-* {NibblePut} Put Nibble disk  (from Apple ][ to host)
+* {NibblePut} (Not implemented yet...) Put Nibble disk  (from Apple ][ to host)
 
 ------------
 

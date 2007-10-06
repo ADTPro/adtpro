@@ -41,6 +41,7 @@ GETFN2:
 ; GetSendType - Get 5.25" disk send type
 ;---------------------------------------------------------
 GetSendType:
+	jmp GetSendFold	; Bypass all this until Nibbles are ready....
 	jsr CLRMSGAREA
 	ldy #PMSG04
 	jsr WRITEMSG

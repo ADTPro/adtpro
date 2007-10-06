@@ -302,51 +302,51 @@ nibnextt:
 ; starting a new sequence; the check takes so long we
 ; lose any byte sync we might have (> 32 cycles).
 ;---------------------------------------------------------
-nibsync:
-	tya
-	pha			; save y on the stack
-	lda #0
-	tay			; y=0 (counter)
-	sta synccnt
-	sta synccnt+1		; init number of bytes
-nibsync0:
-	jsr chekscnt
-	bcs nibsync5		; accept any byte
-nibsync1:
-	lda $c08c,x		; wait for complete byte
-	bpl nibsync1
-	iny			; count byte
-	cmp #$ff		; is it a gap byte?
-	bne nibsync0
-nibsync2:
-	lda $c08c,x		; next byte
-	bpl nibsync2
-	iny			; count byte
-	cmp #$ff		; is it a gap byte?
-	bne nibsync0		; only 1 gap byte
-nibsync3:
-	lda $c08c,x		; next byte
-	bpl nibsync3
-	iny			; count byte
-	cmp #$ff		; is it a gap byte?
-	bne nibsync0		; only 2 gap bytes
-nibsync4:
-	lda $c08c,x		; next byte
-	bpl nibsync4
-	iny			; count byte
-	cmp #$ff		; is it a gap byte?
-	bne nibsync0		; only 3 gap bytes
+;nibsync:
+;	tya
+;	pha			; save y on the stack
+;	lda #0
+;	tay			; y=0 (counter)
+;	sta synccnt
+;	sta synccnt+1		; init number of bytes
+;nibsync0:
+;	jsr chekscnt
+;	bcs nibsync5		; accept any byte
+;nibsync1:
+;	lda $c08c,x		; wait for complete byte
+;	bpl nibsync1
+;	iny			; count byte
+;	cmp #$ff		; is it a gap byte?
+;	bne nibsync0
+;nibsync2:
+;	lda $c08c,x		; next byte
+;	bpl nibsync2
+;	iny			; count byte
+;	cmp #$ff		; is it a gap byte?
+;	bne nibsync0		; only 1 gap byte
+;nibsync3:
+;	lda $c08c,x		; next byte
+;	bpl nibsync3
+;	iny			; count byte
+;	cmp #$ff		; is it a gap byte?
+;	bne nibsync0		; only 2 gap bytes
+;nibsync4:
+;	lda $c08c,x		; next byte
+;	bpl nibsync4
+;	iny			; count byte
+;	cmp #$ff		; is it a gap byte?
+;	bne nibsync0		; only 3 gap bytes
 ; at this point, we encountered 4 consecutive gap bytes.
 ; so now wait for the first non-gap byte.
-nibsync5:
-	pla
-	tay			; restore y
-nibsync6:
-	lda $c08c,x		; next byte
-	bpl nibsync6
-	cmp #$ff		; is it a gap byte?
-	beq nibsync6		; go read next byte
-	jmp rdnibtr8		; avoid rts; save some cycles
+;nibsync5:
+;	pla
+;	tay			; restore y
+;nibsync6:
+;	lda $c08c,x		; next byte
+;	bpl nibsync6
+;	cmp #$ff		; is it a gap byte?
+;	beq nibsync6		; go read next byte
+;	jmp rdnibtr8		; avoid rts; save some cycles
 
 ;---------------------------------------------------------
 ; chekscnt - check if we have to continue syncing

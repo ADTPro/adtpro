@@ -598,6 +598,71 @@ DiedII:
 	pla			; Retrieve error code from the stack
 	jmp Died		; Prompt for another FORMAT...
 
+;************************************
+;*                                  *
+;* TRANS - Transfer track in memory *
+;* to target device                 *
+;*                                  *
+;* Note - this needs to keep within *
+;* a single page of memory.         *
+;************************************
+Trans:
+	lda #$00		; Set Buffer to $6700
+	ldx #$67
+	sta Buffer
+	stx Buffer+1
+Trans2:
+; Trans2 entry point preconditions:
+;   Buffer set to the start of nibble page to write (with leading sync bytes)
+	ldy #$32		; Set Y offset to 1st sync byte (max=50)
+	ldx SlotF		; Set X offset to FORMAT slot/drive
+	sec			; (assume the disk is write protected)
+	lda DiskWR,x		; Write something to the disk
+	lda ModeRD,x		; Reset Mode softswitch to READ
+	bmi LWRprot		; If > $7F then disk was write protected
+	lda #$FF		; Write a sync byte to the disk
+	sta ModeWR,x
+	cmp DiskRD,x
+	nop			; (kill some time for WRITE sync...)
+	jmp LSync2
+LSync1:
+	eor #$80		; Set MSB, converting $7F to $FF (sync byte)
+	nop			; (kill time...)
+	nop
+	jmp MStore
+LSync2:
+	pha			; (kill more time... [ sheesh! ])
+	pla
+LSync3:
+	lda (Buffer),y		; Fetch byte to WRITE to disk
+	cmp #$80		;  Is it a sync byte? ($7F)
+	bcc LSync1		;  Yep. Turn it into an $FF
+	nop
+MStore:
+	sta DiskWR,x		; Write byte to the disk
+	cmp DiskRD,x		; Set Read softswitch
+	iny			; Increment Y offset
+	bne LSync2
+	inc Buffer+1		; Increment Buffer by one page
+; We may have to let everybody use the $6600 buffer space after all.
+; That lets us avoid the extra boundary checking, and just use the 'bpl' 
+; method of waiting for the pointer to go above $7f to page $80.
+	bpl LSync3		; If < $8000 get more FORMAT data
+	lda ModeRD,x		; Restore Mode softswitch to READ
+	lda DiskRD,x		; Restore Read softswitch to READ
+	clc
+	rts
+LWRprot:
+	clc			; Disk is write protected
+	jsr Done		; Turn the drive off
+	lda #$2B
+	pla
+	pla
+	pla
+	pla
+	jmp Died		; Prompt for another FORMAT...
+
+
 ;**************************************
 ;*                                    *
 ;* Died - Something awful happened to *
@@ -634,70 +699,6 @@ NoDied:
 DiedOut:
 	jsr WRITEMSGAREA
 	jmp Again		; Prompt for another FORMAT...
-
-;************************************
-;*                                  *
-;* TRANS - Transfer track in memory *
-;* to target device                 *
-;*                                  *
-;************************************
-Trans:
-	lda #$00		; Set Buffer to $6700
-	ldx #$67
-	sta Buffer
-	stx Buffer+1
-	ldy #$32		; Set Y offset to 1st sync byte (max=50)
-Trans2:
-; Trans2 entry point preconditions:
-;   Buffer set to the start of nibble page to write (with leading sync bytes)
-	ldx SlotF		; Set X offset to FORMAT slot/drive
-	sec			; (assume the disk is write protected)
-	lda DiskWR,x		; Write something to the disk
-	lda ModeRD,x		; Reset Mode softswitch to READ
-	bmi LWRprot		; If > $7F then disk was write protected
-	lda #$FF		; Write a sync byte to the disk
-	sta ModeWR,x
-	cmp DiskRD,x
-	nop			; (kill some time for WRITE sync...)
-	jmp LSync2
-LSync1:
-	eor #$80		; Set MSB, converting $7F to $FF (sync byte)
-	nop			; (kill time...)
-	nop
-	jmp MStore
-LSync2:
-	pha			; (kill more time... [ sheesh! ])
-	pla
-LSync3:
-	lda (Buffer),y		; Fetch byte to WRITE to disk
-	cmp #$7f		;  Is it a sync byte? ($7F)
-	beq LSync1		;  Yep. Turn it into an $FF
-	nop
-MStore:
-	sta DiskWR,x		; Write byte to the disk
-	cmp DiskRD,x		; Set Read softswitch
-	iny			; Increment Y offset
-	bne LSync2
-	inc Buffer+1		; Increment Buffer by one page
-; We may have to let everybody use the $6600 buffer space after all.
-; That lets us avoid the extra boundary checking, and just use the 'bpl' 
-; method of waiting for the pointer to go above $7f to page $80.
-	bpl LSync3		; If < $8000 get more FORMAT data
-	lda ModeRD,x		; Restore Mode softswitch to READ
-	lda DiskRD,x		; Restore Read softswitch to READ
-	clc
-	rts
-LWRprot:
-	clc			; Disk is write protected
-	jsr Done		; Turn the drive off
-	lda #$2B
-	pla
-	pla
-	pla
-	pla
-	jmp Died		; Prompt for another FORMAT...
-
-TransEnd: .byte $80
 
 ;************************************
 ;*                                  *

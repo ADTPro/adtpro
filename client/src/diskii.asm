@@ -456,8 +456,7 @@ SKT_BUF:
 SKT_BUF2:
 	.RES  16	; idem (don't change)
 ADR_TRK:
-	.BYTE $6C,$7C,$8C,$9C,$AC
-;	.BYTE $44,$54,$64,$74,$84
+	.BYTE >BIGBUF,>BIGBUF+$10,>BIGBUF+$20,>BIGBUF+$30,>BIGBUF+$40
 ERR_READ:		; read error flag
 	.BYTE 0
 

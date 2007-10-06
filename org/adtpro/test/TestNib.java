@@ -1,5 +1,27 @@
+/*
+ * ADTPro - Apple Disk Transfer ProDOS
+ * Copyright (C) 2007 by David Schmidt
+ * david__schmidt at users.sourceforge.net
+ *
+ * This program is free software; you can redistribute it and/or modify it 
+ * under the terms of the GNU General Public License as published by the 
+ * Free Software Foundation; either version 2 of the License, or (at your 
+ * option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but 
+ * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY 
+ * or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License 
+ * for more details.
+ *
+ * You should have received a copy of the GNU General Public License along 
+ * with this program; if not, write to the Free Software Foundation, Inc., 
+ * 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+ */
+
 package org.adtpro.test;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 
 import org.adtpro.disk.Disk;
@@ -43,8 +65,8 @@ public class TestNib
             {
               state = 0;
             }
-            else
-              buffer[i] = 0x7f;
+//            else
+//              buffer[i] = 0x7f;
           }
           if ((i + 3 < buffer.length) &&
               (buffer[i] == UnsignedByte.loByte(0xff)) &&
@@ -116,6 +138,7 @@ public class TestNib
             }
           }
         }
+
         Log.println(true, "Rearranging disk image");
         /*
          * Rearrange gap 1 to the beginning of the track 
@@ -134,7 +157,6 @@ public class TestNib
           bestSyncStart = 0;
           int bufferOffset =  j * 6656;
           wasCountingSyncs = false;
-          Log.println(true,"Dealing with track "+j);
           for (i = 0; i < 6656; i++)
           {
             if (buffer[bufferOffset + i] == UnsignedByte.loByte(0x7f))
@@ -150,7 +172,6 @@ public class TestNib
                 syncBytes = 1;
                 wasCountingSyncs = true;
                 syncStart = bufferOffset + i;
-                Log.println(true,"new syncStart: " + syncStart);
               }
             }
             else
@@ -158,10 +179,8 @@ public class TestNib
               // We stopped counting syncs.
               if (wasCountingSyncs)
               {
-                Log.println(true,"Finished counting syncs; starts at:" + syncStart+" and runs for:"+syncBytes);
                 if (syncBytes > bestSyncBytes)
                 {
-                  Log.println(true,"(Which is the best so far.)");
                   bestSyncBytes = syncBytes;
                   bestSyncStart = syncStart;
                 }
@@ -169,19 +188,22 @@ public class TestNib
               wasCountingSyncs = false;
             }
           }
-          if (syncBytes > bestSyncBytes)
+          if (wasCountingSyncs)
           {
-            bestSyncBytes = syncBytes;
-            bestSyncStart = syncStart;
+            // In case the last run was the longest - catch that too.
+            if (syncBytes > bestSyncBytes)
+            {
+              bestSyncBytes = syncBytes;
+              bestSyncStart = syncStart;
+            }
           }
         
-          Log.println(true, "bestSyncStart: " + bestSyncStart);
           int bufferPointer = bufferOffset;
           // Found the best run of sync bytes.  Spin forward a bit and start there.
           if (bestSyncBytes > 26)
           {
-            bufferPointer = bestSyncStart + 26;
-            bestSyncStart += 26;
+            bufferPointer = bestSyncStart + 17;
+            bestSyncStart += 17;
           }
           for (i = 0; i < 6656; i++)
           {
@@ -205,11 +227,19 @@ public class TestNib
          */
         for (int j = 0; j < 35; j++)
         {
-          Log.print(false, "Dumping out disk:");
+          Log.println(false, "Dumping out track "+j+": (zero-based)");
           for (i = 0; i < 6656; i++)
+          {
             Log.print(false, UnsignedByte.toString(trackBuf[j * 6656 + i])); //buffer[j*6656+i]));
+            if (trackBuf[j * 6656 + i] == UnsignedByte.loByte(0x7f))
+              trackBuf[j * 6656 + i] = (byte)0xff;
+          }
           Log.println(false, "");
         }
+        File newfile = new File(args[0]+".nib");
+        FileOutputStream fos = new FileOutputStream(newfile);
+        fos.write(trackBuf);
+        fos.close();
       }
     }
     catch (IOException e)

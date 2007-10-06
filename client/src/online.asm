@@ -66,6 +66,8 @@ OLLOOP:
 	lda $C000
 	cmp #CHR_ESC
 	bne :+
+	lda #$00
+	sta LASTVOL	; Remember we aborted - so make sure to re-read next time
 	jmp ABORT
 :	lda DEVICES,x
 	cmp #$00

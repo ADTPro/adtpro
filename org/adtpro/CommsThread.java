@@ -1,4 +1,6 @@
 /*
+ * ADTPro - Apple Disk Transfer ProDOS
+ * Copyright (C) 2007 by David Schmidt
  * david__schmidt at users.sourceforge.net
  *
  * This program is free software; you can redistribute it and/or modify it 
@@ -1187,15 +1189,11 @@ public class CommsThread extends Thread
                 buffer[i] = 0x7f;
             }
             if ((i + 3 < buffer.length) &&
-                (buffer[i] == UnsignedByte.loByte(0xff)) &&
-                (buffer[i+1] == UnsignedByte.loByte(0xff)) &&
-                (buffer[i+2] == UnsignedByte.loByte(0xff)) &&
-                (buffer[i+3] == UnsignedByte.loByte(0xff)))
+                (buffer[i] == UnsignedByte.loByte(0x7f)) &&
+                (buffer[i+1] == UnsignedByte.loByte(0x7f)) &&
+                (buffer[i+2] == UnsignedByte.loByte(0x7f)) &&
+                (buffer[i+3] == UnsignedByte.loByte(0x7f)))
             {
-                buffer[i] = 0x7f;
-                buffer[i+1] = 0x7f;
-                buffer[i+2] = 0x7f;
-                buffer[i+3] = 0x7f;
                 i+=3;
                 state = 1;
             }
@@ -1210,47 +1208,42 @@ public class CommsThread extends Thread
               {0x9F, 0xE7, 0xF9, 0xFE, 0xFF},
               */
               if ((i + 4 < buffer.length) &&
-                  ((buffer[i] == UnsignedByte.loByte(0xfe)) &&
-                    (buffer[i+1] == UnsignedByte.loByte(0xff)) &&
-                    (buffer[i+2] == UnsignedByte.loByte(0xff)) &&
-                    (buffer[i+3] == UnsignedByte.loByte(0xff)) &&
-                    (buffer[i+4] == UnsignedByte.loByte(0xff))) ||
-                  ((buffer[i] == UnsignedByte.loByte(0xfc)) &&
-                    (buffer[i+1] == UnsignedByte.loByte(0xff)) &&
-                    (buffer[i+2] == UnsignedByte.loByte(0xff)) &&
-                    (buffer[i+3] == UnsignedByte.loByte(0xff)) &&
-                    (buffer[i+4] == UnsignedByte.loByte(0xff))) ||
-                  ((buffer[i] == UnsignedByte.loByte(0xf9)) &&
-                    (buffer[i+1] == UnsignedByte.loByte(0xfe)) &&
-                    (buffer[i+2] == UnsignedByte.loByte(0xff)) &&
-                    (buffer[i+3] == UnsignedByte.loByte(0xff)) &&
-                    (buffer[i+4] == UnsignedByte.loByte(0xff))) ||
-                  ((buffer[i] == UnsignedByte.loByte(0xf3)) &&
-                    (buffer[i+1] == UnsignedByte.loByte(0xfc)) &&
-                    (buffer[i+2] == UnsignedByte.loByte(0xff)) &&
-                    (buffer[i+3] == UnsignedByte.loByte(0xff)) &&
-                    (buffer[i+4] == UnsignedByte.loByte(0xff))) ||
-                  ((buffer[i] == UnsignedByte.loByte(0xe7)) &&
-                    (buffer[i+1] == UnsignedByte.loByte(0xf9)) &&
-                    (buffer[i+2] == UnsignedByte.loByte(0xfe)) &&
-                    (buffer[i+3] == UnsignedByte.loByte(0xff)) &&
-                    (buffer[i+4] == UnsignedByte.loByte(0xff))) ||
-                  ((buffer[i] == UnsignedByte.loByte(0xcf)) &&
-                    (buffer[i+1] == UnsignedByte.loByte(0xf3)) &&
-                    (buffer[i+2] == UnsignedByte.loByte(0xfc)) &&
-                    (buffer[i+3] == UnsignedByte.loByte(0xff)) &&
-                    (buffer[i+4] == UnsignedByte.loByte(0xff))) ||
-                  ((buffer[i] == UnsignedByte.loByte(0x9f)) &&
-                    (buffer[i+1] == UnsignedByte.loByte(0xe7)) &&
-                    (buffer[i+2] == UnsignedByte.loByte(0xf9)) &&
-                    (buffer[i+3] == UnsignedByte.loByte(0xfe)) &&
-                    (buffer[i+4] == UnsignedByte.loByte(0xff))))
+                  ((buffer[i] == UnsignedByte.loByte(0x7e)) &&
+                    (buffer[i+1] == UnsignedByte.loByte(0x7f)) &&
+                    (buffer[i+2] == UnsignedByte.loByte(0x7f)) &&
+                    (buffer[i+3] == UnsignedByte.loByte(0x7f)) &&
+                    (buffer[i+4] == UnsignedByte.loByte(0x7f))) ||
+                  ((buffer[i] == UnsignedByte.loByte(0x7c)) &&
+                    (buffer[i+1] == UnsignedByte.loByte(0x7f)) &&
+                    (buffer[i+2] == UnsignedByte.loByte(0x7f)) &&
+                    (buffer[i+3] == UnsignedByte.loByte(0x7f)) &&
+                    (buffer[i+4] == UnsignedByte.loByte(0x7f))) ||
+                  ((buffer[i] == UnsignedByte.loByte(0x79)) &&
+                    (buffer[i+1] == UnsignedByte.loByte(0x7e)) &&
+                    (buffer[i+2] == UnsignedByte.loByte(0x7f)) &&
+                    (buffer[i+3] == UnsignedByte.loByte(0x7f)) &&
+                    (buffer[i+4] == UnsignedByte.loByte(0x7f))) ||
+                  ((buffer[i] == UnsignedByte.loByte(0x73)) &&
+                    (buffer[i+1] == UnsignedByte.loByte(0x7c)) &&
+                    (buffer[i+2] == UnsignedByte.loByte(0x7f)) &&
+                    (buffer[i+3] == UnsignedByte.loByte(0x7f)) &&
+                    (buffer[i+4] == UnsignedByte.loByte(0x7f))) ||
+                  ((buffer[i] == UnsignedByte.loByte(0x67)) &&
+                    (buffer[i+1] == UnsignedByte.loByte(0x79)) &&
+                    (buffer[i+2] == UnsignedByte.loByte(0x7e)) &&
+                    (buffer[i+3] == UnsignedByte.loByte(0x7f)) &&
+                    (buffer[i+4] == UnsignedByte.loByte(0x7f))) ||
+                  ((buffer[i] == UnsignedByte.loByte(0x4f)) &&
+                    (buffer[i+1] == UnsignedByte.loByte(0x73)) &&
+                    (buffer[i+2] == UnsignedByte.loByte(0x7c)) &&
+                    (buffer[i+3] == UnsignedByte.loByte(0x7f)) &&
+                    (buffer[i+4] == UnsignedByte.loByte(0x7f))) ||
+                  ((buffer[i] == UnsignedByte.loByte(0x1f)) &&
+                    (buffer[i+1] == UnsignedByte.loByte(0x67)) &&
+                    (buffer[i+2] == UnsignedByte.loByte(0x79)) &&
+                    (buffer[i+3] == UnsignedByte.loByte(0x7e)) &&
+                    (buffer[i+4] == UnsignedByte.loByte(0x7f))))
               {
-                buffer[i] = 0x7f;
-                buffer[i+1] = 0x7f;
-                buffer[i+2] = 0x7f;
-                buffer[i+3] = 0x7f;
-                buffer[i+4] = 0x7f;
                 i+=4;
                 state = 1;
               }
@@ -1509,6 +1502,11 @@ public class CommsThread extends Thread
               if (packetResult != 0) break;
               _parent.setProgressValue((numTracks * 52) + part + 1);
             }
+            // Dump the raw track
+            Log.println(false, "Dumping out raw track "+numTracks+": (zero-based; first try)");
+            for (int i = 0; i < 6656; i++)
+              Log.print(false, UnsignedByte.toString(rawNibbleBuffer[i]));
+            Log.println(false, "");
             // analyze this track
             realTrack1 = NibbleAnalysis.analyzeNibbleBuffer(rawNibbleBuffer);
             /*
@@ -1538,8 +1536,13 @@ public class CommsThread extends Thread
                     _parent.setProgressValue((numTracks * 52) + part + 1);
                   }
                   // analyze this track
-                  realTrack2 = NibbleAnalysis
-                      .analyzeNibbleBuffer(rawNibbleBuffer);
+                  realTrack2 = NibbleAnalysis.analyzeNibbleBuffer(rawNibbleBuffer);
+                  // Dump the raw track
+                  Log.println(false, "Dumping out raw track "+numTracks+": (zero-based; second try)");
+                  for (int i = 0; i < 6656; i++)
+                    Log.print(false, UnsignedByte.toString(rawNibbleBuffer[i]));
+                  Log.println(false, "");
+
                   Log.println(false,"receiveNibbleDisk() accuracies: realTrack1: "+realTrack1.accuracy + " realTrack2: "+realTrack2.accuracy);
                   if (realTrack2.accuracy > realTrack1.accuracy)
                   {

@@ -1,3 +1,23 @@
+/*
+ * ADTPro - Apple Disk Transfer ProDOS
+ * Copyright (C) 2007 by David Schmidt
+ * david__schmidt at users.sourceforge.net
+ *
+ * This program is free software; you can redistribute it and/or modify it 
+ * under the terms of the GNU General Public License as published by the 
+ * Free Software Foundation; either version 2 of the License, or (at your 
+ * option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but 
+ * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY 
+ * or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License 
+ * for more details.
+ *
+ * You should have received a copy of the GNU General Public License along 
+ * with this program; if not, write to the Free Software Foundation, Inc., 
+ * 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+ */
+
 package org.adtpro;
 
 import org.adtpro.utilities.Log;
@@ -130,6 +150,18 @@ public class NibbleBufferEntry
    * bytes in each gap. In the worst case, we only get to read 4 of them. */
 
   static int cGapSequence[][] =
+  {
+    {0x7F, 0x7F, 0x7F, 0x7F},
+    {0x7E, 0x7F, 0x7F, 0x7F, 0x7F},
+    {0x7C, 0x7F, 0x7F, 0x7F, 0x7F},
+    {0x79, 0x7E, 0x7F, 0x7F, 0x7F},
+    {0x73, 0x7C, 0x7F, 0x7F, 0x7F},
+    {0x67, 0x79, 0x7E, 0x7F, 0x7F},
+    {0x4F, 0x73, 0x7C, 0x7F, 0x7F},
+    {0x1F, 0x67, 0x79, 0x7E, 0x7F},
+    {0x00}                // Must be last
+  };
+  static int cGapSequence2[][] =
   {
     {0xFF, 0xFF, 0xFF, 0xFF},
     {0xFE, 0xFF, 0xFF, 0xFF, 0xFF},
