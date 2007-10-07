@@ -302,7 +302,20 @@ public class SerialTransport extends ATransport
           Log.println(false, UnsignedByte.toString(data[i]) + " ");
         }
        */
-      outputStream.write(data, 0, data.length);
+      /*
+       * Problem: 300 baud garbles screen text while
+       * doing a 'directory' listing because it writes lotsa
+       * bytes at once as a stream.
+       * Solution: send bytes one at a time if we're going
+       * so slow; blast 'em otherwise.
+       */
+      if (_currentSpeed == 300)
+      {
+        for (int i = 0; i < data.length; i++)
+          outputStream.write(data[i]);
+      }
+      else
+        outputStream.write(data, 0, data.length);
     }
     catch (IOException ex)
     {
