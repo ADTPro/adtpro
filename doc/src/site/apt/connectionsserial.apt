@@ -171,8 +171,8 @@ of the IIgs.  It looks like this:
 [images/tickiic.png]
 
  Note that the original IIc motherboard is not able to operate the serial 
- port at speeds higher than 300 baud, making serial transfers with that
- version unsupported.  You can check the revision of your IIc by checking
+ port at speeds higher than 300 baud, so you have to go really slowly if
+ you have one of those.  You can check the revision of your IIc by checking
  memory location 64447:
 
  * if <<<PRINT PEEK(64427)>>> returns 255, you have an original IIc (ROM revision '255').
