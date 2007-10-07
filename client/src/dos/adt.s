@@ -16,8 +16,7 @@
 
 ; Version History:
 
-; Version v.r.m Unreleased
-; David Schmidt
+; Version 1.34 October 2007
 ; - Nibble disk send by Gerard Putter
 ; - Half track disk send by Eric Neilson 
 
@@ -74,6 +73,8 @@
 
 ; Version 1.00 - FIRST PUBLIC RELEASE
 
+; The version number as a macro. Must not be more than 7 characters.
+.define		version_no	"1.34"
 
 ; CONSTANTS
 
@@ -123,7 +124,7 @@ cout		= $fded		; Monitor output
 cout1		= $fdf0		; CHARACTER OUTPUT
 crout		= $fd8e		; OUTPUT RETURN
 
-; MESSAGES
+; MESSAGES. These numbers are byte offsets into msgtbl
 
 mtitle		= 0		; TITLE SCREEN
 mconfig		= 2		; CONFIGURATION TOP OF SCREEN
@@ -421,10 +422,11 @@ kconf:	cmp	#_'C'		; CONFIGURE?
 
 kabout: cmp	#$9f		; ABOUT MESSAGE? ("?" KEY)
 	bne	kquit		; NOPE, TRY QUIT
+	jsr home
 	ldy	#mabout		; YES, SHOW MESSAGE, WAIT
-	jsr	showmsg		; FOR KEY, AND RETURN
+	jsr	showm1		; FOR KEY, AND RETURN
 	jsr	rdkey
-	jmp	mainlup
+	jmp	redraw
 
 kquit:	cmp	#_'Q'		; QUIT?
 	bne	mainlup		; NOPE, WAS A BAD KEY
@@ -2131,7 +2133,8 @@ nibtdone:
 
 ;---------------------------------------------------------
 ; SHOWMSG - SHOW NULL-TERMINATED MESSAGE #Y AT BOTTOM OF
-; SCREEN.  CALL SHOWM1 TO SHOW ANYWHERE WITHOUT ERASING
+; SCREEN.  CALL SHOWM1 TO SHOW ANYWHERE WITHOUT ERASING.
+; THE MESSAGE CAN HAVE ANY LENGTH THAT FITS THE SCREEN.
 ;---------------------------------------------------------
 showmsg:
 	sty	ysave		; CLREOP USES Y
@@ -2154,6 +2157,8 @@ msgloop:
 	jsr	cout1
 	iny
 	bne	msgloop
+	inc	msgptr+1
+	jmp	msgloop
 msgend: rts
 
 
@@ -2167,12 +2172,22 @@ msgtbl: .addr	msg01,msg02,msg03,msg04,msg05,msg06,msg07
 
 msg01:	asc	"COM:S"
 mtssc:	asc	" ,"
-mtspd:	asc	"        "
-	inv	" ADT V.R.M "
-	asc	"    DISK:S"
+mtspd:	asc	"     "
+; Define as many space characters as required to fill line
+; while the version number stays in the middle.
+	.repeat	5-(.strlen(version_no)/2)
+	.byte	$A0
+	.endrep
+	inv	" ADT "
+	inv	version_no
+	inv	" "
+	.repeat	6-((.strlen(version_no)+1)/2)
+	.byte	$A0
+	.endrep
+	asc	"DISK:S"
 mtslt:	asc	" ,D"
 mtdrv:	asc	" "
-	.byte	$8d,$8d
+	.byte	$8d,$8d,$8d
 	invcr	"  00000000000000001111111111111111222  "
 	inv	"  "
 hexnum: inv	"0123456789ABCDEF0123456789ABCDEF012  "
@@ -2239,8 +2254,26 @@ msg18:	ascz	"  ANY KEY: "
 
 msg19:	ascz	"<- DO NOT CHANGE"
 
-msg20:	asccr	"APPLE DISK TRANSFER BY PAUL GUERTIN AND"
-	ascz	"OTHERS (SSC, IIGS, LASER COMPATIBLE)"
+msg20:	inv	"ADT "
+	invcr	version_no
+	.byte	$8d
+	asccr	"ORIGINAL PROGRAM BY PAUL GUERTIN"
+	.byte	$8d
+	asccr	"SEND NIBBLE DISK ADDED BY GERARD PUTTER"
+	.byte	$8d
+	asccr	"HALFTRACK SEND ADDED BY ERIC NEILSON"
+	.byte	$8d
+	asccr	"IIGS AND LASER SUPPORT BY DAVID SCHMIDT"
+	.byte	$8d
+	asc	"----------------------------------------"
+	asccr	"SENDS / RECEIVES APPLE II DISK IMAGES"
+	asccr	"VIA A SERIAL CONNECTION."
+	asccr	"REQUIRES A COMPATIBLE COMPANION PROGRAM"
+	asccr	"AT THE HOST SIDE."
+	.byte	$8d
+	asccr	"SSC, IIGS, IIC AND LASER COMPATIBLE."
+	asccr	"----------------------------------------"
+	ascz	"PRESS ANY KEY"
 
 msg21:	ascz	"TESTING DISK FORMAT."
 
