@@ -33,7 +33,8 @@ import org.adtpro.utilities.UnsignedByte;
 
 public class AudioTransport extends ATransport
 {
-  int _inPacketPtr = 0, _inPacketLen = 0, _outPacketPtr = 0, _bigOutPacketPtr = 0;
+  int _inPacketPtr = 0, _inPacketLen = 0, _outPacketPtr = 0,
+      _bigOutPacketPtr = 0;
 
   byte[] _receiveBuffer = null;
 
@@ -75,7 +76,7 @@ public class AudioTransport extends ATransport
    * Writes an array of bytes into a packet.
    * 
    * @param data
-   *          the bytes to be written to the serial port.
+   *                the bytes to be written to the serial port.
    */
   public void writeBytes(byte data[])
   {
@@ -104,7 +105,9 @@ public class AudioTransport extends ATransport
       }
     }
     else
-      Log.println(true, "AudioTransport.writeBytes(char[]) - buffer too large!");
+      Log
+          .println(true,
+              "AudioTransport.writeBytes(char[]) - buffer too large!");
   }
 
   public void writeBigBytes(byte[] data)
@@ -149,7 +152,8 @@ public class AudioTransport extends ATransport
     // _inPacketPtr + "; _inPacketLen = " + _inPacketLen + ".");
     if (_receiveBuffer == null)
     {
-      Log.println(false, "AudioTransport.readByte() needs to pull a buffer; buffer is null.");
+      Log.println(false,
+          "AudioTransport.readByte() needs to pull a buffer; buffer is null.");
       try
       {
         pullBuffer(timeout);
@@ -165,7 +169,9 @@ public class AudioTransport extends ATransport
     }
     if (_inPacketPtr + 1 > _inPacketLen)
     {
-      Log.println(false, "AudioTransport.readByte() needs to pull a buffer; we're out of data.");
+      Log
+          .println(false,
+              "AudioTransport.readByte() needs to pull a buffer; we're out of data.");
       try
       {
         pullBuffer(timeout);
@@ -196,7 +202,8 @@ public class AudioTransport extends ATransport
 
   public void pushBuffer()
   {
-    Log.println(false, "AudioTransport.pushBuffer() entry, pushing " + _outPacketPtr + " bytes.");
+    Log.println(false, "AudioTransport.pushBuffer() entry, pushing "
+        + _outPacketPtr + " bytes.");
     Log.println(false, "AudioTransport.pushBuffer() pushing data:");
     for (int i = 0; i < _outPacketPtr; i++)
     {
@@ -223,7 +230,7 @@ public class AudioTransport extends ATransport
     {
       // We have to wait for the thread to finish; it was happening
       // that some stray data would come in during output, and confuse
-      // the issue.  So just plug our ears until it's done playing.
+      // the issue. So just plug our ears until it's done playing.
       _sendThread.join();
     }
     catch (InterruptedException e)
@@ -238,12 +245,15 @@ public class AudioTransport extends ATransport
 
   public void pushBigBuffer(Gui parent)
   {
-    Log.println(false, "AudioTransport.pushBigBuffer() entry, pushing " + _bigBuffer.length + " bytes.");
+    Log.println(false, "AudioTransport.pushBigBuffer() entry, pushing "
+        + _bigBuffer.length + " bytes.");
     if (_sendThread != null)
     {
       try
       {
-        Log.println(false, "AudioTransport.pushBigBuffer() waiting for another send thread to end...");
+        Log
+            .println(false,
+                "AudioTransport.pushBigBuffer() waiting for another send thread to end...");
         _sendThread.join();
         Log.println(false, "AudioTransport.pushBigBuffer() done waiting.");
       }
@@ -267,14 +277,19 @@ public class AudioTransport extends ATransport
     Log.println(false, "AudioTransport.pushBigBuffer() exit.");
   }
 
-  public void pullBuffer(int seconds) throws TransportTimeoutException, TransportClosedException
+  public void pullBuffer(int seconds) throws TransportTimeoutException,
+      TransportClosedException
   {
-    Log.println(false, "AudioTransport.pullBuffer() entry; timeout = " + seconds + " seconds.");
+    Log.println(false, "AudioTransport.pullBuffer() entry; timeout = "
+        + seconds + " seconds.");
     int collectedTimeouts = 0;
-    while ((_captureThread != null) && ((_captureThread.receiveBufferSize()) == 0) && (collectedTimeouts / 4 < seconds))
+    while ((_captureThread != null)
+        && ((_captureThread.receiveBufferSize()) == 0)
+        && (collectedTimeouts / 4 < seconds))
     {
-      Log.println(false, "AudioTransport.pullBuffer() sleeping... collectedTimeouts: " + collectedTimeouts / 4
-          + " requested: " + seconds);
+      Log.println(false,
+          "AudioTransport.pullBuffer() sleeping... collectedTimeouts: "
+              + collectedTimeouts / 4 + " requested: " + seconds);
       try
       {
         Thread.sleep(250);
@@ -304,7 +319,8 @@ public class AudioTransport extends ATransport
     }
     else
       throw new TransportClosedException();
-    Log.println(false, "AudioTransport.pullBuffer() exit; _inPacketLen = " + _inPacketLen);
+    Log.println(false, "AudioTransport.pullBuffer() exit; _inPacketLen = "
+        + _inPacketLen);
   }
 
   public void flushSendBuffer()
@@ -350,7 +366,8 @@ public class AudioTransport extends ATransport
     try
     {
       Log.getSingleton();
-      Log.println(false, "AudioTransport.pauseIncorrectCRC() Pausing for garbled data...");
+      Log.println(false,
+          "AudioTransport.pauseIncorrectCRC() Pausing for garbled data...");
       Thread.sleep(7000);
       Log.println(false, "AudioTransport.pauseIncorrectCRC() Done pausing.");
     }
@@ -373,39 +390,48 @@ public class AudioTransport extends ATransport
           + UnsignedByte.toString(UnsignedByte.loByte(endAddr));
       ret = ret.replaceFirst("%1%", endAddrHex);
     }
+    else
+      if (guiString.equals(Messages.getString("Gui.BS.DOS")))
+      {
+        ret = Messages.getString("Gui.BS.DumpDOSAudioInstructions");
+        endAddr = fileSize - 1 + 976;
+        String endAddrHex = UnsignedByte.toString(UnsignedByte.hiByte(endAddr))
+            + UnsignedByte.toString(UnsignedByte.loByte(endAddr));
+        ret = ret.replaceFirst("%1%", endAddrHex);
+        ret = ret.replaceFirst("0.0", "0."); // Remove the unsightly leading
+        // zero
+      }
       else
-        if (guiString.equals(Messages.getString("Gui.BS.DOS")))
+        if (guiString.equals(Messages.getString("Gui.BS.ADT")))
         {
-          ret = Messages.getString("Gui.BS.DumpDOSAudioInstructions");
+          ret = Messages.getString("Gui.BS.DumpADTAudioInstructions");
           endAddr = fileSize - 1 + 2051;
           String endAddrHex = UnsignedByte.toString(UnsignedByte.hiByte(endAddr))
               + UnsignedByte.toString(UnsignedByte.loByte(endAddr));
           ret = ret.replaceFirst("%1%", endAddrHex);
-          ret = ret.replaceFirst("0.0", "0."); // Remove the unsightly leading
-                                                // zero
         }
         else
           if (guiString.equals(Messages.getString("Gui.BS.DOS2"))) ret = Messages
               .getString("Gui.BS.DumpDOSAudioInstructions2");
           else
-            if ((guiString.equals(Messages.getString("Gui.BS.ADT")))
-                || (guiString.equals(Messages.getString("Gui.BS.ADTPro")))
+            if ((guiString.equals(Messages.getString("Gui.BS.ADTPro")))
                 || (guiString.equals(Messages.getString("Gui.BS.ADTProAudio")))
-                || (guiString.equals(Messages.getString("Gui.BS.ADTProEthernet"))))
+                || (guiString.equals(Messages
+                    .getString("Gui.BS.ADTProEthernet"))))
             {
-              if (guiString.equals(Messages.getString("Gui.BS.ADT"))) ret = Messages
-                  .getString("Gui.BS.DumpADTAudioInstructions");
-              else
                 if (guiString.equals(Messages.getString("Gui.BS.ADTPro"))) ret = Messages
                     .getString("Gui.BS.DumpProAudioInstructions");
                 else
-                  if (guiString.equals(Messages.getString("Gui.BS.ADTProAudio"))) ret = Messages
+                  if (guiString
+                      .equals(Messages.getString("Gui.BS.ADTProAudio"))) ret = Messages
                       .getString("Gui.BS.DumpProAudioAudioInstructions");
                   else
-                    if (guiString.equals(Messages.getString("Gui.BS.ADTProEthernet"))) ret = Messages
+                    if (guiString.equals(Messages
+                        .getString("Gui.BS.ADTProEthernet"))) ret = Messages
                         .getString("Gui.BS.DumpProEthernetAudioInstructions");
               endAddr = fileSize - 1 + 8192;
-              String endAddrHex = UnsignedByte.toString(UnsignedByte.hiByte(endAddr))
+              String endAddrHex = UnsignedByte.toString(UnsignedByte
+                  .hiByte(endAddr))
                   + UnsignedByte.toString(UnsignedByte.loByte(endAddr));
               ret = ret.replaceFirst("%1%", endAddrHex);
             }
@@ -415,7 +441,8 @@ public class AudioTransport extends ATransport
 
   public String getInstructionsDone(String guiString)
   {
-    Log.println(false, "AudioTransport.getInstructionsDone() entry for command: "+guiString);
+    Log.println(false,
+        "AudioTransport.getInstructionsDone() entry for command: " + guiString);
     String ret = "AudioTransport.getInstructionsDone() - returned null!";
     if (guiString.equals(Messages.getString("Gui.BS.ProDOS")))
     {
@@ -436,7 +463,8 @@ public class AudioTransport extends ATransport
             if ((guiString.equals(Messages.getString("Gui.BS.ADT")))
                 || (guiString.equals(Messages.getString("Gui.BS.ADTPro")))
                 || (guiString.equals(Messages.getString("Gui.BS.ADTProAudio")))
-                || (guiString.equals(Messages.getString("Gui.BS.ADTProEthernet"))))
+                || (guiString.equals(Messages
+                    .getString("Gui.BS.ADTProEthernet"))))
             {
               if (guiString.equals(Messages.getString("Gui.BS.ADT"))) ret = Messages
                   .getString("Gui.BS.DumpADTAudioInstructionsDone");
@@ -444,13 +472,16 @@ public class AudioTransport extends ATransport
                 if (guiString.equals(Messages.getString("Gui.BS.ADTPro"))) ret = Messages
                     .getString("Gui.BS.DumpProAudioInstructionsDone");
                 else
-                  if (guiString.equals(Messages.getString("Gui.BS.ADTProAudio"))) ret = Messages
+                  if (guiString
+                      .equals(Messages.getString("Gui.BS.ADTProAudio"))) ret = Messages
                       .getString("Gui.BS.DumpProAudioAudioInstructionsDone");
                   else
-                    if (guiString.equals(Messages.getString("Gui.BS.ADTProEthernet"))) ret = Messages
+                    if (guiString.equals(Messages
+                        .getString("Gui.BS.ADTProEthernet"))) ret = Messages
                         .getString("Gui.BS.DumpProEthernetAudioInstructionsDone");
             }
-    Log.println(false, "AudioTransport.getInstructionsDone() returning:\n" + ret);
+    Log.println(false, "AudioTransport.getInstructionsDone() returning:\n"
+        + ret);
     return ret;
   }
 }

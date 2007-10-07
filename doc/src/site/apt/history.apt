@@ -26,6 +26,9 @@ ADTPro Release History
 
  * [Server] Always record 5-1/4" disks at the host as DOS order images
 
+ * [Server] Corrected DOS audio addresses coming from bootstrapping 
+   instructions
+
  * [Server] Honor the "Apple IIc Serial" checkbox (which disables hardware
    handshaking) on startup; previously, one had to open the communications
    dialog box and explicitly hit OK to get it recognized
