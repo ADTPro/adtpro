@@ -4,7 +4,7 @@
 	<property name="distName" value="ADTPro-${versionString}" />
 	<property name="diskName" value="ADTPRO-${versionString}" />
 	<property name="volName" value="ADTPro.${versionString}" />
-	<property name="dosVersionString" value="133" />
+	<property name="dosVersionString" value="134" />
 	<property name="dosDistName" value="ADT${dosVersionString}" />
 	<property name="projdir" value="${basedir}" />
 	<property name="builddir" value="${basedir}/build" />

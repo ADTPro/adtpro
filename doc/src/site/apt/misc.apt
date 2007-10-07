@@ -69,7 +69,10 @@ ProDOS can see:
 
   The leftmost two columns will show you the slot and drive 
 assignments of a particular volume.  The Volume Name column will show you
-what ProDOS thinks it's called.
+what ProDOS thinks it's called.  It typically takes ProDOS a fair amount of
+time to scan for all volumes and names, so ADTPro caches this information.
+If you remove and insert different disks, or format disks, you may want to 
+hit the 'R' key to re-scan for the latest names.
 
  The "Blocks" column is the count of ProDOS blocks present on the disk.  Each 
 block contains 512 bytes of data.  So, typical disk sizes are:

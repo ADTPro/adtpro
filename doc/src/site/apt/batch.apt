@@ -28,7 +28,7 @@ numbers are the first two columns; if the volume happens to be formatted with
 ProDOS, its name will appear in the Volume Name column.  You can use the arrow
 keys or the space bar to pick the volume to be sent to the host:
 
-[images/sendBatch1.png]
+[images/adtpropick.png]
 
  The "Blocks" column is the count of ProDOS blocks present on the disk.  Each 
 block contains 512 bytes of data.  Typical disk sizes are:
