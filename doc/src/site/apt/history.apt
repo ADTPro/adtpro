@@ -6,11 +6,9 @@
 
 ADTPro Release History
 
-* v.r.m - Unreleased
+* 1.0.3 - October 7, 2007
 
  New functionality:
-
-~~ * [Client] Apple-to-host nibble (.nib) image creation
 
  * Support for 300 baud operation to help non-upgraded ROM 255 Apple IIc
    computers with the serial timing problem
