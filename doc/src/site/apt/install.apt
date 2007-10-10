@@ -18,10 +18,18 @@ ADTPro Installation
  download for your platform and install it.
 
  The ADTPro distribution comes as a single file named something similar to
- <<<ADTPro-v.r.m>>> with either a <<<.zip>>> (for Windows or OS/2) or a <<<.tar.gz>>>
- (for Linux/OSX/Solaris) extension.  (The <<<"v.r.m">>> part signifies the 
- Version, Release, and Modification numbers of the particular release 
- you're looking at.)
+ <<<ADTPro-v.r.m>>> with an extension particular to the target platform:
+ 
+  * <<<ADTPro-v.r.m.tar.gz>>> - Linux/Solaris
+ 
+  * <<<ADTPro-v.r.m.dmg>>> - OSX
+ 
+  * <<<ADTPro-v.r.m.zip>>> - Windows/OS/2
+  
+  []
+
+ (The <<<"v.r.m">>> part signifies the Version, Release, and Modification
+ numbers of the particular distribution you're looking at.)
 
  Installation steps:
 
@@ -88,29 +96,29 @@ Distribution contents
 
  The distribution should contain:
 
- * <<<adtpro.bat>>>       - A Windows server startup batch file
+ * <<<adtpro.bat    >>> - A Windows server startup batch file
 
- * <<<adtpro.cmd>>>       - An OS/2 server startup command file
+ * <<<adtpro.cmd    >>> - An OS/2 server startup command file
 
- * <<<adtpro.command>>>   - An OSX server startup command file
+ * <<<adtpro.command>>> - An OSX server startup command file
 
- * <<<adtpro.sh>>>        - A Linux/Solaris server startup shell script
+ * <<<adtpro.sh     >>> - A Linux/Solaris server startup shell script
 
- * <<<LICENSE>>> - The GNU Public License file
+ * <<<LICENSE       >>> - The GNU Public License file
 
- * <<<README>>> - The page you're looking at now, mostly
+ * <<<README        >>> - The page you're looking at now, mostly
 
- * <<<disks/ADTPRO-v.r.m.DSK>>> - ADTPro client-side software (an Apple 140K disk image)
+ * <<<disks/ADTPRO-v.r.m.DSK  >>> - ADTPro client-side software (an Apple 140K disk image)
 
- * <<<disks/ADTPRO-v.r.m.PO>>> - ADTPro client-side software (an Apple 800K disk image)
+ * <<<disks/ADTPRO-v.r.m.PO   >>> - ADTPro client-side software (an Apple 800K disk image)
 
- * <<<disks/ADTvrm.DSK>>> - An enhanced legacy Apple DOS ADT client, capable 
+ * <<<disks/ADTvrm.DSK        >>> - An enhanced legacy Apple DOS ADT client, capable 
    of running on both Super Serial hardware as well as on the IIgs
    modem port (an Apple 140K disk image)
 
- * <<<lib/ADTPro-v.r.m.jar>>> - ADTPro server-side software (a Java .jar file)
+ * <<<lib/ADTPro-v.r.m.jar    >>> - ADTPro server-side software (a Java .jar file)
  
- * <<<lib/rxtx/...>>> - Java serial library files
+ * <<<lib/rxtx/...            >>> - Java serial library files
 
  * <<<lib/rxtx/fixperm.command>>> - A command to help OSX users enable the RXTX library
 
