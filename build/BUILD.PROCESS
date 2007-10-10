@@ -2,9 +2,10 @@ For detailed build instructions, see:
 http://adtpro.sourceforge.net/developing.html
 
 The ADTPro project is using the ca65 macro assembler from
-the cc65 project (http://www.cc65.org/).  The build.xml file
-will need a pointer to where the assembler lives in your
-installation.
+the cc65 project (http://www.cc65.org/).  The file
+ADTProBuild-default.properties, if copied to
+ADTProBuild.properties, serves as a pointer to where the
+assembler lives in your installation.
 
 The web site is built using Maven (http://maven.apache.org/).
 Go into the doc directory and run the command "mvn site".
