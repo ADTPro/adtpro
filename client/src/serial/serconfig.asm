@@ -338,7 +338,7 @@ FindSlotLoop:
 	ldy #$1b		; Lookup offset
 	lda (UTILPTR),y
 	cmp #$eb		; Do we have a goofy XBA instruction?
-	bne FoundNotIIgs	; If not, it's an SSC or a Laser.
+	bne FoundNotIIgs	; If not, it's an SSC, IIc, or a Laser.
 	cpx #$02		; Only bothering to check IIgs Modem slot (2)
 	bne FindSlotNext
 	lda #$07		; We found the IIgs modem port, so store it
@@ -362,6 +362,12 @@ FoundNotIIgs:
 :
 	jmp FindSlotNext
 NotLaser:
+	ldy #$0a
+	lda (UTILPTR),y
+	cmp #$0e		; Is this an IIc?
+	bne FindSlotNext
+	cpx #$02		; Only bothering to check IIc Modem slot (2)
+	bne FindSlotNext
 	stx TempSlot
 FindSlotNext:
 	dex
