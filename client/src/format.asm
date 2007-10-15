@@ -202,17 +202,11 @@ YesSmart2:
 Jump3:	jmp Again
 
 NoUnit:
-	ldy #PMUnitNone	; Prompt to continue or not Because
+	ldy #PMUnitNone		; Prompt to continue or not Because
 	jsr WRITEMSGAREA	; There is no unit number like that
 	jmp Again
 
 DiskII:
-;	lda #$18		; Set VolBlks to 280 ($118)
-;	ldx #$01		;  Just setting default settings
-;	ldy #$00
-;	sta VolBlks
-;	stx VolBlks+1
-;	sty VolBlks+2
 	jsr LName		; Get new name
 	jsr OldName		; Ask if ready
 	jmp DIIForm		; Format DiskII
@@ -291,6 +285,7 @@ LAbort:
 	jmp Again
 
 DIIForm:
+	jsr CLEARVOLUMES	; Invalidate volume name cache
 	jsr Format		; Format the disk
 	jsr CodeWr		; Form Bitmap
 	jmp Catalog		; Write Directory information to the disk
@@ -886,6 +881,7 @@ Ram3Form:
 	bit $C082		; Read ROM, use Bank 2(Put back on line)
 	bcs Ram3Err
 	plp
+	jsr CLEARVOLUMES	; Invalidate volume name cache
 	rts
 
 Ram3Dri:
@@ -921,6 +917,7 @@ SmartForm:
 	bcs SmartErr
 SmartFormDone:
 	plp
+	jsr CLEARVOLUMES	; Invalidate volume name cache
 	rts
 
 SmartDri:

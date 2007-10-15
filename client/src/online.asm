@@ -555,6 +555,11 @@ HOWBIG2:
 	tax
 	rts
 
+CLEARVOLUMES:
+	lda #$00
+	sta LASTVOL
+	rts
+
 VOLNAME:	.res 17,$00		; One byte for length
 					; One byte for leading slash
 					; 15 bytes for name
