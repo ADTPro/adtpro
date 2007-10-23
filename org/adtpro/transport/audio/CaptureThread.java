@@ -23,28 +23,15 @@ package org.adtpro.transport.audio;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
-import javax.sound.sampled.AudioFormat;
-import javax.sound.sampled.AudioSystem;
-import javax.sound.sampled.DataLine;
-import javax.sound.sampled.SourceDataLine;
-import javax.sound.sampled.TargetDataLine;
-
-import org.adtpro.utilities.Log;
+import javax.sound.sampled.*;
 
 // Inner class to capture audio data
 public class CaptureThread extends Thread
 {
-  // An arbitrary-size temporary holding
-  // buffer
-  byte tempBuffer[] = new byte[10000];
-
-  boolean dataYet = false;
-
-  byte previousByte = 0x00;
+  // An arbitrary-size temporary holding buffer
+  byte buffer[] = new byte[8192];
 
   ByteArrayOutputStream outputStream;
-
-  ByteArrayOutputStream outputBits;
 
   AudioFormat audioFormat;
 
@@ -54,36 +41,42 @@ public class CaptureThread extends Thread
 
   boolean stopCapture = false;
 
-  int crossState = 0; // 0 = indeterminate state
+  int byteRegisterData = 0;
 
-  int newState = 0;
+  int byteRegisterBits = 0;
 
-  int freq = 0;
+  boolean isTraining = true;
 
-  int numBytesSinceLastCross = 0;
+  int transitionHysteresis = 18;
 
-  int prevFreq = 0;
+  int transitionValue = 0;
 
-  boolean training = true;
+  int transitionPeriod = 0;
+
+  int transitionState = 0;
+
+  int lastBit = -1;
 
   public void run()
   {
-    Log.println(false, "CaptureThread.run() entry.");
     try
     {
       // Get everything set up for capture
       audioFormat = getAudioFormat();
-      DataLine.Info dataLineInfo = new DataLine.Info(TargetDataLine.class, audioFormat);
-      targetDataLine = (TargetDataLine) AudioSystem.getLine(dataLineInfo);
+      DataLine.Info dataLineInfo = new DataLine.Info(TargetDataLine.class,
+          audioFormat);
+      // Added by MSR
+      Mixer.Info[] mixerInfo = AudioSystem.getMixerInfo();
+      Mixer mixer = AudioSystem.getMixer(mixerInfo[2]);
+      targetDataLine = (TargetDataLine) mixer.getLine(dataLineInfo);
+
+      // targetDataLine = (TargetDataLine) AudioSystem.getLine(dataLineInfo);
       targetDataLine.open(audioFormat);
       targetDataLine.start();
     }
     catch (Exception e)
-    {
-      Log.printStackTrace(e);
-    }// end catch
+    {}// end catch
     outputStream = new ByteArrayOutputStream();
-    outputBits = new ByteArrayOutputStream();
     // Log.println(false,"Training(0)...");
     try
     {
@@ -94,119 +87,103 @@ public class CaptureThread extends Thread
       {
         // Read data from the internal
         // buffer of the data line.
-        int cnt = targetDataLine.read(tempBuffer, 0, tempBuffer.length);
+        int cnt = targetDataLine.read(buffer, 0, buffer.length);
         if (cnt > 0)
         {
-          interpretStream(tempBuffer);
+          interpretStream(buffer);
         }// end if
       }// end while
       outputStream.close();
-      outputBits.close();
     }
     catch (IOException e)
-    {
-      Log.printStackTrace(e);
-    }// end catch
-    Log.println(false, "CaptureThread.run() exit.");
+    {}// end catch
   }// end run
 
   void interpretStream(byte buffer[])
   {
-    // Log.println(false,"CaptureThread.interpretStream() entry.");
-    // Need to track:
-    // - bit position we're working on
-    // - number of bytes since last zero cross
-    // - state: training, pulling
     for (int i = 0; i < buffer.length; i++)
     {
-      // Log.println(false,buffer[i]);
-      numBytesSinceLastCross++;
-      if (buffer[i] > 0)
+
+      boolean isTransition;
+
+      if ((transitionValue >= 0) && (buffer[i] >= transitionValue))
       {
-        prevFreq = freq;
-        newState = 1;
-        if (crossState != newState)
-        {
-          crossState = newState;
-          freq = numBytesSinceLastCross;
-          numBytesSinceLastCross = 0;
-        }
+        transitionValue = -transitionHysteresis;
+        isTransition = true;
       }
       else
-        if (buffer[i] < 0)
+        if ((transitionValue < 0) && (buffer[i] <= transitionValue))
         {
-          newState = -1;
-          if (crossState != newState)
-          {
-            prevFreq = freq;
-            crossState = newState;
-            freq = numBytesSinceLastCross;
-            numBytesSinceLastCross = 0;
-          }
-        }
-      if (numBytesSinceLastCross == 0)
-      {
-        // Log.println(false,"Freq: " + freq + " Previous Freq: " + prevFreq);
-        if ((freq <= 9) && (freq > 2) && (training))
-        {
-          training = false;
-          // Log.println(false,"Training done.");
-          numBytesSinceLastCross = 0;
-          freq = 0;
-          prevFreq = 0;
+          transitionValue = transitionHysteresis;
+          isTransition = true;
         }
         else
-          if ((freq > 25) && (!training))
-          {
-            // Log.println(false,"Training(1)...");
-            training = true;
-            numBytesSinceLastCross = 0;
-            dataYet = false;
-            freq = 0;
-            prevFreq = 0;
-          }
-          else
-            if ((freq <= prevFreq + 2) && (freq >= prevFreq - 2))
+          isTransition = false;
+      transitionPeriod++;
+
+      if (isTransition)
+      {
+        switch (transitionPeriod)
+        {
+          case 8: // 2200Hz
+          case 9: // 2200Hz
+          case 10: // 2000Hz
+          case 11: // 2000Hz
+          case 12: // 2000Hz
+            if ((transitionState == 1) && (lastBit == 0))
             {
-              switch (freq)
+              if (isTraining)
               {
-                case 27: // 770Hz
-                case 28: // 770Hz
-                case 29: // 770Hz
-                  if (training == false)
-                  {
-                    training = true;
-                    freq = 0;
-                    dataYet = false;
-                    // Log.println(false,"Training(2)...");
-                  }
-                  break;
-                case 10: // 2000Hz
-                case 11: // 2000Hz
-                case 12: // 2000Hz
-                  if (training == false)
-                  {
-                    freq = 0;
-                    pushBit(0);
-                  }
-                  break;
-                case 21: // 1000Hz
-                case 22: // 1000Hz
-                case 23: // 1000Hz
-                  if (training == false)
-                  {
-                    freq = 0;
-                    pushBit(1);
-                  }
-                  break;
-                default:
-                  if (!training)
-                  {
-                    Log.println(false, "CaptureThread.interpretStream() unexpected frequency: " + freq);
-                  }
-                  break;
+                // System.out.println("----");
+                isTraining = false;
+                break;
               }
+              else
+                pushBit(0);
+              transitionState = 0;
             }
+            else
+              transitionState = 1;
+            lastBit = 0;
+            break;
+
+          case 20: // 1000Hz
+          case 21: // 1000Hz
+          case 22: // 1000Hz
+          case 23: // 1000Hz
+            if (isTraining) break;
+            if ((transitionState == 1) && (lastBit == 1))
+            {
+              pushBit(1);
+              transitionState = 0;
+            }
+            else
+              transitionState = 1;
+            lastBit = 1;
+            break;
+
+          case 16: // 1200Hz
+          case 17: // 1200Hz
+          case 18: // 1200Hz
+          case 19: // 1200Hz
+
+          case 26: // 770Hz
+          case 27: // 770Hz
+          case 28: // 770Hz
+          case 29: // 770Hz
+          case 30: // 770Hz
+          // if (!isTraining)
+          // System.out.println("Training on");
+            isTraining = true;
+            transitionState = 0;
+            byteRegisterBits = 0;
+            break;
+          default:
+            // System.out.println("transitionPeriod:" + transitionPeriod);
+            break;
+        }
+
+        transitionPeriod = 0;
       }
     }
   }
@@ -217,6 +194,7 @@ public class CaptureThread extends Thread
     if (outputStream != null)
     {
       mySize = outputStream.size();
+      // System.out.println("retrieveReceiveSize: " + mySize);
     }
     return mySize;
   }
@@ -231,52 +209,49 @@ public class CaptureThread extends Thread
         synchronized (outputStream)
         {
           returnValue = outputStream.toByteArray();
+          String a = "";
+          for (int i = 0; i < returnValue.length; i++)
+          {
+            if ((returnValue[i] & 0xff) < 16) a = a + "0";
+            a = a + Integer.toHexString(returnValue[i] & 0xff);
+          }
+          // System.out.println("retrieveReceiveBuffer: " + a);
           outputStream.reset();
         }
       }
     }
-    if (returnValue == null)
-      returnValue = new byte[0];
+
+    if (returnValue == null) returnValue = new byte[0];
+
     return returnValue;
   }
 
   public void pushBit(int bit)
   {
-    outputBits.write(bit);
-    if (outputBits.size() == 8)
+    byteRegisterData = ((byteRegisterData << 1) | bit) & 0xff;
+    byteRegisterBits++;
+    if (byteRegisterBits == 8)
     {
-      byte fred[] = outputBits.toByteArray();
-      byte completedByte = 0x00;
-      for (int i = 0; i < 8; i++)
-      {
-        completedByte = (byte) (completedByte + (fred[i] << (7 - i)));
-      }
-      if (dataYet)
-      {
-        // Log.println(false,"Pushing completed byte:
-        // "+UnsignedByte.toString(previousByte)+", delaying most recent byte
-        // "+UnsignedByte.toString(completedByte));
-        outputStream.write(previousByte);
-      }
-      // else
-      // Log.println(false,"Delaying completed byte:
-      // "+UnsignedByte.toString(completedByte));
+      outputStream.write(byteRegisterData);
+      byteRegisterBits = 0;
 
-      previousByte = completedByte;
-      outputBits.reset();
-      dataYet = true;
+      String a = "";
+      if (byteRegisterData < 16) a = a + "0";
+      a = Integer.toHexString(byteRegisterData);
+      // System.out.println("pushBit: " + a);
     }
   }
 
   public void flushReceiveBuffer()
   {
-    Log.println(false, "CaptureThread.flushReceiveBuffer() entry.");
-    synchronized (outputStream)
+    if (receiveBufferSize() > 128)
     {
-      outputStream.reset();
+      // System.out.println("flushReceiveBuffer");
+      synchronized (outputStream)
+      {
+        outputStream.reset();
+      }
     }
-    outputBits.reset();
-    Log.println(false, "CaptureThread.flushReceiveBuffer() exit.");
   }
 
   public void requestStop()
@@ -296,7 +271,7 @@ public class CaptureThread extends Thread
     int channels = 1; // 1,2
     boolean signed = true; // true,false
     boolean bigEndian = false; // true,false
-    return new AudioFormat(sampleRate, sampleSizeInBits, channels, signed, bigEndian);
+    return new AudioFormat(sampleRate, sampleSizeInBits, channels, signed,
+        bigEndian);
   }// end getAudioFormat
-
 }
