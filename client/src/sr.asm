@@ -480,7 +480,6 @@ SRBCNT:	.byte $00
 ; Sets carry if it is sized as .nib and destination is Disk II
 ;---------------------------------------------------------
 CheckForNib:
-	clc
 	lda HOSTBLX
 	cmp #$C7		; LSB of 455 blocks (.nib size)
 	bne NotNib
@@ -490,7 +489,9 @@ CheckForNib:
 	lda NonDiskII		; Is this a Disk II?
 	beq NotNib		; No - skip it
 	sec			; Yep - everything matches.
+	rts
 NotNib:
+	clc
 	rts
 
 ;---------------------------------------------------------
