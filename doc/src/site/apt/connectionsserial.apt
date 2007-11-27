@@ -202,13 +202,12 @@ of the IIgs.  It looks like this:
 
   The Laser 128 serial port has a DIN-5 connector similar to some Apple IIc computers.
 I don't have an Apple IIc to test, but I imagine the cable described here will work
-on an IIc as well.  I have verified that this pinout works correctly with the Laser 128.
-The cable will provide null-modem function between the Laser 128 and ADTPro at a
-host computer.  No other signal adaptation should be necessary.
+on an IIc as well.  I have verified that this null-modem pinout works correctly between
+the Laser 128 and ADTPro at the host computer.  No other signal adaptation is necessary.
 
   This pinout describes the round male connector
 looking into the cable plug at the pins.  Note that this is numbered using
-the Apple (not DIN!) standard:
+Apple's (not DIN's!) standard:
 
 ---
 1       5
@@ -243,10 +242,6 @@ the Apple (not DIN!) standard:
 
   This null modem cable ties all the handshaking lines together at the host
 end and at the Laser end.  This effectively disables hardware handshaking.
-
-  I wired some of these up myself for testing, going from DIN-5 to DE-9F. 
-{{{mailto:fixme... david__schmidt at users dot sourceforge dot net}Contact me}}
-if you would like to buy one.
 
   One thing to note with Laser 128 machines: you will need to keep your 
 hands off the keyboard while transfers are taking place.  It turns out
