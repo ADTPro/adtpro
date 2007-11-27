@@ -67,7 +67,7 @@ cable like this:
 * {IIgs modem port cabling}
 
   You will need a serial cable setup
-that ultimately connects your IIgs' round, 8-pin mini-din modem connectcor to 
+that ultimately connects your IIgs' round, 8-pin mini-din modem connector to 
 the serial port of your host computer - and also performs a null-modem function 
 in between.
 
@@ -106,7 +106,7 @@ looking into the cable connector/plug at the pins:
   1 2    
 ---
 
-  A straight-through cable (if you connect through a null modem as pictured above) is wired like this
+  A straight-through cable, used if you connect through a null modem as pictured above, is wired like this
   (Apple would call this a "Modem" cable):
 
 ---
