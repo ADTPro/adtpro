@@ -209,11 +209,7 @@ the Laser 128 and ADTPro at the host computer.  No other signal adaptation is ne
 looking into the cable plug at the pins.  Note that this is numbered using
 Apple's (not DIN's!) standard:
 
----
-1       5
- 2     4
-    3
----
+[images/din5.jpg]
 
   The main pinout is:
 
