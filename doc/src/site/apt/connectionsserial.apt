@@ -100,11 +100,7 @@ mini-din connector with a null modem in between looks like this:
   These pinouts describe the round "MiniDIN8" IIgs male connector
 looking into the cable connector/plug at the pins:
 
----
- 6 7 8
-3 4   5
-  1 2    
----
+[images/minidin8.png]
 
   A straight-through cable, used if you connect through a null modem as pictured above, is wired like this
   (Apple would call this a "Modem" cable):
@@ -139,20 +135,15 @@ looking into the cable connector/plug at the pins:
     1 ----- 8      5     CTS
 ---
 
-  The cables are getting harder to find in stores, but eBay, swap meets, Jameco, 
-Mouser, Radio Shack, etc. will have what you need.  
+  The parts you need can be found at swap meets, Jameco, 
+Mouser, Radio Shack, etc.
 I wired up some single-cable null modems myself for 
 testing using Belkin and Jameco parts, going from MiniDIN8 to DE-9F. 
-{{{mailto:fixme... david__schmidt at users dot sourceforge dot net}Contact me}}
+{{{http://retrofloppy.com/products.html}Contact me}}
 if you would like to buy one.  They look like this:
 
 [images/iigsNullModem.jpg]
 
- A company in the USA is (as of Summer 2007) selling Apple serial cables and
- adapters.  You might check
- {{{http://www.connectworld.net/cgi-bin/iec/05MCAOSerial.html}there}}
- for the one you need.  No endorsement of this company is expressed or implied.
- 
   There are two 8-pin mini-din connectors on the back of the IIgs.  One has the
 icon of a telephone, the other has an icon of a printer.  Be sure you are 
 plugging into the telephone (modem) one, on the far left as you look at the back
@@ -193,11 +184,6 @@ of the IIgs.  It looks like this:
  and a standard Dsub-25 plug on the other with the correct line swapping
  to be a null modem.
 
- A company in the USA is (as of Spring 2007) selling Apple serial cables and
- adapters.  You might check
- {{{http://www.connectworld.net/cgi-bin/iec/05MCAOSerial.html}there}}
- for the one you need.  No endorsement of this company is expressed or implied.
- 
 * {Laser 128 serial port cabling}
 
   The Laser 128 serial port has a DIN-5 connector similar to some Apple IIc computers.
@@ -209,7 +195,7 @@ the Laser 128 and ADTPro at the host computer.  No other signal adaptation is ne
 looking into the cable plug at the pins.  Note that this is numbered using
 Apple's (not DIN's!) standard:
 
-[images/din5.jpg]
+[images/din5.png]
 
   The main pinout is:
 
@@ -238,6 +224,9 @@ Apple's (not DIN's!) standard:
 
   This null modem cable ties all the handshaking lines together at the host
 end and at the Laser end.  This effectively disables hardware handshaking.
+I wired some of these up myself for testing.
+{{{http://retrofloppy.com/products.html}Contact me}}
+if you would like to buy one.
 
   One thing to note with Laser 128 machines: you will need to keep your 
 hands off the keyboard while transfers are taking place.  It turns out
