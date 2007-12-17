@@ -22,7 +22,7 @@ drive types, communications devices, and host operating systems.
 
  ADTPro transfers disks using any of these communications devices:
 
-    * Super Serial Card, IIgs modem port or IIc/Laser 128 serial port at 115,200 BPS 
+    * Super Serial Card, IIgs modem port or IIc/Laser 128 serial port
 
     * {{{http://a2retrosystems.com/}Uthernet}} Ethernet card
 
@@ -30,7 +30,7 @@ drive types, communications devices, and host operating systems.
 
  ADTPro has these features:
 
-    * Compatibility with any device ProDOS can read
+    * Compatibility with any storage device ProDOS can read
 
     * Compatibility with any Apple ][ (or clone) computer with 64k memory
 

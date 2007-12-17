@@ -7,7 +7,7 @@
 ADTPro Audio Connections
 
  Connecting a host computer and the Apple II requires one (if only bootstrapping)
- or two (if doing image transfers) audio patch wires.  They are available from
+ or two (if doing disk transfers) audio patch wires.  They are available from
  electronics retailers worldwide; Radio Shack has a part number 42-2387 (stereo)
  and 42-2420 (mono).  Either should work; the Apple is only going to speak
  mono anyway.  
