@@ -28,7 +28,7 @@
 	.include "audio/audproto.asm"
 	.include "online.asm"
 	.include "rw.asm"
-	.include "audio/sr.asm"
+	.include "sr.asm"
 	.include "audio/audio.asm"
 	.include "crc.asm"
 	.include "pickvol.asm"
