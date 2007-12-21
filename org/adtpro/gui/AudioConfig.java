@@ -116,8 +116,6 @@ public class AudioConfig extends JDialog implements ActionListener
       try
       {
         TargetDataLine targetDataLine = (TargetDataLine) mixer.getLine(dataLineInfo);
-        targetDataLine.open(audioFormat);
-        targetDataLine.close();
         nextName = mixerInfo[i].getName();
         if (!nextName.equals("")) /* Skip it if it's name is blank... */
         {
@@ -130,8 +128,10 @@ public class AudioConfig extends JDialog implements ActionListener
       catch (Exception e)
       {
         /* Don't need to see stack traces for bad lines/mixers... */
-        /* Log.println(true,"AudioConfig() ctor Encountered error on mixer "+mixerInfo[i].getName()+":"); */
-        /* Log.printStackTrace(e); */
+        /*
+        Log.println(true,"AudioConfig() ctor Encountered error on mixer "+mixerInfo[i].getName()+":");
+        Log.printStackTrace(e);
+        */
       }
     }
     Log.println(false, "AudioConfig Constructor completed.");

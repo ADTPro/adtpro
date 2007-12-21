@@ -86,11 +86,9 @@ public class CaptureThread extends Thread
         if (_hardwareMixerIndex < mixerInfo.length)
         {
           Mixer mixer = AudioSystem.getMixer(mixerInfo[_hardwareMixerIndex]);
-          targetDataLine = (TargetDataLine) mixer.getLine(dataLineInfo);
           try
           {
-            targetDataLine.open(audioFormat);
-            targetDataLine.close();
+            targetDataLine = (TargetDataLine) mixer.getLine(dataLineInfo);
             Log.println(true, "CaptureThread.run() using audio mixer "+mixerInfo[_hardwareMixerIndex].getName()+".");
           }
           catch (Exception e)
