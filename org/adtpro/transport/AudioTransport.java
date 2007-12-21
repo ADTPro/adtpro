@@ -23,6 +23,7 @@
 
 package org.adtpro.transport;
 
+import org.adtpro.ADTProperties;
 import org.adtpro.gui.Gui;
 import org.adtpro.resources.Messages;
 import org.adtpro.transport.audio.BytesToWav;
@@ -46,11 +47,27 @@ public class AudioTransport extends ATransport
 
   PlaybackThread _sendThread = null;
 
+  ADTProperties _properties = null;
+
+  public AudioTransport(ADTProperties properties)
+  {
+    _properties = properties;
+  }
+
   public void open() throws Exception
   {
     Log.getSingleton();
     Log.println(false, "AudioTransport.open() entry...");
-    _captureThread = new CaptureThread();
+    int mixerIndex = 0;
+    try
+    {
+      mixerIndex = Integer.parseInt(_properties.getProperty("AudioHardwareIndex","0"));
+    }
+    catch (NumberFormatException e)
+    {
+      /* Leaves mixerIndex at zero */
+    }
+    _captureThread = new CaptureThread(mixerIndex);
     _captureThread.start();
     Log.println(true, "AudioTransport opened.");
     _sendBuffer = new byte[1500];
@@ -437,6 +454,22 @@ public class AudioTransport extends ATransport
             }
     Log.println(false, "AudioTransport.getInstructions() returning:\n" + ret);
     return ret;
+  }
+
+  public void setAudioParms() throws Exception
+  {
+    _captureThread.requestStop();
+    int mixerHardwareIndex = 0;
+    try
+    {
+      mixerHardwareIndex = Integer.parseInt(_properties.getProperty("AudioHardwareIndex","0"));
+    }
+    catch (NumberFormatException e)
+    {
+      /* Leaves mixerIndex at zero */
+    }
+    _captureThread = new CaptureThread(mixerHardwareIndex);
+    _captureThread.start();
   }
 
   public String getInstructionsDone(String guiString)

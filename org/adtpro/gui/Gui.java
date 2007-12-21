@@ -110,6 +110,8 @@ public final class Gui extends JFrame implements ActionListener
     JMenu menuFile = new JMenu(Messages.getString("Gui.File")); //$NON-NLS-1$
     MenuAction serialConfigAction = new MenuAction(Messages.getString("Gui.SerialConfig")); //$NON-NLS-1$
     menuFile.add(serialConfigAction);
+    MenuAction audioConfigAction = new MenuAction(Messages.getString("Gui.AudioConfig")); //$NON-NLS-1$
+    menuFile.add(audioConfigAction);
     MenuAction cdAction = new MenuAction(Messages.getString("Gui.CD")); //$NON-NLS-1$
     menuFile.add(cdAction);
     _traceMenuItem = new JCheckBoxMenuItem(Messages.getString("Gui.Trace"));
@@ -284,6 +286,7 @@ public final class Gui extends JFrame implements ActionListener
     }
     this.setVisible(true);
     SerialConfig.getSingleton(this);
+    AudioConfig.getSingleton(this, _properties);
     Log.println(false, "Gui Constructor exit.");
   }
 
@@ -382,7 +385,7 @@ public final class Gui extends JFrame implements ActionListener
         // _audioButton clicked
         if ((e.getSource() == _audioButton) && (_previousButton != _audioButton))
         {
-          boolean success = startComms(new AudioTransport());
+          boolean success = startComms(new AudioTransport(_properties));
           if (success)
           {
             setTitle(Messages.getString("Gui.Title") + " " + Messages.getString("Version.Number")); //$NON-NLS-1$ //$NON-NLS-2$
@@ -453,6 +456,12 @@ public final class Gui extends JFrame implements ActionListener
     SerialConfig.getSingleton(this);
     SerialConfig.setProperties(_properties);
     SerialConfig.showSingleton(this, tab);
+  }
+
+  public void audioConfigGui()
+  {
+    AudioConfig.getSingleton(this, _properties);
+    AudioConfig.showSingleton(this);
   }
 
   public byte setWorkingDirectory(String cwd)
@@ -663,6 +672,18 @@ public final class Gui extends JFrame implements ActionListener
                   _commsThread.requestSend(e.getActionCommand(), true, pacing, speed);
                 }
               }
+              else
+                if (e.getActionCommand().equals(Messages.getString("Gui.AudioConfig")))
+                {
+                  audioConfigGui();
+                  if (AudioConfig.getSingleton(_parent,_properties).getExitStatus() == AudioConfig.OK)
+                  {
+                    if ((_commsThread != null) && (_commsThread.transportType() == ATransport.TRANSPORT_TYPE_AUDIO))
+                    {
+                      _commsThread.setAudioParms();
+                    }
+                  }
+                }
               else
                 if (((e.getActionCommand().equals(Messages.getString("Gui.SerialConfig"))))
                     || ((e.getActionCommand().equals(Messages.getString("Gui.SerialConfigBootstrap")))))

@@ -2606,6 +2606,23 @@ public class CommsThread extends Thread
     }
   }
 
+  public void setAudioParms()
+  {
+    if (_transport.transportType() == ATransport.TRANSPORT_TYPE_AUDIO)
+    {
+      try
+      {
+        ((AudioTransport) _transport).setAudioParms();
+      }
+      catch (Exception e)
+      {
+        Log.printStackTrace(e);
+        Log.println(true,
+            "CommsThread.setParms() failed to set audio parameters.");
+      }
+    }
+  }
+
   public void setProtocolCompatibility(boolean state)
   {
     _client01xCompatibleProtocol = state;

@@ -25,6 +25,9 @@ import java.io.IOException;
 
 import javax.sound.sampled.*;
 
+import org.adtpro.resources.Messages;
+import org.adtpro.utilities.Log;
+
 // Inner class to capture audio data
 public class CaptureThread extends Thread
 {
@@ -57,25 +60,53 @@ public class CaptureThread extends Thread
 
   int lastBit = -1;
 
+  int _hardwareMixerIndex = 0;
+
+  public CaptureThread(int hardwareMixerIndex)
+  {
+    _hardwareMixerIndex = hardwareMixerIndex;
+  }
+
   public void run()
   {
+    Log.println(true, "CaptureThread.run() entry with hardware mixer index "+_hardwareMixerIndex);
     try
     {
       // Get everything set up for capture
       audioFormat = getAudioFormat();
-      DataLine.Info dataLineInfo = new DataLine.Info(TargetDataLine.class,
-          audioFormat);
-      // Added by MSR
-      Mixer.Info[] mixerInfo = AudioSystem.getMixerInfo();
-      Mixer mixer = AudioSystem.getMixer(mixerInfo[2]);
-      targetDataLine = (TargetDataLine) mixer.getLine(dataLineInfo);
-
-      // targetDataLine = (TargetDataLine) AudioSystem.getLine(dataLineInfo);
+      DataLine.Info dataLineInfo = new DataLine.Info(TargetDataLine.class, audioFormat);
+      if (_hardwareMixerIndex == 0)
+      {
+        targetDataLine = (TargetDataLine) AudioSystem.getLine(dataLineInfo);
+        Log.println(true, "CaptureThread.run() using audio mixer "+Messages.getString("Gui.DefaultAudioMixer")+".");
+      }
+      else
+      {
+        Mixer.Info[] mixerInfo = AudioSystem.getMixerInfo();
+        if (_hardwareMixerIndex < mixerInfo.length)
+        {
+          Mixer mixer = AudioSystem.getMixer(mixerInfo[_hardwareMixerIndex]);
+          targetDataLine = (TargetDataLine) mixer.getLine(dataLineInfo);
+          try
+          {
+            targetDataLine.open(audioFormat);
+            targetDataLine.close();
+            Log.println(true, "CaptureThread.run() using audio mixer "+mixerInfo[_hardwareMixerIndex].getName()+".");
+          }
+          catch (Exception e)
+          {
+            targetDataLine = (TargetDataLine) AudioSystem.getLine(dataLineInfo);
+            Log.println(true, "CaptureThread.run() reverting to audio mixer "+Messages.getString("Gui.DefaultAudioMixer")+".");
+          }
+        }
+      }
       targetDataLine.open(audioFormat);
       targetDataLine.start();
     }
     catch (Exception e)
-    {}// end catch
+    {
+      Log.printStackTrace(e);
+    }// end catch
     outputStream = new ByteArrayOutputStream();
     // Log.println(false,"Training(0)...");
     try
@@ -96,7 +127,11 @@ public class CaptureThread extends Thread
       outputStream.close();
     }
     catch (IOException e)
-    {}// end catch
+    {
+      Log.printStackTrace(e);
+    }// end catch
+    targetDataLine.stop();
+    Log.println(true, "CaptureThread.run() exit.");
   }// end run
 
   void interpretStream(byte buffer[])
@@ -264,14 +299,13 @@ public class CaptureThread extends Thread
    * format parameters. The allowable parameter values are shown in comments
    * following the declarations.
    */
-  private AudioFormat getAudioFormat()
+  public static AudioFormat getAudioFormat()
   {
     float sampleRate = 44100.0F; // 8000,11025,16000,22050,44100
     int sampleSizeInBits = 8; // 8,16
     int channels = 1; // 1,2
     boolean signed = true; // true,false
     boolean bigEndian = false; // true,false
-    return new AudioFormat(sampleRate, sampleSizeInBits, channels, signed,
-        bigEndian);
+    return new AudioFormat(sampleRate, sampleSizeInBits, channels, signed, bigEndian);
   }// end getAudioFormat
 }
