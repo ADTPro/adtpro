@@ -119,10 +119,13 @@ public class AudioConfig extends JDialog implements ActionListener
         targetDataLine.open(audioFormat);
         targetDataLine.close();
         nextName = mixerInfo[i].getName();
-        comboAudioDevice.addItem(nextName);
-        _audioDeviceIndices[j] = i;
-        Log.println(true, "Added device "+nextName+" at index "+i+", mixer index "+j+".");
-        j = j + 1;
+        if (!nextName.equals("")) /* Skip it if it's name is blank... */
+        {
+          comboAudioDevice.addItem(nextName);
+          _audioDeviceIndices[j] = i;
+          Log.println(true, "Added device "+nextName+" at index "+i+", mixer index "+j+".");
+          j = j + 1;
+        }
       }
       catch (Exception e)
       {
