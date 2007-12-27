@@ -71,7 +71,14 @@ that ultimately connects your IIgs' round, 8-pin mini-din modem connector to
 the serial port of your host computer - and also performs a null-modem function 
 in between.
 
-  You will need to verify a couple of things in the IIgs control panel.  
+  There are two 8-pin mini-din connectors on the back of the IIgs.  One has the
+icon of a telephone, the other has an icon of a printer.  Be sure you are 
+plugging into the telephone (modem) one, on the far left as you look at the back
+of the IIgs.  It looks like this:
+
+[images/iigsmodemport.jpg]
+
+  You will also need to verify a couple of things in the IIgs control panel.  
 You bring up the IIgs control panel with the key sequence 
 <<<Control>>>-<<<OpenApple>>>-<<<Escape>>>.
 
@@ -144,26 +151,61 @@ if you would like to buy one.  They look like this:
 
 [images/iigsNullModem.jpg]
 
-  There are two 8-pin mini-din connectors on the back of the IIgs.  One has the
-icon of a telephone, the other has an icon of a printer.  Be sure you are 
-plugging into the telephone (modem) one, on the far left as you look at the back
-of the IIgs.  It looks like this:
-
-[images/iigsmodemport.jpg]
-
 * {IIc serial port cabling}
 
-  I don't have an IIc to test and take pictures of 
-  {{{mailto:fixme... david__schmidt at users dot sourceforge dot net}(donations, anyone?)}},
-  but users report success with standard serial port adapters.  
-  You will need to tick the "Apple IIc Serial" checkbox in the serial config
-  dialog box, brought up from the <<<File->Serial Configuration>>> menu item:
+  Connect a null modem between your host computer and the IIc using the IIc's "modem" port:
+
+[images/iicmodemport.jpg]
+
+  The orignal IIc (not IIc+) computers had DIN5 connectors for its serial ports.
+  There are two pinouts for a single-cable null-modem that will work with ADTPro:
+  one with "hardware handshaking" (described immediately below) and one without (described in
+  the {{{connectionsserial.html#Laser 128 serial port cabling}Laser 128}} section below).
+  If you use the "hardware handshaking" cable, you will need to tick the "Apple IIc Serial"
+  checkbox in the serial config dialog box, brought up from the 
+  <<<File->Serial Configuration>>> menu item:
 
 [images/tickiic.png]
 
+  This pinout describes the round male connector
+looking into the cable plug at the pins.  Note that this is numbered using
+Apple's (not DIN's!) standard:
+
+[images/din5.png]
+
+ The "hardware handshaking" cable has the following pinout:
+
+---
+ Apple
+ DIN-5    DE-9  DB-25  RS-232
+ Pin#     Pin#  Pin#    Name
+ -----    ----  -----  ------
+   4 ----- 3      2     TxD
+   2 ----- 2      3     RxD
+   3 ----- 5      7     GND
+   1 ----- 6 -,   6 -,  DSR
+           1 -'   8 -'  DCD
+   5 ----- 4      20    DTR
+
+ Within the DE-9 shell, tie together pins 1 and 6.
+
+ Within the DB-25 shell, tie together pins 6 and 8.
+---
+
+  The parts you need can be found at swap meets, Jameco, 
+Mouser, Radio Shack, etc.
+I wired up some single-cable null modems myself for 
+testing going from DIN-5M to DE-9F. 
+{{{http://retrofloppy.com/products.html}Contact me}}
+if you would like to buy one.  They look like this:
+
+[images/nullmodemDIN5DE9.jpg]
+
  Note that the original IIc motherboard is not able to operate the serial 
- port at speeds higher than 300 baud, so you have to go really slowly if
- you have one of those.  You can check the revision of your IIc by checking
+ port accurately at speeds higher than 300 baud, so you may have to go really
+ slowly if you have one of those.  I have used my ROM revision '255' machine
+ flawlessly at 115kbps, but your mileage my vary.
+ You can check the revision of your IIc by checking
  memory location 64447:
 
  * if <<<PRINT PEEK(64447)>>> returns 255, you have an original IIc (ROM revision '255').
@@ -178,18 +220,14 @@ of the IIgs.  It looks like this:
 
  []
 
- This {{{http://home.swbell.net/rubywand/Csa2T1TCOM.html#024}FAQ}} contains
- details about constructing a proper null modem cable.  If you can find one, the 
- standard "Apple IIc to ImageWriter I" cable has a DIN-5 plug on one end
- and a standard Dsub-25 plug on the other with the correct line swapping
- to be a null modem.
-
 * {Laser 128 serial port cabling}
 
-  The Laser 128 serial port has a DIN-5 connector similar to some Apple IIc computers.
-I don't have an Apple IIc to test, but I imagine the cable described here will work
-on an IIc as well.  I have verified that this null-modem pinout works correctly between
-the Laser 128 and ADTPro at the host computer.  No other signal adaptation is necessary.
+  Connect a null modem between your host computer and the Laser using the Laser's "modem" port:
+
+[images/lasermodemport.jpg]
+
+  The Laser 128 modem port has a DIN-5 connector similar to early Apple IIc computers.
+The cable described here will work on IIc computers with DIN-5 connectors as well.
 
   This pinout describes the round male connector
 looking into the cable plug at the pins.  Note that this is numbered using
@@ -205,9 +243,9 @@ Apple's (not DIN's!) standard:
  DIN-5    DE-9  DB-25  RS-232
  Pin#     Pin#  Pin#    Name
  -----    ----  -----  ------
+   4 ----- 3      2     TxD
    2 ----- 2      3     RxD
    3 ----- 5      7     GND
-   4 ----- 3      2     TxD
   1-5     (nc)   (nc)  (disables
   (nc)    7-8    4-5    hardware
   (nc)   1-4-6  6-8-20  handshaking)
@@ -223,7 +261,7 @@ Apple's (not DIN's!) standard:
 ---
 
   This null modem cable ties all the handshaking lines together at the host
-end and at the Laser end.  This effectively disables hardware handshaking.
+end and at the Laser/IIc end.  This effectively disables hardware handshaking.
 I wired some of these up myself for testing.
 {{{http://retrofloppy.com/products.html}Contact me}}
 if you would like to buy one.
