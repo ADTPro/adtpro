@@ -166,15 +166,15 @@ of the IIgs.  It looks like this:
  you have one of those.  You can check the revision of your IIc by checking
  memory location 64447:
 
- * if <<<PRINT PEEK(64427)>>> returns 255, you have an original IIc (ROM revision '255').
+ * if <<<PRINT PEEK(64447)>>> returns 255, you have an original IIc (ROM revision '255').
  
- * if <<<PRINT PEEK(64427)>>> returns 0, you have an IIc with UniDisk 3.5 inch drive support (ROM revision '0').
+ * if <<<PRINT PEEK(64447)>>> returns 0, you have an IIc with UniDisk 3.5 inch drive support (ROM revision '0').
  
- * if <<<PRINT PEEK(64427)>>> returns 3, you have an IIc with memory expansion support (ROM revision '3').
+ * if <<<PRINT PEEK(64447)>>> returns 3, you have an IIc with memory expansion support (ROM revision '3').
  
- * if <<<PRINT PEEK(64427)>>> returns 4, you have an IIc with a modified/fixed version of memory expansion support (ROM revision '4').
+ * if <<<PRINT PEEK(64447)>>> returns 4, you have an IIc with a modified/fixed version of memory expansion support (ROM revision '4').
  
- * if <<<PRINT PEEK(64427)>>> returns 5, you have an Apple IIc Plus (ROM revision '5').
+ * if <<<PRINT PEEK(64447)>>> returns 5, you have an Apple IIc Plus (ROM revision '5').
 
  []
 
