@@ -965,8 +965,7 @@ public class CommsThread extends Thread
     int byteCount = 0, crc, ok = CHR_NAK, currentRetries = 0;
     byte data, prev, newprev;
 
-    Log.println(false, "CommsThread.sendPacket() entry; offset " + offset
-            + ".");
+    Log.println(false, "CommsThread.sendPacket() entry; offset " + offset + ".");
     do
     {
       prev = 0;
@@ -1095,24 +1094,22 @@ public class CommsThread extends Thread
           Log.println(false,
               "CommsThread.sendPacket() didn't work; will retry #"
                   + currentRetries + ".");
-          // For audio transport, pause for an increasing amount of
-          // time each
-          // time we retry.
+          // Pause for an increasing amount of time each time we retry.
           // What's that called - progressive backoff/fallback?
+          int pauseMS = 500;
+          // Slow down a little faster for Audio...
           if (_transport.transportType() == ATransport.TRANSPORT_TYPE_AUDIO)
+            pauseMS = 2000;
+          try
           {
-            try
-            {
-              Log.println(false,
-                  "CommsThread.sendPacket() audio backoff sleeping for "
-                      + (currentRetries * 2) + " seconds.");
-              sleep(currentRetries * 200); // Sleep 2 seconds for each time we have to retry
-            }
-            catch (InterruptedException e)
-            {
-              Log.println(false,
-                      "CommsThread.sendPacket() audio backoff sleep was interrupted.");
-            }
+            Log.println(true, "CommsThread.sendPacket() block: " + block + " offset: " + offset + ".");
+            Log.println(true, "CommsThread.sendPacket() backoff sleeping for "
+                    + ((currentRetries * pauseMS)/1000) + " seconds.");
+            sleep(currentRetries * pauseMS); // Sleep each time we have to retry
+          }
+          catch (InterruptedException e)
+          {
+            Log.println(false, "CommsThread.sendPacket() backoff sleep was interrupted.");
           }
         }
       }
@@ -2089,25 +2086,23 @@ public class CommsThread extends Thread
               "CommsThread.receivePacket() didn't work; will retry #" + retries
                   + ".");
           // For audio transport, pause for an increasing amount of time
-          // each
-          // time we retry.
-          // What's that called - progressive backoff?
+          // each time we retry.
+          // What's that called - progressive backoff/fallback?
+          int pauseMS = 500;
+          // Slow down a little faster for Audio...
           if (_transport.transportType() == ATransport.TRANSPORT_TYPE_AUDIO)
+            pauseMS = 2000;
+          try
           {
-            try
-            {
-              Log.println(false,
-                  "CommsThread.receivePacket() audio backoff sleeping for "
-                      + (retries * 200) + " seconds.");
-              sleep(retries * 200); // Sleep 2 seconds for each time
-              // we have to
-              // retry
-            }
-            catch (InterruptedException e)
-            {
-              Log.println(false,
-                      "CommsThread.receivePacket() audio backoff sleep was interrupted.");
-            }
+            Log.println(true, "CommsThread.receivePacket() block: " + (buffNum / 2) + " offset: " + offset + ".");
+            Log.println(true, "CommsThread.receivePacket() backoff sleeping for "
+                    + ((retries * pauseMS)/1000) + " seconds.");
+            sleep(retries * pauseMS); // Sleep each time we have to retry
+          }
+          catch (InterruptedException e)
+          {
+            Log.println(false,
+                    "CommsThread.receivePacket() audio backoff sleep was interrupted.");
           }
           _transport.writeByte(CHR_NAK);
           _transport.pushBuffer();
