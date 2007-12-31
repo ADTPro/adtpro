@@ -202,7 +202,7 @@ section below.
 {{{http://retrofloppy.com/products.html}Contact me}}
 if you would like to buy one.  They look like this:
 
-[images/nullmodemDIN5DE9.jpg]
+[images/nullModemDIN5DE9.jpg]
 
  Note that the original IIc motherboard is not able to operate the serial 
  port accurately at speeds higher than 300 baud, so you may have to go really
@@ -269,7 +269,7 @@ I wired some of these up myself for testing.
 {{{http://retrofloppy.com/products.html}Contact me}}
 if you would like to buy one.  They look like this:
 
-[images/nullmodemDIN5DE9.jpg]
+[images/nullModemDIN5DE9.jpg]
 
   One thing to note with Laser 128 machines: you will need to keep your 
 hands off the keyboard while transfers are taking place.  It turns out
