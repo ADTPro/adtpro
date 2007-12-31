@@ -145,11 +145,11 @@ looking into the cable connector/plug at the pins:
   The parts you need can be found at swap meets, Jameco, 
 Mouser, Radio Shack, etc.
 I wired up some single-cable null modems myself for 
-testing using Belkin and Jameco parts, going from MiniDIN8 to DE-9F. 
+testing, going from MiniDIN8 to DE-9F. 
 {{{http://retrofloppy.com/products.html}Contact me}}
 if you would like to buy one.  They look like this:
 
-[images/iigsNullModem.jpg]
+[images/iigsNullModem2.jpg]
 
 * {IIc serial port cabling}
 
@@ -159,9 +159,10 @@ if you would like to buy one.  They look like this:
 
   The orignal IIc (not IIc+) computers had DIN5 connectors for its serial ports.
   There are two pinouts for a single-cable null-modem that will work with ADTPro:
-  one with "hardware handshaking" (described immediately below) and one without (described in
-  the {{{connectionsserial.html#Laser 128 serial port cabling}Laser 128}} section below).
-  If you use the "hardware handshaking" cable, you will need to tick the "Apple IIc Serial"
+  an "Imagewriter I" cable (one that does some amount of "hardware handshaking")
+  and one without (described in the {{{connectionsserial.html#Laser 128 serial port cabling}Laser 128}}
+  section below).
+  If you use the Imagewriter I cable, you will need to tick the "Apple IIc Serial"
   checkbox in the serial config dialog box, brought up from the 
   <<<File->Serial Configuration>>> menu item:
 
@@ -173,7 +174,7 @@ Apple's (not DIN's!) standard:
 
 [images/din5.png]
 
- The "hardware handshaking" cable has the following pinout:
+ The Imagewriter I cable has the following pinout:
 
 ---
  Apple
@@ -194,8 +195,10 @@ Apple's (not DIN's!) standard:
 
   The parts you need can be found at swap meets, Jameco, 
 Mouser, Radio Shack, etc.
-I wired up some single-cable null modems myself for 
-testing going from DIN-5M to DE-9F. 
+I wired up some of these myself for testing, but ultimately 
+prefer the non-hardware handshaking models listed below in the
+{{{connectionsserial.html#Laser 128 serial port cabling}Laser 128}}
+section below.
 {{{http://retrofloppy.com/products.html}Contact me}}
 if you would like to buy one.  They look like this:
 
@@ -264,7 +267,9 @@ Apple's (not DIN's!) standard:
 end and at the Laser/IIc end.  This effectively disables hardware handshaking.
 I wired some of these up myself for testing.
 {{{http://retrofloppy.com/products.html}Contact me}}
-if you would like to buy one.
+if you would like to buy one.  They look like this:
+
+[images/nullmodemDIN5DE9.jpg]
 
   One thing to note with Laser 128 machines: you will need to keep your 
 hands off the keyboard while transfers are taking place.  It turns out
