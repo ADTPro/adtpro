@@ -73,8 +73,8 @@ more bootstrapping scenarios and configurations are detailed below.
 
 [images/serialConfig.png]
 
- And if you are using an Apple IIc, don't forget to check the "Apple IIc Serial"
- box on the Port tab.
+ And if you are using an Imagewriter I cable with an Apple IIc, don't forget to check the 
+ "Apple IIc Serial" box on the Port tab.
 
 * {If you already have ProDOS}
 
