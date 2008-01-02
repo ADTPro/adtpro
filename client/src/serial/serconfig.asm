@@ -334,11 +334,12 @@ FindSlotLoop:
 	lda (UTILPTR),y
 	cmp #$31		; Is $Cn0C == $31?
 	bne FindSlotNext
-; Ok, we have a set of signature bytes for a comms card (or IIc/IIgs).
+; Ok, we have a set of signature bytes for a comms card (or IIc/IIgs, or Laser).
+; Remove more specific models/situations first.
 	ldy #$1b		; Lookup offset
 	lda (UTILPTR),y
 	cmp #$eb		; Do we have a goofy XBA instruction in $C01B?
-	bne FoundNotIIgs	; If not, it's an SSC, IIc, or a Laser.
+	bne FoundNotIIgs	; If not, it's not an IIgs.
 	cpx #$02		; Only bothering to check IIgs Modem slot (2)
 	bne FindSlotNext
 	lda #$07		; We found the IIgs modem port, so store it
@@ -348,7 +349,7 @@ FoundNotIIgs:
 	ldy #$00
 	lda (UTILPTR),y
 	cmp #$da		; Is $Cn00 == $DA?
-	bne NotLaser
+	bne NotLaser		; If not, it's not a Laser 128.
 	cpx #$02
 	bne FindSlotNext
 	lda #$09		; Ok, this is a Laser 128.
@@ -375,7 +376,7 @@ Slot2Reentry:
 NotNewIIc:
 	cmp #$25		; Is this an older IIc - $Cn07 == $25?
 	beq Slot2Reentry
-	stx TempSlot	; Nope, nothing special.  Just a Super Serial card.
+	stx TempSlot		; Nope, nothing special.  Just a Super Serial card.
 
 FindSlotNext:
 	dex
@@ -385,12 +386,12 @@ FindSlotNext:
 	beq :+
 	dex			; Subtract 1 to match slot# to parm index
 	stx PSSC
-	stx DEFAULT
+	stx DEFAULT		; Store the slot number discovered as default
 	rts
 :	lda TempIIgsSlot
 	beq FindSlotDone	; Didn't find either SSC or IIgs Modem, so leave carry set
 	sta PSSC
-	sta DEFAULT
+	sta DEFAULT		; Store the slot number discovered as default
 	clc
 FindSlotDone:
 	rts
