@@ -334,10 +334,10 @@ FindSlotLoop:
 	lda (UTILPTR),y
 	cmp #$31		; Is $Cn0C == $31?
 	bne FindSlotNext
-; Ok, we have a set of signature bytes for a comms card (or IIgs).
+; Ok, we have a set of signature bytes for a comms card (or IIc/IIgs).
 	ldy #$1b		; Lookup offset
 	lda (UTILPTR),y
-	cmp #$eb		; Do we have a goofy XBA instruction?
+	cmp #$eb		; Do we have a goofy XBA instruction in $C01B?
 	bne FoundNotIIgs	; If not, it's an SSC, IIc, or a Laser.
 	cpx #$02		; Only bothering to check IIgs Modem slot (2)
 	bne FindSlotNext
@@ -347,7 +347,7 @@ FindSlotLoop:
 FoundNotIIgs:
 	ldy #$00
 	lda (UTILPTR),y
-	cmp #$da
+	cmp #$da		; Is $Cn00 == $DA?
 	bne NotLaser
 	cpx #$02
 	bne FindSlotNext
@@ -364,11 +364,19 @@ FoundNotIIgs:
 NotLaser:
 	ldy #$0a
 	lda (UTILPTR),y
-	cmp #$0e		; Is this an IIc?
-	bne FindSlotNext
+	cmp #$0e		; Is this a newer IIc - $Cn07 == $0E?
+	bne NotNewIIc
+Slot2Reentry:
 	cpx #$02		; Only bothering to check IIc Modem slot (2)
 	bne FindSlotNext
 	stx TempSlot
+	jmp FindSlotNext
+
+NotNewIIc:
+	cmp #$25		; Is this an older IIc - $Cn07 == $25?
+	beq Slot2Reentry
+	stx TempSlot	; Nope, nothing special.  Just a Super Serial card.
+
 FindSlotNext:
 	dex
 	bne FindSlotLoop
