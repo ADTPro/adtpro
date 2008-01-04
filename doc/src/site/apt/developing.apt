@@ -32,8 +32,8 @@ to use {{{http://www.eclipse.org/}Eclipse}}, so I'll provide setup information
 for that.  Other IDEs are similar, and surely address your own pet peeves.
 This page happens to show screenshots of a Windows setup, but there's nothing
 particularly Windows-ey about the build process.  It should run on any platform
-that can support all of the build tools.  I have tested it myself on Windows
-and SuSE Linux.
+that can support all of the build tools.  I have tested it myself on Windows,
+Mac OSX, and SuSE Linux.
 
  Table of Contents:
 
