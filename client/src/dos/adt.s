@@ -16,9 +16,11 @@
 
 ; Version History:
 
-; Version 1.34 October 2007
+; Version v.r.m Unreleased
+; David Schmidt
 ; - Nibble disk send by Gerard Putter
 ; - Half track disk send by Eric Neilson 
+; - Fix slot scan for IIc computers
 
 ; Version 1.33 July 2007
 ; David Schmidt
@@ -74,7 +76,7 @@
 ; Version 1.00 - FIRST PUBLIC RELEASE
 
 ; The version number as a macro. Must not be more than 7 characters.
-.define		version_no	"1.34"
+.define		version_no	"V.R.M"
 
 ; CONSTANTS
 
@@ -529,11 +531,12 @@ FindSlotLoop:
 	lda	(msgptr),y
 	cmp	#$31		; Is $Cn0C == $31?
 	bne	FindSlotNext
-; Ok, we have a set of signature bytes for a comms card, IIgs or Laser.
+; Ok, we have a set of signature bytes for a comms card (or IIc/IIgs, or Laser).
+; Remove more specific models/situations first.
 	ldy	#$1b		; Lookup offset
 	lda	(msgptr),y
-	cmp	#$eb		; Do we have a goofy XBA instruction?
-	bne	FoundNotIIgs	; If not, it's an SSC or a Laser.
+	cmp	#$eb		; Do we have a goofy XBA instruction in $C01B?
+	bne	FoundNotIIgs	; If not, it's not an IIgs.
 	cpx	#$02		; Only bothering to check IIgs Modem slot (2)
 	bne	FindSlotNext
 	lda	#$07		; We found the IIgs modem port, so store it
@@ -542,26 +545,41 @@ FindSlotLoop:
 FoundNotIIgs:
 	ldy	#$00
 	lda	(msgptr),y
-	cmp	#$da
-	bne	NotLaser
+	cmp	#$da		; Is $Cn00 == $DA?
+	bne	NotLaser	; If not, it's not a Laser 128.
 	cpx	#$02
 	bne	FindSlotNext
-	lda	#$09
+	lda	#$09		; Ok, this is a Laser 128.
 	sta	TempSlot
-	lda	pspeed
+	lda	pspeed		; Were we trying to go too fast (115.2k)?
 	cmp	#$06
 	bne	:+
-	lda	#$05
+	lda	#$05		; Yes, slow it down to 19200.
 	sta	pspeed
-	sta	default+3
+	sta	default+3	; And make that the default.
 :
 	jmp	FindSlotNext
 NotLaser:
+	ldy	#$0a
+	lda	(msgptr),y
+	cmp	#$0e		; Is this a newer IIc - $Cn0a == $0E?
+	beq	ProcessIIc
+NotNewIIc:
+	cmp	#$25		; Is this an older IIc - $Cn0a == $25?
+	bne	GenericSSC
+ProcessIIc:
+	cpx	#$02		; Only bothering to check IIc Modem slot (2)
+	bne	FindSlotNext
 	stx	TempSlot
+	jmp	FindSlotBreak	; Don't check port #1 on an IIc - we don't care
+GenericSSC:
+	stx	TempSlot	; Nope, nothing special.  Just a Super Serial card.
+
 FindSlotNext:
 	dex
 	bne	FindSlotLoop
 ; All done now, so clean up
+FindSlotBreak:
 	ldx	TempSlot
 	beq	:+
 	dex			; Subtract 1 to match slot# to parm index
@@ -569,7 +587,7 @@ FindSlotNext:
 	stx	default+2	; Store the slot number discovered as default
 	rts
 :	lda	TempIIgsSlot
-	beq	FindSlotDone	; Didn't find either SSC or IIgs Modem
+	beq	FindSlotDone	; Didn't find anything in particular
 	sta	pssc
 	sta	default+2	; Store the slot number discovered as default
 FindSlotDone:
