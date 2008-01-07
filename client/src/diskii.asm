@@ -396,7 +396,6 @@ TRACKS_5:
 	lda $C000
 	cmp #CHR_ESC	; ESCAPE = ABORT
 	beq TRKABORT
-
 	LDA GOHTRK	; from current half track
 	STA CURHTRK
 	LDA TRK		; to dos 3.3 track
@@ -405,6 +404,9 @@ TRACKS_5:
 ; Calculate HI address where loaded sectors are stored
 
 READY_L5TRK:
+
+        jsr UpdateTrackNumber
+
 	ldx RELTRK	; Track counter, 0-4
 	LDY #$0F	; init sector #
 
@@ -460,6 +462,34 @@ ADR_TRK:
 ERR_READ:		; read error flag
 	.BYTE 0
 
+UpdateTrackNumber:
+	clc
+	lda BLKLO	; Increment the 16-bit block number
+	adc #$08
+	sta NUM
+	sta BLKLO
+	lda BLKHI
+	adc #$00
+	tax
+	stx BLKHI
+ShowTrackNumber:
+	lda <CH
+	sta <COL_SAV
+	lda #V_MSG	; start printing at first number spot
+	jsr TABV
+	lda #H_NUM1
+	sta <CH
+
+	lda NUM
+	ldx BLKHI
+	ldy #CHR_0
+	jsr PRD		; Print block number in decimal
+
+	lda <COL_SAV	; Reposition cursor to previous
+	sta <CH		; buffer row
+	lda #V_BUF
+	jsr TABV
+	rts
 
 ;==============================*
 ;                              *
