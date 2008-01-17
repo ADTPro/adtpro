@@ -138,8 +138,10 @@ looking into the cable connector/plug at the pins:
     3 ----- 2      3     RxD
     4 --,-- 5      7     GND
     8 --'
-    2 ----- 7      4     RTS
     1 ----- 8      5     CTS
+    2 --+-- 7      4     RTS
+        '-- 4     20     DTR
+    7 ----- 1      8     DCD
 ---
 
   The parts you need can be found at swap meets, Jameco, 
