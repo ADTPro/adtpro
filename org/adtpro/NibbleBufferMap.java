@@ -78,7 +78,7 @@ public class NibbleBufferMap
   NibbleBufferMap(byte[] inBuffer)
   {
     buffer = inBuffer;
-    mapEntries = new Vector();
+    mapEntries = new Vector<NibbleBufferEntry>();
     buildMap();
   }
 
@@ -169,6 +169,7 @@ public class NibbleBufferMap
           break;
       }
     } // For all bytes
+    Log.println(false,"NibbleBufferMap.buildMap() exit; found "+mapEntries.size()+" map entries.");
   }
 
   boolean isFirstGapByte(byte aByte)
@@ -185,7 +186,7 @@ public class NibbleBufferMap
         currentGapSequence = i;
         rv = true;
         break; // end inner for loop
-      } // end if byte matchs
+      } // end if byte matches
     } // end outer for loop
     return rv;
   }
@@ -195,10 +196,11 @@ public class NibbleBufferMap
     // Returns the index in mapEntries of the entry found, or -1 in the case of error.
     int rv = 0;
     NibbleBufferEntry entry;
-    Iterator it = mapEntries.iterator();
+    Iterator<NibbleBufferEntry> it = mapEntries.iterator();
     while (it.hasNext())
     {
-      entry = (NibbleBufferEntry)it.next();
+      entry = it.next();
+      // Log.println(false, "NibbleBufferEntry type: "+entry.type);
       if ((entry.type == NibbleBufferEntry.NIBBLE_FIELD) && (entry.startIndex >= MIN_TRACK_LENGTH))
       {
         Log.println(false,"NibbleBufferMap.findFirstRepeatCandidate() found a candidate at "+rv+".");
@@ -217,7 +219,7 @@ public class NibbleBufferMap
     int rv = -1; // Default - no candidate found
     for (int i = currentIndex + 1; i < mapEntries.size(); i++)
     {
-      NibbleBufferEntry candidate = (NibbleBufferEntry)mapEntries.elementAt(i);
+      NibbleBufferEntry candidate = mapEntries.elementAt(i);
       if (candidate.startIndex > NIBBLE_TRACK_LENGTH)
       {
         rv = -1; // Track would become too long
@@ -256,9 +258,9 @@ public class NibbleBufferMap
       otherIndex = i + candidateIndex;
       if (otherIndex >= mapEntries.size())
         break;
-      NibbleBufferEntry first = (NibbleBufferEntry)mapEntries.elementAt(i);
-      NibbleBufferEntry second = (NibbleBufferEntry)mapEntries.elementAt(otherIndex);
-      // Log.println(false,"NibbleBufferMap.assessRepeatStartingAt() comparing "+i+" and "+otherIndex+".");
+      NibbleBufferEntry first = mapEntries.elementAt(i);
+      NibbleBufferEntry second = mapEntries.elementAt(otherIndex);
+      //Log.println(false,"NibbleBufferMap.assessRepeatStartingAt() comparing "+i+" and "+otherIndex+".");
       if (second.length == 0)
       {
         Log.println(false,"NibbleBufferMap.assessRepeatStartingAt() found zero length second.");
@@ -292,7 +294,7 @@ public class NibbleBufferMap
          repeatCandidateIndex > 0;
          repeatCandidateIndex = this.findNextRepeatCandidate(repeatCandidateIndex))
     {
-      //    Log.println(false,"NibbleBufferMap.determineTrackLength() looking at repeatCandidateIndex of "+repeatCandidateIndex+".");
+      //Log.println(false,"NibbleBufferMap.determineTrackLength() looking at repeatCandidateIndex of "+repeatCandidateIndex+".");
       double match = this.assessRepeatStartingAt(repeatCandidateIndex);
       if (match > bestMatchSoFar)
       {
@@ -303,7 +305,7 @@ public class NibbleBufferMap
     if (bestMatchSoFar > 0.0)
     {
       // Apparently something was found
-      NibbleBufferEntry candidate = (NibbleBufferEntry)mapEntries.elementAt(bestRepeatIndexSoFar);
+      NibbleBufferEntry candidate = mapEntries.elementAt(bestRepeatIndexSoFar);
       rv = candidate.startIndex;
     }
     this.accuracy = bestMatchSoFar;
@@ -323,10 +325,10 @@ public class NibbleBufferMap
     int rv = 0;
     int bestSoFar = 0;
     NibbleBufferEntry entry;
-    Iterator it = mapEntries.iterator();
+    Iterator<NibbleBufferEntry> it = mapEntries.iterator();
     while (it.hasNext())
     {
-      entry = (NibbleBufferEntry)it.next();
+      entry = it.next();
       if (entry.startIndex + entry.length <= length)
       {
         if ((entry.type == NibbleBufferEntry.NIBBLE_GAP) && (entry.length > bestSoFar))
@@ -339,7 +341,7 @@ public class NibbleBufferMap
     return rv;
   }
 
-  Vector mapEntries;
+  Vector<NibbleBufferEntry> mapEntries;
   public double accuracy = 0.0;
   byte[] buffer;
   int currentGapSequence = -1;

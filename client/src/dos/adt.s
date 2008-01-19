@@ -71,7 +71,7 @@
 ; to receive. ADT then expects to receive the 560 sectors of a diskette, 
 ; starting at track 0 sector 0. 
 ; Each track is sent in increasing order of DOS logical sector numbers. 
-; The data is compressed with RLE (see beow). Each sector is followed by 
+; The data is compressed with RLE (see below). Each sector is followed by 
 ; a 2-byte checksum (which does not take part in the RLE compression), 
 ; and is acknowledged by ADT. The possible answers are:
 ; - ACK : checksum matches; please send next sector
@@ -109,16 +109,16 @@
 ; - 1 byte track number (N command) or half-track number (V command)
 ; - 1 byte with fixed value 0x02
 ; - 256 data bytes, compressed with RLE (see below)
-; - 2 bytes checkum over the 256 data bytes
+; - 2 bytes checksum over the 256 data bytes
 ; The host must either confirm (ACK) or reject (NAK) the block, just as in
 ; the S command.
 ; After sending the entire track, ADT waits for a response byte from the host:
 ; - ACK: analysis was successful; please proceed with the next track
 ; - NAK: analysis failed; abort the operation
 ; - CAN (0x18): analysis failed, but please continue with next track
-; - ENQ (0x05): analysis was unconclusive; please re-read the
+; - ENQ (0x05): analysis was inconclusive; please re-read the
 ;               same track and send the newly read data
-; After sending all tracks, ADT sends a final ststus code, which is always
+; After sending all tracks, ADT sends a final status code, which is always
 ; 0x00 (success).
 ; Note that the host plays an important role in controlling the process.
 ; For example, it is up to the host to decide how many times to request
@@ -1810,7 +1810,7 @@ nibdisp:
 ;---------------------------------------------------------
 ; initsnib - init send nibble disk
 ; ask for a filename, then send "N" command and filename
-; to the other side and await an acknowldgement.
+; to the other side and await an acknowledgement.
 ; note we do not check for a valid disk in the drive;
 ; basically any disk will do. if there is no disk present,
 ; bad luck (behaves the same as when booting).
@@ -1831,7 +1831,7 @@ nibnamok:
 	jsr	showmsg
 	lda	#_'N'		; Load acc with command code
 	jsr	putc		;  and send to pc
-	jsr	initprot	; Protocol negotiaton
+	jsr	initprot	; Protocol negotiation
 	bcc	:+		; Protocol accepted
 	jmp	abort		; Exit via abort
 :	ldx	#0
@@ -1843,10 +1843,6 @@ fnloop2:
 	bne	fnloop2
 
 getans2:  
-	lda	#$18
-	jsr	putc		; Send disk size lsb
-	lda	#$01
-	jsr	putc		; Send disk size msb
 ; for test only: activate next and deactivate line after
 ;	lda	#0		; Simulate ok
 	jsr	getc		; Answer from host should be 0

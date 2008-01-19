@@ -245,9 +245,10 @@ public class CommsThread extends Thread
             _parent.setSecondaryText(""); //$NON-NLS-1$
             Log.println(false,
                 "CommsThread.commandLoop() Received Nibble Put command."); //$NON-NLS-1$
-            receiveNibbleDisk(false);
+            receiveNibbleDisk(false, 35);
             _busy = false;
             break;
+            /*
           case (byte) 207: // "O": Get Nibble Disk
             _busy = true;
             _parent.setMainText(Messages.getString("CommsThread.13")); //$NON-NLS-1$
@@ -257,9 +258,18 @@ public class CommsThread extends Thread
             sendNibbleDisk(false);
             _busy = false;
             break;
+            */
+          case (byte) 214: // "V": Put Half Track Disk
+            _busy = true;
+            _parent.setMainText(Messages.getString("CommsThread.5")); //$NON-NLS-1$
+            _parent.setSecondaryText(""); //$NON-NLS-1$
+            Log.println(false,
+                "CommsThread.commandLoop() Received Half Track Put command."); //$NON-NLS-1$
+            receiveNibbleDisk(false, 70);
+            _busy = false;
+            break;
           default:
-            Log
-                .println(
+            Log.println(
                     false,
                     "CommsThread.commandLoop() Received unknown command: " + UnsignedByte.toString(oneByte)); //$NON-NLS-1$
             break;
@@ -1462,7 +1472,7 @@ public class CommsThread extends Thread
     Log.println(false, "CommsThread.sendNibbleDisk() exit.");
   }
 
-  public void receiveNibbleDisk(boolean generateName)
+  public void receiveNibbleDisk(boolean generateName, int requestedTracks)
   /* Nibble receive routine - Host <- Apple (Apple sends) */
   {
     boolean shouldContinue = true;
@@ -1473,8 +1483,6 @@ public class CommsThread extends Thread
       Log.print(false, "Waiting for name..."); //$NON-NLS-1$
       String name = _parent.getWorkingDirectory() + receiveName();
       Log.println(false, " received name: " + name); //$NON-NLS-1$
-      waitForData(15); // Eat sizelo
-      waitForData(15); // Eat sizehi
       File f = null;
       String nameGen, zeroPad;
       FileOutputStream fos = null;
@@ -1483,7 +1491,6 @@ public class CommsThread extends Thread
       int part, packetResult = 0;
       byte report;
 
-      _parent.setProgressMaximum(70);
       rawNibbleBuffer = new byte[13312];
       if (generateName)
       {
@@ -1505,8 +1512,16 @@ public class CommsThread extends Thread
       else
       {
         String tempName = name.toUpperCase();
-        if (!tempName.endsWith(".NIB"))
-            name = name + ".nib";
+        if (requestedTracks == 35)
+        {
+          if (!tempName.endsWith(".NIB"))
+              name = name + ".nib";
+        }
+        else // requestedTracks == 70
+        {
+          if (!tempName.endsWith(".V2D"))
+              name = name + ".v2d";
+        }
         f = new File(name);
       }
       try
@@ -1520,10 +1535,10 @@ public class CommsThread extends Thread
         if (waitForData(15) == CHR_ACK)
         {
           Log.println(false, "receiveNibbleDisk() received ACK from apple.");
-          _parent.setProgressMaximum(35 * 52); // Tracks
+          _parent.setProgressMaximum(requestedTracks * 52); // Tracks
           _parent.setSecondaryText(name);
           int numParts = 52;
-          for (int numTracks = 0; numTracks < 35; numTracks++)
+          for (int numTracks = 0; numTracks < requestedTracks; numTracks++)
           {
             for (part = 0; part < numParts; part++)
             {
@@ -1542,16 +1557,19 @@ public class CommsThread extends Thread
             /*
              * Dump out the track
              */
+            /*
               Log.println(false, "Dumping out track "+numTracks+": (zero-based)");
               for (int i = 0; i < 6656; i++)
                 Log.print(false, UnsignedByte.toString(rawNibbleBuffer[i]));
               Log.println(false, "");
+            */
             if (realTrack1 != null)
             {
               if (realTrack1.accuracy < 0.9)
               {
                 Log.println(false,"CommsThread.receiveNibbleDisk() asking to re-send track; accuracy was low.");
-                shouldContinue = sendTrackReply(CHR_ENQ);
+                _transport.writeByte(CHR_ENQ);
+                _transport.pushBuffer();
                 if (shouldContinue)
                 {                
                   for (part = 0; part < numParts; part++)
@@ -1568,11 +1586,12 @@ public class CommsThread extends Thread
                   // analyze this track
                   realTrack2 = NibbleAnalysis.analyzeNibbleBuffer(rawNibbleBuffer);
                   // Dump the raw track
+                  /*
                   Log.println(false, "Dumping out raw track "+numTracks+": (zero-based; second try)");
                   for (int i = 0; i < 6656; i++)
                     Log.print(false, UnsignedByte.toString(rawNibbleBuffer[i]));
                   Log.println(false, "");
-
+                  */
                   Log.println(false,"receiveNibbleDisk() accuracies: realTrack1: "+realTrack1.accuracy + " realTrack2: "+realTrack2.accuracy);
                   if (realTrack2.accuracy > realTrack1.accuracy)
                   {
@@ -1590,10 +1609,9 @@ public class CommsThread extends Thread
             }
             if (shouldContinue)
             {
-              Log.println(true,"Acknowledging track number "+numTracks+" (decimal; zero-based).");
-              shouldContinue = sendTrackReply(CHR_ACK);
-//              _transport.writeByte(CHR_ACK);
-//              _transport.pushBuffer();
+              Log.println(false,"Acknowledging track number "+numTracks+" (decimal; zero-based).");
+              _transport.writeByte(CHR_ACK);
+              _transport.pushBuffer();
               Log.println(false,
                   "Writing track " + (numTracks + 1) + " of 35."); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
               fos.write(realTrack1.trackBuffer);
@@ -1720,46 +1738,6 @@ public class CommsThread extends Thread
     }
     if (timeouts == 5)
       Log.println(false, "CommsThread.getTrackAck() timed out.");
-    return rc;
-  }
-
-  boolean sendTrackReply(byte ackByte)
-  {
-    boolean rc = false, done = false;
-    int ack = -1, timeouts = 0;
-    while (done == false)
-    {
-      if (timeouts == 5)
-        done = true;
-      else
-      {
-        try
-        {
-          ack = waitForData(15);
-          if (ack == CHR_ACK)
-          {
-            rc = true;
-            done = true;
-            Log.println(false, "CommsThread.getTrackReply() ready to go.");
-            _transport.writeByte(ackByte);
-            _transport.pushBuffer();
-          }
-          else
-          {
-            Log.println(false, "CommsThread.getTrackReply() received garbage ("+ack+").");
-          }
-          done = true;
-        }
-        catch (TransportTimeoutException e)
-        {
-          _transport.writeByte(CHR_TIMEOUT);
-          _transport.pushBuffer();
-          timeouts ++;
-        }
-      }
-    }
-    if (timeouts == 5)
-      Log.println(false, "CommsThread.getTrackReply() timed out.");
     return rc;
   }
 
