@@ -528,6 +528,7 @@ resetio:
 	bne	krecv		; Nope, try receive
 	ldy	#msendtype
 	jsr	showmsg
+sendtype:
 	jsr	rdkey		; GET ANSWER
 	and	#$df		; CONVERT TO UPPERCASE
 	cmp	#_'H'		; Half?
@@ -546,7 +547,9 @@ resetio:
 	bne	:+		; Nope, invalid input
 	jsr	send		; YES, DO SEND ROUTINE
 :
-	jmp	mainlup
+	cmp	#esc
+	beq	mainlup
+	jmp	sendtype
 
 krecv:	cmp	#_'R'		; RECEIVE?
 	bne	kdir		; NOPE, TRY DIR
