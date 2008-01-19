@@ -26,6 +26,7 @@ import java.util.GregorianCalendar;
 import org.adtpro.resources.Messages;
 import org.adtpro.transport.ATransport;
 import org.adtpro.transport.AudioTransport;
+import org.adtpro.transport.ProtocolVersionException;
 import org.adtpro.transport.SerialTransport;
 import org.adtpro.transport.TransportTimeoutException;
 import org.adtpro.transport.UDPTransport;
@@ -43,6 +44,8 @@ public class CommsThread extends Thread
   private boolean _busy = false;
 
   protected boolean _client01xCompatibleProtocol = false;
+
+  protected int _protocolVersion = 0x0101;
 
   private ATransport _transport;
 
@@ -413,9 +416,13 @@ public class CommsThread extends Thread
     }
     catch (TransportTimeoutException e)
     {
-      Log
-          .println(false,
+      Log.println(false,
               "CommsThread.queryFileSize() aborting due to timeout.");
+    }
+    catch (ProtocolVersionException e2)
+    {
+      Log.println(false,
+              "CommsThread.queryFileSize() aborting due to protocol version exception.");
     }
   }
 
@@ -437,6 +444,12 @@ public class CommsThread extends Thread
     {
       Log.println(false,
           "CommsThread.changeDirectory() aborting due to timeout.");
+      _parent.setSecondaryText(Messages.getString("CommsThread.21"));
+    }
+    catch (ProtocolVersionException e2)
+    {
+      Log.println(false,
+          "CommsThread.changeDirectory() aborting due to protocol mismatch.");
       _parent.setSecondaryText(Messages.getString("CommsThread.21"));
     }
   }
@@ -653,6 +666,11 @@ public class CommsThread extends Thread
       Log.println(false, "CommsThread.receiveDisk() aborting due to timeout.");
       _parent.setSecondaryText(Messages.getString("CommsThread.21"));
     }
+    catch (ProtocolVersionException e2)
+    {
+      Log.println(false, "CommsThread.receiveDisk() aborting due to protocol mismatch.");
+      _parent.setSecondaryText(Messages.getString("CommsThread.21"));
+    }
     Log.println(false, "CommsThread.receiveDisk() exit.");
   }
 
@@ -795,6 +813,11 @@ public class CommsThread extends Thread
     catch (TransportTimeoutException e)
     {
       Log.println(false, "CommsThread.sendDisk() aborting due to timeout.");
+      _parent.setSecondaryText(Messages.getString("CommsThread.21"));
+    }
+    catch (ProtocolVersionException e2)
+    {
+      Log.println(false, "CommsThread.sendDisk() aborting due to protocol mismatch.");
       _parent.setSecondaryText(Messages.getString("CommsThread.21"));
     }
 
@@ -949,6 +972,11 @@ public class CommsThread extends Thread
     catch (TransportTimeoutException e)
     {
 
+    }
+    catch (ProtocolVersionException e2)
+    {
+      Log.println(false, "CommsThread.send140kDisk() aborting due to protocol mismatch.");
+      _parent.setSecondaryText(Messages.getString("CommsThread.21"));
     }
     Log.println(false, "send140kDisk() exit.");
   }
@@ -1425,6 +1453,11 @@ public class CommsThread extends Thread
       Log.println(false, "CommsThread.sendNibbleDisk() aborting due to timeout.");
       _parent.setSecondaryText(Messages.getString("CommsThread.21"));
     }
+    catch (ProtocolVersionException e2)
+    {
+      Log.println(false, "CommsThread.sendNibbleDisk() aborting due to protocol mismatch.");
+      _parent.setSecondaryText(Messages.getString("CommsThread.21"));
+    }
 
     Log.println(false, "CommsThread.sendNibbleDisk() exit.");
   }
@@ -1645,6 +1678,11 @@ public class CommsThread extends Thread
           "CommsThread.receiveNibbleDisk() aborting due to timeout.");
       _parent.setSecondaryText(Messages.getString("CommsThread.21"));
     }
+    catch (ProtocolVersionException e2)
+    {
+      Log.println(false, "CommsThread.receiveNibbleDisk() aborting due to protocol mismatch.");
+      _parent.setSecondaryText(Messages.getString("CommsThread.21"));
+    }
     Log.println(false, "CommsThread.receiveNibbleDisk() exit.");
   }
 
@@ -1854,6 +1892,11 @@ public class CommsThread extends Thread
       Log.println(true, "receive140kDisk() aborting due to timeout.");
       _parent.setSecondaryText(Messages.getString("CommsThread.21"));
     }
+    catch (ProtocolVersionException e2)
+    {
+      Log.println(false, "CommsThread.receive140kDisk() aborting due to protocol mismatch.");
+      _parent.setSecondaryText(Messages.getString("CommsThread.21"));
+    }
     Log.println(false, "receive140kDisk() exit.");
   }
 
@@ -1982,7 +2025,7 @@ public class CommsThread extends Thread
           try
           {
             // Wait for a byte...
-            data = waitForData(1);
+            data = waitForData(15);
             // Log.println(false, "Received: " +
             // UnsignedByte.toString(data));
             if (UnsignedByte.intValue(data) > 0)
@@ -2153,9 +2196,10 @@ public class CommsThread extends Thread
     return oneByte;
   }
 
-  public String receiveName() throws TransportTimeoutException
+  public String receiveName() throws TransportTimeoutException, ProtocolVersionException
   {
     byte oneByte;
+    int protoMSB, protoLSB;
     StringBuffer buf = new StringBuffer();
 
     for (int i = 0; i < 256; i++)
@@ -2168,6 +2212,53 @@ public class CommsThread extends Thread
       catch (TransportTimeoutException e)
       {
         throw e;
+      }
+      protoMSB = UnsignedByte.intValue(oneByte);
+      if ((protoMSB <= 0x7f) && (i == 0))
+      {
+        Log.println(false, "CommsThread.receiveName() found the protocol MSB - value: "+protoMSB);
+        // We have a protocol byte...
+        protoMSB = oneByte;
+        try
+        {
+          // Low order protocol byte...
+          oneByte = waitForData(15);
+          protoLSB = UnsignedByte.intValue(oneByte);
+          Log.println(false, "CommsThread.receiveName() found the protocol LSB - value: "+protoLSB);
+        }
+        catch (TransportTimeoutException e)
+        {
+          throw e;
+        }
+        // Zero byte...
+        try
+        {
+          oneByte = waitForData(15);
+        }
+        catch (TransportTimeoutException e)
+        {
+          throw e;
+        }
+        if (oneByte == (byte) 0x00)
+        {
+          Log.println(false, "CommsThread.receiveName() found the zero byte.  Sending ACK...");
+          _transport.writeByte(CHR_ACK);
+          _transport.pushBuffer();
+          _protocolVersion = protoMSB*256+protoLSB;
+          try
+          {
+            Log.println(false, "CommsThread.receiveName() back to receiving the first name byte...");
+            oneByte = waitForData(15);
+          }
+          catch (TransportTimeoutException e)
+          {
+            throw e;
+          }
+        }
+        else
+        {
+          throw new ProtocolVersionException("CommsThread.receiveName() found an incompatible protocol version.");
+        }
       }
       if (oneByte != (byte) 0x00)
       {

@@ -8,16 +8,155 @@
 ;--------------------------------
 	.LIST	ON
 
+; Overview
+; --------
 ; This program transfers a 16-sector disk
 ; to a 140K MS-DOS file and back.  The file
 ; format (dos-ordered, .dsk) is compatible
 ; with most Apple II emulators.
 ; SSC, IIgs or compatible hardware is required.
 
-; Version History:
+; Protocol
+; --------
+; This program initiates any data exchange with the host, which typically
+; runs on a PC or Macintosh computer.
+;
+; The first byte transmited is always a command code:
+; - R to receive a disk image
+; - S to send a disk in sector form
+; - N to send a disk in nibble form
+; - V to send a disk in nibble form, using half-tracks
+; - D to get a directory listing of the hosts's working directory
+;
+; The protocol for each of the commands is described below.
+; 
+; Initial protocol negotiation
+; ----------------------------
+; In the case of the R, S, N, or V command code, ADT sends three bytes 
+; to negotiate a protocol:
+; - High-order byte of a protocol number (range 0x01 to 0x1F)
+; - Low-order byte of a protcol number (range 0x01 to 0xFF)
+; - A null byte
+; The protocol number identifies the exact protocol that will
+; be used. It allows the host to decide whether it supports this
+; protocol or not. ADT waits for an answer:
+; - ACK (0x06) means the host supports this protocol
+; - NAK (0x15) means the host does not support this protocol
+; - Any other answers means the host is incompatible.
+; Currently, the only supported protocol version is 0x0101.
+;
+; In the case of an ACK response, ADT continues by sending the
+; file name of the disk image file the host is supposed to save 
+; (in the case of S, N or V command) or read (in the case of the 
+; R) command. The file name is terminated by a 0-byte.
+; It is up to the host how to interpret the file name. The host
+; probably considers it relative to a working directory, the
+; same as used in the D command.
+; ADT then waits for an answer from the host, being one byte:
+; - 0x00 means OK, file name is accepted
+; - 0x1A means the file name is invalid (any command) or the file doesn't 
+;   exist on the host (R command only)
+; - 0x1C (S, N or V command only) means the file already exists on the host
+; - 0x1E (R command only) means the file exists on the host, but is not a 
+;   valid disk image file
+;
+; Any response other than 0x00 aborts the operation.
+; When the response is 0x00, different things occur for the different 
+; commands.
+;
+; The R command
+; -------------
+; In the case of the R command (after the initial negotiation described 
+; above), ADT starts by sending ACK to the host, to indicate it is ready 
+; to receive. ADT then expects to receive the 560 sectors of a diskette, 
+; starting at track 0 sector 0. 
+; Each track is sent in increasing order of DOS logical sector numbers. 
+; The data is compressed with RLE (see beow). Each sector is followed by 
+; a 2-byte checksum (which does not take part in the RLE compression), 
+; and is acknowledged by ADT. The possible answers are:
+; - ACK : checksum matches; please send next sector
+; - NAK : checksum does not match; please resend same sector
+; After receiving the entire disk (all 560 sectors), ADT send a final
+; byte with the overall result: 0 is success, any non-0 value is an error.
+; When the user interrupts the transfer, the host is not notified; adt 
+; just stops reading the input. The transfer at the host side must be 
+; stopped manually in whatever way the host software provides.
+;
+; The S command
+; -------------
+; After the initial protocol negotiation described above, ADT starts
+; by sending ACK to the host, to indicate it is ready to send. It then 
+; sends the 560 disk sectors exactly as described for the R command, with
+; the roles of ADT and host reversed.
+; After sending the entire disk, ADT sends a final byte with the overall 
+; result: 0 is success, any non-0 value is an error.
+; When the user interrupts the transfer, the host is not notified; ADT
+; just stops sending bytes The transfer at the host side must be stopped
+; manually in whatever way the host software provides.
+;
+; The N and V commands
+; --------------------
+; After the initial protocol negotiation described above, ADT starts by
+; sending ACK. It then sends either 35 tracks (N command) or 70 tracks
+; (V command). Each track is handled as follows.
+; ADT sends 52 blocks of 256 bytes each. The bytes are raw disk nibbles,
+; and these 13312 bytes (about 2 full disk rotations) give the host enough
+; raw material to analyze the data. 
+; It is guaranteed that ADT starts each track with a nibble that comes right
+; after a gap.
+; Each of the 256-byte blocks is sent as follows:
+; - 1 byte block number within the track (starting at 0)
+; - 1 byte track number (N command) or half-track number (V command)
+; - 1 byte with fixed value 0x02
+; - 256 data bytes, compressed with RLE (see below)
+; - 2 bytes checkum over the 256 data bytes
+; The host must either confirm (ACK) or reject (NAK) the block, just as in
+; the S command.
+; After sending the entire track, ADT waits for a response byte from the host:
+; - ACK: analysis was successful; please proceed with the next track
+; - NAK: analysis failed; abort the operation
+; - CAN (0x18): analysis failed, but please continue with next track
+; - ENQ (0x05): analysis was unconclusive; please re-read the
+;               same track and send the newly read data
+; After sending all tracks, ADT sends a final ststus code, which is always
+; 0x00 (success).
+; Note that the host plays an important role in controlling the process.
+; For example, it is up to the host to decide how many times to request
+; for a track re-read, and also to decide when continuing the transfer is
+; useless.
+;
+; The D command
+; -------------
+; No preliminary protocol negotiation takes place.
+; The host starts sending text to be displayed on the Apple II screen. The 
+; layout is completely up to the host. The text is plain ASCII, not Apple II
+; "high" ASCII. It might contain \r end-of-line characters. The host must
+; make sure the text does not exceed one screen on the Apple II.
+; The last character of the screen text sent is 0x00. After that, the host
+; sends a continuation byte:
+; - 0x01 to indicate more screens are to follow
+; - 0x00 to indicate this was the last screen; this ends the Dir command
+; If the continuation character is 0x01, ADT has two options:
+; - Send 0x00 to abort the Dir command (this ends the command), or
+; - Send any other byte to have the host send the next screen.
 
-; Version v.r.m Unreleased
-; David Schmidt
+; RLE compression
+; ---------------
+; The 256 byte blocks sent over the line are compressed with a form of
+; run length encoding. Refer to the source for details on the exact
+; operation.
+
+; Checksum calculation
+; --------------------
+; The 16-bit checksum is based on the exclusive or of two items:
+; - The data bytes before RLE is applied
+; - The bytes form a crc table, indexed with the data bytes
+; Refer to the source code for details.
+
+; Version History:
+; ----------------
+
+; Version 2.2 Unreleased
 ; - Nibble disk send by Gerard Putter
 ; - Half track disk send by Eric Neilson 
 ; - Fix slot scan for IIc computers
@@ -76,17 +215,21 @@
 ; Version 1.00 - FIRST PUBLIC RELEASE
 
 ; The version number as a macro. Must not be more than 7 characters.
-.define		version_no	"V.R.M"
+.define		version_no	"2.2"
+
+; Protocol number. Note it must be assigned a higher value when the protcol is
+; modified, and must never be < $0101 or > $01FF
+protono		= $0101
 
 ; CONSTANTS
 
-esc		 = $9b		; ESCAPE KEY
-ack		 = $06		; ACKNOWLEDGE
-nak		 = $15		; NEGATIVE ACKNOWLEDGE
-parmnum 	 = 9		; NUMBER OF CONFIGURABLE PARMS
-nibpages	 = $34		; Number of nibble pages to send
-enq		 = $05		; Request to re-read track
-can		 = $18		; Track not accepted at host
+esc		= $9b		; ESCAPE KEY
+ack		= $06		; ACKNOWLEDGE
+nak		= $15		; NEGATIVE ACKNOWLEDGE
+parmnum 	= 9		; NUMBER OF CONFIGURABLE PARMS
+nibpages	= $34		; Number of nibble pages to send
+enq		= $05		; Request to re-read track
+can		= $18		; Track not accepted at host
 
 ; ZERO PAGE LOCATIONS (ALL UNUSED BY DOS, BASIC & MONITOR)
 
@@ -160,6 +303,7 @@ mnodiskc	= 56		; Slot has no disk card
 manalys		= 58		; Host could not analyze the disk
 mhlfsend	= 60		; Sending halftrack/nibble file
 msendtype	= 62		; Type of send
+mproterr	= 64		; Incompatible host
 
 ;*********************************************************
 
@@ -437,6 +581,7 @@ kquit:	cmp	#_'Q'		; QUIT?
 	lda	dosbyte+1
 	sta	$b98a
 	cli			; Restore interrupts
+	jsr	home		; Clear screen
 	jmp	$3d0		; AND QUIT TO DOS
 
 
@@ -1054,6 +1199,12 @@ trytbl: .byte	0,1,2,3,4,5,10,99
 
 ;---------------------------------------------------------
 ; GETNAME - GET FILENAME AND SEND TO HOST
+; When an acceptable file name has been entered, the function
+; sends the command letter to the host.
+; This function also does the protocol negotiation, because
+; that has to happen after sending the command letter.
+; When the host accepts the protocol, the function sends
+; the entered file name and waits for the host's response.
 ;---------------------------------------------------------
 getname:
 	stx	directn		; TFR DIRECTION (0=RECV, 1=SEND)
@@ -1092,9 +1243,12 @@ fnameok:
 diskok: ldy	#mpcans		;"AWAITING ANSWER FROM HOST"
 	jsr	showmsg
 	lda	#_'R'		; LOAD ACC WITH "R" OR "S"
-	adc	directn
+	adc	directn		; Rather tricky way to change R into S.
 	jsr	putc		; AND SEND TO HOST
-	ldx	#0
+	jsr	initprot
+	bcc	:+		; Protocol accepted
+	jmp	abort		; Exit via abort
+:	ldx	#0
 fnloop: lda	$200,x		; SEND FILENAME TO HOST
 	jsr	putc
 	beq	getans		; STOP AT NULL
@@ -1136,6 +1290,29 @@ prmptbl:
 	.byte	mfrecv,mfsend
 tfrtbl: .byte	mrecv,msend
 
+;---------------------------------------------------------
+; initprot - Negotiate the protocol. Return carry clear
+; if successful, carry set otherwise. Displays an error
+; message if the host does not accept the protocol.
+;---------------------------------------------------------
+initprot:
+	lda	#>protono	; High order byte
+	jsr	putc		; Send to host
+	lda	#<protono	; Low order byte
+	jsr	putc		; Send to host
+	lda	#0
+	jsr	putc		; Delimiter
+	jsr	getc		; Read response from host
+	cmp	#ack
+	bne	:+		; Not ack, so invalid protocol or host
+	clc
+	rts			; Exit with OK status
+:	ldy	#mproterr	; Erroneous protocol negotiation
+	jsr	showmsg		; Display appropriate error message
+	jsr	awbeep		; This error deserves some attention
+	jsr	rdkey		; Wait for key
+	sec			; Error status
+	rts
 
 ;---------------------------------------------------------
 ; RECEIVE - MAIN RECEIVE ROUTINE
@@ -1168,7 +1345,8 @@ recvlup:
 ;---------------------------------------------------------
 ; SEND - MAIN SEND ROUTINE
 ;---------------------------------------------------------
-send:	ldx	#1		; DIRECTION = APPLE-->HOST
+send:
+	ldx	#1		; DIRECTION = APPLE-->HOST
 	jsr	getname		; ASK FOR FILENAME & SEND TO HOST
 	lda	#ack		; SEND INITIAL ACK
 	jsr	putc
@@ -1486,7 +1664,10 @@ hlfnamok:
 	jsr	showmsg
 	lda	#_'V'		; Load acc with command code
 	jsr	putc		;  ...and send to host
-	ldx	#0
+	jsr	initprot	; Protocol negotiaton
+	bcc	:+		; Protocol accepted
+	jmp	abort		; Exit via abort
+:	ldx	#0
 hfloop2:
 	lda	$200,x		; Send filename to host
 	jsr	putc
@@ -1499,12 +1680,12 @@ gethans2:
 ;	lda	#0		; simulate ok
 	jsr	getc		; answer from host should be 0
 	beq	initsh2
-	jmp	pcerror		; error; exit via getname
+	jmp	pcerror		; error; exit via pcerror
 
 initsh2:
 	ldy	#mhlfsend
 	jsr	showmsg		; show transfer message
-	jmp	showfn		; exit via getname
+	jmp	showfn		; exit via showfn
 
 ;---------------------------------------------------------
 ; hlfnextt - goto next halftrack. we know there is still room
@@ -1650,7 +1831,10 @@ nibnamok:
 	jsr	showmsg
 	lda	#_'N'		; Load acc with command code
 	jsr	putc		;  and send to pc
-	ldx	#0
+	jsr	initprot	; Protocol negotiaton
+	bcc	:+		; Protocol accepted
+	jmp	abort		; Exit via abort
+:	ldx	#0
 fnloop2:
 	lda	$200,x		; Send filename to pc
 	jsr	putc
@@ -1667,12 +1851,12 @@ getans2:
 ;	lda	#0		; Simulate ok
 	jsr	getc		; Answer from host should be 0
 	beq	initsn2
-	jmp	pcerror		; Error; exit via getname
+	jmp	pcerror		; Error; exit via pcerror
 
 initsn2:
 	ldy	#mnibsend
 	jsr	showmsg		; Show transfer message
-	jmp	showfn		; Exit via getname
+	jmp	showfn		; Exit via showfn
 
 ;---------------------------------------------------------
 ; snibtrak - send nibble track to the other side
@@ -1766,9 +1950,9 @@ snibpage:
 	sty	crc+1
 	sty 	prev		; No previous character
 	lda	iobsec
-	jsr	putc		; Send the track number
-	lda	iobtrk
 	jsr	putc		; Send the sector number
+	lda	iobtrk
+	jsr	putc		; Send the track number
 	lda	#$02
 	jsr	putc		; Send a protocol filler
 
@@ -2063,7 +2247,7 @@ putc:	jmp	$0000	; Pseudo-indirect JSR - self-modified
 getc:	jmp	$0000	; Pseudo-indirect JSR - self-modified
 
 ;---------------------------------------------------------
-; ABORT - STOP EVERYTHING (CALL SABORT TO BEEP ALSO)
+; ABORT - STOP EVERYTHING (CALL babort TO BEEP ALSO)
 ;---------------------------------------------------------
 babort: jsr	awbeep		; BEEP
 abort:	ldx	#$ff		; POP GOES THE STACKPTR
@@ -2186,7 +2370,7 @@ msgtbl: .addr	msg01,msg02,msg03,msg04,msg05,msg06,msg07
 	.addr	msg08,msg09,msg10,msg11,msg12,msg13,msg14
 	.addr	msg15,msg16,msg17,msg18,msg19,msg20,msg21
 	.addr	msg22,msg23,msg24,msg25,msg26,msg27,msg28
-	.addr	msg29,msg30,msg31,msg32
+	.addr	msg29,msg30,msg31,msg32,msg33
 
 msg01:	asc	"COM:S"
 mtssc:	asc	" ,"
@@ -2324,6 +2508,9 @@ msg32:	inv	"S"
 	asc	"IBBLE, "
 	inv	"H"
 	ascz	"ALF TRACKS ?"
+	
+msg33:	inv	"ERROR:"
+	ascz	" INCOMPATIBLE HOST SOFTWARE"
 
 ;----------------------- PARAMETERS ----------------------
 

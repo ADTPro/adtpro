@@ -110,8 +110,8 @@ public final class Gui extends JFrame implements ActionListener
     JMenu menuFile = new JMenu(Messages.getString("Gui.File")); //$NON-NLS-1$
     MenuAction serialConfigAction = new MenuAction(Messages.getString("Gui.SerialConfig")); //$NON-NLS-1$
     menuFile.add(serialConfigAction);
-    MenuAction audioConfigAction = new MenuAction(Messages.getString("Gui.AudioConfig")); //$NON-NLS-1$
-    menuFile.add(audioConfigAction);
+    //MenuAction audioConfigAction = new MenuAction(Messages.getString("Gui.AudioConfig")); //$NON-NLS-1$
+    //menuFile.add(audioConfigAction);
     MenuAction cdAction = new MenuAction(Messages.getString("Gui.CD")); //$NON-NLS-1$
     menuFile.add(cdAction);
     _traceMenuItem = new JCheckBoxMenuItem(Messages.getString("Gui.Trace"));

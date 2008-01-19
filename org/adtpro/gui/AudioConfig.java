@@ -121,7 +121,7 @@ public class AudioConfig extends JDialog implements ActionListener
         {
           comboAudioDevice.addItem(nextName);
           _audioDeviceIndices[j] = i;
-          Log.println(true, "Added device "+nextName+" at index "+i+", mixer index "+j+".");
+          Log.println(false, "AudioConfig().ctor Added device "+nextName+" at index "+i+", mixer index "+j+".");
           j = j + 1;
         }
       }
@@ -134,7 +134,7 @@ public class AudioConfig extends JDialog implements ActionListener
         */
       }
     }
-    Log.println(false, "AudioConfig Constructor completed.");
+    Log.println(false, "AudioConfig().ctor completed.");
 /*
     Log.println(true, Messages.getString("Gui.NoAudio")); //$NON-NLS-1$
     Log.println(false, "AudioConfig Constructor could not instantiate the rxtx library.");
@@ -162,8 +162,8 @@ public class AudioConfig extends JDialog implements ActionListener
     try
     {
       mixerIndex = Integer.parseInt(_properties.getProperty("AudioPortIndex","0"));
-      Log.println(true, "  AudioConfig.ctor() Found a GUI mixer index of: "+mixerIndex);
-      Log.println(true, "    which is a hardware index of: "+_audioDeviceIndices[mixerIndex]);
+      Log.println(false, "AudioConfig.ctor() Found a GUI mixer index of: "+mixerIndex);
+      Log.println(false, "  which is a hardware index of: "+_audioDeviceIndices[mixerIndex]);
     }
     catch (NumberFormatException e)
     {
@@ -215,18 +215,18 @@ public class AudioConfig extends JDialog implements ActionListener
     Log.println(false,"AudioConfig.actionPerformed() entry, responding to "+e.getActionCommand());
     if (e.getSource() == okButton)
     {
-      Log.println(true, "  Selected index: "+(comboAudioDevice.getSelectedIndex()));
+      Log.println(false, "  Selected index: "+(comboAudioDevice.getSelectedIndex()));
       if (comboAudioDevice.getSelectedIndex() > -1)
       {
         _properties.setProperty("AudioPortIndex", Integer.toString(comboAudioDevice.getSelectedIndex()));
         _properties.setProperty("AudioHardwareIndex", Integer.toString(_audioDeviceIndices[comboAudioDevice.getSelectedIndex()]));
 
-        Log.println(true, "  Set property to: "+Integer.toString(comboAudioDevice.getSelectedIndex()));
+        Log.println(false, "  Set property to: "+Integer.toString(comboAudioDevice.getSelectedIndex()));
       }
       else
       {
         _properties.setProperty("AudioPortIndex", "0");
-        Log.println(true, "  Oops, set property to 0.");
+        Log.println(false, "  Oops, set property to 0.");
       }
       _properties.save();
       _theSingleton.exitStatus = OK;
