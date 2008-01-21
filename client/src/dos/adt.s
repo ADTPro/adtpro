@@ -2458,14 +2458,6 @@ msg19:	ascz	"<- DO NOT CHANGE"
 msg20:	inv	"ADT "
 	invcr	version_no
 	.byte	$8d
-	asccr	"ORIGINAL PROGRAM BY PAUL GUERTIN"
-	.byte	$8d
-	asccr	"SEND NIBBLE DISK ADDED BY GERARD PUTTER"
-	.byte	$8d
-	asccr	"HALFTRACK SEND ADDED BY ERIC NEILSON"
-	.byte	$8d
-	asccr	"IIGS AND LASER SUPPORT BY DAVID SCHMIDT"
-	.byte	$8d
 	asc	"----------------------------------------"
 	asccr	"SENDS / RECEIVES APPLE II DISK IMAGES"
 	asccr	"VIA A SERIAL CONNECTION."
@@ -2474,6 +2466,14 @@ msg20:	inv	"ADT "
 	.byte	$8d
 	asccr	"SSC, IIGS, IIC AND LASER COMPATIBLE."
 	asccr	"----------------------------------------"
+	asccr	"ORIGINAL PROGRAM BY PAUL GUERTIN"
+	.byte	$8d
+	asccr	"SEND NIBBLE DISK ADDED BY GERARD PUTTER"
+	.byte	$8d
+	asccr	"HALFTRACK SEND ADDED BY ERIC NEILSON"
+	.byte	$8d
+	asccr	"IIGS AND LASER SUPPORT BY DAVID SCHMIDT"
+	.byte	$8d
 	ascz	"PRESS ANY KEY"
 
 msg21:	ascz	"TESTING DISK FORMAT."
