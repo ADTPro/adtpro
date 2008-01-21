@@ -30,7 +30,7 @@ ADTPro Release History
    to watch carefully to realize they weren't moving during read)
 
  * [Server] Audio data capture logic was refactored to be more
-   reliable and understandable by Marc S. Re\xDFl
+   reliable and understandable by Marc S. Re&#223;l
 
  * [Client] Audio send protocol (from Apple to Host) was out of sync,
    causing transfers to immediately abort
