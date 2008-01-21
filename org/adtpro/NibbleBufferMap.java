@@ -1,6 +1,6 @@
 /*
  * ADTPro - Apple Disk Transfer ProDOS
- * Copyright (C) 2007 by David Schmidt
+ * Copyright (C) 2007, 2008 by David Schmidt
  * david__schmidt at users.sourceforge.net
  *
  * This program is free software; you can redistribute it and/or modify it 
@@ -260,7 +260,7 @@ public class NibbleBufferMap
         break;
       NibbleBufferEntry first = (NibbleBufferEntry)mapEntries.elementAt(i);
       NibbleBufferEntry second = (NibbleBufferEntry)mapEntries.elementAt(otherIndex);
-      //Log.println(false,"NibbleBufferMap.assessRepeatStartingAt() comparing "+i+" and "+otherIndex+".");
+      // Log.println(false,"NibbleBufferMap.assessRepeatStartingAt() comparing "+i+" and "+otherIndex+".");
       if (second.length == 0)
       {
         Log.println(false,"NibbleBufferMap.assessRepeatStartingAt() found zero length second.");
@@ -294,7 +294,7 @@ public class NibbleBufferMap
          repeatCandidateIndex > 0;
          repeatCandidateIndex = this.findNextRepeatCandidate(repeatCandidateIndex))
     {
-      //Log.println(false,"NibbleBufferMap.determineTrackLength() looking at repeatCandidateIndex of "+repeatCandidateIndex+".");
+      // Log.println(false,"NibbleBufferMap.determineTrackLength() looking at repeatCandidateIndex of "+repeatCandidateIndex+".");
       double match = this.assessRepeatStartingAt(repeatCandidateIndex);
       if (match > bestMatchSoFar)
       {

@@ -6,6 +6,39 @@
 
 ADTPro Release History
 
+* 1.0.4 - January 20, 2008
+
+ New functionality:
+
+ * [DOS ADT Client] Included DOS ADT client with nibble and halftrack send
+   capability for Disk II drives from Gerard Putter and Eric Neilson 
+
+ * [Server] Incorporated nibble and half track disk logic from
+   Gerard Putter's ADT-compatible Virtual ][ A2V2 transfer software -
+   it's still experimental, so support hasn't been added to ADTPro
+   client yet
+
+ []
+
+ Bug fixes:
+
+ * [Client] Better automatic serial device detection for Apple IIc
+   computers (select Modem vs. Printer port)
+
+ * [Client] Update track counter during fast Disk II reads (you had
+   to watch carefully to realize they weren't moving during read)
+
+ * [Server] Audio data capture logic was refactored to be more
+   reliable and understandable by Marc S. Reﬂl
+
+ * [Client] Audio send protocol (from Apple to Host) was out of sync,
+   causing transfers to immediately abort
+
+ * [Server] Fix progressive backoff timing for failures during audio
+   transfers
+
+ []
+
 * 1.0.3 - October 7, 2007
 
  New functionality:
