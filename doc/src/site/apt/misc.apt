@@ -6,6 +6,12 @@
 
 Miscellaneous Functions
 
+* {Nibble} Nibble/Half Track Send
+
+ The nibble/half track send function is still experimental, and so far
+ has only been incorporated into the included DOS ADT client.
+ More discussion is available on the {{{compatability.html#Nibble}ADT Compatibility page}}.
+
 * {Format} Volumes (disks)
 
  The ADTPro client has built-in disk formatting capabilities.
