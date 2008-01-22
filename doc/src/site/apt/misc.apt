@@ -6,7 +6,7 @@
 
 Miscellaneous Functions
 
-* {Nibble} Nibble/Half Track Send
+* {Nibble}/Half Track Send
 
  The nibble/half track send function is still experimental, and so far
  has only been incorporated into the included DOS ADT client.
