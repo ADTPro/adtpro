@@ -15,6 +15,7 @@
     <menu name="ADTPro">
       <item name="Main" href="index.html"/>
       <item name="Credits" href="credits.html"/>
+      <item name="ADT Compatability" href="compatability.html"/>
       <item name="Download" href="download.html"/>
     </menu>
 

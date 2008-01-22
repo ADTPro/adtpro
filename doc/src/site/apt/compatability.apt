@@ -1,0 +1,84 @@
+ -----
+ ADTPro-ADT Compatability
+ -----
+ David Schmidt (david__schmidt at users dot souceforge dot net)
+ -----
+
+ADT Compatability
+
+ The compatability of ADTPro and related programs is starting to
+ get a little tricky.  A goal of ADTPro is for the server to remain
+ compatible with the vast majority of ADT and ADT-derived software
+ currently in use.
+ Below is some information about what capabilities lie where.
+
+* Related Programs
+
+ First of all, there are several pieces of software that are related in
+ various ways.  A quick survey of the major players:
+ 
+*-----:-----:------:------+
+ <<Program>> | <<Latest Client Version>> | <<Host Platform>> | <<Notes>>
+*-----:-----:------:------+
+ ADTPro | 1.0.4 | Linux, OS/2, OSX, Solaris, Windows (Java) | Serial, Uthernet, Audio capable; no nibble/half-track capabilities in client
+*-----:-----:------:------+
+ ADT (Shipped with ADTPro) | 2.2 | ADTPro | Serial only, client has nibble/half-track capabilities
+*-----:-----:------:------+
+ ADT (Berlios/standalone) | 1.34 | Windows | Serial only, no serial/half-track
+*-----:-----:------:------+
+ A2V2 (Shipped with Virtual ][) | 2.1 | OSX | Serial only, client has nibble/half-track capabilities, limited to 19,200bps
+*-----:-----:------:------+
+ MacADT | 1.21 | Mac OS9 and below (not classic under OSX) | Serial only, no nibble/half-track, limited to 19,200bps
+*-----:-----:------:------+
+
+ Generally speaking, the client program (the part that runs on the Apple II)
+ for any of these programs is compatible with the ADTPro server.
+ Version 1.0.4 of ADTPro started shipping with a new offshoot of the original
+ ADT client, based in part on the Berlios 1.34 version and in part on the 
+ A2V2-imbedded version.  The result is a superset of all the function that
+ came with the latest Berlios ADT client, plus the nascent nibble/halftrack
+ extensions from the A2V2 project.  The intent is to have a highly capable client
+ that can operate on the Disk II at a very low level as well as provide higher
+ level support for generic ProDOS devices.  That work is ongoing, so the landscape
+ remains a little "busy" for the time being.
+
+ADT Nibble/Halftrack Usage
+
+ ADT version 2.2, included as <ADT22.DSK> in the ADTPro package, introduces
+ nibble and halftrack disk extraction.  Those capabiities are only present in
+ the ADT client (i.e. the capability is not in the ADTPro client yet).  
+ The ADTPro server 
+ is capable of responding to the ADT requests, so in order to experiment with it,
+ that is the combination of tools one would use.
+
+* Starting ADT
+
+ Booting the <<<ADT22.DSK>>> disk image brings up the DOS ADT program:
+
+[images/adtmain.png]
+
+* Sending Disk Images
+
+ From the main ADT screen, hitting the "S" key brings up a send sub-menu:
+
+[images/adtsend.png]
+
+ From the send sub-menu, you can choose to send normal sector-based images
+ (i.e. <<<.dsk>>>, <<<.po>>>) to the server with "S", nibble-based images
+ with "N", or half-track-based images with "H".  Selecting "N" brings up
+ the Nibble send window, where you enter the name of the nibble image to
+ save at the host.  Nibble images should be saved with the file extension
+ <<<.nib>>>:
+
+[images/adtsendnib.png]
+
+ Alternatively, selecting "H" brings up the half-track send window, where you
+ enter the name of the half-track image to save at the host.  Half-track images,
+ usable only with the Virtual ][ emulator, should be saved with the file
+ extension <<<.v2d>>>:
+
+[images/adtsendhlf.png]
+
+ The 1.0.4 ADTPro server currently writes incorrect <<<.v2d>>> images - if
+ you are going to be working with half-track images, you are best off sticking
+ with the A2V2 server for the time being.
