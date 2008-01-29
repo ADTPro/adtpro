@@ -11,11 +11,9 @@ ADTPro Serial Connections
  
  * {{{connectionsserial.html#Super Serial cabling}Super Serial card}}
 
- * {{{connectionsserial.html#IIgs modem port cabling}IIgs modem port}}
+ * {{{connectionsserial.html#modem port}IIgs, IIc+ modem port}}
 
- * {{{connectionsserial.html#IIc serial port cabling}IIc serial port}}
-
- * {{{connectionsserial.html#Laser 128 serial port cabling}Laser 128 serial port}}
+ * {{{connectionsserial.html#serial port}IIc, Laser 128 serial port}}
 
  * {{{connectionsserial.html#USB cabling}USB adapters}}
 
@@ -64,19 +62,23 @@ cable like this:
 
 [images/superSerialCable.jpg]
 
-* {IIgs modem port cabling}
+* IIgs, IIc+ {modem port} cabling
 
-  You will need a serial cable setup
-that ultimately connects your IIgs' round, 8-pin mini-din modem connector to 
+  You will need a serial cable setup that ultimately connects the round, 8-pin
+mini-DIN modem connector of your IIgs or IIc+ to
 the serial port of your host computer - and also performs a null-modem function 
 in between.
 
-  There are two 8-pin mini-din connectors on the back of the IIgs.  One has the
-icon of a telephone, the other has an icon of a printer.  Be sure you are 
-plugging into the telephone (modem) one, on the far left as you look at the back
-of the IIgs.  It looks like this:
+  There are two 8-pin mini-DIN connectors on the backs of IIgs and IIc+ computers.
+One has the icon of a telephone, the other has an icon of a printer.
+Be sure you are plugging into the telephone (modem) one, on the far left as you 
+look at the back of the computer.  The IIgs looks like this:
 
 [images/iigsmodemport.jpg]
+
+  And the IIc+ looks like this:
+
+[images/iicplusmodemport.png]
 
   You will also need to verify a couple of things in the IIgs control panel.  
 You bring up the IIgs control panel with the key sequence 
@@ -98,13 +100,21 @@ You bring up the IIgs control panel with the key sequence
 
 [images/iigsControl2.png]
 
-  One possible setup that connects a male DE9 serial port to the IIgs' 8-pin
-mini-din connector with a null modem in between looks like this:
+  One possible "frankencable" setup that connects a male DE9 serial port to the IIgs' 8-pin
+mini-DIN connector with a null modem in between looks like this:
 
 [images/nullModem.jpg]
 
-  If you're wiring one yourself, the following are pinouts you can use.
-  These pinouts describe the round "MiniDIN8" IIgs male connector
+  If you are wiring one yourself, the following are pinouts you can use.
+The parts you need can be found at swap meets, Jameco, Mouser, Radio Shack, etc.
+I wired up some single-cable null modems myself for 
+testing IIgs and IIc+ computers with ADTPro, going from MiniDIN8 to DE-9F. 
+{{{http://retrofloppy.com/products.html}Contact me}}
+if you would like to buy one.  They look like this:
+
+[images/iigsNullModem2.jpg]
+  
+  These pinouts describe the round "MiniDIN8" male connector
 looking into the cable connector/plug at the pins:
 
 [images/minidin8.png]
@@ -144,103 +154,41 @@ looking into the cable connector/plug at the pins:
     7 ----- 1      8     DCD
 ---
 
-  The parts you need can be found at swap meets, Jameco, 
-Mouser, Radio Shack, etc.
-I wired up some single-cable null modems myself for 
-testing, going from MiniDIN8 to DE-9F. 
-{{{http://retrofloppy.com/products.html}Contact me}}
-if you would like to buy one.  They look like this:
+* IIc, Laser 128 {serial port} cabling
 
-[images/iigsNullModem2.jpg]
+  You will need a serial cable setup that ultimately connects the round, 5-pin
+DIN modem connector of your IIc or Laser 128 to
+the serial port of your host computer - and also performs a null-modem function 
+in between.
 
-* {IIc serial port cabling}
-
-  Connect a null modem between your host computer and the IIc using the IIc's "modem" port:
-
+  There are two 5-pin DIN connectors on the backs of IIc and Laser 128 computers. 
+One has the icon of a telephone, the other has an icon of a printer. 
+Be sure you are plugging into the telephone (modem) one, on the far left as you look 
+at the back of the IIc:
+  
 [images/iicmodemport.jpg]
 
-  The orignal IIc (not IIc+) computers had DIN5 connectors for its serial ports.
-  There are two pinouts for a single-cable null-modem that will work with ADTPro:
-  an "Imagewriter I" cable (one that does some amount of "hardware handshaking")
-  and one without (described in the {{{connectionsserial.html#Laser 128 serial port cabling}Laser 128}}
-  section below).
-  If you use the Imagewriter I cable, you will need to tick the "Apple IIc Serial"
-  checkbox in the serial config dialog box, brought up from the 
-  <<<File->Serial Configuration>>> menu item:
+ And on the Laser 128, it's on the right side of the case, but just to the left of the
+printer port:
 
-[images/tickiic.png]
+[images/lasermodemport.jpg]
 
-  This pinout describes the round male connector
-looking into the cable plug at the pins.  Note that this is numbered using
-Apple's (not DIN's!) standard:
-
-[images/din5.png]
-
- The Imagewriter I cable has the following pinout:
-
----
- Apple
- DIN-5    DE-9  DB-25  RS-232
- Pin#     Pin#  Pin#    Name
- -----    ----  -----  ------
-   4 ----- 3      2     TxD
-   2 ----- 2      3     RxD
-   3 ----- 5      7     GND
-   1 ----- 6 -,   6 -,  DSR
-           1 -'   8 -'  DCD
-   5 ----- 4      20    DTR
-
- Within the DE-9 shell, tie together pins 1 and 6.
-
- Within the DB-25 shell, tie together pins 6 and 8.
----
-
-  The parts you need can be found at swap meets, Jameco, 
-Mouser, Radio Shack, etc.
-I wired up some of these myself for testing, but ultimately 
-prefer the non-hardware handshaking models listed below in the
-{{{connectionsserial.html#Laser 128 serial port cabling}Laser 128}}
-section below.
+  If you are wiring a null-modem yourself, the following is the pinout to use.
+The parts you need can be found at swap meets, Jameco, Mouser, Radio Shack, etc.
+I wired some of these up myself for testing IIc and Laser 128 computers with ADTPro,
+going from DIN5 to DE-9F.
 {{{http://retrofloppy.com/products.html}Contact me}}
 if you would like to buy one.  They look like this:
 
 [images/nullModemDIN5DE9.jpg]
 
- Note that the original IIc motherboard is not able to operate the serial 
- port accurately at speeds higher than 300 baud, so you may have to go really
- slowly if you have one of those.  I have used my ROM revision '255' machine
- flawlessly at 115kbps, but your mileage my vary.
- You can check the revision of your IIc by checking
- memory location 64447:
-
- * if <<<PRINT PEEK(64447)>>> returns 255, you have an original IIc (ROM revision '255').
- 
- * if <<<PRINT PEEK(64447)>>> returns 0, you have an IIc with UniDisk 3.5 inch drive support (ROM revision '0').
- 
- * if <<<PRINT PEEK(64447)>>> returns 3, you have an IIc with memory expansion support (ROM revision '3').
- 
- * if <<<PRINT PEEK(64447)>>> returns 4, you have an IIc with a modified/fixed version of memory expansion support (ROM revision '4').
- 
- * if <<<PRINT PEEK(64447)>>> returns 5, you have an Apple IIc Plus (ROM revision '5').
-
- []
-
-* {Laser 128 serial port cabling}
-
-  Connect a null modem between your host computer and the Laser using the Laser's "modem" port:
-
-[images/lasermodemport.jpg]
-
-  The Laser 128 modem port has a DIN-5 connector similar to early Apple IIc computers.
-The cable described here will work on IIc computers with DIN-5 connectors as well.
-
   This pinout describes the round male connector
 looking into the cable plug at the pins.  Note that this is numbered using
 Apple's (not DIN's!) standard:
 
 [images/din5.png]
 
-  The main pinout is:
+  The null-modem pinout is:
 
 ---
  Laser/
@@ -266,17 +214,43 @@ Apple's (not DIN's!) standard:
 ---
 
   This null modem cable ties all the handshaking lines together at the host
-end and at the Laser/IIc end.  This effectively disables hardware handshaking.
-I wired some of these up myself for testing.
-{{{http://retrofloppy.com/products.html}Contact me}}
-if you would like to buy one.  They look like this:
-
-[images/nullModemDIN5DE9.jpg]
+end and at the IIc/Laser end.  This effectively disables hardware handshaking.
 
   One thing to note with Laser 128 machines: you will need to keep your 
 hands off the keyboard while transfers are taking place.  It turns out
 that keypresses are injected directly into the serial stream, corrupting
 image transfers.
+
+  There are two pinouts for a single-cable null-modem that will work with ADTPro:
+an "Imagewriter I" cable (one that does some amount of "hardware handshaking")
+and one without.  The Apple IIc's hardware handshaking tends to be problematic
+and non-standard, so we're only discussing the non-hardware handshaking cable here.
+If you happen to have an Imagewriter I cable, you will need to tick the "Apple IIc Serial"
+checkbox in the serial config dialog box, brought up from the 
+<<<File->Serial Configuration>>> menu item:
+
+[images/tickiic.png]
+
+  The Laser 128 will not work with the Imagewriter I cable.
+
+ Note that the original IIc motherboard is not able to operate the serial 
+ port accurately at speeds higher than 300 baud, so you may have to go really
+ slowly if you have one of those.  I have used my ROM revision '255' machine
+ flawlessly at 115kbps, but your mileage my vary.
+ You can check the revision of your IIc by checking
+ memory location 64447:
+
+ * if <<<PRINT PEEK(64447)>>> returns 255, you have an original IIc (ROM revision '255').
+ 
+ * if <<<PRINT PEEK(64447)>>> returns 0, you have an IIc with UniDisk 3.5 inch drive support (ROM revision '0').
+ 
+ * if <<<PRINT PEEK(64447)>>> returns 3, you have an IIc with memory expansion support (ROM revision '3').
+ 
+ * if <<<PRINT PEEK(64447)>>> returns 4, you have an IIc with a modified/fixed version of memory expansion support (ROM revision '4').
+ 
+ * if <<<PRINT PEEK(64447)>>> returns 5, you have an Apple IIc Plus (ROM revision '5').
+
+ []
 
 * {USB cabling}
 
