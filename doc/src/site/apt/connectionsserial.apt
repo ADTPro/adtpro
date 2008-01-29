@@ -80,7 +80,16 @@ look at the back of the computer.  The IIgs looks like this:
 
 [images/iicplusmodemport.png]
 
-  You will also need to verify a couple of things in the IIgs control panel.  
+  If you are wiring a null modem yourself, the pinout to use is below.
+The parts you need can be found at swap meets, Jameco, Mouser, Radio Shack, etc.
+I wired up some single-cable null modems myself for 
+testing IIgs and IIc+ computers with ADTPro, going from MiniDIN8 to DE-9F. 
+{{{http://retrofloppy.com/products.html}Contact me}}
+if you would like to buy one.  They look like this:
+
+[images/iigsNullModem2.jpg]
+  
+  For the IIgs, you will first need to verify a couple of things in the control panel.  
 You bring up the IIgs control panel with the key sequence 
 <<<Control>>>-<<<OpenApple>>>-<<<Escape>>>.
 
@@ -105,15 +114,6 @@ mini-DIN connector with a null modem in between looks like this:
 
 [images/nullModem.jpg]
 
-  If you are wiring one yourself, the following are pinouts you can use.
-The parts you need can be found at swap meets, Jameco, Mouser, Radio Shack, etc.
-I wired up some single-cable null modems myself for 
-testing IIgs and IIc+ computers with ADTPro, going from MiniDIN8 to DE-9F. 
-{{{http://retrofloppy.com/products.html}Contact me}}
-if you would like to buy one.  They look like this:
-
-[images/iigsNullModem2.jpg]
-  
   These pinouts describe the round "MiniDIN8" male connector
 looking into the cable connector/plug at the pins:
 
