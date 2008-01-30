@@ -117,9 +117,9 @@ public final class Gui extends JFrame implements ActionListener
     _traceMenuItem = new JCheckBoxMenuItem(Messages.getString("Gui.Trace"));
     menuFile.add(_traceMenuItem);
     _traceMenuItem.addActionListener(this);
-    _protoCompatMenuItem = new JCheckBoxMenuItem(Messages.getString("Gui.ProtocolCompatability"));
-    menuFile.add(_protoCompatMenuItem);
-    _protoCompatMenuItem.addActionListener(this);
+    // _protoCompatMenuItem = new JCheckBoxMenuItem(Messages.getString("Gui.ProtocolCompatability"));
+    // menuFile.add(_protoCompatMenuItem);
+    // _protoCompatMenuItem.addActionListener(this);
     MenuAction quitAction = new MenuAction(Messages.getString("Gui.Quit")); //$NON-NLS-1$
     menuFile.add(quitAction);
     menuBar.add(menuFile);
@@ -155,8 +155,7 @@ public final class Gui extends JFrame implements ActionListener
     menuBar.add(menuHelp);
     this.setJMenuBar(menuBar);
 
-    _protoCompatMenuItem
-        .setSelected(_properties.getProperty("Client01xCompatibleProtocol", "false").compareTo("true") == 0); //$NON-NLS-1$ //$NON-NLS-2$
+    // _protoCompatMenuItem.setSelected(_properties.getProperty("Client01xCompatibleProtocol", "false").compareTo("true") == 0); //$NON-NLS-1$ //$NON-NLS-2$
     _traceMenuItem.setSelected(_properties.getProperty("TraceEnabled", "false").compareTo("true") == 0); //$NON-NLS-1$ //$NON-NLS-2$
     // Log.getSingleton().setTrace(_traceMenuItem.isSelected());
 
@@ -416,6 +415,7 @@ public final class Gui extends JFrame implements ActionListener
             }
             Log.println(false, "Gui.actionPerformed setting previous button to _disconnectButton.");
           }
+          /*
           else
             if (e.getActionCommand().equals(Messages.getString("Gui.ProtocolCompatability"))) //$NON-NLS-1$
             {
@@ -425,6 +425,7 @@ public final class Gui extends JFrame implements ActionListener
               }
               saveProperties();
             }
+            */
             else
               if (e.getActionCommand().equals(Messages.getString("Gui.Trace"))) //$NON-NLS-1$
               {
@@ -765,7 +766,7 @@ public final class Gui extends JFrame implements ActionListener
        */
       _commsThread = new CommsThread(this, transport);
       _commsThread.start();
-      _commsThread.setProtocolCompatibility(_protoCompatMenuItem.isSelected());
+      // _commsThread.setProtocolCompatibility(_protoCompatMenuItem.isSelected());
       setMainText(Messages.getString("Gui.Quiesced")); //$NON-NLS-1$
       setSecondaryText(Messages.getString("Gui.Connected")); //$NON-NLS-1$
       clearProgress();
@@ -808,12 +809,14 @@ public final class Gui extends JFrame implements ActionListener
 
   public void saveProperties()
   {
+    /*
     if (_protoCompatMenuItem != null)
     {
       if (_protoCompatMenuItem.isSelected()) _properties.setProperty("Client01xCompatibleProtocol", "true");
       else
         _properties.setProperty("Client01xCompatibleProtocol", "false");
     }
+    */
     if (_traceMenuItem != null)
     {
       if (_traceMenuItem.isSelected()) _properties.setProperty("TraceEnabled", "true");

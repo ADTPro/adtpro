@@ -50,16 +50,16 @@ Java lib Version   = RXTX-2.1-7
  
 [images/serialConfig.png]
  
- During development of version 0.2.1 of the server and client software,
- there was a {change} in the transfer protocol.  
- Servers and clients numbered 0.2.x and above are of course compatible
- with one another; and a 0.2.x server and above can be made compatible
- with a 0.1.x client by checking the "Old ADTPro 0.1.x protocol" checkbox:
-
-[images/clientCompat.png]
-
- A client numbered 0.2.x and above will not communicate correctly with
- a 0.1.x server.  Upgrade both at the same time to minimize confusion.
+~~ During development of version 0.2.1 of the server and client software,
+~~ there was a {change} in the transfer protocol.  
+~~ Servers and clients numbered 0.2.x and above are of course compatible
+~~ with one another; and a 0.2.x server and above can be made compatible
+~~ with a 0.1.x client by checking the "Old ADTPro 0.1.x protocol" checkbox:
+~~
+~~[images/clientCompat.png]
+~~
+~~ A client numbered 0.2.x and above will not communicate correctly with
+~~ a 0.1.x server.  Upgrade both at the same time to minimize confusion.
 
 * Starting the Client
 

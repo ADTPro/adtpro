@@ -11,9 +11,9 @@ ADTPro Serial Connections
  
  * {{{connectionsserial.html#Super Serial cabling}Super Serial card}}
 
- * {{{connectionsserial.html#modem port}IIgs, IIc+ modem port}}
+ * {{{connectionsserial.html#modem port}IIgs or IIc+ modem port}}
 
- * {{{connectionsserial.html#serial port}IIc, Laser 128 serial port}}
+ * {{{connectionsserial.html#serial port}IIc or Laser 128 serial port}}
 
  * {{{connectionsserial.html#USB cabling}USB adapters}}
 
@@ -62,7 +62,7 @@ cable like this:
 
 [images/superSerialCable.jpg]
 
-* IIgs, IIc+ {modem port} cabling
+* IIgs or IIc+ {modem port} cabling
 
   You will need a serial cable setup that ultimately connects the round, 8-pin
 mini-DIN modem connector of your IIgs or IIc+ to
@@ -115,7 +115,7 @@ mini-DIN connector with a null modem in between looks like this:
 [images/nullModem.jpg]
 
   These pinouts describe the round "MiniDIN8" male connector
-looking into the cable connector/plug at the pins:
+looking into the cable at the pins:
 
 [images/minidin8.png]
 
@@ -154,7 +154,7 @@ looking into the cable connector/plug at the pins:
     7 ----- 1      8     DCD
 ---
 
-* IIc, Laser 128 {serial port} cabling
+* IIc or Laser 128 {serial port} cabling
 
   You will need a serial cable setup that ultimately connects the round, 5-pin
 DIN modem connector of your IIc or Laser 128 to
@@ -183,7 +183,7 @@ if you would like to buy one.  They look like this:
 [images/nullModemDIN5DE9.jpg]
 
   This pinout describes the round male connector
-looking into the cable plug at the pins.  Note that this is numbered using
+looking into the cable at the pins.  Note that this is numbered using
 Apple's (not DIN's!) standard:
 
 [images/din5.png]

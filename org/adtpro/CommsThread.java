@@ -2687,10 +2687,12 @@ public class CommsThread extends Thread
     }
   }
 
+  /*
   public void setProtocolCompatibility(boolean state)
   {
     _client01xCompatibleProtocol = state;
   }
+  */
 
   public String getInstructions(String guiString, int size, int speed)
   {
