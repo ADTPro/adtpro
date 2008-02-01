@@ -15,7 +15,6 @@
     <menu name="ADTPro">
       <item name="Main" href="index.html"/>
       <item name="Credits" href="credits.html"/>
-      <item name="ADT Compatability" href="compatability.html"/>
       <item name="Download" href="download.html"/>
     </menu>
 
@@ -54,6 +53,7 @@
     </menu>
 
     <menu name="Minutiae">
+      <item name="ADT Compatability" href="compatability.html"/>
       <item name="Release History" href="history.html">
         <item name="Ancient History" href="historyold.html" collapse="true"/>
       </item>

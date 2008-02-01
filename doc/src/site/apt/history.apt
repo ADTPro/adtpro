@@ -35,8 +35,7 @@ ADTPro Release History
  * [Client] Audio send protocol (from Apple to Host) was out of sync,
    causing transfers to immediately abort
 
- * [Server] Fix progressive backoff timing for failures during audio
-   transfers
+ * [Server] Fix progressive backoff timing for transmission failures
 
  []
 
