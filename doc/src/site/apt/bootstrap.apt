@@ -27,9 +27,9 @@ more bootstrapping scenarios and configurations are detailed below.
 
  * {{{connectionsserial.html#Super Serial cabling}Super Serial card}}
 
- * {{{connectionsserial.html#modem port}IIgs or IIc+ modem port}}
+ * {{{connectionsserial.html#MiniDIN8}IIgs and IIc+ modem ports}}
 
- * {{{connectionsserial.html#serial port}IIc or Laser 128 serial port}}
+ * {{{connectionsserial.html#DIN5}IIc and Laser 128 modem ports}}
 
  * {{{connectionsserial.html#USB cabling}USB adapters}}
 
