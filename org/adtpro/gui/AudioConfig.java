@@ -105,7 +105,7 @@ public class AudioConfig extends JDialog implements ActionListener
     Mixer.Info[] mixerInfo = AudioSystem.getMixerInfo();
     AudioFormat audioFormat = CaptureThread.getAudioFormat();
     String nextName = null;
-    _audioDeviceIndices = new int[mixerInfo.length];
+    _audioDeviceIndices = new int[mixerInfo.length + 1];
     _audioDeviceIndices[0] = 0;
     int j = 1;
     for (int i = 0; i < mixerInfo.length; i++)
