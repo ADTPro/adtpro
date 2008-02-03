@@ -1,6 +1,6 @@
 ;
 ; ADTPro - Apple Disk Transfer ProDOS
-; Copyright (C) 2006, 2007 by David Schmidt
+; Copyright (C) 2006 - 2008 by David Schmidt
 ; david__schmidt at users.sourceforge.net
 ;
 ; This program is free software; you can redistribute it and/or modify it 
@@ -98,10 +98,6 @@ itsOK:
 
 INITZSCC:
 	SEI
-	clc
-	lda #$05
-	adc PSPEED	; 0 = 300, 1 = 9600, 2=19200, 3=115200
-	sta BAUD
 
 	LDA GSCMDB	;hit rr0 once to sync up
 
@@ -223,11 +219,8 @@ INITCOMMON:
 ; (In other words, set the baud rate.)
 
 TIMECON:
-	LDY BAUD	; Start with the 9600/19200 baud rate table index
-	lda PSPEED	; But wait... do they only want 300?
-	bne :+		; Yes!  PSPEED is zero, meaning 300 baud.
-	ldy #$00	; Set our index into the baud rate tables to zero (thus selecting 300 baud).
-:	LDA #12
+	ldy PSPEED
+	LDA #12
 	STA GSCMDB
 	LDA BAUDL,Y	;load time constant low
 	STA GSCMDB
@@ -241,23 +234,32 @@ TIMECON:
 ; Table of values for different baud rates. There is
 ; a low byte and a high byte table.
 
-BAUDL:	.byte	126	;300 bps (1)
-	.byte	94	;1200 (2)
-	.byte	46	;2400 (3)
-	.byte	22	;4800 (4)
-	.byte	10	;9600 (5)
-	.byte	4	;19200 (6)
-	.byte	1	;38400 (7)
-	.byte	0	;57600 (8)
+BAUDL:	.byte	126	;300 bps
+	.byte	10	;9600
+	.byte	4	;19200
 
-BAUDH:	.byte	1	;300 bps (1)
-	.byte	0	;1200 (2)
-	.byte	0	;2400 (3)
-	.byte	0	;4800 (4)
-	.byte	0	;9600 (5)
-	.byte	0	;19200 (6)
-	.byte	0	;38400 (7)
-	.byte	0	;57600 (8)
+BAUDH:	.byte	1	;300 bps
+	.byte	0	;9600
+	.byte	0	;19200
+
+; For reference, all the possible values:
+;BAUDL:	.byte	126	;300 bps (1)
+;	.byte	94	;1200 (2)
+;	.byte	46	;2400 (3)
+;	.byte	22	;4800 (4)
+;	.byte	10	;9600 (5)
+;	.byte	4	;19200 (6)
+;	.byte	1	;38400 (7)
+;	.byte	0	;57600 (8)
+;
+;BAUDH:	.byte	1	;300 bps (1)
+;	.byte	0	;1200 (2)
+;	.byte	0	;2400 (3)
+;	.byte	0	;4800 (4)
+;	.byte	0	;9600 (5)
+;	.byte	0	;19200 (6)
+;	.byte	0	;38400 (7)
+;	.byte	0	;57600 (8)
 
 ;---------------------------------------------------------
 ; RESETZGS - Clean up SCC every time we hit the main loop
