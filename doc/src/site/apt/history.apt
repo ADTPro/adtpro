@@ -6,6 +6,18 @@
 
 ADTPro Release History
 
+* 1.0.5 - February 3, 2008
+
+ Bug fixes:
+
+ * [Server] Hosts with zero audio mixers (a Java thing) were crashing with
+   java.lang.ArrayIndexOutOfBoundsException in AudioConfig.java
+
+ * [Client] IIgs serial port initialization was not working for speeds
+   below 115.2kbps as a result of the 300 baud integration in v1.0.3
+
+ []
+
 * 1.0.4 - January 21, 2008
 
  New functionality:
