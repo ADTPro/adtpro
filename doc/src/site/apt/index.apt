@@ -7,7 +7,7 @@
 ADTPro
 
  Apple Disk Transfer ProDOS (ADTPro) transfers diskettes and logical
-disk images between Apple ][-era computers and the modern world.
+disk images between Apple II-era computers and the modern world.
 If you're familiar with the {{{http://adt.berlios.de}original ADT}},
 ADTPro extends ADT's reach by working with more logical disk formats,
 drive types, communications devices, and host operating systems.
@@ -22,29 +22,29 @@ drive types, communications devices, and host operating systems.
 
  ADTPro transfers disks using any of these communications devices:
 
-    * Super Serial Card, IIgs modem port or IIc/Laser 128 serial port
+    * {{{connectionsserial.html#Super Serial cabling}Super Serial}} card, {{{connectionsserial.html#MiniDIN8}IIgs modem port}}, or {{{connectionsserial.html#DIN5}IIc/Laser 128 serial port}}
 
     * {{{http://a2retrosystems.com/}Uthernet}} Ethernet card
 
-    * The Apple's cassette ports
+    * The Apple's {{{connectionsaudio.html}cassette ports}}
 
  ADTPro has these features:
 
-    * Compatibility with any storage device ProDOS can read
+    * Transfers any storage device ProDOS can access
 
-    * Compatibility with any Apple ][ (or clone) computer with 64k memory
+    * Runs on any Apple II (or clone) computer with 64k memory
 
-    * Compatibility with many logical disk image formats: .DSK, .PO, .NIB, 2IMG
+    * Runs on Linux, Mac OSX, OS/2, Windows, and probably Solaris
 
-    * Server compatibility with original ADT client program
+    * Understands many digital disk formats: .DSK, .PO, .NIB, 2IMG
 
-    * Server compatibility with Windows, Mac OSX, Linux, and probably Solaris
+    * Serves the original {{{compatability.html}ADT client}} as well as the updated ADTPro client
 
-    * Ability to {{{bootstrapmain.html}bootstrap}} an Apple ][ from bare metal over serial or cassette ports
+    * {{{bootstrapmain.html}Bootstraps}} Apple II computers from bare metal over serial or cassette ports
 
-    * Ability to send floppies in "{{{batch.html}batch}}" mode without having to name each one
+    * Sends floppies in "{{{batch.html}batch}}" mode without having to name each one
 
-    * Integrated media {{{misc.html#Format}formatter}}
+    * {{{misc.html#Format}Formats}} media on the Apple II end
 
  ADTPro may be used to transfer either Apple diskette/disk images in DOS or ProDOS format.
 The Apple client side happens to run under ProDOS, but it is perfectly capable
@@ -62,24 +62,20 @@ Depending on how you want to connect to your Apple II, you might also need a
 {{{connectionsserial.html}serial port and cables}}, an 
 {{{configethernet.html}Uthernet card}}, or a couple of
 {{{connectionsaudio.html}audio patch cables}}.  
-The server offers a compact user interface that 
-shows what communications are taking place 
-between the host and the Apple ][:
-
-[images/serverBusy.png]
 
  The server's primary role is to send and receive disk images as
 requested from the {{{index.html#Client}client}}.  But if you have recently acquired
-an Apple and a disk drive, and you have no software for it - you're in a
+an Apple II and a disk drive, and you have no software for it - you're in a
 bit of a tricky situation if you want to move software from the Internet
 all the way to your shiny new Apple.  ADTPro's server can help get you
-get {{{bootstrapmain.html}bootstrapped}}.
+get {{{bootstrapmain.html}bootstrapped}} by sending operating software to
+an otherwise completely empty Apple.
 
 [images/serverBoot.png]
 
 * {Client}
 
- The client side runs on the Apple ][.  It handles most of the 
+ The client side runs on the Apple II.  It handles most of the 
 user interaction:
 
 [images/about.png]

@@ -21,7 +21,7 @@ ADT Compatability
 *-----:-----:------:------:------:------+
  <<Program>> | <<Latest Client Version>> | <<Client Platforms>> | <<Server Platforms>> | <<Comms>> | <<Notes>>
 *-----:-----:------:------+
- ADTPro | 1.0.4 | II,+,e,c,GS,Laser | Linux, OS/2, OSX, Solaris, Windows (Java) | Serial, Uthernet, Audio | 
+ ADTPro | 1.0.5 | II,+,e,c,GS,Laser | Linux, OS/2, OSX, Solaris, Windows (Java) | Serial, Uthernet, Audio | 
 *-----:-----:------:------+
  ADT (Shipped with ADTPro) | 2.2 | II,+,e,c,GS,Laser | (ADTPro) | Serial (115.2k) | Nibble/half-track capable
 *-----:-----:------:------+
@@ -29,7 +29,7 @@ ADT Compatability
 *-----:-----:------:------+
  A2V2 (Shipped with Virtual ][) | 2.1 |  II,+,e,c  | OSX | Serial (19.2k) | Nibble/half-track capable
 *-----:-----:------:------+
- MacADT | 1.21 |  II,+,e,c  | Mac OS9 and earlier (not classic under OSX) | Serial (19.2k) |
+ MacADT | 1.21 |  II,+,e,c  | Mac OS9 and earlier | Serial (19.2k) |
 *-----:-----:------:------+
 
  Generally speaking, the client program (the part that runs on the Apple II)
@@ -80,6 +80,6 @@ ADT {Nibble}/Halftrack Usage
 
 [images/adtsendhlf.png]
 
- The 1.0.4 ADTPro server currently writes incorrect <<<.v2d>>> images - if
+ The ADTPro server currently writes incorrect <<<.v2d>>> images - if
  you are going to be working with half-track images, you are best off sticking
  with the A2V2 server for the time being.

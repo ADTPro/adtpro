@@ -31,7 +31,7 @@ the FASTDSK package, and added config file creation as well.
 
  The routine to decide what kind of block device a particular slot/drive 
 combination contains was generously donated by Mark Percival.  It originates
-from his DiskMaker 8 program: {{http://www.gamebits.net/mark/DM8/}}
+from his DiskMaker 8 program: {{http://www.markpercival.net/DM8/}}
 
  The disk abstraction layer of ADTPro's server software was borrowed from the 
 AppleCommander project: {{http://applecommander.sourceforge.net/}}
