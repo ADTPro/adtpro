@@ -332,7 +332,6 @@ Trans2:
 	lda DiskWR,x		; Write something to the disk
 	lda ModeRD,x		; Reset Mode softswitch to READ
 	bmi LWRprot		; If > $7F then disk was write protected
-	sei			; Disable interrupts
 	lda #$FF		; Write a sync byte to the disk
 	sta ModeWR,x
 	cmp DiskRD,x
@@ -363,7 +362,6 @@ MStore:
 	bpl LSync3		; If < $8000 get more FORMAT data
 	lda ModeRD,x		; Restore Mode softswitch to READ
 	lda DiskRD,x		; Restore Read softswitch to READ
-	cli			; Re-enable interrupts
 	clc
 	rts
 LWRprot:
