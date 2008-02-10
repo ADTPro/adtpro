@@ -8,7 +8,7 @@ ADTPro Release History
 
 * 1.0.6 - February 10, 2008
 
- Bug fix:
+ Bug fixes:
 
  * [Client] Formatting was unreliable for 5.25" media due to
    timing-sensitive code placement
