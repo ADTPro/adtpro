@@ -162,10 +162,10 @@ YesSmart1:
 YesSmart2:
 	jsr LName		; Get New name
 	jsr OldName		; Ask if ready
-;	ldy #$FE
-;	lda (Buffer),y
-;	and #$08
-;	sta ShouldLLFormat	; Skip the test for low level format capability
+	ldy #$FE
+	lda (Buffer),y
+	and #$08
+	sta ShouldLLFormat	; Skip the test for low level format capability
 	jsr SmartForm		; Jump to routine to format Smart Drive
 	lda ListSlot
 	and #$F0
@@ -817,8 +817,8 @@ Ram3Err:
 ;**********************************
 SmartForm:
 	php
-;	lda ShouldLLFormat	; Will be $08 if so
-;	beq SmartFormDone
+	lda ShouldLLFormat	; Will be $08 if so
+	beq SmartFormDone
 	lda #3  		; Give Protocol Converter a Format Request
 	sta $42 		; Give it Slot number
 	lda ListSlot
@@ -830,7 +830,8 @@ SmartForm:
 	sta $45
 
 	jsr SmartDri
-;	bcs SmartErr		; Skip the test for successful low level formatting
+	bcs SmartErr		; Skip the test for successful low level formatting
+	clc
 SmartFormDone:
 	plp
 	jsr CLEARVOLUMES	; Invalidate volume name cache
@@ -846,8 +847,8 @@ SmartErr:
 	txa
 	jmp Died
 
-;ShouldLLFormat:
-;	.res 1
+ShouldLLFormat:
+	.res 1
 
 ;**********************************
 ;*                                *
@@ -913,12 +914,12 @@ Info:
 	.addr VolLen
 Parms:	.byte $03		; Parameter count = 3
 Slot:	.byte $60		; Default to S6,D1
-Addr:	.res 2			; Address for indirect jump
 MLIbuf:	.addr BootCode		; Default buffer address
 MLIBlk:	.byte $00,$00		; Default block number of 0
 QSlot:	.res 1			; Quit Slot number
 ListSlot:
 	.res 1			; Saving the slot total from the list
+Addr:	.res 2			; Address for indirect jump
 LByte:	.res 1			; Storage for byte value used in Fill
 LAddr:
 	.byte $D5,$AA,$96	; Address header

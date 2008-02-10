@@ -96,7 +96,6 @@ Home     =  $FC58		; Monitor clear screen and home cursor
 DevCnt   =  $BF31		; Prodos device count
 DevList  =  $BF32		; List of devices for ProDOS
 DevAdr   =  $BF10		; Given slot this is the address of driver
-Buffer   =  $07 		; Address pointer for FORMAT data
 IN       =  $200		; Keyboard input buffer
 WARMDOS  =  $BE00		; BASIC Warm-start vector
 LAST     =  $BF30		; Last device accessed by ProDOS
