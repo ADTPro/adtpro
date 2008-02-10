@@ -1,6 +1,6 @@
 ;
 ; ADTPro - Apple Disk Transfer ProDOS
-; Copyright (C) 2006, 2007 by David Schmidt
+; Copyright (C) 2006 - 2008 by David Schmidt
 ; david__schmidt at users.sourceforge.net
 ;
 ; This program is free software; you can redistribute it and/or modify it 
@@ -26,8 +26,8 @@ CONFIG:
 
 ; No matter what, we put in the default value for 
 ; 'save' - always turn it off when we start up.
-	lda #$01	; Index for 'NO' save
-	sta PARMS+BSAVEP
+	lda #$01	; Index for 'NO' save parameter
+	sta PSAVE
 
 	ldy #PARMNUM-1	; Save incoming parameters
 SAVPARM:
@@ -243,7 +243,7 @@ PARMRST:
 ENDCFG:
 	lda #$01
 	sta CONFIGYET
-	lda PARMS+BSAVEP	; Did they ask to save?
+	lda PSAVE	; Did they ask to save?
 	bne NOSAVE
 
 	ldy #PARMNUM-1	; Save previous parameters
@@ -301,7 +301,7 @@ PARMDFTNEXT:
 ; No matter what, we put in the default value for 
 ; 'save' - always turn it off when we restore defaults.
 	lda #$01	; Index for 'NO' save
-	sta PARMS+BSAVEP
+	sta PSAVE
 	rts
 
 ;---------------------------------------------------------
@@ -429,7 +429,6 @@ MSG26:	ascz "COMMS DEVICE"
 MSG27:	ascz "BAUD RATE"
 
 YSAVE:		.byte $00
-BSAVEP		= $03	; Index to the 'Save parameters' parameter
 
 CONFIG_FILE_NAME:	.byte 11
 			.byte "ADTPRO.CONF"

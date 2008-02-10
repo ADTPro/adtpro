@@ -1,6 +1,6 @@
 ;
 ; ADTPro - Apple Disk Transfer ProDOS
-; Copyright (C) 2006, 2007 by David Schmidt
+; Copyright (C) 2006 - 2008 by David Schmidt
 ; david__schmidt at users.sourceforge.net
 ;
 ; This program is free software; you can redistribute it and/or modify it 
@@ -88,6 +88,34 @@ DRVON		= $C089 ; drive on
 DRVSEL		= $C08A ; drive selection
 DRVRD		= $C08C ; Strobe input
 DRVRDM		= $C08E ; switch on READ mode
+
+;---------------------------------------------------------
+; Equates from imported formatting code
+;---------------------------------------------------------
+Home     =  $FC58		; Monitor clear screen and home cursor
+DevCnt   =  $BF31		; Prodos device count
+DevList  =  $BF32		; List of devices for ProDOS
+DevAdr   =  $BF10		; Given slot this is the address of driver
+Buffer   =  $07 		; Address pointer for FORMAT data
+IN       =  $200		; Keyboard input buffer
+WARMDOS  =  $BE00		; BASIC Warm-start vector
+LAST     =  $BF30		; Last device accessed by ProDOS
+WAIT     =  $FCA8		; Delay routine
+CLRLN    =  $FC9C		; Clear Line routine
+PRBYTE   =  $FDDA		; Print Byte routine (HEX value)
+COUT     =  $FDED		; Character output routine (print to screen)
+Step0    =  $C080		; Drive stepper motor positions
+Step1    =  $C081		;   |      |      |       |
+Step2    =  $C082		;   |      |      |       |
+Step4    =  $C084		;   |      |      |       |
+Step6    =  $C086		;   |      |      |       |
+DiskOFF  =  $C088		; Drive OFF  softswitch
+DiskON   =  $C089		; Drive ON   softswitch
+Select   =  $C08A		; Starting offset for target device
+DiskRD   =  $C08C		; Disk READ  softswitch
+DiskWR   =  $C08D		; Disk WRITE softswitch
+ModeRD   =  $C08E		; Mode READ  softswitch
+ModeWR   =  $C08F		; Mode WRITE softswitch
 
 ;---------------------------------------------------------
 ; Horizontal tabs for volume display

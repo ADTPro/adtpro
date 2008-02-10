@@ -1,4 +1,4 @@
-; Copyright (C) 2007 by David Schmidt
+; Copyright (C) 2007 - 2008 by David Schmidt
 ; david__schmidt at users.sourceforge.net
 ;
 ; This program is free software; you can redistribute it and/or modify it 
@@ -40,33 +40,6 @@
 
 	.segment "FORMAT"
 
-Home     =  $FC58		; Monitor clear screen and home cursor
-DevCnt   =  $BF31		; Prodos device count
-DevList  =  $BF32		; List of devices for ProDOS
-DevAdr   =  $BF10		; Given slot this is the address of driver
-Buffer   =  $07 		; Address pointer for FORMAT data
-IN       =  $200		; Keyboard input buffer
-WARMDOS  =  $BE00		; BASIC Warm-start vector
-LAST     =  $BF30		; Last device accessed by ProDOS
-WAIT     =  $FCA8		; Delay routine
-CLRLN    =  $FC9C		; Clear Line routine
-PRBYTE   =  $FDDA		; Print Byte routine (HEX value)
-COUT     =  $FDED		; Character output routine (print to screen)
-Step0    =  $C080		; Drive stepper motor positions
-Step1    =  $C081		;   |      |      |       |
-Step2    =  $C082		;   |      |      |       |
-Step4    =  $C084		;   |      |      |       |
-Step6    =  $C086		;   |      |      |       |
-DiskOFF  =  $C088		; Drive OFF  softswitch
-DiskON   =  $C089		; Drive ON   softswitch
-Select   =  $C08A		; Starting offset for target device
-DiskRD   =  $C08C		; Disk READ  softswitch
-DiskWR   =  $C08D		; Disk WRITE softswitch
-ModeRD   =  $C08E		; Mode READ  softswitch
-ModeWR   =  $C08F		; Mode WRITE softswitch
-;**********************************************************
-; Equates
-;**********************************************************
 FormatDone:
 	rts
 AgainCloser:
@@ -189,10 +162,10 @@ YesSmart1:
 YesSmart2:
 	jsr LName		; Get New name
 	jsr OldName		; Ask if ready
-	ldy #$FE
-	lda (Buffer),y
-	and #$08
-	sta ShouldLLFormat
+;	ldy #$FE
+;	lda (Buffer),y
+;	and #$08
+;	sta ShouldLLFormat	; Skip the test for low level format capability
 	jsr SmartForm		; Jump to routine to format Smart Drive
 	lda ListSlot
 	and #$F0
@@ -593,69 +566,12 @@ DiedII:
 	pla			; Retrieve error code from the stack
 	jmp Died		; Prompt for another FORMAT...
 
-;************************************
-;*                                  *
-;* TRANS - Transfer track in memory *
-;* to target device                 *
-;*                                  *
-;* Note - this needs to keep within *
-;* a single page of memory.         *
-;************************************
-Trans:
-	lda #$00		; Set Buffer to $6700
-	ldx #$67
-	sta Buffer
-	stx Buffer+1
-Trans2:
-; Trans2 entry point preconditions:
-;   Buffer set to the start of nibble page to write (with leading sync bytes)
-	ldy #$32		; Set Y offset to 1st sync byte (max=50)
-	ldx SlotF		; Set X offset to FORMAT slot/drive
-	sec			; (assume the disk is write protected)
-	lda DiskWR,x		; Write something to the disk
-	lda ModeRD,x		; Reset Mode softswitch to READ
-	bmi LWRprot		; If > $7F then disk was write protected
-	lda #$FF		; Write a sync byte to the disk
-	sta ModeWR,x
-	cmp DiskRD,x
-	nop			; (kill some time for WRITE sync...)
-	jmp LSync2
-LSync1:
-	eor #$80		; Set MSB, converting $7F to $FF (sync byte)
-	nop			; (kill time...)
-	nop
-	jmp MStore
-LSync2:
-	pha			; (kill more time... [ sheesh! ])
-	pla
-LSync3:
-	lda (Buffer),y		; Fetch byte to WRITE to disk
-	cmp #$80		;  Is it a sync byte? ($7F)
-	bcc LSync1		;  Yep. Turn it into an $FF
-	nop
-MStore:
-	sta DiskWR,x		; Write byte to the disk
-	cmp DiskRD,x		; Set Read softswitch
-	iny			; Increment Y offset
-	bne LSync2
-	inc Buffer+1		; Increment Buffer by one page
-; We may have to let everybody use the $6600 buffer space after all.
-; That lets us avoid the extra boundary checking, and just use the 'bpl' 
-; method of waiting for the pointer to go above $7f to page $80.
-	bpl LSync3		; If < $8000 get more FORMAT data
-	lda ModeRD,x		; Restore Mode softswitch to READ
-	lda DiskRD,x		; Restore Read softswitch to READ
-	clc
-	rts
-LWRprot:
-	clc			; Disk is write protected
-	jsr Done		; Turn the drive off
-	lda #$2B
-	pla
-	pla
-	pla
-	pla
-	jmp Died		; Prompt for another FORMAT...
+
+;
+; Note - the routine named Trans: and entrypoint named Trans2:
+; have moved to the main.asm in order to keep it within a
+; page boundary.
+;
 
 
 ;**************************************
@@ -901,8 +817,8 @@ Ram3Err:
 ;**********************************
 SmartForm:
 	php
-	lda ShouldLLFormat	; Will be $08 if so
-	beq SmartFormDone
+;	lda ShouldLLFormat	; Will be $08 if so
+;	beq SmartFormDone
 	lda #3  		; Give Protocol Converter a Format Request
 	sta $42 		; Give it Slot number
 	lda ListSlot
@@ -914,7 +830,7 @@ SmartForm:
 	sta $45
 
 	jsr SmartDri
-	bcs SmartErr
+;	bcs SmartErr		; Skip the test for successful low level formatting
 SmartFormDone:
 	plp
 	jsr CLEARVOLUMES	; Invalidate volume name cache
@@ -930,8 +846,8 @@ SmartErr:
 	txa
 	jmp Died
 
-ShouldLLFormat:
-	.res 1
+;ShouldLLFormat:
+;	.res 1
 
 ;**********************************
 ;*                                *
@@ -997,12 +913,12 @@ Info:
 	.addr VolLen
 Parms:	.byte $03		; Parameter count = 3
 Slot:	.byte $60		; Default to S6,D1
+Addr:	.res 2			; Address for indirect jump
 MLIbuf:	.addr BootCode		; Default buffer address
 MLIBlk:	.byte $00,$00		; Default block number of 0
 QSlot:	.res 1			; Quit Slot number
 ListSlot:
 	.res 1			; Saving the slot total from the list
-Addr:	.res 2
 LByte:	.res 1			; Storage for byte value used in Fill
 LAddr:
 	.byte $D5,$AA,$96	; Address header
