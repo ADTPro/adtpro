@@ -18,12 +18,12 @@
 ; 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 ;
 
+	.include "vars.asm"
 	.include "main.asm"
 
 ;---------------------------------------------------------
 ; Pull in all the rest of the code
 ;---------------------------------------------------------
-	.include "vars.asm"
 	.include "print.asm"
 	.include "serial/serproto.asm"
 	.include "online.asm"

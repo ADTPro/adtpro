@@ -23,7 +23,7 @@
 .global PARMS, PSSC, PSPEED, PSOUND, PSAVE, PGSSLOT, SR_WR_C, SLOWA, SLOWX, SLOWY
 .global PCCRC, COLDSTART, BAUD, NonDiskII, SendType
 
-.globalzp ZP, UTILPTR, COL_SAV, RLEPREV, UNUSED1, BLKPTR, CRC
+.globalzp ZP, UTILPTR, COL_SAV, RLEPREV, UNUSED1, CRC, BLKPTR, Buffer
 
 ;------------------------------------
 ; Variables - memory written to
@@ -49,25 +49,6 @@ HOSTBLX:
 UNITNBR:
 	.byte $00	; Unit number of chosen volume
 
-;------------------------------------
-; Zero page locations (all unused by ProDOS,
-; Applesoft, Disk Drivers and the Monitor)
-;------------------------------------
-
-; $6-$9, $19-$1e are free
-ZP	= $06		; ($01 byte)
-UTILPTR	= $07		; ($02 bytes) Used for printing messages
-COL_SAV	= $09		; ($01 byte)
-RLEPREV = $19		; ($01 byte)
-UDPI	= $1a		; ($01 byte) Used by UDP SEND and RECEIVE
-BLKPTR	= $1b		; ($02 bytes) Used by SEND and RECEIVE
-synccnt	= $1d		; ($02 bytes) Used by nibble/halftrack
-CRC	= $1d		; ($02 bytes) Used by ONLINE, SEND and RECEIVE
-;Buffer  = $1d 		; ($02 bytes) Address pointer for FORMAT data - see const.i
-CRCY	= $8a		; ($01 byte) Used by UDP SEND
-TMOT    = $8b		; ($01 byte) Timeout indicator
-NIBPCNT	= $8c		; ($01 byte) Counts nibble pages
-
 SR_WR_C:
 	.byte $00	; A place to save the send/receive/read/write character
 SLOWA:	.byte $00	; A place to save the Accumulator, speed is not important
@@ -86,11 +67,24 @@ pdsoftx:
 top_stack:	.byte $00
 
 ;---------------------------------------------------------
-; Default SCC baud rate
+; Zero page locations (all unused by ProDOS,
+; Applesoft, Disk Drivers and the Monitor)
 ;---------------------------------------------------------
-BAUD:	.byte 6	;1=300, 2=1200, 3=2400
-		;4=4800, 5=9600, 6=19200
-		;7=38400, 8=57600.
+
+; $6-$9, $19-$1e are free
+ZP	= $06		; ($01 byte)
+UTILPTR	= $07		; ($02 bytes) Used for printing messages
+COL_SAV	= $09		; ($01 byte)
+RLEPREV = $19		; ($01 byte)
+UDPI	= $1a		; ($01 byte) Used by UDP SEND and RECEIVE
+BLKPTR	= $1b		; ($02 bytes) Used by SEND and RECEIVE
+synccnt	= $1d		; ($02 bytes) Used by nibble/halftrack
+CRC	= $1d		; ($02 bytes) Used by ONLINE, SEND and RECEIVE
+Buffer  = $1d 		; ($02 bytes) Address pointer for FORMAT data
+CRCY	= $8a		; ($01 byte) Used by UDP SEND
+TMOT    = $8b		; ($01 byte) Timeout indicator
+NIBPCNT	= $8c		; ($01 byte) Counts nibble pages
+
 
 ;---------------------------------------------------------
 ; DiskII flag: did the user ask for a Disk II device?

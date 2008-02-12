@@ -92,7 +92,6 @@ DRVRDM		= $C08E ; switch on READ mode
 ;---------------------------------------------------------
 ; Equates from imported formatting code
 ;---------------------------------------------------------
-Buffer   = $1d	 		; ($02 bytes) Address pointer for FORMAT data
 Home     = $FC58		; Monitor clear screen and home cursor
 DevCnt   = $BF31		; Prodos device count
 DevList  = $BF32		; List of devices for ProDOS
