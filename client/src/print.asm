@@ -548,7 +548,7 @@ MSGTBL:
 	.addr MProtect, MNoDisk, MNuther, MUnitNone, MNIBTOP
 	.addr MNULL
 
-MSG01:	ascz "1.0.6"
+MSG01:	ascz "v.r.m"
 MSG02:	asccr "(S)END (R)ECEIVE (D)IR (B)ATCH (C)D"
 	.byte $8d,$00
 MSG03:	ascz "(V)OLUMES CONFI(G) (F)ORMAT (?) (Q)UIT:"
