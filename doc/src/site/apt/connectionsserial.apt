@@ -188,7 +188,7 @@ Apple's (not DIN's!) standard:
 
 [images/din5.png]
 
-  The null-modem pinout is:
+  A single-cable null-modem is wired like this (Apple would call this a "Printer" cable):
 
 ---
  Laser/
