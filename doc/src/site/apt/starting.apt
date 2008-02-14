@@ -64,9 +64,8 @@ Java lib Version   = RXTX-2.1-7
 * Starting the Client
 
  (If you don't have the ADTPro client software on your Apple II yet, 
- take a look at the 
- {{{bootstrapmain.html}Bootstrapping}}
- section to get that started.) 
+ take a look at the {{{bootstrap.html}serial}} or {{{bootstrapaudio.html}audio}}
+ bootstrapping section to get that started.) 
 
  When you boot your Apple ][ from the ADTPro disk, it will start a simple
  menu where you can pick which version of ADTPro you wish to start:
@@ -121,7 +120,7 @@ a response from the host, or if garbled data comes back, it will be necessary
 to check the physical connections, port names and speeds on both host and
 client ends.  The ethernet version of ADTPro (<<<ADTPROETH>>>) often needs 
 a couple of directory queries to find the server after setting up its 
-{{{configethernet.html#Client IP Configuration}configuration}}.
+{{{configethernet.html}configuration}}.
 If you're using the audio
 version of ADTPro (<<<ADTPROAUD>>>), ensure the volume setting for your sound
 card is set to halfway up the scale (i.e. much louder than you'd 

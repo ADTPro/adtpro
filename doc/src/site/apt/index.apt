@@ -40,7 +40,7 @@ drive types, communications devices, and host operating systems.
 
     * Serves the original {{{compatability.html}ADT client}} as well as the updated ADTPro client
 
-    * {{{bootstrapmain.html}Bootstraps}} Apple II computers from bare metal over serial or cassette ports
+    * Bootstraps Apple II computers from bare metal over {{{bootstrap.html}serial}} or {{{bootstrapaudio.html}cassette}} ports
 
     * Sends floppies in "{{{batch.html}batch}}" mode without having to name each one
 
@@ -68,7 +68,7 @@ requested from the {{{index.html#Client}client}}.  But if you have recently acqu
 an Apple II and a disk drive, and you have no software for it - you're in a
 bit of a tricky situation if you want to move software from the Internet
 all the way to your shiny new Apple.  ADTPro's server can help get you
-get {{{bootstrapmain.html}bootstrapped}} by sending operating software to
+get {{{#Bootstrapping}bootstrapped}} by sending operating software to
 an otherwise completely empty Apple.
 
 [images/serverBoot.png]
@@ -91,12 +91,14 @@ into the current chunk, as well as a running count of the total progress:
 
 [images/sending.png]
 
-* Bootstrapping the Apple II
+* {Bootstrapping} the Apple II
 
   If you already use the DOS version of ADT, you can use it to transfer the 
 virtual floppy containing ADTPro that comes with this project
 (ADTPRO-v.r.m.DSK) to your Apple.  Reboot the Apple with the ADTPro floppy, and
 you're ready to go.
+
+[images/dumpster.png]
 
   If you don't use DOS ADT now, don't have software for your Apple yet, 
 or don't have a serial card, more bootstrapping scenarios and configurations 
@@ -121,3 +123,12 @@ are detailed below.  Please note that you will need to use
  * {{{connectionsaudio.html}Audio cabling connections}}
 
  []
+ 
+* Brief {Demo} Presentation
+
+ Attached below is a brief demonstration presentation I gave to a local 
+ Mac users group.  It goes through the basic steps it takes to bootstrap the 
+ Apple II.  There are speaker notes, and it contains a few resources and links.
+
+ {{{ADTProIntro.ppt}ADTProIntro.ppt}}
+ 

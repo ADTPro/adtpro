@@ -1,10 +1,10 @@
  -----
- ADTPro Ethernet Configuration
+ ADTPro Ethernet Connections
  -----
  David Schmidt (david__schmidt at users dot souceforge dot net)
  -----
 
-ADTPro Ethernet Configuration
+ADTPro Ethernet Connections
 
 [images/uthernet.jpg]
 
@@ -20,21 +20,7 @@ ADTPro Ethernet Configuration
  address assigned to the Uthernet card by ADTPro is
  <<<00:80:10:6d:76:30>>>.
 
- <<Note>>: if you ever end up saving a configuration that is not compatible
- with the Apple you're trying to run ADTPro on (because you move your
- Uthernet card to a different slot, for example) you may need to reset
- ADTPro to factory defaults.  To do that, boot the Apple with ProDOS, and 
- get to a BASIC prompt (perhaps using the
- ADTPro diskette itself). Delete the configuration file:
- 
- * <<<DELETE ADTPROETH.CONF>>>
-
- []
-
- That will reset everything to defaults and you should be able to bring
- up the configuration screen, make corrections, then re-save it.
-
-{Client IP Configuration}
+ADTPro Ethernet {Client IP Configuration}
 
  The ethernet version of the ADTPro client program is named <<<ADTPROETH>>> on the 
  distribution diskette.
@@ -123,3 +109,17 @@ if you need it.
  Once you get your addresses set up, save your configuration and hit the "D" 
 key from the main menu (and escape) to ask for a directory once or twice.  
 It seems to take some networks a couple of tries to finally find the server.
+
+ <<Note>>: if you ever end up saving a configuration that is not compatible
+ with the Apple you're trying to run ADTPro on (because you move your
+ Uthernet card to a different slot, for example) you may need to reset
+ ADTPro to factory defaults.  To do that, boot the Apple with ProDOS, and 
+ get to a BASIC prompt (perhaps using the
+ ADTPro diskette itself). Delete the configuration file:
+ 
+ * <<<DELETE ADTPROETH.CONF>>>
+
+ []
+
+ That will reset everything to defaults and you should be able to bring
+ up the configuration screen, make corrections, then re-save it.

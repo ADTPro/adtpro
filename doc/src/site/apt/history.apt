@@ -153,31 +153,31 @@ ADTPro Release History
  First official public release after one year of beta iterations.
  Communications methods include:
 
- * Super Serial Card, IIgs modem port or IIc serial port at 115,200 BPS 
+  * {{{connectionsserial.html#Super Serial cabling}Super Serial}} card, {{{connectionsserial.html#MiniDIN8}IIgs modem port}}, or {{{connectionsserial.html#DIN5}IIc/Laser 128 serial port}}
 
- * {{{http://a2retrosystems.com/}Uthernet}} Ethernet card
+  * {{{http://a2retrosystems.com/}Uthernet}} Ethernet card
 
- * The Apple's cassette ports
+  * The Apple's {{{connectionsaudio.html}cassette ports}}
 
  []
 
  Feature set includes:
 
- * Compatibility with any device ProDOS can read
+  * Transfers any storage device ProDOS can access
 
- * Compatibility with any Apple ][ (or clone) computer with 64k memory
+  * Runs on any Apple II (or clone) computer with 64k memory
 
- * Compatibility with many logical disk image formats: .DSK, .PO, .NIB, 2IMG
+  * Runs on Linux, Mac OSX, OS/2, Windows, and probably Solaris
 
- * Server compatibility with original ADT client program
+  * Understands many digital disk formats: .DSK, .PO, .NIB, 2IMG
 
- * Server compatibility with Windows, Mac OSX, Linux, and probably Solaris
+  * Serves the original {{{compatability.html}ADT client}} as well as the updated ADTPro client
 
- * Ability to {{{bootstrapmain.html}bootstrap}} an Apple ][ from bare metal over serial or cassette ports
+  * Bootstraps Apple II computers from bare metal over {{{bootstrap.html}serial}} or {{{bootstrapaudio.html}cassette}} ports
 
- * Ability to send floppies in "{{{batch.html}batch}}" mode without having to name each one
+  * Sends floppies in "{{{batch.html}batch}}" mode without having to name each one
 
- * Integrated media {{{misc.html#Format}formatter}}
+  * {{{misc.html#Format}Formats}} media on the Apple II end
 
  []
 

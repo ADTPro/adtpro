@@ -41,7 +41,8 @@ ADTPro Installation
  command line or by clicking on the startup program for your host operating
  system.
 
- [[1]] {{{bootstrapmain.html}Bootstrap}} the client software on your Apple II.
+ [[1]] Bootstrap the client software on your Apple II via {{{bootstrap.html}serial}} or {{{bootstrapaudio.html}cassette}} ports.
+
 
  []
 
