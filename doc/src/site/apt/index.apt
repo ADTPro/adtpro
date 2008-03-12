@@ -98,8 +98,6 @@ virtual floppy containing ADTPro that comes with this project
 (ADTPRO-v.r.m.DSK) to your Apple.  Reboot the Apple with the ADTPro floppy, and
 you're ready to go.
 
-[images/dumpster.png]
-
   If you don't use DOS ADT now, don't have software for your Apple yet, 
 or don't have a serial card, more bootstrapping scenarios and configurations 
 are detailed below.  Please note that you will need to use 
@@ -126,7 +124,11 @@ are detailed below.  Please note that you will need to use
  
 * Brief {Demo} Presentation
 
- Attached below is a brief demonstration presentation I gave to a local 
+  Here is a 5-minute overview video of the bootstrapping process, end-to-end:
+
+ youtubereplaced
+
+ Attached below are slides to a demonstration presentation I gave to a local 
  Mac users group.  It goes through the basic steps it takes to bootstrap the 
  Apple II.  There are speaker notes, and it contains a few resources and links.
 

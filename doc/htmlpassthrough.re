@@ -1,0 +1,2 @@
+s@webringreplaced@<script type="text/javascript"src="http://ss.webring.com/navbar?f=j;y=schmidtd;u=adtpro"></script>Powered by <a href="http://dir.webring.com/rw" target=_top>WebRing</a>.@ig;
+s@youtubereplaced@<object width="425" height="350"><param name="movie" value="http://www.youtube.com/v/vEw8gRmqClA"></param><embed src="http://www.youtube.com/v/vEw8gRmqClA" type="application/x-shockwave-flash" width="425" height="350"></embed></object>@ig;

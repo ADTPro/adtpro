@@ -35,6 +35,14 @@ more bootstrapping scenarios and configurations are detailed below.
 
  []
 
+*  Bootstrapping Demonstration {Video}
+
+  Here is a 5-minute overview video of the bootstrapping process.
+It shows the bare-metal bootstrapping scenario of an Apple IIe with a
+Super Serial card, all the way to making a bootable ADTPro floppy:
+
+ youtubereplaced
+
 * {A Note About Speed}
 
  ADTPro lets you control how fast bootstrapping data gets sent to the

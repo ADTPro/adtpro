@@ -24,5 +24,4 @@ perl -i.orig -p ..\..\removeMaven.re receiving.html
 perl -i.orig -p ..\..\removeMaven.re sending.html
 perl -i.orig -p ..\..\removeMaven.re starting.html
 perl -i.orig -p ..\..\removeMaven.re webring.html
-perl -i.orig -p ..\..\webring.re webring.html
 cd ..\..
