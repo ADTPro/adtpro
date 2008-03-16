@@ -82,10 +82,9 @@ look at the back of the computer.  The IIgs looks like this:
 
   If you are wiring a null modem yourself, the pinout to use is below.
 The parts you need can be found at swap meets, Jameco, Mouser, Radio Shack, etc.
-I wired up some single-cable null modems myself for 
-testing IIgs and IIc+ computers with ADTPro, going from MiniDIN8 to DE-9F. 
-{{{http://retrofloppy.com/products.html}Contact me}}
-if you would like to buy one.  They look like this:
+If you would rather purchse one that is ready to use, I sell them
+{{{http://retrofloppy.com/products.html#DIN8DE9}here}}.
+They look like this:
 
 [images/iigsNullModem2.jpg]
   
@@ -175,10 +174,9 @@ printer port:
 
   If you are wiring a null-modem yourself, the following is the pinout to use.
 The parts you need can be found at swap meets, Jameco, Mouser, Radio Shack, etc.
-I wired some of these up myself for testing IIc and Laser 128 computers with ADTPro,
-going from DIN5 to DE-9F.
-{{{http://retrofloppy.com/products.html}Contact me}}
-if you would like to buy one.  They look like this:
+If you would rather purchse one that is ready to use, I sell them
+{{{http://retrofloppy.com/products.html#DIN5DE9}here}}.
+They look like this:
 
 [images/nullModemDIN5DE9.jpg]
 
@@ -256,7 +254,14 @@ checkbox in the serial config dialog box, brought up from the
 * {USB cabling}
 
   Several manufacturers make different types of USB to serial adapters.
-These types of devices will work fine with ADTPro.  You will need to
+These types of devices will work fine with ADTPro.  I sell one that is compatible
+with Windows and OSX operating systems 
+{{{http://retrofloppy.com/products.html#USBDE9}here}}.
+They look like this:
+
+[images/USBCable.jpg]
+
+ You will need to
 connect everything up with the right combination of cables, of course.  Here is
 an example of a Keyspan USB-to-8-pin mini-DIN adapter connected to an IIgs:
 

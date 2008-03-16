@@ -8,4 +8,5 @@ cd target\site
 perl -i.orig -p ..\..\htmlpassthrough.re webring.html
 perl -i.orig -p ..\..\htmlpassthrough.re index.html
 perl -i.orig -p ..\..\htmlpassthrough.re bootstrap.html
+perl -i.orig -p ..\..\htmlpassthrough.re connectionsserial.html
 cd ..\..
