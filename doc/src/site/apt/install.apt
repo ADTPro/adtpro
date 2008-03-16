@@ -13,7 +13,7 @@ ADTPro Installation
  "<<<java -version>>>" from a terminal window it ought to produce 
  output other than complaints.
  One place to get a downloadable Java distribution is from Sun Microsystems:
- {{{http://java.sun.com/j2se/1.5.0/download.jsp}Sun JRE download}}.
+ {{{http://java.sun.com/javase/downloads/index.jsp}Sun JRE download}}.
  When you get there, look for a "Java Runtime Environment (JRE)"
  download for your platform and install it.
 
@@ -35,8 +35,6 @@ ADTPro Installation
 
  [[1]] Unpack the ADTPro distribution file using your operating system's native facilities.
  
- [[1]] Run the <<<fixperm.command>>> {{{install.html#Considerations}command}} if you're on OSX.
-
  [[1]] {{{starting.html}Start the ADTPro server}} from your host computer's
  command line or by clicking on the startup program for your host operating
  system.
@@ -55,13 +53,9 @@ ADTPro Installation
 
 Unix/Mac OSX RXTX {Considerations}
 
- Mac OSX users should run the <<<fixperm.command>>> script that is in 
- the <<<lib/rxtx>>> directory.  This will correct some permissions to
- enable the serial library to work.  You will need your administrator
- password.
-
- For other Unix variants, make sure the user that will be running 
+ For Unix variants, make sure the user that will be running 
  ADTPro is in the group <<<lock>>> or <<<uucp>>> so that lockfiles can work.
+ This won't be necessary in OSX.
 
  The <<<adtpro.sh>>> and <<<adtpro.command>>> files can be customized 
  to suit your environment.
@@ -121,6 +115,6 @@ Distribution contents
  
  * <<<lib/rxtx/...            >>> - Java serial library files
 
- * <<<lib/rxtx/fixperm.command>>> - A command to help OSX users enable the RXTX library
+ * <<<lib/rxtx/fixperm.command>>> - A command to help OSX users enable the RXTX library (no longer necessary as of version 1.0.6a)
 
  []

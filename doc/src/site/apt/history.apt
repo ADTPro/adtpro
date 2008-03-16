@@ -16,6 +16,9 @@ ADTPro Release History
  * [Client] Formatting was unreliable for 3.5" media due to unfortunate
    re-use of zero-page variable space
 
+ * [Server] Included a copy of the rxtx library that no longer requires
+   lockfiles (1.0.6a.dmg for OSX only)
+
  []
 
 * 1.0.5 - February 3, 2008
