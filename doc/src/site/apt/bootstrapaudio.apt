@@ -31,6 +31,14 @@ ADTPro Audio Bootstrapping
  audio and cassette ports, refer back to the
  {{{connectionsaudio.html}Connections}} section.
 
+*  Bootstrapping Demonstration {Video}
+
+  Here is a 6-minute overview video of the audio bootstrapping process.
+It shows the bare-metal bootstrapping scenario of an Apple IIe with 
+audio cables all the way to making a bootable ADTPro floppy:
+
+ youtubereplace2
+
 * {If you already have ProDOS}
 
     [[1]] {{{connectionsaudio.html}Connect}} the two computers through their
