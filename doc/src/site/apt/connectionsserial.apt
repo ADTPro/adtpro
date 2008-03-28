@@ -197,18 +197,18 @@ Apple's (not DIN's!) standard:
    4 ----- 3      2     TxD
    2 ----- 2      3     RxD
    3 ----- 5      7     GND
-  1-5     (nc)   (nc)  (disables
-  (nc)    7-8    4-5    hardware
-  (nc)   1-4-6  6-8-20  handshaking)
+  1&5     (nc)   (nc)  (disables
+  (nc)    7&8    4&5    hardware
+  (nc)   1&4&6  6&8&20  handshaking)
 
  Within the DIN-5 shell, tie together pins:
- 1-5
+ 1&5
 
  Within the DE-9 shell, tie together pins:
- 1-4-6 and 7-8
+ 1&4&6 and 7&8
 
  Within the DB-25 shell, tie together pins:
- 6-8-20 and 4-5 
+ 6&8&20 and 4&5 
 ---
 
   This null modem cable ties all the handshaking lines together at the host
