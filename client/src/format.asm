@@ -269,7 +269,7 @@ DIIForm:
 ;*                                *
 ;**********************************
 CodeWr:	lda #$81		; Set Opcode to WRITE
-	sta Opcode
+	sta CallMLI+OS_CALL_OFFSET
 	lda #$00		; Set MLIBlk to 0
 	sta MLIBlk
 	sta MLIBlk+1
@@ -335,7 +335,7 @@ BlkCount:
 
 	jsr FFFill6800		; Set up to fill pages
 	lda #$81		; Change Opcode to $81 (WRITE)
-	sta Opcode
+	sta CallMLI+OS_CALL_OFFSET
 	lda #$00		; Reset MLIbuf to $6800
 	ldx #$68
 	sta MLIbuf
@@ -433,7 +433,7 @@ Curblk:	.res 1
 ;*************************************
 Catalog:
 	lda #$81		; Change Opcode to $81 (WRITE)
-	sta Opcode
+	sta CallMLI+OS_CALL_OFFSET
 	clc
 	lda #$06
 	adc FullPages
@@ -444,9 +444,7 @@ Catalog:
 	stx MLIbuf+1
 	sta MLIBlk+1
 	jsr Call2MLI		; Write Buffer (BitMap) to block #6 on the disk
-	jsr MLI			; Call for time and date
-	.byte $82
-	.addr 0000
+	CALLOS OS_GET_TIME, 0		; Call for time and date
 	lda $BF90		; Get them and save them into the
 	sta Datime		; Directory to be written.
 	lda $BF91
@@ -487,9 +485,7 @@ Call2MLI:
 ;*                                   *
 ;*************************************
 CallMLI:
-	jsr MLI 		; Call the ProDOS Machine Langauge Interface
-Opcode:	.byte $81		; Default MLI opcode = $81 (WRITE)
-	.addr Parms
+	CALLOS OS_WRITEBLOCK, Parms
 	bcs MLIError
 	rts
 MLIError:

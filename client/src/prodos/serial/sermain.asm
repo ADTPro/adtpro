@@ -18,11 +18,32 @@
 ; 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 ;
 
+	.include "applechr.i"
+	.include "ip65/common.i"
+	.include "prodos/prodosconst.i"
+	.include "prodos/prodosmacros.i"
+	.include "prodos/prodosvars.asm"
+	.include "main.asm"
+
 ;---------------------------------------------------------
-; DiskII flag: did the user ask for a Disk II device?
+; Pull in all the rest of the code
 ;---------------------------------------------------------
-NonDiskII:	.byte $00	; $00 = We do _not_ have a Disk II
-				; $01 = We _have_ a Disk II
-SendType:	.byte CHR_P	; CHR_P = Normal Put
-				; CHR_N = Nibble send
-				; CHR_H = Half track send
+	.include "print.asm"
+	.include "prodos/serial/serproto.asm"
+	.include "online.asm"
+	.include "rw.asm"
+	.include "sr.asm"
+	.include "prodos/serial/ssc.asm"
+	.include "prodos/serial/iigsscc.asm"
+	.include "crc.asm"
+	.include "pickvol.asm"
+	.include "input.asm"
+	.include "prodos/serial/serconfig.asm"
+	.include "hostfns.asm"
+	.include "diskii.asm"
+	.include "nibble.asm"
+	.include "prodos/serial/pascalep.asm"	; Note: includes PASCALEP segment
+	.include "format.asm"			; Note: includes FORMAT segment
+	.include "bsave.asm"
+
+	.segment "DATA"

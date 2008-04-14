@@ -1,6 +1,6 @@
 ;
 ; ADTPro - Apple Disk Transfer ProDOS
-; Copyright (C) 2006 - 2008 by David Schmidt
+; Copyright (C) 2008 by David Schmidt
 ; david__schmidt at users.sourceforge.net
 ;
 ; This program is free software; you can redistribute it and/or modify it 
@@ -18,11 +18,10 @@
 ; 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 ;
 
-;---------------------------------------------------------
-; DiskII flag: did the user ask for a Disk II device?
-;---------------------------------------------------------
-NonDiskII:	.byte $00	; $00 = We do _not_ have a Disk II
-				; $01 = We _have_ a Disk II
-SendType:	.byte CHR_P	; CHR_P = Normal Put
-				; CHR_N = Nibble send
-				; CHR_H = Half track send
+.include "const.i"
+
+;--------------------------------------------------------- 
+; SOS specific stuff
+;--------------------------------------------------------- 
+OS_CALL_OFFSET = 1	; Offset to the SOS call type byte
+

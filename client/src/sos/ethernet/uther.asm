@@ -1,6 +1,6 @@
 ;
 ; ADTPro - Apple Disk Transfer ProDOS
-; Copyright (C) 2006 - 2008 by David Schmidt
+; Copyright (C) 2008 by David Schmidt
 ; david__schmidt at users.sourceforge.net
 ;
 ; This program is free software; you can redistribute it and/or modify it 
@@ -18,29 +18,30 @@
 ; 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 ;
 
-	.include "vars.asm"
-	.include "main.asm"
+	.import ip65_init
+	.import ip65_process
 
-;---------------------------------------------------------
-; Pull in all the rest of the code
-;---------------------------------------------------------
+	.import udp_add_listener
+	.import udp_callback
+	.import udp_send
 
-	.include "print.asm"
-	.include "online.asm"
-	.include "rw.asm"
-	.include "sr.asm"
-	.include "ethernet/uther.asm"
-	.include "crc.asm"
-	.include "pickvol.asm"
-	.include "input.asm"
-	.include "ethernet/ethconfig.asm"
-	.include "hostfns.asm"
-	.include "diskii.asm"
-	.include "nibble.asm"
-	.include "ethernet/ethproto.asm"
-	.include "ethernet/ipconfig.asm"
-	.include "format.asm"		; Note: format.asm is its own segment
-	.include "bsave.asm"
+	.import udp_inp
+	.import udp_outp
 
-PEND:
-	.segment "DATA"	
+	.importzp udp_data
+	.importzp udp_len
+	.importzp udp_src_port
+	.importzp udp_dest_port
+
+	.import udp_send_dest
+	.import udp_send_src_port
+	.import udp_send_dest_port
+	.import udp_send_len
+
+	.importzp ip_src
+	.import ip_inp
+
+cnt:		.res 1
+replyaddr:	.res 4
+replyport:	.res 2
+state:		.res 2

@@ -33,8 +33,8 @@
 READING:
 	lda #PMSG07
 	sta SR_WR_C
-	lda #PD_READBLOCK
-	sta RWDIR
+	lda #OS_READBLOCK
+	sta RWDIR+OS_CALL_OFFSET
 	lda #CHR_R
 	sta RWCHR
 	lda #CHR_BLK
@@ -44,8 +44,8 @@ READING:
 WRITING:
 	lda #PMSG08
 	sta SR_WR_C
-	lda #PD_WRITEBLOCK
-	sta RWDIR
+	lda #OS_WRITEBLOCK
+	sta RWDIR+OS_CALL_OFFSET
 	lda #CHR_W
 	sta RWCHR
 	lda #CHR_SP
@@ -162,9 +162,7 @@ RWCALL:
 	lda #V_BUF
 	jsr TABV
 
-	jsr MLI		; MLI call: READ/WRITE
-RWDIR:	.byte PD_READBLOCK
-	.addr PARMBUF
+RWDIR:	CALLOS OS_READBLOCK, PARMBUF
 	bne RWBAD
 	lda RWCHROK
 	jsr COUT1

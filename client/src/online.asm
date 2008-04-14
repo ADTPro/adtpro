@@ -1,6 +1,6 @@
 ;
 ; ADTPro - Apple Disk Transfer ProDOS
-; Copyright (C) 2006-2007 by David Schmidt
+; Copyright (C) 2006 - 2008 by David Schmidt
 ; david__schmidt at users.sourceforge.net
 ;
 ; This program is free software; you can redistribute it and/or modify it 
@@ -55,9 +55,7 @@ OCLEAN:
 	STA PARMBUF+2
 	LDA #>DEVICES
 	STA PARMBUF+3
-	JSR MLI
-	.byte PD_ONL
-	.addr PARMBUF
+	CALLOS OS_ONL, PARMBUF
 	BNE OERROR
 
 	ldx #$00	; X is our index into the device table
@@ -523,9 +521,7 @@ HOWBIG2:
 	STA PARMBUF+1
 	LDA #>VOLNAME
 	STA PARMBUF+2
-	JSR MLI
-	.byte PD_INFO
-	.addr PARMBUF
+	CALLOS OS_GET_FILE_INFO, PARMBUF
 	BNE @H2ERROR
 	pla		; Grab the original X
 	pha		; back off the stack, put it in A

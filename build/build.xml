@@ -65,13 +65,13 @@
 		Assemble the ADTPro source
 		-->
 		<exec dir="${projdir}/client/src" executable="${assemblerPath}/ca65">
-			<arg line="-l -t none audio/audmain.asm" />
+			<arg line="-l -t none prodos/audio/audmain.asm" />
 		</exec>
 		<exec dir="${projdir}/client/src" executable="${assemblerPath}/ca65">
-			<arg line="-l -t none ethernet/ethmain.asm" />
+			<arg line="-l -t none prodos/ethernet/ethmain.asm" />
 		</exec>
 		<exec dir="${projdir}/client/src" executable="${assemblerPath}/ca65">
-			<arg line="-l -t none serial/sermain.asm" />
+			<arg line="-l -t none prodos/serial/sermain.asm" />
 		</exec>
 		<exec dir="${projdir}/client/src" executable="${assemblerPath}/ca65">
 			<arg line="-l -t none tail.asm" />
@@ -100,13 +100,13 @@
 		Link the bits
 		-->
 		<exec dir="${projdir}/client/src" executable="${assemblerPath}/ld65">
-			<arg line="-m adtproser.map -C serial/adtpro.cfg -o ADTPRO serial/sermain.o tail.o" />
+			<arg line="-m adtproser.map -C prodos/serial/adtpro.cfg -o ADTPRO prodos/serial/sermain.o tail.o" />
 		</exec>
 		<exec dir="${projdir}/client/src" executable="${assemblerPath}/ld65">
-			<arg line="-m adtproaud.map -C audio/adtpro.cfg -o ADTPROAUD audio/audmain.o tail.o" />
+			<arg line="-m adtproaud.map -C prodos/audio/adtpro.cfg -o ADTPROAUD prodos/audio/audmain.o tail.o" />
 		</exec>
 		<exec dir="${projdir}/client/src" executable="${assemblerPath}/ld65">
-			<arg line="-m adtproeth.map -C ethernet/adtpro.cfg -o ADTPROETH ethernet/ethmain.o ip65/ip65.lib tail.o" />
+			<arg line="-m adtproeth.map -C prodos/ethernet/adtpro.cfg -o ADTPROETH prodos/ethernet/ethmain.o ip65/ip65.lib tail.o" />
 		</exec>
 		<!--
 		Move the object code to the build directory

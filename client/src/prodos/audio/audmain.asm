@@ -18,22 +18,26 @@
 ; 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 ;
 
-	.include "vars.asm"
+	.include "applechr.i"
+	.include "ip65/common.i"
+	.include "prodos/prodosconst.i"
+	.include "prodos/prodosmacros.i"
+	.include "prodos/prodosvars.asm"
 	.include "main.asm"
 
 ;---------------------------------------------------------
 ; Pull in all the rest of the code
 ;---------------------------------------------------------
 	.include "print.asm"
-	.include "audio/audproto.asm"
+	.include "prodos/audio/audproto.asm"
 	.include "online.asm"
 	.include "rw.asm"
 	.include "sr.asm"
-	.include "audio/audio.asm"
+	.include "prodos/audio/audio.asm"
 	.include "crc.asm"
 	.include "pickvol.asm"
 	.include "input.asm"
-	.include "audio/audconfig.asm"
+	.include "prodos/audio/audconfig.asm"
 	.include "hostfns.asm"
 	.include "diskii.asm"
 	.include "nibble.asm"

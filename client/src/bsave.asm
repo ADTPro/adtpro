@@ -1,6 +1,6 @@
 ;
 ; ADTPro - Apple Disk Transfer ProDOS
-; Copyright (C) 2006, 2007 by David Schmidt
+; Copyright (C) 2006 - 2008 by David Schmidt
 ; david__schmidt at users.sourceforge.net
 ;
 ; This program is free software; you can redistribute it and/or modify it 
@@ -17,6 +17,7 @@
 ; with this program; if not, write to the Free Software Foundation, Inc., 
 ; 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 ;
+
 	.import ASMEND
 
 ;---------------------------------------------------------
@@ -26,18 +27,14 @@
 ;      carry = 1 -> a MLI error occured (acc=err)
 ;
 BSAVE:
-	JSR MLI			; Create file
-	.byte PD_CREATE
-	.addr FILE_CR
+	CALLOS OS_CREATE, FILE_CR
 	bcc :+
 	cmp #$47		; File exists already?
 	beq :+			; Don't care!
 	ldy #PMNOCREATE
 	jmp BSAVE_MSGEND 
 :
-	JSR MLI			; open file
-	.byte PD_OPEN
-	.addr FILE_OP
+	CALLOS OS_OPEN, FILE_OP	; open file
 	bcc :+
 	ldy #PMNOCREATE
 	jmp BSAVE_MSGEND 
@@ -47,9 +44,7 @@ BSAVE:
 	STA FILE_CLN
 
 WRITE:
-	JSR MLI			; Write file
-	.byte PD_WRITEFILE
-	.addr FILE_WR
+	CALLOS OS_WRITEFILE, FILE_WR
 	bcc :+
 	ldy #PMNOCREATE
 	jmp BSAVE_MSGEND 
@@ -68,9 +63,7 @@ BSAVE_MSGEND:
 ;      carry = 1 -> a MLI error occured (acc=err)
 ;
 BLOAD:
-	JSR MLI			; open file
-	.byte PD_OPEN
-	.addr FILE_OP
+	CALLOS OS_OPEN, FILE_OP
 	bcc :+
 	jmp BLOAD_END		; Error; don't care
 :
@@ -78,14 +71,10 @@ BLOAD:
 	STA FILE_RDN
 	STA FILE_CLN
 
-	JSR MLI			; read file
-	.byte PD_READFILE
-	.addr FILE_RD
+	CALLOS OS_READFILE, FILE_RD
 
 BLOAD_END:
-	JSR MLI			; close file
-	.byte PD_CLOSE
-	.addr FILE_CL
+	CALLOS OS_CLOSE, FILE_CL
 	RTS
 
 FILE_P0: .byte 0,0		; page 0 : 2 byte backup
@@ -102,9 +91,7 @@ GET_PREFIX:
 	INX
 	STX ZDEVCNT		; +1 saved in work field
 
-	JSR MLI			; get the current prefix
-	.byte PD_GET_PREFIX
-	.addr GET_PFX_PLIST
+	CALLOS OS_GET_PREFIX, GET_PFX_PLIST ; get the current prefix
 	BCS GP_ANOTHER		; error
 
 	LDA CUR_PFX		; len=0 -> no prefix
@@ -155,9 +142,7 @@ GP_DEVNUM:
 	AND #%11110000
 	STA UNIT		; set: current unit
 
-	JSR MLI			; retrieve the volume name (without /)
-	.byte PD_ONL
-	.addr TBL_ONLINE
+	CALLOS OS_ONL, TBL_ONLINE ; retrieve the volume name (without /)
 	BCS GP_PREV		; unit error. Try next one
 
 	LDA CUR_PFX+1		; 1st byte=DSSSLLLL
@@ -171,9 +156,7 @@ GP_DEVNUM:
 	STA CUR_PFX+1		; replace DSSSLLLL with first / (volume name)
 	STA CUR_PFX,X		; add / to the end to have: /name/
 
-GP_SET:	JSR MLI			; do a 'set prefix' on the current pathname
-	.byte PD_SET_PREFIX
-	.addr GET_PFX_PLIST
+GP_SET:	CALLOS OS_SET_PREFIX, GET_PFX_PLIST ; do a 'set prefix' on the current pathname
 	BCS GP_PREV		; error -> try another unit
 
 GP_DONE:

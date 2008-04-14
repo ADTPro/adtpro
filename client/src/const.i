@@ -19,59 +19,34 @@
 ;
 
 ;---------------------------------------------------------
-; Passive addresses (not written to)
+; ProDOS/SOS equates
 ;---------------------------------------------------------
-MLI	= $BF00
-MLIADDR	= $BF10
-BITMAP	= $BF58 ; bitmap of low 48k of memory
-DEVICE	= $BF30 ; last drive+slot used, DSSS0000
-DEVCNT	= $BF31 ; Count (minus 1) of active devices
-DEVLST	= $BF32 ; List of active devices (Slot, drive, id =DSSSIIII)
+OS_QUIT			= $65
 
-;---------------------------------------------------------
-; ProDOS equates
-;---------------------------------------------------------
-PD_QUIT	= $65
-PD_READBLOCK	= $80
-PD_WRITEBLOCK	= $81
-PD_CREATE	= $C0
-PD_INFO	= $C4
-PD_ONL	= $C5
-PD_SET_PREFIX	= $C6
-PD_GET_PREFIX	= $C7
-PD_OPEN	= $C8
-PD_READFILE	= $CA
-PD_WRITEFILE	= $CB
-PD_CLOSE	= $CC
+OS_READBLOCK		= $80
+OS_WRITEBLOCK		= $81
+OS_GET_TIME		= $82
 
-;---------------------------------------------------------
-; Monitor equates
-;---------------------------------------------------------
-CH	= $24		; Character horizontal position
-CV	= $25		; Character vertical position
-BASL	= $28		; Base Line Address
-INVFLG	= $32		; Inverse flag
-A1L	= $3c
-A1H	= $3d
-A2L	= $3e
-A2H	= $3f
-A4L	= $42
-A4H	= $43
-KEYBUFF	= $0280	; Keyboard buffer
-MSLOT	= $07f8	; Pascal entry point scrren hole
-CLREOL	= $FC9C	; Clear to end of line
-CLREOP	= $FC42	; Clear to end of screen
-HOME	= $FC58	; Clear screen
-TABV	= $FB5B	; Set BASL from Accumulator
-VTAB	= $FC22	; SET BASL FROM CV
-RDKEY	= $FD0C	; Character input
-NXTCHAR	= $FD75	; Line input
-COUT1	= $FDF0	; Character output
-CROUT	= $FD8E	; Output return character
-PRDEC	= $ED24	; Print pointer as decimal
-DELAY	= $FCA8 ; Monitor delay: # cycles = (5*A*A + 27*A + 26)/2
-MEMMOVE	= $FE2C	; PERFORM MEMORY MOVE A1-A2 TO A4
-ROM	= $C082 ; Enables rom
+OS_CREATE		= $C0
+OS_DESTROY		= $C1
+OS_RENAME		= $C2
+OS_SET_FILE_INFO	= $C3
+OS_GET_FILE_INFO	= $C4
+OS_ONL			= $C5
+OS_SET_PREFIX		= $C6
+OS_GET_PREFIX		= $C7
+OS_OPEN			= $C8
+OS_NEWLINE		= $C9
+OS_READFILE		= $CA
+OS_WRITEFILE		= $CB
+OS_CLOSE		= $CC
+OS_FLUSH		= $CD
+OS_SET_MARK		= $CE
+OS_GET_MARK		= $CF
+OS_SET_EOF		= $D0
+OS_GET_EOF		= $D1
+OS_SET_LEVEL		= $D2
+OS_GET_LEVEL		= $D3
 
 ;---------------------------------------------------------
 ; Disk II soft switches
@@ -92,17 +67,6 @@ DRVRDM		= $C08E ; switch on READ mode
 ;---------------------------------------------------------
 ; Equates from imported formatting code
 ;---------------------------------------------------------
-Home     = $FC58		; Monitor clear screen and home cursor
-DevCnt   = $BF31		; Prodos device count
-DevList  = $BF32		; List of devices for ProDOS
-DevAdr   = $BF10		; Given slot this is the address of driver
-IN       = $200			; Keyboard input buffer
-WARMDOS  = $BE00		; BASIC Warm-start vector
-LAST     = $BF30		; Last device accessed by ProDOS
-WAIT     = $FCA8		; Delay routine
-CLRLN    = $FC9C		; Clear Line routine
-PRBYTE   = $FDDA		; Print Byte routine (HEX value)
-COUT     = $FDED		; Character output routine (print to screen)
 Step0    = $C080		; Drive stepper motor positions
 Step1    = $C081		;   |      |      |       |
 Step2    = $C082		;   |      |      |       |
@@ -115,27 +79,6 @@ DiskRD   = $C08C		; Disk READ  softswitch
 DiskWR   = $C08D		; Disk WRITE softswitch
 ModeRD   = $C08E		; Mode READ  softswitch
 ModeWR   = $C08F		; Mode WRITE softswitch
-
-;---------------------------------------------------------
-; Horizontal tabs for volume display
-;---------------------------------------------------------
-H_SL	= $02
-H_DR	= $08
-H_VO	= $0f
-H_SZ	= $21
-
-;---------------------------------------------------------
-; Horizontal tabs for buffer display
-;---------------------------------------------------------
-H_BUF	= $05
-H_BLK	= $0f
-H_NUM1	= $15
-
-;---------------------------------------------------------
-; Veritcal tab for buffer display
-;---------------------------------------------------------
-V_MSG	= $0b
-V_BUF	= $0f
 
 ;---------------------------------------------------------
 ; Characters
@@ -189,21 +132,3 @@ CHR_CAN = $18
 ; Nibble/halftrack stuff
 ;---------------------------------------------------------
 NIBPAGES	= $34		; Number of nibble pages to send
-
-;---------------------------------------------------------
-; Apple IIgs SCC Z8530 registers and constants
-;---------------------------------------------------------
-
-GSCMDB	=	$C038
-GSDATAB	=	$C03A
-
-GSCMDA	=	$C039
-GSDATAA	=	$C03B
-
-RESETA	=	%11010001	; constant to reset Channel A
-RESETB	=	%01010001	; constant to reset Channel B
-WR11A	=	%11010000	; init wr11 in Ch A
-WR11BXTAL	=	%00000000	; init wr11 in Ch B - use external clock
-WR11BBRG	=	%01010000	; init wr11 in Ch B - use baud rate generator
-
-CASSLOT		= $08	; Selection number for cassette transport

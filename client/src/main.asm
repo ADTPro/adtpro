@@ -18,10 +18,6 @@
 ; 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 ;
 
-.include "applechr.i"
-.include "const.i"
-.include "ip65/common.i"
-
 	.segment "SYS"
 	.org $2000
 
@@ -563,9 +559,7 @@ NOBEEP:	rts
 
 QUIT:
 	sta ROM
-	jsr MLI
-	.byte PD_QUIT
-	.addr QUITL
+	CALLOS OS_QUIT, QUITL
 
 QUITL:
 	.byte	4

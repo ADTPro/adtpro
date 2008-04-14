@@ -1,6 +1,6 @@
 ;
 ; ADTPro - Apple Disk Transfer ProDOS
-; Copyright (C) 2006 - 2008 by David Schmidt
+; Copyright (C) 2008 by David Schmidt
 ; david__schmidt at users.sourceforge.net
 ;
 ; This program is free software; you can redistribute it and/or modify it 
@@ -18,28 +18,8 @@
 ; 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 ;
 
-	.include "vars.asm"
-	.include "main.asm"
-
-;---------------------------------------------------------
-; Pull in all the rest of the code
-;---------------------------------------------------------
-	.include "print.asm"
-	.include "serial/serproto.asm"
-	.include "online.asm"
-	.include "rw.asm"
-	.include "sr.asm"
-	.include "serial/ssc.asm"
-	.include "serial/iigsscc.asm"
-	.include "crc.asm"
-	.include "pickvol.asm"
-	.include "input.asm"
-	.include "serial/serconfig.asm"
-	.include "hostfns.asm"
-	.include "diskii.asm"
-	.include "nibble.asm"
-	.include "serial/pascalep.asm"	; Note: includes PASCALEP segment
-	.include "format.asm"			; Note: includes FORMAT segment
-	.include "bsave.asm"
-
-	.segment "DATA"
+.macro 	CALLOS Arg1, Arg2
+	jsr PRODOS_MLI	; Which ought to be $BF00
+	.byte Arg1
+	.addr Arg2
+.endmacro
