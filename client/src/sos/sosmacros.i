@@ -25,3 +25,6 @@
         .byte Arg1
         .addr Arg2
 .endmacro
+
+.define	NRM_BLOCK $11,$20
+.define	INV_BLOCK $12,$20,$11

@@ -25,10 +25,11 @@
 ;---------------------------------------------------------
 INIT_SCREEN:
 	; Prepare the system for our expecations
+	clc
 	CALLOS OS_OPEN, OPEN_PARMS	; Open the console
 	bcs Local_Quit
 	lda OPEN_REF
-	sta WRITE_REF	; Save off our terminal references
+	sta WRITE_REF			; Save off our console file references
 	sta WRITE1_REF
 	sta CONSREAD_REF
 
@@ -39,10 +40,15 @@ INIT_SCREEN:
 	lda #>INIT_SCREEN_DATA
 	sta UTILPTR+1
 	jsr WRITEMSG_RAW
+					; Ask for device number of the console
+	CALLOS OS_GET_DEV_NUM, GET_DEV_NUM_PARMS
+	bcs Local_Quit
+	lda GET_DEV_NUM_REF
+	sta D_STATUS_NUM		; Save off our console device references
 	rts
 
 Local_Quit:
-	jmp *	; TODO: Would be nice to jump to QUIT here...
+	jmp QUIT
 
 INIT_SCREEN_DATA:
 	.byte 16, 0	; Set 40 columns
@@ -87,6 +93,7 @@ LogoLoop:
 	jsr HTAB
 	ldy #PMSG01	; Version number
 	jsr WRITEMSG
+
 	rts
 
 ;---------------------------------------------------------
@@ -94,8 +101,8 @@ LogoLoop:
 ;---------------------------------------------------------
 ; Entry - clear and print at the message area (row $16)
 WRITEMSGAREA:
-	ldx #$16
-	jsr VTAB
+	lda #$16
+	jsr TABV
 ; Entry - print message at left border, current row
 WRITEMSGLEFT:
 	lda #$1e		; Clear line
@@ -105,7 +112,7 @@ WRITEMSG:
 	sta UTILPTR		; Point UTILPTR at our message
 	lda MSGTBL+1,Y
 	sta UTILPTR+1
-WRITEMSGRAW:
+
 	clc
 	tya
 	ror		; Divide Y by 2 to get the message length out of the table
@@ -128,32 +135,33 @@ GOTOXY:
 	sta UTILPTR+1
 	lda #$03
 	sta WRITE_LEN
-	jsr WRITEMSG_RAW
-	rts
+	jmp WRITEMSG_RAW	; Finish through WRITEMSG_RAW
 
 WRITEMSG_XY:
-	.byte 26, $00, $00
+	.byte 26, $00, $00	; $1a/26 is the code for absolute position
 
 ;---------------------------------------------------------
-; VTAB - Vertical tab to row X
+; TABV - Vertical tab to accumulator value
 ;---------------------------------------------------------
-VTAB:
-	stx WRITEMSG_VT+1
+TABV:
+	sta WRITEMSG_VT+1
 	lda #<WRITEMSG_VT
 	sta UTILPTR
 	lda #>WRITEMSG_VT
 	sta UTILPTR+1
 	lda #$02
 	sta WRITE_LEN
-	jsr WRITEMSG_RAW
+	jmp WRITEMSG_RAW	; Finish through WRITEMSG_RAW
+	
 
 WRITEMSG_VT:
-	.byte $19,$16
+	.byte $19,$16		; $19/25d is the code for vertical position
 
 ;---------------------------------------------------------
 ; HTAB - Horizontal tab to column X
 ;---------------------------------------------------------
 HTAB:
+	pha
 	stx WRITEMSG_HT+1
 	lda #<WRITEMSG_HT
 	sta UTILPTR
@@ -162,6 +170,8 @@ HTAB:
 	lda #$02
 	sta WRITE_LEN
 	jsr WRITEMSG_RAW
+	pla
+	rts
 
 WRITEMSG_HT:
 	.byte $18,$16
@@ -172,6 +182,7 @@ WRITEMSG_HT:
 ; Read a character from the console
 ;---------------------------------------------------------
 GETCHR1:
+RDKEY:
 	clc
 	CALLOS OS_READFILE, CONSREAD_PARMS
 	jsr ERRORCK
@@ -193,7 +204,7 @@ SOS_ERROR:
 ; Special case: CROUT, which prints a carriage return
 ;---------------------------------------------------------
 CROUT:	; Output return character
-	lda #$8d
+	lda #$0d
 COUT:	; Character output routine (print to screen)
 COUT1:	; Character output
 	sta WRITE1_DATA
@@ -217,14 +228,67 @@ CLRMSGAREA_DATA:
 	.byte $19,$16,$1d
 
 ;---------------------------------------------------------
+; INVERSE - Invert/highlight the characters on the screen
+;
+; Inputs:
+;   A - number of bytes to process
+;   X - starting x coordinate
+;   Y - starting y coordinate
+;---------------------------------------------------------
+INVERSE:
+	sta INUM
+	jsr GOTOXY
+	lda #$12		; Code for start printing in inverse
+	jsr COUT
+	ldx INUM
+:	jsr READVID
+	jsr COUT		; Reflect the characters on screen, inverted!
+	dex
+	bne :-
+	lda #$11		; Code for start printing normally
+	jsr COUT
+	rts
+
+INUM:	.byte $00
+
+;---------------------------------------------------------
+; PRBYTE: Print Byte routine (HEX value)
+;---------------------------------------------------------
+PRBYTE:	
+	PHA		; PRINT BYTE AS 2 HEX
+	LSR		; DIGITS, DESTROYS A-REG
+	LSR
+	LSR
+	LSR
+	JSR PRHEXZ
+	PLA
+PRHEX:	AND #$0F	; PRINT HEX DIG IN A-REG
+PRHEXZ:	ORA #$B0	;  LSB'S
+	CMP #$BA
+	BCC MyCOUT
+	ADC #$06
+MyCOUT:	JMP COUT
+	rts
+
+;---------------------------------------------------------
+; READVID:
+; 
+; Read character under cursor
+;---------------------------------------------------------
+READVID:
+	lda #$11
+	sta D_STATUS_CODE
+	CALLOS OS_D_STATUS, D_STATUS_PARMS
+	clc
+	lda D_STATUS_DATA
+	rts
+
+;---------------------------------------------------------
 ; TODO: Still Stubs
 ;---------------------------------------------------------
-TABV:	; Set BASL from Accumulator
 CLREOP:	; Clear to end of screen
 CLREOL:	; Clear to end of line
 WAIT:	; Monitor delay: # cycles = (5*A*A + 27*A + 26)/2
-RDKEY:	; Character input
 NXTCHAR:; Line input
-PRBYTE:	; Print Byte routine (HEX value)
 
 rts

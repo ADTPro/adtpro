@@ -49,51 +49,6 @@ caldriv3:
 	rts
 
 ;---------------------------------------------------------
-; rdnibtr - read track as nibbles into tracks buffer.
-; total bytes read is NIBPAGES * 256, or about twice
-; the track length.
-; the drive has been calibrated, so we know we are in read
-; mode, the motor is running, and and the correct drive 
-; number is engaged.
-; we wait until we encounter a first nibble after a gap.
-; for this purpose, a gap is at least 4 ff nibbles in a 
-; row. note this is not 100% fool proof; the ff nibble
-; can occur as a regular nibble instead of autosync.
-; but this is conform beneath apple dos, so is
-; probably ok.
-;---------------------------------------------------------
-;readtrk:
-;rdnibtr:
-;	ldx pdsoftx		; Load drive index into X
-;	lda #0			; a = 0
-;	tay			; y = 0 (index)
-;	sta BLKPTR		; set running ptr (lo) to 0
-;	lda #>BIGBUF		; BIGBUF address high
-;	sta BLKPTR+1		; set running ptr (hi)
-;	lda #NIBPAGES
-;	sta NIBPCNT		; page counter
-; use jmp, not jsr, to perform nibsync. that way we
-; have a bit more breathing room, cycle-wise. the
-; "function" returns with a jmp to rdnibtr8.
-;	jmp	nibsync		; find first post-gap byte
-; the read loop must be fast enough to read 1 byte every
-; 32 cycles. it appears the interval is 17 cycles within
-; one data page, and 29 cycles when crossing a data page.
-; these numbers are based on code that does not cross
-; a page boundary.
-;rdnibtr7:
-;	lda $c08c,x		; read (4 cycles)
-;	bpl rdnibtr7		; until byte complete (2c)
-;rdnibtr8:
-;	sta (BLKPTR),y		; store in buffer (6c)
-;	iny			; (2c)
-;	bne rdnibtr7		; 256 bytes done? (2 / 3c)
-;	inc BLKPTR+1		; next page (5c)
-;	dec NIBPCNT		; count (5c)
-;	bne rdnibtr7		; and back (3c)
-;	rts
-
-;---------------------------------------------------------
 ; Read a full track, marking long and short self-sync nibbles
 ;
 ; By: Stephen Thomas
@@ -297,7 +252,6 @@ LWRprot:
 	jmp * ; TODO: remove me
 
 entrypoint:
-
 ;---------------------------------------------------------
 ; Start us up
 ;---------------------------------------------------------
@@ -314,19 +268,22 @@ entrypoint:
 ;	jsr BLOAD	; Load up user parameters, if any
 ;	jsr HOME	; Clear screen
 ;	jsr PARMINT	; Interpret parameters - may leave a complaint
-;	jmp MAINL	; And off we go!
+	jmp MAINL	; And off we go!
 
 ;---------------------------------------------------------
 ; Main loop
 ;---------------------------------------------------------
 MAINLUP:
 	jsr HOME	; Clear screen
-
 MAINL:
 RESETIO:
 ;	jsr $0000	; Pseudo-indirect JSR to reset the IO device
 	jsr MainScreen
-
+	lda #$03
+        ldx #$1C
+	ldy #$10
+	jsr INVERSE
+	jmp *
 ;---------------------------------------------------------
 ; KBDLUP
 ;
@@ -341,7 +298,7 @@ KSEND:	cmp #CHR_S	; SEND?
 	lda #$06
         ldx #$02
 	ldy #$0e
-	;jsr INVERSE
+	jsr INVERSE
 	;jsr SEND	; YES, DO SEND ROUTINE
 	jmp MAINLUP
 :
@@ -350,7 +307,7 @@ KRECV:	cmp #CHR_R	; RECEIVE?
 	lda #$09
 	ldx #$09
 	ldy #$0e
-	;jsr INVERSE
+	jsr INVERSE
 	;jsr RECEIVE
 	jmp MAINLUP
 :
@@ -359,7 +316,7 @@ KDIR:	cmp #CHR_D	; DIR?
 	lda #$05
 	ldx #$13
 	ldy #$0e
-	;jsr INVERSE
+	jsr INVERSE
 	;jsr DIR	  	; Yes, do DIR routine
 	jmp MAINLUP
 :
@@ -370,7 +327,7 @@ KBATCH:
 	lda #$07
         ldx #$19
 	ldy #$0e
-	;jsr INVERSE
+	jsr INVERSE
 	;jsr BATCH	; Set up batch processing
 	jmp MAINLUP
 :
@@ -379,7 +336,7 @@ KCD:	cmp #CHR_C	; CD?
 	lda #$04
         ldx #$21
 	ldy #$0e
-	;jsr INVERSE
+	jsr INVERSE
 	;jsr CD	  	; Yes, do CD routine
 	jmp MAINLUP
 :
@@ -396,7 +353,7 @@ KABOUT:	cmp #$9F	; ABOUT MESSAGE? ("?" KEY)
 	lda #$03
         ldx #$1C
 	ldy #$10
-	;jsr INVERSE
+	jsr INVERSE
 	lda #$15
 	jsr TABV
 	ldy #PMSG17	; "About" message
@@ -432,11 +389,9 @@ FORWARD:
 ;---------------------------------------------------------
 MainScreen:
 	jsr SHOWLOGO
-
-	lda #$02
-	;sta <CH
-	lda #$0e
-	;jsr TABV
+	ldx #$02
+	ldy #$0e
+	jsr GOTOXY
 	ldy #PMSG02	; Prompt line 1
 	jsr WRITEMSG
 
@@ -477,7 +432,7 @@ NOBEEP:	rts
 
 QUIT:
 ;	sta ROM
-	CALLOS OS_QUIT, QUITL
+	CALLOS OS_QUIT, QUIT
 
 QUITL:
 	.byte	4

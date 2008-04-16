@@ -38,7 +38,6 @@ FormatEntry:
 PICKVOL:
 CD:
 DIR:
-INVERSE:
 BLOAD:
 GET_PREFIX:
 Died:
