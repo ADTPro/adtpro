@@ -36,7 +36,7 @@ DEVICES:		; DEVICES and CAPBLKS used to share space
 CAPBLKS:		; for faster volume selection.
 	.res $20
 PARMBUF:
-	.res $10, $00
+	.res $20, $00
 BLKLO	= PARMBUF+$04	; Part of PARMBUF structure
 BLKHI	= PARMBUF+$05	; Part of PARMBUF structure
 
@@ -44,29 +44,6 @@ BIGBUF	= $6600		; The place where all the action happens
 ; Note: we now have 6 pages of free space between $B600 and $BC00.
 CRCTBLL	= $BC00		; CRC LOW TABLE  ($100 Bytes)
 CRCTBLH	= $BD00		; CRC HIGH TABLE ($100 Bytes)
-NUMBLKS:
-	.byte $00, $00	; Number of blocks of a chosen volume
-HOSTBLX:
-	.byte $00, $00	; Number of blocks in a host image
-UNITNBR:
-	.byte $00	; Unit number of chosen volume
-
-SR_WR_C:
-	.byte $00	; A place to save the send/receive/read/write character
-SLOWA:	.byte $00	; A place to save the Accumulator, speed is not important
-SLOWX:	.byte $00	; A place to save the X register, speed is not important
-SLOWY:	.byte $00	; A place to save the Y register, speed is not important
-iobtrk:
-PCCRC:	.byte $00
-maxtrk:
-PCCRC2:	.byte $00	; CRC received from PC
-
-pdslot:	.byte $06
-pdrive:	.byte $00
-pdsoftx:
-	.byte $00
-
-top_stack:	.byte $00
 
 ;---------------------------------------------------------
 ; Zero page locations (all unused by ProDOS,
@@ -86,5 +63,3 @@ Buffer  = $1d 		; ($02 bytes) Address pointer for FORMAT data
 CRCY	= $8a		; ($01 byte) Used by UDP SEND
 TMOT    = $8b		; ($01 byte) Timeout indicator
 NIBPCNT	= $8c		; ($01 byte) Counts nibble pages
-
-

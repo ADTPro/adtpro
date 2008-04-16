@@ -18,10 +18,12 @@
 ; 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 ;
 
-.include "const.i"
+.include "applechr.i"		; ASCII string productions
+.include "const.i"		; ProDOS/SOS, CHR equates
 
 ;--------------------------------------------------------- 
 ; SOS specific stuff
 ;--------------------------------------------------------- 
-OS_CALL_OFFSET = 1	; Offset to the SOS call type byte
+OS_CALL_OFFSET	= 1	; Offset to the SOS call type byte
+CHR_RETURN	= $0d	; Carriage return
 

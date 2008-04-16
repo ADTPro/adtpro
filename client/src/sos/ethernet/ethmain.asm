@@ -18,18 +18,20 @@
 ; 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 ;
 
-	.include "applechr.i"
-	.include "ip65/common.i"
-	.include "sos/sosconst.i"
+	.include "sos/interp.asm"	; Interpreter header
+	.include "sos/sosmacros.i"	; OS macros
+	.include "sos/sosconst.i"	; OS equates, characters, etc.
 	.include "sos/sosvars.asm"
-;	.include "main.asm"
+	.include "sos/conio.asm"	; Console I/O
+	.include "sos/ethernet/ethmessages.asm"	; Messages
+	.include "ip65/common.i"	; More macros - ldax, for example
 
 ;---------------------------------------------------------
 ; Pull in all the rest of the code
 ;---------------------------------------------------------
 
-	.segment "STARTUP"	; Remove when real main comes in
-	rts
+	.include "sos/interimmain.asm"
+
 ;	.include "print.asm"
 ;	.include "online.asm"
 ;	.include "rw.asm"

@@ -18,10 +18,18 @@
 ; 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 ;
 
-.include "macros.i"
+; Header for SOS interpreter
 
-.macro 	CALLOS Arg1, Arg2
-	jsr PRODOS_MLI	; Which ought to be $BF00
-	.byte Arg1
-	.addr Arg2
-.endmacro
+	.import ASMEND
+
+	.ORG  $2000-14      ; START ADDRESS
+
+	.BYTE $53,$4f,$53,$20,$4e,$54,$52,$50	; "SOS NTRP"
+	.ADDR $0000	; No extra header
+	.ADDR ASMBEGIN	; Tell 'em where it starts
+	.ADDR ASMEND	; Tell 'em where it ends
+
+	.segment "STARTUP"
+
+ASMBEGIN:
+	jmp entrypoint	; Start it up!

@@ -31,6 +31,8 @@
         .endrep
 .endmacro
 
+.define asc2(Arg)  asc Arg
+
 .macro  ascz Arg
         .repeat .strlen(Arg), I
         .byte   .strat(Arg, I) | $80

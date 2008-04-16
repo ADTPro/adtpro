@@ -18,6 +18,8 @@
 ; 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 ;
 
+.include "macros.i"
+
 .macro  CALLOS Arg1, Arg2
         .byte $00
         .byte Arg1

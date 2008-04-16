@@ -3,6 +3,7 @@
 	<property name="versionString" value="v.r.m" />
 	<property name="distName" value="ADTPro-${versionString}" />
 	<property name="diskName" value="ADTPRO-${versionString}" />
+	<property name="diskNameSOS" value="ADTSOS-${versionString}" />
 	<property name="volName" value="ADTPro.${versionString}" />
 	<property name="dosVersionString" value="22" />
 	<property name="dosDistName" value="ADT${dosVersionString}" />
@@ -18,7 +19,7 @@
 	<target name="all" depends="wipe, clean, assemble, builddsk, scripts, jar">
 	</target>
 
-	<target name="dev" depends="clean, assemble, builddsk, scripts, jar">
+	<target name="dev" depends="clean, assemble, builddsk">
 	</target>
 
 	<target name="wipe">
@@ -35,12 +36,15 @@
 		<!-- <delete file="${projdir}/client/src/dos/ADT" /> -->
 		<delete file="${builddir}/ADT" />
 		<delete file="${builddir}/ADTPRO" />
+		<delete file="${builddir}/ADTSOS" />
 		<delete file="${builddir}/ADTPROAUD" />
 		<delete file="${builddir}/ADTPROETH" />
+		<delete file="${builddir}/ADTSOSETH" />
 		<delete file="${builddir}/${distName}.tar.gz" />
 		<delete file="${builddir}/${distName}.zip" />
 		<delete file="${builddir}/${distName}/disks/${diskName}.DSK" />
 		<delete file="${builddir}/${distName}/disks/${diskName}.PO" />
+		<delete file="${builddir}/${distName}/disks/${diskNameSOS}.DSK" />
 		<delete file="${builddir}/${distName}/disks/${dosDistName}.DSK" />
 		<delete file="${projdir}/org/adtpro/resources/adt.dmp" />
 		<delete file="${projdir}/org/adtpro/resources/adtpro.dmp" />
@@ -77,6 +81,15 @@
 			<arg line="-l -t none tail.asm" />
 		</exec>
 		<!--
+		Assemble the ADTSOS source
+		-->
+		<exec dir="${projdir}/client/src" executable="${assemblerPath}/ca65">
+			<arg line="-l -t none sos/serial/sermain.asm" />
+		</exec>
+		<exec dir="${projdir}/client/src" executable="${assemblerPath}/ca65">
+			<arg line="-l -t none sos/ethernet/ethmain.asm" />
+		</exec>
+		<!--
 		Assemble and link the ADT source
 		-->
 		<exec dir="${projdir}/client/src/dos" executable="${assemblerPath}/cl65">
@@ -108,6 +121,12 @@
 		<exec dir="${projdir}/client/src" executable="${assemblerPath}/ld65">
 			<arg line="-m adtproeth.map -C prodos/ethernet/adtpro.cfg -o ADTPROETH prodos/ethernet/ethmain.o ip65/ip65.lib tail.o" />
 		</exec>
+		<exec dir="${projdir}/client/src" executable="${assemblerPath}/ld65">
+			<arg line="-m adtsosser.map -C sos/serial/adtpro.cfg -o ADTSOS sos/serial/sermain.o tail.o" />
+		</exec>
+		<exec dir="${projdir}/client/src" executable="${assemblerPath}/ld65">
+			<arg line="-m adtsoseth.map -C sos/ethernet/adtpro.cfg -o ADTSOSETH sos/ethernet/ethmain.o ip65/ip65.lib tail.o" />
+		</exec>
 		<!--
 		Move the object code to the build directory
 		-->
@@ -117,6 +136,8 @@
 		<copy file="${builddir}/ADTPROAUD" tofile="${basedir}/org/adtpro/resources/adtproaud.raw" />
 		<move file="${projdir}/client/src/ADTPROETH" tofile="${builddir}/ADTPROETH" />
 		<copy file="${builddir}/ADTPROETH" tofile="${basedir}/org/adtpro/resources/adtproeth.raw" />
+		<move file="${projdir}/client/src/ADTSOS" tofile="${builddir}/ADTSOS" />
+		<move file="${projdir}/client/src/ADTSOSETH" tofile="${builddir}/ADTSOSETH" />
 		<move file="${projdir}/client/src/dos/ADT" tofile="${builddir}/ADT" />
 		<copy file="${builddir}/ADT" tofile="${basedir}/org/adtpro/resources/adt.raw" />
 		<!--
@@ -148,6 +169,7 @@
 		-->
 		<copy file="${builddir}/ADTProBase.dsk" tofile="${builddir}/${distName}/disks/${diskName}.DSK" />
 		<copy file="${builddir}/ADTProBase.po" tofile="${builddir}/${distName}/disks/${diskName}.PO" />
+		<copy file="${builddir}/ADTSOSBase.dsk" tofile="${builddir}/${distName}/disks/${diskNameSOS}.DSK" />
 		<copy file="${builddir}/ADTBase.dsk" tofile="${builddir}/${distName}/disks/${dosDistName}.DSK" />
 		<!--
 		Put the assembled programs on the disk images
@@ -160,6 +182,12 @@
 		</exec>
 		<exec dir="${builddir}" executable="java" input="${builddir}/ADTPROETH">
 			<arg line="-jar ${acJar} -p ADTPROETH sys 8192 ${distName}/disks/${diskName}.DSK" />
+		</exec>
+		<exec dir="${builddir}" executable="java" input="${builddir}/ADTSOS">
+			<arg line="-jar ${acJar} -p SOS.INTERP sos 0000 ${distName}/disks/${diskNameSOS}.DSK" />
+		</exec>
+		<exec dir="${builddir}" executable="java" input="${builddir}/ADTSOSETH">
+			<arg line="-jar ${acJar} -p SOS.INTERPETH sos 0000 ${distName}/disks/${diskNameSOS}.DSK" />
 		</exec>
 		<!--
 		And the .po version...

@@ -18,10 +18,27 @@
 ; 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 ;
 
-.include "macros.i"
+	.macro  define_msg	MESSAGE_DATA_LENGTH, d1, d2, d3, d4, d5, d6
+	.local	MESSAGE_DATA_START, MESSAGE_DATA_END
 
-.macro 	CALLOS Arg1, Arg2
-	jsr PRODOS_MLI	; Which ought to be $BF00
-	.byte Arg1
-	.addr Arg2
+MESSAGE_DATA_LENGTH:
+	.byte MESSAGE_DATA_END-MESSAGE_DATA_START
+MESSAGE_DATA_START:
+	.byte d1
+	.ifnblank d2
+	.byte d2
+	.endif
+	.ifnblank d3
+	.byte d3
+	.endif
+	.ifnblank d4
+	.byte d4
+	.endif
+	.ifnblank d5
+	.byte d5
+	.endif
+	.ifnblank d6
+	.byte d6
+	.endif
+MESSAGE_DATA_END:
 .endmacro

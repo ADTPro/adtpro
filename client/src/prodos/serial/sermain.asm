@@ -18,16 +18,18 @@
 ; 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 ;
 
-	.include "applechr.i"
-	.include "ip65/common.i"
-	.include "prodos/prodosconst.i"
-	.include "prodos/prodosmacros.i"
+	.include "prodos/interp.asm"			; Interpreter header
+	.include "prodos/prodosmacros.i"		; OS macros
+	.include "prodos/prodosconst.i"			; OS equates, characters, etc.
 	.include "prodos/prodosvars.asm"
+	.include "prodos/serial/sermessages.asm"	; Messages
+	.include "ip65/common.i"
 	.include "main.asm"
 
 ;---------------------------------------------------------
 ; Pull in all the rest of the code
 ;---------------------------------------------------------
+	.include "prodos/conio.asm"		; Console I/O
 	.include "print.asm"
 	.include "prodos/serial/serproto.asm"
 	.include "online.asm"
@@ -38,7 +40,7 @@
 	.include "crc.asm"
 	.include "pickvol.asm"
 	.include "input.asm"
-	.include "prodos/serial/serconfig.asm"
+	.include "prodos/serial/serconfigpro.asm"
 	.include "hostfns.asm"
 	.include "diskii.asm"
 	.include "nibble.asm"

@@ -18,33 +18,72 @@
 ; 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 ;
 
-	.include "applechr.i"
-	.include "ip65/common.i"
-	.include "sos/sosconst.i"
+	.include "sos/interp.asm"	; Interpreter header
+	.include "sos/sosmacros.i"	; OS macros
+	.include "sos/sosconst.i"	; OS equates, characters, etc.
 	.include "sos/sosvars.asm"
-;	.include "main.asm"
+	.include "sos/conio.asm"	; Console I/O
+	.include "sos/serial/sermessages.asm"	; Messages
+	.include "ip65/common.i"	; More macros - ldax, for example
 
-	.segment "STARTUP"	; Remove when real main comes in
+	.include "sos/interimmain.asm"
+
+; Stubs:
+PRD:
+ROM:
+DELAY:
+motoroff:
+CH:
+FormatEntry:
+PICKVOL:
+CD:
+DIR:
+INVERSE:
+BLOAD:
+GET_PREFIX:
+Died:
+Done:
+SlotF:
+NUM:
+CHROVER:
+WRITING:
+PICKVOL2:
+ReceiveNib:
+READING:
+PREPPRG:
+GO_TRACK0:
+INIT_DISKII:
+sendnib:
+SHOWHM1:
+YN:
+GETFN:
+PAUSE:
+GetSendType:
+GETFN2:
+BIGBUF:
+BLKHI:
+BLKLO:
+PARMBUF:
+INVFLG:
 	rts
 
 ;---------------------------------------------------------
 ; Pull in all the rest of the code
 ;---------------------------------------------------------
 ;	.include "print.asm"
-;	.include "prodos/serial/serproto.asm"
+	.include "prodos/serial/serproto.asm"
 ;	.include "online.asm"
 ;	.include "rw.asm"
-;	.include "sr.asm"
-;	.include "prodos/serial/ssc.asm"
-;	.include "prodos/serial/iigsscc.asm"
-;	.include "crc.asm"
+	.include "sr.asm"
+	.include "prodos/serial/ssc.asm"
+	.include "sos/serial/iiiacia.asm"
+	.include "crc.asm"
 ;	.include "pickvol.asm"
 ;	.include "input.asm"
-;	.include "prodos/serial/serconfig.asm"
+	.include "sos/serial/serconfigsos.asm"
 ;	.include "hostfns.asm"
 ;	.include "diskii.asm"
 ;	.include "nibble.asm"
-;	.include "prodos/serial/pascalep.asm"	; Note: includes PASCALEP segment
 ;	.include "format.asm"			; Note: includes FORMAT segment
 ;	.include "bsave.asm"
 

@@ -106,7 +106,7 @@ rdnibtr:
 	lda #0			; a = 0
 	tay			; y = 0 (index)
 	sta BLKPTR		; set running ptr (lo) to 0
-	lda #>BIGBUF		; BIGBUF address high
+	;lda #>BIGBUF		; BIGBUF address high
 	sta BLKPTR+1		; set running ptr (hi)
 	lda pdsoftx		; Get soft switch offset
 	clc
@@ -248,7 +248,7 @@ Trans2:
 ; Trans2 entry point preconditions:
 ;   Buffer set to the start of nibble page to write (with leading sync bytes)
 	ldy #$32		; Set Y offset to 1st sync byte (max=50)
-	ldx SlotF		; Set X offset to FORMAT slot/drive
+	;ldx SlotF		; Set X offset to FORMAT slot/drive
 	sec			; (assume the disk is write protected)
 	lda DiskWR,x		; Write something to the disk
 	lda ModeRD,x		; Reset Mode softswitch to READ
@@ -287,14 +287,14 @@ MStore:
 	rts
 LWRprot:
 	clc			; Disk is write protected
-	jsr Done		; Turn the drive off
+	;jsr Done		; Turn the drive off
 	lda #$2B
 	pla
 	pla
 	pla
 	pla
-	jmp Died		; Prompt for another FORMAT...
-
+	;jmp Died		; Prompt for another FORMAT...
+	jmp * ; TODO: remove me
 
 entrypoint:
 
@@ -308,13 +308,13 @@ entrypoint:
 	stx top_stack	; Save it for full pops during aborts
 
 	jsr INIT_SCREEN	; Sets up the screen for behaviors we expect
-	jsr MAKETBL	; Prepare our CRC tables
-	jsr PARMDFT	; Set up parameters
-	jsr GET_PREFIX	; Get our current ProDOS prefix
-	jsr BLOAD	; Load up user parameters, if any
-	jsr HOME	; Clear screen
-	jsr PARMINT	; Interpret parameters - may leave a complaint
-	jmp MAINL	; And off we go!
+;	jsr MAKETBL	; Prepare our CRC tables
+;	jsr PARMDFT	; Set up parameters
+;	jsr GET_PREFIX	; Get our current ProDOS prefix
+;	jsr BLOAD	; Load up user parameters, if any
+;	jsr HOME	; Clear screen
+;	jsr PARMINT	; Interpret parameters - may leave a complaint
+;	jmp MAINL	; And off we go!
 
 ;---------------------------------------------------------
 ; Main loop
@@ -324,7 +324,7 @@ MAINLUP:
 
 MAINL:
 RESETIO:
-	jsr $0000	; Pseudo-indirect JSR to reset the IO device
+;	jsr $0000	; Pseudo-indirect JSR to reset the IO device
 	jsr MainScreen
 
 ;---------------------------------------------------------
@@ -341,8 +341,8 @@ KSEND:	cmp #CHR_S	; SEND?
 	lda #$06
         ldx #$02
 	ldy #$0e
-	jsr INVERSE
-	jsr SEND	; YES, DO SEND ROUTINE
+	;jsr INVERSE
+	;jsr SEND	; YES, DO SEND ROUTINE
 	jmp MAINLUP
 :
 KRECV:	cmp #CHR_R	; RECEIVE?
@@ -350,8 +350,8 @@ KRECV:	cmp #CHR_R	; RECEIVE?
 	lda #$09
 	ldx #$09
 	ldy #$0e
-	jsr INVERSE
-	jsr RECEIVE
+	;jsr INVERSE
+	;jsr RECEIVE
 	jmp MAINLUP
 :
 KDIR:	cmp #CHR_D	; DIR?
@@ -359,8 +359,8 @@ KDIR:	cmp #CHR_D	; DIR?
 	lda #$05
 	ldx #$13
 	ldy #$0e
-	jsr INVERSE
-	jsr DIR	  	; Yes, do DIR routine
+	;jsr INVERSE
+	;jsr DIR	  	; Yes, do DIR routine
 	jmp MAINLUP
 :
 KBATCH:
@@ -370,8 +370,8 @@ KBATCH:
 	lda #$07
         ldx #$19
 	ldy #$0e
-	jsr INVERSE
-	jsr BATCH	; Set up batch processing
+	;jsr INVERSE
+	;jsr BATCH	; Set up batch processing
 	jmp MAINLUP
 :
 KCD:	cmp #CHR_C	; CD?
@@ -379,15 +379,15 @@ KCD:	cmp #CHR_C	; CD?
 	lda #$04
         ldx #$21
 	ldy #$0e
-	jsr INVERSE
-	jsr CD	  	; Yes, do CD routine
+	;jsr INVERSE
+	;jsr CD	  	; Yes, do CD routine
 	jmp MAINLUP
 :
 KCONF:	cmp #CHR_G	; Configure?
 	bne :+		; Nope
-	jsr CONFIG      ; YES, DO CONFIGURE ROUTINE
+	;jsr CONFIG      ; YES, DO CONFIGURE ROUTINE
 	jsr HOME	; Clear screen; PARMINT may leave a complaint
-	jsr PARMINT     ; AND INTERPRET PARAMETERS
+	;jsr PARMINT     ; AND INTERPRET PARAMETERS
 	jmp MAINL
 
 :
@@ -396,7 +396,7 @@ KABOUT:	cmp #$9F	; ABOUT MESSAGE? ("?" KEY)
 	lda #$03
         ldx #$1C
 	ldy #$10
-	jsr INVERSE
+	;jsr INVERSE
 	lda #$15
 	jsr TABV
 	ldy #PMSG17	; "About" message
@@ -408,13 +408,13 @@ KVOLUMS:
 	cmp #CHR_V	; Volumes online?
 	bne :+		; Nope
 	ldy #PMNULL	; No title line
-	jsr PICKVOL	; Pick a volume - A has index into DEVICES table
+	;jsr PICKVOL	; Pick a volume - A has index into DEVICES table
 	jmp MAINLUP
 :
 KFORMAT:
 	cmp #CHR_F	; Format?
 	bne :+		; Nope
-	jsr FormatEntry	; Run formatter
+	;jsr FormatEntry	; Run formatter
 	jmp MAINLUP
 :
 KQUIT:
@@ -434,9 +434,9 @@ MainScreen:
 	jsr SHOWLOGO
 
 	lda #$02
-	sta <CH
+	;sta <CH
 	lda #$0e
-	jsr TABV
+	;jsr TABV
 	ldy #PMSG02	; Prompt line 1
 	jsr WRITEMSG
 
@@ -450,23 +450,23 @@ MainScreen:
 BABORT:	jsr AWBEEP	; Beep!
 ABORT:	ldx top_stack	; Pop goes the stackptr
 	txs
-	jsr motoroff	; Turn potentially active drive off
-	bit $C010	; Strobe the keyboard
+;	jsr motoroff	; Turn potentially active drive off
+;	bit $C010	; Strobe the keyboard
 	jmp MAINLUP	; ... and restart
 
 ;---------------------------------------------------------
 ; AWBEEP - CUTE TWO-TONE BEEP (USES AXY)
 ;---------------------------------------------------------
 AWBEEP:
-	lda PSOUND	; IF SOUND OFF, RETURN NOW
+	;lda PSOUND	; IF SOUND OFF, RETURN NOW
 	bne NOBEEP
 	ldx #$0d	; Tone isn't quite the same as
 	jsr BEEP1	; Apple Writer ][, but at least
 	ldx #$0f	; it's the same on all CPU speeds.
 BEEP1:	ldy #$85
 BEEP2:	txa
-BEEP3:	jsr DELAY
-	bit $C030	; WHAP SPEAKER
+BEEP3:	;jsr DELAY
+	;bit $C030	; WHAP SPEAKER
 	dey
 	bne BEEP2
 NOBEEP:	rts
@@ -476,7 +476,7 @@ NOBEEP:	rts
 ;---------------------------------------------------------
 
 QUIT:
-	sta ROM
+;	sta ROM
 	CALLOS OS_QUIT, QUITL
 
 QUITL:

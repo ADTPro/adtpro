@@ -18,10 +18,16 @@
 ; 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 ;
 
-.include "macros.i"
+.include "messages.asm"
 
-.macro 	CALLOS Arg1, Arg2
-	jsr PRODOS_MLI	; Which ought to be $BF00
-	.byte Arg1
-	.addr Arg2
-.endmacro
+	MSG10: .byte	$20,$20,$20,$A0,$A0,$20,$20,$20,$A0,$A0,$20,$A0,$A0,$A0,$20,$8D
+	MSG10_END =*
+	MSG11: .byte	$20,$A0,$A0,$20,$A0,$20,$A0,$A0,$20,$A0,$A0,$20,$A0,$20,$8D
+	MSG11_END =*
+	MSG12: .byte	$20,$A0,$A0,$20,$A0,$20,$A0,$A0,$20,$A0,$A0,$A0,$20,$8D
+	MSG12_END =*
+	MSG26: asc	"COMMS DEVICE"
+	MSG26_END =*
+	MSG27: asc	"BAUD RATE"
+	MSG27_END =*
+	

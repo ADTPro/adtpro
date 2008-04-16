@@ -1,6 +1,6 @@
 ;
 ; ADTPro - Apple Disk Transfer ProDOS
-; Copyright (C) 2006 - 2008 by David Schmidt
+; Copyright (C) 2008 by David Schmidt
 ; david__schmidt at users.sourceforge.net
 ;
 ; This program is free software; you can redistribute it and/or modify it 
@@ -18,12 +18,14 @@
 ; 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 ;
 
+.include "applechr.i"		; ASCII string productions
 .include "const.i"
 
 ;--------------------------------------------------------- 
 ; ProDOS specific stuff
 ;--------------------------------------------------------- 
-OS_CALL_OFFSET = 3	; Offset to the MLI call type/opcode byte
+OS_CALL_OFFSET	= 3	; Offset to the MLI call type/opcode byte
+CHR_RETURN	= $8d	; Carriage return
 
 ;---------------------------------------------------------
 ; Passive addresses (not written to)
@@ -78,27 +80,6 @@ WAIT     = $FCA8		; Delay routine
 CLRLN    = $FC9C		; Clear Line routine
 PRBYTE   = $FDDA		; Print Byte routine (HEX value)
 COUT     = $FDED		; Character output routine (print to screen)
-
-;---------------------------------------------------------
-; Horizontal tabs for volume display
-;---------------------------------------------------------
-H_SL	= $02
-H_DR	= $08
-H_VO	= $0f
-H_SZ	= $21
-
-;---------------------------------------------------------
-; Horizontal tabs for buffer display
-;---------------------------------------------------------
-H_BUF	= $05
-H_BLK	= $0f
-H_NUM1	= $15
-
-;---------------------------------------------------------
-; Veritcal tab for buffer display
-;---------------------------------------------------------
-V_MSG	= $0b
-V_BUF	= $0f
 
 ;---------------------------------------------------------
 ; Apple IIgs SCC Z8530 registers and constants
