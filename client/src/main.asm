@@ -397,8 +397,10 @@ KABOUT:	cmp #$9F	; ABOUT MESSAGE? ("?" KEY)
         ldx #$1C
 	ldy #$10
 	jsr INVERSE
+	lda #$15
+	jsr TABV
 	ldy #PMSG17	; "About" message
-	jsr WRITEMSGAREA
+	jsr WRITEMSGLEFT
 	jsr RDKEY
 	jmp MAINLUP	; Clear and start over
 :
