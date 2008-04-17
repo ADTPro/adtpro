@@ -22,11 +22,31 @@
 	.include "sos/sosmacros.i"	; OS macros
 	.include "sos/sosconst.i"	; OS equates, characters, etc.
 	.include "sos/sosvars.asm"
-	.include "sos/conio.asm"	; Console I/O
 	.include "sos/serial/sermessages.asm"	; Messages
 	.include "ip65/common.i"	; More macros - ldax, for example
 
 	.include "sos/interimmain.asm"
+
+;---------------------------------------------------------
+; Pull in all the rest of the code
+;---------------------------------------------------------
+	.include "sos/conio.asm"	; Console I/O
+;	.include "print.asm"
+	.include "prodos/serial/serproto.asm"
+;	.include "online.asm"
+;	.include "rw.asm"
+	.include "sr.asm"
+	.include "prodos/serial/ssc.asm"
+	.include "sos/serial/iiiacia.asm"
+	.include "crc.asm"
+;	.include "pickvol.asm"
+	.include "input.asm"
+	.include "sos/serial/serconfigsos.asm"
+	.include "hostfns.asm"
+;	.include "diskii.asm"
+;	.include "nibble.asm"
+;	.include "format.asm"			; Note: includes FORMAT segment
+;	.include "bsave.asm"
 
 ; Stubs:
 PRD:
@@ -36,8 +56,6 @@ motoroff:
 CH:
 FormatEntry:
 PICKVOL:
-CD:
-DIR:
 BLOAD:
 GET_PREFIX:
 Died:
@@ -53,37 +71,11 @@ PREPPRG:
 GO_TRACK0:
 INIT_DISKII:
 sendnib:
-SHOWHM1:
-YN:
-GETFN:
-PAUSE:
-GetSendType:
-GETFN2:
 BIGBUF:
 BLKHI:
 BLKLO:
 PARMBUF:
 INVFLG:
 	rts
-
-;---------------------------------------------------------
-; Pull in all the rest of the code
-;---------------------------------------------------------
-;	.include "print.asm"
-	.include "prodos/serial/serproto.asm"
-;	.include "online.asm"
-;	.include "rw.asm"
-	.include "sr.asm"
-	.include "prodos/serial/ssc.asm"
-	.include "sos/serial/iiiacia.asm"
-	.include "crc.asm"
-;	.include "pickvol.asm"
-;	.include "input.asm"
-	.include "sos/serial/serconfigsos.asm"
-;	.include "hostfns.asm"
-;	.include "diskii.asm"
-;	.include "nibble.asm"
-;	.include "format.asm"			; Note: includes FORMAT segment
-;	.include "bsave.asm"
 
 	.segment "DATA"

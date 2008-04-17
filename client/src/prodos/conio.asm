@@ -40,29 +40,28 @@ INIT_SCREEN:
 ; Prints the logo on the screen
 ;---------------------------------------------------------
 SHOWLOGO:
-	lda #$0d
-	sta CH
-	lda #$03
-	jsr TABV
-
+	ldx #$0d
+	ldy #$03
+	jsr GOTOXY
 	lda #PMLOGO1	; Start with MLOGO1 message
 	sta ZP
-    	ldx #$0d	; Get ready to HTAB $0d chars over
-LogoLoop:
-	stx CH		; Tab over to starting position
 	tay
+LogoLoop:
+    	lda #$0d	; Get ready to HTAB $0d chars over
+	jsr HTAB	; Tab over to starting position
 	jsr WRITEMSG
 	inc ZP
 	inc ZP		; Get next logo message
-	lda ZP
-	cmp #PMLOGO5+2	; Stop at MLOGO5 message
+	ldy ZP
+	cpy #PMLOGO5+2	; Stop at MLOGO5 message
 	bne LogoLoop
 
 	jsr CROUT
     	lda #$12
-	sta CH
+	jsr HTAB
 	ldy #PMSG01	; Version number
 	jsr WRITEMSG
+
 	rts
 
 ;---------------------------------------------------------
@@ -72,6 +71,13 @@ GOTOXY:
 	stx <CH
 	tya
 	jsr TABV
+	rts
+
+;---------------------------------------------------------
+; HTAB - Horizontal tab to column in accumulator
+;---------------------------------------------------------
+HTAB:
+	sta <CH
 	rts
 
 ;---------------------------------------------------------
@@ -127,4 +133,64 @@ CLRMSGAREA:
 	lda #$14
 	jsr TABV
 	jsr CLREOP
+	rts
+
+;---------------------------------------------------------
+; SHOWHMSG - Show null-terminated host message #Y at current
+; cursor location.  We further constrain messages to be
+; even and within the host message range.
+; Call SHOWHM1 to clear/print at message area.
+;---------------------------------------------------------
+SHOWHM1:
+	sty SLOWY
+	lda #$00
+	sta CH
+	lda #$16
+	jsr TABV
+	jsr CLREOP
+	ldy SLOWY
+
+SHOWHMSG:
+	tya
+	and #$01	; If it's odd, it's garbage
+	cmp #$01
+	beq HGARBAGE
+	tya
+	clc
+	cmp #PHMMAX
+	bcs HGARBAGE	; If it's greater than max, it's garbage
+	jmp HMOK
+HGARBAGE:
+	ldy #PHMGBG
+HMOK:
+	lda HMSGTBL,Y
+	sta UTILPTR
+	lda HMSGTBL+1,Y
+	sta UTILPTR+1
+
+	ldy #$00
+	jmp WRITEMSGLOOP	; Call the regular message printer
+	
+;---------------------------------------------------------
+; READ_LINE - Read a line of input from the console
+;---------------------------------------------------------
+READ_LINE:
+	ldx #0		; Get answer from $200
+	jsr NXTCHAR
+	lda #0		; Null terminate it
+	sta $200,X
+	txa
+	rts
+
+;---------------------------------------------------------
+; SET_INVERSE - Set output to inverse mode
+; SET_NORMAL - Set output to normal mode
+;---------------------------------------------------------
+SET_INVERSE:
+	lda #$3F	; Start printing in inverse
+	sta <INVFLG
+	rts
+SET_NORMAL:
+	lda #$FF	; Back to normal
+	sta <INVFLG
 	rts

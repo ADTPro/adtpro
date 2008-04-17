@@ -279,11 +279,10 @@ MAINL:
 RESETIO:
 ;	jsr $0000	; Pseudo-indirect JSR to reset the IO device
 	jsr MainScreen
-	lda #$03
-        ldx #$1C
-	ldy #$10
-	jsr INVERSE
-	jmp *
+
+;	lda #CHR_C
+;	jmp KCD
+
 ;---------------------------------------------------------
 ; KBDLUP
 ;
@@ -291,7 +290,7 @@ RESETIO:
 ;---------------------------------------------------------
 KBDLUP:
 	jsr RDKEY	; GET ANSWER
-	and #$DF	; Conver to upper case
+	CONDITION_KEYPRESS	; Convert to upper case, etc.  OS dependent.
 
 KSEND:	cmp #CHR_S	; SEND?
 	bne :+		; Nope
@@ -331,18 +330,20 @@ KBATCH:
 	;jsr BATCH	; Set up batch processing
 	jmp MAINLUP
 :
-KCD:	cmp #CHR_C	; CD?
-	bne :+		; Nope
+KCD:
+;	cmp #CHR_C	; CD?
+;	bne :+		; Nope
 	lda #$04
         ldx #$21
 	ldy #$0e
 	jsr INVERSE
-	;jsr CD	  	; Yes, do CD routine
+	jsr CD	  	; Yes, do CD routine
+	jmp *
 	jmp MAINLUP
 :
 KCONF:	cmp #CHR_G	; Configure?
 	bne :+		; Nope
-	;jsr CONFIG      ; YES, DO CONFIGURE ROUTINE
+	jsr CONFIG      ; YES, DO CONFIGURE ROUTINE
 	jsr HOME	; Clear screen; PARMINT may leave a complaint
 	;jsr PARMINT     ; AND INTERPRET PARAMETERS
 	jmp MAINL
@@ -354,10 +355,8 @@ KABOUT:	cmp #$9F	; ABOUT MESSAGE? ("?" KEY)
         ldx #$1C
 	ldy #$10
 	jsr INVERSE
-	lda #$15
-	jsr TABV
 	ldy #PMSG17	; "About" message
-	jsr WRITEMSGLEFT
+	jsr WRITEMSGAREA
 	jsr RDKEY
 	jmp MAINLUP	; Clear and start over
 :

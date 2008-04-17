@@ -222,42 +222,6 @@ HLINE1:	jsr COUT1
 	rts
 
 ;---------------------------------------------------------
-; SHOWHMSG - Show null-terminated host message #Y at current
-; cursor location.  We further constrain messages to be
-; even and within the host message range.
-; Call SHOWHM1 to clear/print at message area.
-;---------------------------------------------------------
-SHOWHM1:
-	sty SLOWY
-	lda #$00
-	sta CH
-	lda #$16
-	jsr TABV
-	jsr CLREOP
-	ldy SLOWY
-
-SHOWHMSG:
-	tya
-	and #$01	; If it's odd, it's garbage
-	cmp #$01
-	beq HGARBAGE
-	tya
-	clc
-	cmp #PHMMAX
-	bcs HGARBAGE	; If it's greater than max, it's garbage
-	jmp HMOK
-HGARBAGE:
-	ldy #PHMGBG
-HMOK:
-	lda HMSGTBL,Y
-	sta UTILPTR
-	lda HMSGTBL+1,Y
-	sta UTILPTR+1
-
-	ldy #$00
-	jmp WRITEMSGLOOP	; Call the regular message printer
-	
-;---------------------------------------------------------
 ; ToDecimal
 ; Prints accumulator as a decimal number
 ; The number is right/space justified to 3 digits
@@ -424,33 +388,3 @@ nibtitle:
 
 nibtdone:
 	rts
-
-
-;---------------------------------------------------------
-; Host messages
-;---------------------------------------------------------
-
-HMSGTBL:	.addr HMGBG,HMFIL,HMFMT,HMDIR,HMTIMEOUT
-
-HMGBG:	asc "GARBAGE RECEIVED FROM HOST"
-	.byte $8d,$00
-HMFIL:	asc "UNABLE TO OPEN FILE"
-	.byte $8d,$00
-HMFMT:	asc "FILE FORMAT NOT RECOGNIZED"
-	.byte $8d,$00
-HMDIR:	asc "UNABLE TO CHANGE DIRECTORY"
-	.byte $8d,$00
-HMTIMEOUT:
-	asc "HOST TIMEOUT"
-	.byte $8d,$00
-
-;---------------------------------------------------------
-; Host message equates
-;---------------------------------------------------------
-
-PHMGBG	= $00
-PHMFIL	= $02
-PHMFMT	= $04
-PHMDIR	= $06
-PHMTIMEOUT	= $08
-PHMMAX	= $0a		; This must be two greater than the largest host message

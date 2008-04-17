@@ -30,11 +30,7 @@ GETFN2:
 	lda #$15
 	jsr TABV
 	jsr WRITEMSGLEFT
-	ldx #0		; Get answer from $200
-	jsr NXTCHAR
-	lda #0		; Null terminate it
-	sta $200,X
-	txa
+	jsr READ_LINE
 	rts
 
 ;---------------------------------------------------------

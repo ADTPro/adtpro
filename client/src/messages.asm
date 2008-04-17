@@ -18,6 +18,58 @@
 ; 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 ;
 
+;---------------------------------------------------------
+; Host messages
+;---------------------------------------------------------
+
+HMSGTBL:
+	.addr HMGBG,HMFIL,HMFMT,HMDIR,HMTIMEOUT
+
+HMGBG:	asc "GARBAGE RECEIVED FROM HOST"
+	.byte CHR_RETURN
+HMGBG_END =*
+
+HMFIL:	asc "UNABLE TO OPEN FILE"
+	.byte CHR_RETURN
+HMFIL_END =*
+
+HMFMT:	asc "FILE FORMAT NOT RECOGNIZED"
+	.byte CHR_RETURN
+HMFMT_END =*
+
+HMDIR:	asc "UNABLE TO CHANGE DIRECTORY"
+	.byte CHR_RETURN
+HMDIR_END =*
+
+HMTIMEOUT:
+	asc "HOST TIMEOUT"
+	.byte CHR_RETURN
+HMTIMEOUT_END =*
+
+;---------------------------------------------------------
+; Host message lengths
+;---------------------------------------------------------
+HMSGLENTBL:
+	.byte HMGBG_END-HMGBG
+	.byte HMFIL_END-HMFIL
+	.byte HMFMT_END-HMFMT
+	.byte HMDIR_END-HMDIR
+	.byte HMTIMEOUT_END-HMTIMEOUT
+
+;---------------------------------------------------------
+; Host message equates
+;---------------------------------------------------------
+
+PHMGBG	= $00
+PHMFIL	= $02
+PHMFMT	= $04
+PHMDIR	= $06
+PHMTIMEOUT	= $08
+PHMMAX	= $0a		; This must be two greater than the largest host message
+
+;---------------------------------------------------------
+; Console messages
+;---------------------------------------------------------
 	MSG01:	asc "v.r.m"
 	MSG01_END =*
 

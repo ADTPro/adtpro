@@ -334,7 +334,7 @@ RESETIO:
 ;---------------------------------------------------------
 KBDLUP:
 	jsr RDKEY	; GET ANSWER
-	and #$DF	; Conver to upper case
+	CONDITION_KEYPRESS	; Convert to upper case, etc.  OS dependent.
 
 KSEND:	cmp #CHR_S	; SEND?
 	bne :+		; Nope
@@ -397,10 +397,8 @@ KABOUT:	cmp #$9F	; ABOUT MESSAGE? ("?" KEY)
         ldx #$1C
 	ldy #$10
 	jsr INVERSE
-	lda #$15
-	jsr TABV
 	ldy #PMSG17	; "About" message
-	jsr WRITEMSGLEFT
+	jsr WRITEMSGAREA
 	jsr RDKEY
 	jmp MAINLUP	; Clear and start over
 :
@@ -432,11 +430,9 @@ FORWARD:
 ;---------------------------------------------------------
 MainScreen:
 	jsr SHOWLOGO
-
-	lda #$02
-	sta <CH
-	lda #$0e
-	jsr TABV
+	ldx #$02
+	ldy #$0e
+	jsr GOTOXY
 	ldy #PMSG02	; Prompt line 1
 	jsr WRITEMSG
 

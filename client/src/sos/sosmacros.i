@@ -26,5 +26,10 @@
         .addr Arg2
 .endmacro
 
+.macro CONDITION_KEYPRESS
+	and #$DF	; Conver to upper case
+	ora #$80	; Turn high bit on
+.endmacro
+
 .define	NRM_BLOCK $11,$20
 .define	INV_BLOCK $12,$20,$11

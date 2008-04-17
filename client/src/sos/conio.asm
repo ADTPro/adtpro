@@ -45,6 +45,7 @@ INIT_SCREEN:
 	bcs Local_Quit
 	lda GET_DEV_NUM_REF
 	sta D_STATUS_NUM		; Save off our console device references
+	sta D_CONTROL_NUM
 	rts
 
 Local_Quit:
@@ -77,19 +78,19 @@ SHOWLOGO:
 	jsr GOTOXY
 	lda #PMLOGO1	; Start with MLOGO1 message
 	sta ZP
-    	ldx #$0d	; Get ready to HTAB $0d chars over
-LogoLoop:
-	jsr HTAB	; Tab over to starting position
 	tay
+LogoLoop:
+    	lda #$0d	; Get ready to HTAB $0d chars over
+	jsr HTAB	; Tab over to starting position
 	jsr WRITEMSG
 	inc ZP
 	inc ZP		; Get next logo message
-	lda ZP
-	cmp #PMLOGO5+2	; Stop at MLOGO5 message
+	ldy ZP
+	cpy #PMLOGO5+2	; Stop at MLOGO5 message
 	bne LogoLoop
 
 	jsr CROUT
-    	ldx #$12
+    	lda #$12
 	jsr HTAB
 	ldy #PMSG01	; Version number
 	jsr WRITEMSG
@@ -124,6 +125,45 @@ WRITEMSG_RAW:
 	jmp ERRORCK		; Retrun through error handler for SOS errors
 
 ;---------------------------------------------------------
+; SHOWHMSG - Show host-initiated message #Y at current
+; cursor location.  We further constrain messages to be
+; even and within the host message range.
+; Call SHOWHM1 to clear/print at message area.
+;---------------------------------------------------------
+SHOWHM1:
+	sty SLOWY
+	ldx #$00
+	ldy #$16
+	jsr GOTOXY
+	jsr CLREOP
+	ldy SLOWY
+
+SHOWHMSG:
+	tya
+	and #$01	; If it's odd, it's garbage
+	cmp #$01
+	beq HGARBAGE
+	tya
+	clc
+	cmp #PHMMAX
+	bcs HGARBAGE	; If it's greater than max, it's garbage
+	jmp HMOK
+HGARBAGE:
+	ldy #PHMGBG
+HMOK:
+	lda HMSGTBL,Y
+	sta UTILPTR
+	lda HMSGTBL+1,Y
+	sta UTILPTR+1
+	clc
+	tya
+	ror		; Divide Y by 2 to get the message length out of the table
+	tay
+	lda HMSGLENTBL,Y
+	sta WRITE_LEN
+	jmp WRITEMSG_RAW	; Call the regular message printer
+	
+;---------------------------------------------------------
 ; GOTOXY - Position the cursor
 ;---------------------------------------------------------
 GOTOXY:
@@ -142,6 +182,7 @@ WRITEMSG_XY:
 
 ;---------------------------------------------------------
 ; TABV - Vertical tab to accumulator value
+; VTABS TO ROW IN A-REG
 ;---------------------------------------------------------
 TABV:
 	sta WRITEMSG_VT+1
@@ -158,20 +199,17 @@ WRITEMSG_VT:
 	.byte $19,$16		; $19/25d is the code for vertical position
 
 ;---------------------------------------------------------
-; HTAB - Horizontal tab to column X
+; HTAB - Horizontal tab to column in accumulator
 ;---------------------------------------------------------
 HTAB:
-	pha
-	stx WRITEMSG_HT+1
+	sta WRITEMSG_HT+1
 	lda #<WRITEMSG_HT
 	sta UTILPTR
 	lda #>WRITEMSG_HT
 	sta UTILPTR+1
 	lda #$02
 	sta WRITE_LEN
-	jsr WRITEMSG_RAW
-	pla
-	rts
+	jmp WRITEMSG_RAW
 
 WRITEMSG_HT:
 	.byte $18,$16
@@ -183,6 +221,9 @@ WRITEMSG_HT:
 ;---------------------------------------------------------
 GETCHR1:
 RDKEY:
+	jsr ECHO_OFF
+	lda #$01
+	sta CONSREAD_COUNT
 	clc
 	CALLOS OS_READFILE, CONSREAD_PARMS
 	jsr ERRORCK
@@ -194,8 +235,40 @@ ERRORCK:
 NoError:
 	rts
 SOS_ERROR:
-	rts	; TODO: fixme
-	;jmp QUIT
+	jmp QUIT
+
+;---------------------------------------------------------
+; READ_LINE
+;
+; Read a line of input from the console
+;---------------------------------------------------------
+READ_LINE:
+	jsr ECHO_ON
+	lda #$ff
+	sta CONSREAD_COUNT
+	CALLOS OS_READFILE, CONSREAD_PARMS
+	jsr ERRORCK				; Output is available at CONSREAD_INPUT
+						; for CONSREAD_COUNT bytes
+	jsr ECHO_OFF
+
+	rts
+	
+;---------------------------------------------------------
+; ECHO_ON|OFF - turn keypress ech on or off
+;---------------------------------------------------------
+ECHO_ON:
+	lda #$80
+	sta D_CONTROL_DATA
+	jmp ECHO_GO
+ECHO_OFF:
+	lda #$00
+	sta D_CONTROL_DATA
+ECHO_GO:
+	lda #$0B
+	sta D_CONTROL_CODE
+	CALLOS OS_D_CONTROL, D_CONTROL_PARMS	; Turn screen echo on
+	clc
+	rts
 
 ;---------------------------------------------------------
 ; Character output
@@ -252,6 +325,19 @@ INVERSE:
 INUM:	.byte $00
 
 ;---------------------------------------------------------
+; SET_INVERSE - Set output to inverse mode
+; SET_NORMAL - Set output to normal mode
+;---------------------------------------------------------
+SET_INVERSE:
+	lda #$12		; Code for start printing in inverse
+	jsr COUT
+	rts
+SET_NORMAL:
+	lda #$11		; Code for start printing normally
+	jsr COUT
+	rts
+
+;---------------------------------------------------------
 ; PRBYTE: Print Byte routine (HEX value)
 ;---------------------------------------------------------
 PRBYTE:	
@@ -289,6 +375,5 @@ READVID:
 CLREOP:	; Clear to end of screen
 CLREOL:	; Clear to end of line
 WAIT:	; Monitor delay: # cycles = (5*A*A + 27*A + 26)/2
-NXTCHAR:; Line input
 
 rts

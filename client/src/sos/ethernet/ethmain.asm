@@ -41,6 +41,9 @@
 ;	.include "pickvol.asm"
 ;	.include "input.asm"
 ;	.include "prodos/ethernet/ethconfig.asm"
+CD:
+CONFIG:
+	rts
 ;	.include "hostfns.asm"
 ;	.include "diskii.asm"
 ;	.include "nibble.asm"

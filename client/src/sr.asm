@@ -414,13 +414,13 @@ SRCALL:
 	lda SRCHR
 	jsr CHROVER
 
-	lda <CH
-	sta <COL_SAV
+	lda CH
+	sta COL_SAV
 
 	lda #V_MSG	; Start printing at first number spot
 	jsr TABV
 	lda #H_NUM1
-	sta <CH
+	sta CH
 
 	clc
 	lda BLKLO	; Increment the 16-bit block number

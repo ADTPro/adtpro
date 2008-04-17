@@ -85,7 +85,7 @@ CONSREAD_REF:	.byte $00
 		.word CONSREAD_INPUT
 CONSREAD_COUNT:	.word $0001
 CONSREAD_XFERCT:.word $0000
-CONSREAD_INPUT:	.byte $00
+CONSREAD_INPUT:	.res $100, $00
 
 ; Table for get device number
 
@@ -99,7 +99,15 @@ GET_DEV_NUM_REF:
 ; Table for device status
 
 D_STATUS_PARMS:	.byte $03
-D_STATUS_NUM:	.byte $01
+D_STATUS_NUM:	.byte $00
 D_STATUS_CODE:	.byte $00
 D_STATUS_LIST:	.addr D_STATUS_DATA
-D_STATUS_DATA:	.res $02, $00
+D_STATUS_DATA:	.byte $00
+
+; Table for device control
+D_CONTROL_PARMS:
+		.byte $03
+D_CONTROL_NUM:	.byte $01
+D_CONTROL_CODE:	.byte $00
+D_CONTROL_LIST:	.addr D_CONTROL_DATA
+D_CONTROL_DATA:	.byte $00, $00

@@ -105,10 +105,11 @@
 		<!--
 		Package the IP65 stack library
 		-->
-		<apply executable="${assemblerPath}/ar65" dir="${projdir}/client/src/ip65">
+		<apply executable="${assemblerPath}/ar65" dir="${projdir}/client/src/ip65" output="ar65garbageoutputdeleteme">
 			<arg line="a ip65.lib "/>
 			<fileset dir="${projdir}/client/src/ip65" includes="**/*.o"/>
 		</apply>
+		<delete file="ar65garbageoutputdeleteme" />
 		<!--
 		Link the bits
 		-->
@@ -225,6 +226,12 @@
 		<exec dir="${builddir}" executable="java">
 			<arg line="-jar ${acJar} -v ${distName}/disks/${diskName}.PO ${volName}" />
 		</exec>
+		<delete file="${builddir}/ADT" />
+		<delete file="${builddir}/ADTPRO" />
+		<delete file="${builddir}/ADTPROAUD" />
+		<delete file="${builddir}/ADTPROETH" />
+		<delete file="${builddir}/ADTSOS" />
+		<delete file="${builddir}/ADTSOSETH" />
 	</target>
 
 	<target name="jar">
@@ -261,10 +268,6 @@
 		<gzip destfile="${builddir}/${distName}.tar.gz"
 			src="${builddir}/${distName}.tar" />
 		<delete file="${builddir}/${distName}.tar" />
-		<delete file="${builddir}/ADT" />
-		<delete file="${builddir}/ADTPRO" />
-		<delete file="${builddir}/ADTPROAUD" />
-		<delete file="${builddir}/ADTPROETH" />
 	</target>
 
 </project>
