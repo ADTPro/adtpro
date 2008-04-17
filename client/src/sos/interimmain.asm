@@ -1,6 +1,6 @@
 ;
 ; ADTPro - Apple Disk Transfer ProDOS
-; Copyright (C) 2006 - 2008 by David Schmidt
+; Copyright (C) 2008 by David Schmidt
 ; david__schmidt at users.sourceforge.net
 ;
 ; This program is free software; you can redistribute it and/or modify it 
@@ -280,9 +280,6 @@ RESETIO:
 ;	jsr $0000	; Pseudo-indirect JSR to reset the IO device
 	jsr MainScreen
 
-;	lda #CHR_C
-;	jmp KCD
-
 ;---------------------------------------------------------
 ; KBDLUP
 ;
@@ -331,14 +328,13 @@ KBATCH:
 	jmp MAINLUP
 :
 KCD:
-;	cmp #CHR_C	; CD?
-;	bne :+		; Nope
+	cmp #CHR_C	; CD?
+	bne :+		; Nope
 	lda #$04
         ldx #$21
 	ldy #$0e
 	jsr INVERSE
 	jsr CD	  	; Yes, do CD routine
-	jmp *
 	jmp MAINLUP
 :
 KCONF:	cmp #CHR_G	; Configure?
@@ -355,8 +351,10 @@ KABOUT:	cmp #$9F	; ABOUT MESSAGE? ("?" KEY)
         ldx #$1C
 	ldy #$10
 	jsr INVERSE
+	lda #$15
+	jsr TABV
 	ldy #PMSG17	; "About" message
-	jsr WRITEMSGAREA
+	jsr WRITEMSGLEFT
 	jsr RDKEY
 	jmp MAINLUP	; Clear and start over
 :

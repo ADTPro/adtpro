@@ -46,6 +46,15 @@ INIT_SCREEN:
 	lda GET_DEV_NUM_REF
 	sta D_STATUS_NUM		; Save off our console device references
 	sta D_CONTROL_NUM
+
+	lda #$80
+	sta D_CONTROL_DATA
+	lda #$0d
+	sta D_CONTROL_DATA+1
+	lda #$02
+	sta D_CONTROL_CODE
+	CALLOS OS_D_CONTROL, D_CONTROL_PARMS	; Turn data entry termination on
+
 	rts
 
 Local_Quit:
@@ -121,6 +130,7 @@ WRITEMSG:
 	lda MSGLENTBL,Y
 	sta WRITE_LEN
 WRITEMSG_RAW:
+	clc
 	CALLOS OS_WRITEFILE, WRITE_PARMS
 	jmp ERRORCK		; Retrun through error handler for SOS errors
 
@@ -193,6 +203,7 @@ TABV:
 	lda #$02
 	sta WRITE_LEN
 	jmp WRITEMSG_RAW	; Finish through WRITEMSG_RAW
+	rts
 	
 
 WRITEMSG_VT:
@@ -219,6 +230,7 @@ WRITEMSG_HT:
 ; 
 ; Read a character from the console
 ;---------------------------------------------------------
+READ_CHAR:
 GETCHR1:
 RDKEY:
 	jsr ECHO_OFF
@@ -254,13 +266,17 @@ READ_LINE:
 	rts
 	
 ;---------------------------------------------------------
-; ECHO_ON|OFF - turn keypress ech on or off
+; ECHO_ON|OFF - turn keypress echo on or off
 ;---------------------------------------------------------
 ECHO_ON:
+	lda #$05
+	jsr COUT		; Turn cursor on
 	lda #$80
 	sta D_CONTROL_DATA
 	jmp ECHO_GO
 ECHO_OFF:
+	lda #$06
+	jsr COUT		; Turn cursor off
 	lda #$00
 	sta D_CONTROL_DATA
 ECHO_GO:

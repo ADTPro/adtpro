@@ -156,9 +156,9 @@ ENDVAL:	dex
 ;--------------- SECOND PART: CHANGE VALUES --------------
 
 GETCMD:
-	lda $C000         ;WAIT FOR NEXT COMMAND
-	bpl GETCMD
-	bit $C010
+	jsr READ_CHAR
+	CONDITION_KEYPRESS
+
 	ldx CURPARM       ;CURRENT PARAMETER IN X
 
 	cmp #$88

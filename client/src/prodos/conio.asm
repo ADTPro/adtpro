@@ -183,6 +183,15 @@ READ_LINE:
 	rts
 
 ;---------------------------------------------------------
+; READ_CHAR - Read a single character, no cursor
+;---------------------------------------------------------
+READ_CHAR:
+	lda $C000         ;WAIT FOR NEXT COMMAND
+	bpl READ_CHAR
+	bit $C010
+	rts
+
+;---------------------------------------------------------
 ; SET_INVERSE - Set output to inverse mode
 ; SET_NORMAL - Set output to normal mode
 ;---------------------------------------------------------

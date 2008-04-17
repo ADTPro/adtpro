@@ -26,4 +26,3 @@
 ;--------------------------------------------------------- 
 OS_CALL_OFFSET	= 1	; Offset to the SOS call type byte
 CHR_RETURN	= $0d	; Carriage return
-
