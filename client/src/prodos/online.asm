@@ -22,6 +22,7 @@
 ; Code
 ;---------------------------------------------------------
 ONLINE:
+	jsr DRAWBDR
 	lda LASTVOL	; Have we already done an online?
 	beq OSTART	; No - spend the time to scan drives
 
@@ -172,6 +173,52 @@ DEVMSG3:
 	rts
 
 ;---------------------------------------------------------
+; INTERPRET_ONLINE
+;
+; Input: the row "enter" was hit in A
+; Output: (side effects, sets): 
+;   UNITNBR, pdsoftx, pdslot, pdrive, NonDiskII, NUMBLKS
+;---------------------------------------------------------
+INTERPRET_ONLINE:
+	jsr WHATUNIT
+	sta UNITNBR
+	and #$70	; Mask off just slot
+	lsr
+	lsr
+	lsr
+	lsr
+	sta pdslot	; Save default slot
+	dec pdslot
+	jsr slot2x
+	sta pdsoftx	; Save slot * 16 for soft switches
+	inc pdslot
+	lda #$00
+	sta pdrive	; Save default drive number
+	lda UNITNBR
+	and #$80	; Wait, was that drive 2?
+	beq :+
+	inc pdrive
+:	lda VCURROW	; Extract unit capacity
+	clc
+	rol		; Multiply by 2
+	tax		; X is now the index into blocks table
+	lda #$00
+	sta NonDiskII	; Assume _no_ Disk II selected
+	lda CAPBLKS,X
+	sta NUMBLKS
+	lda CAPBLKS+1,X
+	sta NUMBLKS+1
+	cmp #$01	; Do we have a Disk II selected?
+	bne :+
+	lda NUMBLKS
+	cmp #$18	; $180 blocks; assume so
+	bne :+
+	lda #$01
+	sta NonDiskII	; $01 = We _have_ a Disk II
+:
+	rts
+
+;---------------------------------------------------------
 ; WHATUNIT - Which unit number is this index?
 ;
 ; Input:
@@ -185,7 +232,7 @@ WHATUNIT:
 	stx SLOWX	; Preserve X
 	beq @READY
 	tax		; Send the index to the X register
-	lda #$00	; Now clear A out - need it for some arithmatic
+	lda #$00	; Now clear A out - need it for some arithmetic
 @MORE:
 	clc
 	adc #$10
@@ -556,6 +603,140 @@ CLEARVOLUMES:
 	sta LASTVOL
 	rts
 
+;---------------------------------------------------------
+; DRAWBDR
+; 
+; Draws the volume picker decorative border
+; Y holds the top line message number
+;---------------------------------------------------------
+DRAWBDR:
+	lda #$07
+	sta CH
+	lda #$00
+	jsr TABV
+	jsr WRITEMSG	; Y holds the top line message number
+
+	lda #$07	; Column
+	sta CH
+	lda #$02	; Row
+	jsr TABV
+	ldy #PMSG19	; 'VOLUMES CURRENTLY ON-LINE:'
+	jsr WRITEMSG
+
+	lda #H_SL	; "Slot" starting column
+	sta CH
+	lda #$03	; Row
+	jsr TABV
+	ldy #PMSG20	; 'SLOT  DRIVE  VOLUME NAME      BLOCKS'
+	jsr WRITEMSG
+
+	lda #H_SL	; "Slot" starting column
+	sta CH
+	lda #$04	; Row
+	jsr TABV
+	ldy #PMSG21	; '----  -----  ---------------  ------'
+	jsr WRITEMSG
+VOLINSTRUCT:
+	lda #$14	; Row
+	jsr TABV
+	ldy #PMSG22	; 'CHANGE VOLUME/SLOT/DRIVE WITH ARROW KEYS'
+	jsr WRITEMSGLEFT
+
+	lda #$15	; Row
+	jsr TABV
+	ldy #PMSG23	; 'SELECT WITH RETURN, ESC CANCELS'
+	jsr WRITEMSGLEFT
+
+	lda #$05	; starting row for slot/drive entries
+	jsr TABV
+	rts
+
+;---------------------------------------------------------
+; PRT1VOL
+;
+; Inputs:
+;   X register holds the index to the device table
+;   Y register is preserved
+; Prints one volume's worth of information
+; Called from ONLINE
+;---------------------------------------------------------
+PRT1VOL:
+	tya
+	pha
+	stx SLOWX
+
+	lda #H_SL	; "Slot" starting column
+	sta CH
+
+	lda DEVICES,X
+	and #$70	; Mask off length nybble
+	lsr
+	lsr
+	lsr
+	lsr		; Acc now holds the slot number
+	clc
+	adc #$B0
+	sta PRTSVA
+	jsr COUT1
+
+	lda #H_DR	; "Drive" starting column
+	sta CH
+	lda DEVICES,X
+	and #$80
+	cmp #$80
+	beq PRDR2
+	lda #$B1
+	jmp PROUT
+PRDR2:	lda #$B2
+PROUT:	jsr COUT1
+
+	lda #H_VO	; "Volume" starting column
+	sta CH
+	lda DEVICES,X
+	and #$0f
+	sta PRTSVA
+	beq PRVODONE
+	ldy #$00
+PRLOOP:
+	lda DEVICES+1,X
+	ora #$80
+	jsr COUT1
+	inx
+	iny
+	cpy PRTSVA
+	bne PRLOOP
+
+	lda #H_SZ	; "Size" starting column
+	sta CH
+
+	lda SLOWX	; Get a copy of original X into Acc
+
+	beq PRnum
+	lsr
+	lsr
+	lsr
+PRnum:	tax
+	lda CAPBLKS+1,X
+	sta FILL
+	lda CAPBLKS,X
+	ldx FILL
+	ldy #CHR_SP
+	jsr PRD
+
+PRVODONE:
+	jsr CROUT
+
+	ldx SLOWX
+	pla
+	tay
+	rts
+
+PRTSVA:	.byte $00
+POFF:	.byte $00
+
+;---------------------------------------------------------
+; Local variables
+;---------------------------------------------------------
 VOLNAME:	.res 17,$00		; One byte for length
 					; One byte for leading slash
 					; 15 bytes for name

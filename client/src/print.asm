@@ -37,139 +37,7 @@ PRINTVOL:
 	jsr HOME	; Clear screen
 	pla
 	tay
-	jsr DRAWBDR
 	jsr ONLINE
-	rts
-
-;---------------------------------------------------------
-; PRT1VOL
-;
-; Inputs:
-;   X register holds the index to the device table
-;   Y register is preserved
-; Prints one volume's worth of information
-; Called from ONLINE
-;---------------------------------------------------------
-PRT1VOL:
-	tya
-	pha
-	stx SLOWX
-
-	lda #H_SL	; "Slot" starting column
-	sta CH
-
-	lda DEVICES,X
-	and #$70	; Mask off length nybble
-	lsr
-	lsr
-	lsr
-	lsr		; Acc now holds the slot number
-	clc
-	adc #$B0
-	sta PRTSVA
-	jsr COUT1
-
-	lda #H_DR	; "Drive" starting column
-	sta CH
-	lda DEVICES,X
-	and #$80
-	cmp #$80
-	beq PRDR2
-	lda #$B1
-	jmp PROUT
-PRDR2:	lda #$B2
-PROUT:	jsr COUT1
-
-	lda #H_VO	; "Volume" starting column
-	sta CH
-	lda DEVICES,X
-	and #$0f
-	sta PRTSVA
-	beq PRVODONE
-	ldy #$00
-PRLOOP:
-	lda DEVICES+1,X
-	ora #$80
-	jsr COUT1
-	inx
-	iny
-	cpy PRTSVA
-	bne PRLOOP
-
-	lda #H_SZ	; "Size" starting column
-	sta CH
-
-	lda SLOWX	; Get a copy of original X into Acc
-
-	beq PRnum
-	lsr
-	lsr
-	lsr
-PRnum:	tax
-	lda CAPBLKS+1,X
-	sta FILL
-	lda CAPBLKS,X
-	ldx FILL
-	ldy #CHR_SP
-	jsr PRD
-
-PRVODONE:
-	jsr CROUT
-
-	ldx SLOWX
-	pla
-	tay
-	rts
-
-PRTSVA:	.byte $00
-POFF:	.byte $00
-
-;---------------------------------------------------------
-; DRAWBDR
-; 
-; Draws the volume picker decorative border
-; Y holds the top line message number
-;---------------------------------------------------------
-DRAWBDR:
-	lda #$07
-	sta CH
-	lda #$00
-	jsr TABV
-	jsr WRITEMSG	; Y holds the top line message number
-
-	lda #$07	; Column
-	sta CH
-	lda #$02	; Row
-	jsr TABV
-	ldy #PMSG19	; 'VOLUMES CURRENTLY ON-LINE:'
-	jsr WRITEMSG
-
-	lda #H_SL	; "Slot" starting column
-	sta CH
-	lda #$03	; Row
-	jsr TABV
-	ldy #PMSG20	; 'SLOT  DRIVE  VOLUME NAME      BLOCKS'
-	jsr WRITEMSG
-
-	lda #H_SL	; "Slot" starting column
-	sta CH
-	lda #$04	; Row
-	jsr TABV
-	ldy #PMSG21	; '----  -----  ---------------  ------'
-	jsr WRITEMSG
-VOLINSTRUCT:
-	lda #$14	; Row
-	jsr TABV
-	ldy #PMSG22	; 'CHANGE VOLUME/SLOT/DRIVE WITH ARROW KEYS'
-	jsr WRITEMSGLEFT
-
-	lda #$15	; Row
-	jsr TABV
-	ldy #PMSG23	; 'SELECT WITH RETURN, ESC CANCELS'
-	jsr WRITEMSGLEFT
-
-	lda #$05	; starting row for slot/drive entries
-	jsr TABV
 	rts
 
 ;---------------------------------------------------------
@@ -312,36 +180,6 @@ CHROVER:
 	rts
 
 ;---------------------------------------------------------
-; INVERSE - Invert/highlight the characters on the screen
-;
-; Inputs:
-;   A - number of bytes to process
-;   X - starting x coordinate
-;   Y - starting y coordinate
-;---------------------------------------------------------
-INVERSE:
-	clc
-	sta INUM
-	stx CH		; Set cursor to first position
-	txa
-	adc INUM
-	sta INUM
-	tya
-	jsr TABV
-	ldy CH
-INV1:	lda (BASL),Y
-	and #$BF
-	eor #$80
-	sta (BASL),Y
-	iny
-	cpy INUM
-	bne INV1
-	rts
-
-INUM:	.byte $00
-
-
-;---------------------------------------------------------
 ; nibtitle - show title screen for nibble disk transfer
 ;---------------------------------------------------------
 nibtitle:
@@ -354,14 +192,14 @@ nibtitle:
 	jsr CROUT
 	ldy #PMNIBTOP
 	jsr WRITEMSG
-	lda #$0e		; show one block left and right
-	sta CV			; on line $0e
-	jsr VTAB
+	ldx #$38		; show one block left and right
+	ldy #$0e		; on line $0e at end of line
+	jsr GOTOXY 
 	lda #_I' '		; inverse space char
-	ldy #38			; at end of line
-	sta (BASL),y
-	ldy #0			; at start of line
-	sta (BASL),y
+	jsr COUT
+	lda #0			; at start of line
+	jsr HTAB
+	jsr COUT
 	lda #_I'>'		; inverse character!
 	iny			; next position in line
 	sta (BASL),y
@@ -373,7 +211,7 @@ nibtitle:
 	bne nibtdone
 	lda #$0f		; move one line down
 	sta CV
-	jsr VTAB
+	jsr TABV
 	lda #_I'.'		; put an inverse . on screen
 	ldy #0			;  at horiz pos 0
 	sta (BASL),y

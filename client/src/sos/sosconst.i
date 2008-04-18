@@ -21,6 +21,14 @@
 .include "applechr.i"		; ASCII string productions
 .include "const.i"		; ProDOS/SOS, CHR equates
 
+;---------------------------------------------------------
+; Horizontal tabs for volume display
+;---------------------------------------------------------
+H_SL	= $00
+H_VO	= $08
+H_SZ	= $21
+VOL_LINE_LEN = $27
+
 ;--------------------------------------------------------- 
 ; SOS specific stuff
 ;--------------------------------------------------------- 

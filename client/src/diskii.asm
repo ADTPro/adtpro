@@ -473,12 +473,12 @@ UpdateTrackNumber:
 	tax
 	stx BLKHI
 ShowTrackNumber:
-	lda <CH
+	lda CH
 	sta <COL_SAV
 	lda #V_MSG	; start printing at first number spot
 	jsr TABV
 	lda #H_NUM1
-	sta <CH
+	sta CH
 
 	lda NUM
 	ldx BLKHI

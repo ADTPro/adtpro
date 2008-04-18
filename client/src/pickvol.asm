@@ -1,6 +1,6 @@
 ;
 ; ADTPro - Apple Disk Transfer ProDOS
-; Copyright (C) 2006, 2007 by David Schmidt
+; Copyright (C) 2006 - 2008 by David Schmidt
 ; david__schmidt at users.sourceforge.net
 ;
 ; This program is free software; you can redistribute it and/or modify it 
@@ -38,17 +38,15 @@ PICKVOL:
 ;---------------------------------------------------------
 ; VOLLOOP
 ; 
-; Manages the volume screen, returns selection in A
-; which is an index into the device table
+; Manages the volume screen, returns row selection in A
+; ...which is an index into the device table
 ;---------------------------------------------------------
 VOLLOOP:
-	lda #$25	; Column
-	sta CH
-	lda #$15	; Row
-	jsr TABV
-
+	ldx #$25	; Column
+	ldy #$15	; Row
+	jsr GOTOXY
 	jsr RDKEY
-	and #$DF	; Convert to upper case
+	CONDITION_KEYPRESS
 
 VKEYDN:
 	cmp #$8a	; Is it a key down?
@@ -99,46 +97,11 @@ LOOPDN:
 	jsr INVROW
 	jmp VOLLOOP
 
-VENTER:	cmp #$8d	; Is it Enter?
+VENTER:
+	cmp #$8d	; Is it Enter?
 	bne VREREAD	; No - process next group
-
 	lda VCURROW	; Extract unit number
-	jsr WHATUNIT
-	sta UNITNBR
-	and #$70	; Mask off just slot
-	lsr
-	lsr
-	lsr
-	lsr
-	sta pdslot	; Save default slot
-	dec pdslot
-	jsr slot2x
-	sta pdsoftx	; Save slot * 16 for soft switches
-	inc pdslot
-	lda #$00
-	sta pdrive	; Save default drive number
-	lda UNITNBR
-	and #$80	; Wait, was that drive 2?
-	beq :+
-	inc pdrive
-:	lda VCURROW	; Extract unit capacity
-	clc
-	rol		; Multiply by 2
-	tax		; X is now the index into blocks table
-	lda #$00
-	sta NonDiskII	; Assume _no_ Disk II selected
-	lda CAPBLKS,X
-	sta NUMBLKS
-	lda CAPBLKS+1,X
-	sta NUMBLKS+1
-	cmp #$01	; Do we have a Disk II selected?
-	bne :+
-	lda NUMBLKS
-	cmp #$18	; $180 blocks; assume so
-	bne :+
-	lda #$01
-	sta NonDiskII	; $01 = We _have_ a Disk II
-:
+	jsr INTERPRET_ONLINE
 	lda VCURROW	; Send the row selection back out
 	rts
 
@@ -162,16 +125,17 @@ ESCAPE:
 ;---------------------------------------------------------
 ; PICKVOL2 - Re-entry to the volume screen; clears the 
 ;            operator area and lets you pick again
+; Preserves X, Y
 ;---------------------------------------------------------
 PICKVOL2:
 	sty SLOWY
-	lda #$00
-	sta <CH
-	lda #$16
-	jsr TABV
+	stx SLOWX
+	ldx #$00
+	ldy #$16
+	jsr GOTOXY
 	jsr CLREOP
 	ldy SLOWY
-	jsr DRAWBDR
+	ldx SLOWX
 	jmp VOLLOOP
 
 ;---------------------------------------------------------
@@ -182,8 +146,8 @@ INVROW:
 	clc
 	adc #VROFFS
 	tay
-	lda #$24	; The length of line to highlight
-	ldx #H_SL	; Start at the "Slot" column
+	lda #VOL_LINE_LEN	; The length of line to highlight
+	ldx #H_SL		; Start at the "Slot" column
 	jsr INVERSE
 	rts
 

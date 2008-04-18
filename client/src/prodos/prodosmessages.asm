@@ -18,16 +18,9 @@
 ; 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 ;
 
-.include "messages.asm"
-.include "prodos/prodosmessages.asm"
+	MSG20:	asc "SLOT  DRIVE  VOLUME NAME      BLOCKS"
+	MSG20_END =*
 
-	MSG10: .byte	$20,$20,$20,$A0,$A0,$20,$20,$20,$A0,$A0,$20,$A0,$A0,$A0,$20,$8D
-	MSG10_END =*
-	MSG11: .byte	$20,$A0,$A0,$20,$A0,$20,$A0,$A0,$20,$A0,$A0,$20,$A0,$20,$8D
-	MSG11_END =*
-	MSG12: .byte	$20,$A0,$A0,$20,$A0,$20,$A0,$A0,$20,$A0,$A0,$A0,$20,$8D
-	MSG12_END =*
-	MSG26: asc	"COMMS DEVICE"
-	MSG26_END =*
-	MSG27: asc	"BAUD RATE"
-	MSG27_END =*
+	MSG21:	asc "----  -----  ---------------  ------"
+	MSG21_END =*
+	

@@ -30,13 +30,15 @@
 ; Pull in all the rest of the code
 ;---------------------------------------------------------
 
-	.include "sos/interimmain.asm"
+entrypoint:	; Remove me when main comes back...
+QUIT:
+;	.include "sos/interimmain.asm"
 
 ;	.include "print.asm"
-;	.include "online.asm"
+;	.include "sos/online.asm"
 ;	.include "rw.asm"
 ;	.include "sr.asm"
-	.include "sos/ethernet/uther.asm"
+;	.include "sos/ethernet/uther.asm"
 ;	.include "crc.asm"
 ;	.include "pickvol.asm"
 ;	.include "input.asm"
@@ -51,6 +53,24 @@ CONFIG:
 ;	.include "prodos/ethernet/ipconfig.asm"
 ;	.include "format.asm"		; Note: format.asm is its own segment
 ;	.include "bsave.asm"
+; Stubs:
+ROM:
+DELAY:
+CH:
+CV:
+FormatEntry:
+BLOAD:
+GET_PREFIX:
+Died:
+Done:
+SlotF:
+BIGBUF:
+BLKHI:
+BLKLO:
+INVFLG:
+BASL = $ff
+CAPBLKS:
+DEVICES:
 
 PEND:
 	.segment "DATA"	

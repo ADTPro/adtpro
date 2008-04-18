@@ -19,6 +19,7 @@
 ;
 
 .include "messages.asm"
+.include "sos/sosmessages.asm"
 
 	MSG10: .byte	$20,$20,$20,$A0,$A0,$20,$20,$20,$A0,$A0,$20,$A0,$A0,$A0,$20,$8D
 	MSG10_END =*

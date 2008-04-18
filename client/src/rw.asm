@@ -54,14 +54,14 @@ WRITING:
 RW_COMN:
 	sty BCOUNT
 	lda #H_BUF	; Column - r/w/s/r
-	sta <CH
+	jsr HTAB
 	lda #V_MSG	; Message row
 	jsr TABV
 	ldy SR_WR_C
 	jsr WRITEMSG
 
 	lda #$00	; Reposition cursor to beginning of
-	sta <CH		; buffer row
+	jsr HTAB	; buffer row
 	lda #V_BUF
 	jsr TABV
 
@@ -138,13 +138,13 @@ RWCALL:
 	lda RWCHR
 	jsr CHROVER
 
-	lda <CH
+	lda CH
 	sta <COL_SAV
 
 	lda #V_MSG	; start printing at first number spot
 	jsr TABV
 	lda #H_NUM1
-	sta <CH
+	jsr HTAB
 
 	clc
 	lda BLKLO	; Increment the 16-bit block number
@@ -158,7 +158,7 @@ RWCALL:
 	jsr PRD		; Print block number in decimal
 
 	lda <COL_SAV	; Reposition cursor to previous
-	sta <CH		; buffer row
+	jsr HTAB		; buffer row
 	lda #V_BUF
 	jsr TABV
 

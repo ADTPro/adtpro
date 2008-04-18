@@ -50,6 +50,8 @@ CRCTBLH:	.res $100	; CRC HIGH TABLE ($100 Bytes)
 ; Operating System Call Tables
 ;----------------------------------------------------
 
+PARMBUF:	.res $04
+
 ; Table for open
 
 OPEN_PARMS:	.byte 4
@@ -105,9 +107,35 @@ D_STATUS_LIST:	.addr D_STATUS_DATA
 D_STATUS_DATA:	.byte $00
 
 ; Table for device control
+
 D_CONTROL_PARMS:
 		.byte $03
 D_CONTROL_NUM:	.byte $01
 D_CONTROL_CODE:	.byte $00
 D_CONTROL_LIST:	.addr D_CONTROL_DATA
 D_CONTROL_DATA:	.byte $00, $00
+
+; Table for dev_info query
+
+D_INFO_PARMS:	.byte $04
+D_INFO_NUM:	.byte $01
+D_INFO_NAME_PTR:
+		.addr D_INFO_NAME
+D_INFO_OPTION_PTR:
+		.addr D_INFO_OPTION
+D_INFO_LENGTH:	.byte $07
+
+D_INFO_NAME:	.res 16
+D_INFO_OPTION:	.res $07
+D_INFO_OPTION_END = *
+
+; Table for volume query
+
+VOLUME_PARMS:	.byte $04
+VOLUME_DEV_PTR:	.addr VOLUME_NAME
+VOLUME_NAME_PTR:
+		.addr VOLUME_NAME
+VOLUME_BLOCKS:	.res 2
+VOLUME_FREE:	.res 2
+
+VOLUME_NAME:	.res $10

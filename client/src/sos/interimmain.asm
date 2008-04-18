@@ -286,8 +286,10 @@ RESETIO:
 ; Keyboard handler, dispatcher
 ;---------------------------------------------------------
 KBDLUP:
-	jsr RDKEY	; GET ANSWER
-	CONDITION_KEYPRESS	; Convert to upper case, etc.  OS dependent.
+;	jsr RDKEY	; GET ANSWER
+;	CONDITION_KEYPRESS	; Convert to upper case, etc.  OS dependent.
+
+	lda #CHR_V
 
 KSEND:	cmp #CHR_S	; SEND?
 	bne :+		; Nope
@@ -362,7 +364,7 @@ KVOLUMS:
 	cmp #CHR_V	; Volumes online?
 	bne :+		; Nope
 	ldy #PMNULL	; No title line
-	;jsr PICKVOL	; Pick a volume - A has index into DEVICES table
+	jsr PICKVOL	; Pick a volume - A has index into DEVICES table
 	jmp MAINLUP
 :
 KFORMAT:

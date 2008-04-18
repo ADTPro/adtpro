@@ -192,6 +192,35 @@ READ_CHAR:
 	rts
 
 ;---------------------------------------------------------
+; INVERSE - Invert/highlight the characters on the screen
+;
+; Inputs:
+;   A - number of bytes to process
+;   X - starting x coordinate
+;   Y - starting y coordinate
+;---------------------------------------------------------
+INVERSE:
+	clc
+	sta INUM
+	stx CH		; Set cursor to first position
+	txa
+	adc INUM
+	sta INUM
+	tya
+	jsr TABV
+	ldy CH
+INV1:	lda (BASL),Y
+	and #$BF
+	eor #$80
+	sta (BASL),Y
+	iny
+	cpy INUM
+	bne INV1
+	rts
+
+INUM:	.byte $00
+
+;---------------------------------------------------------
 ; SET_INVERSE - Set output to inverse mode
 ; SET_NORMAL - Set output to normal mode
 ;---------------------------------------------------------

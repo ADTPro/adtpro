@@ -31,51 +31,38 @@
 ; Pull in all the rest of the code
 ;---------------------------------------------------------
 	.include "sos/conio.asm"	; Console I/O
-;	.include "print.asm"
+	.include "print.asm"
 	.include "prodos/serial/serproto.asm"
-;	.include "online.asm"
-;	.include "rw.asm"
+	.include "sos/online.asm"
+	.include "rw.asm"
 	.include "sr.asm"
 	.include "prodos/serial/ssc.asm"
 	.include "sos/serial/iiiacia.asm"
 	.include "crc.asm"
-;	.include "pickvol.asm"
+	.include "pickvol.asm"
 	.include "input.asm"
 	.include "sos/serial/serconfigsos.asm"
 	.include "hostfns.asm"
-;	.include "diskii.asm"
-;	.include "nibble.asm"
+	.include "diskii.asm"
+	.include "nibble.asm"
 ;	.include "format.asm"			; Note: includes FORMAT segment
 ;	.include "bsave.asm"
 
 ; Stubs:
-PRD:
 ROM:
 DELAY:
-motoroff:
 CH:
+CV:
 FormatEntry:
-PICKVOL:
 BLOAD:
 GET_PREFIX:
 Died:
 Done:
 SlotF:
-NUM:
-CHROVER:
-WRITING:
-PICKVOL2:
-ReceiveNib:
-READING:
-PREPPRG:
-GO_TRACK0:
-INIT_DISKII:
-sendnib:
 BIGBUF:
 BLKHI:
 BLKLO:
-PARMBUF:
 INVFLG:
-	rts
+BASL = $ff
 
 	.segment "DATA"

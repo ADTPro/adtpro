@@ -128,11 +128,8 @@ PHMMAX	= $0a		; This must be two greater than the largest host message
 	MSG19:	asc "VOLUMES CURRENTLY ON-LINE:"
 	MSG19_END =*
 
-	MSG20:	asc "SLOT  DRIVE  VOLUME NAME      BLOCKS"
-	MSG20_END =*
-
-	MSG21:	asc "----  -----  ---------------  ------"
-	MSG21_END =*
+	;MSG20 - defined locally
+	;MSG21 - defined locally
 
 	MSG22:	asc "CHANGE SELECTION WITH ARROW KEYS&RETURN "
 	MSG22_END =*

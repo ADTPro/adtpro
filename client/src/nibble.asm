@@ -373,16 +373,17 @@ nibblank:
 	lda CV
 	pha			; Save current vertical pos
 	lda #$0e		; Fixed vertical position
-	jsr $fb5b		; Calculate BASL from a
-	ldy #2			; Initial horizontal position
+	jsr TABV		; Calculate BASL from a
+	lda #2			; Initial horizontal position
+	jsr HTAB
 	lda #CHR_SP		; The character to display
 nibblnk1:
-	sta (BASL),y		; Put on screen
+	jsr COUT		; Put on screen
 	iny			; Next horizontal position
 	cpy #37			; At the end?
 	bcc nibblnk1		; If not, jump back
 	pla
-	jsr $fb5b		; Restore cv
+	jsr TABV		; Restore cv
 	rts
 
 ;---------------------------------------------------------
@@ -420,7 +421,7 @@ NIBNORM:
 NIBDISP:
 	tay		; INDEX VALUE IN Y
 	pla		; RESTORE CHARACTER TO SHOW
-	sta (BASL),Y
+	jsr COUT
 	pla
 	jsr TABV	; RESTORE CV
 	rts
