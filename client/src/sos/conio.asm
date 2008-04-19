@@ -243,11 +243,23 @@ RDKEY:
 	rts
 
 ERRORCK:
-	bcs SOS_ERROR
+	bcc NoError
+SOS_ERROR:
+	pha
+	lda #SOS_ERROR_MESSAGE_END-SOS_ERROR_MESSAGE
+	sta WRITE_LEN
+	lda #<SOS_ERROR_MESSAGE
+	sta UTILPTR
+	lda #>SOS_ERROR_MESSAGE
+	sta UTILPTR+1
+	jsr WRITEMSG_RAW
+	pla
+	jsr PRHEX
+	sec
 NoError:
 	rts
-SOS_ERROR:
-	jmp QUIT
+SOS_ERROR_MESSAGE:	asc "SOS ERROR: "
+SOS_ERROR_MESSAGE_END	=*
 
 ;---------------------------------------------------------
 ; READ_LINE
@@ -326,8 +338,16 @@ CLRMSGAREA_DATA:
 ;---------------------------------------------------------
 INVERSE:
 	sta INUM
+	lda #$12
+	sta ATTRIB
+	jmp INV_GO		; Code for start printing normally
+UNINVERSE:
+	sta INUM
+	lda #$11		; Code for start printing in inverse
+	sta ATTRIB
+INV_GO:
 	jsr GOTOXY
-	lda #$12		; Code for start printing in inverse
+	lda ATTRIB
 	jsr COUT
 	ldx INUM
 :	jsr READVID
@@ -339,6 +359,7 @@ INVERSE:
 	rts
 
 INUM:	.byte $00
+ATTRIB:	.byte $12
 
 ;---------------------------------------------------------
 ; SET_INVERSE - Set output to inverse mode
@@ -370,6 +391,45 @@ PRHEXZ:	ORA #$B0	;  LSB'S
 	BCC MyCOUT
 	ADC #$06
 MyCOUT:	JMP COUT
+	rts
+
+;---------------------------------------------------------
+; DUMPMEM:
+; 
+; Dump memory to console starting from UTILPTR to BLKPTR
+;---------------------------------------------------------
+DUMPMEM:
+	ldy #$00
+DUMPNEXTLINE:
+	ldx #$08
+	lda <UTILPTR+1
+	jsr PRBYTE
+	lda <UTILPTR
+	jsr PRBYTE
+	lda #$20
+	jsr COUT
+DUMPNEXTONE:
+	lda (UTILPTR),Y
+	jsr PRBYTE
+	lda #$20
+	jsr COUT
+	clc
+	inc <UTILPTR
+	bne :+
+	inc <UTILPTR+1
+:	lda <UTILPTR
+	cmp <UTILPTR2
+	bne DUMPNEXT
+	lda <UTILPTR+1
+	cmp <UTILPTR2+1
+	bne DUMPNEXT
+	jmp DUMPDONE
+DUMPNEXT:
+	dex
+	bne DUMPNEXTONE
+	jsr CROUT
+	jmp DUMPNEXTLINE
+DUMPDONE:	
 	rts
 
 ;---------------------------------------------------------

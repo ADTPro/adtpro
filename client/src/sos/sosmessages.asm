@@ -18,10 +18,10 @@
 ; 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 ;
 ;                   "0123456789012345678901234567890123456789"
-;                   ".123456789ABCDEF 123456789ABCDEF  BLOCKS
-	MSG20:	asc "DEVICE NAME      VOLUME NAME     BLOCKS"
+;                   ".123456789ABCDE  123456789ABCDEF  BLOCKS
+	MSG20:	asc " DEVICE NAME     VOLUME NAME     BLOCKS"
 	MSG20_END =*
 
-	MSG21:	asc "---------------- --------------- ------"
+	MSG21:	asc " --------------- --------------- ------"
 	MSG21_END =*
 	

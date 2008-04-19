@@ -29,10 +29,26 @@
 PICKVOL:
 	sty ZP		; Borrow space for the top-line message ptr
 	jsr PRINTVOL
-;	lda #$00
-;	sta VCURROW	; Note - VCURROW always keeps row state around
 	jsr INVROW
+	lda LASTVOL
+	sta LASTVOLZERO
+	dec LASTVOLZERO
 	jsr VOLLOOP
+	rts
+
+;---------------------------------------------------------
+; PRINTVOL
+; 
+; Prints on-line volume information 
+; Y holds pointer to top line message
+;---------------------------------------------------------
+PRINTVOL:
+	tya
+	pha
+	jsr HOME	; Clear screen
+	pla
+	tay
+	jsr ONLINE
 	rts
 
 ;---------------------------------------------------------
@@ -62,15 +78,15 @@ VKEYR:	cmp #$95	; Is it a key right?
 	bne VKEYUP	; No - continue with next group
 
 VKEYD:	lda VCURROW	; All roads lead to down
-	cmp LASTVOL
+	cmp LASTVOLZERO
 	beq LOOPUP	; Loop around to the top again
-	jsr INVROW
+	jsr UNINVROW
 	inc VCURROW
 	jsr INVROW
 	jmp VOLLOOP
 
 LOOPUP:
-	jsr INVROW
+	jsr UNINVROW
 	lda #$00
 	sta VCURROW
 	jsr INVROW
@@ -85,14 +101,14 @@ VKEYL:	cmp #$88	; Is it a key left?
 
 VKEYU:	lda VCURROW	; All roads lead to up
 	beq LOOPDN	; Loop around to bottom again
-	jsr INVROW
+	jsr UNINVROW
 	dec VCURROW
 	jsr INVROW
 	jmp VOLLOOP
 
 LOOPDN:
-	jsr INVROW
-	lda LASTVOL
+	jsr UNINVROW
+	lda LASTVOLZERO
 	sta VCURROW
 	jsr INVROW
 	jmp VOLLOOP
@@ -151,6 +167,16 @@ INVROW:
 	jsr INVERSE
 	rts
 
-VCURROW:	.byte $00
-VROFFS	= $05
+UNINVROW:
+	lda VCURROW
+	clc
+	adc #VROFFS
+	tay
+	lda #VOL_LINE_LEN	; The length of line to highlight
+	ldx #H_SL		; Start at the "Slot" column
+	jsr UNINVERSE
+	rts
 
+VCURROW:	.byte $00	; The current row the cursor is on (zero-indexed)
+LASTVOLZERO:	.byte $00
+VROFFS	= $05

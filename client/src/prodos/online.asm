@@ -28,7 +28,6 @@ ONLINE:
 
 dumpem:			; Just spit out what we already discovered
 	tay
-	iny
 	ldx #$00
 dumploop:
 	jsr PRT1VOL
@@ -107,7 +106,7 @@ skip:
 	adc #$10
 	tax
 	bcc OLLOOP
-ODONE:	dec LASTVOL	; Save off the last volume number (index)
+ODONE:
 	rts
 
 OERROR:
@@ -741,7 +740,7 @@ VOLNAME:	.res 17,$00		; One byte for length
 					; One byte for leading slash
 					; 15 bytes for name
 
-LASTVOL:	.byte $00
+LASTVOL:	.byte $00		; The number of volumes currently in the table
 onlineUnit:	.byte $00
 DevSize:	.word $0000
 

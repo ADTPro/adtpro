@@ -23,20 +23,33 @@
 ;---------------------------------------------------------
 ONLINE:
 	jsr DRAWBDR
+	lda #$00
+	sta DUMP_INDEX	; Haven't dumped anybody out yet
 	lda LASTVOL	; Have we already done an online?
-	beq OSTART	; No - spend the time to scan drives
-
-dumpem:			; Just spit out what we already discovered
-	tay
-	iny
-	ldx #$00
+	bne dumpem	; Yes - dump 'em out
+	jmp OSTART	; No - spend the time to scan drives
+dumpem:			; Spit out what we discovered
 dumploop:
+	lda #<DEVICES
+	sta UTILPTR
+	lda #>DEVICES
+	sta UTILPTR+1
+	ldx DUMP_INDEX
+	beq dump_PTR_DONE
+dump_ADD_ONE:
+	clc				; Add ONE_DEVICE_COSTS*LASTVOL to UTILPTR
+	lda UTILPTR
+	adc #ONE_DEVICE_COSTS
+	sta UTILPTR			; Move pointer ONE_DEVICE_COSTS bytes for each entry already existing
+	bcc :+
+	inc UTILPTR+1
+:	dex
+	bne dump_ADD_ONE
+dump_PTR_DONE:
 	jsr PRT1VOL
-	txa
-	clc
-	adc #$10
-	tax
-	dey
+	inc DUMP_INDEX
+	lda DUMP_INDEX
+	cmp LASTVOL
 	bne dumploop
 	rts
 
@@ -47,23 +60,6 @@ OSTART:
 	sta UTILPTR+1
 	ldy #$00
 	lda #$00
-OCLEAN:
-	ldx #$03
-OPAGE:	sta (UTILPTR),Y	; Clear out devices table
-	iny
-	bne OPAGE
-	clc
-	inc UTILPTR
-	bcc :+
-	inc UTILPTR+1
-:	dex		; Need to do this 3 times... $318 bytes in that table!
-	bne OPAGE
-
-:	sta (UTILPTR),Y	; Clear out remainder of devices table
-	iny
-	cpy #<DEVICES_END-DEVICES
-	bne :-
-
 	ldy #$01			; SOS devices are numbered $1-$18
 SCAN_DEVICE_LOOP:
 	sty D_INFO_NUM
@@ -74,15 +70,20 @@ SCAN_DEVICE_LOOP:
 	bne :-
 	clc
 	CALLOS OS_D_INFO, D_INFO_PARMS
+	jsr ERRORCK
 	bcs :+
-	lda D_INFO_NAME
+	lda D_INFO_NAME			; Skip it if it doesn't have a name
 	beq :+
+	lda D_INFO_OPTION+2		; Skip it if it isn't a block device
+	bpl :+
 	jsr SCAN_VOLUME
 :	iny
 	cpy #$19
 	bne SCAN_DEVICE_LOOP
 ODONE:
 	rts
+
+DUMP_INDEX:	.byte $00
 
 ;---------------------------------------------------------
 ; SCAN_VOLUME
@@ -103,7 +104,8 @@ SCAN_VOLUME:
 	bne :-
 	clc
 	CALLOS OS_ONL, VOLUME_PARMS	; Retrieve the volume name
-	bcs SV_DONE
+	bne SV_NONE
+SV_NEW_NAME:
 	lda #<DEVICES			; Start by pointing at head of DEVICES table
 	sta UTILPTR
 	lda #>DEVICES
@@ -111,7 +113,7 @@ SCAN_VOLUME:
 	ldx LASTVOL
 	beq SV_PTR_DONE
 SV_ADD_ONE:
-	clc
+	clc				; Add ONE_DEVICE_COSTS*LASTVOL to UTILPTR
 	lda UTILPTR
 	adc #ONE_DEVICE_COSTS
 	sta UTILPTR			; Move pointer ONE_DEVICE_COSTS bytes for each entry already existing
@@ -120,22 +122,30 @@ SV_ADD_ONE:
 :	dex
 	bne SV_ADD_ONE
 SV_PTR_DONE:
-	inc LASTVOL			; Count another volume used
+	inc LASTVOL			; Count another volume as used
+
 	ldy #$00
 	lda D_INFO_NUM
 	sta (UTILPTR),Y			; Copy in the device number
 	iny
 
+	lda D_INFO_OPTION+5
+	sta (UTILPTR),Y			; Copy in the capacity in blocks lo
+	iny
+	lda D_INFO_OPTION+6
+	sta (UTILPTR),Y			; Copy in the capacity in blocks hi
+	iny
+
 	ldx #$01			; Skip the length byte
-SV_DVR_NAME_LOOP:
-	lda D_INFO_NAME,X		; Copy in the driver name
+SV_DEV_NAME_LOOP:
+	lda D_INFO_NAME,X		; Copy in the device name
 	bne :+
 	lda #$20			; Swap spaces for zeroes
 :	sta (UTILPTR),Y
 	inx
 	iny
 	cpx #$10
-	bne SV_DVR_NAME_LOOP
+	bne SV_DEV_NAME_LOOP
 
 	ldx #$01			; Skip the length byte
 SV_VOL_NAME_LOOP:
@@ -147,70 +157,55 @@ SV_VOL_NAME_LOOP:
 	iny
 	cpx #$10
 	bne SV_VOL_NAME_LOOP
-
-	lda D_INFO_OPTION+5
-	sta (UTILPTR),Y
-	iny
-	lda D_INFO_OPTION+6
-	sta (UTILPTR),Y
 	jsr PRT1VOL
 SV_DONE:
 	ldy SLOWY
 	rts
 
+SV_NONE:
+	jsr DEVMSG2
+	jmp SV_NEW_NAME
+
 ; DEVMSG - Add a message to the "Volume name" area of the device
 DEVMSG:
-	txa		; Preserve X
-	pha
-
 	clc
-	adc #<DEVICES
-	sta UTILPTR
-	lda #>DEVICES
-	sta UTILPTR+1	; UTILPTR now holds DEVICES + X
-	
-	ldy #$00
-DMLOOP:
-	lda MNONAME,Y
-	cmp #$00
-	beq DMDONE
-	iny
-	sta (UTILPTR),Y
-	jmp DMLOOP
-DMDONE:
-	tya
-	ldy #$00
-	ora (UTILPTR),Y
-	sta (UTILPTR),Y
-
-	pla
+	ror
+	tax			; Message length table lookup - need to cut the index in half
+	lda MSGLENTBL,X		; Look up message length
 	tax
+	ldy #$00
+:	lda (UTILPTR2),Y
+	iny
+	sta VOLUME_NAME,Y
+	dex
+	bne :-
 	rts
 
 ; DEVMSG1 - Add "<NO NAME>" to the "Volume name"
 DEVMSG1:
 	lda #<MNONAME
-	sta DMLOOP+1
+	sta UTILPTR2
 	lda #>MNONAME
-	sta DMLOOP+2
+	sta UTILPTR2+1
 	jsr DEVMSG
 	rts
 
 ; DEVMSG2 - Add "<I/O ERROR>" to the "Volume name"
 DEVMSG2:
 	lda #<MIOERR
-	sta DMLOOP+1
+	sta UTILPTR2
 	lda #>MIOERR
-	sta DMLOOP+2
+	sta UTILPTR2+1
+	lda #PMIOERR
 	jsr DEVMSG
 	rts
 
 ; DEVMSG3 - Add "<NO DISK>" to the "Volume name"
 DEVMSG3:
 	lda #<MNODISK
-	sta DMLOOP+1
+	sta UTILPTR2
 	lda #>MNODISK
-	sta DMLOOP+2
+	sta UTILPTR2+1
 	jsr DEVMSG
 	rts
 
@@ -274,21 +269,67 @@ VOLINSTRUCT:
 ; PRT1VOL
 ;
 ; Inputs:
-;   UTILPTR points to the device to dump in the DEVICES table
+;   UTILPTR points to the device to display in the DEVICES table
 ;---------------------------------------------------------
 PRT1VOL:
-	lda #UTILPTR
-	sta PRT1PTR
-	lda #UTILPTR+1
-	sta PRT1PTR
+	lda #$1e		; Set the cursor at the left edge
+	jsr COUT
+	lda #$20		; One space over
+	jsr COUT
+
+	lda UTILPTR
+	sta PRT1PTR		; Save a pointer to the beginning of the structure
+	lda UTILPTR+1
+	sta PRT1PTR+1
 
 	clc
-	inc UTILPTR
+	inc UTILPTR		; Move past the Device Number in the DEVICES structure
 	bcc :+
 	inc UTILPTR+1
-:	lda #$f
+:	ldy #$00
+	lda (UTILPTR),Y
+	sta NUMBLKS
+	iny
+	lda (UTILPTR),Y
+	sta NUMBLKS+1		; Hang on to block capacity
+
+	clc
+	lda UTILPTR		; Move past the Volume Blocks in the DEVICES structure
+	adc #$02
+	sta UTILPTR
+	bcc :+
+	inc UTILPTR+1
+:
+	lda #$0f
 	sta WRITE_LEN
-	jsr WRITEMSG_RAW
+	jsr WRITEMSG_RAW	; Write the device name
+
+	lda #$20
+	jsr COUT		; Space between Device Name and Volume Name
+
+	clc
+	lda PRT1PTR+1
+	sta UTILPTR+1
+	lda PRT1PTR
+	adc #$12		; Move past the Device Number, Volume Blocks and Device Name in the DEVICES structure
+	sta UTILPTR
+	bcc :+
+	inc UTILPTR+1
+:
+	lda #$0f
+	sta WRITE_LEN
+	jsr WRITEMSG_RAW	; Write the volume name
+
+	lda #$20
+	jsr COUT		; Space between Volume Name and Volume Blocks
+	lda #$20
+	jsr COUT		; Double space between Volume Name and Volume Blocks
+
+	lda NUMBLKS
+	ldx NUMBLKS+1
+	ldy #CHR_SP
+	jsr PRD		; Print the block size
+
 	jsr CROUT
 	rts
 
@@ -340,11 +381,11 @@ LASTVOL:	.byte $00
 ; DEVICES structure:
 ;
 ; Device Number	.byte
-; Driver Name	.res $0f
-; Volume Name	.res $0f
 ; Volume Blocks	.word
+; Device Name	.res $0f
+; Volume Name	.res $0f
 ;               ======
 ;               $21 bytes per entry; $18 possible entries
 ONE_DEVICE_COSTS	=$21
-DEVICES:	.res ONE_DEVICE_COSTS*$18
+DEVICES:	.res ONE_DEVICE_COSTS*$18, $ff
 DEVICES_END	=*

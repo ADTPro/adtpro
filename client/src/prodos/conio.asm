@@ -200,6 +200,7 @@ READ_CHAR:
 ;   Y - starting y coordinate
 ;---------------------------------------------------------
 INVERSE:
+UNINVERSE:
 	clc
 	sta INUM
 	stx CH		; Set cursor to first position

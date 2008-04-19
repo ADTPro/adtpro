@@ -18,7 +18,7 @@
 ; 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 ;
 
-.global CAPBLKS, DEVICES, PARMBUF, BLKLO, BLKHI, BIGBUF, CRCTBLL, CRCTBLH
+.global CAPBLKS, PARMBUF, BLKLO, BLKHI, BIGBUF, CRCTBLL, CRCTBLH
 .global NUMBLKS, HOSTBLX, UNITNBR
 .global PARMS, PSSC, PSPEED, PSOUND, PSAVE, PGSSLOT, SR_WR_C, SLOWA, SLOWX, SLOWY
 .global PCCRC, COLDSTART, BAUD, NonDiskII, SendType
@@ -42,6 +42,7 @@ Buffer  = $2c 		; ($02 bytes) Address pointer for FORMAT data
 CRCY	= $2e		; ($01 byte) Used by UDP SEND
 TMOT    = $2f		; ($01 byte) Timeout indicator
 NIBPCNT	= $30		; ($01 byte) Counts nibble pages
+UTILPTR2	= $32		; ($02 bytes) Used for printing messages too
 
 CRCTBLL:	.res $100	; CRC LOW TABLE  ($100 Bytes)
 CRCTBLH:	.res $100	; CRC HIGH TABLE ($100 Bytes)
@@ -132,7 +133,7 @@ D_INFO_OPTION_END = *
 ; Table for volume query
 
 VOLUME_PARMS:	.byte $04
-VOLUME_DEV_PTR:	.addr VOLUME_NAME
+VOLUME_DEV_PTR:	.addr D_INFO_NAME
 VOLUME_NAME_PTR:
 		.addr VOLUME_NAME
 VOLUME_BLOCKS:	.res 2

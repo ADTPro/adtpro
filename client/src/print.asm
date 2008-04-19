@@ -26,21 +26,6 @@
 .global PMANALYSIS
 
 ;---------------------------------------------------------
-; PRINTVOL
-; 
-; Prints on-line volume information 
-; Y holds pointer to top line message
-;---------------------------------------------------------
-PRINTVOL:
-	tya
-	pha
-	jsr HOME	; Clear screen
-	pla
-	tay
-	jsr ONLINE
-	rts
-
-;---------------------------------------------------------
 ; PREPPRG
 ; 
 ; Sets up the progress screen
