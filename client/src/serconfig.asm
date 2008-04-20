@@ -38,8 +38,8 @@ SAVPARM:
 
 ;--------------- FIRST PART: DISPLAY SCREEN --------------
 
-	ldx #$07
-	ldy #$00
+	ldx #$07	; Column
+	ldy #$00	; Row
 	jsr GOTOXY
 	ldy #PMSG24	; 'CONFIGURE ADTPRO PARAMETERS'
 	jsr WRITEMSG
@@ -239,7 +239,7 @@ SAVPARM2:
 	bpl SAVPARM2
 	lda #$00
 	sta CURPARM
-;	jsr BSAVE	; TODO: Finish this for SOS
+	jsr BSAVE
 NOSAVE:
 	rts
 

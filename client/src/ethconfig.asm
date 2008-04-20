@@ -41,76 +41,67 @@ SAVPARM:
 
 ;--------------- FIRST PART: DISPLAY SCREEN --------------
 
-	lda #$07	; Column
-	sta <CH
-	lda #$00	; Row
-	jsr TABV
+	ldx #$07	; Column
+	ldy #$00	; Row
+	jsr GOTOXY
 	ldy #PMSG24	; 'CONFIGURE ADTPRO PARAMETERS'
 	jsr WRITEMSG
 
-	lda #$05	; Column
-	sta <CH
-	lda #$03	; Row
-	jsr TABV
-	lda #<MSG26	; 'UTHER SLOT'
-	sta UTILPTR
-	lda #>MSG26
-	sta UTILPTR+1
-	jsr WRITEMSGRAW
+	ldx #$05	; Column
+	ldy #$03	; Row
+	jsr GOTOXY
+	ldy #PMSG26	; 'UTHER SLOT'
+	jsr WRITEMSG
 
-	lda #$05	; Column
-	sta <CH
-	lda #$04	; Row
-	jsr TABV
+	ldx #$05	; Column
+	ldy #$04	; Row
+	jsr GOTOXY
 	ldy #PMSG28	; 'ENABLE SOUND'
 	jsr WRITEMSG
 
-	lda #$05	; Column
-	sta <CH
-	lda #$05	; Row
-	jsr TABV
+	ldx #$05	; Column
+	ldy #$05	; Row
+	jsr GOTOXY
 	ldy #PMSG28a	; 'SAVE CONFIGURATION'
 	jsr WRITEMSG
 
-	lda #$05
-	sta <CH
-	lda #$07
-	jsr TABV
+	ldx #$05
+	ldy #$07
+	jsr GOTOXY
 	ldax #IPMsg01
+	ldy IP_MSG_LEN_TBL
 	jsr IPShowMsg	; 'SERVER IP ADDR'
 
-	lda #$05
-	sta <CH
-	lda #$08
-	jsr TABV
+	ldx #$05
+	ldy #$08
+	jsr GOTOXY
 	ldax #IPMsg02
+	ldy IP_MSG_LEN_TBL+1
 	jsr IPShowMsg	; 'LOCAL IP ADDR'
 	
-	lda #$05
-	sta <CH
-	lda #$09
-	jsr TABV
+	ldx #$05
+	ldy #$09
+	jsr GOTOXY
 	ldax #IPMsg03
+	ldy IP_MSG_LEN_TBL+2
 	jsr IPShowMsg	; 'NETMASK'
 	
-	lda #$05
-	sta <CH
-	lda #$0a
-	jsr TABV
+	ldx #$05
+	ldy #$0a
+	jsr GOTOXY
 	ldax #IPMsg04
+	ldy IP_MSG_LEN_TBL+3
 	jsr IPShowMsg	; 'GATEWAY ADDR'
 	
-	lda #$04	; Column
-	sta <CH
-	lda #$14	; Row
-	jsr TABV
+	ldx #$04	; Column
+	ldy #$14	; Row
+	jsr GOTOXY
 	ldy #PMSG25	; 'CHANGE PARAMETERS WITH ARROW KEYS'
 	jsr WRITEMSG
 
-	lda #$05	; Column
-	sta <CH
-	lda #$15	; Row
-	jsr TABV
+	ldx #$05	; Column
+	ldy #$15	; Row
+	jsr GOTOXY
 	ldy #PMSG23a	; 'SELECT WITH RETURN, ESC CANCELS'
 	jsr WRITEMSG
 
@@ -271,19 +262,10 @@ PARMDFTNEXT:
 IPShowMsg:
 	sta UTILPTR
 	stx UTILPTR+1
-	ldy #$00
-@MSGLOOP:
-	lda (UTILPTR),Y
-	beq @MSGEND
-	jsr COUT1
-	iny
-	bne @MSGLOOP
-@MSGEND:
+	tya		; Put the length in accumulator
+	jsr WRITEMSG_RAWLEN
 	rts
 
-;
-;
-;
 REFRESH:
 	lda #3		; FIRST PARAMETER IS ON LINE 3
 	jsr TABV
@@ -371,48 +353,3 @@ FindSlotDone:
 	stx DEFAULT
 	rts
 TempSlot:	.byte 0
-
-;---------------------------------------------------------
-; Configuration
-;---------------------------------------------------------
-
-PARMNUM	= $03		; Number of configurable parms
-;			; Note - add bytes to OLDPARM if this is expanded.
-PARMSIZ: .byte 7,2,2	; Number of options for each parm
-LINECNT:	.byte 00		; CURRENT LINE NUMBER
-CURPARM:	.byte 00		; ACTIVE PARAMETER
-CURVAL:		.byte 00		; VALUE OF ACTIVE PARAMETER
-OLDPARM:	.byte $00,$00,$00	; There must be PARMNUM bytes here...
-
-PARMTXT:
-	ascz "1"
-	ascz "2"
-	ascz "3"
-	ascz "4"
-	ascz "5"
-	ascz "6"
-	ascz "7"
-	ascz "YES"
-	ascz "NO"
-	ascz "YES"
-	ascz "NO"
-
-CONFIG_FILE_NAME:	.byte 14
-			asc "ADTPROETH.CONF"
-
-YSAVE:	.byte $00
-
-PARMS:
-PSSC:	.byte 2		; Comms slot (3)
-PSOUND:	.byte 0		; Sounds? (YES)
-PSAVE:	.byte 1		; Save parms? (NO)
-
-ip_parms:
-serverip:	.byte 192, 168,   0,   2
-cfg_ip:		.byte 192, 168,   0, 123
-cfg_netmask:	.byte 255, 255, 248,   0
-cfg_gateway:	.byte 192, 168,   0,   1
-
-DEFAULT:	.byte 2,0,1	; Default parm indices
-CONFIGYET:	.byte 0		; Has the user configged yet?
-PARMSEND:

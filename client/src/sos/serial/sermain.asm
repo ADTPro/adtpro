@@ -55,6 +55,7 @@ CH:
 CV:
 FormatEntry:
 BLOAD:
+BSAVE:
 GET_PREFIX:
 Died:
 Done:

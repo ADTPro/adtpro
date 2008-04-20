@@ -128,6 +128,7 @@ WRITEMSG:
 	ror		; Divide Y by 2 to get the message length out of the table
 	tay
 	lda MSGLENTBL,Y
+WRITEMSG_RAWLEN:
 	sta WRITE_LEN
 WRITEMSG_RAW:
 	clc
@@ -243,7 +244,7 @@ RDKEY:
 	rts
 
 ERRORCK:
-	bcc NoError
+	beq NoError
 SOS_ERROR:
 	pha
 	lda #SOS_ERROR_MESSAGE_END-SOS_ERROR_MESSAGE
@@ -254,7 +255,7 @@ SOS_ERROR:
 	sta UTILPTR+1
 	jsr WRITEMSG_RAW
 	pla
-	jsr PRHEX
+	jsr PRBYTE
 	sec
 NoError:
 	rts
@@ -385,7 +386,7 @@ PRBYTE:
 	LSR
 	JSR PRHEXZ
 	PLA
-PRHEX:	AND #$0F	; PRINT HEX DIG IN A-REG
+	AND #$0F	; PRINT HEX DIG IN A-REG
 PRHEXZ:	ORA #$B0	;  LSB'S
 	CMP #$BA
 	BCC MyCOUT

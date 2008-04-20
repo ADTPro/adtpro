@@ -49,7 +49,7 @@ OS_DESTROY		= $C1
 OS_RENAME		= $C2
 OS_SET_FILE_INFO	= $C3
 OS_GET_FILE_INFO	= $C4
-OS_ONL			= $C5
+OS_ONL			= $C5	; ONLINE call for ProDOS; VOLUME call for SOS
 OS_SET_PREFIX		= $C6
 OS_GET_PREFIX		= $C7
 OS_OPEN			= $C8
@@ -64,6 +64,54 @@ OS_SET_EOF		= $D0
 OS_GET_EOF		= $D1
 OS_SET_LEVEL		= $D2
 OS_GET_LEVEL		= $D3
+
+;---------------------------------------------------------
+; ProDOS/SOS error numbers
+;---------------------------------------------------------
+BADSCNUM		= $01
+BADCZPAGE		= $02
+BADXBYTE		= $03
+BADSCPCNT		= $04
+BADSCBNDS		= $05
+
+DNFERR			= $10
+BADDNUM			= $11
+BADREQCODE		= $20
+BADCTLCODE		= $21
+BADCTLPARM		= $22
+NOTOPEN			= $23
+NORESRC			= $24
+BADOP			= $25
+IOERROR			= $27
+NOWRITE			= $2B
+DISKSK			= $2E
+
+BADPATH			= $40
+CFCBFULL		= $41
+FCBFULL			= $42
+BADREFNUM		= $43
+PATHNOTFND		= $44
+VNFERR			= $45
+FNFERR			= $46
+DUPERR			= $47
+OVRERR			= $48
+DIRFULL			= $49
+CPTERR			= $4A
+TYPERR			= $4B
+EOFERR			= $4C
+POSNERR			= $4D
+ACCSERR			= $4E
+BTSERR			= $4F
+FILBUSY			= $50
+DIRERR			= $51
+NOTNATIVE		= $52	; NOTSOS/NOTPRODOS
+BADLSTCNT		= $53
+BUFTBLFULL		= $55
+BADSYSBUF		= $56
+DUPVOL			= $57
+NOTBLKDEV		= $58
+LVLERR			= $59
+BITMAPADR		= $5A
 
 ;---------------------------------------------------------
 ; Disk II soft switches

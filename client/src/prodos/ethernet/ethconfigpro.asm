@@ -18,35 +18,49 @@
 ; 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 ;
 
-	.include "prodos/interp.asm"			; Interpreter header
-	.include "prodos/prodosmacros.i"		; OS macros
-	.include "prodos/prodosconst.i"			; OS equates, characters, etc.
-	.include "prodos/prodosvars.asm"
-	.include "prodos/ethernet/ethmessages.asm"	; Messages
-	.include "ip65/common.i"
-	.include "main.asm"
+.include "ethconfig.asm"
 
 ;---------------------------------------------------------
-; Pull in all the rest of the code
+; Configuration
 ;---------------------------------------------------------
 
-	.include "prodos/conio.asm"		; Console I/O
-	.include "print.asm"
-	.include "prodos/online.asm"
-	.include "rw.asm"
-	.include "sr.asm"
-	.include "prodos/ethernet/uther.asm"
-	.include "crc.asm"
-	.include "pickvol.asm"
-	.include "input.asm"
-	.include "prodos/ethernet/ethconfigpro.asm"
-	.include "hostfns.asm"
-	.include "diskii.asm"
-	.include "nibble.asm"
-	.include "prodos/ethernet/ethproto.asm"
-	.include "prodos/ethernet/ipconfig.asm"
-	.include "format.asm"		; Note: format.asm is its own segment
-	.include "bsave.asm"
+PARMNUM	= $03		; Number of configurable parms
+;			; Note - add bytes to OLDPARM if this is expanded.
+PARMSIZ: .byte 7,2,2	; Number of options for each parm
+LINECNT:	.byte 00		; CURRENT LINE NUMBER
+CURPARM:	.byte 00		; ACTIVE PARAMETER
+CURVAL:		.byte 00		; VALUE OF ACTIVE PARAMETER
+OLDPARM:	.byte $00,$00,$00	; There must be PARMNUM bytes here...
 
-PEND:
-	.segment "DATA"	
+PARMTXT:
+	ascz "1"
+	ascz "2"
+	ascz "3"
+	ascz "4"
+	ascz "5"
+	ascz "6"
+	ascz "7"
+	ascz "YES"
+	ascz "NO"
+	ascz "YES"
+	ascz "NO"
+
+CONFIG_FILE_NAME:	.byte 14
+			asc "ADTPROETH.CONF"
+
+YSAVE:	.byte $00
+
+PARMS:
+PSSC:	.byte 2		; Comms slot (3)
+PSOUND:	.byte 0		; Sounds? (YES)
+PSAVE:	.byte 1		; Save parms? (NO)
+
+ip_parms:
+serverip:	.byte 192, 168,   0,   2
+cfg_ip:		.byte 192, 168,   0, 123
+cfg_netmask:	.byte 255, 255, 248,   0
+cfg_gateway:	.byte 192, 168,   0,   1
+
+DEFAULT:	.byte 2,0,1	; Default parm indices
+CONFIGYET:	.byte 0		; Has the user configged yet?
+PARMSEND:

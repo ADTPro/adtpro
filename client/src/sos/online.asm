@@ -68,16 +68,13 @@ SCAN_DEVICE_LOOP:
 :	sta D_INFO_NAME-1,x		; Clean out D_INFO_NAME data
 	dex
 	bne :-
-	clc
 	CALLOS OS_D_INFO, D_INFO_PARMS
-	jsr ERRORCK
-	bcs :+
-	lda D_INFO_NAME			; Skip it if it doesn't have a name
-	beq :+
+	bne SCAN_NEXT			; Skip it if we got an OS call error
 	lda D_INFO_OPTION+2		; Skip it if it isn't a block device
-	bpl :+
+	bpl SCAN_NEXT
 	jsr SCAN_VOLUME
-:	iny
+SCAN_NEXT:
+	iny
 	cpy #$19
 	bne SCAN_DEVICE_LOOP
 ODONE:
@@ -102,7 +99,6 @@ SCAN_VOLUME:
 :	dex
 	sta VOLUME_NAME,X		; Clear out the volume name space
 	bne :-
-	clc
 	CALLOS OS_ONL, VOLUME_PARMS	; Retrieve the volume name
 	bne SV_NONE
 SV_NEW_NAME:
@@ -163,8 +159,11 @@ SV_DONE:
 	rts
 
 SV_NONE:
-	jsr DEVMSG2
-	jmp SV_NEW_NAME
+	cmp #VNFERR
+	beq DEVMSG3		; Volume not found - "<NO DISK>"
+	cmp #NOTNATIVE
+	beq DEVMSG1		; Not an SOS volume - "<NO NAME>"
+	jmp DEVMSG2		; Punt - generic I/O error
 
 ; DEVMSG - Add a message to the "Volume name" area of the device
 DEVMSG:
@@ -187,8 +186,9 @@ DEVMSG1:
 	sta UTILPTR2
 	lda #>MNONAME
 	sta UTILPTR2+1
+	lda #PMNONAME
 	jsr DEVMSG
-	rts
+	jmp SV_NEW_NAME
 
 ; DEVMSG2 - Add "<I/O ERROR>" to the "Volume name"
 DEVMSG2:
@@ -198,7 +198,7 @@ DEVMSG2:
 	sta UTILPTR2+1
 	lda #PMIOERR
 	jsr DEVMSG
-	rts
+	jmp SV_NEW_NAME
 
 ; DEVMSG3 - Add "<NO DISK>" to the "Volume name"
 DEVMSG3:
@@ -206,8 +206,9 @@ DEVMSG3:
 	sta UTILPTR2
 	lda #>MNODISK
 	sta UTILPTR2+1
+	lda #PMNODISK
 	jsr DEVMSG
-	rts
+	jmp SV_NEW_NAME
 
 ;---------------------------------------------------------
 ; INTERPRET_ONLINE

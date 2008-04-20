@@ -22,35 +22,29 @@
 	.include "sos/sosmacros.i"	; OS macros
 	.include "sos/sosconst.i"	; OS equates, characters, etc.
 	.include "sos/sosvars.asm"
-	.include "sos/conio.asm"	; Console I/O
 	.include "sos/ethernet/ethmessages.asm"	; Messages
 	.include "ip65/common.i"	; More macros - ldax, for example
+
+	.include "sos/interimmain.asm"
 
 ;---------------------------------------------------------
 ; Pull in all the rest of the code
 ;---------------------------------------------------------
-
-entrypoint:	; Remove me when main comes back...
-QUIT:
-;	.include "sos/interimmain.asm"
-
-;	.include "print.asm"
-;	.include "sos/online.asm"
-;	.include "rw.asm"
-;	.include "sr.asm"
-;	.include "sos/ethernet/uther.asm"
-;	.include "crc.asm"
-;	.include "pickvol.asm"
-;	.include "input.asm"
-;	.include "prodos/ethernet/ethconfig.asm"
-CD:
-CONFIG:
-	rts
-;	.include "hostfns.asm"
-;	.include "diskii.asm"
-;	.include "nibble.asm"
-;	.include "prodos/ethernet/ethproto.asm"
-;	.include "prodos/ethernet/ipconfig.asm"
+	.include "sos/conio.asm"	; Console I/O
+	.include "print.asm"
+	.include "sos/online.asm"
+	.include "rw.asm"
+	.include "sr.asm"
+	.include "crc.asm"
+	.include "pickvol.asm"
+	.include "input.asm"
+	.include "hostfns.asm"
+	.include "diskii.asm"
+	.include "nibble.asm"
+	.include "prodos/ethernet/ethproto.asm"
+	.include "prodos/ethernet/uther.asm"
+	.include "sos/ethernet/ethconfigsos.asm"
+	.include "prodos/ethernet/ipconfig.asm"
 ;	.include "format.asm"		; Note: format.asm is its own segment
 ;	.include "bsave.asm"
 ; Stubs:
@@ -60,6 +54,7 @@ CH:
 CV:
 FormatEntry:
 BLOAD:
+BSAVE:
 GET_PREFIX:
 Died:
 Done:
@@ -69,8 +64,5 @@ BLKHI:
 BLKLO:
 INVFLG:
 BASL = $ff
-CAPBLKS:
-DEVICES:
-
 PEND:
 	.segment "DATA"	

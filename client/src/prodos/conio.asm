@@ -104,13 +104,14 @@ WRITEMSG:
 	sta UTILPTR+1
 ; Entry - print message at current cursor pos
 ;         set UTILPTR to point to null-term message
-WRITEMSGRAW:
+WRITEMSG_RAW:
 	clc
 	tya
 	ror		; Divide Y by 2 to get the message length out of the table
 	tay
 	lda MSGLENTBL,Y
 	beq WRITEMSGEND	; Bail if length is zero (i.e. MNULL)
+WRITEMSG_RAWLEN:
 	sta WRITEMSGLEN
 	ldy #$00
 WRITEMSGLOOP:
