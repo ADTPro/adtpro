@@ -25,9 +25,8 @@
 ;---------------------------------------------------------
 INIT_SCREEN:
 	; Prepare the system for our expecations
-	clc
 	CALLOS OS_OPEN, OPEN_PARMS	; Open the console
-	bcs Local_Quit
+	jsr ERRORCK
 	lda OPEN_REF
 	sta WRITE_REF			; Save off our console file references
 	sta WRITE1_REF
@@ -42,7 +41,7 @@ INIT_SCREEN:
 	jsr WRITEMSG_RAW
 					; Ask for device number of the console
 	CALLOS OS_GET_DEV_NUM, GET_DEV_NUM_PARMS
-	bcs Local_Quit
+	jsr ERRORCK
 	lda GET_DEV_NUM_REF
 	sta D_STATUS_NUM		; Save off our console device references
 	sta D_CONTROL_NUM
@@ -135,7 +134,6 @@ WRITEMSG:
 WRITEMSG_RAWLEN:
 	sta WRITE_LEN
 WRITEMSG_RAW:
-	clc
 	CALLOS OS_WRITEFILE, WRITE_PARMS
 	jmp ERRORCK		; Retrun through error handler for SOS errors
 
@@ -241,7 +239,6 @@ RDKEY:
 	jsr ECHO_OFF
 	lda #$01
 	sta CONSREAD_COUNT
-	clc
 	CALLOS OS_READFILE, CONSREAD_PARMS
 	jsr ERRORCK
 	lda CONSREAD_INPUT
@@ -263,6 +260,7 @@ SOS_ERROR:
 	sec
 NoError:
 	rts
+
 SOS_ERROR_MESSAGE:	asc "SOS ERROR: "
 SOS_ERROR_MESSAGE_END	=*
 
@@ -315,7 +313,6 @@ COUT:	; Character output routine (print to screen)
 COUT1:	; Character output
 	sta WRITE1_DATA
 	CALLOS OS_WRITEFILE, WRITE1_PARMS
-	clc
 	rts
 
 ;---------------------------------------------------------
