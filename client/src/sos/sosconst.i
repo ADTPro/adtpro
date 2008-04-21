@@ -34,3 +34,4 @@ VOL_LINE_LEN = $26
 ;--------------------------------------------------------- 
 OS_CALL_OFFSET	= 1	; Offset to the SOS call type byte
 CHR_RETURN	= $0d	; Carriage return
+INPUT_BUFFER	= CONSREAD_INPUT

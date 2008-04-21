@@ -84,7 +84,8 @@ DIRDONE:
 
 CD:
 	jsr GETFN1
-	bne CDSTART
+	jmp CDSTART
+;	bne CDSTART
 	jmp CDDONE
 
 CDSTART:

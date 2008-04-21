@@ -404,11 +404,11 @@ SS4:	tya		; DIFFERENCE NOT A ZERO
 ;---------------------------------------------------------
 ; SENDFN - Send a file name
 ;
-; Assumes input is at $0200
+; Assumes input is at INPUT_BUFFER
 ;---------------------------------------------------------
 SENDFN:
 	ldx #$00	
-FNLOOP:	lda $0200,X
+FNLOOP:	lda INPUT_BUFFER,X
 	jsr PUTC
 	beq @Done
 	inx

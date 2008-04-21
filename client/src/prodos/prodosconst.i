@@ -84,6 +84,7 @@ DevCnt   = $BF31		; Prodos device count
 DevList  = $BF32		; List of devices for ProDOS
 DevAdr   = $BF10		; Given slot this is the address of driver
 IN       = $200			; Keyboard input buffer
+INPUT_BUFFER = $200
 WARMDOS  = $BE00		; BASIC Warm-start vector
 LAST     = $BF30		; Last device accessed by ProDOS
 WAIT     = $FCA8		; Delay routine

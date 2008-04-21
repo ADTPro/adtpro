@@ -274,8 +274,19 @@ READ_LINE:
 	lda #$ff
 	sta CONSREAD_COUNT
 	CALLOS OS_READFILE, CONSREAD_PARMS
-	jsr ERRORCK				; Output is available at CONSREAD_INPUT
-						; for CONSREAD_COUNT bytes
+	ldx CONSREAD_COUNT		; Output is available at CONSREAD_INPUT
+					; for CONSREAD_COUNT bytes
+READ_CONDITION_LOOP:
+	lda CONSREAD_INPUT,X
+	cmp #$0d
+	bne @1
+	lda #$00
+	jmp @2
+@1:	ora #$80
+@2:	sta CONSREAD_INPUT,x
+	dex
+	cpx #$ff
+	bne READ_CONDITION_LOOP
 	jsr ECHO_OFF
 
 	rts

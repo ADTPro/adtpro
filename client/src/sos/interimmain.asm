@@ -326,7 +326,7 @@ KBATCH:
         ldx #$19
 	ldy #$0e
 	jsr INVERSE
-	;jsr BATCH	; Set up batch processing
+	jsr BATCH	; Set up batch processing
 	jmp MAINLUP
 :
 KCD:
