@@ -59,7 +59,6 @@ GET_PREFIX:
 Died:
 Done:
 SlotF:
-BIGBUF:
 BLKHI:
 BLKLO:
 INVFLG:

@@ -262,11 +262,11 @@ entrypoint:
 	stx top_stack	; Save it for full pops during aborts
 
 	jsr INIT_SCREEN	; Sets up the screen for behaviors we expect
-;	jsr MAKETBL	; Prepare our CRC tables
-;	jsr PARMDFT	; Set up parameters
+	jsr MAKETBL	; Prepare our CRC tables
+	jsr PARMDFT	; Set up parameters
 ;	jsr GET_PREFIX	; Get our current ProDOS prefix
 ;	jsr BLOAD	; Load up user parameters, if any
-;	jsr HOME	; Clear screen
+	jsr HOME	; Clear screen
 ;	jsr PARMINT	; Interpret parameters - may leave a complaint
 	jmp MAINL	; And off we go!
 
@@ -277,7 +277,8 @@ MAINLUP:
 	jsr HOME	; Clear screen
 MAINL:
 RESETIO:
-;	jsr $0000	; Pseudo-indirect JSR to reset the IO device
+	jsr HOME	; Pseudo-indirect JSR to reset the IO device
+	; Note - must un/comment above along with PARMINT at the same time.
 	jsr MainScreen
 
 ;---------------------------------------------------------
@@ -286,9 +287,9 @@ RESETIO:
 ; Keyboard handler, dispatcher
 ;---------------------------------------------------------
 KBDLUP:
-;	jsr RDKEY	; GET ANSWER
-;	CONDITION_KEYPRESS	; Convert to upper case, etc.  OS dependent.
-	lda #CHR_V
+	jsr RDKEY		; GET ANSWER
+	CONDITION_KEYPRESS	; Convert to upper case, etc.  OS dependent.
+;	lda #CHR_G
 
 KSEND:	cmp #CHR_S	; SEND?
 	bne :+		; Nope
@@ -314,7 +315,7 @@ KDIR:	cmp #CHR_D	; DIR?
 	ldx #$13
 	ldy #$0e
 	jsr INVERSE
-	;jsr DIR	  	; Yes, do DIR routine
+	jsr DIR	  	; Yes, do DIR routine
 	jmp MAINLUP
 :
 KBATCH:
@@ -342,7 +343,7 @@ KCONF:	cmp #CHR_G	; Configure?
 	bne :+		; Nope
 	jsr CONFIG      ; YES, DO CONFIGURE ROUTINE
 	jsr HOME	; Clear screen; PARMINT may leave a complaint
-	;jsr PARMINT     ; AND INTERPRET PARAMETERS
+	jsr PARMINT     ; AND INTERPRET PARAMETERS
 	jmp MAINL
 
 :
@@ -411,15 +412,15 @@ ABORT:	ldx top_stack	; Pop goes the stackptr
 ; AWBEEP - CUTE TWO-TONE BEEP (USES AXY)
 ;---------------------------------------------------------
 AWBEEP:
-	;lda PSOUND	; IF SOUND OFF, RETURN NOW
+	lda PSOUND	; IF SOUND OFF, RETURN NOW
 	bne NOBEEP
 	ldx #$0d	; Tone isn't quite the same as
 	jsr BEEP1	; Apple Writer ][, but at least
 	ldx #$0f	; it's the same on all CPU speeds.
 BEEP1:	ldy #$85
 BEEP2:	txa
-BEEP3:	;jsr DELAY
-	;bit $C030	; WHAP SPEAKER
+BEEP3:	jsr DELAY
+	bit $C030	; WHAP SPEAKER
 	dey
 	bne BEEP2
 NOBEEP:	rts

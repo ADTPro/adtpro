@@ -28,7 +28,7 @@ PARMINT:
 	iny		; Now slot# = 1..5 (where 5=///)
 	tya
 	cmp #$05
-	bpl THREE
+	beq THREE
 	jmp INITSSC	; Y holds slot number
 THREE:
 	jmp INITIII

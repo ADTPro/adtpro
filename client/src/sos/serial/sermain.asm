@@ -58,7 +58,6 @@ FormatEntry:
 Died:
 Done:
 SlotF:
-BIGBUF:
 BLKHI:
 BLKLO:
 INVFLG:

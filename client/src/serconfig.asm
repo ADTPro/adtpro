@@ -23,7 +23,6 @@
 ;---------------------------------------------------------
 CONFIG:
 	jsr HOME	; Clear screen
-
 ; No matter what, we put in the default value for 
 ; 'save' - always turn it off when we start up.
 	lda #$01	; Index for 'NO' save parameter

@@ -55,6 +55,10 @@ INIT_SCREEN:
 	sta D_CONTROL_CODE
 	CALLOS OS_D_CONTROL, D_CONTROL_PARMS	; Turn data entry termination on
 
+	lda $FFDF			; Read the environment register
+	and #$f7			; Turn $C000-$CFFF to R/W
+	ora #$40			; Turn $C000-$CFFF to I/O
+	sta $FFDF			; Write the environment register
 	rts
 
 Local_Quit:
@@ -447,10 +451,24 @@ READVID:
 	rts
 
 ;---------------------------------------------------------
-; TODO: Still Stubs
+; CLREOP: Clear to end of screen
 ;---------------------------------------------------------
 CLREOP:	; Clear to end of screen
+	lda #$1D
+	jsr COUT
+	rts
+
+;---------------------------------------------------------
+; CLREOL:	Clear to end of line
+;---------------------------------------------------------
 CLREOL:	; Clear to end of line
+	lda #$1F
+	jsr COUT
+	rts
+
+;---------------------------------------------------------
+; TODO: Still Stubs
+;---------------------------------------------------------
 WAIT:	; Monitor delay: # cycles = (5*A*A + 27*A + 26)/2
 
 rts

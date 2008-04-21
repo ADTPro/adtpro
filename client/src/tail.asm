@@ -22,4 +22,5 @@
 ; TAIL - Measures the end of the assembly (linked in last)
 ;---------------------------------------------------------
 	.export ASMEND
+	.segment "END"
 ASMEND:

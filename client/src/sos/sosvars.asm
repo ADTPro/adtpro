@@ -46,6 +46,7 @@ UTILPTR2	= $32		; ($02 bytes) Used for printing messages too
 
 CRCTBLL:	.res $100	; CRC LOW TABLE  ($100 Bytes)
 CRCTBLH:	.res $100	; CRC HIGH TABLE ($100 Bytes)
+BIGBUF:		.res $1000
 
 ;----------------------------------------------------
 ; Operating System Call Tables

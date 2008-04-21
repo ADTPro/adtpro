@@ -22,24 +22,11 @@
 ; INITIII - Initialize the /// ACIA
 ;---------------------------------------------------------
 INITIII:
-	tya
-	asl
-	asl
-	asl
-	asl		; NOW $S0
-	adc #$88
-	tax
 	lda #$0B	; COMMAND: NO PARITY, RTS ON,
-	sta $C002,X	; DTR ON, NO INTERRUPTS
+	sta $C0F2	; DTR ON, NO INTERRUPTS (Command mode register)
 	ldy PSPEED	; CONTROL: 8 DATA BITS, 1 STOP
 	lda BPSCTRL,Y	; BIT, BAUD RATE DEPENDS ON
-	sta $C003,X	; PSPEED
-	stx IIIMOD0+1	; SELF-MODS FOR $C088+S0
-	stx IIIMOD2+1	; IN MAIN LOOP
-	stx IIIMOD4+1	; AND IN IIIGET AND IIIPUT
-	inx
-	stx IIIMOD1+1	; SELF-MODS FOR $C089+S0
-	stx IIIMOD3+1	; IN IIIGET AND IIIPUT
+	sta $C0F3	; PSPEED (Control register)
 	jsr PATCHIII
 	rts
 
@@ -53,15 +40,16 @@ IIIPUTC1:
 	cmp #CHR_ESC	; Escape = abort
 	beq IIIABORT
 
-IIIMOD1:	lda $C089	; Check status bits
+	lda $C0F1	; Check status bits
 	and #$70
 	cmp #$10
 	bne IIIPUTC1	; Output register is full, so loop
 	pla
-IIIMOD2:	sta $C088	; Put character
+	sta $C0F0	; Put character
 	rts
 
 IIIABORT:
+	sta $C040
 	jmp ABORT
 
 ;---------------------------------------------------------
@@ -71,18 +59,18 @@ IIIGET:
 	lda $C000
 	cmp #CHR_ESC	; Escape = abort
 	beq IIIABORT
-IIIMOD3:	lda $C089	; Check status bits
+	lda $C0F1	; Check status bits
 	and #$68
 	cmp #$8
 	bne IIIGET	; Input register empty, loop
-IIIMOD4:	lda $C088	; Get character
+	lda $C0F0	; Get character
 	rts
 
 ;---------------------------------------------------------
 ; RESETIII - Clean up ///
 ;---------------------------------------------------------
 RESETIII:
-IIIMOD0:	bit $C088	; CLEAR ACIA INPUT REGISTER
+	bit $C0F0	; CLEAR ACIA INPUT REGISTER
 	rts
 
 ;---------------------------------------------------------
@@ -105,3 +93,8 @@ PATCHIII:
 	sta RESETIO+2
 
 	rts
+
+; C0F0 ($C088):  ACIADR  Data register.
+; C0F1 ($C089):  ACIASR  Status register.
+; C0F2 ($C08A):  ACIAMR  Command mode register.
+; C0F3 ($C08B):  ACIACR  Control register.
