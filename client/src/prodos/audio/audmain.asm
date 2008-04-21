@@ -43,8 +43,8 @@
 	.include "hostfns.asm"
 	.include "diskii.asm"
 	.include "nibble.asm"
-	.include "bsave.asm"
 	.include "format.asm"
+	.include "prodos/bsave.asm"
 
 PEND:
 	.segment "DATA"

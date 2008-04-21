@@ -46,7 +46,7 @@
 	.include "sos/ethernet/ethconfigsos.asm"
 	.include "prodos/ethernet/ipconfig.asm"
 ;	.include "format.asm"		; Note: format.asm is its own segment
-;	.include "bsave.asm"
+;	.include "sos/bsave.asm"
 ; Stubs:
 ROM:
 DELAY:

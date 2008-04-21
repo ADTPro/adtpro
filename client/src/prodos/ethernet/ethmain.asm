@@ -46,7 +46,7 @@
 	.include "prodos/ethernet/ethproto.asm"
 	.include "prodos/ethernet/ipconfig.asm"
 	.include "format.asm"		; Note: format.asm is its own segment
-	.include "bsave.asm"
+	.include "prodos/bsave.asm"
 
 PEND:
 	.segment "DATA"	

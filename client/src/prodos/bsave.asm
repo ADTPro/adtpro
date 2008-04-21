@@ -28,14 +28,14 @@
 ;
 BSAVE:
 	CALLOS OS_CREATE, FILE_CR
-	bcc :+
+	CALLOS_CHECK_POS	; Branch + if no error
 	cmp #$47		; File exists already?
 	beq :+			; Don't care!
 	ldy #PMNOCREATE
 	jmp BSAVE_MSGEND 
 :
 	CALLOS OS_OPEN, FILE_OP	; open file
-	bcc :+
+	CALLOS_CHECK_POS	; Branch + if no error
 	ldy #PMNOCREATE
 	jmp BSAVE_MSGEND 
 :
@@ -45,7 +45,7 @@ BSAVE:
 
 WRITE:
 	CALLOS OS_WRITEFILE, FILE_WR
-	bcc :+
+	CALLOS_CHECK_POS	; Branch + if no error
 	ldy #PMNOCREATE
 	jmp BSAVE_MSGEND 
 :	ldy #PMSG14		; All was OK
@@ -64,18 +64,16 @@ BSAVE_MSGEND:
 ;
 BLOAD:
 	CALLOS OS_OPEN, FILE_OP
-	bcc :+
-	jmp BLOAD_END		; Error; don't care
-:
-	LDA FILE_OPN		; copy file number
-	STA FILE_RDN
-	STA FILE_CLN
+	CALLOS_CHECK_POS	; Branch + if no error
+	lda FILE_OPN		; copy file number
+	sta FILE_RDN
+	sta FILE_CLN
 
 	CALLOS OS_READFILE, FILE_RD
 
 BLOAD_END:
 	CALLOS OS_CLOSE, FILE_CL
-	RTS
+	rts
 
 FILE_P0: .byte 0,0		; page 0 : 2 byte backup
 
@@ -92,9 +90,10 @@ GET_PREFIX:
 	STX ZDEVCNT		; +1 saved in work field
 
 	CALLOS OS_GET_PREFIX, GET_PFX_PLIST ; get the current prefix
-	BCS GP_ANOTHER		; error
+	CALLOS_CHECK_POS	; Branch forward on success
+	jmp GP_ANOTHER		; error
 
-	LDA CUR_PFX		; len=0 -> no prefix
+:	LDA CUR_PFX		; len=0 -> no prefix
 	BNE GP_DONE
 
 ; It is possible to execute ADTPRO from BASIC.SYSTEM
@@ -136,16 +135,17 @@ GP_PREV:
 
 GP_NOTDONE:
 	LDX ZDEVCNT
-	LDA DEVLST,X		; load device informations (format DSSS000)
+	LDA DEVLST,X		; load device information (format DSSS000)
 
 GP_DEVNUM:
 	AND #%11110000
 	STA UNIT		; set: current unit
 
 	CALLOS OS_ONL, TBL_ONLINE ; retrieve the volume name (without /)
-	BCS GP_PREV		; unit error. Try next one
+	CALLOS_CHECK_POS	; Branch forward on success
+	jmp GP_PREV		; unit error. Try next one
 
-	LDA CUR_PFX+1		; 1st byte=DSSSLLLL
+:	LDA CUR_PFX+1		; 1st byte=DSSSLLLL
 	AND #$0F		; keep only length
 	BEQ GP_PREV		; len=0 -> error. Try next unit
 

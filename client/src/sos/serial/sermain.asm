@@ -46,17 +46,15 @@
 	.include "diskii.asm"
 	.include "nibble.asm"
 ;	.include "format.asm"			; Note: includes FORMAT segment
-;	.include "bsave.asm"
+	.include "sos/bsave.asm"
 
 ; Stubs:
 ROM:
+;BSAVE:
 DELAY:
 CH:
 CV:
 FormatEntry:
-BLOAD:
-BSAVE:
-GET_PREFIX:
 Died:
 Done:
 SlotF:

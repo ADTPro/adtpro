@@ -21,13 +21,22 @@
 .include "macros.i"
 
 .macro 	CALLOS Arg1, Arg2
+	clc
 	jsr PRODOS_MLI	; Which ought to be $BF00
 	.byte Arg1
 	.addr Arg2
 .endmacro
 
+.macro CALLOS_CHECK_POS
+	bcc :+		; Branch on success
+.endmacro
+
+.macro CALLOS_CHECK_NEG
+	bcs :+		; Branch on failure
+.endmacro
+
 .macro CONDITION_KEYPRESS
-	and #$DF	; Conver to upper case
+	and #$DF	; Convert to upper case
 .endmacro
 
 .define	INV_BLOCK $20	; ASCII for an inverse space - is differernt on SOS

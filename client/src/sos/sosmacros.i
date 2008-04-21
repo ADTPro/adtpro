@@ -26,6 +26,14 @@
         .addr Arg2
 .endmacro
 
+.macro CALLOS_CHECK_POS
+	beq :+		; Branch on success
+.endmacro
+
+.macro CALLOS_CHECK_NEG
+	bne :+		; Branch on failure
+.endmacro
+
 .macro CONDITION_KEYPRESS
 	and #$DF	; Conver to upper case
 	ora #$80	; Turn high bit on

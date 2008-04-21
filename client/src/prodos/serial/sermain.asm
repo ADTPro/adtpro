@@ -46,6 +46,6 @@
 	.include "nibble.asm"
 	.include "prodos/serial/pascalep.asm"	; Note: includes PASCALEP segment
 	.include "format.asm"			; Note: includes FORMAT segment
-	.include "bsave.asm"
+	.include "prodos/bsave.asm"
 
 	.segment "DATA"

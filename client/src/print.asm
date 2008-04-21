@@ -38,10 +38,9 @@ PREPPRG:
 	stx SLOWX	; Preserve X
 	jsr HOME
 	jsr SHOWLOGO
-	lda #H_BLK	; Column
-	sta CH
-	lda #V_MSG	; Row
-	jsr TABV
+	ldx #H_BLK	; Column
+	ldy #V_MSG	; Row
+	jsr GOTOXY
 	ldy #PMSG09
 	jsr WRITEMSG
 	inc CH		; Space over one character
@@ -51,10 +50,9 @@ PREPPRG:
 	ldy #CHR_0
 	jsr PRD
 
-	lda #$00	; Column
-	sta CH
-	lda #V_BUF-2	; Row
-	jsr TABV
+	ldx #$00	; Column
+	ldy #V_BUF-2	; Row
+	jsr GOTOXY
 	jsr HLINE	; Print out a row of underlines
 	lda #V_BUF+1	; Row
 	jsr TABV
