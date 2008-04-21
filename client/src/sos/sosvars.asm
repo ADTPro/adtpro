@@ -141,3 +141,11 @@ VOLUME_BLOCKS:	.res 2
 VOLUME_FREE:	.res 2
 
 VOLUME_NAME:	.res $10
+
+MEM_REQ_PARMS:	.byte $06	; Six parameters
+MEM_REQ_MODE:	.byte $00	; In - cross no 32k boundaries
+MEM_REQ_SEG:	.byte $10	; In - our segment "label"
+MEM_REQ_PAGES:	.addr $0050	; In/Out - number of pages
+MEM_REQ_BASE:	.addr $0000	; Out - origin segment addr
+MEM_REQ_LIMIT:	.addr $0000	; Out - last segment addr
+MEM_REQ_NUM:	.byte $00	; Out - segment "number"

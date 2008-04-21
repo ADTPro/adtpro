@@ -32,8 +32,15 @@ V_MSG	= $0b
 V_BUF	= $0f
 
 ;---------------------------------------------------------
-; ProDOS/SOS equates
+; ProDOS/SOS call number equates
 ;---------------------------------------------------------
+OS_REQUEST_SEG		= $40
+OS_FIND_SEG		= $41
+OS_CHANGE_SEG		= $42
+OS_GET_SEG_INFO		= $43
+OS_GET_SEG_NUM		= $44
+OS_RELEASE_SEG		= $45
+
 OS_QUIT			= $65
 
 OS_READBLOCK		= $80
@@ -112,6 +119,15 @@ DUPVOL			= $57
 NOTBLKDEV		= $58
 LVLERR			= $59
 BITMAPADR		= $5A
+
+BADBPKG			= $E0
+SEGRQDN			= $E1
+SEGTBLFULL		= $E2
+BADSEGNUM		= $E3
+SEGNOTFND		= $E4
+BADSRCHMODE		= $E5
+BADCHGMODE		= $E6
+BADPGCNT		= $E7
 
 ;---------------------------------------------------------
 ; Disk II soft switches
