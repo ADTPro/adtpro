@@ -33,7 +33,7 @@
 	.include "print.asm"
 	.include "prodos/serial/serproto.asm"
 	.include "prodos/online.asm"
-	.include "rw.asm"
+	.include "prodos/rw.asm"
 	.include "sr.asm"
 	.include "prodos/serial/ssc.asm"
 	.include "prodos/serial/iigsscc.asm"

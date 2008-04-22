@@ -33,7 +33,7 @@
 	.include "print.asm"
 	.include "prodos/audio/audproto.asm"
 	.include "prodos/online.asm"
-	.include "rw.asm"
+	.include "prodos/rw.asm"
 	.include "sr.asm"
 	.include "prodos/audio/audio.asm"
 	.include "crc.asm"

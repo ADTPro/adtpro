@@ -34,7 +34,7 @@
 	.include "print.asm"
 	.include "prodos/serial/serproto.asm"
 	.include "sos/online.asm"
-	.include "rw.asm"
+	.include "sos/rw.asm"
 	.include "sr.asm"
 	.include "prodos/serial/ssc.asm"
 	.include "sos/serial/iiiacia.asm"

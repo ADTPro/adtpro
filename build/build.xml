@@ -16,10 +16,31 @@
 	<property name="rxtxZip" value="rxtx-2.1-7-bins-r2.zip" />
 	<taskdef name="appleDump" classname="org.adtpro.utilities.AppleDump" classpath="${projdir}"/>
 
-	<target name="all" depends="wipe, clean, assemble, builddsk, scripts, jar">
+	<target name="skipSOS" description="Order this before 'dev' or 'all' to skip building SOS parts.">
+		<property name="skipSOS" value="true"/>		
 	</target>
 
-	<target name="dev" depends="clean, assemble, builddsk">
+	<target name="skipProDOS" description="Order this before 'dev' or 'all' to skip building ProDOS parts.">
+		<property name="skipProDOS" value="true"/>		
+	</target>
+
+	<target name="all" depends="setup, wipe, clean, assemble, builddsk, scripts, jar" description="Bulid everything after wiping the output directory.">
+	</target>
+
+	<target name="dev" depends="setup, clean, assemble, builddsk" description="Build everything but the Java GUI; don't wipe the output directory.">
+	</target>
+
+	<target name="setup">
+		<condition property="SOS-needed">
+			<not>
+				<isset property="skipSOS" />
+			</not>
+		</condition>
+		<condition property="ProDOS-needed">
+			<not>
+				<isset property="skipProDOS" />
+			</not>
+		</condition>
 	</target>
 
 	<target name="wipe">
@@ -65,6 +86,11 @@
 
 	<target name="assemble">
 		<mkdir dir="${builddir}/${distName}"/>
+		<antcall target="assembleProDOS"/>
+		<antcall target="assembleSOS"/>
+	</target>
+
+	<target name="assembleProDOS" depends="assembleCommon" if="ProDOS-needed">
 		<!--
 		Assemble the ADTPro source
 		-->
@@ -76,9 +102,6 @@
 		</exec>
 		<exec dir="${projdir}/client/src" executable="${assemblerPath}/ca65">
 			<arg line="-l -t none prodos/serial/sermain.asm" />
-		</exec>
-		<exec dir="${projdir}/client/src" executable="${assemblerPath}/ca65">
-			<arg line="-l -t none tail.asm" />
 		</exec>
 		<!--
 		Assemble the ADTSOS source
@@ -122,12 +145,6 @@
 		<exec dir="${projdir}/client/src" executable="${assemblerPath}/ld65">
 			<arg line="-m adtproeth.map -C prodos/ethernet/adtpro.cfg -o ADTPROETH prodos/ethernet/ethmain.o ip65/ip65.lib tail.o" />
 		</exec>
-		<exec dir="${projdir}/client/src" executable="${assemblerPath}/ld65">
-			<arg line="-m adtsosser.map -C sos/serial/adtpro.cfg -o ADTSOS sos/serial/sermain.o tail.o" />
-		</exec>
-		<exec dir="${projdir}/client/src" executable="${assemblerPath}/ld65">
-			<arg line="-m adtsoseth.map -C sos/ethernet/adtpro.cfg -o ADTSOSETH sos/ethernet/ethmain.o ip65/ip65.lib tail.o" />
-		</exec>
 		<!--
 		Move the object code to the build directory
 		-->
@@ -137,8 +154,6 @@
 		<copy file="${builddir}/ADTPROAUD" tofile="${basedir}/org/adtpro/resources/adtproaud.raw" />
 		<move file="${projdir}/client/src/ADTPROETH" tofile="${builddir}/ADTPROETH" />
 		<copy file="${builddir}/ADTPROETH" tofile="${basedir}/org/adtpro/resources/adtproeth.raw" />
-		<move file="${projdir}/client/src/ADTSOS" tofile="${builddir}/ADTSOS" />
-		<move file="${projdir}/client/src/ADTSOSETH" tofile="${builddir}/ADTSOSETH" />
 		<move file="${projdir}/client/src/dos/ADT" tofile="${builddir}/ADT" />
 		<copy file="${builddir}/ADT" tofile="${basedir}/org/adtpro/resources/adt.raw" />
 		<!--
@@ -149,6 +164,56 @@
 		<appleDump infilename="${builddir}/ADTPROAUD" outfilename="${basedir}/org/adtpro/resources/adtproaud.dmp" applename="ADTPROAUD" startaddrhex="2000" numbyteswide="10" decoration="begin" finalline="2000G"/>
 		<appleDump infilename="${builddir}/ADTPRO" outfilename="${basedir}/org/adtpro/resources/adtpro.dmp" applename="ADTPRO" startaddrhex="2000" numbyteswide="10"  decoration="begin" finalline="2000G"/>
 		<appleDump infilename="${builddir}/ADT" outfilename="${basedir}/org/adtpro/resources/adt.dmp" applename="ADT" startaddrhex="803" numbyteswide="10" decoration="yes" />
+	</target>
+
+	<target name="assembleSOS" depends="assembleCommon" if="SOS-needed">
+		<!--
+		Assemble the ADTSOS source
+		-->
+		<exec dir="${projdir}/client/src" executable="${assemblerPath}/ca65">
+			<arg line="-l -t none sos/serial/sermain.asm" />
+		</exec>
+		<exec dir="${projdir}/client/src" executable="${assemblerPath}/ca65">
+			<arg line="-l -t none sos/ethernet/ethmain.asm" />
+		</exec>
+		<!--
+		Link the bits
+		-->
+		<exec dir="${projdir}/client/src" executable="${assemblerPath}/ld65">
+			<arg line="-m adtsosser.map -C sos/serial/adtpro.cfg -o ADTSOS sos/serial/sermain.o tail.o" />
+		</exec>
+		<exec dir="${projdir}/client/src" executable="${assemblerPath}/ld65">
+			<arg line="-m adtsoseth.map -C sos/ethernet/adtpro.cfg -o ADTSOSETH sos/ethernet/ethmain.o ip65/ip65.lib tail.o" />
+		</exec>
+		<!--
+		Move the object code to the build directory
+		-->
+		<move file="${projdir}/client/src/ADTSOS" tofile="${builddir}/ADTSOS" />
+		<move file="${projdir}/client/src/ADTSOSETH" tofile="${builddir}/ADTSOSETH" />
+	</target>
+
+	<target name="assembleCommon">
+		<!--
+		Assemble the end of source marker
+		-->
+		<exec dir="${projdir}/client/src" executable="${assemblerPath}/ca65">
+			<arg line="-l -t none tail.asm" />
+		</exec>
+		<!--
+		Assemble the IP65 stack source
+		-->
+		<apply executable="${assemblerPath}/ca65" dir="${projdir}/client/src/ip65">
+			<arg line="-l -t c64" />
+			<fileset dir="${projdir}/client/src/ip65" includes="**/*.s"/>
+		</apply>
+		<!--
+		Package the IP65 stack library
+		-->
+		<apply executable="${assemblerPath}/ar65" dir="${projdir}/client/src/ip65" output="ar65garbageoutputdeleteme">
+			<arg line="a ip65.lib "/>
+			<fileset dir="${projdir}/client/src/ip65" includes="**/*.o"/>
+		</apply>
+		<delete file="ar65garbageoutputdeleteme" />
 	</target>
 
 	<target name="scripts">
@@ -164,13 +229,15 @@
 		<copy file="${builddir}/${distName}/adtpro.sh" tofile="${builddir}/${distName}/adtpro.command" />
 	</target>
 
-	<target name="builddsk">
+	<target name="builddsk" depends="buildProDOSdsk, buildSOSdsk">
+	</target>
+
+	<target name="buildProDOSdsk" if="ProDOS-needed">
 		<!--
 		Start disk images containing the release number
 		-->
 		<copy file="${builddir}/ADTProBase.dsk" tofile="${builddir}/${distName}/disks/${diskName}.DSK" />
 		<copy file="${builddir}/ADTProBase.po" tofile="${builddir}/${distName}/disks/${diskName}.PO" />
-		<copy file="${builddir}/ADTSOSBase.dsk" tofile="${builddir}/${distName}/disks/${diskNameSOS}.DSK" />
 		<copy file="${builddir}/ADTBase.dsk" tofile="${builddir}/${distName}/disks/${dosDistName}.DSK" />
 		<!--
 		Put the assembled programs on the disk images
@@ -183,12 +250,6 @@
 		</exec>
 		<exec dir="${builddir}" executable="java" input="${builddir}/ADTPROETH">
 			<arg line="-jar ${acJar} -p ADTPROETH sys 8192 ${distName}/disks/${diskName}.DSK" />
-		</exec>
-		<exec dir="${builddir}" executable="java" input="${builddir}/ADTSOS">
-			<arg line="-jar ${acJar} -p SOS.INTERP sos 0000 ${distName}/disks/${diskNameSOS}.DSK" />
-		</exec>
-		<exec dir="${builddir}" executable="java" input="${builddir}/ADTSOSETH">
-			<arg line="-jar ${acJar} -p SOS.INTERPETH sos 0000 ${distName}/disks/${diskNameSOS}.DSK" />
 		</exec>
 		<!--
 		And the .po version...
@@ -230,6 +291,28 @@
 		<delete file="${builddir}/ADTPRO" />
 		<delete file="${builddir}/ADTPROAUD" />
 		<delete file="${builddir}/ADTPROETH" />
+	</target>
+
+	<target name="buildSOSdsk" if="SOS-needed">
+		<!--
+		Start disk images containing the release number
+		-->
+		<copy file="${builddir}/ADTSOSBase.dsk" tofile="${builddir}/${distName}/disks/${diskNameSOS}.DSK" />
+		<!--
+		Put the assembled programs on the disk images
+		-->
+		<exec dir="${builddir}" executable="java" input="${builddir}/ADTSOS">
+			<arg line="-jar ${acJar} -p SOS.INTERP sos 0000 ${distName}/disks/${diskNameSOS}.DSK" />
+		</exec>
+		<exec dir="${builddir}" executable="java" input="${builddir}/ADTSOSETH">
+			<arg line="-jar ${acJar} -p SOS.INTERPETH sos 0000 ${distName}/disks/${diskNameSOS}.DSK" />
+		</exec>
+		<!--
+		Put a nice volume name on the disk images
+		-->
+		<exec dir="${builddir}" executable="java">
+			<arg line="-jar ${acJar} -v ${distName}/disks/${diskNameSOS}.DSK ${volName}" />
+		</exec>
 		<delete file="${builddir}/ADTSOS" />
 		<delete file="${builddir}/ADTSOSETH" />
 	</target>

@@ -33,7 +33,7 @@
 	.include "sos/conio.asm"	; Console I/O
 	.include "print.asm"
 	.include "sos/online.asm"
-	.include "rw.asm"
+	.include "sos/rw.asm"
 	.include "sr.asm"
 	.include "crc.asm"
 	.include "pickvol.asm"

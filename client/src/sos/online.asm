@@ -29,26 +29,15 @@ ONLINE:
 	bne dumpem	; Yes - dump 'em out
 	jmp OSTART	; No - spend the time to scan drives
 dumpem:			; Spit out what we discovered
-dumploop:
 	lda #<DEVICES
 	sta UTILPTR
 	lda #>DEVICES
 	sta UTILPTR+1
 	ldx DUMP_INDEX
-	beq dump_PTR_DONE
-dump_ADD_ONE:
-	clc				; Add ONE_DEVICE_COSTS*LASTVOL to UTILPTR
-	lda UTILPTR
-	adc #ONE_DEVICE_COSTS
-	sta UTILPTR			; Move pointer ONE_DEVICE_COSTS bytes for each entry already existing
-	bcc :+
-	inc UTILPTR+1
-:	dex
-	bne dump_ADD_ONE
-dump_PTR_DONE:
+dumploop:
 	jsr PRT1VOL
 	inc DUMP_INDEX
-	lda DUMP_INDEX
+	lda DUMP_INDEX	; Redundant?  Can't remember if inc loads accumulator or sets flags...
 	cmp LASTVOL
 	bne dumploop
 	rts
@@ -102,22 +91,8 @@ SCAN_VOLUME:
 	CALLOS OS_ONL, VOLUME_PARMS	; Retrieve the volume name
 	bne SV_NONE
 SV_NEW_NAME:
-	lda #<DEVICES			; Start by pointing at head of DEVICES table
-	sta UTILPTR
-	lda #>DEVICES
-	sta UTILPTR+1
 	ldx LASTVOL
-	beq SV_PTR_DONE
-SV_ADD_ONE:
-	clc				; Add ONE_DEVICE_COSTS*LASTVOL to UTILPTR
-	lda UTILPTR
-	adc #ONE_DEVICE_COSTS
-	sta UTILPTR			; Move pointer ONE_DEVICE_COSTS bytes for each entry already existing
-	bcc :+
-	inc UTILPTR+1
-:	dex
-	bne SV_ADD_ONE
-SV_PTR_DONE:
+	jsr POINT_AT
 	inc LASTVOL			; Count another volume as used
 
 	ldy #$00
@@ -215,10 +190,60 @@ DEVMSG3:
 ;
 ; Input: the row "enter" was hit on in A
 ; Output: (side effects; sets): 
-;   UNITNBR, pdsoftx, pdslot, pdrive, NonDiskII, NUMBLKS
+;   UNITNBR, NonDiskII, NUMBLKS; *NOT* pdsoftx, pdslot, pdrive as in the ProDOS version
 ;---------------------------------------------------------
 INTERPRET_ONLINE:
+	tax
+	jsr POINT_AT
+	ldy #$00
+	lda (UTILPTR),Y
+	sta UNITNBR		; Save off the device (unit) number
+	iny
+	lda (UTILPTR),Y		; Extract unit capacity lo
+	sta NUMBLKS
+	iny
+	lda (UTILPTR),Y		; Extract unit capacity hi
+	sta NUMBLKS+1
+	lda #$00
+	sta NonDiskII		; Assume _no_ Disk II selected
 	rts
+
+;---------------------------------------------------------
+; POINT_AT - Move the UTILPTR to the Xth item in the DEVICES structure
+;
+; Input:
+;   X - The item to point at (0-indexed)
+;
+;---------------------------------------------------------
+POINT_AT:
+	lda #<DEVICES
+	sta UTILPTR
+	lda #>DEVICES
+	sta UTILPTR+1
+	cpx #$00
+	beq POINT_DONE
+POINT_ADD_ONE:
+	jsr POINT_NEXT			; Add ONE_DEVICE_COSTS*LASTVOL to UTILPTR
+	dex
+	bne POINT_ADD_ONE
+POINT_DONE:
+	rts
+
+;---------------------------------------------------------
+; POINT_NEXT - Move the UTILPTR one item forward in the DEVICES structure
+;
+; Input:
+;   UTILPTR - already ponting at the DEVICES structure somewhere
+;
+;---------------------------------------------------------
+POINT_NEXT:
+	clc				; Add ONE_DEVICE_COSTS*LASTVOL to UTILPTR
+	lda UTILPTR
+	adc #ONE_DEVICE_COSTS
+	sta UTILPTR			; Move pointer ONE_DEVICE_COSTS bytes for each entry already existing
+	bcc :+
+	inc UTILPTR+1
+:	rts
 
 ;---------------------------------------------------------
 ; DRAWBDR
@@ -271,6 +296,10 @@ VOLINSTRUCT:
 ;
 ; Inputs:
 ;   UTILPTR points to the device to display in the DEVICES table
+;
+; Outputs:
+;   Screen updated with one line of volume information from the current cursor position
+;   UTILPTR points to the next device in the DEVICES table
 ;---------------------------------------------------------
 PRT1VOL:
 	lda #$1e		; Set the cursor at the left edge
@@ -329,53 +358,19 @@ PRT1VOL:
 	lda NUMBLKS
 	ldx NUMBLKS+1
 	ldy #CHR_SP
-	jsr PRD		; Print the block size
+	jsr PRD			; Print the block size
 
 	jsr CROUT
+	
+	lda PRT1PTR+1
+	sta UTILPTR+1
+	lda PRT1PTR
+	sta UTILPTR
+	jsr POINT_NEXT		; Point UTILPTR at the next device
+
 	rts
 
 PRT1PTR: .res $02
-
-;---------------------------------------------------------
-; WHATUNIT - Which unit number is this index?
-;
-; Input:
-;   A - index into the device table
-;
-; Returns:
-;   A - unit number
-;   X - unharmed
-;---------------------------------------------------------
-WHATUNIT:
-	stx SLOWX	; Preserve X
-	beq @READY
-	tax		; Send the index to the X register
-	lda #$00	; Now clear A out - need it for some arithmatic
-@MORE:
-	clc
-	adc #$10
-	dex
-	cpx #$00
-	bne @MORE
-@READY:
-	tax
-	lda DEVICES,x
-	and #$F0	; Extract unit number
-	ldx SLOWX	; Restore X
-	rts
-
-;---------------------------------------------------------
-; HOWBIG - How big is this volume?
-;
-; Input: 
-;   A holds first byte of device list
-;   X holds index into device list
-; 
-; Returns:
-;   X unharmed
-;   Updated capacity block table for index X/8
-;
-;---------------------------------------------------------
 
 LASTVOL:	.byte $00
 

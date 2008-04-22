@@ -33,7 +33,7 @@
 	.include "prodos/conio.asm"		; Console I/O
 	.include "print.asm"
 	.include "prodos/online.asm"
-	.include "rw.asm"
+	.include "prodos/rw.asm"
 	.include "sr.asm"
 	.include "prodos/ethernet/uther.asm"
 	.include "crc.asm"

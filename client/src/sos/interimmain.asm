@@ -287,9 +287,9 @@ RESETIO:
 ; Keyboard handler, dispatcher
 ;---------------------------------------------------------
 KBDLUP:
-	jsr RDKEY		; GET ANSWER
-	CONDITION_KEYPRESS	; Convert to upper case, etc.  OS dependent.
-;	lda #CHR_G
+;	jsr RDKEY		; GET ANSWER
+;	CONDITION_KEYPRESS	; Convert to upper case, etc.  OS dependent.
+	lda #CHR_V
 
 KSEND:	cmp #CHR_S	; SEND?
 	bne :+		; Nope
