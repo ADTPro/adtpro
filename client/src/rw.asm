@@ -125,9 +125,9 @@ RWBLOX:
 	lda #$03	; Set up MLI call - 3 parameters
 	sta PARMBUF
 
-	lda #<BIGBUF	; Point to the start of the big buffer
+	LDA_BIGBUF_ADDR_LO	; Point to the start of the big buffer
 	sta PARMBUF+2
-	lda #>BIGBUF
+	LDA_BIGBUF_ADDR_HI
 	sta PARMBUF+3
 
 RWCALL:

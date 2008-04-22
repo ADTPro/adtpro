@@ -54,6 +54,18 @@ INIT_SCREEN:
 	sta D_CONTROL_CODE
 	CALLOS OS_D_CONTROL, D_CONTROL_PARMS	; Turn data entry termination on
 
+	CALLOS OS_FIND_SEG, MEM_REQ_PARMS
+	bne Local_Quit
+
+	lda #$00
+	sta BIGBUF_ADDR_LO
+	lda MEM_REQ_BASE+1
+	sta BIGBUF_ADDR_HI
+	lda MEM_REQ_BASE
+	and #$0F			; Mask off the high nibble
+	ora #$80			; Add the extended addressing bit
+	sta BIGBUF_XBYTE		; This is our xbyte for BIGBUF addressing
+
 	lda $FFDF			; Read the environment register
 	and #$f7			; Turn $C000-$CFFF to R/W
 	ora #$40			; Turn $C000-$CFFF to I/O

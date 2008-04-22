@@ -42,9 +42,9 @@ ReceiveNibOK:
 	sta BLKHI
 	jsr calibrat	; Fire up the drive
 :	jsr rnibtrak	; Read a track from the comms device
-	lda #<BIGBUF	; Connect the Buffer pointer to the
+	LDA_BIGBUF_ADDR_LO	; Connect the Buffer pointer to the
 	sta Buffer	; beginning of the Big Buffer(TM)
-	lda #>BIGBUF
+	LDA_BIGBUF_ADDR_HI
 	sta Buffer+1
 	ldy #$00	; Start at beginning of buffer
 	jsr Trans2	; Write track to disk
@@ -133,7 +133,7 @@ rnibtrak:
 	lda #0			; a = 0
 	sta BLKPTR		; Init running ptr
 	sta BLKLO
-	lda #>BIGBUF		; BIGBUF address high
+	LDA_BIGBUF_ADDR_HI	; BIGBUF address high
 	sta BLKPTR+1		; We will be storing stuff at BIGBUF
 	lda #$1A		; Only run for 26 (decimal) pages
 	sta NIBPCNT		; Page counter
@@ -196,7 +196,7 @@ rnib4:
 snibtrak:
 	lda #0			; a = 0
 	sta BLKPTR		; Init running ptr
-	lda #>BIGBUF		; BIGBUF address high
+	LDA_BIGBUF_ADDR_HI	; BIGBUF address high
 	sta BLKPTR+1
 	lda #NIBPAGES
 	sta NIBPCNT		; Page counter

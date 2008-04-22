@@ -18,7 +18,7 @@
 ; 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 ;
 
-.global CAPBLKS, PARMBUF, BLKLO, BLKHI, BIGBUF, CRCTBLL, CRCTBLH
+.global CAPBLKS, PARMBUF, BLKLO, BLKHI, CRCTBLL, CRCTBLH
 .global NUMBLKS, HOSTBLX, UNITNBR
 .global PARMS, PSSC, PSPEED, PSOUND, PSAVE, PGSSLOT, SR_WR_C, SLOWA, SLOWX, SLOWY
 .global PCCRC, COLDSTART, BAUD, NonDiskII, SendType
@@ -43,10 +43,12 @@ CRCY	= $2e		; ($01 byte) Used by UDP SEND
 TMOT    = $2f		; ($01 byte) Timeout indicator
 NIBPCNT	= $30		; ($01 byte) Counts nibble pages
 UTILPTR2	= $32		; ($02 bytes) Used for printing messages too
-
+BIGBUF_ADDR_LO	= $34		; ($01 byte) points to big buffer low in 
+BIGBUF_ADDR_HI	= $35		; ($01 byte) points to big buffer high
+BIGBUF_XBYTE	= $1627		; XByte address for our bank
+BIGBUF:		.res $40
 CRCTBLL:	.res $100	; CRC LOW TABLE  ($100 Bytes)
 CRCTBLH:	.res $100	; CRC HIGH TABLE ($100 Bytes)
-BIGBUF:		.res $1000
 
 ;----------------------------------------------------
 ; Operating System Call Tables

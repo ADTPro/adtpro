@@ -405,9 +405,9 @@ SR_COMN:
 ;   BLKHI: starting block (hi)
 ;---------------------------------------------------------
 SRBLOX:
-	lda #<BIGBUF	; Connect the block pointer to the
+	LDA_BIGBUF_ADDR_LO	; Connect the block pointer to the
 	sta BLKPTR	; beginning of the Big Buffer(TM)
-	lda #>BIGBUF
+	LDA_BIGBUF_ADDR_HI
 	sta BLKPTR+1
 
 SRCALL:

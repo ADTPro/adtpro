@@ -34,9 +34,9 @@ DIRREQUEST:
 DIRREPLY:
 	ldy #$00
 	sty TMOT	; Clear timeout processing
-	lda #<BIGBUF	; Connect the block pointer to the
+	LDA_BIGBUF_ADDR_LO	; Connect the block pointer to the
 	sta BLKPTR	; beginning of the Big Buffer(TM)
-	lda #>BIGBUF
+	LDA_BIGBUF_ADDR_HI
 	sta BLKPTR+1
 :	jsr GETC	; Get character from serial port
 	php		; Save flags
@@ -50,9 +50,9 @@ DIRREPLY:
 
 	jsr GETC	; Get continuation character
 	sta (BLKPTR),Y 	; Store continuation byte too
-	lda #<BIGBUF	; Connect the block pointer to the
+	LDA_BIGBUF_ADDR_LO	; Connect the block pointer to the
 	sta BLKPTR	; beginning of the Big Buffer(TM)
-	lda #>BIGBUF
+	LDA_BIGBUF_ADDR_HI
 	sta BLKPTR+1
 	rts
 

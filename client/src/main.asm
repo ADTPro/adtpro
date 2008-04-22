@@ -68,7 +68,7 @@ caldriv3:
 ;	lda #0			; a = 0
 ;	tay			; y = 0 (index)
 ;	sta BLKPTR		; set running ptr (lo) to 0
-;	lda #>BIGBUF		; BIGBUF address high
+;	LDA_BIGBUF_ADDR_HI	; BIGBUF address high
 ;	sta BLKPTR+1		; set running ptr (hi)
 ;	lda #NIBPAGES
 ;	sta NIBPCNT		; page counter
@@ -106,7 +106,7 @@ rdnibtr:
 	lda #0			; a = 0
 	tay			; y = 0 (index)
 	sta BLKPTR		; set running ptr (lo) to 0
-	lda #>BIGBUF		; BIGBUF address high
+	LDA_BIGBUF_ADDR_HI	; BIGBUF address high
 	sta BLKPTR+1		; set running ptr (hi)
 	lda pdsoftx		; Get soft switch offset
 	clc

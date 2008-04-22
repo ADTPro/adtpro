@@ -39,5 +39,13 @@
 	ora #$80	; Turn high bit on
 .endmacro
 
+.macro LDA_BIGBUF_ADDR_HI
+	lda BIGBUF_ADDR_HI	; Was lda #$>BIGBUF (the high part of the address)
+.endmacro
+
+.macro LDA_BIGBUF_ADDR_LO
+	lda BIGBUF_ADDR_LO
+.endmacro
+
 .define	NRM_BLOCK $11,$20
 .define	INV_BLOCK $12,$20,$11

@@ -184,9 +184,9 @@ DIRABORT:
 ; CDREQUEST - Request current directory change
 ;---------------------------------------------------------
 CDREQUEST:
-	lda #<BIGBUF	; Connect the block pointer to the
+	LDA_BIGBUF_ADDR_LO	; Connect the block pointer to the
 	sta BLKPTR	; beginning of the Big Buffer(TM)
-	lda #>BIGBUF
+	LDA_BIGBUF_ADDR_HI
 	sta BLKPTR+1
 	ldy #$00
 	lda #CHR_C
@@ -308,9 +308,9 @@ GETFINALACK:
 ; GETREQUEST -
 ;---------------------------------------------------------
 GETREQUEST:
-	lda #<BIGBUF	; Connect the block pointer to the
+	LDA_BIGBUF_ADDR_LO	; Connect the block pointer to the
 	sta BLKPTR	; beginning of the Big Buffer(TM)
-	lda #>BIGBUF
+	LDA_BIGBUF_ADDR_HI
 	sta BLKPTR+1
 	ldy #$00
 	lda #CHR_G	; Ask host to send the file
@@ -331,9 +331,9 @@ GETREQUEST:
 ; BATCHREQUEST - Request to send multiple images to the host
 ;---------------------------------------------------------
 BATCHREQUEST:
-	lda #<BIGBUF		; Connect the block pointer to the
+	LDA_BIGBUF_ADDR_LO	; Connect the block pointer to the
 	sta BLKPTR		; beginning of the Big Buffer(TM)
-	lda #>BIGBUF
+	LDA_BIGBUF_ADDR_HI
 	sta BLKPTR+1
 	ldy #$00
 	lda #CHR_B		; Tell host we are Putting/Sending
@@ -360,9 +360,9 @@ BATCHREQUEST:
 ; QUERYFNREQUEST
 ;---------------------------------------------------------
 QUERYFNREQUEST:
-	lda #<BIGBUF	; Connect the block pointer to the
+	LDA_BIGBUF_ADDR_LO	; Connect the block pointer to the
 	sta BLKPTR	; beginning of the Big Buffer(TM)
-	lda #>BIGBUF
+	LDA_BIGBUF_ADDR_HI
 	sta BLKPTR+1
 	ldy #$00
 	lda #CHR_Z	; Ask host for file size

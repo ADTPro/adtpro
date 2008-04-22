@@ -39,6 +39,14 @@
 	and #$DF	; Convert to upper case
 .endmacro
 
+.macro LDA_BIGBUF_ADDR_HI
+	lda #>BIGBUF
+.endmacro
+
+.macro LDA_BIGBUF_ADDR_LO
+	lda #<BIGBUF
+.endmacro
+
 .define	INV_BLOCK $20	; ASCII for an inverse space - is differernt on SOS
 .define	NRM_BLOCK $A0	; ASCII for a normal space - is different on SOS
 .define INV_OFF   	; Nothing to do for ProDOS
