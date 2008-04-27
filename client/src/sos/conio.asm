@@ -248,6 +248,11 @@ WRITEMSG_HT:
 READ_CHAR:
 GETCHR1:
 RDKEY:
+	lda $C000
+	bpl RDKEY
+	bit $C010
+	rts
+
 	jsr ECHO_OFF
 	lda #$01
 	sta CONSREAD_COUNT
@@ -474,6 +479,7 @@ READVID:
 ; CLREOP: Clear to end of screen
 ;---------------------------------------------------------
 CLREOP:	; Clear to end of screen
+CLRLN:
 	lda #$1D
 	jsr COUT
 	rts

@@ -25,7 +25,11 @@
 ;
 ; Input:
 ;   Y: Count of blocks
-;   PARMBUF+1: unit number
+;   UNITNBR: unit number
+;   BLKLO: starting block (lo)
+;   BLKHI: starting block (hi)
+;
+; Output:
 ;   BLKLO: starting block (lo)
 ;   BLKHI: starting block (hi)
 ;---------------------------------------------------------
@@ -33,7 +37,9 @@ READING:
 	lda #PMSG07
 	sta SR_WR_C
 	lda #OS_READBLOCK
-	sta RWDIR+OS_CALL_OFFSET
+	sta RWDIR
+	lda #$05
+	sta D_RW_PARMS
 	lda #CHR_R
 	sta RWCHR
 	lda #CHR_BLK
@@ -44,7 +50,9 @@ WRITING:
 	lda #PMSG08
 	sta SR_WR_C
 	lda #OS_WRITEBLOCK
-	sta RWDIR+OS_CALL_OFFSET
+	sta RWDIR
+	lda #$04
+	sta D_RW_PARMS
 	lda #CHR_W
 	sta RWCHR
 	lda #CHR_SP
@@ -52,6 +60,8 @@ WRITING:
 
 RW_COMN:
 	sty BCOUNT
+	lda UNITNBR
+	sta D_RW_DEV_NUM
 	lda #H_BUF	; Column - r/w/s/r
 	jsr HTAB
 	lda #V_MSG	; Message row
@@ -63,47 +73,7 @@ RW_COMN:
 	jsr HTAB	; buffer row
 	lda #V_BUF
 	jsr TABV
-
-	lda NonDiskII	; Do we have a Disk II?
-	beq :+		; No, branch to the block entry point
-	lda RWCHR	; Are we writing?
-	cmp #CHR_W
-	beq :+		; Yes, branch to the block entry point
-	jsr READTRAX	; Ok, we're reading a Disk II - so go fast.
-	rts
-:	jsr RWBLOX
-	rts
-
-;------------------------------------
-; READTRAX
-;
-; Read five tracks starting from BIGBUF
-;
-; Input:
-;   PARMBUF+1: unit number
-;   BLKLO: starting block (lo)
-;   BLKHI: starting block (hi)
-;------------------------------------
-
-READTRAX:
-	jsr INIT_DISKII
-	lda #$00
-	sta ERR_READ
-;	sta ERR_WRITE
-
-	jsr SAV_NBUF2  ; save page 0 space used by denibblizing
-
-; Load five tracks into memory
-	lda BLKHI
-	clc
-	ror		; Shift low bit into carry (only care if it's a 1)
-	lda BLKLO
-	ror
-	lsr
-	lsr		; Divide by eight
-	jsr LOAD_TRACKS
-	jsr motoroff	; drive off
-	jsr RST_NBUF2	; restore page 0 space used by NBUF2
+	jsr RWBLOX
 	rts
 
 ;------------------------------------
@@ -113,32 +83,45 @@ READTRAX:
 ; starting from BIGBUF
 ;
 ; Input:
-;   PARMBUF+1: unit number
+;   UNITNBR: unit number
+;   BCOUNT: block count
 ;   BLKLO: starting block (lo)
 ;   BLKHI: starting block (hi)
+;
+; Output:
+;   BLKLO: ending block (lo)
+;   BLKHI: ending block (hi)
 ;------------------------------------
+RABORT:	jmp BABORT
 
 RWBLOX:
 	stx SLOWX
 	sty SLOWY
-	lda #$03	; Set up MLI call - 3 parameters
-	sta PARMBUF
 
 	LDA_BIGBUF_ADDR_LO	; Point to the start of the big buffer
-	sta PARMBUF+2
-	LDA_BIGBUF_ADDR_HI
-	sta PARMBUF+3
+	sta D_RW_BUFFER_PTR
+	lda #$00
+	sta D_RW_BUFFER_PTR+1
+
+	lda BCOUNT
+	asl			; Multiply by 2 - gives us the MSB of bytes to request (512 * BCOUNT)
+	sta D_RW_BYTE_COUNT+1
+
+	lda BLKLO
+	sta D_RW_BLOCK		; The starting block number
+	lda BLKHI
+	sta D_RW_BLOCK+1
 
 RWCALL:
-	lda $C000
-	cmp #CHR_ESC	; ESCAPE = ABORT
+;	lda $C000
+;	cmp #CHR_ESC	; ESCAPE = ABORT
 
-	beq RABORT
-	lda RWCHR
-	jsr CHROVER
+;	beq RABORT
+;	lda RWCHR
+;	jsr CHROVER
 
-	lda CH
-	sta <COL_SAV
+;?	lda CH
+;?	jsr HTAB
 
 	lda #V_MSG	; start printing at first number spot
 	jsr TABV
@@ -157,11 +140,81 @@ RWCALL:
 	jsr PRD		; Print block number in decimal
 
 	lda <COL_SAV	; Reposition cursor to previous
-	jsr HTAB		; buffer row
+	jsr HTAB	; buffer row
 	lda #V_BUF
 	jsr TABV
 
-RWDIR:	CALLOS OS_READBLOCK, PARMBUF
+RWDIR:	CALLOS OS_READBLOCK, D_RW_PARMS
+	sta SLOWX
+	jsr HOME
+	jsr HOME
+	jsr HOME
+;	jsr CROUT
+;	jsr CLREOP
+;	jsr CROUT
+	lda SLOWX
+	jsr PRBYTE
+	jsr CROUT
+
+	lda #<D_RW_PARMS
+	sta UTILPTR
+	lda #>D_RW_PARMS
+	sta UTILPTR+1
+	lda #<D_RW_END
+	sta UTILPTR2
+	lda #>D_RW_END
+	sta UTILPTR2+1
+
+	; Dump memory to console starting from UTILPTR to UTILPTR2
+	jsr DUMPMEM
+
+	jsr CROUT
+
+	lda #$34
+	sta UTILPTR
+	lda #$00
+	sta UTILPTR+1
+	lda #$36
+	sta UTILPTR2
+	lda #$00
+	sta UTILPTR2+1
+
+	; Dump memory to console starting from UTILPTR to UTILPTR2
+	jsr DUMPMEM
+
+	jsr CROUT
+
+	lda #$35
+	sta UTILPTR
+	lda #$16
+	sta UTILPTR+1
+	lda #$36
+	sta UTILPTR2
+	lda #$16
+	sta UTILPTR2+1
+
+	; Dump memory to console starting from UTILPTR to UTILPTR2
+	
+	jsr DUMPMEM
+
+	jsr CROUT
+
+	lda #$fd
+	sta UTILPTR
+	lda #$01
+	sta UTILPTR+1
+	lda #$fe
+	sta UTILPTR2
+	lda #$01
+	sta UTILPTR2+1
+
+	; Dump memory to console starting from UTILPTR to UTILPTR2
+	
+	jsr DUMPMEM
+
+	jmp *
+
+
 	bne RWBAD
 	lda RWCHROK
 	jsr COUT1
@@ -171,18 +224,17 @@ RWBAD:
 	sta ECOUNT
 	lda #CHR_X
 	jsr COUT1
-RWOK:	inc PARMBUF+3	; Advance buffer $100 bytes
-	inc PARMBUF+3	; Advance buffer another $100 bytes
-	inc BLKLO	; Advance block counter by one (word width)
-	bne RWNOB
-	inc BLKHI
-RWNOB:	dec BCOUNT
-	bne RWCALL
-	ldy SLOWY
+RWOK:
+	clc
+	lda BLKLO
+	adc BCOUNT
+	sta BLKLO
+	bcc :+
+	inc BLKHI	; Send the block count back out via updated BLKLO/HI
+
+:	ldy SLOWY
 	ldx SLOWX
 	rts
-
-RABORT:	jmp BABORT
 
 RWCHR:	.byte CHR_R	; Character to notify what we're doing
 RWCHROK:	.byte CHR_BLK	; Character to write when things are OK

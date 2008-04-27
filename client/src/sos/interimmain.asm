@@ -267,7 +267,7 @@ entrypoint:
 ;	jsr GET_PREFIX	; Get our current ProDOS prefix
 ;	jsr BLOAD	; Load up user parameters, if any
 	jsr HOME	; Clear screen
-;	jsr PARMINT	; Interpret parameters - may leave a complaint
+	jsr PARMINT	; Interpret parameters - may leave a complaint
 	jmp MAINL	; And off we go!
 
 ;---------------------------------------------------------
@@ -280,6 +280,55 @@ RESETIO:
 	jsr HOME	; Pseudo-indirect JSR to reset the IO device
 	; Note - must un/comment above along with PARMINT at the same time.
 	jsr MainScreen
+	jmp KBDLUP
+
+	jsr CROUT
+	lda #$01
+	sta D_RW_DEV_NUM
+
+	LDA_BIGBUF_ADDR_LO	; Point to the start of the big buffer
+	sta D_RW_BUFFER_PTR
+	lda #$00
+	sta D_RW_BUFFER_PTR+1
+
+	lda #$28
+	sta D_RW_BYTE_COUNT+1
+	lda #$00
+	sta D_RW_BYTE_COUNT
+
+	sta D_RW_BLOCK		; The starting block number
+	sta D_RW_BLOCK+1
+
+	lda #<D_RW_PARMS
+	sta UTILPTR
+	lda #>D_RW_PARMS
+	sta UTILPTR+1
+	lda #<D_RW_END
+	sta UTILPTR2
+	lda #>D_RW_END
+	sta UTILPTR2+1
+
+	; Dump memory to console starting from UTILPTR to UTILPTR2
+	jsr DUMPMEM
+	jsr CROUT
+
+	CALLOS OS_READBLOCK, D_RW_PARMS
+	jsr PRBYTE
+	jsr CROUT
+
+	lda #<D_RW_PARMS
+	sta UTILPTR
+	lda #>D_RW_PARMS
+	sta UTILPTR+1
+	lda #<D_RW_END
+	sta UTILPTR2
+	lda #>D_RW_END
+	sta UTILPTR2+1
+
+	; Dump memory to console starting from UTILPTR to UTILPTR2
+	jsr DUMPMEM
+	jsr CROUT
+	JMP *
 
 ;---------------------------------------------------------
 ; KBDLUP
@@ -287,9 +336,8 @@ RESETIO:
 ; Keyboard handler, dispatcher
 ;---------------------------------------------------------
 KBDLUP:
-;	jsr RDKEY		; GET ANSWER
-;	CONDITION_KEYPRESS	; Convert to upper case, etc.  OS dependent.
-	lda #CHR_V
+	jsr RDKEY		; GET ANSWER
+	CONDITION_KEYPRESS	; Convert to upper case, etc.  OS dependent.
 
 KSEND:	cmp #CHR_S	; SEND?
 	bne :+		; Nope
@@ -370,7 +418,7 @@ KVOLUMS:
 KFORMAT:
 	cmp #CHR_F	; Format?
 	bne :+		; Nope
-	;jsr FormatEntry	; Run formatter
+	jsr FormatEntry	; Run formatter
 	jmp MAINLUP
 :
 KQUIT:

@@ -43,7 +43,7 @@
 	.include "hostfns.asm"
 	.include "diskii.asm"
 	.include "nibble.asm"
-	.include "format.asm"
+	.include "prodos/format.asm"
 	.include "prodos/bsave.asm"
 
 PEND:

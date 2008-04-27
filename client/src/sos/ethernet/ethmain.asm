@@ -45,23 +45,22 @@
 	.include "prodos/ethernet/uther.asm"
 	.include "sos/ethernet/ethconfigsos.asm"
 	.include "prodos/ethernet/ipconfig.asm"
-;	.include "format.asm"		; Note: format.asm is its own segment
+	.include "sos/format.asm"		; Note: format.asm is its own segment
 ;	.include "sos/bsave.asm"
 ; Stubs:
 ROM:
 DELAY:
 CH:
 CV:
-FormatEntry:
 BLOAD:
 BSAVE:
 GET_PREFIX:
-Died:
-Done:
-SlotF:
 BLKHI:
 BLKLO:
 INVFLG:
+DevAdr:
+DevList:
+DevCnt:
 BASL = $ff
 PEND:
 	.segment "DATA"	

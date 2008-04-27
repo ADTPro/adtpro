@@ -45,7 +45,7 @@ NIBPCNT	= $30		; ($01 byte) Counts nibble pages
 UTILPTR2	= $32		; ($02 bytes) Used for printing messages too
 BIGBUF_ADDR_LO	= $34		; ($01 byte) points to big buffer low in 
 BIGBUF_ADDR_HI	= $35		; ($01 byte) points to big buffer high
-BIGBUF_XBYTE	= $1627		; XByte address for our bank
+BIGBUF_XBYTE	= $1635		; XByte address for our bank
 BIGBUF:		.res $40
 CRCTBLL:	.res $100	; CRC LOW TABLE  ($100 Bytes)
 CRCTBLH:	.res $100	; CRC HIGH TABLE ($100 Bytes)
@@ -132,6 +132,19 @@ D_INFO_LENGTH:	.byte $07
 D_INFO_NAME:	.res 16
 D_INFO_OPTION:	.res $07
 D_INFO_OPTION_END = *
+
+; Table for massive block read (rw.asm)
+
+D_RW_PARMS:	.byte $05	; 5 for Read, 4 for Write
+D_RW_DEV_NUM:	.byte $00
+D_RW_BUFFER_PTR:
+		.addr $0000	; In
+D_RW_BYTE_COUNT:
+		.word $0000	; In; $5000 is 20k, the full boat (but we calculate it anyway)
+D_RW_BLOCK:	.word $0000	; In
+D_RW_BYTES_READ:
+		.word $0000	; Out (only used for Write)
+D_RW_END:
 
 ; Table for volume query
 

@@ -45,7 +45,7 @@
 	.include "nibble.asm"
 	.include "prodos/ethernet/ethproto.asm"
 	.include "prodos/ethernet/ipconfig.asm"
-	.include "format.asm"		; Note: format.asm is its own segment
+	.include "prodos/format.asm"		; Note: format.asm is its own segment
 	.include "prodos/bsave.asm"
 
 PEND:

@@ -45,7 +45,7 @@
 	.include "diskii.asm"
 	.include "nibble.asm"
 	.include "prodos/serial/pascalep.asm"	; Note: includes PASCALEP segment
-	.include "format.asm"			; Note: includes FORMAT segment
+	.include "prodos/format.asm"		; Note: includes FORMAT segment
 	.include "prodos/bsave.asm"
 
 	.segment "DATA"

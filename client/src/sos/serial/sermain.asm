@@ -45,7 +45,7 @@
 	.include "hostfns.asm"
 	.include "diskii.asm"
 	.include "nibble.asm"
-;	.include "format.asm"			; Note: includes FORMAT segment
+	.include "sos/format.asm"			; Note: includes FORMAT segment
 	.include "sos/bsave.asm"
 
 ; Stubs:
@@ -54,13 +54,11 @@ ROM:
 DELAY:
 CH:
 CV:
-FormatEntry:
-Died:
-Done:
-SlotF:
 BLKHI:
 BLKLO:
 INVFLG:
+DevAdr:
+DevList:
+DevCnt:
 BASL = $ff
-
 	.segment "DATA"

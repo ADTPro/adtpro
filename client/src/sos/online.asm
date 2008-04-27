@@ -370,6 +370,15 @@ PRT1VOL:
 
 	rts
 
+;---------------------------------------------------------
+; CLEARVOLUMES - invalidate the volume cache
+;---------------------------------------------------------
+CLEARVOLUMES:
+	lda #$00
+	sta LASTVOL
+	rts
+
+
 PRT1PTR: .res $02
 
 LASTVOL:	.byte $00
