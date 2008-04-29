@@ -43,10 +43,16 @@
 	.include "input.asm"
 	.include "sos/serial/serconfigsos.asm"
 	.include "hostfns.asm"
-	.include "diskii.asm"
-	.include "nibble.asm"
 	.include "sos/format.asm"			; Note: includes FORMAT segment
 	.include "sos/bsave.asm"
+
+; Stubs from Disk II-related stuff
+ReceiveNib:
+GO_TRACK0:
+INIT_DISKII:
+sendnib:
+motoroff:
+	rts
 
 ; Stubs:
 ROM:

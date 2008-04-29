@@ -117,57 +117,58 @@ OERROR:
 
 ; DEVMSG - Add a message to the "Volume name" area of the device
 DEVMSG:
-	txa		; Preserve X
-	pha
-
-	clc
-	adc #<DEVICES
+	stx XSTASH	; Preserve X - the index into DEVICES structure
+	lda MSGTBL,Y	; Y has an index into the messages table
 	sta UTILPTR
-	lda #>DEVICES
-	sta UTILPTR+1	; UTILPTR now holds DEVICES + X
-	
-	ldy #$00
-DMLOOP:
-	lda MNONAME,Y
-	cmp #$00
-	beq DMDONE
-	iny
-	sta (UTILPTR),Y
-	jmp DMLOOP
-DMDONE:
+	lda MSGTBL+1,Y
+	sta UTILPTR+1
 	tya
+	clc
+	ror		; Divide Y by 2 to get the message length out of the message length table
+	tay
+	lda MSGLENTBL,Y
+	sta SLOWY	; Store the message length
+	tay		; Y now holds the message length
+	dey
+	lda XSTASH	; Grab the index into the DEVICES structure
+	sec
+	adc #<DEVICES
+	sta BLKPTR
+	lda #>DEVICES
+	sta BLKPTR+1	; BLKPTR now holds DEVICES + X
+DMLOOP:
+	lda (UTILPTR),Y
+	sta (BLKPTR),Y	; Copy the message over
+	dey
+	cpy #$ff	; Copy the zeroeth byte, too
+	bne DMLOOP
+DMDONE:
+	dec BLKPTR
 	ldy #$00
-	ora (UTILPTR),Y
-	sta (UTILPTR),Y
+	lda SLOWY	; Get our message length back
+	ora (BLKPTR),Y
+	sta (BLKPTR),Y	; Prepend the message length
 
-	pla
-	tax
+	ldx XSTASH	; Get X back
 	rts
+
+XSTASH:	.byte $00
 
 ; DEVMSG1 - Add "<NO NAME>" to the "Volume name"
 DEVMSG1:
-	lda #<MNONAME
-	sta DMLOOP+1
-	lda #>MNONAME
-	sta DMLOOP+2
+	ldy #PMNONAME
 	jsr DEVMSG
 	rts
 
 ; DEVMSG2 - Add "<I/O ERROR>" to the "Volume name"
 DEVMSG2:
-	lda #<MIOERR
-	sta DMLOOP+1
-	lda #>MIOERR
-	sta DMLOOP+2
+	ldy #PMIOERR
 	jsr DEVMSG
 	rts
 
 ; DEVMSG3 - Add "<NO DISK>" to the "Volume name"
 DEVMSG3:
-	lda #<MNODISK
-	sta DMLOOP+1
-	lda #>MNODISK
-	sta DMLOOP+2
+	ldy #PMNODISK
 	jsr DEVMSG
 	rts
 
@@ -731,7 +732,6 @@ PRVODONE:
 	rts
 
 PRTSVA:	.byte $00
-POFF:	.byte $00
 
 ;---------------------------------------------------------
 ; Local variables

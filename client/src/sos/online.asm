@@ -140,8 +140,13 @@ SV_NONE:
 	beq DEVMSG1		; Not an SOS volume - "<NO NAME>"
 	jmp DEVMSG2		; Punt - generic I/O error
 
-; DEVMSG - Add a message to the "Volume name" area of the device
+; DEVMSG - Add message in Y to the "Volume name" area of the device
 DEVMSG:
+	lda MSGTBL,Y	; Y has an index into the messages table
+	sta UTILPTR2
+	lda MSGTBL+1,Y
+	sta UTILPTR2+1
+	tya	
 	clc
 	ror
 	tax			; Message length table lookup - need to cut the index in half
@@ -157,31 +162,19 @@ DEVMSG:
 
 ; DEVMSG1 - Add "<NO NAME>" to the "Volume name"
 DEVMSG1:
-	lda #<MNONAME
-	sta UTILPTR2
-	lda #>MNONAME
-	sta UTILPTR2+1
-	lda #PMNONAME
+	ldy #PMNONAME
 	jsr DEVMSG
 	jmp SV_NEW_NAME
 
 ; DEVMSG2 - Add "<I/O ERROR>" to the "Volume name"
 DEVMSG2:
-	lda #<MIOERR
-	sta UTILPTR2
-	lda #>MIOERR
-	sta UTILPTR2+1
-	lda #PMIOERR
+	ldy #PMIOERR
 	jsr DEVMSG
 	jmp SV_NEW_NAME
 
 ; DEVMSG3 - Add "<NO DISK>" to the "Volume name"
 DEVMSG3:
-	lda #<MNODISK
-	sta UTILPTR2
-	lda #>MNODISK
-	sta UTILPTR2+1
-	lda #PMNODISK
+	ldy #PMNODISK
 	jsr DEVMSG
 	jmp SV_NEW_NAME
 

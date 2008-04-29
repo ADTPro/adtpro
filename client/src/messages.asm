@@ -235,7 +235,7 @@ PHMMAX	= $0a		; This must be two greater than the largest host message
 	; Messages from formatter routine
 	MVolName:
 		asc "VOLUME NAME: /"
-	MBlank:	asc "BLANK__________"	; Note - these two are really one continuous message.
+	MBlank:	asc "BLANK          "	; Note - these two are really one continuous message.
 	MVolName_END =*
 
 	MTheOld:

@@ -46,7 +46,6 @@ UTILPTR2	= $32		; ($02 bytes) Used for printing messages too
 BIGBUF_ADDR_LO	= $34		; ($01 byte) points to big buffer low in 
 BIGBUF_ADDR_HI	= $35		; ($01 byte) points to big buffer high
 BIGBUF_XBYTE	= $1635		; XByte address for our bank
-BIGBUF:		.res $40
 CRCTBLL:	.res $100	; CRC LOW TABLE  ($100 Bytes)
 CRCTBLH:	.res $100	; CRC HIGH TABLE ($100 Bytes)
 

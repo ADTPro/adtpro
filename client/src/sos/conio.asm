@@ -128,9 +128,11 @@ LogoLoop:
 WRITEMSGAREA:
 	lda #$16
 	jsr TABV
-; Entry - print message at left border, current row
+; Entry - print message at left border, current row, clear to end of page
 WRITEMSGLEFT:
-	lda #$1e		; Clear line
+	lda #$00
+	jsr HTAB
+	lda #$1d		; Clear end of page
 	jsr COUT
 WRITEMSG:
 	lda MSGTBL,Y
@@ -480,7 +482,7 @@ READVID:
 ;---------------------------------------------------------
 CLREOP:	; Clear to end of screen
 CLRLN:
-	lda #$1D
+	lda #$1d
 	jsr COUT
 	rts
 

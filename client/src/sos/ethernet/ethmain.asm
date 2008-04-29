@@ -39,21 +39,26 @@
 	.include "pickvol.asm"
 	.include "input.asm"
 	.include "hostfns.asm"
-	.include "diskii.asm"
-	.include "nibble.asm"
 	.include "prodos/ethernet/ethproto.asm"
 	.include "prodos/ethernet/uther.asm"
 	.include "sos/ethernet/ethconfigsos.asm"
 	.include "prodos/ethernet/ipconfig.asm"
 	.include "sos/format.asm"		; Note: format.asm is its own segment
-;	.include "sos/bsave.asm"
+	.include "sos/bsave.asm"
+
+; Stubs from Disk II-related stuff
+ReceiveNib:
+GO_TRACK0:
+INIT_DISKII:
+sendnib:
+motoroff:
+	rts
+
 ; Stubs:
 ROM:
 DELAY:
 CH:
 CV:
-BLOAD:
-BSAVE:
 GET_PREFIX:
 BLKHI:
 BLKLO:

@@ -89,7 +89,7 @@ WRITEMSGAREA:
 	lda #$16
 	jsr TABV
 	ldy SLOWY
-; Entry - print message at left border, current row
+; Entry - print message at left border, current row, clear to end of page
 WRITEMSGLEFT:
 	sty SLOWY
 	lda #$00

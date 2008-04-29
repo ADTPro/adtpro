@@ -242,48 +242,59 @@
 		<!--
 		Put the assembled programs on the disk images
 		-->
+		<echo message="Adding ADTPRO to 5.25 disk image..."/>
 		<exec dir="${builddir}" executable="java" input="${builddir}/ADTPRO">
 			<arg line="-jar ${acJar} -p ADTPRO sys 8192 ${distName}/disks/${diskName}.DSK" />
 		</exec>
+		<echo message="Adding ADTPROAUD to 5.25 disk image..."/>
 		<exec dir="${builddir}" executable="java" input="${builddir}/ADTPROAUD">
 			<arg line="-jar ${acJar} -p ADTPROAUD sys 8192 ${distName}/disks/${diskName}.DSK" />
 		</exec>
+		<echo message="Adding ADTPROETH to 5.25 disk image..."/>
 		<exec dir="${builddir}" executable="java" input="${builddir}/ADTPROETH">
 			<arg line="-jar ${acJar} -p ADTPROETH sys 8192 ${distName}/disks/${diskName}.DSK" />
 		</exec>
 		<!--
 		And the .po version...
 		-->
+		<echo message="Adding ADTPRO to 3.5 disk image..."/>
 		<exec dir="${builddir}" executable="java" input="${builddir}/ADTPRO">
 			<arg line="-jar ${acJar} -p ADTPRO sys 8192 ${distName}/disks/${diskName}.PO" />
 		</exec>
+		<echo message="Adding ADTPROAUD to 3.5 disk image..."/>
 		<exec dir="${builddir}" executable="java" input="${builddir}/ADTPROAUD">
 			<arg line="-jar ${acJar} -p ADTPROAUD sys 8192 ${distName}/disks/${diskName}.PO" />
 		</exec>
+		<echo message="Adding ADTPROETH to 3.5 disk image..."/>
 		<exec dir="${builddir}" executable="java" input="${builddir}/ADTPROETH">
 			<arg line="-jar ${acJar} -p ADTPROETH sys 8192 ${distName}/disks/${diskName}.PO" />
 		</exec>
 		<!--
 		Put the assembled DOS ADT program on the .dsk image
 		-->
+		<echo message="Adding ADT to 5.25 disk image..."/>
 		<exec dir="${builddir}" executable="java" input="${builddir}/ADT">
 			<arg line="-jar ${acJar} -p ADT bin 2051 ${distName}/disks/${dosDistName}.DSK" />
 		</exec>
+		<echo message="Adding ADT.BACKUP to 5.25 disk image..."/>
 		<exec dir="${builddir}" executable="java" input="${builddir}/ADT">
 			<arg line="-jar ${acJar} -p ADT.BACKUP bin 2051 ${distName}/disks/${dosDistName}.DSK" />
 		</exec>
 		<!--
 		Lock the backup ADT version
 		-->
+		<echo message="Locking ADT on 5.25 disk image..."/>
 		<exec dir="${builddir}" executable="java">
 			<arg line="-jar ${acJar} -k ADT.BACKUP ${distName}/disks/${dosDistName}.DSK" />
 		</exec>
 		<!--
 		Put a nice volume name on the disk images
 		-->
+		<echo message="Adding ADTPro volume name to 5.25 disk image..."/>
 		<exec dir="${builddir}" executable="java">
 			<arg line="-jar ${acJar} -v ${distName}/disks/${diskName}.DSK ${volName}" />
 		</exec>
+		<echo message="Adding ADTPro volume name to 3.5 disk image..."/>
 		<exec dir="${builddir}" executable="java">
 			<arg line="-jar ${acJar} -v ${distName}/disks/${diskName}.PO ${volName}" />
 		</exec>

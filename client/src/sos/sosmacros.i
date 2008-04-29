@@ -40,11 +40,15 @@
 .endmacro
 
 .macro LDA_BIGBUF_ADDR_HI
-	lda #BIGBUF_ADDR_HI	; Was lda #$>BIGBUF (the high part of the address)
+	lda #BIGBUF_ADDR_HI	; Was lda #>BIGBUF (the high part of the address)
 .endmacro
 
 .macro LDA_BIGBUF_ADDR_LO
 	lda #BIGBUF_ADDR_LO
+.endmacro
+
+.macro LDX_BIGBUF_ADDR_HI
+	ldx #BIGBUF_ADDR_HI
 .endmacro
 
 .define	NRM_BLOCK $11,$20

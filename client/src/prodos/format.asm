@@ -218,14 +218,17 @@ LInput:
 	cmp #$AE		; (periods are ok...)
 	beq LStore
 	cmp #$B0		; Less than '0'?
-	bcc LInput
-	cmp #$BA		; Less than ':'?
-	bcc LStore		; Valid. Store the keypress
+	bcc LInput		; Then it's invalid
+	cmp #$BA		; Less than '9'+1?
+	bcc LStore		; Then it's a number - store it
+
 	and #$DF		; Force any lower case to upper case
-	cmp #$C0		; Less than 'A'?
-	beq LInput
-	cmp #$DB		; Greater than 'Z'?
-	bcs LInput
+	cmp #$C1		; Less than 'A'?
+	bcc LInput		; Then it's invalid
+	cmp #$DB		; Less than 'Z'+1?
+	bcc LStore		; Then it's a letter - store it
+
+	jmp LInput		; So sorry, try again
 LStore:
 	jsr COUT		; Print keypress on the screen
 	and #$7F		; Clear MSB

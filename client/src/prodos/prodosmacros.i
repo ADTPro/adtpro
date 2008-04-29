@@ -47,6 +47,10 @@
 	lda #<BIGBUF
 .endmacro
 
+.macro LDX_BIGBUF_ADDR_HI
+	ldx #>BIGBUF
+.endmacro
+
 .define	INV_BLOCK $20	; ASCII for an inverse space - is differernt on SOS
 .define	NRM_BLOCK $A0	; ASCII for a normal space - is different on SOS
 .define INV_OFF   	; Nothing to do for ProDOS

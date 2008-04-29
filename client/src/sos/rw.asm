@@ -37,7 +37,7 @@ READING:
 	lda #PMSG07
 	sta SR_WR_C
 	lda #OS_READBLOCK
-	sta RWDIR
+	sta RWDIR+1
 	lda #$05
 	sta D_RW_PARMS
 	lda #CHR_R
@@ -50,7 +50,7 @@ WRITING:
 	lda #PMSG08
 	sta SR_WR_C
 	lda #OS_WRITEBLOCK
-	sta RWDIR
+	sta RWDIR+1
 	lda #$04
 	sta D_RW_PARMS
 	lda #CHR_W
@@ -73,7 +73,17 @@ RW_COMN:
 	jsr HTAB	; buffer row
 	lda #V_BUF
 	jsr TABV
+
+jsr CROUT
+lda #$DA
+jsr PRBYTE
+
 	jsr RWBLOX
+
+lda #$AD
+jsr PRBYTE
+jsr CROUT
+
 	rts
 
 ;------------------------------------
@@ -103,7 +113,7 @@ RWBLOX:
 	lda #$00
 	sta D_RW_BUFFER_PTR+1
 
-	lda BCOUNT
+	lda BCOUNT		; Get the block count
 	asl			; Multiply by 2 - gives us the MSB of bytes to request (512 * BCOUNT)
 	sta D_RW_BYTE_COUNT+1
 
@@ -145,17 +155,29 @@ RWCALL:
 	jsr TABV
 
 RWDIR:	CALLOS OS_READBLOCK, D_RW_PARMS
-	sta SLOWX
-	jsr HOME
-	jsr HOME
-	jsr HOME
-;	jsr CROUT
-;	jsr CLREOP
-;	jsr CROUT
-	lda SLOWX
-	jsr PRBYTE
-	jsr CROUT
+	bne RWBAD
+	lda RWCHROK
+	jsr COUT1
+	jmp RWOK
+RWBAD:
+	lda #$01
+	sta ECOUNT
+	lda #CHR_X
+	jsr COUT1
+RWOK:
+	clc
+	lda BLKLO
+	adc BCOUNT
+	sta BLKLO
+	bcc :+
+	inc BLKHI	; Send the block count back out via updated BLKLO/HI
 
+:	ldy SLOWY
+	ldx SLOWX
+	rts
+
+DUMP_CALL:
+	jsr CROUT
 	lda #<D_RW_PARMS
 	sta UTILPTR
 	lda #>D_RW_PARMS
@@ -164,10 +186,8 @@ RWDIR:	CALLOS OS_READBLOCK, D_RW_PARMS
 	sta UTILPTR2
 	lda #>D_RW_END
 	sta UTILPTR2+1
-
 	; Dump memory to console starting from UTILPTR to UTILPTR2
 	jsr DUMPMEM
-
 	jsr CROUT
 
 	lda #$34
@@ -212,28 +232,6 @@ RWDIR:	CALLOS OS_READBLOCK, D_RW_PARMS
 	
 	jsr DUMPMEM
 
-	jmp *
-
-
-	bne RWBAD
-	lda RWCHROK
-	jsr COUT1
-	jmp RWOK
-RWBAD:
-	lda #$01
-	sta ECOUNT
-	lda #CHR_X
-	jsr COUT1
-RWOK:
-	clc
-	lda BLKLO
-	adc BCOUNT
-	sta BLKLO
-	bcc :+
-	inc BLKHI	; Send the block count back out via updated BLKLO/HI
-
-:	ldy SLOWY
-	ldx SLOWX
 	rts
 
 RWCHR:	.byte CHR_R	; Character to notify what we're doing

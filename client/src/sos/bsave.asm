@@ -101,7 +101,7 @@ GET_PFX_PLIST:
 
 FILE_OP:	.byte 3
 FILE_NAME:	.addr CONFIG_FILE_NAME	; addr len+name
-FILE_BUF_PTR:	.addr BIGBUF+1024	; 1024 bytes buffer
+;FILE_BUF_PTR:	.addr BIGBUF+1024	; 1024 bytes buffer
 FILE_OPN:	.byte 0		; opened file number
 
 ; Table for create

@@ -185,7 +185,7 @@ DIRABORT:
 ;---------------------------------------------------------
 CDREQUEST:
 	LDA_BIGBUF_ADDR_LO	; Connect the block pointer to the
-	sta BLKPTR	; beginning of the Big Buffer(TM)
+	sta BLKPTR		; beginning of the Big Buffer(TM)
 	LDA_BIGBUF_ADDR_HI
 	sta BLKPTR+1
 	ldy #$00
@@ -198,7 +198,8 @@ CDREQUEST:
 	stax udp_send_len	; much bigger than that anyway...
 	lda #STATE_CD
 	sta state
-	ldax #BIGBUF
+	LDA_BIGBUF_ADDR_LO	; Was: ldax #BIGBUF
+	LDX_BIGBUF_ADDR_HI
 	jsr udp_send
 	jsr RECEIVE_LOOP
 	rts
@@ -242,10 +243,10 @@ GETREPLY2:
 ; CHR_H - half track send
 ;---------------------------------------------------------
 PUTREQUEST:
-	ldy #<BIGBUF		; Connect the block pointer to the
-	sty BLKPTR		; beginning of the Big Buffer(TM)
-	ldy #>BIGBUF
-	sty BLKPTR+1
+	LDA_BIGBUF_ADDR_LO	; Connect the block pointer to the
+	sta BLKPTR		; beginning of the Big Buffer(TM)
+	LDA_BIGBUF_ADDR_HI
+	sta BLKPTR+1
 	ldy #$00
 	sta (BLKPTR),Y		; Accumulator still holds request type
 	iny
@@ -261,7 +262,8 @@ PUTREQUEST:
 	stax udp_send_len
 	lda #STATE_PUT
 	sta state
-	ldax #BIGBUF
+	LDA_BIGBUF_ADDR_LO	; Was: ldax #BIGBUF
+	LDX_BIGBUF_ADDR_HI
 	jsr udp_send
 	jsr RECEIVE_LOOP
 	rts
@@ -309,7 +311,7 @@ GETFINALACK:
 ;---------------------------------------------------------
 GETREQUEST:
 	LDA_BIGBUF_ADDR_LO	; Connect the block pointer to the
-	sta BLKPTR	; beginning of the Big Buffer(TM)
+	sta BLKPTR		; beginning of the Big Buffer(TM)
 	LDA_BIGBUF_ADDR_HI
 	sta BLKPTR+1
 	ldy #$00
@@ -322,7 +324,8 @@ GETREQUEST:
 	stax udp_send_len
 	lda #STATE_GET	; Set up for GETREPLY1 callback
 	sta state
-	ldax #BIGBUF
+	LDA_BIGBUF_ADDR_LO	; Was: ldax #BIGBUF
+	LDX_BIGBUF_ADDR_HI
 	jsr udp_send
 	jsr RECEIVE_LOOP
 	rts
@@ -351,7 +354,8 @@ BATCHREQUEST:
 	stax udp_send_len
 	lda #STATE_PUT
 	sta state
-	ldax #BIGBUF
+	LDA_BIGBUF_ADDR_LO	; Was: ldax #BIGBUF
+	LDX_BIGBUF_ADDR_HI
 	jsr udp_send
 	jsr RECEIVE_LOOP
 	rts
@@ -374,7 +378,8 @@ QUERYFNREQUEST:
 	stax udp_send_len
 	lda #STATE_QUERY	; Set up for the QUERYFNREPLY callback
 	sta state
-	ldax #BIGBUF
+	LDA_BIGBUF_ADDR_LO	; Was: ldax #BIGBUF
+	LDX_BIGBUF_ADDR_HI
 	jsr udp_send
 	jsr RECEIVE_LOOP
 	rts

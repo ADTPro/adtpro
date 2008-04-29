@@ -1,6 +1,6 @@
 ;
 ; ADTPro - Apple Disk Transfer ProDOS
-; Copyright (C) 2008 by David Schmidt
+; Copyright (C) 2006 - 2008 by David Schmidt
 ; david__schmidt at users.sourceforge.net
 ;
 ; This program is free software; you can redistribute it and/or modify it 
@@ -49,6 +49,51 @@ caldriv3:
 	rts
 
 ;---------------------------------------------------------
+; rdnibtr - read track as nibbles into tracks buffer.
+; total bytes read is NIBPAGES * 256, or about twice
+; the track length.
+; the drive has been calibrated, so we know we are in read
+; mode, the motor is running, and and the correct drive 
+; number is engaged.
+; we wait until we encounter a first nibble after a gap.
+; for this purpose, a gap is at least 4 ff nibbles in a 
+; row. note this is not 100% fool proof; the ff nibble
+; can occur as a regular nibble instead of autosync.
+; but this is conform beneath apple dos, so is
+; probably ok.
+;---------------------------------------------------------
+;readtrk:
+;rdnibtr:
+;	ldx pdsoftx		; Load drive index into X
+;	lda #0			; a = 0
+;	tay			; y = 0 (index)
+;	sta BLKPTR		; set running ptr (lo) to 0
+;	LDA_BIGBUF_ADDR_HI	; BIGBUF address high
+;	sta BLKPTR+1		; set running ptr (hi)
+;	lda #NIBPAGES
+;	sta NIBPCNT		; page counter
+; use jmp, not jsr, to perform nibsync. that way we
+; have a bit more breathing room, cycle-wise. the
+; "function" returns with a jmp to rdnibtr8.
+;	jmp	nibsync		; find first post-gap byte
+; the read loop must be fast enough to read 1 byte every
+; 32 cycles. it appears the interval is 17 cycles within
+; one data page, and 29 cycles when crossing a data page.
+; these numbers are based on code that does not cross
+; a page boundary.
+;rdnibtr7:
+;	lda $c08c,x		; read (4 cycles)
+;	bpl rdnibtr7		; until byte complete (2c)
+;rdnibtr8:
+;	sta (BLKPTR),y		; store in buffer (6c)
+;	iny			; (2c)
+;	bne rdnibtr7		; 256 bytes done? (2 / 3c)
+;	inc BLKPTR+1		; next page (5c)
+;	dec NIBPCNT		; count (5c)
+;	bne rdnibtr7		; and back (3c)
+;	rts
+
+;---------------------------------------------------------
 ; Read a full track, marking long and short self-sync nibbles
 ;
 ; By: Stephen Thomas
@@ -61,7 +106,7 @@ rdnibtr:
 	lda #0			; a = 0
 	tay			; y = 0 (index)
 	sta BLKPTR		; set running ptr (lo) to 0
-	;lda #>BIGBUF		; BIGBUF address high
+	LDA_BIGBUF_ADDR_HI	; BIGBUF address high
 	sta BLKPTR+1		; set running ptr (hi)
 	lda pdsoftx		; Get soft switch offset
 	clc
@@ -203,7 +248,7 @@ Trans2:
 ; Trans2 entry point preconditions:
 ;   Buffer set to the start of nibble page to write (with leading sync bytes)
 	ldy #$32		; Set Y offset to 1st sync byte (max=50)
-	;ldx SlotF		; Set X offset to FORMAT slot/drive
+	ldx SlotF		; Set X offset to FORMAT slot/drive
 	sec			; (assume the disk is write protected)
 	lda DiskWR,x		; Write something to the disk
 	lda ModeRD,x		; Reset Mode softswitch to READ
@@ -242,16 +287,17 @@ MStore:
 	rts
 LWRprot:
 	clc			; Disk is write protected
-	;jsr Done		; Turn the drive off
+	jsr Done		; Turn the drive off
 	lda #$2B
 	pla
 	pla
 	pla
 	pla
-	;jmp Died		; Prompt for another FORMAT...
-	jmp * ; TODO: remove me
+	jmp Died		; Prompt for another FORMAT...
+
 
 entrypoint:
+
 ;---------------------------------------------------------
 ; Start us up
 ;---------------------------------------------------------
@@ -275,60 +321,11 @@ entrypoint:
 ;---------------------------------------------------------
 MAINLUP:
 	jsr HOME	; Clear screen
+
 MAINL:
 RESETIO:
-	jsr HOME	; Pseudo-indirect JSR to reset the IO device
-	; Note - must un/comment above along with PARMINT at the same time.
+	jsr $0000	; Pseudo-indirect JSR to reset the IO device
 	jsr MainScreen
-	jmp KBDLUP
-
-	jsr CROUT
-	lda #$01
-	sta D_RW_DEV_NUM
-
-	LDA_BIGBUF_ADDR_LO	; Point to the start of the big buffer
-	sta D_RW_BUFFER_PTR
-	lda #$00
-	sta D_RW_BUFFER_PTR+1
-
-	lda #$28
-	sta D_RW_BYTE_COUNT+1
-	lda #$00
-	sta D_RW_BYTE_COUNT
-
-	sta D_RW_BLOCK		; The starting block number
-	sta D_RW_BLOCK+1
-
-	lda #<D_RW_PARMS
-	sta UTILPTR
-	lda #>D_RW_PARMS
-	sta UTILPTR+1
-	lda #<D_RW_END
-	sta UTILPTR2
-	lda #>D_RW_END
-	sta UTILPTR2+1
-
-	; Dump memory to console starting from UTILPTR to UTILPTR2
-	jsr DUMPMEM
-	jsr CROUT
-
-	CALLOS OS_READBLOCK, D_RW_PARMS
-	jsr PRBYTE
-	jsr CROUT
-
-	lda #<D_RW_PARMS
-	sta UTILPTR
-	lda #>D_RW_PARMS
-	sta UTILPTR+1
-	lda #<D_RW_END
-	sta UTILPTR2
-	lda #>D_RW_END
-	sta UTILPTR2+1
-
-	; Dump memory to console starting from UTILPTR to UTILPTR2
-	jsr DUMPMEM
-	jsr CROUT
-	JMP *
 
 ;---------------------------------------------------------
 ; KBDLUP
@@ -336,7 +333,7 @@ RESETIO:
 ; Keyboard handler, dispatcher
 ;---------------------------------------------------------
 KBDLUP:
-	jsr RDKEY		; GET ANSWER
+	jsr RDKEY	; GET ANSWER
 	CONDITION_KEYPRESS	; Convert to upper case, etc.  OS dependent.
 
 KSEND:	cmp #CHR_S	; SEND?
@@ -345,7 +342,7 @@ KSEND:	cmp #CHR_S	; SEND?
         ldx #$02
 	ldy #$0e
 	jsr INVERSE
-	;jsr SEND	; YES, DO SEND ROUTINE
+	jsr SEND	; YES, DO SEND ROUTINE
 	jmp MAINLUP
 :
 KRECV:	cmp #CHR_R	; RECEIVE?
@@ -354,7 +351,7 @@ KRECV:	cmp #CHR_R	; RECEIVE?
 	ldx #$09
 	ldy #$0e
 	jsr INVERSE
-	;jsr RECEIVE
+	jsr RECEIVE
 	jmp MAINLUP
 :
 KDIR:	cmp #CHR_D	; DIR?
@@ -377,8 +374,7 @@ KBATCH:
 	jsr BATCH	; Set up batch processing
 	jmp MAINLUP
 :
-KCD:
-	cmp #CHR_C	; CD?
+KCD:	cmp #CHR_C	; CD?
 	bne :+		; Nope
 	lda #$04
         ldx #$21
@@ -452,8 +448,8 @@ MainScreen:
 BABORT:	jsr AWBEEP	; Beep!
 ABORT:	ldx top_stack	; Pop goes the stackptr
 	txs
-;	jsr motoroff	; Turn potentially active drive off
-;	bit $C010	; Strobe the keyboard
+	jsr motoroff	; Turn potentially active drive off
+	bit $C010	; Strobe the keyboard
 	jmp MAINLUP	; ... and restart
 
 ;---------------------------------------------------------
@@ -478,8 +474,8 @@ NOBEEP:	rts
 ;---------------------------------------------------------
 
 QUIT:
-;	sta ROM
-	CALLOS OS_QUIT, QUIT
+	sta ROM
+	CALLOS OS_QUIT, QUITL
 
 QUITL:
 	.byte	4
