@@ -51,5 +51,9 @@
 	ldx #BIGBUF_ADDR_HI
 .endmacro
 
+.macro STA_CH_COL_SAV
+	stx COL_SAV		; X has current position from CHROVER call
+.endmacro
+
 .define	NRM_BLOCK $11,$20
 .define	INV_BLOCK $12,$20,$11
