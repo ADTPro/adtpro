@@ -237,7 +237,7 @@ GETREPLY2:
 
 ;---------------------------------------------------------
 ; PUTREQUEST - Request to send an image to the host
-; Accumulator holds request type:
+; SendType holds request type:
 ; CHR_P - typical put
 ; CHR_N - nibble send
 ; CHR_H - half track send
@@ -248,6 +248,7 @@ PUTREQUEST:
 	LDA_BIGBUF_ADDR_HI
 	sta BLKPTR+1
 	ldy #$00
+	lda SendType
 	sta (BLKPTR),Y		; Accumulator still holds request type
 	iny
 	jsr COPYINPUT

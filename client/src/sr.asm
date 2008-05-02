@@ -122,8 +122,7 @@ SMSTART:
 	ldy #PMWAIT
 	jsr WRITEMSGAREA	; Tell user to have patience
 
-	lda SendType
-	jsr PUTREQUEST
+	jsr PUTREQUEST		; Note - SendType holds the type of request
 	jsr PUTREPLY
 	beq PCOK
 	jmp PCERROR
