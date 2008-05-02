@@ -29,10 +29,10 @@ ypos:		.byte $07
 current_value:	.byte $00
 new_digit:	.byte $09
 ip_parms_temp:
-		.byte 192, 168,   0,   2
-		.byte 192, 168,   0, 123
-		.byte 255, 255, 248,   0
-		.byte 192, 168,   0,   1
+	.byte 1, 2,   3,   4
+	.byte 5, 6,   7, 8
+	.byte 9, 10, 11,  12
+	.byte 13, 14,   15,  16
 ip_parms_temp_done:
 Hundred = $64
 Ten = $0a
@@ -51,9 +51,9 @@ IPConfig:
 	bpl :-
 
 	lda #<ip_parms_temp
-	sta UTILPTR
+	sta UTILPTR2
 	lda #>ip_parms_temp
-	sta UTILPTR+1
+	sta UTILPTR2+1
 
 	lda ypos
 	tay
@@ -61,16 +61,18 @@ IPConfig:
 @Dots:	clc
 	lda xpos
 	adc #$03
-	sta <CH
+	jsr HTAB
 	lda #CHR_DOT
 	jsr COUT1
-	inc <CH
-	inc <CH
-	inc <CH
+	lda xpos
+	adc #$07
+	jsr HTAB
+	lda #CHR_DOT
 	jsr COUT1
-	inc <CH
-	inc <CH
-	inc <CH
+	lda xpos
+	adc #$0b
+	jsr HTAB
+	lda #CHR_DOT
 	jsr COUT1
 	iny
 	cpy #$0b
@@ -86,7 +88,7 @@ IPConfig:
 	sta raw_y
 @PLoop:	
 	jsr BuildIndex
-	lda (UTILPTR),Y
+	lda (UTILPTR2),Y
 	sta current_value
 	jsr RenderNumber
 	clc
@@ -108,12 +110,16 @@ IPConfig:
 	rts
 
 IPConfigTopEntry:
+	lda #$05
+	jsr COUT		; Turn cursor on
 	lda #$00
 	sta raw_x
 	sta raw_y
 	jmp IPConfigReEntry
 
 IPConfigBottomEntry:
+	lda #$05
+	jsr COUT		; Turn cursor on
 	lda #$00
 	sta raw_x
 	lda #$03
@@ -122,7 +128,7 @@ IPConfigBottomEntry:
 
 IPConfigReEntry:
 	jsr BuildIndex
-	lda (UTILPTR),Y
+	lda (UTILPTR2),Y
 	sta current_value
 	jsr RenderNumber
 	jsr InputLoop
@@ -131,7 +137,7 @@ IPConfigReEntry:
 	clc
 	jsr EvaluateScreen
 	jsr BuildIndex
-	sta (UTILPTR),Y
+	sta (UTILPTR2),Y
 	pla
 	beq ExitRight
 	cmp #$01
@@ -169,6 +175,8 @@ ExitUp:
 	sec
 	sbc #$01
 	bcs :+
+	lda #$06	; Turn the cursor back off
+	jsr COUT
 	ldx #PARMNUM-1	; Head back to upper config items - bottom
 	rts
 :	sta raw_y
@@ -182,6 +190,8 @@ ExitDown:
 	adc raw_y
 	cmp #$04
 	bmi :+
+	lda #$06	; Turn the cursor back off
+	jsr COUT
 	ldx #$00	; Head back to upper config items - top
 	txa
 	rts
@@ -264,14 +274,14 @@ RenderNumber:
 	clc
 	lda xpos
 	adc raw_x
-	sta CH
+	jsr HTAB
 	lda current_value
 	jsr ToDecimal
 	clc
 	lda xpos
 	adc raw_x
 	adc #$02
-	sta CH
+	jsr HTAB
 	rts
 
 ;---------------------------------------------------------

@@ -88,7 +88,7 @@ SEND:
 	cmp #$02	; File doesn't exist - so everything's ok
 	beq SMSTART
 	lda #$00
-	sta <CH
+	SET_HTAB
 	lda #$15
 	jsr TABV
 	jsr CLREOP
@@ -378,14 +378,14 @@ RECVING:
 SR_COMN:
 	sty SRBCNT
 	lda #H_BUF
-	sta <CH
+	SET_HTAB
 	lda #V_MSG	; Message row
 	jsr TABV
 	ldy SR_WR_C
 	jsr WRITEMSG
 
 	lda #$00	; Reposition cursor to beginning of
-	sta <CH		; buffer row
+	SET_HTAB	;   buffer row
 	lda #V_BUF
 	jsr TABV
 
@@ -414,13 +414,13 @@ SRCALL:
 	lda SRCHR
 	jsr CHROVER
 
-	lda CH
+	LDA_CH		; Retrieve the current horizontal cursor position
 	sta COL_SAV
 
 	lda #V_MSG	; Start printing at first number spot
 	jsr TABV
 	lda #H_NUM1
-	sta CH
+	SET_HTAB
 
 	clc
 	lda BLKLO	; Increment the 16-bit block number
@@ -433,8 +433,8 @@ SRCALL:
 	ldy #CHR_0
 	jsr PRD		; Print block number in decimial
 
-	lda <COL_SAV	; Position cursor to next
-	sta <CH		;   buffer row
+	lda COL_SAV	; Position cursor to next
+	SET_HTAB	;   buffer row
 	lda #V_BUF
 	jsr TABV
 
@@ -450,16 +450,16 @@ SR1:
 
 SRCOMN:
 	bne SRBAD
-	lda <COL_SAV	; Position cursor to next buffer row - 
-	sta <CH		;   have to reassert this, as IIgs messes it up
+	lda COL_SAV	; Position cursor to next buffer row - 
+	SET_HTAB	;   have to reassert this, as IIgs messes it up
 	lda SRCHROK
 	jmp SROK
 
 SRBAD:
 	lda #$01
 	sta ECOUNT
-	lda <COL_SAV	; Position cursor to next
-	sta <CH		;   buffer row
+	lda COL_SAV	; Position cursor to next
+	SET_HTAB	;   buffer row
 	lda #CHR_X
 SROK:	jsr COUT1
 	inc BLKLO

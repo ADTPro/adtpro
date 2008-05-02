@@ -51,8 +51,22 @@
 	ldx #BIGBUF_ADDR_HI
 .endmacro
 
-.macro STA_CH_COL_SAV
-	stx COL_SAV		; X has current position from CHROVER call
+.macro LDA_CH
+	txa
+	pha
+	tya
+	pha
+	jsr READPOSN
+	stx CH
+	pla
+	tay
+	pla
+	tax
+	lda CH
+.endmacro
+
+.macro SET_HTAB
+	jsr HTAB
 .endmacro
 
 .define	NRM_BLOCK $11,$20

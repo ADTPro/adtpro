@@ -38,8 +38,6 @@
 ;                                  *                                 *
 ;                                  ***********************************
 
-	.segment "FORMAT"
-
 FormatDone:
 	rts
 AgainCloser:

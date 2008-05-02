@@ -53,10 +53,10 @@ PSOUND:	.byte 0		; Sounds? (YES)
 PSAVE:	.byte 1		; Save parms? (NO)
 
 ip_parms:
-serverip:	.byte 192, 168,   0,   2
-cfg_ip:		.byte 192, 168,   0, 123
-cfg_netmask:	.byte 255, 255, 248,   0
-cfg_gateway:	.byte 192, 168,   0,   1
+serverip:	.byte 1, 2,   3,   4
+cfg_ip:		.byte 5, 6,   7, 8
+cfg_netmask:	.byte 9, 10, 11,  12
+cfg_gateway:	.byte 13, 14,   15,  16
 
 DEFAULT:	.byte 2,0,1	; Default parm indices
 CONFIGYET:	.byte 0		; Has the user configged yet?

@@ -7,8 +7,7 @@
 ;	.export cfg_gateway
 ;	.export cfg_dns
 
-
-	.data	; should be bss
+	.segment "CODE"
 
 cfg_mac:	.byte $00, $80, $10, $6d, $76, $30
 ;cfg_ip:		.byte 192, 168, 0, 64

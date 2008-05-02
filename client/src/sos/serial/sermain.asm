@@ -66,5 +66,4 @@ INVFLG:
 DevAdr:
 DevList:
 DevCnt:
-BASL = $ff
 	.segment "DATA"

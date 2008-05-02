@@ -170,18 +170,22 @@
 		<!--
 		Assemble the ADTSOS source
 		-->
+		<echo message="Assembling ADTSOSSER source..."/>
 		<exec dir="${projdir}/client/src" executable="${assemblerPath}/ca65">
 			<arg line="-l -t none sos/serial/sermain.asm" />
 		</exec>
+		<echo message="Assembling ADTSOSETH source..."/>
 		<exec dir="${projdir}/client/src" executable="${assemblerPath}/ca65">
 			<arg line="-l -t none sos/ethernet/ethmain.asm" />
 		</exec>
 		<!--
 		Link the bits
 		-->
+		<echo message="Linking ADTSOSSER..."/>
 		<exec dir="${projdir}/client/src" executable="${assemblerPath}/ld65">
 			<arg line="-m adtsosser.map -C sos/serial/adtpro.cfg -o ADTSOS sos/serial/sermain.o tail.o" />
 		</exec>
+		<echo message="Linking ADTSOSETH..."/>
 		<exec dir="${projdir}/client/src" executable="${assemblerPath}/ld65">
 			<arg line="-m adtsoseth.map -C sos/ethernet/adtpro.cfg -o ADTSOSETH sos/ethernet/ethmain.o ip65/ip65.lib tail.o" />
 		</exec>
@@ -317,7 +321,7 @@
 		</exec>
 		<exec dir="${builddir}" executable="java" input="${builddir}/ADTSOSETH">
 			<arg line="-jar ${acJar} -p SOS.INTERPETH sos 0000 ${distName}/disks/${diskNameSOS}.DSK" />
-		</exec>
+ 		</exec>
 		<!--
 		Put a nice volume name on the disk images
 		-->

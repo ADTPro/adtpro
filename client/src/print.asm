@@ -181,7 +181,7 @@ nibtitle:
 	lda #_I' '		; inverse space char
 	jsr COUT
 	lda #0			; at start of line
-	jsr HTAB
+	SET_HTAB
 	jsr COUT
 	lda #_I'>'		; inverse character!
 	iny			; next position in line

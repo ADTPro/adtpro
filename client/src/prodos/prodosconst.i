@@ -52,7 +52,8 @@ DEVLST		= $BF32 ; List of active devices (Slot, drive, id =DSSSIIII)
 ;---------------------------------------------------------
 CH	= $24		; Character horizontal position
 CV	= $25		; Character vertical position
-BASL	= $28		; Base Line Address
+BASL	= $28		; Base Line Address Lo
+BASH	= $28		; Base Line Address Hi
 INVFLG	= $32		; Inverse flag
 A1L	= $3c
 A1H	= $3d
@@ -62,6 +63,7 @@ A4L	= $42
 A4H	= $43
 KEYBUFF	= $0280	; Keyboard buffer
 MSLOT	= $07f8	; Pascal entry point scrren hole
+BASCALC	= $FBC1 ; Calculate screen line
 CLREOL	= $FC9C	; Clear to end of line
 CLREOP	= $FC42	; Clear to end of screen
 HOME	= $FC58	; Clear screen

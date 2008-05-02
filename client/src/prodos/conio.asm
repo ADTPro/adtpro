@@ -48,7 +48,7 @@ SHOWLOGO:
 	tay
 LogoLoop:
     	lda #$0d	; Get ready to HTAB $0d chars over
-	jsr HTAB	; Tab over to starting position
+	SET_HTAB	; Tab over to starting position
 	jsr WRITEMSG
 	inc ZP
 	inc ZP		; Get next logo message
@@ -58,7 +58,7 @@ LogoLoop:
 
 	jsr CROUT
     	lda #$12
-	jsr HTAB
+	SET_HTAB
 	ldy #PMSG01	; Version number
 	jsr WRITEMSG
 

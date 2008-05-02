@@ -22,14 +22,14 @@
 
 	.import ASMEND
 
+	.segment "STARTUP"
+
 	.ORG  $2000-14      ; START ADDRESS
 
 	.BYTE $53,$4f,$53,$20,$4e,$54,$52,$50	; "SOS NTRP"
 	.ADDR $0000	; No extra header
 	.ADDR ASMBEGIN	; Tell 'em where it starts
 	.ADDR ASMEND	; Tell 'em where it ends
-
-	.segment "STARTUP"
 
 ASMBEGIN:
 	jmp entrypoint	; Start it up!

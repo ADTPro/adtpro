@@ -219,7 +219,7 @@ TABV:
 	sta UTILPTR+1
 	lda #$02
 	sta WRITE_LEN
-	jmp WRITEMSG_RAW	; Finish through WRITEMSG_RAW
+	jsr WRITEMSG_RAW
 	rts
 	
 
@@ -428,7 +428,7 @@ MyCOUT:	JMP COUT
 ;---------------------------------------------------------
 ; DUMPMEM:
 ; 
-; Dump memory to console starting from UTILPTR to BLKPTR
+; Dump memory to console starting from UTILPTR to UTILPTR2
 ;---------------------------------------------------------
 DUMPMEM:
 	ldy #$00
@@ -492,6 +492,38 @@ CLRLN:
 CLREOL:	; Clear to end of line
 	lda #$1F
 	jsr COUT
+	rts
+
+;---------------------------------------------------------
+; BASCALC - CALC BASE ADR IN BASL,H
+;---------------------------------------------------------
+BASCALC: PHA              ;CALC BASE ADR IN BASL,H
+         LSR              ;  FOR GIVEN LINE NO
+         AND   #$03       ;  0<=LINE NO.<=$17
+         ORA   #$04       ;ARG=000ABCDE, GENERATE
+         STA   BASH       ;  BASH=000001CD
+         PLA              ;  AND
+         AND   #$18       ;  BASL=EABAB000
+         BCC   BSCLC2
+         ADC   #$7F
+BSCLC2:  STA   BASL
+         ASL
+         ASL
+         ORA   BASL
+         STA   BASL
+         RTS
+
+;---------------------------------------------------------
+; READPOSN:
+; 
+; Read cursor position in x,y
+;---------------------------------------------------------
+READPOSN:
+	ldx #$10
+	stx D_STATUS_CODE
+	CALLOS OS_D_STATUS, D_STATUS_PARMS
+	ldx D_STATUS_DATA
+	ldy D_STATUS_DATA+1
 	rts
 
 ;---------------------------------------------------------

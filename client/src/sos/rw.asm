@@ -123,20 +123,20 @@ RWBLOX:
 	sta D_RW_BLOCK+1
 
 RWCALL:
-;	lda $C000
-;	cmp #CHR_ESC	; ESCAPE = ABORT
+	lda $C000
+	cmp #CHR_ESC	; ESCAPE = ABORT
 
-;	beq RABORT
-;	lda RWCHR
-;	jsr CHROVER
+	beq RABORT
+	LDA_CH
+	sta COL_SAV
+	lda RWCHR
+	jsr COUT
+	lda COL_SAV
+	SET_HTAB
 
-;?	lda CH
-;?	jsr HTAB
-
-	lda #V_MSG	; start printing at first number spot
-	jsr TABV
-	lda #H_NUM1
-	jsr HTAB
+	ldy #V_MSG	; start printing at first number spot
+	ldx #H_NUM1
+	jsr GOTOXY
 
 	clc
 	lda BLKLO	; Increment the 16-bit block number
@@ -149,7 +149,7 @@ RWCALL:
 	ldy #CHR_0
 	jsr PRD		; Print block number in decimal
 
-	lda <COL_SAV	; Reposition cursor to previous
+	lda COL_SAV	; Reposition cursor to previous
 	jsr HTAB	; buffer row
 	lda #V_BUF
 	jsr TABV

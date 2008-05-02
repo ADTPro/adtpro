@@ -275,7 +275,7 @@ REFRESH:
 NXTLINE:
 	stx LINECNT	; SAVE CURRENT LINE
 	lda #$15	; Start printing config parms in this column
-	sta <CH
+	jsr HTAB	; sta <CH
 	clc
 	lda PARMSIZ,X	; GET CURRENT VALUE (NEGATIVE:
 	sbc PARMS,X	; LAST VALUE HAS CURVAL=0)
@@ -297,8 +297,7 @@ PRINTIT:
 	lda LINECNT	; IF WE'RE ON THE ACTIVE LINE,
 	cmp CURPARM	; THEN PRINT VALUE IN INVERSE
 	bne PRTVAL	; ELSE PRINT IT NORMALLY
-	lda #$3F
-	sta <INVFLG
+	jsr SET_INVERSE
 
 PRTVAL:	lda #$A0	; SPACE BEFORE & AFTER VALUE
 	jsr COUT1
@@ -310,8 +309,7 @@ PRTLOOP:
 	jmp PRTLOOP
 ENDPRT:	lda #$A0
 	jsr COUT1
-	lda #$FF	; BACK TO NORMAL
-	sta <INVFLG
+	jsr SET_NORMAL
 ENDVAL:	dex
 	bpl VALLOOP	; PRINT REMAINING VALUES
 
@@ -352,4 +350,5 @@ FindSlotDone:
 	stx PSSC
 	stx DEFAULT
 	rts
+
 TempSlot:	.byte 0

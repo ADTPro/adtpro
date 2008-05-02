@@ -139,7 +139,7 @@ RWCALL:
 	jsr CHROVER
 
 	lda CH
-	sta <COL_SAV
+	sta COL_SAV
 
 	lda #V_MSG	; start printing at first number spot
 	jsr TABV
@@ -157,7 +157,7 @@ RWCALL:
 	ldy #CHR_0
 	jsr PRD		; Print block number in decimal
 
-	lda <COL_SAV	; Reposition cursor to previous
+	lda COL_SAV	; Reposition cursor to previous
 	jsr HTAB		; buffer row
 	lda #V_BUF
 	jsr TABV

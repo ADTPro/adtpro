@@ -51,9 +51,12 @@
 	ldx #>BIGBUF
 .endmacro
 
-.macro STA_CH_COL_SAV
+.macro LDA_CH
 	lda CH
-	sta COL_SAV
+.endmacro
+
+.macro SET_HTAB
+	sta CH
 .endmacro
 
 .define	INV_BLOCK $20	; ASCII for an inverse space - is differernt on SOS

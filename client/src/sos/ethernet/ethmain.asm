@@ -18,14 +18,14 @@
 ; 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 ;
 
-	.include "sos/interp.asm"	; Interpreter header
+	.include "sos/interp.asm"	; Interpreter header - INTERP segment
 	.include "sos/sosmacros.i"	; OS macros
 	.include "sos/sosconst.i"	; OS equates, characters, etc.
-	.include "sos/sosvars.asm"
-	.include "sos/ethernet/ethmessages.asm"	; Messages
+	.include "sos/sosvars.asm"	; DATA segment
+	.include "sos/ethernet/ethmessages.asm"	; Messages - DATA segment
 	.include "ip65/common.i"	; More macros - ldax, for example
 
-	.include "sos/interimmain.asm"
+	.include "sos/interimmain.asm"	; STARTUP segment
 
 ;---------------------------------------------------------
 ; Pull in all the rest of the code
@@ -42,8 +42,8 @@
 	.include "prodos/ethernet/ethproto.asm"
 	.include "prodos/ethernet/uther.asm"
 	.include "sos/ethernet/ethconfigsos.asm"
-	.include "prodos/ethernet/ipconfig.asm"
-	.include "sos/format.asm"		; Note: format.asm is its own segment
+	.include "sos/ethernet/ipconfig.asm"
+	.include "sos/format.asm"		; FORMAT segment
 	.include "sos/bsave.asm"
 
 ; Stubs from Disk II-related stuff
@@ -66,6 +66,5 @@ INVFLG:
 DevAdr:
 DevList:
 DevCnt:
-BASL = $ff
 PEND:
 	.segment "DATA"	

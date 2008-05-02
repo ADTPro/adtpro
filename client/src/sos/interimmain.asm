@@ -18,6 +18,8 @@
 ; 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 ;
 
+	.segment "STARTUP"
+
 ;---------------------------------------------------------
 ; calibrat - Calibrate the disk arm to track #0
 ; The code is essentially like in the Disk ][ card
@@ -324,7 +326,7 @@ MAINLUP:
 
 MAINL:
 RESETIO:
-	jsr $0000	; Pseudo-indirect JSR to reset the IO device
+	jsr HOME	; Pseudo-indirect JSR to reset the IO device
 	jsr MainScreen
 
 ;---------------------------------------------------------
