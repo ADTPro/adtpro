@@ -33,7 +33,7 @@ VOL_LINE_LEN = $24
 ;--------------------------------------------------------- 
 ; ProDOS specific stuff
 ;--------------------------------------------------------- 
-OS_CALL_OFFSET	= 3	; Offset to the MLI call type/opcode byte
+OS_CALL_OFFSET	= 4	; Offset to the MLI call type/opcode byte
 CHR_RETURN	= $8d	; Carriage return
 
 
