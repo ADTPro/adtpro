@@ -1,6 +1,6 @@
 ;
 ; ADTPro - Apple Disk Transfer ProDOS
-; Copyright (C) 2006, 2007 by David Schmidt
+; Copyright (C) 2006 - 2008 by David Schmidt
 ; david__schmidt at users.sourceforge.net
 ;
 ; This program is free software; you can redistribute it and/or modify it 
@@ -44,7 +44,7 @@ GetSendType:
 	; (S)TANDARD (N)IBBLE (H)ALF TRACKS:
 GetSendLoop:
 	jsr RDKEY
-	and #$DF	; Convert to upper case
+	CONDITION_KEYPRESS	; Convert to upper case
 	cmp #CHR_S
 	beq GetSendFold	; Fold to "P"
 	cmp #CHR_N
@@ -93,7 +93,7 @@ YN:
 	jsr WRITEMSGAREA
 YNLOOP:
 	jsr RDKEY
-	and #$DF	; Convert to upper case
+	CONDITION_KEYPRESS	; Convert to upper case
 	cmp #CHR_Y
 	beq YNYES
 	cmp #CHR_N

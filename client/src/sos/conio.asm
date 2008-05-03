@@ -293,21 +293,24 @@ READ_LINE:
 	lda #$ff
 	sta CONSREAD_COUNT
 	CALLOS OS_READFILE, CONSREAD_PARMS
-	ldx CONSREAD_COUNT		; Output is available at CONSREAD_INPUT
-					; for CONSREAD_COUNT bytes
+	ldx CONSREAD_XFERCT		; Output is available at CONSREAD_INPUT
+					; for CONSREAD_XFERCT bytes
+	dex				; Skip the trailing Ctrl-M
+	stx CONSREAD_XFERCT
+	lda #$00
+	sta CONSREAD_INPUT,x
+	cpx #$00
+	beq READ_LINE_DONE
 READ_CONDITION_LOOP:
 	lda CONSREAD_INPUT,X
-	cmp #$0d
-	bne @1
-	lda #$00
-	jmp @2
-@1:	ora #$80
-@2:	sta CONSREAD_INPUT,x
+	ora #$80
+	sta CONSREAD_INPUT,x
 	dex
 	cpx #$ff
 	bne READ_CONDITION_LOOP
 	jsr ECHO_OFF
-
+	lda CONSREAD_XFERCT		; Exits with number of bytes read
+READ_LINE_DONE:
 	rts
 	
 ;---------------------------------------------------------
