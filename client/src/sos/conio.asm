@@ -358,7 +358,7 @@ CLRMSGAREA:
 	sta UTILPTR+1
 	lda #$03
 	sta WRITE_LEN
-	jsr WRITEMSG_RAW
+	jmp WRITEMSG_RAW	; Return through writemsg
 
 CLRMSGAREA_DATA:
 	.byte $19,$16,$1d
