@@ -2245,6 +2245,7 @@ public class CommsThread extends Thread
       else
         break;
     }
+    Log.println(false, "CommsThread.receiveName() received name: ["+buf.toString()+"]");
     return new String(buf);
   }
 

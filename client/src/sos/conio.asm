@@ -302,15 +302,29 @@ READ_LINE:
 	cpx #$00
 	beq READ_LINE_DONE
 READ_CONDITION_LOOP:
+	dex
 	lda CONSREAD_INPUT,X
 	ora #$80
 	sta CONSREAD_INPUT,x
-	dex
-	cpx #$ff
+	cpx #$00
 	bne READ_CONDITION_LOOP
-	jsr ECHO_OFF
-	lda CONSREAD_XFERCT		; Exits with number of bytes read
 READ_LINE_DONE:
+	jsr ECHO_OFF
+
+lda #$20
+jsr COUT
+lda CONSREAD_XFERCT
+jsr PRBYTE
+lda #$20
+jsr COUT
+ldx #$00
+:lda CONSREAD_INPUT,x
+jsr COUT
+inx
+cpx CONSREAD_XFERCT
+bne :-
+
+	lda CONSREAD_XFERCT		; Exits with number of bytes read
 	rts
 	
 ;---------------------------------------------------------
@@ -535,3 +549,13 @@ READPOSN:
 WAIT:	; Monitor delay: # cycles = (5*A*A + 27*A + 26)/2
 
 rts
+
+;---------------------------------------------------------
+; Quit to SOS
+;---------------------------------------------------------
+
+QUIT:
+	CALLOS OS_QUIT, QUITL
+
+QUITL:
+        .byte	$00,$00,$00,$00,$00,$00

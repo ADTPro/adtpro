@@ -234,3 +234,15 @@ SET_NORMAL:
 	lda #$FF	; Back to normal
 	sta <INVFLG
 	rts
+
+;---------------------------------------------------------
+; Quit to ProDOS
+;---------------------------------------------------------
+
+QUIT:
+	sta ROM
+	CALLOS OS_QUIT, QUITL
+
+QUITL:
+	.byte	4
+        .byte	$00,$00,$00,$00,$00,$00

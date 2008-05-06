@@ -470,15 +470,3 @@ BEEP3:	jsr DELAY
 	dey
 	bne BEEP2
 NOBEEP:	rts
-
-;---------------------------------------------------------
-; Quit to ProDOS
-;---------------------------------------------------------
-
-QUIT:
-	sta ROM
-	CALLOS OS_QUIT, QUITL
-
-QUITL:
-	.byte	4
-        .byte	$00,$00,$00,$00,$00,$00
