@@ -311,18 +311,18 @@ READ_CONDITION_LOOP:
 READ_LINE_DONE:
 	jsr ECHO_OFF
 
-lda #$20
-jsr COUT
-lda CONSREAD_XFERCT
-jsr PRBYTE
-lda #$20
-jsr COUT
-ldx #$00
-:lda CONSREAD_INPUT,x
-jsr COUT
-inx
-cpx CONSREAD_XFERCT
-bne :-
+;lda #$20		; Dump out input
+;jsr COUT
+;lda CONSREAD_XFERCT
+;jsr PRBYTE
+;lda #$20
+;jsr COUT
+;ldx #$00
+;:lda CONSREAD_INPUT,x
+;jsr COUT
+;inx
+;cpx CONSREAD_XFERCT
+;bne :-
 
 	lda CONSREAD_XFERCT		; Exits with number of bytes read
 	rts
