@@ -57,11 +57,8 @@ motoroff:
 ; Stubs:
 ROM:
 ;BSAVE:
-DELAY:
 CH:
 CV:
-BLKHI:
-BLKLO:
 INVFLG:
 DevAdr:
 DevList:

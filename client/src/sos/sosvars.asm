@@ -50,6 +50,8 @@ BIGBUF_ADDR_HI	= $36		; ($01 byte) points to big buffer high
 BIGBUF_XBYTE	= $1635		; XByte address for our bank
 CRCTBLL:	.res $100	; CRC LOW TABLE  ($100 Bytes)
 CRCTBLH:	.res $100	; CRC HIGH TABLE ($100 Bytes)
+BLKHI:		.byte $01
+BLKLO:		.byte $01
 
 ;----------------------------------------------------
 ; Operating System Call Tables

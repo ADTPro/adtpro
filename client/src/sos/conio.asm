@@ -544,11 +544,17 @@ READPOSN:
 	rts
 
 ;---------------------------------------------------------
-; TODO: Still Stubs
+; WAIT - # cycles = (5*A*A + 27*A + 26)/2
 ;---------------------------------------------------------
-WAIT:	; Monitor delay: # cycles = (5*A*A + 27*A + 26)/2
-
-rts
+DELAY:
+WAIT:	SEC		; Delay: # cycles = (5*A*A + 27*A + 26)/2
+WAIT2:	PHA
+WAIT3:	SBC #$01
+	BNE WAIT3	; 1.0204 USEC
+	PLA		;(13+27/2*A+5/2*A*A)
+	SBC #$01
+	BNE WAIT2
+	RTS
 
 ;---------------------------------------------------------
 ; Quit to SOS

@@ -56,12 +56,9 @@ motoroff:
 
 ; Stubs:
 ROM:
-DELAY:
 CH:
 CV:
 GET_PREFIX:
-BLKHI:
-BLKLO:
 INVFLG:
 DevAdr:
 DevList:
