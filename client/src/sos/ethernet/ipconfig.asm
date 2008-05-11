@@ -147,6 +147,10 @@ IPConfigReEntry:
 	cmp #$03
 	beq ExitLeft
 IPConfigExit:
+	pha
+	lda #$06	; Turn the cursor back off
+	jsr COUT
+	pla
 	rts
 
 ExitLeft:
