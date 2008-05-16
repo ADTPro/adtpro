@@ -36,6 +36,9 @@ COL_SAV	= $23		; ($01 byte)
 RLEPREV = $24		; ($01 byte)
 UDPI	= $25		; ($01 byte) Used by UDP SEND and RECEIVE
 BLKPTR	= $26		; ($02 bytes) Used by SEND and RECEIVE
+BIGBUF_ADDR_LO	= $26
+BIGBUF_ADDR_HI	= $27
+BIGBUF_XBYTE	= $1626		; XByte address for our bank
 BASL	= $28
 BASH	= $29
 synccnt	= $2a		; ($02 bytes) Used by nibble/halftrack
@@ -45,9 +48,6 @@ CRCY	= $30		; ($01 byte) Used by UDP SEND
 TMOT    = $31		; ($01 byte) Timeout indicator
 NIBPCNT	= $32		; ($01 byte) Counts nibble pages
 UTILPTR2	= $33		; ($02 bytes) Used for printing messages too
-BIGBUF_ADDR_LO	= $35		; ($01 byte) points to big buffer low in 
-BIGBUF_ADDR_HI	= $36		; ($01 byte) points to big buffer high
-BIGBUF_XBYTE	= $1635		; XByte address for our bank
 CRCTBLL:	.res $100	; CRC LOW TABLE  ($100 Bytes)
 CRCTBLH:	.res $100	; CRC HIGH TABLE ($100 Bytes)
 BLKHI:		.byte $01

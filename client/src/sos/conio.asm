@@ -65,6 +65,7 @@ INIT_SCREEN:
 	and #$0F			; Mask off the high nibble
 	ora #$80			; Add the extended addressing bit
 	sta BIGBUF_XBYTE		; This is our xbyte for BIGBUF addressing
+	sta BIGBUF_XBYTE+1		; This is our xbyte for BIGBUF addressing
 
 	lda $FFDF			; Read the environment register
 	and #$f7			; Turn $C000-$CFFF to R/W

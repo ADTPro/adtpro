@@ -183,7 +183,7 @@ SMPARTIAL:
 	sta BLKLO
 	lda CURBLK+1
 	sta BLKHI
-	ldy DIFF	
+	ldy DIFF
 	jsr SENDING
 
 	lda BLKLO
@@ -377,6 +377,7 @@ RECVING:
 SR_COMN:
 	sty SRBCNT
 	lda #H_BUF
+; Seem to fail right around here...
 	SET_HTAB
 	lda #V_MSG	; Message row
 	jsr TABV

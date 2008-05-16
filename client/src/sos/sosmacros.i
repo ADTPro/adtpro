@@ -40,15 +40,15 @@
 .endmacro
 
 .macro LDA_BIGBUF_ADDR_HI
-	lda #BIGBUF_ADDR_HI	; Was lda #>BIGBUF (the high part of the address)
+	lda MEM_REQ_BASE+1	; Was lda #>BIGBUF (the high part of the address)
 .endmacro
 
 .macro LDA_BIGBUF_ADDR_LO
-	lda #BIGBUF_ADDR_LO
+	lda #$00
 .endmacro
 
 .macro LDX_BIGBUF_ADDR_HI
-	ldx #BIGBUF_ADDR_HI
+	ldx MEM_REQ_BASE+1
 .endmacro
 
 .macro LDA_CH

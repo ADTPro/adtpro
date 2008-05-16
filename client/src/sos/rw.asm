@@ -74,15 +74,7 @@ RW_COMN:
 	lda #V_BUF
 	jsr TABV
 
-jsr CROUT
-lda #$DA
-jsr PRBYTE
-
 	jsr RWBLOX
-
-lda #$AD
-jsr PRBYTE
-jsr CROUT
 
 	rts
 
@@ -108,7 +100,7 @@ RWBLOX:
 	stx SLOWX
 	sty SLOWY
 
-	LDA_BIGBUF_ADDR_LO	; Point to the start of the big buffer
+	lda #BLKPTR	; Point to the start of the big buffer
 	sta D_RW_BUFFER_PTR
 	lda #$00
 	sta D_RW_BUFFER_PTR+1
@@ -155,6 +147,7 @@ RWCALL:
 	jsr TABV
 
 RWDIR:	CALLOS OS_READBLOCK, D_RW_PARMS
+
 	bne RWBAD
 	lda RWCHROK
 	jsr COUT1
@@ -174,6 +167,7 @@ RWOK:
 
 :	ldy SLOWY
 	ldx SLOWX
+
 	rts
 
 DUMP_CALL:
