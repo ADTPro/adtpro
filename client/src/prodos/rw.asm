@@ -1,6 +1,6 @@
 ;
 ; ADTPro - Apple Disk Transfer ProDOS
-; Copyright (C) 2006, 2007 by David Schmidt
+; Copyright (C) 2006 - 2008 by David Schmidt
 ; david__schmidt at users.sourceforge.net
 ;
 ; This program is free software; you can redistribute it and/or modify it 
@@ -25,8 +25,12 @@
 ; a 64k Apple ][ buffer
 ;
 ; Input:
-;   Y: Count of blocks
+;   DIFF: Count of blocks
 ;   PARMBUF+1: unit number
+;   BLKLO: starting block (lo)
+;   BLKHI: starting block (hi)
+;
+; Output:
 ;   BLKLO: starting block (lo)
 ;   BLKHI: starting block (hi)
 ;---------------------------------------------------------
@@ -52,7 +56,8 @@ WRITING:
 	sta RWCHROK
 
 RW_COMN:
-	sty BCOUNT
+	lda DIFF
+	sta BCOUNT	; Get a local copy of block count to mess with
 	lda #H_BUF	; Column - r/w/s/r
 	jsr HTAB
 	lda #V_MSG	; Message row
