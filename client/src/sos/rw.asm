@@ -24,7 +24,7 @@
 ; Read or write from zero to 40 ($28) blocks
 ;
 ; Input:
-;   Y: Count of blocks
+;   DIFF: Count of blocks
 ;   UNITNBR: unit number
 ;   BLKLO: starting block (lo)
 ;   BLKHI: starting block (hi)
@@ -59,7 +59,6 @@ WRITING:
 	sta RWCHROK
 
 RW_COMN:
-	sty BCOUNT
 	lda UNITNBR
 	sta D_RW_DEV_NUM
 	lda #H_BUF	; Column - r/w/s/r
@@ -86,7 +85,7 @@ RW_COMN:
 ;
 ; Input:
 ;   UNITNBR: unit number
-;   BCOUNT: block count
+;   DIFF: block count
 ;   BLKLO: starting block (lo)
 ;   BLKHI: starting block (hi)
 ;
@@ -100,13 +99,18 @@ RWBLOX:
 	stx SLOWX
 	sty SLOWY
 
-	lda #BLKPTR	; Point to the start of the big buffer
-	sta D_RW_BUFFER_PTR
 	lda #$00
 	sta D_RW_BUFFER_PTR+1
+	sta D_RW_BYTE_COUNT
+	sta BIGBUF_ADDR_LO	; Point to the start of the big buffer
+	LDA_BIGBUF_ADDR_HI	; Get the memory segment pointer
+	sta BIGBUF_ADDR_HI
 
-	lda BCOUNT		; Get the block count
-	asl			; Multiply by 2 - gives us the MSB of bytes to request (512 * BCOUNT)
+	lda #BLKPTR	; Point to the start of the big buffer
+	sta D_RW_BUFFER_PTR
+
+	lda DIFF		; Get the block count
+	asl			; Multiply by 2 - gives us the MSB of bytes to request (512 * DIFF)
 	sta D_RW_BYTE_COUNT+1
 
 	lda BLKLO
@@ -160,7 +164,7 @@ RWBAD:
 RWOK:
 	clc
 	lda BLKLO
-	adc BCOUNT
+	adc DIFF
 	sta BLKLO
 	bcc :+
 	inc BLKHI	; Send the block count back out via updated BLKLO/HI
@@ -184,11 +188,11 @@ DUMP_CALL:
 	jsr DUMPMEM
 	jsr CROUT
 
-	lda #$34
+	lda #$26
 	sta UTILPTR
 	lda #$00
 	sta UTILPTR+1
-	lda #$36
+	lda #$28
 	sta UTILPTR2
 	lda #$00
 	sta UTILPTR2+1
@@ -198,11 +202,11 @@ DUMP_CALL:
 
 	jsr CROUT
 
-	lda #$35
+	lda #$26
 	sta UTILPTR
 	lda #$16
 	sta UTILPTR+1
-	lda #$36
+	lda #$28
 	sta UTILPTR2
 	lda #$16
 	sta UTILPTR2+1
@@ -230,4 +234,3 @@ DUMP_CALL:
 
 RWCHR:	.byte CHR_R	; Character to notify what we're doing
 RWCHROK:	.byte CHR_BLK	; Character to write when things are OK
-BCOUNT:	.byte $00
