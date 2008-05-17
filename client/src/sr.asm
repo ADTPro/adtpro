@@ -1,6 +1,6 @@
 ;
 ; ADTPro - Apple Disk Transfer ProDOS
-; Copyright (C) 2006, 2007 by David Schmidt
+; Copyright (C) 2006 - 2008 by David Schmidt
 ; david__schmidt at users.sourceforge.net
 ;
 ; This program is free software; you can redistribute it and/or modify it 
@@ -178,13 +178,12 @@ SMPARTIAL:
 	sta BLKLO
 	lda CURBLK+1
 	sta BLKHI
-	jsr READING
+	jsr READING	; DIFF holds number of blocks to read
 	lda CURBLK
 	sta BLKLO
 	lda CURBLK+1
 	sta BLKHI
-	ldy DIFF
-	jsr SENDING
+	jsr SENDING	; DIFF still holds number of blocks to send
 
 	lda BLKLO
 	sta CURBLK
@@ -353,7 +352,7 @@ DIFF:	.byte $00,$00
 ; a 64k Apple ][ buffer
 ;
 ; Input:
-;   Y: Count of blocks
+;   DIFF: Count of blocks
 ;   BLKLO: starting block (lo)
 ;   BLKHI: starting block (hi)
 ;---------------------------------------------------------
@@ -375,20 +374,16 @@ RECVING:
 	sta SRCHROK
 
 SR_COMN:
-	sty SRBCNT
 	lda #H_BUF
-; Seem to fail right around here...
 	SET_HTAB
 	lda #V_MSG	; Message row
 	jsr TABV
 	ldy SR_WR_C
 	jsr WRITEMSG
-
 	lda #$00	; Reposition cursor to beginning of
 	SET_HTAB	;   buffer row
 	lda #V_BUF
 	jsr TABV
-
 	jsr SRBLOX
 
 	rts
@@ -400,11 +395,14 @@ SR_COMN:
 ; Starting from BIGBUF
 ;
 ; Input:
-;   SRBCNT: Count of blocks
+;   DIFF: Count of blocks
 ;   BLKLO: starting block (lo)
 ;   BLKHI: starting block (hi)
 ;---------------------------------------------------------
 SRBLOX:
+	lda DIFF
+	sta SRBCNT	; Get a local copy of block count to mess with
+	
 	LDA_BIGBUF_ADDR_LO	; Connect the block pointer to the
 	sta BLKPTR	; beginning of the Big Buffer(TM)
 	LDA_BIGBUF_ADDR_HI
