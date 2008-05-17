@@ -192,6 +192,18 @@ HMOK:
 	jmp WRITEMSG_RAW	; Call the regular message printer
 	
 ;---------------------------------------------------------
+; HLINE - Prints a row of underlines at current cursor position
+;---------------------------------------------------------
+HLINE:
+	ldx #$28
+HLINEX:			; Send in your own X for length
+	lda #$80
+HLINE1:	jsr COUT1
+	dex
+	bne HLINEX
+	rts
+
+;---------------------------------------------------------
 ; GOTOXY - Position the cursor
 ;---------------------------------------------------------
 GOTOXY:

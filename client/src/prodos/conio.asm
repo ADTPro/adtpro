@@ -81,6 +81,18 @@ HTAB:
 	rts
 
 ;---------------------------------------------------------
+; HLINE - Prints a row of underlines at current cursor position
+;---------------------------------------------------------
+HLINE:
+	ldx #$28
+HLINEX:			; Send in your own X for length
+	lda #$df
+HLINE1:	jsr COUT1
+	dex
+	bne HLINE1
+	rts
+
+;---------------------------------------------------------
 ; WRITEMSG - Print null-terminated message number in Y
 ;---------------------------------------------------------
 ; Entry - clear and print at the message area (row $16)

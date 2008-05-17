@@ -43,7 +43,8 @@ PREPPRG:
 	jsr GOTOXY
 	ldy #PMSG09
 	jsr WRITEMSG
-	inc CH		; Space over one character
+	lda #CHR_SP
+	jsr COUT	; Space over one character
 
 	lda NUMBLKS
 	ldx NUMBLKS+1
@@ -58,18 +59,6 @@ PREPPRG:
 	jsr TABV
 	jsr HLINE
 	ldx SLOWX	; Restore X
-	rts
-
-;---------------------------------------------------------
-; HLINE - Prints a row of underlines at current cursor position
-;---------------------------------------------------------
-HLINE:
-	ldx #$28
-HLINEX:			; Send in your own X for length
-	lda #$df
-HLINE1:	jsr COUT1
-	dex
-	bne HLINE1
 	rts
 
 ;---------------------------------------------------------
