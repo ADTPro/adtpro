@@ -120,12 +120,12 @@ RWBLOX:
 	asl			; Multiply by 2 - gives us the MSB of bytes to request (512 * ITCOUNT)
 	sta D_RW_BYTE_COUNT+1
 
+RWCALL:
 	lda BLKLO
 	sta D_RW_BLOCK		; The starting block number
 	lda BLKHI
 	sta D_RW_BLOCK+1
 
-RWCALL:
 	lda $C000
 	cmp #CHR_ESC	; ESCAPE = ABORT
 
@@ -151,7 +151,6 @@ RWCALL:
 	jsr PRD		; Print block number in decimal
 
 RWDIR:	CALLOS OS_READBLOCK, D_RW_PARMS
-
 	bne RWBAD
 	lda RWCHROK
 	sta RWRESULT	; Remember the character we're going to use for this I/O result
@@ -168,7 +167,6 @@ RWOK:
 	sta BLKLO
 	bcc :+
 	inc BLKHI	; Send the block count back out via updated BLKLO/HI
-
 :
 	lda COL_SAV	; Reposition cursor to previous
 	jsr HTAB	; buffer row
