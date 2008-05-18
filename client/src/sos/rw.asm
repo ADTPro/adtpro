@@ -99,6 +99,9 @@ RWBLOX:
 	stx SLOWX
 	sty SLOWY
 
+	lda DIFF
+	sta BCOUNT	; Get a local copy of block count to mess with
+
 	lda #$00
 	sta D_RW_BUFFER_PTR+1
 	sta D_RW_BYTE_COUNT
@@ -109,8 +112,12 @@ RWBLOX:
 	lda #BLKPTR	; Point to the start of the big buffer
 	sta D_RW_BUFFER_PTR
 
-	lda DIFF		; Get the block count
-	asl			; Multiply by 2 - gives us the MSB of bytes to request (512 * DIFF)
+	lda BCOUNT		; Get the block count
+	cmp #$09
+	bmi :+			; if BCOUNT is <= 8, use it
+	lda #$08		; If BCOUNT is > 8, then use 8
+:	sta ITCOUNT		; How many blocks to count this iteration
+	asl			; Multiply by 2 - gives us the MSB of bytes to request (512 * ITCOUNT)
 	sta D_RW_BYTE_COUNT+1
 
 	lda BLKLO
@@ -127,8 +134,6 @@ RWCALL:
 	sta COL_SAV
 	lda RWCHR
 	jsr COUT
-	lda COL_SAV
-	SET_HTAB
 
 	ldy #V_MSG	; start printing at first number spot
 	ldx #H_NUM1
@@ -145,30 +150,52 @@ RWCALL:
 	ldy #CHR_0
 	jsr PRD		; Print block number in decimal
 
-	lda COL_SAV	; Reposition cursor to previous
-	jsr HTAB	; buffer row
-	lda #V_BUF
-	jsr TABV
-
 RWDIR:	CALLOS OS_READBLOCK, D_RW_PARMS
 
 	bne RWBAD
 	lda RWCHROK
-	jsr COUT1
+	sta RWRESULT	; Remember the character we're going to use for this I/O result
 	jmp RWOK
 RWBAD:
 	lda #$01
 	sta ECOUNT
 	lda #CHR_X
-	jsr COUT1
+	sta RWRESULT	; Remember the character we're going to use for this I/O result
 RWOK:
 	clc
 	lda BLKLO
-	adc DIFF
+	adc ITCOUNT	; Increment the total blocks by this iteration's count
 	sta BLKLO
 	bcc :+
 	inc BLKHI	; Send the block count back out via updated BLKLO/HI
 
+:
+	lda COL_SAV	; Reposition cursor to previous
+	jsr HTAB	; buffer row
+	lda #V_BUF	; Start printing the result of this I/O action
+	jsr TABV
+
+	jsr SET_INVERSE
+	ldx #$08
+@loop:
+	lda RWRESULT
+	jsr COUT
+	dex
+	cpx #$00
+	bne @loop
+	jsr SET_NORMAL
+
+	sec
+	lda BCOUNT
+	sbc ITCOUNT	; Subtract ITCOUNT from BCOUNT
+	sta BCOUNT
+	beq :+		; We're done
+	clc		; fixup the data pointer
+	lda BIGBUF_ADDR_HI
+	adc #$10	; Bump up 8 blocks worth of memory
+	sta BIGBUF_ADDR_HI
+	jmp RWCALL	; Go back for another iteration
+	
 :	ldy SLOWY
 	ldx SLOWX
 
@@ -234,3 +261,6 @@ DUMP_CALL:
 
 RWCHR:	.byte CHR_R	; Character to notify what we're doing
 RWCHROK:	.byte CHR_BLK	; Character to write when things are OK
+RWRESULT:	.byte CHR_BLK	; Result of reading/writing
+BCOUNT:	.byte $00
+ITCOUNT:	.byte $00
