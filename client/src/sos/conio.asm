@@ -197,7 +197,7 @@ HMOK:
 HLINE:
 	ldx #$28
 HLINEX:			; Send in your own X for length
-	lda #$80
+	lda #$DF
 HLINE1:	jsr COUT1
 	dex
 	bne HLINEX
