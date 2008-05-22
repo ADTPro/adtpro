@@ -64,14 +64,13 @@ BSAVE_MSGEND:
 ;
 BLOAD:
 	CALLOS OS_OPEN, FILE_OP
-	CALLOS_CHECK_POS	; Branch + if no error
-	jmp BLOAD_END
-:	lda FILE_OPN		; copy file number
+	CALLOS_CHECK_NEG	; Branch to BLOAD_END on error
+	lda FILE_OPN		; copy file number
 	sta FILE_RDN
 	sta FILE_CLN
 
 	CALLOS OS_READFILE, FILE_RD
-
+:	; This colon (label) assigns the branch point for CALLOS_CHECK_NEG - to BLOAD_END
 BLOAD_END:
 	CALLOS OS_CLOSE, FILE_CL
 	rts
