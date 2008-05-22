@@ -439,9 +439,9 @@ MainScreen:
 	jsr GOTOXY
 	ldy #PMSG02	; Prompt line 1
 	jsr WRITEMSG
-
+	jsr CROUT
 	ldy #PMSG03	; Prompt line 2
-	jsr WRITEMSGLEFT
+	jsr WRITEMSG
 	rts
 
 ;---------------------------------------------------------
