@@ -71,6 +71,18 @@ INIT_SCREEN:
 	and #$f7			; Turn $C000-$CFFF to R/W
 	ora #$40			; Turn $C000-$CFFF to I/O
 	sta $FFDF			; Write the environment register
+
+					; Make reset behave better...
+					; To return from monitor, type:
+					; 198CG
+	lda $1904			; Grab low byte of NMI vector
+	sec				; Make sure that carry is set.
+	sbc #$07			; Fall back 7 bytes from the
+	sta $1911			; byte currently pointed to
+	lda $1905			; (an RTS), and store this in
+	sbc #$00			; the NMI JMP instruction.
+	sta $1912			; Unwrap the high byte.
+
 	rts
 
 Local_Quit:
