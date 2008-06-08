@@ -106,19 +106,18 @@ GETREPLY2:
 
 ;---------------------------------------------------------
 ; PUTREQUEST - Request to send an image to the host
-; Accumulator holds request type:
+; SendType holds request type:
 ; CHR_P - typical put
 ; CHR_N - nibble send
 ; CHR_H - half track send
 ;---------------------------------------------------------
 PUTREQUEST:
-	pha			; Stash the send type
 	ldax #AUD_BUFFER
 	stax BLKPTR
 	stax A1L		; Set everyone up to talk to the AUD_BUFFER
 	stx A2H
 	ldy #$00
-	pla			; Grab the send type off the stack
+	lda SendTYpe		; Grab the send type
 	sta (BLKPTR),Y		; Tell host what we are sending
 	iny
 	jsr COPYINPUT

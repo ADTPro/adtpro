@@ -79,15 +79,14 @@ CDREQUEST:
 
 ;---------------------------------------------------------
 ; PUTREQUEST - Request to send an image to the host
-; Accumulator holds request type:
+; SendType holds request type:
 ; CHR_P - typical put
 ; CHR_N - nibble send
 ; CHR_H - half track send
 ;---------------------------------------------------------
 PUTREQUEST:
-	pha
 	jsr PARMINT	; Clean up the comms device
-	pla
+	lda SendType
 	jsr PUTC
 
 	jsr SENDFN	; Send file name
