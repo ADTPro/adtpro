@@ -552,7 +552,7 @@ public class CommsThread extends Thread
         {
           Log.println(false, "receiveDisk() received ACK from apple.");
           _parent.setProgressMaximum((int) length * 2); // Half-blocks
-          _parent.setSecondaryText(name);
+          _parent.setSecondaryText(f.getName()); // name);
           int numParts = (int) length / 40;
           int remainder = (int) length % 40;
           for (part = 0; part < numParts; part++)
@@ -614,6 +614,7 @@ public class CommsThread extends Thread
         }
         if (packetResult == 0)
         {
+          String msg;
           report = waitForData(15);
           _endTime = new GregorianCalendar();
           _diffMillis = (float) (_endTime.getTimeInMillis() - _startTime
@@ -621,8 +622,10 @@ public class CommsThread extends Thread
               / (float) 1000;
           if (report == 0x00)
           {
-            _parent.setSecondaryText(Messages.getString("CommsThread.19")
-                + " in " + _diffMillis + " seconds.");
+            msg = Messages.getString("CommsThread.19");
+            msg = msg.replaceAll("%1", f.getName());
+            msg = msg.replaceAll("%2", ""+_diffMillis);
+            _parent.setSecondaryText(msg);
             Log.println(true, "Apple sent disk image "
                 + name
                 + " successfully in "
@@ -631,8 +634,10 @@ public class CommsThread extends Thread
           }
           else
           {
-            _parent.setSecondaryText(Messages.getString("CommsThread.20")
-                + " in " + _diffMillis + " seconds.");
+            msg = Messages.getString("CommsThread.20");
+            msg = msg.replaceAll("%1", f.getName());
+            msg = msg.replaceAll("%2", ""+_diffMillis);
+            _parent.setSecondaryText(msg);
             Log
                 .println(true,
                     "Apple sent disk image " + name + " with errors."); //$NON-NLS-1$ //$NON-NLS-2$
@@ -645,6 +650,9 @@ public class CommsThread extends Thread
           _parent.clearProgress();
           _transport.flushReceiveBuffer();
           _transport.flushSendBuffer();
+          f.delete();
+          if (generateName)
+            lastFileNumber--;
         }
       }
       catch (FileNotFoundException ex)
