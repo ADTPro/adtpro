@@ -117,7 +117,7 @@ PUTREQUEST:
 	stax A1L		; Set everyone up to talk to the AUD_BUFFER
 	stx A2H
 	ldy #$00
-	lda SendTYpe		; Grab the send type
+	lda SendType		; Grab the send type
 	sta (BLKPTR),Y		; Tell host what we are sending
 	iny
 	jsr COPYINPUT
