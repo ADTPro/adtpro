@@ -123,7 +123,8 @@ RECEIVE_LOOP_WARM:
 	cmp #CHR_ESC	; Escape = abort
 	bne :+
 	jmp BABORT
-:	inc TIMEOUT	; Increment our counter
+:	bit $c010	; Strobe the keyboard
+	inc TIMEOUT	; Increment our counter
 	bne :+
 	inc TMOT
 	jsr UDPDISPATCH
