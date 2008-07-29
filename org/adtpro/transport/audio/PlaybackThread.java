@@ -156,7 +156,7 @@ public class PlaybackThread extends Thread
       }
       while (line.getFramePosition() < nBytesWritten)
       {
-        System.out.println("line active... position:" + line.getFramePosition());
+        Log.println(false,"PlaybackThread.play() Line still active... pausing a bit.  Position:" + line.getFramePosition());
         try
         {
           Thread.sleep(100);
