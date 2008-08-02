@@ -61,7 +61,7 @@
 		<!-- <delete file="${projdir}/client/src/dos/ADT" /> -->
 		<delete file="${builddir}/ADT" />
 		<delete file="${builddir}/ADTPRO" />
-		<!-- <delete file="${builddir}/ADTSOS" /> -->
+		<delete file="${builddir}/ADTSOS" />
 		<delete file="${builddir}/ADTPROAUD" />
 		<delete file="${builddir}/ADTPROETH" />
 		<delete file="${builddir}/ADTSOSETH" />
