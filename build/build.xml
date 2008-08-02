@@ -1,4 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!-- Note - running this under Java 1.6 caused "java -jar ac.jar" constructions
+     to fail to produce good executables on the destination disk.  Seems odd
+     stuff got changed to $3f all over the place; made code non-executable.
+     Switching back to Java 1.5 for compilation fixed it. -->
 <project name="ADTPro" default="all" basedir="..">
 	<property name="versionString" value="v.r.m" />
 	<property name="distName" value="ADTPro-${versionString}" />
@@ -11,7 +15,7 @@
 	<property name="builddir" value="${basedir}/build" />
 	<property file="${builddir}/ADTProBuild.properties"/>
 	<property file="${builddir}/ADTProBuild-default.properties"/>
-	<property name="acJar" value="lib/AppleCommander-1.3.4d-ac.jar" />
+	<property name="acJar" value="${builddir}/lib/AppleCommander-1.3.5.1-ac.jar" />
 	<property name="rxtxVersion" value="rxtx-2.1-7-bins-r2" />
 	<property name="rxtxZip" value="rxtx-2.1-7-bins-r2.zip" />
 	<taskdef name="appleDump" classname="org.adtpro.utilities.AppleDump" classpath="${projdir}"/>
@@ -57,7 +61,7 @@
 		<!-- <delete file="${projdir}/client/src/dos/ADT" /> -->
 		<delete file="${builddir}/ADT" />
 		<delete file="${builddir}/ADTPRO" />
-		<delete file="${builddir}/ADTSOS" />
+		<!-- <delete file="${builddir}/ADTSOS" /> -->
 		<delete file="${builddir}/ADTPROAUD" />
 		<delete file="${builddir}/ADTPROETH" />
 		<delete file="${builddir}/ADTSOSETH" />
@@ -94,54 +98,37 @@
 		<!--
 		Assemble the ADTPro source
 		-->
+		<echo message="Assembling ADTPROAUD source..."/>
 		<exec dir="${projdir}/client/src" executable="${assemblerPath}/ca65">
 			<arg line="-l -t none prodos/audio/audmain.asm" />
 		</exec>
+		<echo message="Assembling ADTPROETH source..."/>
 		<exec dir="${projdir}/client/src" executable="${assemblerPath}/ca65">
 			<arg line="-l -t none prodos/ethernet/ethmain.asm" />
 		</exec>
+		<echo message="Assembling ADTPRO source..."/>
 		<exec dir="${projdir}/client/src" executable="${assemblerPath}/ca65">
 			<arg line="-l -t none prodos/serial/sermain.asm" />
 		</exec>
 		<!--
-		Assemble the ADTSOS source
-		-->
-		<exec dir="${projdir}/client/src" executable="${assemblerPath}/ca65">
-			<arg line="-l -t none sos/serial/sermain.asm" />
-		</exec>
-		<exec dir="${projdir}/client/src" executable="${assemblerPath}/ca65">
-			<arg line="-l -t none sos/ethernet/ethmain.asm" />
-		</exec>
-		<!--
 		Assemble and link the ADT source
 		-->
+		<echo message="Assembling ADT source..."/>
 		<exec dir="${projdir}/client/src/dos" executable="${assemblerPath}/cl65">
 			<arg line="-l -t none adt.s -o ADT" />
 		</exec>
 		<!--
-		Assemble the IP65 stack source
-		-->
-		<apply executable="${assemblerPath}/ca65" dir="${projdir}/client/src/ip65">
-			<arg line="-l -t c64" />
-			<fileset dir="${projdir}/client/src/ip65" includes="**/*.s"/>
-		</apply>
-		<!--
-		Package the IP65 stack library
-		-->
-		<apply executable="${assemblerPath}/ar65" dir="${projdir}/client/src/ip65" output="ar65garbageoutputdeleteme">
-			<arg line="a ip65.lib "/>
-			<fileset dir="${projdir}/client/src/ip65" includes="**/*.o"/>
-		</apply>
-		<delete file="ar65garbageoutputdeleteme" />
-		<!--
 		Link the bits
 		-->
+		<echo message="Linking ADTPRO..."/>
 		<exec dir="${projdir}/client/src" executable="${assemblerPath}/ld65">
 			<arg line="-m adtproser.map -C prodos/serial/adtpro.cfg -o ADTPRO prodos/serial/sermain.o tail.o" />
 		</exec>
+		<echo message="Linking ADTPROAUD..."/>
 		<exec dir="${projdir}/client/src" executable="${assemblerPath}/ld65">
 			<arg line="-m adtproaud.map -C prodos/audio/adtpro.cfg -o ADTPROAUD prodos/audio/audmain.o tail.o" />
 		</exec>
+		<echo message="Linking ADTPROETH..."/>
 		<exec dir="${projdir}/client/src" executable="${assemblerPath}/ld65">
 			<arg line="-m adtproeth.map -C prodos/ethernet/adtpro.cfg -o ADTPROETH prodos/ethernet/ethmain.o ip65/ip65.lib tail.o" />
 		</exec>
@@ -200,12 +187,14 @@
 		<!--
 		Assemble the end of source marker
 		-->
+		<echo message="Assembling end-of-source marker..."/>
 		<exec dir="${projdir}/client/src" executable="${assemblerPath}/ca65">
 			<arg line="-l -t none tail.asm" />
 		</exec>
 		<!--
 		Assemble the IP65 stack source
 		-->
+		<echo message="Assembling IP65 source..."/>
 		<apply executable="${assemblerPath}/ca65" dir="${projdir}/client/src/ip65">
 			<arg line="-l -t c64" />
 			<fileset dir="${projdir}/client/src/ip65" includes="**/*.s"/>
@@ -213,6 +202,7 @@
 		<!--
 		Package the IP65 stack library
 		-->
+		<echo message="Packaging IP65 library..."/>
 		<apply executable="${assemblerPath}/ar65" dir="${projdir}/client/src/ip65" output="ar65garbageoutputdeleteme">
 			<arg line="a ip65.lib "/>
 			<fileset dir="${projdir}/client/src/ip65" includes="**/*.o"/>
@@ -247,61 +237,61 @@
 		Put the assembled programs on the disk images
 		-->
 		<echo message="Adding ADTPRO to 5.25 disk image..."/>
-		<exec dir="${builddir}" executable="java" input="${builddir}/ADTPRO">
-			<arg line="-jar ${acJar} -p ADTPRO sys 8192 ${distName}/disks/${diskName}.DSK" />
-		</exec>
+		<java jar="${acJar}" fork="true" dir="${builddir}" input="${builddir}/ADTPRO">
+			<arg line="-p ${distName}/disks/${diskName}.DSK ADTPRO sys 8192" />
+		</java>
 		<echo message="Adding ADTPROAUD to 5.25 disk image..."/>
-		<exec dir="${builddir}" executable="java" input="${builddir}/ADTPROAUD">
-			<arg line="-jar ${acJar} -p ADTPROAUD sys 8192 ${distName}/disks/${diskName}.DSK" />
-		</exec>
+		<java jar="${acJar}" fork="true" dir="${builddir}" input="${builddir}/ADTPROAUD">
+			<arg line="-p ${distName}/disks/${diskName}.DSK ADTPROAUD sys 8192" />
+		</java>
 		<echo message="Adding ADTPROETH to 5.25 disk image..."/>
-		<exec dir="${builddir}" executable="java" input="${builddir}/ADTPROETH">
-			<arg line="-jar ${acJar} -p ADTPROETH sys 8192 ${distName}/disks/${diskName}.DSK" />
-		</exec>
+		<java jar="${acJar}" fork="true" dir="${builddir}" input="${builddir}/ADTPROETH">
+			<arg line="-p ${distName}/disks/${diskName}.DSK ADTPROETH sys 8192" />
+		</java>
 		<!--
 		And the .po version...
 		-->
 		<echo message="Adding ADTPRO to 3.5 disk image..."/>
-		<exec dir="${builddir}" executable="java" input="${builddir}/ADTPRO">
-			<arg line="-jar ${acJar} -p ADTPRO sys 8192 ${distName}/disks/${diskName}.PO" />
-		</exec>
+		<java jar="${acJar}" fork="true" dir="${builddir}" input="${builddir}/ADTPRO">
+			<arg line="-p ${distName}/disks/${diskName}.PO ADTPRO sys 8192" />
+		</java>
 		<echo message="Adding ADTPROAUD to 3.5 disk image..."/>
-		<exec dir="${builddir}" executable="java" input="${builddir}/ADTPROAUD">
-			<arg line="-jar ${acJar} -p ADTPROAUD sys 8192 ${distName}/disks/${diskName}.PO" />
-		</exec>
+		<java jar="${acJar}" fork="true" dir="${builddir}" input="${builddir}/ADTPROAUD">
+			<arg line="-p ${distName}/disks/${diskName}.PO ADTPROAUD sys 8192" />
+		</java>
 		<echo message="Adding ADTPROETH to 3.5 disk image..."/>
-		<exec dir="${builddir}" executable="java" input="${builddir}/ADTPROETH">
-			<arg line="-jar ${acJar} -p ADTPROETH sys 8192 ${distName}/disks/${diskName}.PO" />
-		</exec>
+		<java jar="${acJar}" fork="true" dir="${builddir}" input="${builddir}/ADTPROETH">
+			<arg line="-p ${distName}/disks/${diskName}.PO ADTPROETH sys 8192" />
+		</java>
 		<!--
 		Put the assembled DOS ADT program on the .dsk image
 		-->
 		<echo message="Adding ADT to 5.25 disk image..."/>
-		<exec dir="${builddir}" executable="java" input="${builddir}/ADT">
-			<arg line="-jar ${acJar} -p ADT bin 2051 ${distName}/disks/${dosDistName}.DSK" />
-		</exec>
+		<java jar="${acJar}" fork="true" dir="${builddir}" input="${builddir}/ADT">
+			<arg line="-p ${distName}/disks/${dosDistName}.DSK ADT bin 2051" />
+		</java>
 		<echo message="Adding ADT.BACKUP to 5.25 disk image..."/>
-		<exec dir="${builddir}" executable="java" input="${builddir}/ADT">
-			<arg line="-jar ${acJar} -p ADT.BACKUP bin 2051 ${distName}/disks/${dosDistName}.DSK" />
-		</exec>
+		<java jar="${acJar}" fork="true" dir="${builddir}" input="${builddir}/ADT">
+			<arg line="-p ${distName}/disks/${dosDistName}.DSK ADT.BACKUP bin 2051" />
+		</java>
 		<!--
 		Lock the backup ADT version
 		-->
 		<echo message="Locking ADT on 5.25 disk image..."/>
-		<exec dir="${builddir}" executable="java">
-			<arg line="-jar ${acJar} -k ADT.BACKUP ${distName}/disks/${dosDistName}.DSK" />
-		</exec>
+		<java jar="${acJar}" fork="true" dir="${builddir}">
+			<arg line="-k ${distName}/disks/${dosDistName}.DSK ADT.BACKUP" />
+		</java>
 		<!--
 		Put a nice volume name on the disk images
 		-->
 		<echo message="Adding ADTPro volume name to 5.25 disk image..."/>
-		<exec dir="${builddir}" executable="java">
-			<arg line="-jar ${acJar} -v ${distName}/disks/${diskName}.DSK ${volName}" />
-		</exec>
+		<java jar="${acJar}" fork="true" dir="${builddir}">
+			<arg line="-n ${distName}/disks/${diskName}.DSK ${volName}" />
+		</java>
 		<echo message="Adding ADTPro volume name to 3.5 disk image..."/>
-		<exec dir="${builddir}" executable="java">
-			<arg line="-jar ${acJar} -v ${distName}/disks/${diskName}.PO ${volName}" />
-		</exec>
+		<java jar="${acJar}" fork="true" dir="${builddir}">
+			<arg line="-n ${distName}/disks/${diskName}.PO ${volName}" />
+		</java>
 		<delete file="${builddir}/ADT" />
 		<delete file="${builddir}/ADTPRO" />
 		<delete file="${builddir}/ADTPROAUD" />
@@ -317,20 +307,20 @@
 		Put the assembled programs on the disk images
 		-->
 		<echo message="Adding ADTSOS to 5.25 disk image..."/>
-		<exec dir="${builddir}" executable="java" input="${builddir}/ADTSOS">
-			<arg line="-jar ${acJar} -p SOS.INTERP sos 0000 ${distName}/disks/${diskNameSOS}.DSK" />
-		</exec>
+		<java jar="${acJar}" fork="true" dir="${builddir}" input="${builddir}/ADTSOS">
+			<arg line="-p ${distName}/disks/${diskNameSOS}.DSK SOS.INTERP sos 0000" />
+		</java>
 		<echo message="Adding ADTSOSETH to 5.25 disk image..."/>
-		<exec dir="${builddir}" executable="java" input="${builddir}/ADTSOSETH">
-			<arg line="-jar ${acJar} -p SOS.INTERPETH sos 0000 ${distName}/disks/${diskNameSOS}.DSK" />
- 		</exec>
+		<java jar="${acJar}" fork="true" dir="${builddir}" input="${builddir}/ADTSOSETH">
+			<arg line="-p ${distName}/disks/${diskNameSOS}.DSK SOS.INTERPETH sos 0000" />
+		</java>
 		<!--
 		Put a nice volume name on the disk images
 		-->
-		<exec dir="${builddir}" executable="java">
-			<arg line="-jar ${acJar} -v ${distName}/disks/${diskNameSOS}.DSK ${volName}" />
-		</exec>
-		<delete file="${builddir}/ADTSOS" />
+		<java jar="${acJar}" fork="true" dir="${builddir}">
+			<arg line="-n ${distName}/disks/${diskNameSOS}.DSK ${volName}" />
+		</java>
+		<!-- <delete file="${builddir}/ADTSOS" /> -->
 		<delete file="${builddir}/ADTSOSETH" />
 	</target>
 
