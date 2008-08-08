@@ -10,8 +10,8 @@ ADTPro Release History
 
  New functionality:
 
- * [SOS Client] Built a SOS (pronounced like "sauce") client for the 
-   Apple /// using its built-in serial port and paged memory
+ * [Client] Ported the client to SOS (pronounced like "sauce") for the 
+   Apple /// using its built-in serial port and paged/bank-switched memory
 
  []
 
@@ -23,6 +23,13 @@ ADTPro Release History
 
  * [Client] Fixed formatter volume name input routine to correctly handle
    special characters
+
+ * [Client] Fixed a fiddly problem with the IIgs and Uthernet where hitting
+   a key while waiting for a response from the host would make it ignore the esc key
+
+ * [Server] Improved batch logic for cleaning up after aborted image transfers
+
+ []
 
 * 1.0.6 - February 10, 2008
 
