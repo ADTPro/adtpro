@@ -320,7 +320,7 @@
 		<java jar="${acJar}" fork="true" dir="${builddir}">
 			<arg line="-n ${distName}/disks/${diskNameSOS}.DSK ${volName}" />
 		</java>
-		<!-- <delete file="${builddir}/ADTSOS" /> -->
+		<delete file="${builddir}/ADTSOS" />
 		<delete file="${builddir}/ADTSOSETH" />
 	</target>
 
