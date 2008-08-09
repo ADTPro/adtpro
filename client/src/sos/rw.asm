@@ -173,11 +173,14 @@ RWOK:
 	lda #V_BUF	; Start printing the result of this I/O action
 	jsr TABV
 
-	jsr SET_INVERSE
 	ldx #$08
 @loop:
 	lda RWRESULT
-	jsr COUT
+	cmp #CHR_BLK
+	bne :+
+	jsr SET_INVERSE
+	lda RWRESULT
+:	jsr COUT
 	dex
 	cpx #$00
 	bne @loop
@@ -194,7 +197,16 @@ RWOK:
 	sta BIGBUF_ADDR_HI
 	jmp RWCALL	; Go back for another iteration
 	
-:	ldy SLOWY
+:
+	ldy #V_MSG	; start printing at first number spot
+	ldx #H_NUM1
+	jsr GOTOXY
+	lda BLKLO
+	ldx BLKHI
+	ldy #CHR_0
+	jsr PRD		; Print the final block tally decimal
+
+	ldy SLOWY
 	ldx SLOWX
 
 	rts

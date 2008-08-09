@@ -1151,7 +1151,7 @@ public class CommsThread extends Thread
             Log.println(true, "CommsThread.sendPacket() block: " + block + " offset: " + offset + ".");
             Log.println(true, "CommsThread.sendPacket() backoff sleeping for "
                     + ((currentRetries * pauseMS)/1000) + " seconds.");
-            sleep(currentRetries * pauseMS); // Sleep each time we have to retry
+            sleep((currentRetries * pauseMS)/1000); // Sleep each time we have to retry
           }
           catch (InterruptedException e)
           {

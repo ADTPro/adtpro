@@ -197,7 +197,7 @@ SMPARTIAL:
 	lda BLKLO
 	cmp NUMBLKS	; Compare low-order num blocks byte
 	bcc SMMORE
-; jsr $1910
+
 	jsr PUTFINALACK
 
 	jsr COMPLETE

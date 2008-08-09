@@ -386,16 +386,17 @@ SRBLOX:
 	sta SRBCNT	; Get a local copy of block count to mess with
 	
 	LDA_BIGBUF_ADDR_LO	; Connect the block pointer to the
-	sta BIGBUF_ADDR_LO	; Point to the start of the big buffer
+	sta BLKPTR	; beginning of the Big Buffer(TM)
 	LDA_BIGBUF_ADDR_HI
-	sta BIGBUF_ADDR_HI
+	sta BLKPTR+1
 
 SRCALL:
-	lda SRCHR
-	jsr CHROVER
-
-	LDA_CH		; Retrieve the current horizontal cursor position
+	LDA_CH
 	sta COL_SAV
+	lda SRCHR
+	jsr COUT
+
+	lda COL_SAV	; Retrieve the previous horizontal cursor position
 
 	lda #V_MSG	; Start printing at first number spot
 	jsr TABV
@@ -441,7 +442,14 @@ SRBAD:
 	lda COL_SAV	; Position cursor to next
 	SET_HTAB	;   buffer row
 	lda #CHR_X
-SROK:	jsr COUT1
+	sta SRCHROK
+SROK:
+	cmp #CHR_BLK
+	bne :+
+	jsr SET_INVERSE
+	lda SRCHROK
+:	jsr COUT1
+	jsr SET_NORMAL
 	inc BLKLO
 	bne SRNOB
 	inc BLKHI
