@@ -197,7 +197,7 @@ SMPARTIAL:
 	lda BLKLO
 	cmp NUMBLKS	; Compare low-order num blocks byte
 	bcc SMMORE
-
+; jsr $1910
 	jsr PUTFINALACK
 
 	jsr COMPLETE
@@ -409,11 +409,12 @@ SRBLOX:
 	sta BLKPTR+1
 
 SRCALL:
-	lda SRCHR
-	jsr CHROVER
-
-	LDA_CH		; Retrieve the current horizontal cursor position
+	LDA_CH
 	sta COL_SAV
+	lda SRCHR
+	jsr COUT
+
+	lda COL_SAV	; Retrieve the previous horizontal cursor position
 
 	lda #V_MSG	; Start printing at first number spot
 	jsr TABV
