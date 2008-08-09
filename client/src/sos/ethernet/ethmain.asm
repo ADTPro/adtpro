@@ -44,7 +44,7 @@
 	.include "sos/ethernet/ethconfigsos.asm"
 	.include "sos/ethernet/ipconfig.asm"
 	.include "sos/format.asm"		; FORMAT segment
-	.include "sos/bsave.asm"
+	.include "bsave.asm"
 
 ; Stubs from Disk II-related stuff
 ReceiveNib:
@@ -58,10 +58,16 @@ motoroff:
 ROM:
 CH:
 CV:
-GET_PREFIX:
 INVFLG:
 DevAdr:
 DevList:
 DevCnt:
 PEND:
+TBL_ONLINE:
+UNIT:
+DEVLST:
+DEVICE:
+KEYBUFF:
+ZDEVCNT:
+DEVCNT:
 	.segment "DATA"	

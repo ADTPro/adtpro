@@ -51,7 +51,7 @@ WRITE:
 :	ldy #PMSG14		; All was OK
 
 BSAVE_MSGEND:
-	jsr BLOAD_END		; Close up the file
+	jsr BLOAD_CLOSE		; Close up the file
 	jsr WRITEMSGAREA
 	jsr PAUSE
 	rts
@@ -64,15 +64,15 @@ BSAVE_MSGEND:
 ;
 BLOAD:
 	CALLOS OS_OPEN, FILE_OP
-	CALLOS_CHECK_NEG	; Branch to BLOAD_END on error
-	lda FILE_OPN		; copy file number
+	CALLOS_CHECK_POS	; Branch to BLOAD_END on error
+	jmp BLOAD_END
+:	lda FILE_OPN		; copy file number
 	sta FILE_RDN
 	sta FILE_CLN
-
+BLOAD_CLOSE:
 	CALLOS OS_READFILE, FILE_RD
-:	; This colon (label) assigns the branch point for CALLOS_CHECK_NEG - to BLOAD_END
-BLOAD_END:
 	CALLOS OS_CLOSE, FILE_CL
+BLOAD_END:
 	rts
 
 ;==============================*
@@ -158,67 +158,3 @@ GP_SET:	CALLOS OS_SET_PREFIX, GET_PFX_PLIST ; do a 'set prefix' on the current p
 
 GP_DONE:
 	rts
-
-
-ZDEVCNT:	.byte 0
-
-; Online
-
-TBL_ONLINE:
-         .byte 2
-UNIT:    .byte 0          ; unit
-         .addr CUR_PFX+1  ; 16 bytes buffer for a specific unit
-
-; Set Prefix
-
-TBL_SET_PFX:
-         .byte 1
-         .addr CUR_PFX    ; addr of pathname
-
-CUR_PFX:	.res 64
-
-; Get Prefix
-
-GET_PFX_PLIST:
-	.byte 1
-	.addr CUR_PFX
-
-; Table for open
-
-FILE_OP:	.byte 3
-FILE_NAME:	.addr CONFIG_FILE_NAME	; addr len+name
-FILE_BUF_PTR:	.addr BIGBUF+1024	; 1024 bytes buffer
-FILE_OPN:	.byte 0		; opened file number
-
-; Table for create
-
-FILE_CR:	.byte $07
-		.addr CONFIG_FILE_NAME	; addr len+name
-		.byte $C3		; Full access
-		.byte $06		; BIN file
-		.addr $FFFF		; Aux data - load addr
-		.byte $01			; Standard seedling file
-		.byte $00, $00		; Creation date
-		.byte $00, $00		; Creation time
-
-; Table for read
-
-FILE_RD:	.byte 4
-FILE_RDN:	.byte 0			; opened file number
-FILE_RADR:	.addr PARMS		; loading addr
-FILE_RLEN:	.addr PARMSEND-PARMS	; max len
-FILE_RALEN:	.addr $FFFF		; real len of loaded file
-
-; Table for write
-
-FILE_WR:	.byte 4
-FILE_WRN:	.byte 0			; opened file number
-FILE_WADR:	.addr PARMS		; loading addr
-FILE_WLEN:	.addr PARMSEND-PARMS	; max len
-FILE_WALEN:	.byte 0,0		; real len of loaded file
-
-; Table for close
-
-FILE_CL:	.byte 1
-FILE_END:
-FILE_CLN:	.byte 0			; opened file number

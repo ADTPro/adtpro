@@ -167,3 +167,56 @@ FIND_SEG_PAGES:	.addr $0050	; In/Out - number of pages
 FIND_SEG_BASE:	.addr $0000	; Out - origin segment addr
 FIND_SEG_LIMIT:	.addr $0000	; Out - last segment addr
 FIND_SEG_NUM:	.byte $00	; Out - segment "number"
+
+; Set Prefix
+
+TBL_SET_PFX:
+         .byte 1
+         .addr CUR_PFX    ; addr of pathname
+
+CUR_PFX:	.res 64
+
+; Get Prefix
+
+GET_PFX_PLIST:
+	.byte 1
+	.addr CUR_PFX
+
+; Table for open
+
+FILE_OP:	.byte 4
+FILE_NAME:	.addr CONFIG_FILE_NAME	; addr len+name
+FILE_OPN:	.byte $00		; file reference number
+FILE_OPTION:	.addr $0000		; No options
+FILE_OPTIONS:	.byte $00		; No options
+
+; Table for create
+
+FILE_CR:	.byte $03
+		.addr CONFIG_FILE_NAME	; addr len+name
+		.addr FILE_CR_OPTIONS	; Option list
+		.byte $01		; Only file type option exists
+
+FILE_CR_OPTIONS:
+		.byte $06		; BIN file
+
+; Table for read
+
+FILE_RD:	.byte 4
+FILE_RDN:	.byte 0			; opened file number
+FILE_RADR:	.addr PARMS		; loading addr
+FILE_RLEN:	.addr PARMSEND-PARMS	; max len
+FILE_RALEN:	.addr $FFFF		; real len of loaded file
+
+; Table for write
+
+FILE_WR:	.byte 3
+FILE_WRN:	.byte 0			; opened file number
+FILE_WADR:	.addr PARMS		; loading addr
+FILE_WLEN:	.addr PARMSEND-PARMS	; max len
+
+; Table for close
+
+FILE_CL:	.byte 1
+FILE_END:
+FILE_CLN:	.byte 0			; opened file number

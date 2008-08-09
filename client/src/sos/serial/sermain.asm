@@ -44,7 +44,7 @@
 	.include "sos/serial/serconfigsos.asm"
 	.include "hostfns.asm"
 	.include "sos/format.asm"			; Note: includes FORMAT segment
-	.include "sos/bsave.asm"
+	.include "bsave.asm"
 
 ; Stubs from Disk II-related stuff
 ReceiveNib:
@@ -63,4 +63,12 @@ INVFLG:
 DevAdr:
 DevList:
 DevCnt:
+PEND:
+TBL_ONLINE:
+UNIT:
+DEVLST:
+DEVICE:
+KEYBUFF:
+ZDEVCNT:
+DEVCNT:
 	.segment "DATA"

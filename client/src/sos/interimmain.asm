@@ -313,7 +313,7 @@ entrypoint:
 	jsr MAKETBL	; Prepare our CRC tables
 	jsr PARMDFT	; Set up parameters
 ;	jsr GET_PREFIX	; Get our current ProDOS prefix
-;	jsr BLOAD	; Load up user parameters, if any
+	jsr BLOAD	; Load up user parameters, if any
 	jsr HOME	; Clear screen
 	jsr PARMINT	; Interpret parameters - may leave a complaint
 	jmp MAINL	; And off we go!

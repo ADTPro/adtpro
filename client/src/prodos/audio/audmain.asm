@@ -44,7 +44,7 @@
 	.include "diskii.asm"
 	.include "nibble.asm"
 	.include "prodos/format.asm"
-	.include "prodos/bsave.asm"
+	.include "bsave.asm"
 
 PEND:
 	.segment "DATA"
