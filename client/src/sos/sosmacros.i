@@ -72,5 +72,9 @@
 	jsr HTAB
 .endmacro
 
+.macro JSR_GET_PREFIX
+; Nothing to see here...
+.endmacro
+
 .define	NRM_BLOCK $11,$20
 .define	INV_BLOCK $12,$20,$11

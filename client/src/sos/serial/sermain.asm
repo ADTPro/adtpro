@@ -25,7 +25,7 @@
 	.include "sos/serial/sermessages.asm"	; Messages
 	.include "ip65/common.i"	; More macros - ldax, for example
 
-	.include "sos/interimmain.asm"
+	.include "main.asm"
 
 ;---------------------------------------------------------
 ; Pull in all the rest of the code

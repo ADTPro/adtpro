@@ -312,7 +312,7 @@ entrypoint:
 	jsr INIT_SCREEN	; Sets up the screen for behaviors we expect
 	jsr MAKETBL	; Prepare our CRC tables
 	jsr PARMDFT	; Set up parameters
-	jsr GET_PREFIX	; Get our current ProDOS prefix
+	JSR_GET_PREFIX	; Get our current prefix (ProDOS only)
 	jsr BLOAD	; Load up user parameters, if any
 	jsr HOME	; Clear screen
 	jsr PARMINT	; Interpret parameters - may leave a complaint

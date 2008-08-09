@@ -25,7 +25,7 @@
 	.include "sos/ethernet/ethmessages.asm"	; Messages - DATA segment
 	.include "ip65/common.i"	; More macros - ldax, for example
 
-	.include "sos/interimmain.asm"	; STARTUP segment
+	.include "main.asm"	; STARTUP segment
 
 ;---------------------------------------------------------
 ; Pull in all the rest of the code
