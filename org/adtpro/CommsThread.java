@@ -937,12 +937,13 @@ public class CommsThread extends Thread
                 byte report = waitForData(15);
                 _endTime = new GregorianCalendar();
                 _diffMillis = (float) (_endTime.getTimeInMillis() - _startTime
-                    .getTimeInMillis())
-                    / (float) 1000;
+                    .getTimeInMillis()) / (float) 1000;
                 if (report == 0x00)
                 {
-                  _parent.setSecondaryText(Messages.getString("CommsThread.19")
-                      + " in " + _diffMillis + " seconds.");
+                  String msg = Messages.getString("CommsThread.19");
+                  msg = msg.replaceAll("%1", f.getName());
+                  msg = msg.replaceAll("%2", ""+_diffMillis);
+                  _parent.setSecondaryText(msg);
                   Log.println(true,
                           "Apple sent disk image " + name + " successfully in " + (float) (_endTime.getTimeInMillis() - _startTime.getTimeInMillis()) / (float) 1000 + " seconds."); //$NON-NLS-1$ //$NON-NLS-2$
                 }
@@ -1648,8 +1649,10 @@ public class CommsThread extends Thread
               / (float) 1000;
           if (report == 0x00)
           {
-            _parent.setSecondaryText(Messages.getString("CommsThread.19")
-                + " in " + _diffMillis + " seconds.");
+            String msg = Messages.getString("CommsThread.19");
+            msg = msg.replaceAll("%1", f.getName());
+            msg = msg.replaceAll("%2", ""+_diffMillis);
+            _parent.setSecondaryText(msg);
             Log.println(true, "Apple sent disk image "
                 + name
                 + " successfully in "
@@ -1832,8 +1835,10 @@ public class CommsThread extends Thread
                   / (float) 1000;
               if (report == 0x00)
               {
-                _parent.setSecondaryText(Messages.getString("CommsThread.19")
-                    + " in " + _diffMillis + " seconds.");
+                String msg = Messages.getString("CommsThread.19");
+                msg = msg.replaceAll("%1", f.getName());
+                msg = msg.replaceAll("%2", ""+_diffMillis);
+                _parent.setSecondaryText(msg);
                 Log
                     .println(
                         true,
