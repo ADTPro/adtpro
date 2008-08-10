@@ -248,7 +248,7 @@ SRMISMATCH:
 	lda #$15
 	jsr TABV
 	ldy #PMSG35
-	jsr WRITEMSG
+	jsr WRITEMSGLEFT
 	ldy #PMFORC
 	jsr YN
 	bne SROK2

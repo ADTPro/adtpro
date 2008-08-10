@@ -152,6 +152,7 @@ PICKVOL2:
 	jsr CLREOP
 	ldy SLOWY
 	ldx SLOWX
+	jsr DRAWBDR
 	jmp VOLLOOP
 
 ;---------------------------------------------------------
