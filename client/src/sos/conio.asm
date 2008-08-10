@@ -54,6 +54,12 @@ INIT_SCREEN:
 	sta D_CONTROL_CODE
 	CALLOS OS_D_CONTROL, D_CONTROL_PARMS	; Turn data entry termination on
 
+	lda #$00
+	sta D_CONTROL_DATA
+	lda #$0f
+	sta D_CONTROL_CODE
+	CALLOS OS_D_CONTROL, D_CONTROL_PARMS	; Turn escape mode off
+
 	CALLOS OS_FIND_SEG, FIND_SEG_PARMS
 	bne Local_Quit
 
