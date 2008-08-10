@@ -16,7 +16,7 @@ the stuff that gets uploaded to sourceforge.
    the version number is encoded:
    * build/build.xml: <property name="versionString" value="v.r.m" />
    * DOS version number, if necessary: <property name="dosVersionString" value="vrm" />
-   * client/src/print.asm: MSG01 .as -'v.r.m'
+   * client/src/messages.asm: MSG01 .as -'v.r.m'
    * org/adtpro/resources/messages.properties: Version.Number=v.r.m
 
 2. Make sure you've got the latest DOS ADT from the Berlios project;
