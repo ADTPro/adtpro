@@ -251,7 +251,7 @@ TABV:
 	
 
 WRITEMSG_VT:
-	.byte $19,$16		; $19/25d is the code for vertical position
+	.byte $19, $16		; $19/25d is the code for vertical position
 
 ;---------------------------------------------------------
 ; HTAB - Horizontal tab to column in accumulator
@@ -397,12 +397,15 @@ CLRMSGAREA:
 	sta UTILPTR
 	lda #>CLRMSGAREA_DATA
 	sta UTILPTR+1
-	lda #$03
+	lda #$04
 	sta WRITE_LEN
 	jmp WRITEMSG_RAW	; Return through writemsg
 
 CLRMSGAREA_DATA:
-	.byte $19,$16,$1d
+	.byte $1a		; Control: Absolute Position
+	.byte $00		; Horizontal Position
+	.byte $14		; Vertical Position
+	.byte $1d		; Control: Clear to end of page
 
 ;---------------------------------------------------------
 ; INVERSE - Invert/highlight the characters on the screen
