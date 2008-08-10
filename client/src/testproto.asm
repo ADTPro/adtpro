@@ -54,10 +54,11 @@ DIRREPLY:
 
 DIRRESPONSE:
 ;            0123456789012345678901234567890123456789
-	asc "DIRECTORY OF: UNIT.TEST.DIRECTORY.BOGUS"
+	asc "DIRECTORY OF: Unit.Test.Directory"
 	.byte $0d ; TODO: Need one of those fancy CR characters and deal with it...
 	asc "----------------------------------------"
-	asc "TEST.DSK                                "
+	asc "TEST.DSK            ANOTHER.DSK         "
+	asc "AnotherLongNameWithMixedCase.dsk        "
 	.byte $00,$00,$FF ; $FF is the end of response marker
 
 ;---------------------------------------------------------

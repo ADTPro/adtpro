@@ -50,6 +50,7 @@ DIRMORE:
 	plp		; Restore flags
 	beq DIRPAGE	; Page or dir end?
 	ora #$80
+	CONDITION_CR	; SOS needs to fix up the carriage return
 	jsr COUT1	; Display
 	jmp DIRDISP	; Loop back around
 

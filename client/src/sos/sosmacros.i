@@ -84,10 +84,16 @@
 	sta $FFDF			; Write the environment register
 .endmacro
 
+.macro CONDITION_CR
+	cmp #$8d			; If the character is $8d, strip off $80
+	bne :+
+	lda #$0d
+	:				; Need a place to go
+.endmacro
+
 .macro JSR_GET_PREFIX
 ; Nothing to see here...
 .endmacro
 
->>>>>>> 1.13
 .define	NRM_BLOCK $11,$20
 .define	INV_BLOCK $12,$20,$11
