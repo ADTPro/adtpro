@@ -72,6 +72,18 @@
 	jsr HTAB
 .endmacro
 
+.macro GO_SLOW
+	lda $FFDF			; Read the environment register
+	ora #$80			; Set 1MHz switch
+	sta $FFDF			; Write the environment register
+.endmacro
+
+.macro GO_FAST
+	lda $FFDF			; Read the environment register
+	and #$7f			; Set 2MHz switch
+	sta $FFDF			; Write the environment register
+.endmacro
+
 .macro JSR_GET_PREFIX
 ; Nothing to see here...
 .endmacro

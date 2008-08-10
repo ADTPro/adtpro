@@ -59,6 +59,14 @@
 	sta CH
 .endmacro
 
+.macro GO_FAST
+; Nothing to see here...
+.endmacro
+
+.macro GO_SLOW
+; Nothing to see here...
+.endmacro
+
 .macro JSR_GET_PREFIX
 	jsr GET_PREFIX
 .endmacro
