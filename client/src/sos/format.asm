@@ -20,6 +20,10 @@
 	.segment "FORMAT"
 
 FormatEntry:
+	lda #$08
+	ldx #$13
+	ldy #$10
+	jsr INVERSE
 	ldx #$00
 	ldy #$15
 	jsr GOTOXY
