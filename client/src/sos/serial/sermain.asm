@@ -32,7 +32,7 @@
 ;---------------------------------------------------------
 	.include "sos/conio.asm"	; Console I/O
 	.include "print.asm"
-	.include "testproto.asm"
+	.include "prodos/serial/serproto.asm"
 	.include "sos/online.asm"
 	.include "sos/rw.asm"
 	.include "sr.asm"
