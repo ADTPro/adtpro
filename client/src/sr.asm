@@ -460,7 +460,7 @@ SRBAD:
 	lda COL_SAV	; Position cursor to next
 	SET_HTAB	;   buffer row
 	lda #CHR_X
-SROK:	jsr COUT1
+SROK:	COUT_MAYBE_INVERSE_SOS
 	inc BLKLO
 	bne SRNOB
 	inc BLKHI
