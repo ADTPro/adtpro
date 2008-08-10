@@ -412,7 +412,7 @@ SRCALL:
 	LDA_CH
 	sta COL_SAV
 	lda SRCHR
-	jsr COUT
+	COUT_MAYBE_INVERSE_SOS
 
 	lda COL_SAV	; Retrieve the previous horizontal cursor position
 

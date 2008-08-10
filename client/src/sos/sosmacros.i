@@ -95,5 +95,17 @@
 ; Nothing to see here...
 .endmacro
 
+.macro COUT_MAYBE_INVERSE_SOS
+	cmp #CHR_BLK
+	bne :+
+	pha
+	lda #$12		; Code for start printing in inverse
+	jsr COUT
+	pla
+	jsr COUT
+	lda #$11		; Code for start printing normally
+:	jsr COUT
+.endmacro
+
 .define	NRM_BLOCK $11,$20
 .define	INV_BLOCK $12,$20,$11
