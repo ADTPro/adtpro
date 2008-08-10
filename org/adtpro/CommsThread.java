@@ -747,8 +747,8 @@ public class CommsThread extends Thread
             if (_client01xCompatibleProtocol == false)
             {
               waitForData(15);
-              waitForData(15);
-              waitForData(15);
+              waitForData(1);
+              waitForData(1);
             }
             length = disk.getImageOrder().getBlocksOnDevice();
             _parent.setProgressMaximum(length * 2); // Half-blocks
@@ -779,8 +779,7 @@ public class CommsThread extends Thread
               report = waitForData(15);
               _endTime = new GregorianCalendar();
               _diffMillis = (float) (_endTime.getTimeInMillis() - _startTime
-                  .getTimeInMillis())
-                  / (float) 1000;
+                  .getTimeInMillis()) / (float) 1000;
               if (report == 0x00)
               {
                 _parent.setSecondaryText(Messages.getString("CommsThread.17")
@@ -1093,7 +1092,7 @@ public class CommsThread extends Thread
               {
                 ok = CHR_ACK;
                 Log.println(false,
-                    "CommsThread.sendPacket() found an old packet; advancing.");
+                    "CommsThread.sendPacket() found an old packet; advancing (location 1).");
               }
             }
           }
@@ -1117,7 +1116,7 @@ public class CommsThread extends Thread
               {
                 ok = CHR_ACK;
                 Log.println(false,
-                    "CommsThread.sendPacket() found an old packet; advancing.");
+                    "CommsThread.sendPacket() found an old packet; advancing (location 2).");
               }
             }
           }
@@ -1151,7 +1150,7 @@ public class CommsThread extends Thread
             Log.println(true, "CommsThread.sendPacket() block: " + block + " offset: " + offset + ".");
             Log.println(true, "CommsThread.sendPacket() backoff sleeping for "
                     + ((currentRetries * pauseMS)/1000) + " seconds.");
-            sleep((currentRetries * pauseMS)/1000); // Sleep each time we have to retry
+            sleep(currentRetries * pauseMS); // Sleep each time we have to retry
           }
           catch (InterruptedException e)
           {
