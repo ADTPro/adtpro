@@ -8,6 +8,7 @@
 	<property name="distName" value="ADTPro-${versionString}" />
 	<property name="diskName" value="ADTPRO-${versionString}" />
 	<property name="diskNameSOS" value="ADTSOS-${versionString}" />
+	<property name="diskNameSOSCFIDE" value="ADTSOS-CFIDE-${versionString}" />
 	<property name="volName" value="ADTPro.${versionString}" />
 	<property name="dosVersionString" value="22" />
 	<property name="dosDistName" value="ADT${dosVersionString}" />
@@ -70,6 +71,7 @@
 		<delete file="${builddir}/${distName}/disks/${diskName}.DSK" />
 		<delete file="${builddir}/${distName}/disks/${diskName}.PO" />
 		<delete file="${builddir}/${distName}/disks/${diskNameSOS}.DSK" />
+		<delete file="${builddir}/${distName}/disks/${diskNameSOSCFIDE}.DSK" />
 		<delete file="${builddir}/${distName}/disks/${dosDistName}.DSK" />
 		<delete file="${projdir}/org/adtpro/resources/adt.dmp" />
 		<delete file="${projdir}/org/adtpro/resources/adtpro.dmp" />
@@ -303,6 +305,7 @@
 		Start disk images containing the release number
 		-->
 		<copy file="${builddir}/ADTSOSBase.dsk" tofile="${builddir}/${distName}/disks/${diskNameSOS}.DSK" />
+		<copy file="${builddir}/ADTSOSBaseCFIDE.dsk" tofile="${builddir}/${distName}/disks/${diskNameSOSCFIDE}.DSK" />
 		<!--
 		Put the assembled programs on the disk images
 		-->
@@ -314,11 +317,22 @@
 		<java jar="${acJar}" fork="true" dir="${builddir}" input="${builddir}/ADTSOSETH">
 			<arg line="-p ${distName}/disks/${diskNameSOS}.DSK SOS.INTERPETH sos 0000" />
 		</java>
+		<echo message="Adding ADTSOS to 5.25 CFIDE disk image..."/>
+		<java jar="${acJar}" fork="true" dir="${builddir}" input="${builddir}/ADTSOS">
+			<arg line="-p ${distName}/disks/${diskNameSOSCFIDE}.DSK SOS.INTERP sos 0000" />
+		</java>
+		<echo message="Adding ADTSOSETH to 5.25 CFIDE disk image..."/>
+		<java jar="${acJar}" fork="true" dir="${builddir}" input="${builddir}/ADTSOSETH">
+			<arg line="-p ${distName}/disks/${diskNameSOSCFIDE}.DSK SOS.INTERPETH sos 0000" />
+		</java>
 		<!--
 		Put a nice volume name on the disk images
 		-->
 		<java jar="${acJar}" fork="true" dir="${builddir}">
 			<arg line="-n ${distName}/disks/${diskNameSOS}.DSK ${volName}" />
+		</java>
+		<java jar="${acJar}" fork="true" dir="${builddir}">
+			<arg line="-n ${distName}/disks/${diskNameSOSCFIDE}.DSK ${volName}" />
 		</java>
 		<delete file="${builddir}/ADTSOS" />
 		<delete file="${builddir}/ADTSOSETH" />
