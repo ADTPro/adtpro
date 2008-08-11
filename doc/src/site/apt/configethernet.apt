@@ -20,6 +20,8 @@ ADTPro Ethernet Connections
  address assigned to the Uthernet card by ADTPro is
  <<<00:80:10:6d:76:30>>>.
 
+ Note that the Apple /// version of ADTPro does not include Uthernet support.
+
 ADTPro Ethernet {Client IP Configuration}
 
  The ethernet version of the ADTPro client program is named <<<ADTPROETH>>> on the 

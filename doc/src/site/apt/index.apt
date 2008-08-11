@@ -13,7 +13,7 @@ ADTPro extends ADT's reach by working with more logical disk formats,
 drive types, communications devices, and host operating systems.
 
  There is a host (server) component that runs on modern computers with
- Java, and an Apple II (client) component that runs on any Apple II 
+ Java, and an Apple (client) component that runs on any Apple II or Apple ///
  compatible computer with at least 64k of memory:
 
 [images/serverBusy.png]
@@ -22,7 +22,7 @@ drive types, communications devices, and host operating systems.
 
  ADTPro transfers disks using any of these communications devices:
 
-    * {{{connectionsserial.html#Super Serial cabling}Super Serial}} card, {{{connectionsserial.html#MiniDIN8}IIgs modem port}}, or {{{connectionsserial.html#DIN5}IIc/Laser 128 serial port}}
+    * {{{connectionsserial.html#Super Serial cabling}Super Serial}} card, {{{connectionsserial.html#MiniDIN8}IIgs modem port}}, {{{connectionsserial.html#DIN5}IIc/Laser 128 serial port}}, or the Apple /// serial port
 
     * {{{http://a2retrosystems.com/}Uthernet}} Ethernet card
 
@@ -30,9 +30,9 @@ drive types, communications devices, and host operating systems.
 
  ADTPro has these features:
 
-    * Transfers any storage device ProDOS can access
+    * Transfers any storage device ProDOS or SOS can access
 
-    * Runs on any Apple II (or clone) computer with 64k memory
+    * Runs on any Apple II, Apple ///, or clone computer with 64k memory
 
     * Runs on Linux, Mac OSX, OS/2, Windows, and probably Solaris
 
@@ -46,8 +46,8 @@ drive types, communications devices, and host operating systems.
 
     * {{{misc.html#Format}Formats}} media on the Apple II end
 
- ADTPro may be used to transfer either Apple diskette/disk images in DOS or ProDOS format.
-The Apple client side happens to run under ProDOS, but it is perfectly capable
+ ADTPro may be used to transfer Apple diskette/disk images in DOS or ProDOS/SOS format.
+The Apple client side happens to run under ProDOS or SOS, but it is perfectly capable
 of reading or writing Apple DOS (or Pascal, or CP/M, or...) diskettes.
 
  The latest ADTPro can always be 
@@ -58,7 +58,7 @@ from the SourceForge
 * Server
 
  The server program runs on a computer capable of running Java.
-Depending on how you want to connect to your Apple II, you might also need a
+Depending on how you want to connect to your Apple, you might also need a
 {{{connectionsserial.html}serial port and cables}}, an 
 {{{configethernet.html}Uthernet card}}, or a couple of
 {{{connectionsaudio.html}audio patch cables}}.  
@@ -75,12 +75,12 @@ an otherwise completely empty Apple.
 
 * {Client}
 
- The client side runs on the Apple II.  It handles most of the 
+ The client side runs on the Apple II or Apple ///.  It handles most of the 
 user interaction:
 
 [images/about.png]
 
- When choosing disks/volumes to transfer, anything that ProDOS can see
+ When choosing disks/volumes to transfer, anything that ProDOS or SOS can see
 is fair game:
 
 [images/miscVolume.png]
@@ -104,6 +104,7 @@ are detailed below.  Please note that you will need to use
 {{{bootstrap.html}serial}} or
 {{{bootstrapaudio.html}audio}} communications 
 (not ethernet) for this task.
+ADTPro doesn't have the ability to bootstrap the Apple ///.
 
  * Click {{{bootstrap.html#Starting from bare metal}[serial}}|{{{bootstrapaudio.html#Starting from bare metal}audio]}} if you have no Apple software at all - starting ADTPro from bare metal
 
@@ -112,7 +113,7 @@ are detailed below.  Please note that you will need to use
  * Click {{{bootstrap.html#Bootstrapping DOS}[serial}}|{{{bootstrapaudio.html#Bootstrapping DOS}audio]}} if you have no Apple software at all and only want to boot DOS, not ProDOS or ADTPro
 
  []
- 
+
  If you still need to connect your host and Apple computers with physical cables,
  refer back to the "Configuration" section for your connection type:
 
@@ -121,7 +122,7 @@ are detailed below.  Please note that you will need to use
  * {{{connectionsaudio.html}Audio cabling connections}}
 
  []
- 
+
   Here is a 5-minute overview video of the bootstrapping process, end-to-end:
 
  youtubereplaced

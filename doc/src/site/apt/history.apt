@@ -6,32 +6,15 @@
 
 ADTPro Release History
 
-* v.r.m - Unreleased
+* 1.0.6 - February 10, 2008
 
  New functionality:
 
  * [Client] Ported the client to SOS (pronounced like "sauce") for the 
-   Apple /// using its built-in serial port and paged/bank-switched memory
+   Apple /// supporting the built-in serial port and Super Serial card in
+   any of its four slots (SOS released 8/10/2008)
 
  []
-
- Bug fixes:
-
- * [Client] {{{http://www.refactoring.com/}Refactored}} and reorganized
-   the entire client code base in order to single-source ProDOS and SOS versions -
-   probably leading to several new bugs in the ProDOS client
-
- * [Client] Fixed formatter volume name input routine to correctly handle
-   special characters
-
- * [Client] Fixed a fiddly problem with the IIgs and Uthernet where hitting
-   a key while waiting for a response from the host would make it ignore the esc key
-
- * [Server] Improved batch logic for cleaning up after aborted image transfers
-
- []
-
-* 1.0.6 - February 10, 2008
 
  Bug fixes:
 

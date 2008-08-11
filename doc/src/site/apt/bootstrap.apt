@@ -35,6 +35,8 @@ more bootstrapping scenarios and configurations are detailed below.
 
  []
 
+ Note that the Apple /// can't be bootstrapped this way.
+
 *  Bootstrapping Demonstration {Video}
 
   Here is a 5-minute overview video of the bootstrapping process.
@@ -148,6 +150,7 @@ Super Serial card, all the way to making a bootable ADTPro floppy:
 * {Starting from bare metal}
 
     [[1]] {{{connectionsserial.html}Connect}} the two computers through their serial ports.
+      Note that the Apple /// can't be bootstrapped this way.
 
     [[1]] Boot your Apple; hit Ctrl-Reset before it reads anything from the disk drive.
       It's important that it not load any OS, even DOS 3.3.
@@ -244,7 +247,7 @@ Super Serial card, all the way to making a bootable ADTPro floppy:
   If you don't need or want the extra features the ADTPro client provides
   beyond the DOS ADT client, you may only want to get started with the DOS
   ADT program.  The ADTPro server is compatible with both the DOS ADT and 
-  ADTPro clients.
+  ADTPro clients.  Note that the Apple /// can't be bootstrapped this way.
 
     [[1]] {{{connectionsserial.html}Connect}} the two computers through their serial ports.
 

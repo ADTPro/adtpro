@@ -12,7 +12,7 @@ Miscellaneous Functions
  has only been incorporated into the included DOS ADT client.
  More discussion is available on the {{{compatability.html#Nibble}ADT Compatibility page}}.
 
-* {Format} Volumes (disks)
+* {Format} Volumes (disks) - ProDOS Only
 
  The ADTPro client has built-in disk formatting capabilities.
 ProDOS itself doesn't include an <<<INIT>>> or <<<FORMAT>>> command
