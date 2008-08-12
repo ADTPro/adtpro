@@ -7,7 +7,6 @@
 	<property name="versionString" value="v.r.m" />
 	<property name="distName" value="ADTPro-${versionString}" />
 	<property name="diskName" value="ADTPRO-${versionString}" />
-	<property name="diskNameSOS" value="ADTSOS-${versionString}" />
 	<property name="diskNameSOSCFIDE" value="ADTSOS-CFIDE-${versionString}" />
 	<property name="volName" value="ADTPro.${versionString}" />
 	<property name="dosVersionString" value="22" />
@@ -29,13 +28,14 @@
 		<property name="skipProDOS" value="true"/>		
 	</target>
 
-	<target name="all" depends="setup, wipe, clean, assemble, builddsk, scripts, jar" description="Bulid everything after wiping the output directory.">
+	<target name="all" depends="wipe, clean, setup, assemble, builddsk, scripts, jar" description="Bulid everything after wiping the output directory.">
 	</target>
 
-	<target name="dev" depends="setup, clean, assemble, builddsk" description="Build everything but the Java GUI; don't wipe the output directory.">
+	<target name="dev" depends="clean, setup, assemble, builddsk" description="Build everything but the Java GUI; don't wipe the output directory.">
 	</target>
 
 	<target name="setup">
+		<copy file="${builddir}/ADTProBase.dsk" tofile="${builddir}/${distName}/disks/${diskName}.DSK" />
 		<condition property="SOS-needed">
 			<not>
 				<isset property="skipSOS" />
@@ -70,7 +70,6 @@
 		<delete file="${builddir}/${distName}.zip" />
 		<delete file="${builddir}/${distName}/disks/${diskName}.DSK" />
 		<delete file="${builddir}/${distName}/disks/${diskName}.PO" />
-		<delete file="${builddir}/${distName}/disks/${diskNameSOS}.DSK" />
 		<delete file="${builddir}/${distName}/disks/${diskNameSOSCFIDE}.DSK" />
 		<delete file="${builddir}/${distName}/disks/${dosDistName}.DSK" />
 		<delete file="${projdir}/org/adtpro/resources/adt.dmp" />
@@ -232,7 +231,6 @@
 		<!--
 		Start disk images containing the release number
 		-->
-		<copy file="${builddir}/ADTProBase.dsk" tofile="${builddir}/${distName}/disks/${diskName}.DSK" />
 		<copy file="${builddir}/ADTProBase.po" tofile="${builddir}/${distName}/disks/${diskName}.PO" />
 		<copy file="${builddir}/ADTBase.dsk" tofile="${builddir}/${distName}/disks/${dosDistName}.DSK" />
 		<!--
@@ -304,18 +302,17 @@
 		<!--
 		Start disk images containing the release number
 		-->
-		<copy file="${builddir}/ADTSOSBase.dsk" tofile="${builddir}/${distName}/disks/${diskNameSOS}.DSK" />
 		<copy file="${builddir}/ADTSOSBaseCFIDE.dsk" tofile="${builddir}/${distName}/disks/${diskNameSOSCFIDE}.DSK" />
 		<!--
 		Put the assembled programs on the disk images
 		-->
 		<echo message="Adding ADTSOS to 5.25 disk image..."/>
 		<java jar="${acJar}" fork="true" dir="${builddir}" input="${builddir}/ADTSOS">
-			<arg line="-p ${distName}/disks/${diskNameSOS}.DSK SOS.INTERP sos 0000" />
+			<arg line="-p ${distName}/disks/${diskName}.DSK SOS.INTERP sos 0000" />
 		</java>
 		<echo message="Adding ADTSOSETH to 5.25 disk image..."/>
 		<java jar="${acJar}" fork="true" dir="${builddir}" input="${builddir}/ADTSOSETH">
-			<arg line="-p ${distName}/disks/${diskNameSOS}.DSK SOS.INTERPETH sos 0000" />
+			<arg line="-p ${distName}/disks/${diskName}.DSK SOS.INTERPETH sos 0000" />
 		</java>
 		<echo message="Adding ADTSOS to 5.25 CFIDE disk image..."/>
 		<java jar="${acJar}" fork="true" dir="${builddir}" input="${builddir}/ADTSOS">
@@ -329,7 +326,7 @@
 		Put a nice volume name on the disk images
 		-->
 		<java jar="${acJar}" fork="true" dir="${builddir}">
-			<arg line="-n ${distName}/disks/${diskNameSOS}.DSK ${volName}" />
+			<arg line="-n ${distName}/disks/${diskName}.DSK ${volName}" />
 		</java>
 		<java jar="${acJar}" fork="true" dir="${builddir}">
 			<arg line="-n ${distName}/disks/${diskNameSOSCFIDE}.DSK ${volName}" />
