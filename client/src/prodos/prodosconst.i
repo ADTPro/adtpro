@@ -21,6 +21,9 @@
 .include "applechr.i"		; ASCII string productions
 .include "const.i"
 
+MINSLOT = $00	; The smallest slot number we're likely to encounter
+MAXSLOT = $07	; The largest slot number we're likely to encounter
+
 ;---------------------------------------------------------
 ; Horizontal tabs for volume display
 ;---------------------------------------------------------
@@ -35,7 +38,6 @@ VOL_LINE_LEN = $24
 ;--------------------------------------------------------- 
 OS_CALL_OFFSET	= 4	; Offset to the MLI call type/opcode byte
 CHR_RETURN	= $8d	; Carriage return
-
 
 ;---------------------------------------------------------
 ; Passive addresses (not written to)

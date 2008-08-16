@@ -21,6 +21,9 @@
 .include "applechr.i"		; ASCII string productions
 .include "const.i"		; ProDOS/SOS, CHR equates
 
+MINSLOT = $01	; The smallest slot number we're likely to encounter
+MAXSLOT = $04	; The largest slot number we're likely to encounter
+
 ;---------------------------------------------------------
 ; Horizontal tabs for volume display
 ;---------------------------------------------------------
