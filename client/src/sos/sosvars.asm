@@ -111,7 +111,7 @@ D_STATUS_PARMS:	.byte $03
 D_STATUS_NUM:	.byte $00
 D_STATUS_CODE:	.byte $00
 D_STATUS_LIST:	.addr D_STATUS_DATA
-D_STATUS_DATA:	.byte $00
+D_STATUS_DATA:	.byte $00, $00
 
 ; Table for device control
 
