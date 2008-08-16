@@ -43,7 +43,7 @@ PARMTXT:
 	ascz "NO"
 
 CONFIG_FILE_NAME:	.byte 14
-			asc "ADTPROETH.CONF"
+			asc "ADTSOSETH.CONF"
 
 YSAVE:	.byte $00
 
