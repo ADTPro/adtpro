@@ -15,6 +15,8 @@ ADTPro Serial Connections
 
  * {{{connectionsserial.html#DIN5}IIc and Laser 128 modem ports}}
 
+ * {{{connectionsserial.html#Apple3}Apple /// RS-232-C port}}
+
  * {{{connectionsserial.html#USB cabling}USB adapters}}
 
  []
@@ -204,10 +206,10 @@ Apple's (not DIN's!) standard:
  Within the DIN-5 shell, tie together pins:
  1&5
 
- Within the DE-9 shell, tie together pins:
+ If using DE-9: Within the DE-9 shell, tie together pins:
  1&4&6 and 7&8
 
- Within the DB-25 shell, tie together pins:
+ Or, if using DB-25: Within the DB-25 shell, tie together pins:
  6&8&20 and 4&5 
 ---
 
@@ -250,6 +252,43 @@ checkbox in the serial config dialog box, brought up from the
  * if <<<PRINT PEEK(64447)>>> returns 5, you have an Apple IIc Plus (ROM revision '5').
 
  []
+
+* {Apple3} /// RS-232-C port cabling
+
+  The RS-232-C port on the back of the Apple /// has the same physical connector as 
+the Super Serial card: a female DB-25.  But unlike the SSC, it can't be configured
+to use a null modem or not: it is hardwired to require one.  At the back of the 
+Apple ///, connect your null modem to the RS-232-C connector
+(also labeled "PORT C"), which looks like this:
+
+[images/a3Back.png]
+
+  If you are wiring a null modem yourself, the pinout to use is below.
+The parts you need can be found at swap meets, Jameco, Mouser, Radio Shack, etc.
+If you would rather purchse one that is ready to use, I sell them
+{{{http://retrofloppy.com/products.html#DB25DE9NULL}here}}.
+They look like this:
+
+[images/a3NullModem.png]
+
+ A single-cable null-modem is wired like this:
+
+---
+ DE-9     DB-25  RS-232
+ Pin#     Pin#    Name
+ -----    -----  ------
+   2 -----  2     TxD
+   3 -----  3     RxD
+   5 -----  7     GND
+  7&8      4&20  (disables
+ 1&4&6            hardware handshaking)
+
+ Within the DE-9 shell, tie together pins:
+ 1&4&6 and 7&8
+
+ Within the DB-25 shell, tie together pins:
+ 4&20
+---
 
 * {USB cabling}
 

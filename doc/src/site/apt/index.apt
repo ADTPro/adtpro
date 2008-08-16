@@ -22,7 +22,7 @@ drive types, communications devices, and host operating systems.
 
  ADTPro transfers disks using any of these communications devices:
 
-    * {{{connectionsserial.html#Super Serial cabling}Super Serial}} card, {{{connectionsserial.html#MiniDIN8}IIgs modem port}}, {{{connectionsserial.html#DIN5}IIc/Laser 128 serial port}}, or the Apple /// serial port
+    * {{{connectionsserial.html#Super Serial cabling}Super Serial}} card, {{{connectionsserial.html#MiniDIN8}IIgs modem port}}, {{{connectionsserial.html#DIN5}IIc/Laser 128 serial port}}, or the {{{connectionsserial.html#Apple3}Apple /// serial port}}
 
     * {{{http://a2retrosystems.com/}Uthernet}} Ethernet card
 
