@@ -29,10 +29,10 @@ ypos:		.byte $07
 current_value:	.byte $00
 new_digit:	.byte $09
 ip_parms_temp:
-	.byte 1, 2,   3,   4
-	.byte 5, 6,   7, 8
-	.byte 9, 10, 11,  12
-	.byte 13, 14,   15,  16
+	.byte 192, 168,   0,   2
+	.byte 192, 168,   0, 123
+	.byte 255, 255, 248,   0
+	.byte 192, 168,   0,   1
 ip_parms_temp_done:
 Hundred = $64
 Ten = $0a
