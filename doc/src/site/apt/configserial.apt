@@ -48,9 +48,13 @@ left arrow keys.  Your Apple has right and left arrow keys; trust me.
  The lowest-numbered slot with a card will be selected by default.
  The IIc and IIc+ computers use the "SSC SLOT 2" setting for their
  modem ports.
-If you have an IIgs and you want to use a Super Serial card in it, ensure you select
+
+ If you have an IIgs and you want to use a Super Serial card in it, ensure you select
 "Your Card" in the IIgs' control panel for the slot your SSC card is in,
 and select that same slot number here.
+
+ If you have an Apple ///, the internal serial adapter will always be chosen by default.
+If you want to use a Super Serial card instead, you will need to select its slot here.
 
  Various serial connection options are discussed in the
  {{{connectionsserial.html}serial connections}} section.
@@ -90,7 +94,19 @@ to the host computer.  See the
 {{{connectionsserial.html#DIN5}Laser 128 modem port}}
 connections section for details.
 
- 
+ <<Apple /// Serial>>
+
+ An Apple /// machine can use the built-in serial port (marked "RS-232-C")
+ on the back of the machine as well Super Serial cards in any of its four slots.
+ The built-in serial will be selected by default.
+
+[images/configIII.png]
+
+ ADTPro on an Apple /// will require a "null modem" cable or adapter when connecting
+ to the host computer.  See the
+{{{connectionsserial.html#Apple3}Apple /// RS-232-C port cabling}}
+connections section for details.
+  
 * Baud Rate
 
  Select the highest baud rate that still works reliably.
