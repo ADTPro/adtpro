@@ -21,8 +21,8 @@
 .include "applechr.i"		; ASCII string productions
 .include "const.i"
 
-MINSLOT = $00	; The smallest slot number we're likely to encounter
-MAXSLOT = $07	; The largest slot number we're likely to encounter
+MINSLOT = $00	; The smallest slot number we're likely to encounter (zero-indexed)
+MAXSLOT = $06	; The largest slot number we're likely to encounter (zero-indexed)
 
 ;---------------------------------------------------------
 ; Horizontal tabs for volume display

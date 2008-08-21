@@ -48,7 +48,7 @@ CONFIG_FILE_NAME:	.byte 14
 YSAVE:	.byte $00
 
 PARMS:
-PSSC:	.byte 3		; Comms slot (3)
+PSSC:	.byte 2		; Zero-indexed Comms slot (3)
 PSOUND:	.byte 0		; Sounds? (YES)
 PSAVE:	.byte 1		; Save parms? (NO)
 
@@ -58,6 +58,6 @@ cfg_ip:		.byte 192, 168,   0, 123
 cfg_netmask:	.byte 255, 255, 248,   0
 cfg_gateway:	.byte 192, 168,   0,   1
 
-DEFAULT:	.byte 3,0,1	; Default parm indices
+DEFAULT:	.byte 2,0,1	; Default parm indices
 CONFIGYET:	.byte 0		; Has the user configged yet?
 PARMSEND:
