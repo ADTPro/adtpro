@@ -44,7 +44,7 @@ left arrow keys.  Your Apple has right and left arrow keys; trust me.
 
  The Apple's slots will
  be scanned for a serial card or port automatically (until you explicitly
- {{{configserial.html#Save Configuration}save}} a configuration).
+ {{{configserial.html#Save_Configuration}save}} a configuration).
  The lowest-numbered slot with a card will be selected by default.
  The IIc and IIc+ computers use the "SSC SLOT 2" setting for their
  modem ports.

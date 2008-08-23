@@ -19,11 +19,11 @@ ADTPro Audio Bootstrapping
 
  Choose a bootstrapping scenario below that matches your situation.
 
- * {{{bootstrapaudio.html#If you already have ProDOS}If you already have ProDOS}}
+ * {{{bootstrapaudio.html#If_you_already_have_ProDOS}If you already have ProDOS}}
 
- * {{{bootstrapaudio.html#Starting from bare metal}If you have no ProDOS software at all - starting ADTPro from bare metal}}
+ * {{{bootstrapaudio.html#Starting_from_bare_metal}If you have no ProDOS software at all - starting ADTPro from bare metal}}
 
- * {{{bootstrapaudio.html#Bootstrapping DOS}If you have no software now and only want to start DOS 3.3 over the cassette port}}
+ * {{{bootstrapaudio.html#Bootstrapping_DOS}If you have no software now and only want to start DOS 3.3 over the cassette port}}
 
  [] 
 
@@ -97,7 +97,7 @@ audio cables all the way to making a bootable ADTPro floppy:
         or it isn't hearing things loudly enough.
         Make sure your sound volume is set at 50% of maximum and try again.  
         Hit Ctrl-Reset on the Apple to regain control and start again at
-        {{{bootstrapaudio.html#Decide which version}step 4 above}}.
+        {{{bootstrapaudio.html#Decide_which_version}step 4 above}}.
 
     [[1]] Once the transfer completes successfully,
       start the ADTPro client with the command <<<2000G>>>
@@ -174,7 +174,7 @@ audio cables all the way to making a bootable ADTPro floppy:
         or it isn't hearing things loudly enough.
         Make sure your sound volume is set at 50% of maximum and try again.  
         Hit Ctrl-Reset on the Apple to regain control and start again at
-        {{{bootstrapaudio.html#Send ProDOS} step 4 above}}.
+        {{{bootstrapaudio.html#Send_ProDOS} step 4 above}}.
 
     [[1]] Once the transfer completes successfully, the kernel of ProDOS is sitting
       at memory location 2000 on your Apple, and needs to be booted.  Back on the Apple,
@@ -233,7 +233,7 @@ audio cables all the way to making a bootable ADTPro floppy:
   DOS bootstrapped using the audio connection - this procedure's for you.
   If instead you intend to do ADTPro client and server disk transfers, 
   you really want to do the ProDOS bare-metal bootstrapping procedure
-  {{{bootstrapaudio.html#Starting from bare metal}above}}.
+  {{{bootstrapaudio.html#Starting_from_bare_metal}above}}.
 
   The full process looks like this:
 
@@ -328,7 +328,7 @@ audio cables all the way to making a bootable ADTPro floppy:
     [[1]] Remember, DOS ADT can't do audio transfers because it requires a serial card.
       If you want to do audio transfers, you really want to use the
       ProDOS bare-metal bootstrapping procedure
-      {{{bootstrapaudio.html#Starting from bare metal}above}}.
+      {{{bootstrapaudio.html#Starting_from_bare_metal}above}}.
 
     [[1]] You may wish to create a disk with the DOS version of ADT on it now.
       {With a freshly formatted DOS floppy in the Apple drive}, send over the

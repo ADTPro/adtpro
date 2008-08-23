@@ -14,24 +14,24 @@ you're ready to go.
   If you don't use DOS ADT now, or don't have software for your Apple yet, 
 more bootstrapping scenarios and configurations are detailed below.
 
- * {{{bootstrap.html#Starting from bare metal}If you have no Apple software at all - starting ADTPro from bare metal}}
+ * {{{bootstrap.html#Starting_from_bare_metal}If you have no Apple software at all - starting ADTPro from bare metal}}
 
- * {{{bootstrap.html#If you already have ProDOS}If you already have ProDOS}}
+ * {{{bootstrap.html#If_you_already_have_ProDOS}If you already have ProDOS}}
 
- * {{{bootstrap.html#Bootstrapping DOS}If you have no software now and only want to run DOS 3.3, not ADTPro}}
+ * {{{bootstrap.html#Bootstrapping_DOS}If you have no software now and only want to run DOS 3.3, not ADTPro}}
 
  []
 
  If you still need to connect your host and Apple II computers through their 
  serial ports, refer back to the "Connections" section:
 
- * {{{connectionsserial.html#Super Serial cabling}Super Serial card}}
+ * {{{connectionsserial.html#Super_Serial_cabling}Super Serial card}}
 
  * {{{connectionsserial.html#MiniDIN8}IIgs and IIc+ modem ports}}
 
  * {{{connectionsserial.html#DIN5}IIc and Laser 128 modem ports}}
 
- * {{{connectionsserial.html#USB cabling}USB adapters}}
+ * {{{connectionsserial.html#USB_cabling}USB adapters}}
 
  []
 

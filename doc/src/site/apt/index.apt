@@ -22,7 +22,7 @@ drive types, communications devices, and host operating systems.
 
  ADTPro transfers disks using any of these communications devices:
 
-    * {{{connectionsserial.html#Super Serial cabling}Super Serial}} card, {{{connectionsserial.html#MiniDIN8}IIgs modem port}}, {{{connectionsserial.html#DIN5}IIc/Laser 128 serial port}}, or the {{{connectionsserial.html#Apple3}Apple /// serial port}}
+    * {{{connectionsserial.html#Super_Serial_cabling}Super Serial}} card, {{{connectionsserial.html#MiniDIN8}IIgs modem port}}, {{{connectionsserial.html#DIN5}IIc/Laser 128 serial port}}, or the {{{connectionsserial.html#Apple3}Apple /// serial port}}
 
     * {{{http://a2retrosystems.com/}Uthernet}} Ethernet card
 
@@ -106,11 +106,11 @@ are detailed below.  Please note that you will need to use
 (not ethernet) for this task.
 ADTPro doesn't have the ability to bootstrap the Apple ///.
 
- * Click {{{bootstrap.html#Starting from bare metal}[serial}}|{{{bootstrapaudio.html#Starting from bare metal}audio]}} if you have no Apple software at all - starting ADTPro from bare metal
+ * Click {{{bootstrap.html#Starting_from_bare_metal}[serial}}|{{{bootstrapaudio.html#Starting_from_bare_metal}audio]}} if you have no Apple software at all - starting ADTPro from bare metal
 
- * Click {{{bootstrap.html#If you already have ProDOS}[serial}}|{{{bootstrapaudio.html#If you already have ProDOS}audio]}} if you already have ProDOS
+ * Click {{{bootstrap.html#If_you_already_have_ProDOS}[serial}}|{{{bootstrapaudio.html#If_you_already_have_ProDOS}audio]}} if you already have ProDOS
 
- * Click {{{bootstrap.html#Bootstrapping DOS}[serial}}|{{{bootstrapaudio.html#Bootstrapping DOS}audio]}} if you have no Apple software at all and only want to boot DOS, not ProDOS or ADTPro
+ * Click {{{bootstrap.html#Bootstrapping_DOS}[serial}}|{{{bootstrapaudio.html#Bootstrapping_DOS}audio]}} if you have no Apple software at all and only want to boot DOS, not ProDOS or ADTPro
 
  []
 

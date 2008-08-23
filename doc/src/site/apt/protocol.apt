@@ -8,7 +8,7 @@ ADTPro Protocol
 
 * Functions
 
- [{{{#Change Directory}"C" - CD}}]   Change working directory
+ [{{{#Change_Directory}"C" - CD}}]   Change working directory
 
  [{{{#Put}"Z" - Size}}]  Ask for file size (implies existence test; used as part of Put protocol)
 

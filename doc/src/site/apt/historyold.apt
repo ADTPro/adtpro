@@ -96,7 +96,7 @@ ADTPro Release Ancient History
  First official public release after one year of beta iterations.
  Communications methods include:
 
-  * {{{connectionsserial.html#Super Serial cabling}Super Serial}} card, {{{connectionsserial.html#MiniDIN8}IIgs modem port}}, or {{{connectionsserial.html#DIN5}IIc/Laser 128 serial port}}
+  * {{{connectionsserial.html#Super_Serial_cabling}Super Serial}} card, {{{connectionsserial.html#MiniDIN8}IIgs modem port}}, or {{{connectionsserial.html#DIN5}IIc/Laser 128 serial port}}
 
   * {{{http://a2retrosystems.com/}Uthernet}} Ethernet card
 

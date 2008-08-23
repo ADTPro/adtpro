@@ -9,7 +9,7 @@ ADTPro Serial Connections
  Connecting an Apple and your host computer through serial ports 
  can take several forms.  This section details:
  
- * {{{connectionsserial.html#Super Serial cabling}Super Serial card}}
+ * {{{connectionsserial.html#Super_Serial_cabling}Super Serial card}}
 
  * {{{connectionsserial.html#MiniDIN8}IIgs and IIc+ modem ports}}
 
@@ -17,7 +17,7 @@ ADTPro Serial Connections
 
  * {{{connectionsserial.html#Apple3}Apple /// RS-232-C port}}
 
- * {{{connectionsserial.html#USB cabling}USB adapters}}
+ * {{{connectionsserial.html#USB_cabling}USB adapters}}
 
  []
 
@@ -328,7 +328,7 @@ ADTPro seems to be able to function normally using either flavor.
 [images/osxServerPort.png]
 
   Once connected, ADTPro will be able to operate normally over the USB connection,
-including {{{bootstrap.html#Starting from bare metal}bare metal}} bootstrapping
+including {{{bootstrap.html#Starting_from_bare_metal}bare metal}} bootstrapping
 operations.
 
 * {Pinout References}
