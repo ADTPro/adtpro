@@ -150,7 +150,7 @@ PINGREQUEST:
 	sta state
 	lda #CHR_Y
 	jsr PUTC
-	jsr RECEIVE_LOOP
+	jsr RECEIVE_LOOP_FAST
 	rts
 
 ;---------------------------------------------------------
@@ -161,7 +161,7 @@ DIRREQUEST:
 	sta state
 	lda #CHR_D
 	jsr PUTC
-	jsr RECEIVE_LOOP
+	jsr RECEIVE_LOOP_FAST
 	rts
 
 ;---------------------------------------------------------
@@ -202,7 +202,7 @@ CDREQUEST:
 	LDA_BIGBUF_ADDR_LO	; Was: ldax #BIGBUF
 	LDX_BIGBUF_ADDR_HI
 	jsr udp_send
-	jsr RECEIVE_LOOP
+	jsr RECEIVE_LOOP_FAST
 	rts
 
 ;---------------------------------------------------------
@@ -232,7 +232,7 @@ GETREPLY:
 GETREPLY2:
 	lda #STATE_GET	; Set up for GETREPLY1 callback
 	sta state
-	jsr RECEIVE_LOOP
+	jsr RECEIVE_LOOP_FAST
 	lda QUERYRC
 	rts	
 
@@ -267,7 +267,7 @@ PUTREQUEST:
 	LDA_BIGBUF_ADDR_LO	; Was: ldax #BIGBUF
 	LDX_BIGBUF_ADDR_HI
 	jsr udp_send
-	jsr RECEIVE_LOOP
+	jsr RECEIVE_LOOP_FAST
 	rts
 
 ;---------------------------------------------------------
@@ -329,7 +329,7 @@ GETREQUEST:
 	LDA_BIGBUF_ADDR_LO	; Was: ldax #BIGBUF
 	LDX_BIGBUF_ADDR_HI
 	jsr udp_send
-	jsr RECEIVE_LOOP
+	jsr RECEIVE_LOOP_FAST
 	rts
 
 ;---------------------------------------------------------
@@ -359,7 +359,7 @@ BATCHREQUEST:
 	LDA_BIGBUF_ADDR_LO	; Was: ldax #BIGBUF
 	LDX_BIGBUF_ADDR_HI
 	jsr udp_send
-	jsr RECEIVE_LOOP
+	jsr RECEIVE_LOOP_FAST
 	rts
 
 ;---------------------------------------------------------
@@ -383,7 +383,7 @@ QUERYFNREQUEST:
 	LDA_BIGBUF_ADDR_LO	; Was: ldax #BIGBUF
 	LDX_BIGBUF_ADDR_HI
 	jsr udp_send
-	jsr RECEIVE_LOOP
+	jsr RECEIVE_LOOP_FAST
 	rts
 
 ;---------------------------------------------------------
