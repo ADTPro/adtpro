@@ -155,6 +155,8 @@ YesSmart1:
 	lda (Buffer),y		;  Protocol Converter.
 	cmp #$3C
 	beq YesSmart2		; Found a hard drive, CFFA, etc.
+	cmp #$55
+	beq YesSmart2		; Found a ProFile
 	cmp #$00
 	bne NoUnit		; It isn't so it's no device I know.
 YesSmart2:
