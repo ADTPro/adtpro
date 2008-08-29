@@ -769,7 +769,7 @@ Phase:
 	tax
 	lda Step1,x		; PHASE on...
 	lda #$56		; 20 ms. delay
-	jsr WAIT
+	jsr DELAY
 	lda Step0,x		; PHASE off...
 	rts
 

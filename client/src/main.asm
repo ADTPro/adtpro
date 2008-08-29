@@ -45,7 +45,7 @@ caldriv3:
 	tax
 	lda	$c081,x		; stepper motor phase n on
 	lda	#$56		; param for wait loop
-	jsr	$fca8		; wait specified time units
+	jsr	DELAY		; wait specified time units
 	dey			; decrement count
 	bpl	caldriv3	; jump back while y >= 0
 	rts

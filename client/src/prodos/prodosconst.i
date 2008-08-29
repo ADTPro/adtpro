@@ -91,7 +91,6 @@ IN       = $200			; Keyboard input buffer
 INPUT_BUFFER = $200
 WARMDOS  = $BE00		; BASIC Warm-start vector
 LAST     = $BF30		; Last device accessed by ProDOS
-WAIT     = $FCA8		; Delay routine
 CLRLN    = $FC9C		; Clear Line routine
 PRBYTE   = $FDDA		; Print Byte routine (HEX value)
 COUT     = $FDED		; Character output routine (print to screen)
