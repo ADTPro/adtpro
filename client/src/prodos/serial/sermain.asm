@@ -21,14 +21,15 @@
 	.include "prodos/interp.asm"			; Interpreter header
 	.include "prodos/prodosmacros.i"		; OS macros
 	.include "prodos/prodosconst.i"			; OS equates, characters, etc.
-	.include "prodos/prodosvars.asm"
-	.include "prodos/serial/sermessages.asm"	; Messages
 	.include "ip65/common.i"
-	.include "main.asm"
+	.include "diskii.asm"				; Contains positionally dependent format code
 
 ;---------------------------------------------------------
 ; Pull in all the rest of the code
 ;---------------------------------------------------------
+	.include "main.asm"
+	.include "prodos/prodosvars.asm"		; Variables
+	.include "prodos/serial/sermessages.asm"	; Messages
 	.include "prodos/conio.asm"		; Console I/O
 	.include "print.asm"
 	.include "prodos/serial/serproto.asm"
@@ -42,10 +43,10 @@
 	.include "input.asm"
 	.include "prodos/serial/serconfigpro.asm"
 	.include "hostfns.asm"
-	.include "diskii.asm"
 	.include "nibble.asm"
 	.include "prodos/serial/pascalep.asm"	; Note: includes PASCALEP segment
 	.include "prodos/format.asm"		; Note: includes FORMAT segment
 	.include "bsave.asm"
 
 	.segment "DATA"
+	

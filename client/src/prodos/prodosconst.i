@@ -33,6 +33,25 @@ H_VO	= $0f
 H_SZ	= $21
 VOL_LINE_LEN = $24
 
+;---------------------------------------------------------
+; Zero page locations (all unused by ProDOS,
+; Applesoft, Disk Drivers and the Monitor)
+;---------------------------------------------------------
+
+; $6-$9, $19-$1e are free
+ZP	= $06		; ($01 byte)
+UTILPTR	= $07		; ($02 bytes) Used for printing messages
+COL_SAV	= $09		; ($01 byte)
+RLEPREV = $19		; ($01 byte)
+UDPI	= $1a		; ($01 byte) Used by UDP SEND and RECEIVE
+BLKPTR	= $1b		; ($02 bytes) Used by SEND and RECEIVE
+synccnt	= $1d		; ($02 bytes) Used by nibble/halftrack
+CRC	= $1d		; ($02 bytes) Used by ONLINE, SEND and RECEIVE
+Buffer  = $1d 		; ($02 bytes) Address pointer for FORMAT data
+CRCY	= $8a		; ($01 byte) Used by UDP SEND
+TMOT    = $8b		; ($01 byte) Timeout indicator
+NIBPCNT	= $8c		; ($01 byte) Counts nibble pages
+
 ;--------------------------------------------------------- 
 ; ProDOS specific stuff
 ;--------------------------------------------------------- 

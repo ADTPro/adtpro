@@ -21,15 +21,14 @@
 	.include "prodos/interp.asm"			; Interpreter header
 	.include "prodos/prodosmacros.i"		; OS macros
 	.include "prodos/prodosconst.i"			; OS equates, characters, etc.
-	.include "prodos/prodosvars.asm"
-	.include "prodos/ethernet/ethmessages.asm"	; Messages
 	.include "ip65/common.i"
-	.include "main.asm"
+	.include "main.asm"				; Contains positionally dependent format code
 
 ;---------------------------------------------------------
 ; Pull in all the rest of the code
 ;---------------------------------------------------------
-
+	.include "prodos/prodosvars.asm"		; Variables
+	.include "prodos/ethernet/ethmessages.asm"	; Messages
 	.include "prodos/conio.asm"		; Console I/O
 	.include "print.asm"
 	.include "prodos/online.asm"
