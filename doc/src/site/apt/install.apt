@@ -22,7 +22,7 @@ ADTPro Installation
  
   * <<<ADTPro-v.r.m.tar.gz>>> - Linux/Solaris
  
-  * <<<ADTPro-v.r.m.dmg>>> - OSX
+  * <<<ADTPro-v.r.m.dmg>>> - Mac OSX
  
   * <<<ADTPro-v.r.m.zip>>> - Windows/OS/2
   
@@ -41,7 +41,6 @@ ADTPro Installation
 
  [[1]] Bootstrap the client software on your Apple II via {{{bootstrap.html}serial}} or {{{bootstrapaudio.html}cassette}} ports.
 
-
  []
 
  Please report troubles, bugs, requests for help, etc. on the Help 
@@ -51,11 +50,10 @@ ADTPro Installation
 
  Good luck - and have fun!
 
-Unix/Mac OSX RXTX {Considerations}
+Unix RXTX {Considerations}
 
- For Unix variants, make sure the user that will be running 
+ For Unix variants other than Mac OSX, make sure the user that will be running 
  ADTPro is in the group <<<lock>>> or <<<uucp>>> so that lockfiles can work.
- This won't be necessary in OSX.
 
  The <<<adtpro.sh>>> and <<<adtpro.command>>> files can be customized 
  to suit your environment.
@@ -85,7 +83,7 @@ OS/2 RXTX Considerations
  OS/2 doesn't have a native RXTX library.  It would be a relatively easy
  thing to snap in the original Sun/IBM serial library, but just hasn't been
  done yet.  Holler if you want it.  Otherwise, the audio and UDP/Ethernet
- versions will still work fine in OS/2.
+ versions work fine in OS/2.
 
 Distribution contents
 
@@ -101,9 +99,11 @@ Distribution contents
 
  * <<<LICENSE       >>> - The GNU Public License file
 
- * <<<README        >>> - The page you're looking at now, mostly
+ * <<<README        >>> - The info you're looking at now, mostly
 
  * <<<disks/ADTPRO-v.r.m.DSK  >>> - ADTPro client-side software (an Apple 140K disk image)
+
+ * <<<disks/ADTSOS-CFIDE-v.r.m.DSK>>> - A disk specifically for Apple /// computers with Rich Dreher's Compact Flash board
 
  * <<<disks/ADTPRO-v.r.m.PO   >>> - ADTPro client-side software (an Apple 800K disk image)
 
@@ -114,7 +114,5 @@ Distribution contents
  * <<<lib/ADTPro-v.r.m.jar    >>> - ADTPro server-side software (a Java .jar file)
  
  * <<<lib/rxtx/...            >>> - Java serial library files
-
- * <<<lib/rxtx/fixperm.command>>> - A command to help OSX users enable the RXTX library (no longer necessary as of version 1.0.6a)
 
  []

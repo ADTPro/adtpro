@@ -37,8 +37,8 @@ the stuff that gets uploaded to sourceforge.
 6. Tag adtpro project with the version number.
    The standard is:  v_[major]_[minor]_[service]
 
-7. Ungzip/untar the distro on a Mac; delete the non-Mac stuff,
-   build a ADTPro-v.r.m.dmg of the ADTPro-v.r.m directory  
+7. Ungzip/untar the .tar.gz distro on a Mac; delete the non-Mac
+   stuff, build a ADTPro-v.r.m.dmg of the ADTPro-v.r.m directory  
 
 8. Anonymously FTP ADTPro-v.r.m.zip, .dmg and .tar.gz to 
    upload.sourceforge.net, in the incoming directory.
