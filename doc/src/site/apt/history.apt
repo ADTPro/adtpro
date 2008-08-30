@@ -10,6 +10,9 @@ ADTPro Release History
 
  New functionality:
 
+ * [Client] Client software comes on a combined "dual boot"
+   ProDOS/SOS disk for both Apple II and Apple /// computers
+
  * [Client] Format routine now recognizes ProFile drives
 
  []

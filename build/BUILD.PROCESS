@@ -40,8 +40,8 @@ the stuff that gets uploaded to sourceforge.
 7. Ungzip/untar the .tar.gz distro on a Mac; delete the non-Mac
    stuff, build a ADTPro-v.r.m.dmg of the ADTPro-v.r.m directory  
 
-8. Anonymously FTP ADTPro-v.r.m.zip, .dmg and .tar.gz to 
-   upload.sourceforge.net, in the incoming directory.
+8. psftp into frs.sourceforge.net as your real SF ID and send
+   ADTPro-v.r.m.zip, .dmg and .tar.gz to the uploads directory.
 
 9. Release the file
 
