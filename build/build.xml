@@ -340,7 +340,6 @@
 			dest="${builddir}/${distName}/lib"/>
 		<move file="${builddir}/${distName}/lib/${rxtxVersion}"
 			tofile="${builddir}/${distName}/lib/rxtx"/>
-		<copy file="${builddir}/fixperm.command" todir="${builddir}/${distName}/lib/rxtx" />
 		<copy file="${builddir}/README" todir="${builddir}/${distName}" />
 		<copy file="${builddir}/LICENSE" todir="${builddir}/${distName}" />
 		<copy file="${builddir}/ADTPro.html" todir="${builddir}/${distName}" />
@@ -359,9 +358,8 @@
 		<tar destfile="${builddir}/${distName}.tar"
 			basedir="${builddir}"
 			includes="${distName}/**"
-			excludes="${distName}/adtpro.sh ${distName}/adtpro.command ${distName}/lib/rxtx/fixperm.command">
+			excludes="${distName}/adtpro.sh ${distName}/adtpro.command">
 			<tarfileset dir="${builddir}" mode="755">
-				<include name="${distName}/lib/rxtx/fixperm.command"/>
 				<include name="${distName}/adtpro.command"/>
 				<include name="${distName}/adtpro.sh"/>
 			</tarfileset>
