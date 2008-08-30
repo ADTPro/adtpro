@@ -15,15 +15,19 @@ distribution file, you will find:
  * adtpro.sh              - A Linux/Solaris server startup
                             shell script
  * LICENSE                - The GNU Public License file
- * README                 - The page you're looking at now
+ * README                 - The file you're looking at now
  * disks/ADTPro-v.r.m.dsk - ADTPro client-side software
                             (an Apple 140K disk image)
+ * disks/ADTSOS-CFIDE-v.r.m.DSK - A disk specifically for 
+ 	                    Apple /// computers with Rich
+ 	                    Dreher's Compact Flash board
  * disks/ADTPro-v.r.m.po  - ADTPro client-side software
                             (an Apple 800K disk image)
- * disks/ADTvrm.dsk       - An enhanced legacy Apple DOS ADT
-                            client, capable of running on both
-                            Super Serial hardware as well as on
-                            the IIgs serial (modem) port
+ * disks/ADTvr.dsk        - An enhanced legacy Apple DOS ADT
+                            client, capable of running on the
+                            Super Serial hardware, the IIgs
+                            serial (modem) port, and the
+                            IIc/Laser 128 modem port
  * lib/ADTPro-v.r.m.jar   - ADTPro server-side software
                             (a Java .jar file)
  * lib/rxtx/...           - Java serial library files
@@ -31,14 +35,14 @@ distribution file, you will find:
                               the RXTX library
 
 In all cases above, v.r.m is replaced with the version, release 
-and modification numbers of the distribution.
+and modification numbers of the current distribution.
 
 To get started, you will need a Java installation you can call
-from the command line. This means that if you type the command
-"java -version" from a terminal window it ought to produce output
-other than complaints. One place to get a downloadable Java
-distribution is from Sun Microsystems: Sun JRE download. When you
-get there, look for a "Java Runtime Environment (JRE)" download
+from the host computer's command line. This means that if you type
+the command "java -version" from a terminal window it ought to
+produce output other than complaints. One place to get a downloadable
+Java distribution is from Sun Microsystems: Sun JRE download. When
+you get there, look for a "Java Runtime Environment (JRE)" download
 for your platform and install it.
 
 After downloading the ADTPro distribution file to your desktop,

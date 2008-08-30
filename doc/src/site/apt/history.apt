@@ -31,7 +31,7 @@ ADTPro Release History
    appear to "hang" when a response isn't received
 
  * [Client] Re-integrated Bird's Better Bye (which was inexplicably removed)
-   for our Apple II+ friends
+   for our Apple II and II+ friends
 
  * [Server] Improved batch logic for cleaning up after aborted image transfers
 

@@ -30,6 +30,7 @@ the stuff that gets uploaded to sourceforge.
 4. Tests:
    * Ensure all files have a current date on the virtual disks
    * Ensure each bootstrap text content works
+   * Ensure that floppy formatting works
 
 5. Commit all changes
 
