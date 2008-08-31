@@ -19,7 +19,7 @@ ADTPro Release History
 
  Bug fixes:
 
- * [Client] {{{http://www.refactoring.com/}Refactored}} and reorganized
+ * [Client] Reorganized
    the entire client code base in order to single-source ProDOS and SOS versions -
    probably leading to several new bugs in the ProDOS client
 
