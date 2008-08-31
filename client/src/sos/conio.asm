@@ -83,6 +83,9 @@ INIT_SCREEN:
 ; changes it so when you hit RESET, SOS enters a routine that saves all the
 ; important stuff, and jumps into the built in monitor. To reenter SOS, do
 ; a 198CG from the monitor. Known to work through SOS 1.3.
+; To bank your memory in, set the bank register to the highest page
+; I.e. FFEF:F6 for a 256k machine.
+; Your zero page actually lives at $1A00-$1AFF.
 	lda $1904			; Grab low byte of NMI vector
 	sec				; Make sure that carry is set.
 	sbc #$07			; Fall back 7 bytes from the
@@ -171,6 +174,16 @@ WRITEMSG_RAWLEN:
 WRITEMSG_RAW:
 	CALLOS OS_WRITEFILE, WRITE_PARMS
 	jmp ERRORCK		; Retrun through error handler for SOS errors
+
+;---------------------------------------------------------
+; IPShowMsg
+;---------------------------------------------------------
+IPShowMsg:
+	sta UTILPTR
+	stx UTILPTR+1
+	tya		; Put the length in accumulator
+	jsr WRITEMSG_RAWLEN
+	rts
 
 ;---------------------------------------------------------
 ; SHOWHMSG - Show host-initiated message #Y at current

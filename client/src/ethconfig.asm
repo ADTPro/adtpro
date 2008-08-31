@@ -256,16 +256,6 @@ PARMDFTNEXT:
 	sta PSAVE
 	rts
 
-;---------------------------------------------------------
-; IPShowMsg
-;---------------------------------------------------------
-IPShowMsg:
-	sta UTILPTR
-	stx UTILPTR+1
-	tya		; Put the length in accumulator
-	jsr WRITEMSG_RAWLEN
-	rts
-
 REFRESH:
 	lda #3		; FIRST PARAMETER IS ON LINE 3
 	jsr TABV

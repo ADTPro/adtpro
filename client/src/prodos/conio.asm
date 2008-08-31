@@ -138,6 +138,16 @@ WRITEMSGEND:
 WRITEMSGLEN:	.byte $00
 
 ;---------------------------------------------------------
+; IPShowMsg
+;---------------------------------------------------------
+IPShowMsg:
+	sta UTILPTR
+	stx UTILPTR+1
+	tya		; Put the length in accumulator
+	jsr WRITEMSG_RAWLEN
+	rts
+
+;---------------------------------------------------------
 ; CLRMSGAREA - Clear out the bottom part of the screen
 ;---------------------------------------------------------
 CLRMSGAREA:

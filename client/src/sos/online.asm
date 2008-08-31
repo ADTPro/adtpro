@@ -63,13 +63,26 @@ SCAN_DEVICE_LOOP:
 	bpl SCAN_NEXT
 	jsr SCAN_VOLUME
 SCAN_NEXT:
-	iny
+	cmp #$11			; Type = $11 can be FMTDx...
+	bne :+
+	lda D_INFO_OPTION+3
+	cmp #$01			; Subtype = $01 means FMTDx
+	bne :+
+	tya
+	pha				; Hang on to Y for a bit
+	ldy D_INFO_OPTION+1		; Get the unit number
+	lda D_INFO_NUM			; Get the device number
+	sta FMTDX,y			; Associate the formatter device with its unit number
+	pla
+	tay
+:	iny
 	cpy #$19
 	bne SCAN_DEVICE_LOOP
 ODONE:
 	rts
 
 DUMP_INDEX:	.byte $00
+FMTDX:	.byte $00, $00, $00, $00
 
 ;---------------------------------------------------------
 ; SCAN_VOLUME
