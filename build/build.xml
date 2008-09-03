@@ -166,6 +166,10 @@
 		<exec dir="${projdir}/client/src" executable="${assemblerPath}/ca65">
 			<arg line="-l -t none sos/ethernet/ethmain.asm" />
 		</exec>
+		<echo message="Assembling SOS Boot source..."/>
+		<exec dir="${projdir}/client/src" executable="${assemblerPath}/ca65">
+			<arg line="-l -t none sos/manualbootstrap.asm" />
+		</exec>
 		<!--
 		Link the bits
 		-->
