@@ -453,10 +453,15 @@ public class SerialTransport extends ATransport
         ret = Messages.getString("Gui.BS.DumpProDOSInstructions2Done");
       }
       else
-        if (guiString.equals(Messages.getString("Gui.BS.DOS")))
-        {
-          ret = Messages.getString("Gui.BS.DumpDOSInstructionsDone");
-        }
+          if (guiString.equals(Messages.getString("Gui.BS.DOS")))
+          {
+            ret = Messages.getString("Gui.BS.DumpDOSInstructionsDone");
+          }
+          else
+              if (guiString.equals(Messages.getString("Gui.BS.SOS")))
+              {
+                ret = Messages.getString("Gui.BS.DumpSOSInstructionsDone");
+              }
     Log.println(false,"SerialTransport.getInstructionsDone() returning: "+ret);
     return ret;
   }
@@ -470,7 +475,9 @@ public class SerialTransport extends ATransport
       if (guiString.equals(Messages.getString("Gui.BS.ProDOS2"))) ret = Messages
           .getString("Gui.BS.DumpProDOSInstructions2");
       else
-        if (guiString.equals(Messages.getString("Gui.BS.DOS"))) ret = Messages.getString("Gui.BS.DumpDOSInstructions");
+          if (guiString.equals(Messages.getString("Gui.BS.DOS"))) ret = Messages.getString("Gui.BS.DumpDOSInstructions");
+          else
+              if (guiString.equals(Messages.getString("Gui.BS.SOS"))) ret = Messages.getString("Gui.BS.DumpSOSInstructions");
         else
           if (guiString.equals(Messages.getString("Gui.BS.ADT"))) ret = Messages
               .getString("Gui.BS.DumpADTInstructions");

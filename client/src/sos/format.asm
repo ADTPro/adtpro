@@ -235,6 +235,29 @@ LAbort:
 	sec
 	rts
 
+;---------------------------------------------------------
+; Write boot blocks to disk
+;---------------------------------------------------------
+BootBlocks:
+;	lda #$81		; Set Opcode to WRITE
+;	CALLOS OS_D_CONTROL, FMT_CONTROL_PARMS	; Format, baby!
+;	sta CallMLI+OS_CALL_OFFSET
+;	lda #$00		; Set MLIBlk to 0
+;	sta MLIBlk
+;	sta MLIBlk+1
+;	lda #<BootCode		; Set MLIbuf to BootCode
+;	ldy #>BootCode
+;	sta MLIbuf
+;	sty MLIbuf+1
+;	jsr CallMLI		; Write block #0 to target disk
+;	jsr ZeroFill6800
+;	lda #$01		; Set MLIBlk to 1
+;	sta MLIBlk
+;	jsr CallMLI		; Write block #1 to target disk	
+
+;---------------------------------------------------------
+; Variables
+;---------------------------------------------------------
 VolLen:	.res 1			; $F0 + length of Volume Name
 VOLnam:	.res 15			; Volume Name
 

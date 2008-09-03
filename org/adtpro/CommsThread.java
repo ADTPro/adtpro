@@ -2310,7 +2310,7 @@ public class CommsThread extends Thread
       if (resource.equals(Messages.getString("Gui.BS.ProDOS"))) resourceName = "org/adtpro/resources/PD.raw";
       else
         if (resource.equals(Messages.getString("Gui.BS.DOS"))) resourceName = "org/adtpro/resources/EsDOS1.raw";
-        else
+          else
           if (resource.equals(Messages.getString("Gui.BS.DOS2"))) resourceName = "org/adtpro/resources/EsDOS2.raw";
           else
             if (resource.equals(Messages.getString("Gui.BS.ADT"))) resourceName = "org/adtpro/resources/adt.raw";
@@ -2332,12 +2332,19 @@ public class CommsThread extends Thread
         slowFirstLines = 4;
       }
       else
-        if (resource.equals(Messages.getString("Gui.BS.DOS")))
-        {
-          resourceName = "org/adtpro/resources/EsDOS.dmp";
-          slowFirstLines = 3;
-          slowLastLines = 0;
-        }
+          if (resource.equals(Messages.getString("Gui.BS.DOS")))
+          {
+            resourceName = "org/adtpro/resources/EsDOS.dmp";
+            slowFirstLines = 3;
+            slowLastLines = 0;
+          }
+          else
+              if (resource.equals(Messages.getString("Gui.BS.SOS")))
+              {
+                resourceName = "org/adtpro/resources/SOSBlock1.raw";
+                slowFirstLines = 0;
+                slowLastLines = 0;
+              }
         else
           if (resource.equals(Messages.getString("Gui.BS.ADT")))
           {

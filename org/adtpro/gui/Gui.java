@@ -126,6 +126,7 @@ public final class Gui extends JFrame implements ActionListener
     menuBootstrap = new JMenu(Messages.getString("Gui.Bootstrap")); //$NON-NLS-1$
     JMenu menuBootstrapProDOS = new JMenu(Messages.getString("Gui.BootstrapProDOS")); //$NON-NLS-1$
     JMenu menuBootstrapDOS = new JMenu(Messages.getString("Gui.BootstrapDOS")); //$NON-NLS-1$
+    JMenu menuBootstrapSOS = new JMenu(Messages.getString("Gui.BootstrapSOS")); //$NON-NLS-1$
     MenuAction proDOSAction = new MenuAction(Messages.getString("Gui.BS.ProDOS")); //$NON-NLS-1$
     menuBootstrapProDOS.add(proDOSAction);
     MenuAction dosAction = new MenuAction(Messages.getString("Gui.BS.DOS")); //$NON-NLS-1$
@@ -133,6 +134,8 @@ public final class Gui extends JFrame implements ActionListener
     MenuAction dosAction2 = new MenuAction(Messages.getString("Gui.BS.DOS2")); //$NON-NLS-1$
     _dosAction2 = menuBootstrapDOS.add(dosAction2);
     _dosAction2.setEnabled(true);
+    MenuAction sosAction = new MenuAction(Messages.getString("Gui.BS.SOS")); //$NON-NLS-1$
+    menuBootstrapSOS.add(sosAction);
     MenuAction adtAction = new MenuAction(Messages.getString("Gui.BS.ADT")); //$NON-NLS-1$
     menuBootstrapDOS.add(adtAction);
     MenuAction adtProAction = new MenuAction(Messages.getString("Gui.BS.ADTPro")); //$NON-NLS-1$
@@ -144,6 +147,7 @@ public final class Gui extends JFrame implements ActionListener
     menuBar.add(menuBootstrap);
     menuBootstrap.add(menuBootstrapProDOS);
     menuBootstrap.add(menuBootstrapDOS);
+    menuBootstrap.add(menuBootstrapSOS);
     MenuAction serialConfigBootstrapAction = new MenuAction(Messages.getString("Gui.SerialConfigBootstrap")); //$NON-NLS-1$
     menuBootstrap.add(serialConfigBootstrapAction);
     menuBootstrap.setEnabled(false);
@@ -635,6 +639,7 @@ public final class Gui extends JFrame implements ActionListener
             else
               if ((e.getActionCommand().equals(Messages.getString("Gui.BS.DOS"))) || //$NON-NLS-1$
                   (e.getActionCommand().equals(Messages.getString("Gui.BS.DOS2"))) || //$NON-NLS-1$
+                  (e.getActionCommand().equals(Messages.getString("Gui.BS.SOS"))) || //$NON-NLS-1$
                   (e.getActionCommand().equals(Messages.getString("Gui.BS.ProDOS"))) || //$NON-NLS-1$
                   (e.getActionCommand().equals(Messages.getString("Gui.BS.ProDOSFormat"))) || //$NON-NLS-1$
                   (e.getActionCommand().equals(Messages.getString("Gui.BS.ADT"))) || //$NON-NLS-1$
@@ -661,7 +666,8 @@ public final class Gui extends JFrame implements ActionListener
                 {
                   pacing = 75;
                 }
-
+                if (e.getActionCommand().equals(Messages.getString("Gui.BS.SOS")))
+                    speed = Integer.parseInt(_properties.getProperty("CommPortSpeed"));
                 Log.println(false, "Gui.actionPerformed getting instructions with speed = " + speed + " pacing = "
                     + pacing);
                 message = _commsThread.getInstructions(e.getActionCommand(), size, speed);
