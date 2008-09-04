@@ -24,7 +24,7 @@
 ; code into sector zero (block zero) of a diskette and booting it.
 ; The /// ROM will pull it into $A000 and execute it.
 
-	.org $A000
+	.org $a000
 
 KBDSTROBE	:= $C010
 E_REG		:= $FFDF
@@ -66,7 +66,7 @@ banktest:		; Find highest writable bank
 ; Set up the serial port
 	lda #$0b	; No parity, etc.
 	sta $c0f2
-	lda #$10	; 115kbps
+	lda #$1e	; 9600 bps
 	sta $c0f3
 
 ; Say we're active
@@ -141,6 +141,4 @@ message_2:
 	.byte $00, $00, $00, $00, $00, $00, $00, $00
 	.byte $00, $00, $00, $00, $00, $00, $00, $00
 	.byte $00, $00, $00, $00, $00, $00, $00, $00
-	.byte $00, $00, $00, $00, $00, $00, $00, $00
-	.byte $00, $00, $00, $00, $00, $00, $00, $00
-	.byte $00, $00
+	.byte $00, $00, $00, $00, $00, $00, $00
