@@ -2341,7 +2341,7 @@ public class CommsThread extends Thread
           else
               if (resource.equals(Messages.getString("Gui.BS.SOS")))
               {
-                resourceName = "org/adtpro/resources/SOSBlock1.raw";
+                resourceName = "org/adtpro/resources/SK.raw";
                 slowFirstLines = 0;
                 slowLastLines = 0;
               }

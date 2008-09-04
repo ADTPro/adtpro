@@ -18,27 +18,56 @@
 ; 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 ;
 
-	.org $B000
+	.org $A000
+
+KBDSTROBE	:= $C010
+E_REG		:= $FFDF
+B_REG		:= $FFEF
+screenptr	:= $7c
+screenptr_lsb	:= $7c
+screenptr_msb	:= $7d
+buffer		:= $7e
+buffer_lsb	:= $7e
+buffer_msb	:= $7f
+
+entry:	sei
+	cld
+	lda #$77
+	sta E_REG
+	ldx #$FB
+	txs
+	bit KBDSTROBE
+	lda #$40
+	sta $FFCA	; Disable interrupts
+	lda #$07
+	sta B_REG
+	ldx #$00
+banktest:		; Find highest writable bank
+	dec B_REG
+	stx $2000
+	lda $2000
+	bne banktest
+
 ; Slow down to 1MHz
 	lda $ffdf	; Read the environment register
 	ora #$80	; Set 1MHz switch
 	sta $ffdf	; Write the environment register
+
+; Set up our pointers
+	lda #$00
+	tay		; We'll use Y later as an index
+	sta buffer_lsb
+	sta screenptr_lsb
+	lda #$1e	; Initial SOS.KERNEL runs from $1e00 to $73ff
+	sta buffer_msb
+	lda #$04	; Screen memory
+	sta screenptr_msb
 
 ; Set up the serial port
 	lda #$0b	; No parity, etc.
 	sta $c0f2
 	lda #$10	; 115kbps
 	sta $c0f3
-
-; Set up our pointer
-	lda #$00
-	tay		; We'll use Y later as an index
-	sta $7c
-	sta $7e
-	lda #$a0
-	sta $7f
-	lda #$04
-	sta $7d
 
 ; Poll the port until we get a magic incantation
 Poll:
@@ -49,12 +78,12 @@ Poll:
 ; We got the magic signature; start reading data
 Read:	
 	jsr IIIGET	; Pull a byte
-	sta ($7e),y	; Save it
-	sta ($7c),y
+	sta (buffer),y	; Save it
+	sta (screenptr),y	; Print it
 	iny
 	bne Read
-	inc $7f
-	cmp #$a2
+	inc buffer_msb
+	cmp #$74
 	bne Read
 
 ; Go fast again
@@ -63,7 +92,7 @@ Read:
 	sta $ffdf	; Write the environment register
 
 ; Call SOSLDR entry point
-	jmp $a06e	; Entry point - varies by specific loader version
+	jmp $1e70	; SOSLDR Entry point
 
 IIIGET:
 	lda $c000

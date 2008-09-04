@@ -181,6 +181,10 @@
 		<exec dir="${projdir}/client/src" executable="${assemblerPath}/ld65">
 			<arg line="-m adtsoseth.map -C sos/ethernet/adtpro.cfg -o ADTSOSETH sos/ethernet/ethmain.o ip65/ip65.lib tail.o" />
 		</exec>
+		<echo message="Linking manualbootstrap..."/>
+		<exec dir="${projdir}/client/src" executable="${assemblerPath}/ld65">
+			<arg line="-m manualbootstrap.map -C sos/empty.cfg -o BOOTBLK sos/manualbootstrap.o" />
+		</exec>
 		<!--
 		Move the object code to the build directory
 		-->
