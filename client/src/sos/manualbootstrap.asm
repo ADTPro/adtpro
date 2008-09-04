@@ -18,14 +18,17 @@
 ; 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 ;
 
+; The manual bootstrapping startup procedure.
+; This would need to be typed into the monitor (ctrl-OA-reset) and then
+; run (A000G).  Alternatively, you can test this by inserting the assembled
+; code into sector zero (block zero) of a diskette and booting it.
+; The /// ROM will pull it into $A000 and execute it.
+
 	.org $A000
 
 KBDSTROBE	:= $C010
 E_REG		:= $FFDF
 B_REG		:= $FFEF
-screenptr	:= $7c
-screenptr_lsb	:= $7c
-screenptr_msb	:= $7d
 buffer		:= $7e
 buffer_lsb	:= $7e
 buffer_msb	:= $7f
@@ -57,11 +60,8 @@ banktest:		; Find highest writable bank
 	lda #$00
 	tay		; We'll use Y later as an index
 	sta buffer_lsb
-	sta screenptr_lsb
 	lda #$1e	; Initial SOS.KERNEL runs from $1e00 to $73ff
 	sta buffer_msb
-	lda #$04	; Screen memory
-	sta screenptr_msb
 
 ; Set up the serial port
 	lda #$0b	; No parity, etc.
@@ -69,22 +69,41 @@ banktest:		; Find highest writable bank
 	lda #$10	; 115kbps
 	sta $c0f3
 
+; Say we're active
+	ldx #$00
+:	lda message_1,x
+	sta $0400,x
+	inx
+	cpx #$04
+	bne :-
+
+	lda #$57	; "W" - printed after message
+	sta $0405
+
 ; Poll the port until we get a magic incantation
 Poll:
 	jsr IIIGET
-	cmp #$a3
+	cmp #$53	; First character will be "S" from "SOS"
 	bne Poll
 
 ; We got the magic signature; start reading data
 Read:	
 	jsr IIIGET	; Pull a byte
 	sta (buffer),y	; Save it
-	sta (screenptr),y	; Print it
+	sta $0405	; Print it in the corner
 	iny
 	bne Read
 	inc buffer_msb
 	cmp #$74
 	bne Read
+
+; Say we're done
+	ldx #$00
+:	lda message_2,x
+	sta $0400,x
+	inx
+	cpx #$04
+	bne :-
 
 ; Go fast again
 	lda $ffdf	; Read the environment register
@@ -102,3 +121,26 @@ IIIGET:
 	bne IIIGET	; Input register empty, loop
 	lda $c0f0	; Get character
 	rts
+
+message_1:
+	.byte	"сер╨"	; "SER:"
+
+message_2:
+	.byte	"ок║ "	; "OK! "
+;	.byte $d7, $c1, $c9, $d4, $c9, $ce, $c7, $ae, $ae, $ae
+
+	.byte $00, $00, $00, $00, $00, $00, $00, $00
+	.byte $00, $00, $00, $00, $00, $00, $00, $00
+	.byte $00, $00, $00, $00, $00, $00, $00, $00
+	.byte $00, $00, $00, $00, $00, $00, $00, $00
+	.byte $00, $00, $00, $00, $00, $00, $00, $00
+	.byte $00, $00, $00, $00, $00, $00, $00, $00
+	.byte $00, $00, $00, $00, $00, $00, $00, $00
+	.byte $00, $00, $00, $00, $00, $00, $00, $00
+	.byte $00, $00, $00, $00, $00, $00, $00, $00
+	.byte $00, $00, $00, $00, $00, $00, $00, $00
+	.byte $00, $00, $00, $00, $00, $00, $00, $00
+	.byte $00, $00, $00, $00, $00, $00, $00, $00
+	.byte $00, $00, $00, $00, $00, $00, $00, $00
+	.byte $00, $00, $00, $00, $00, $00, $00, $00
+	.byte $00, $00

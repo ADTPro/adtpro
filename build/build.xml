@@ -183,7 +183,7 @@
 		</exec>
 		<echo message="Linking manualbootstrap..."/>
 		<exec dir="${projdir}/client/src" executable="${assemblerPath}/ld65">
-			<arg line="-m manualbootstrap.map -C sos/empty.cfg -o BOOTBLK sos/manualbootstrap.o" />
+			<arg line="-m manualbootstrap.map -C sos/empty.cfg -o MANUALBOOTSTRAP sos/manualbootstrap.o" />
 		</exec>
 		<!--
 		Move the object code to the build directory
