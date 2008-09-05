@@ -85,6 +85,8 @@ Poll:
 	jsr IIIGET
 	cmp #$53	; First character will be "S" from "SOS"
 	bne Poll
+	sta (buffer),y	; Save that first "S"
+	iny
 
 ; We got the magic signature; start reading data
 Read:	
