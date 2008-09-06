@@ -68,7 +68,7 @@ banktest:			; Find highest writable bank
 ; Set up the serial port
 	lda #$0b		; No parity, etc.
 	sta ACIAMR		; Store via ACIA mode register.
-	lda #$1e		; $16=300, $1e=9600, $1f=19200, $10=115k
+	lda #$10		; $16=300, $1e=9600, $1f=19200, $10=115k
 	sta ACIACR		; Store via ACIA control register.
 
 ; Say we're active		; Note - x is assumed to be zero here

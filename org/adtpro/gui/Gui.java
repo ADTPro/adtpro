@@ -667,7 +667,7 @@ public final class Gui extends JFrame implements ActionListener
                   pacing = 75;
                 }
                 if (e.getActionCommand().equals(Messages.getString("Gui.BS.SOS")))
-                    speed = 9600;
+                    speed = 115200;
                 Log.println(false, "Gui.actionPerformed getting instructions with speed = " + speed + " pacing = "
                     + pacing);
                 message = _commsThread.getInstructions(e.getActionCommand(), size, speed);

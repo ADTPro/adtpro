@@ -63,6 +63,8 @@ public class CommsThread extends Thread
 
   private Worker _worker = null;
 
+  private boolean _isBinary = false;
+
   public CommsThread(Gui parent, ATransport transport)
   {
     _transport = transport;
@@ -2301,6 +2303,7 @@ public class CommsThread extends Thread
     int fileSize = 0;
     int slowFirstLines = 0;
     int slowLastLines = 0;
+    boolean isBinary = false;
     Log.println(false, "CommsThread.requestSend() request: " + resource
         + ", reallySend = " + reallySend);
     String resourceName;
@@ -2344,6 +2347,7 @@ public class CommsThread extends Thread
                 resourceName = "org/adtpro/resources/SK.raw";
                 slowFirstLines = 0;
                 slowLastLines = 0;
+                isBinary = true;
               }
         else
           if (resource.equals(Messages.getString("Gui.BS.ADT")))
@@ -2397,7 +2401,7 @@ public class CommsThread extends Thread
         _parent.setMainText(Messages.getString("CommsThread.4")); //$NON-NLS-1$
         _parent.setSecondaryText(resourceName); //$NON-NLS-1$
         _worker = new Worker(resource, is, pacing, speed, slowFirstLines,
-            slowLastLines);
+            slowLastLines, isBinary);
         _worker.start();
       }
       else
@@ -2444,7 +2448,7 @@ public class CommsThread extends Thread
   {
 
     public Worker(String resource, InputStream is, int pacing, int speed,
-        int slowFirstLines, int slowLastLines)
+        int slowFirstLines, int slowLastLines, boolean isBinary)
     {
       Log.println(false, "CommsThread Worker inner class instantiation.");
       Log.println(false, "CommsThread Worker Pacing = " + pacing + ", speed = "
@@ -2455,6 +2459,7 @@ public class CommsThread extends Thread
       _slowFirst = slowFirstLines;
       _slowLast = slowLastLines;
       _resource = resource;
+      _isBinary = isBinary;
     }
 
     public void run()
@@ -2544,7 +2549,7 @@ public class CommsThread extends Thread
             /*
              * We hit the end of a line.
              */
-            if (buffer[i] == 0x0d)
+            if ((buffer[i] == 0x0d) && (!_isBinary))
             {
               _transport.writeByte(0x8d);
               _transport.flushSendBuffer();
@@ -2577,7 +2582,8 @@ public class CommsThread extends Thread
               currentLine++;
             }
             else
-              if (buffer[i] != 0x0a) _transport.writeByte(buffer[i]);
+              if ((buffer[i] != 0x0a) || (_isBinary))
+                _transport.writeByte(buffer[i]);
             if (_shouldRun)
             {
               _parent.setProgressValue(i + 1);
