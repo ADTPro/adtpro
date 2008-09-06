@@ -1,0 +1,187 @@
+# Open, read, close SOS Interpreter File (SOS.INTERP) lives between 205e and 20bf, inclusive
+# When done, jump to LDR053 (renamed ReceiveInterpDone) at $20c0.
+
+# Open, read, close SOS Driver File (SOS.DRIVER) lives between 20fc and 2143, inclusive
+# When done, jump to LDR103 at $2144.
+
+# Need to add:
+# 	.org $1e00
+# ReceiveInterp:
+# 	.res	$20bf-ReceiveInterp, $ea
+# ReceiveInterpDone:
+# ReceiveDriver:
+# 	.res	$2143-ReceiveDriver, $ea
+# ReceiveDriverDone:
+
+GLOBAL {
+            STARTADDR       $1e00;
+            PAGELENGTH      0;                  # No paging
+            CPU             "6502";
+};
+
+# One segment for the whole thing
+SEGMENT { START $1e00;  END   $FFFF; NAME "CODE"; };
+
+RANGE { START $1e00;    END   $1e6f; TYPE ByteTable; };
+RANGE { START $2605;    END   $26f0; TYPE ByteTable; };
+RANGE { START $2797;    END   $2815; TYPE ByteTable; };
+RANGE { START $2aaa;    END   $2c00; TYPE ByteTable; };
+RANGE { START $2d2e;    END   $2fff; TYPE ByteTable; };
+
+# Constants
+LABEL { NAME "ZPAGE";      ADDR  $00;   };
+LABEL { NAME "D_TPARMX";   ADDR  $c0;   };
+LABEL { NAME "I_BASE_P";   ADDR  $02;   };
+LABEL { NAME "I";          ADDR  $EA;   };
+
+# Addresses
+LABEL { NAME "SSPAGE";     ADDR  $0100;   };
+LABEL { NAME "SXPAGE";     ADDR  $1400;   };
+LABEL { NAME "CXPAGE";     ADDR  $1600;   };
+LABEL { NAME "SZPAGE";     ADDR  $1800;   };
+LABEL { NAME "SCRNMODE";   ADDR  $1906;   };
+LABEL { NAME "CZPAGE";     ADDR  $1A00;   };
+LABEL { NAME "CSPAGE";     ADDR  $1B00;   };
+
+LABEL { NAME "K_FILE";     ADDR  $1e00;   };
+LABEL { NAME "K_HDR_CNT";  ADDR  $1e08;   };
+LABEL { NAME "K_DRIVES";   ADDR  $1e0a;   };
+LABEL { NAME "K_FLAGS";    ADDR  $1e0b;   };
+LABEL { NAME "I_PATH";     ADDR  $1e0c;   };
+LABEL { NAME "I_PATHNM";   ADDR  $1e0d;   };
+LABEL { NAME "I_PATHL";    ADDR  $1e1b;   };
+LABEL { NAME "D_PATH";     ADDR  $1e3c;   };
+LABEL { NAME "D_PATHNM";   ADDR  $1e3d;   };
+LABEL { NAME "D_PATHL";    ADDR  $1e4b;   };
+LABEL { NAME "LDR_ADR";    ADDR  $1e2c;   };
+LABEL { NAME "LDR_CNT";    ADDR  $1e2e;   };
+LABEL { NAME "SOSLDR";     ADDR  $1e70;   };
+LABEL { NAME "SLDR010";    ADDR  $1e73;   };
+LABEL { NAME "MOVE";       ADDR  $1eb3;   };
+LABEL { NAME "MOVE010";    ADDR  $1ec7;   };
+LABEL { NAME "MOVE_PAGE";  ADDR  $1EDC;   };
+LABEL { NAME "MOVE020";    ADDR  $1EE3;   };
+LABEL { NAME "MOVE_EXIT";  ADDR  $1EF4;   };
+LABEL { NAME "LINK";       ADDR  $1EF9;   };
+LABEL { NAME "WALKLINKS";  ADDR  $1F28;   };
+LABEL { NAME "LINK_INIT";  ADDR  $1F60;   };
+LABEL { NAME "ALLOC_DEV";  ADDR  $1F79;   };
+LABEL { NAME "LINK010";    ADDR  $1F2b;   };
+LABEL { NAME "LINK030";    ADDR  $1f41;   };
+LABEL { NAME "LINK100";    ADDR  $1f53;   };
+LABEL { NAME "SOSLDR1";    ADDR  $1fd4;   };
+LABEL { NAME "LDR010";     ADDR  $1FD6;   };
+LABEL { NAME "LDR020";     ADDR  $2056;   };
+LABEL { NAME "ReceiveInterp";     ADDR  $205e;   };
+LABEL { NAME "ReceiveInterpDone"; ADDR  $20c0;   };
+LABEL { NAME "ReceiveDriver";     ADDR  $20fc;   };
+LABEL { NAME "ReceiveDriverDone"; ADDR  $2144;   };
+LABEL { NAME "LDR070";     ADDR  $20f6;   };
+LABEL { NAME "LDR105";     ADDR  $2198;   };
+LABEL { NAME "NEXTDRIVER"; ADDR  $21A0;   };
+LABEL { NAME "LDR110";     ADDR  $21c1;   };
+LABEL { NAME "LDR120";     ADDR  $21d6;   };
+LABEL { NAME "LDR130";     ADDR  $21dd;   };
+LABEL { NAME "LDR140";     ADDR  $21e8;   };
+LABEL { NAME "CLEAR0";     ADDR  $2215;   };
+LABEL { NAME "CLEAR1";     ADDR  $2217;   };
+LABEL { NAME "WAIT";       ADDR  $2225;   };
+LABEL { NAME "SET_DRIVES"; ADDR  $2232;   };
+LABEL { NAME "INIT_KRNL";  ADDR  $227b;   };
+LABEL { NAME "INITK_ERR";  ADDR  $22b3;   };
+LABEL { NAME "REVERSE";    ADDR  $22fe;   };
+LABEL { NAME "STDR010";    ADDR  $225f;   };
+LABEL { NAME "STDR020";    ADDR  $2266;   };
+LABEL { NAME "STDR030";    ADDR  $226d;   };
+LABEL { NAME "STDR040";    ADDR  $2274;   };
+LABEL { NAME "ADVANCE";    ADDR  $22BA;   };
+LABEL { NAME "DADVANCE";   ADDR  $237e;   };
+LABEL { NAME "FLAGS";      ADDR  $23db;   };
+LABEL { NAME "FLAG010";    ADDR  $23dc;   };
+LABEL { NAME "FLAG100";    ADDR  $2434;   };
+LABEL { NAME "NEXT_DIB";   ADDR  $2436;   };
+LABEL { NAME "NXTD998";    ADDR  $248a;   };
+LABEL { NAME "NXTD999";    ADDR  $248b;   };
+LABEL { NAME "GETMEM";     ADDR  $248C;   };
+LABEL { NAME "GETM010";    ADDR  $24AD;   };
+LABEL { NAME "NEWDST";     ADDR  $24C4;   };
+LABEL { NAME "NEWD_EXIT";  ADDR  $24fc;   };
+LABEL { NAME "BUILD_DSEG"; ADDR  $24FD;   };
+LABEL { NAME "GETM_EXIT";  ADDR  $24c3;   };
+LABEL { NAME "RELOC";      ADDR  $2519;   };
+LABEL { NAME "ALLOC_SEG";  ADDR  $256A;   };
+LABEL { NAME "ALLOC_DSEG"; ADDR  $25C0;   };
+LABEL { NAME "ALDS010";    ADDR  $25cc;   };
+LABEL { NAME "ALDS020";    ADDR  $25ce;   };
+LABEL { NAME "ALDS_EXIT";  ADDR  $25E1;   };
+LABEL { NAME "ERROR";      ADDR  $25E2;   };
+LABEL { NAME "PRNT010";    ADDR  $25EE;   };
+LABEL { NAME "OPEN_REF";   ADDR  $2819;   };
+LABEL { NAME "READ_REF";   ADDR  $2872;   };
+LABEL { NAME "CLOSE_REF";  ADDR  $287a;   };
+LABEL { NAME "DIEDIEDIE";  ADDR  $2602;   };
+LABEL { NAME "ERR";        ADDR  $2605;   };
+LABEL { NAME "WELCOME";    ADDR  $26f1;   };
+LABEL { NAME "WAM010";     ADDR  $26F3;   };
+LABEL { NAME "WSM010";     ADDR  $2705;   };
+LABEL { NAME "WDM010";     ADDR  $2724;   };
+LABEL { NAME "WDM020";     ADDR  $2748;   };
+LABEL { NAME "WDM030";     ADDR  $2750;   };
+LABEL { NAME "WDM050";     ADDR  $2780;   };
+LABEL { NAME "WDM040";     ADDR  $278B;   };
+LABEL { NAME "WCM010";     ADDR  $278d;   };
+LABEL { NAME "AMSG";       ADDR  $2797;   };
+LABEL { NAME "DMSG";       ADDR  $27a0;   };
+LABEL { NAME "HELPME";     ADDR  $415b;   };
+LABEL { NAME "READ";       ADDR  $4554;   };
+LABEL { NAME "READ1";      ADDR  $4561;   };
+LABEL { NAME "EOFTEST";    ADDR  $4582;   };
+LABEL { NAME "ADJSTCNT";   ADDR  $4590;   };
+LABEL { NAME "READ2";      ADDR  $45a8;   };
+LABEL { NAME "GORDDNE";    ADDR  $45b4;   };
+LABEL { NAME "READ3";      ADDR  $45b7;   };
+LABEL { NAME "READONE";    ADDR  $466b;   };
+LABEL { NAME "RDPART3";    ADDR  $46C3;   };
+
+LABEL { NAME "COLDSTRT";   ADDR  $5C33;   };
+
+LABEL { NAME "SD100";      ADDR  $62CA;   };
+LABEL { NAME "SD020";      ADDR  $629e;   };
+LABEL { NAME "SD015";      ADDR  $629C;   };
+LABEL { NAME "SD010";      ADDR  $6296;   };
+LABEL { NAME "SD005";      ADDR  $625A;   };
+
+# Hardware locations
+LABEL { NAME "MOTORON";    ADDR  $C089;};
+LABEL { NAME "MOTOROFF";   ADDR  $C088;};
+LABEL { NAME "NOSCROLL";   ADDR  $C0D8;};
+
+LABEL { NAME "DIB1";       ADDR  $E899;   };
+LABEL { NAME "DIB2";       ADDR  $E8b9;   };
+LABEL { NAME "DIB3";       ADDR  $E8d9;   };
+LABEL { NAME "DIB4";       ADDR  $E8f9;   };
+LABEL { NAME "DIB1b";      ADDR  $E89a;   };
+LABEL { NAME "DIB2b";      ADDR  $E8ba;   };
+LABEL { NAME "DIB3b";      ADDR  $E8da;   };
+LABEL { NAME "DIB4b";      ADDR  $E8fa;   };
+LABEL { NAME "MAX_DNUM";   ADDR  $eed9;   };
+LABEL { NAME "BLKDLST";    ADDR  $EF70;   };
+
+LABEL { NAME "B_REG";      ADDR $FFEF;};
+LABEL { NAME "Z_REG";      ADDR $ffd0;};
+LABEL { NAME "D_DDRB";     ADDR $FFD2;};
+LABEL { NAME "D_DDRA";     ADDR $FFD3;};
+LABEL { NAME "D_ACR";      ADDR $FFDB;};
+LABEL { NAME "D_PCR";      ADDR $FFDC;};
+LABEL { NAME "D_IFR";      ADDR $FFDD;};
+LABEL { NAME "D_IER";      ADDR $FFDE;};
+LABEL { NAME "E_REG";      ADDR $FFDF;};
+LABEL { NAME "E_IORB";     ADDR $FFE0;};
+LABEL { NAME "E_DDRB";     ADDR $FFE2;};
+LABEL { NAME "E_DDRA";     ADDR $FFE3;};
+LABEL { NAME "NMI_VECTOR"; ADDR $FFFA;};
+LABEL { NAME "E_ACR";      ADDR $FFEB;};
+LABEL { NAME "E_PCR";      ADDR $FFEC;};
+LABEL { NAME "E_IFR";      ADDR $FFED;};
+LABEL { NAME "E_IER";      ADDR $FFEE;};
+LABEL { NAME "ACIASTAT";   ADDR $C0F1;};
