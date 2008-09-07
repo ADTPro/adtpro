@@ -273,7 +273,7 @@ public class CommsThread extends Thread
             _parent.setMainText(Messages.getString("CommsThread.5")); //$NON-NLS-1$
             _parent.setSecondaryText(""); //$NON-NLS-1$
             Log.println(false,"CommsThread.commandLoop() Received Apple /// SOS.INTERP dump command."); //$NON-NLS-1$
-            requestSend(Messages.getString("Gui.BS.SOSINTERP"), true, 0, 115200);
+            requestSend(Messages.getString("Gui.BS.SOSINTERP"), true, 0, 9600);
             _busy = false;
             break;
           case (byte) 180: // "4": Initiate SOS.DRIVER dump
@@ -281,7 +281,7 @@ public class CommsThread extends Thread
             _parent.setMainText(Messages.getString("CommsThread.5")); //$NON-NLS-1$
             _parent.setSecondaryText(""); //$NON-NLS-1$
             Log.println(false,"CommsThread.commandLoop() Received Apple /// SOS.DRIVER dump command."); //$NON-NLS-1$
-            requestSend(Messages.getString("Gui.BS.SOSDRIVER"), true, 0, 115200);
+            requestSend(Messages.getString("Gui.BS.SOSDRIVER"), true, 0, 9600);
             _busy = false;
             break;
           default:
@@ -2642,6 +2642,7 @@ public class CommsThread extends Thread
         try
         {
           bytesAvailable = _is.available();
+          _transport.setSlowSpeed(_speed);
           if (_isBinary)
           {
             // Binary processing
@@ -2657,13 +2658,12 @@ public class CommsThread extends Thread
                   + " more bytes from the stream.");
             }
             if (_resource.equals(Messages.getString("Gui.BS.SOSINTERP"))||
-                _resource.equals(Messages.getString("Gui.BS.SOSDRIVER)")))
+                _resource.equals(Messages.getString("Gui.BS.SOSDRIVER")))
             {
               // If we're sending SOS bootstrap stuff, we need to prepend the length and stuff
               _transport.writeByte(0x53); // Send an "S" to trigger the start
-              _transport.writeByte(UnsignedByte.loByte(buffer.length)); // Send buffer LSB
-              _transport.writeByte(UnsignedByte.hiByte(buffer.length)); // Send buffer MSB
-              
+              _transport.writeByte(UnsignedByte.loByte(buffer.length-1)); // Send buffer LSB
+              _transport.writeByte(UnsignedByte.hiByte(buffer.length-1)); // Send buffer MSB
             }
             for (int i = 0; i < buffer.length; i++)
             {
@@ -2673,6 +2673,7 @@ public class CommsThread extends Thread
                 break;
               }
               _transport.writeByte(buffer[i]);
+              _transport.flushSendBuffer();
               if (_shouldRun)
               {
                 _parent.setProgressValue(i + 1);
@@ -2697,7 +2698,6 @@ public class CommsThread extends Thread
             Log.println(false, "commsThread.Worker.run() speed = " + _speed
                 + " pacing = " + _pacing);
             _parent.setProgressMaximum(buffer.length);
-            _transport.setSlowSpeed(_speed);
             int numLines = 0;
             /*
              * Go through once and just count the number of lines in the file.
@@ -2762,8 +2762,7 @@ public class CommsThread extends Thread
                 currentLine++;
               }
               else
-                if ((buffer[i] != 0x0a) || (_isBinary)) _transport
-                    .writeByte(buffer[i]);
+                if ((buffer[i] != 0x0a) || (_isBinary)) _transport.writeByte(buffer[i]);
               if (_shouldRun)
               {
                 _parent.setProgressValue(i + 1);

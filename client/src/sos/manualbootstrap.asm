@@ -39,84 +39,109 @@ ACIACR		:= $c0f3	; Control register.  $c0f3 for ///, $c08b+S0 for SSC
 
 entry:	sei
 	cld
-	lda #$77
-	sta ENV_REG
-	ldx #$FB
+	ldx	#$FB
 	txs
-	bit KBDSTROBE
-	lda #$40
-	sta $FFCA		; Disable interrupts
-	lda #$07
-	sta BANK_REG
-	ldx #$00		; Note - we rely on x remaining zero until we print our welcome message
+	bit	KBDSTROBE
+	lda	#$40
+	sta	$FFCA		; Disable interrupts
+	lda	#$07
+	sta	BANK_REG
+	ldx	#$00		; Note - we rely on x remaining zero until we print our welcome message
 banktest:			; Find highest writable bank
-	dec BANK_REG
-	stx $2000
-	lda $2000
-	bne banktest
+	dec	BANK_REG
+	stx	$2000
+	lda	$2000
+	bne	banktest
 
-; Slow down to 1MHz
-	lda ENV_REG		; Read the environment register
-	ora #$80		; Set 1MHz switch
-	sta ENV_REG		; Write the environment register
+	jsr	ACIAINIT		; Get the environment all set up
 
 ; Set up our pointers
-	stx buffer_lsb		; x is still zero
-	lda #$1e		; SOS.KERNEL initially occupies $1e00 to $73ff
-	sta buffer_msb
-
-; Set up the serial port
-	lda #$0b		; No parity, etc.
-	sta ACIAMR		; Store via ACIA mode register.
-	lda #$10		; $16=300, $1e=9600, $1f=19200, $10=115k
-	sta ACIACR		; Store via ACIA control register.
+	stx	buffer_lsb	; x is still zero
+	lda	#$1e		; SOS.KERNEL initially occupies $1e00 to $73ff
+	sta	buffer_msb
 
 ; Say we're active
-	ldy #$03
-:	lda message_1,y
-	sta $0400,y
+	ldy	#$03
+:	lda	message_1,y
+	sta	$0400,y
 	dey
-	bpl :-
+	bpl	:-
 	iny			; Make y zero
 
 ; Poll the port until we get a magic incantation
 Poll:
-	jsr IIIGET
-	cmp #$53		; First character will be "S" from "SOS" in SOS.KERNEL
-	bne Poll
-	sta (buffer_lsb),y	; Save that first "S"
+	jsr	IIIGET
+	cmp	#$53		; First character will be "S" from "SOS" in SOS.KERNEL
+	bne	Poll
+	sta	(buffer_lsb),y	; Save that first "S"
 	iny
 
 ; We got the magic signature; start reading data
 Read:	
-	jsr IIIGET		; Pull a byte
-	sta (buffer_lsb),y	; Save it
-	sta $0405		; Print it in the status area
+	jsr	IIIGET		; Pull a byte
+	sta	(buffer_lsb),y	; Save it
+	sta	$0405		; Print it in the status area
 	iny
-	bne Read
-	inc buffer_msb		; Increment another page
-	lda buffer_msb
-	cmp #$74		; Are we done? (SOS.KERNEL v1.3 is $56 pages long; $1E+$56=$74)
-	bne Read		; If not... go back for more
+	bne	Read
+	inc	buffer_msb		; Increment another page
+	lda	buffer_msb
+	cmp	#$74		; Are we done? (SOS.KERNEL v1.3 is $56 pages long; $1E+$56=$74)
+	bne	Read		; If not... go back for more
 
 ; Go fast again
-	lda ENV_REG	; Read the environment register
-	and #$7f	; Set 2MHz switch
-	sta ENV_REG	; Write the environment register
+	lda	ENV_REG	; Read the environment register
+	and	#$7f	; Set 2MHz switch
+	sta	ENV_REG	; Write the environment register
 
 ; Call SOSLDR entry point
-	jmp $1e70	; SOSLDR v1.3 Entry point
+	jmp	$1e70	; SOSLDR v1.3 Entry point
+
+ACIAINIT:
+	lda	ENV_REG		; Read the environment register
+	ora	#$F2		; Set 1MHz switch, Video + I/O space
+	sta	ENV_REG		; Write the environment register
+; Set up the serial port
+ACIAINIT2:
+	lda	#$0b		; No parity, etc.
+	sta	ACIAMR		; Store via ACIA mode register.
+	lda	#$1e		; $16=300, $1e=9600, $1f=19200, $10=115k
+	sta	ACIACR		; Store via ACIA control register.
+	rts
 
 IIIGET:
-	lda ACIASR	; Check status bits via ACIA status register
-	and #$68
-	cmp #$08
-	bne IIIGET	; Input register empty, loop
-	lda ACIADR	; Get character via ACIA data register
+	lda	ACIASR	; Check status bits via ACIA status register
+	and	#$68
+	cmp	#$08
+	bne	IIIGET	; Input register empty, loop
+	lda	ACIADR	; Get character via ACIA data register
+	rts
+
+IIIPUT:
+	pha			; Push 'character to send' onto the stack
+IIIPUTC1:
+	lda	$C0F1		; Check status bits
+	and	#$70
+	cmp	#$10
+	bne	IIIPUTC1	; Output register is full, so loop
+	pla			; Pull 'character to send' back off the stack
+	sta	$C0F0		; Put character
+	rts
+
+RESTORE:
+	ldy	#$03
+:	lda	message_2,y
+	sta	$400,y
+	dey
+	bpl :-
+	lda	#$32
+	sta	ENV_REG
 	rts
 
 message_1:
 	.byte	"ำลาบ"	; "SER:"
+
+message_2:
+	.byte	$CF, $cb, $a1, $a0	; "OK! "
 
 .align	256
 .assert	* = $a100, error, "Code got too big to fit in a block!  C'mon, someone is supposed to be able to type this into the monitor!"

@@ -1,14 +1,20 @@
-; da65 V2.12.0 - (C) Copyright 2000-2005,  Ullrich von Bassewitz
-; Created:    2008-09-07 01:04:57
-; Input file: SOS.KERNEL
-; Page:       1
-
-
         .setcpu "6502"
 	.org	$1e00
 
+ACIAINIT	:= $A05c
+ACIAINIT2	:= $A064
+IIIGET		:= $A06f
+IIIPUT		:= $A07c
+RESTORE		:= $A08b
+RELOC_OFFSET	:= $2c41
+ACIADR		:= $c0f0	; Data register. $c0f0 for ///, $c088+S0 for SSC
+ACIASR		:= $c0f1	; Status register. $c0f1 for ///, $c089+S0 for SSC
+ACIAMR		:= $c0f2	; Command mode register. $c0f2 for ///, $c08a+S0 for SSC
+ACIACR		:= $c0f3	; Control register.  $c0f3 for ///, $c08b+S0 for SSC
 ZPAGE           := $0000
 I_BASE_P        := $0002
+RDBUF_P		:= $04
+SYSBUF_P	:= $06
 D_TPARMX        := $00C0
 I               := $00EA
 L00FD           := $00FD
@@ -363,7 +369,8 @@ D_PATHL:.byte   $FF,$9A,$A0,$FF,$9A,$A0,$A0,$A0
         .byte   $A0,$A0,$F9,$A0,$C1,$E9,$A0,$9E
         .byte   $A1,$A0,$F5,$A0,$A0,$A5,$A0,$A0
         .byte   $88,$00,$00,$88,$0C
-SOSLDR: lda     #$00
+SOSLDR:
+lda     #$00
         tax
 SLDR010:sta     CZPAGE,x
         sta     CXPAGE,x
@@ -655,7 +662,7 @@ ReceiveInterpDone:
         lda     $24
         sta     I_BASE_P
         lda     $25
-        sta     $03
+	sta     $03
         lda     #$00
         sta     $1603
         clc
@@ -671,48 +678,62 @@ ReceiveInterpDone:
         ldx     #$52
         ldy     #$18
         jsr     ERROR
-LDR070: lda     $1901
-        jsr     MOVE
+LDR070:	lda     $1901
+	jsr     MOVE
+
 ReceiveDriver:
-        ldy     D_PATH
-L20FF:  lda     D_PATH,y
-        sta     L2821,y
-        dey
-        bpl     L20FF
-        brk
-        iny
-        asl     $28,x
-        beq     L2115
-        ldx     #$67
-        ldy     #$15
-        jsr     ERROR
-L2115:  lda     OPEN_REF
-        sta     READ_REF
-        sta     CLOSE_REF
-        brk
-        dex
-        adc     ($28),y
-        beq     L212B
-        ldx     #$08
-        ldy     #$09
-        jsr     ERROR
-L212B:  brk
-        cpy     L2879
-        ldy     #$07
-L2131:  lda     ($04),y
-        cmp     L2869,y
-        bne     L213D
-        dey
-        bpl     L2131
-        bmi     ReceiveDriverDone
-L213D:  ldx     #$7A
-        ldy     #$13
-        jsr     ERROR
+	jsr ACIAINIT
+	lda #180
+	jsr IIIPUT
+
+; Poll the port until we get a magic incantation
+b_p	:= $32
+size	:= $30
+Poll:
+	lda #$00	; #>LDREND-$2000+$400 = $58*00*
+	tay
+	sta b_p
+	sta RDBUF_P
+	lda #$58	; #<LDREND-$2000+$400 = $*58*00
+	sta b_p+1
+	sta RDBUF_P+1
+	lda #$80
+	sta CXPAGE+b_p+1	; Set XBYTE to $80 - using Xtended addressing
+PollNext:
+	jsr IIIGET
+	cmp #$53		; Trigger character is an "S"
+	bne PollNext
+	jsr IIIGET		; LSB of length
+	sta size
+	jsr IIIGET		; MSB of length
+	sta size+1		; We're ready to read everything else now
+;	ldy #$00		; y should already be zero from above
+
+Read:				; We got the magic signature; start reading data
+	jsr IIIGET		; Pull a byte
+	sta (b_p),y		; Save it
+;	sta $0405		; Print it in the status area
+	iny
+	cpy size		; Is y equal to the LSB of our target?
+	bne :+			; No... check for next pageness
+	lda size+1		; LSB is equal; is MSB?
+	beq ReadDone		; Yes... so done
+:	cpy #$00
+	bne Read		; Check for page increment
+	inc b_p+1		; Increment another page
+	dec size+1
+	jmp Read		; Go back for more
+ReadDone:
+	jsr	RESTORE
+ReceiveDriverPad:
+	.res	$2144-ReceiveDriverPad, $ea
+
 ReceiveDriverDone:
-        lda     #$14
-        sta     $22
-        lda     #$0F
-        sta     $23
+;MOVE CHARACTER SET TABLE
+LDR103:	lda     #$1C	; #$14		; #>D.CHRSET ; MOVE(SRC.P=D.CHRSET DST.P=$C00 A=0 CNT=$400)
+        sta     $22		; SRC.P
+        lda     #$58	; #$0F		; #<D.CHRSET
+        sta     $23		; SRC.P+1
         lda     #$00
         sta     $24
         lda     #$0C
@@ -723,10 +744,11 @@ ReceiveDriverDone:
         sta     $27
         lda     #$00
         jsr     MOVE
-        lda     #$24
-        sta     $22
-        lda     #$13
-        sta     $23
+; MOVE KEYBOARD TABLE
+        lda     #$2c	; #$24		; #>D.KYBD ; MOVE(SRC.P=D.KYBD DST.P=$1700 A=0 CNT=$100.IN)
+        sta     $22		; SRC.P
+        lda     #$5c	; #$13		; #<D.KYBD
+        sta     $23		; SRC.P+1
         lda     #$00
         sta     $24
         lda     #$17
@@ -737,21 +759,22 @@ ReceiveDriverDone:
         sta     $27
         lda     #$00
         jsr     MOVE
-        ldy     #$0A
-        lda     ($04),y
-        jsr     LINK_INIT
+; RE-INITIALIZE SDT TABLE
+        ldy     #$0A		; #>D.DRIVES-D.FILE ; LINK.INIT(A=D.DRIVES DIB1..4.IN, SDT.TBL BLKDLST.IO)
+        lda     ($04),y		; (RDBUF.P),Y
+        jsr     LINK_INIT	; LINK.INIT
         lda     #$00
-        sta     $1625
-        sta     $24
-        lda     $03
-        sta     $25
-        cmp     #$A0
+        sta     $1625		; CXPAGE+DST.P+1
+        sta     $24		; DST.P
+        lda     $03		; I.BASE.P+1
+        sta     $25		; DST.P+1
+        cmp     #$A0		; IF DST.P>=$A000 THEN DST.P:=$A000
         bcc     LDR105
         lda     #$A0
-        sta     $25
-LDR105: lda     $1901
-        sta     $2A
-        jsr     REVERSE
+        sta     $25		; DST.P+1
+LDR105: lda     $1901		; SYSBANK ; DSTBANK:=SYSBANK
+        sta     $2A		; DSTBANK
+        jsr     REVERSE		; REVERSE(D.HDR.CNT.IN, WORK.P.OUT)
 NEXTDRIVER:
         jsr     DADVANCE
         bcs     LDR140
@@ -919,12 +942,12 @@ ADVANCE:clc
         lda     ($0A),y
         sta     $27
         rts
-REVERSE:lda     #$00
+REVERSE:lda     #$08	; #$00
         sta     $0A
-        lda     #$0F
+        lda     #$58	; #$0F		; Looking for memory at $00:0F00, which is $2f00
         sta     $0B
         lda     #$80
-        sta     $160B
+        sta     $160B		; XByte on
         clc
         ldy     #$00
         lda     $0A
@@ -944,14 +967,14 @@ REVERSE:lda     #$00
         dey
         and     ($0A),y
         cmp     #$FF
-        bne     L2333
+        bne     REV010
         ldx     #$EB
         ldy     #$11
         jsr     ERROR
-L2333:  lda     #$FF
+REV010:	lda     #$FF
         sta     $0C
         sta     $0D
-L2339:  lda     $0C
+REV020:	lda     $0C
         pha
         lda     $0D
         pha
@@ -969,9 +992,9 @@ L2339:  lda     $0C
         lda     $0C
         and     $0D
         cmp     #$FF
-        beq     L237D
-        bit     $0D
-        bmi     L2376
+        beq     REV_EXIT
+REV030:	bit     $0D
+        bmi     REV040
         clc
         lda     $0A
         adc     $0C
@@ -979,18 +1002,19 @@ L2339:  lda     $0C
         lda     $0B
         adc     $0D
         pha
-        bcs     L2376
+        bcs     REV040
         txa
         adc     #$02
         sta     $0A
         pla
         adc     #$00
         sta     $0B
-        bcc     L2339
-L2376:  ldx     #$7A
-        ldy     #$13
+        bcc     REV020
+REV040:	ldx     #$08
+        ldy     #$09
         jsr     ERROR
-L237D:  rts
+REV_EXIT:
+	rts
 DADVANCE:
         ldy     #$00
         lda     ($0A),y
@@ -10716,68 +10740,7 @@ L73B7:  tya
         rts
 L73BA:  lda     #$E2
         jsr     LEE17
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
+FreeSpace:
+	.res	$7400-FreeSpace,$00
+LDREND	:= *
+FILE	:= *-$2000+$400
