@@ -170,6 +170,10 @@
 		<exec dir="${projdir}/client/src" executable="${assemblerPath}/ca65">
 			<arg line="-l -t none sos/manualbootstrap.asm" />
 		</exec>
+		<echo message="Assembling SOS Kernel..."/>
+		<exec dir="${projdir}/client/src" executable="${assemblerPath}/ca65">
+			<arg line="-l -t none sos/serial/kernel.asm" />
+		</exec>
 		<!--
 		Link the bits
 		-->
@@ -185,11 +189,17 @@
 		<exec dir="${projdir}/client/src" executable="${assemblerPath}/ld65">
 			<arg line="-m manualbootstrap.map -C sos/manualbootstrap.cfg -o MANUALBOOTSTRAP sos/manualbootstrap.o" />
 		</exec>
+		<echo message="Linking SOS Kernel..."/>
+		<exec dir="${projdir}/client/src" executable="${assemblerPath}/ld65">
+			<arg line="-C sos/serial/kernel.cfg -o sos/serial/SK.raw sos/serial/kernel.o" />
+		</exec>
 		<!--
 		Move the object code to the build directory
 		-->
 		<move file="${projdir}/client/src/ADTSOS" tofile="${builddir}/ADTSOS" />
+		<copy file="${builddir}/ADTSOS" tofile="${basedir}/org/adtpro/resources/adtsos.raw" />
 		<move file="${projdir}/client/src/ADTSOSETH" tofile="${builddir}/ADTSOSETH" />
+		<move file="${projdir}/client/src/sos/serial/SK.raw" tofile="${basedir}/org/adtpro/resources/SK.raw" />
 	</target>
 
 	<target name="assembleCommon">

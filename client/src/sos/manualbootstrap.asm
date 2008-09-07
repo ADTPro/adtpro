@@ -71,15 +71,15 @@ banktest:			; Find highest writable bank
 	lda #$10		; $16=300, $1e=9600, $1f=19200, $10=115k
 	sta ACIACR		; Store via ACIA control register.
 
-; Say we're active		; Note - x is assumed to be zero here
-:	lda message_1,x
-	sta $0400,x
-	inx
-	cpx #$04
-	bne :-
+; Say we're active
+	ldy #$03
+:	lda message_1,y
+	sta $0400,y
+	dey
+	bpl :-
+	iny			; Make y zero
 
 ; Poll the port until we get a magic incantation
-	ldy #$00
 Poll:
 	jsr IIIGET
 	cmp #$53		; First character will be "S" from "SOS" in SOS.KERNEL
@@ -99,13 +99,6 @@ Read:
 	cmp #$74		; Are we done? (SOS.KERNEL v1.3 is $56 pages long; $1E+$56=$74)
 	bne Read		; If not... go back for more
 
-; Say we're done
-:	lda message_2,y		; Note - y is still zero from the Read loop above
-	sta $0400,y
-	iny
-	cpy #$04
-	bne :-
-
 ; Go fast again
 	lda ENV_REG	; Read the environment register
 	and #$7f	; Set 2MHz switch
@@ -123,11 +116,7 @@ IIIGET:
 	rts
 
 message_1:
-	.byte	"сер╨"	; "SER: W" (waiting)
-
-message_2:
-	.byte	"ок║"	; "OK! "
-	.byte	$a0
+	.byte	"сер╨"	; "SER:"
 
 .align	256
 .assert	* = $a100, error, "Code got too big to fit in a block!  C'mon, someone is supposed to be able to type this into the monitor!"

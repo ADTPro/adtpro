@@ -268,6 +268,22 @@ public class CommsThread extends Thread
             receiveNibbleDisk(false, 70);
             _busy = false;
             break;
+          case (byte) 179: // "3": Initiate SOS.INTERP dump
+            _busy = true;
+            _parent.setMainText(Messages.getString("CommsThread.5")); //$NON-NLS-1$
+            _parent.setSecondaryText(""); //$NON-NLS-1$
+            Log.println(false,"CommsThread.commandLoop() Received Apple /// SOS.INTERP dump command."); //$NON-NLS-1$
+            requestSend(Messages.getString("Gui.BS.SOSINTERP"), true, 0, 115200);
+            _busy = false;
+            break;
+          case (byte) 180: // "4": Initiate SOS.DRIVER dump
+            _busy = true;
+            _parent.setMainText(Messages.getString("CommsThread.5")); //$NON-NLS-1$
+            _parent.setSecondaryText(""); //$NON-NLS-1$
+            Log.println(false,"CommsThread.commandLoop() Received Apple /// SOS.DRIVER dump command."); //$NON-NLS-1$
+            requestSend(Messages.getString("Gui.BS.SOSDRIVER"), true, 0, 115200);
+            _busy = false;
+            break;
           default:
             Log
                 .println(
@@ -604,8 +620,8 @@ public class CommsThread extends Thread
           if ((length * 512) == Disk.APPLE_140KB_DISK)
           {
             Disk disk = new Disk(name, true); // Force disk order to start out
-                                              // as ProDOS - because it came
-                                              // from us for sure!
+            // as ProDOS - because it came
+            // from us for sure!
             disk.makeDosOrder();
             disk.save();
             Log
@@ -1195,8 +1211,7 @@ public class CommsThread extends Thread
                 + " offset: " + offset + ".");
             Log.println(true, "CommsThread.sendPacket() backoff sleeping for "
                 + ((currentRetries * pauseMS) / 1000) + " seconds.");
-            sleep(currentRetries * pauseMS); // Sleep each time we have to
-                                              // retry
+            sleep(currentRetries * pauseMS); // Sleep each time we have to retry
           }
           catch (InterruptedException e)
           {
@@ -2407,8 +2422,7 @@ public class CommsThread extends Thread
     return requestSend(resource, false, 0, 0);
   }
 
-  public int requestSend(String resource, boolean reallySend, int pacing,
-      int speed)
+  public int requestSend(String resource, boolean reallySend, int pacing,  int speed)
   {
     int fileSize = 0;
     int slowFirstLines = 0;
@@ -2432,8 +2446,7 @@ public class CommsThread extends Thread
               else
                 if (resource.equals(Messages.getString("Gui.BS.ADTProAudio"))) resourceName = "org/adtpro/resources/adtproaud.raw";
                 else
-                  if (resource.equals(Messages
-                      .getString("Gui.BS.ADTProEthernet"))) resourceName = "org/adtpro/resources/adtproeth.raw";
+                  if (resource.equals(Messages.getString("Gui.BS.ADTProEthernet"))) resourceName = "org/adtpro/resources/adtproeth.raw";
                   else
                     resourceName = "'CommsThread.requestSend() - not set! (AudioTransport)'";
     }
@@ -2460,39 +2473,54 @@ public class CommsThread extends Thread
             isBinary = true;
           }
           else
-            if (resource.equals(Messages.getString("Gui.BS.ADT")))
+            if (resource.equals(Messages.getString("Gui.BS.SOSINTERP")))
             {
-              resourceName = "org/adtpro/resources/adt.dmp";
-              slowFirstLines = 5;
-              slowLastLines = 4;
+              resourceName = "org/adtpro/resources/adtsos.raw";
+              slowFirstLines = 0;
+              slowLastLines = 0;
+              isBinary = true;
             }
             else
-              if (resource.equals(Messages.getString("Gui.BS.ADTPro")))
+              if (resource.equals(Messages.getString("Gui.BS.SOSDRIVER")))
               {
-                resourceName = "org/adtpro/resources/adtpro.dmp";
+                resourceName = "org/adtpro/resources/SD.raw";
+                slowFirstLines = 0;
+                slowLastLines = 0;
+                isBinary = true;
+              }
+            else
+              if (resource.equals(Messages.getString("Gui.BS.ADT")))
+              {
+                resourceName = "org/adtpro/resources/adt.dmp";
                 slowFirstLines = 5;
                 slowLastLines = 4;
               }
               else
-                if (resource.equals(Messages.getString("Gui.BS.ADTProAudio")))
+                if (resource.equals(Messages.getString("Gui.BS.ADTPro")))
                 {
-                  resourceName = "org/adtpro/resources/adtproaud.dmp";
+                  resourceName = "org/adtpro/resources/adtpro.dmp";
                   slowFirstLines = 5;
                   slowLastLines = 4;
                 }
                 else
-                  if (resource.equals(Messages
-                      .getString("Gui.BS.ADTProEthernet")))
+                  if (resource.equals(Messages.getString("Gui.BS.ADTProAudio")))
                   {
-                    resourceName = "org/adtpro/resources/adtproeth.dmp";
+                    resourceName = "org/adtpro/resources/adtproaud.dmp";
                     slowFirstLines = 5;
                     slowLastLines = 4;
                   }
                   else
-                    resourceName = "'CommsThread.requestSend() - not set! (non-AudioTransport)'";
+                    if (resource.equals(Messages
+                        .getString("Gui.BS.ADTProEthernet")))
+                    {
+                      resourceName = "org/adtpro/resources/adtproeth.dmp";
+                      slowFirstLines = 5;
+                      slowLastLines = 4;
+                    }
+                    else
+                      resourceName = "'CommsThread.requestSend() - not set! (non-AudioTransport)'";
     }
-    Log.println(false, "CommsThread.requestSend() seeking resource named "
-        + resourceName);
+    Log.println(false, "CommsThread.requestSend() seeking resource named " + resourceName);
     is = ADTPro.class.getClassLoader().getResourceAsStream(resourceName);
     if (is != null)
     {
@@ -2627,6 +2655,15 @@ public class CommsThread extends Thread
                   - bytesRead);
               Log.println(false, "CommsThread.Worker.run() read " + bytesRead
                   + " more bytes from the stream.");
+            }
+            if (_resource.equals(Messages.getString("Gui.BS.SOSINTERP"))||
+                _resource.equals(Messages.getString("Gui.BS.SOSDRIVER)")))
+            {
+              // If we're sending SOS bootstrap stuff, we need to prepend the length and stuff
+              _transport.writeByte(0x53); // Send an "S" to trigger the start
+              _transport.writeByte(UnsignedByte.loByte(buffer.length)); // Send buffer LSB
+              _transport.writeByte(UnsignedByte.hiByte(buffer.length)); // Send buffer MSB
+              
             }
             for (int i = 0; i < buffer.length; i++)
             {
