@@ -1,6 +1,8 @@
         .setcpu "6502"
 	.org	$1e00
 
+b_p		:= $32
+size		:= $30
 ACIAINIT	:= $A05c
 ACIAINIT2	:= $A064
 IIIGET		:= $A06f
@@ -605,56 +607,52 @@ LDR020: lda     E_REG
         and     #$F6
         sta     E_REG
 ReceiveInterp:
-        ldy     I_PATH
-LDR030: lda     I_PATH,y
-        sta     L2821,y
-        dey
-        bpl     LDR030
-        lda     #$F8
-        sta     $06
-        lda     #$0A
-        sta     $07
-        lda     #$80
-        sta     $1607
-        brk
-        iny
-        asl     $28,x
-        beq     LDR040
-        ldx     #$22
-        ldy     #$1A
-        jsr     ERROR
-LDR040: lda     OPEN_REF
-        sta     READ_REF
-        sta     CLOSE_REF
-        lda     #$80
-        sta     $1605
-        lda     #$F8
-        sta     $04
-        lda     #$0E
-        sta     $05
-        brk
-        dex
-        adc     ($28),y
-        beq     LDR050
-        ldx     #$08
-        ldy     #$09
-        jsr     ERROR
-LDR050: brk
-        cpy     L2879
-        ldy     #$07
-LDR051: lda     ($04),y
-        cmp     L2861,y
-        bne     LDR052
-        dey
-        bpl     LDR051
-        bmi     ReceiveInterpDone
-LDR052: ldx     #$3A
-        ldy     #$18
-        jsr     ERROR
+	jsr ACIAINIT	; Slow down to 1MHz, etc.
+	lda #179
+	jsr IIIPUT	; Send a "3" to trigger the SOS.INTERP download
+
+; Poll the port until we get a magic incantation
+PollInterp:
+	lda #$00	; #>LDREND-$2000+$400 = $58*00*
+	tay
+	sta b_p
+	sta RDBUF_P
+	lda #$58	; #<LDREND-$2000+$400 = $*58*00
+	sta b_p+1
+	sta RDBUF_P+1
+	lda #$80
+	sta CXPAGE+b_p+1	; Set XBYTE to $80 - using Xtended addressing
+PollInterpNext:
+	jsr IIIGET
+	cmp #$53		; Trigger character is an "S"
+	bne PollInterpNext
+	jsr IIIGET		; LSB of length
+	sta size
+	jsr IIIGET		; MSB of length
+	sta size+1		; We're ready to read everything else now
+
+ReadInterp:			; We got the magic signature; start reading data
+	jsr IIIGET		; Pull a byte
+	sta (b_p),y		; Save it
+	sta $0405		; Print it in the status area
+	iny
+	cpy size		; Is y equal to the LSB of our target?
+	bne :+			; No... check for next pageness
+	lda size+1		; LSB is equal; is MSB?
+	beq ReadInterpDone	; Yes... so done
+:	cpy #$00
+	bne ReadInterp		; Check for page increment
+	inc b_p+1		; Increment another page
+	dec size+1
+	jmp ReadInterp		; Go back for more
+ReadInterpDone:
+	jsr	RESTORE
+ReceiveInterpPadBegin:
+	.res	$20c0-ReceiveInterpPadBegin, $ea
 ReceiveInterpDone:
-        lda     #$FE
+        lda     #$fe
         sta     $0A
-        lda     #$0E
+        lda     #$57
         sta     $0B
         lda     #$80
         sta     $160B
@@ -682,21 +680,18 @@ LDR070:	lda     $1901
 	jsr     MOVE
 
 ReceiveDriver:
-	jsr ACIAINIT
+;	jmp	$f901		; Hit the monitor
+	jsr ACIAINIT	; Slow down to 1MHz, etc.
 	lda #180
-	jsr IIIPUT
+	jsr IIIPUT	; Send a "4" to trigger the SOS.DRIVER download
 
 ; Poll the port until we get a magic incantation
-b_p	:= $32
-size	:= $30
 Poll:
 	lda #$00	; #>LDREND-$2000+$400 = $58*00*
 	tay
 	sta b_p
-	sta RDBUF_P
 	lda #$58	; #<LDREND-$2000+$400 = $*58*00
 	sta b_p+1
-	sta RDBUF_P+1
 	lda #$80
 	sta CXPAGE+b_p+1	; Set XBYTE to $80 - using Xtended addressing
 PollNext:
@@ -942,9 +937,9 @@ ADVANCE:clc
         lda     ($0A),y
         sta     $27
         rts
-REVERSE:lda     #$08	; #$00
+REVERSE:lda     #$08	; #>D.HDR.CNT ; WORK.P:=80:D.HDR.CNT
         sta     $0A
-        lda     #$58	; #$0F		; Looking for memory at $00:0F00, which is $2f00
+        lda     #$58	; #<D.HDR.CNT ; Looking for memory at $00:0F00, which is $2f00
         sta     $0B
         lda     #$80
         sta     $160B		; XByte on
