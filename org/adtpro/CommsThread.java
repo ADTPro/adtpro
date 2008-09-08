@@ -268,7 +268,15 @@ public class CommsThread extends Thread
             receiveNibbleDisk(false, 70);
             _busy = false;
             break;
-          case (byte) 179: // "3": Initiate SOS.INTERP dump
+          case (byte) 179: // "3": Initiate Loader dump
+              _busy = true;
+              _parent.setMainText(Messages.getString("CommsThread.5")); //$NON-NLS-1$
+              _parent.setSecondaryText(""); //$NON-NLS-1$
+              Log.println(false,"CommsThread.commandLoop() Received Apple /// Loader dump command."); //$NON-NLS-1$
+              requestSend(Messages.getString("Gui.BS.SOSLOADER"), true, 0, 9600);
+              _busy = false;
+              break;
+          case (byte) 180: // "4": Initiate SOS.INTERP dump
             _busy = true;
             _parent.setMainText(Messages.getString("CommsThread.5")); //$NON-NLS-1$
             _parent.setSecondaryText(""); //$NON-NLS-1$
@@ -276,14 +284,14 @@ public class CommsThread extends Thread
             requestSend(Messages.getString("Gui.BS.SOSINTERP"), true, 0, 9600);
             _busy = false;
             break;
-          case (byte) 180: // "4": Initiate SOS.DRIVER dump
-            _busy = true;
-            _parent.setMainText(Messages.getString("CommsThread.5")); //$NON-NLS-1$
-            _parent.setSecondaryText(""); //$NON-NLS-1$
-            Log.println(false,"CommsThread.commandLoop() Received Apple /// SOS.DRIVER dump command."); //$NON-NLS-1$
-            requestSend(Messages.getString("Gui.BS.SOSDRIVER"), true, 0, 9600);
-            _busy = false;
-            break;
+          case (byte) 181: // "5": Initiate SOS.DRIVER dump
+              _busy = true;
+              _parent.setMainText(Messages.getString("CommsThread.5")); //$NON-NLS-1$
+              _parent.setSecondaryText(""); //$NON-NLS-1$
+              Log.println(false,"CommsThread.commandLoop() Received Apple /// SOS.DRIVER dump command."); //$NON-NLS-1$
+              requestSend(Messages.getString("Gui.BS.SOSDRIVER"), true, 0, 9600);
+              _busy = false;
+              break;
           default:
             Log
                 .println(
@@ -2465,13 +2473,20 @@ public class CommsThread extends Thread
           slowLastLines = 0;
         }
         else
-          if (resource.equals(Messages.getString("Gui.BS.SOS")))
-          {
-            resourceName = "org/adtpro/resources/SK.raw";
-            slowFirstLines = 0;
-            slowLastLines = 0;
-            isBinary = true;
-          }
+            if (resource.equals(Messages.getString("Gui.BS.SOSLOADER")))
+            {
+              resourceName = "org/adtpro/resources/SOSLoader.raw";
+              slowFirstLines = 0;
+              slowLastLines = 0;
+              isBinary = true;
+            }
+            if (resource.equals(Messages.getString("Gui.BS.SOS")))
+            {
+              resourceName = "org/adtpro/resources/SK.raw";
+              slowFirstLines = 0;
+              slowLastLines = 0;
+              isBinary = true;
+            }
           else
             if (resource.equals(Messages.getString("Gui.BS.SOSINTERP")))
             {

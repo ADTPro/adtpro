@@ -166,9 +166,13 @@
 		<exec dir="${projdir}/client/src" executable="${assemblerPath}/ca65">
 			<arg line="-l -t none sos/ethernet/ethmain.asm" />
 		</exec>
-		<echo message="Assembling SOS Boot source..."/>
+		<echo message="Assembling SOS serial Grub source..."/>
 		<exec dir="${projdir}/client/src" executable="${assemblerPath}/ca65">
-			<arg line="-l -t none sos/manualbootstrap.asm" />
+			<arg line="-l -t none sos/serial/grub.asm" />
+		</exec>
+		<echo message="Assembling SOS serial Loader source..."/>
+		<exec dir="${projdir}/client/src" executable="${assemblerPath}/ca65">
+			<arg line="-l -t none sos/serial/loader.asm" />
 		</exec>
 		<echo message="Assembling SOS Kernel..."/>
 		<exec dir="${projdir}/client/src" executable="${assemblerPath}/ca65">
@@ -185,9 +189,13 @@
 		<exec dir="${projdir}/client/src" executable="${assemblerPath}/ld65">
 			<arg line="-m adtsoseth.map -C sos/ethernet/adtpro.cfg -o ADTSOSETH sos/ethernet/ethmain.o ip65/ip65.lib tail.o" />
 		</exec>
-		<echo message="Linking manualbootstrap..."/>
+		<echo message="Linking grub..."/>
 		<exec dir="${projdir}/client/src" executable="${assemblerPath}/ld65">
-			<arg line="-m manualbootstrap.map -C sos/manualbootstrap.cfg -o MANUALBOOTSTRAP sos/manualbootstrap.o" />
+			<arg line="-m grub.map -C sos/serial/plain.cfg -o GRUB sos/serial/grub.o" />
+		</exec>
+		<echo message="Linking loader..."/>
+		<exec dir="${projdir}/client/src" executable="${assemblerPath}/ld65">
+			<arg line="-m loader.map -C sos/serial/plain.cfg -o LOADER sos/serial/loader.o" />
 		</exec>
 		<echo message="Linking SOS Kernel..."/>
 		<exec dir="${projdir}/client/src" executable="${assemblerPath}/ld65">
@@ -198,6 +206,7 @@
 		-->
 		<move file="${projdir}/client/src/ADTSOS" tofile="${builddir}/ADTSOS" />
 		<copy file="${builddir}/ADTSOS" tofile="${basedir}/org/adtpro/resources/adtsos.raw" />
+		<copy file="${projdir}/client/src/LOADER" tofile="${basedir}/org/adtpro/resources/SOSLoader.raw" />
 		<move file="${projdir}/client/src/ADTSOSETH" tofile="${builddir}/ADTSOSETH" />
 		<move file="${projdir}/client/src/sos/serial/SK.raw" tofile="${basedir}/org/adtpro/resources/SK.raw" />
 	</target>

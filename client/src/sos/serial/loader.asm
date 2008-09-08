@@ -18,47 +18,48 @@
 ; 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 ;
 
-; The manual bootstrapping startup procedure.
-; This would need to be typed into the monitor (ctrl-OA-reset) and then
-; run (A000G).  Alternatively, you can test this by inserting the assembled
-; code into sector zero (block zero) of a diskette and booting it.
-; The /// ROM will pull it into $A000 and execute it.
-
-	.org $a000
+; Serial bootstrap loader
+;
+; This code is sent by the ADTPro GUI a the user's request to a (hopefully)
+; waiting Apple /// that has typed in the Grub loader.  The Grub loads this
+; into $a100 and executes it, pulling in the (serial modified) SOS kernel.
 
 KBDSTROBE	:= $C010
-ENV_REG		:= $FFDF
+E_REG		:= $FFDF
 BANK_REG	:= $FFEF
-buffer_lsb	:= $7e
-buffer_msb	:= $7f
+BUF_P		:= $7e
 
 ACIADR		:= $c0f0	; Data register. $c0f0 for ///, $c088+S0 for SSC
 ACIASR		:= $c0f1	; Status register. $c0f1 for ///, $c089+S0 for SSC
 ACIAMR		:= $c0f2	; Command mode register. $c0f2 for ///, $c08a+S0 for SSC
 ACIACR		:= $c0f3	; Control register.  $c0f3 for ///, $c08b+S0 for SSC
 
-entry:	sei
-	cld
+GRUBIIIGET	:= $a040	; Borrow the Grub's IIIGET
+
+Signature:
+	.byte	$42		; The first byte that grub will see: a "B" character
+	.org $a100
+Entry:
 	ldx	#$FB
-	txs
+	txs			; Some 
 	bit	KBDSTROBE
 	lda	#$40
 	sta	$FFCA		; Disable interrupts
 	lda	#$07
 	sta	BANK_REG
 	ldx	#$00		; Note - we rely on x remaining zero until we print our welcome message
-banktest:			; Find highest writable bank
+BankTest:			; Find highest writable bank
 	dec	BANK_REG
 	stx	$2000
 	lda	$2000
-	bne	banktest
+	bne	BankTest
 
-	jsr	ACIAINIT		; Get the environment all set up
+	jsr	ACIAINIT	; Get the environment all set up
 
 ; Set up our pointers
-	stx	buffer_lsb	; x is still zero
+	stx	BUF_P	; x is still zero
 	lda	#$1e		; SOS.KERNEL initially occupies $1e00 to $73ff
-	sta	buffer_msb
+	sta	BUF_P+1
 
 ; Say we're active
 	ldy	#$03
@@ -70,50 +71,40 @@ banktest:			; Find highest writable bank
 
 ; Poll the port until we get a magic incantation
 Poll:
-	jsr	IIIGET
+	jsr	GRUBIIIGET
 	cmp	#$53		; First character will be "S" from "SOS" in SOS.KERNEL
 	bne	Poll
-	sta	(buffer_lsb),y	; Save that first "S"
+	sta	(BUF_P),y	; Save that first "S"
 	iny
 
 ; We got the magic signature; start reading data
 Read:	
-	jsr	IIIGET		; Pull a byte
-	sta	(buffer_lsb),y	; Save it
-	sta	$0405		; Print it in the status area
+	jsr	GRUBIIIGET	; Pull a byte
+	sta	(BUF_P),y	; Save it
+	sta	$0410		; Print it in the status area
 	iny
 	bne	Read
-	inc	buffer_msb		; Increment another page
-	lda	buffer_msb
+	inc	BUF_P+1		; Increment another page
+	lda	BUF_P+1
 	cmp	#$74		; Are we done? (SOS.KERNEL v1.3 is $56 pages long; $1E+$56=$74)
 	bne	Read		; If not... go back for more
 
 ; Go fast again
-	lda	ENV_REG	; Read the environment register
-	and	#$7f	; Set 2MHz switch
-	sta	ENV_REG	; Write the environment register
+	jsr	RESTORE
 
 ; Call SOSLDR entry point
 	jmp	$1e70	; SOSLDR v1.3 Entry point
 
 ACIAINIT:
-	lda	ENV_REG		; Read the environment register
+; Set up the environment
+	lda	E_REG		; Read the environment register
 	ora	#$F2		; Set 1MHz switch, Video + I/O space
-	sta	ENV_REG		; Write the environment register
+	sta	E_REG		; Write the environment register
 ; Set up the serial port
-ACIAINIT2:
 	lda	#$0b		; No parity, etc.
 	sta	ACIAMR		; Store via ACIA mode register.
 	lda	#$1e		; $16=300, $1e=9600, $1f=19200, $10=115k
 	sta	ACIACR		; Store via ACIA control register.
-	rts
-
-IIIGET:
-	lda	ACIASR	; Check status bits via ACIA status register
-	and	#$68
-	cmp	#$08
-	bne	IIIGET	; Input register empty, loop
-	lda	ACIADR	; Get character via ACIA data register
 	rts
 
 IIIPUT:
@@ -134,14 +125,15 @@ RESTORE:
 	dey
 	bpl :-
 	lda	#$32
-	sta	ENV_REG
+	sta	E_REG
 	rts
 
 message_1:
-	.byte	"ำลาบ"	; "SER:"
+	.byte	"Loading Kernel:"
 
 message_2:
-	.byte	$CF, $cb, $a1, $a0	; "OK! "
+	.byte	$CF, $cb, $a1, $a0	; "OK!"
 
 .align	256
-.assert	* = $a100, error, "Code got too big to fit in a block!  C'mon, someone is supposed to be able to type this into the monitor!"
+	.byte	$00
+.assert	* = $a200, error, "Code got too big to fit in a block!"

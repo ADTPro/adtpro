@@ -5,9 +5,9 @@ b_p		:= $32
 size		:= $30
 ACIAINIT	:= $A05c
 ACIAINIT2	:= $A064
-IIIGET		:= $A06f
-IIIPUT		:= $A07c
-RESTORE		:= $A08b
+GRUBIIIGET	:= $a040	; Borrow the Grub's IIIGET
+LOADERIIIPUT	:= $a168	; Borrow the Loader's IIIPUT
+LOADERRESTORE	:= $a177	; Borrow the Loader's RESTORE
 RELOC_OFFSET	:= $2c41
 ACIADR		:= $c0f0	; Data register. $c0f0 for ///, $c088+S0 for SSC
 ACIASR		:= $c0f1	; Status register. $c0f1 for ///, $c089+S0 for SSC
@@ -302,7 +302,7 @@ LF7F9           := $F7F9
 LF810           := $F810
 LF840           := $F840
 LF851           := $F851
-LF901           := $F901
+MONITOR		:= $f901
 LF952           := $F952
 LF981           := $F981
 LFA23           := $FA23
@@ -609,7 +609,7 @@ LDR020: lda     E_REG
 ReceiveInterp:
 	jsr ACIAINIT	; Slow down to 1MHz, etc.
 	lda #179
-	jsr IIIPUT	; Send a "3" to trigger the SOS.INTERP download
+	jsr LOADERIIIPUT	; Send a "4" to trigger the SOS.INTERP download
 
 ; Poll the port until we get a magic incantation
 PollInterp:
@@ -623,16 +623,16 @@ PollInterp:
 	lda #$80
 	sta CXPAGE+b_p+1	; Set XBYTE to $80 - using Xtended addressing
 PollInterpNext:
-	jsr IIIGET
+	jsr GRUBIIIGET
 	cmp #$53		; Trigger character is an "S"
 	bne PollInterpNext
-	jsr IIIGET		; LSB of length
+	jsr GRUBIIIGET		; LSB of length
 	sta size
-	jsr IIIGET		; MSB of length
+	jsr GRUBIIIGET		; MSB of length
 	sta size+1		; We're ready to read everything else now
 
 ReadInterp:			; We got the magic signature; start reading data
-	jsr IIIGET		; Pull a byte
+	jsr GRUBIIIGET		; Pull a byte
 	sta (b_p),y		; Save it
 	sta $0405		; Print it in the status area
 	iny
@@ -646,7 +646,7 @@ ReadInterp:			; We got the magic signature; start reading data
 	dec size+1
 	jmp ReadInterp		; Go back for more
 ReadInterpDone:
-	jsr	RESTORE
+	jsr	LOADERRESTORE
 ReceiveInterpPadBegin:
 	.res	$20c0-ReceiveInterpPadBegin, $ea
 ReceiveInterpDone:
@@ -680,32 +680,31 @@ LDR070:	lda     $1901
 	jsr     MOVE
 
 ReceiveDriver:
-;	jmp	$f901		; Hit the monitor
-	jsr ACIAINIT	; Slow down to 1MHz, etc.
+	jsr ACIAINIT		; Slow down to 1MHz, etc.
 	lda #180
-	jsr IIIPUT	; Send a "4" to trigger the SOS.DRIVER download
+	jsr LOADERIIIPUT	; Send a "5" to trigger the SOS.DRIVER download
 
 ; Poll the port until we get a magic incantation
 Poll:
-	lda #$00	; #>LDREND-$2000+$400 = $58*00*
+	lda #$00		; #>LDREND-$2000+$400 = $58*00*
 	tay
 	sta b_p
-	lda #$58	; #<LDREND-$2000+$400 = $*58*00
+	lda #$58		; #<LDREND-$2000+$400 = $*58*00
 	sta b_p+1
 	lda #$80
 	sta CXPAGE+b_p+1	; Set XBYTE to $80 - using Xtended addressing
 PollNext:
-	jsr IIIGET
+	jsr GRUBIIIGET
 	cmp #$53		; Trigger character is an "S"
 	bne PollNext
-	jsr IIIGET		; LSB of length
+	jsr GRUBIIIGET		; LSB of length
 	sta size
-	jsr IIIGET		; MSB of length
+	jsr GRUBIIIGET		; MSB of length
 	sta size+1		; We're ready to read everything else now
 ;	ldy #$00		; y should already be zero from above
 
 Read:				; We got the magic signature; start reading data
-	jsr IIIGET		; Pull a byte
+	jsr GRUBIIIGET		; Pull a byte
 	sta (b_p),y		; Save it
 ;	sta $0405		; Print it in the status area
 	iny
@@ -719,15 +718,15 @@ Read:				; We got the magic signature; start reading data
 	dec size+1
 	jmp Read		; Go back for more
 ReadDone:
-	jsr	RESTORE
+	jsr	LOADERRESTORE
 ReceiveDriverPad:
 	.res	$2144-ReceiveDriverPad, $ea
 
 ReceiveDriverDone:
 ;MOVE CHARACTER SET TABLE
-LDR103:	lda     #$1C	; #$14		; #>D.CHRSET ; MOVE(SRC.P=D.CHRSET DST.P=$C00 A=0 CNT=$400)
+LDR103:	lda     #$1C		; #$14 ; #>D.CHRSET ; MOVE(SRC.P=D.CHRSET DST.P=$C00 A=0 CNT=$400)
         sta     $22		; SRC.P
-        lda     #$58	; #$0F		; #<D.CHRSET
+        lda     #$58		; #$0F ; #<D.CHRSET
         sta     $23		; SRC.P+1
         lda     #$00
         sta     $24
@@ -7241,7 +7240,7 @@ L57EC:  txa
         lda     E_REG
         ora     #$03
         sta     E_REG
-        jsr     LF901
+        jsr     MONITOR
         lda     E_REG
         ora     #$04
         sta     E_REG
