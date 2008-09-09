@@ -890,7 +890,9 @@ INIT_KRNL:
         jsr     L28F8
         jsr     L298A
         jsr     LB801
-        bcs     INITK_ERR
+        ;bcs	INITK_ERR
+        nop			; BFM was dying when it didn't have a formatted
+        nop			; disk on bootup.  So... nop out that check.
         jsr     L2A05
         jsr     L29F9
         jsr     L2A34
