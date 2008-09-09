@@ -460,7 +460,7 @@ public class SerialTransport extends ATransport
           else
               if (guiString.equals(Messages.getString("Gui.BS.SOS")))
               {
-                ret = Messages.getString("Gui.BS.DumpSOSInstructionsDone");
+                /* ret = Messages.getString("Gui.BS.DumpSOSInstructionsDone"); */
               }
     Log.println(false,"SerialTransport.getInstructionsDone() returning: "+ret);
     return ret;

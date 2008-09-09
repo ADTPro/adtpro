@@ -3,12 +3,13 @@
 
 b_p		:= $32
 size		:= $30
-GRUBIIIGET	:= $a040	; Borrow the Grub's IIIGET
+GRUBIIIGET	:= $a040	; Borrow Grub's IIIGET
 ACIAINIT	:= $A161	; Borrow the Loader's ACIAINIT
 LOADERIIIPUT	:= $A174	; Borrow the Loader's IIIPUT
 LOADERRESTORE	:= $A192	; Borrow the Loader's RESTORE
 LOADERMessage	:= $A183	; Borrow the Loader's Message routine
 LOADERmessage_2	:= $A1A7	; Borrow the Loader's message_2
+LOADERmessage_3	:= $A1B6	; Borrow the Loader's message_3
 ACIADR		:= $c0f0	; Data register. $c0f0 for ///, $c088+S0 for SSC
 ACIASR		:= $c0f1	; Status register. $c0f1 for ///, $c089+S0 for SSC
 ACIAMR		:= $c0f2	; Command mode register. $c0f2 for ///, $c08a+S0 for SSC
@@ -633,6 +634,7 @@ PollInterpNext:
 
 	ldx #<LOADERmessage_2	; Tell 'em we're reading
 	jsr LOADERMessage
+	ldy #$00
 ReadInterp:			; We got the magic signature; start reading data
 	jsr GRUBIIIGET		; Pull a byte
 	sta (b_p),y		; Save it
@@ -655,9 +657,9 @@ ReceiveInterpPadBegin:
 	.res	$20c0-ReceiveInterpPadBegin, $ea
 
 ReceiveInterpDone:
-        lda     #$fe
+        lda     #$06
         sta     $0A
-        lda     #$57
+        lda     #$58
         sta     $0B
         lda     #$80
         sta     $160B
@@ -696,8 +698,8 @@ Poll:
 	sta b_p
 	lda #$58		; #<LDREND-$2000+$400 = $*58*00
 	sta b_p+1
-	lda #$80
-	sta CXPAGE+b_p+1	; Set XBYTE to $80 - using Xtended addressing
+;	lda #$80
+;	sta CXPAGE+b_p+1	; Set XBYTE to $80 - using Xtended addressing
 PollNext:
 	jsr GRUBIIIGET
 	cmp #$53		; Trigger character is an "S"
@@ -706,8 +708,10 @@ PollNext:
 	sta size
 	jsr GRUBIIIGET		; MSB of length
 	sta size+1		; We're ready to read everything else now
-;	ldy #$00		; y should already be zero from above
 
+	ldx #<LOADERmessage_3	; Tell 'em we're reading
+	jsr LOADERMessage
+	ldy #$00
 Read:				; We got the magic signature; start reading data
 	jsr GRUBIIIGET		; Pull a byte
 	sta (b_p),y		; Save it

@@ -2640,10 +2640,9 @@ public class CommsThread extends Thread
               + " bytes from the stream.");
           while (bytesRead < bytesAvailable)
           {
-            bytesRead += _is
-                .read(buffer, bytesRead, bytesAvailable - bytesRead);
+            bytesRead += _is.read(buffer, bytesRead, bytesAvailable - bytesRead);
             Log.println(false, "CommsThread.Worker.run() read " + bytesRead
-                + " more bytes from the stream.");
+                + " bytes from the stream.");
           }
           ((AudioTransport) _transport).writeBigBytes(buffer);
           ((AudioTransport) _transport).pushBigBuffer(_parent);
