@@ -268,12 +268,12 @@ public class CommsThread extends Thread
             receiveNibbleDisk(false, 70);
             _busy = false;
             break;
-          case (byte) 179: // "3": Initiate Loader dump
+          case (byte) 179: // "3": Initiate SOS.KERNEL dump
               _busy = true;
               _parent.setMainText(Messages.getString("CommsThread.5")); //$NON-NLS-1$
               _parent.setSecondaryText(""); //$NON-NLS-1$
-              Log.println(false,"CommsThread.commandLoop() Received Apple /// Loader dump command."); //$NON-NLS-1$
-              requestSend(Messages.getString("Gui.BS.SOSLOADER"), true, 0, 9600);
+              Log.println(false,"CommsThread.commandLoop() Received Apple /// SOS.KERNEL dump command."); //$NON-NLS-1$
+              requestSend(Messages.getString("Gui.BS.SOSKERNEL"), true, 0, 9600);
               _busy = false;
               break;
           case (byte) 180: // "4": Initiate SOS.INTERP dump
@@ -2460,6 +2460,7 @@ public class CommsThread extends Thread
     }
     else
     {
+      Log.println(true,"Resource: "+resource+" Message: "+Messages.getString("Gui.BS.SOS"));
       if (resource.equals(Messages.getString("Gui.BS.ProDOS")))
       {
         resourceName = "org/adtpro/resources/PD.dmp";
@@ -2473,15 +2474,17 @@ public class CommsThread extends Thread
           slowLastLines = 0;
         }
         else
-            if (resource.equals(Messages.getString("Gui.BS.SOSLOADER")))
+          if (resource.equals(Messages.getString("Gui.BS.SOS")))
+          {
+            resourceName = "org/adtpro/resources/SOSLoader.raw";
+            slowFirstLines = 0;
+            slowLastLines = 0;
+            isBinary = true;
+          }
+          else
+            if (resource.equals(Messages.getString("Gui.BS.SOSKERNEL")))
             {
-              resourceName = "org/adtpro/resources/SOSLoader.raw";
-              slowFirstLines = 0;
-              slowLastLines = 0;
-              isBinary = true;
-            }
-            if (resource.equals(Messages.getString("Gui.BS.SOS")))
-            {
+              Log.println(true, "DEBUG: Sending kernel file, SK.raw");
               resourceName = "org/adtpro/resources/SK.raw";
               slowFirstLines = 0;
               slowLastLines = 0;
@@ -2490,6 +2493,7 @@ public class CommsThread extends Thread
           else
             if (resource.equals(Messages.getString("Gui.BS.SOSINTERP")))
             {
+              Log.println(true, "DEBUG: Sending interp file, adtsos.raw");
               resourceName = "org/adtpro/resources/adtsos.raw";
               slowFirstLines = 0;
               slowLastLines = 0;
@@ -2536,6 +2540,7 @@ public class CommsThread extends Thread
                       resourceName = "'CommsThread.requestSend() - not set! (non-AudioTransport)'";
     }
     Log.println(false, "CommsThread.requestSend() seeking resource named " + resourceName);
+    Log.println(true, "DEBUG: CommsThread.requestSend() seeking resource named " + resourceName);
     is = ADTPro.class.getClassLoader().getResourceAsStream(resourceName);
     if (is != null)
     {
@@ -2551,6 +2556,7 @@ public class CommsThread extends Thread
       {
         // Run this on a thread...
         Log.println(false, "CommsThread.requestSend() Reading " + resourceName);
+        Log.println(true, "DEBUG: CommsThread.requestSend() Reading " + resourceName);
         _parent.setMainText(Messages.getString("CommsThread.4")); //$NON-NLS-1$
         _parent.setSecondaryText(resourceName); //$NON-NLS-1$
         _worker = new Worker(resource, is, pacing, speed, slowFirstLines,
@@ -2558,13 +2564,14 @@ public class CommsThread extends Thread
         _worker.start();
       }
       else
-        Log.println(false, "CommsThread.requestSend() found file sized "
-            + fileSize + " bytes.");
+      {
+        Log.println(false, "CommsThread.requestSend() found file sized " + fileSize + " bytes.");
+        Log.println(true, "DEBUG: CommsThread.requestSend() found file sized " + fileSize + " bytes.");
+      }
     }
     else
     {
-      Log.println(true,
-          "Unable to find resource named " + resourceName + " to send."); //$NON-NLS-1$  //$NON-NLS-2$
+      Log.println(true, "Unable to find resource named " + resourceName + " to send."); //$NON-NLS-1$  //$NON-NLS-2$
     }
     return fileSize;
   }
@@ -2663,23 +2670,25 @@ public class CommsThread extends Thread
             // Binary processing
             byte[] buffer = new byte[bytesAvailable];
             bytesRead = _is.read(buffer);
-            Log.println(false, "CommsThread.Worker.run() read " + bytesRead
-                + " bytes from the stream.");
+            Log.println(false, "CommsThread.Worker.run() read " + bytesRead + " bytes from the stream.");
+            Log.println(true, "DEBUG: CommsThread.Worker.run() read " + bytesRead + " bytes from the stream.");
             while (bytesRead < bytesAvailable)
             {
-              bytesRead += _is.read(buffer, bytesRead, bytesAvailable
-                  - bytesRead);
-              Log.println(false, "CommsThread.Worker.run() read " + bytesRead
-                  + " more bytes from the stream.");
+              bytesRead += _is.read(buffer, bytesRead, bytesAvailable - bytesRead);
+              Log.println(false, "CommsThread.Worker.run() read " + bytesRead + " more bytes from the stream.");
+              Log.println(true, "DEBUG: CommsThread.Worker.run() read " + bytesRead + " more bytes from the stream.");
             }
-            if (_resource.equals(Messages.getString("Gui.BS.SOSINTERP"))||
+            if (_resource.equals(Messages.getString("Gui.BS.SOSINTERP")) ||
                 _resource.equals(Messages.getString("Gui.BS.SOSDRIVER")))
             {
+              Log.println(true, "DEBUG: Sending length of "+(buffer.length-1));
               // If we're sending SOS bootstrap stuff, we need to prepend the length and stuff
               _transport.writeByte(0x53); // Send an "S" to trigger the start
               _transport.writeByte(UnsignedByte.loByte(buffer.length-1)); // Send buffer LSB
               _transport.writeByte(UnsignedByte.hiByte(buffer.length-1)); // Send buffer MSB
             }
+            else
+              Log.println(true, "DEBUG: Not sending length information.");
             for (int i = 0; i < buffer.length; i++)
             {
               if (_shouldRun == false)

@@ -24,6 +24,8 @@
 ; waiting Apple /// that has typed in the Grub loader.  The Grub loads this
 ; into $a100 and executes it, pulling in the (serial modified) SOS kernel.
 
+.export 	Message, ACIAINIT, IIIPUT
+
 KBDSTROBE	:= $C010
 E_REG		:= $FFDF
 BANK_REG	:= $FFEF
@@ -37,17 +39,17 @@ ACIACR		:= $c0f3	; Control register.  $c0f3 for ///, $c08b+S0 for SSC
 GRUBIIIGET	:= $a040	; Borrow the Grub's IIIGET
 
 Signature:
-	.byte	$42		; The first byte that grub will see: a "B" character
+	.byte	$47		; The first byte that grub will see: a "G" character
 	.org $a100
 Entry:
 	ldx	#$FB
-	txs			; Some 
+	txs			; Some nonsense about .CONSOLE mucking with the stack
 	bit	KBDSTROBE
 	lda	#$40
 	sta	$FFCA		; Disable interrupts
 	lda	#$07
 	sta	BANK_REG
-	ldx	#$00		; Note - we rely on x remaining zero until we print our welcome message
+	ldx	#$00
 BankTest:			; Find highest writable bank
 	dec	BANK_REG
 	stx	$2000
@@ -57,19 +59,21 @@ BankTest:			; Find highest writable bank
 	jsr	ACIAINIT	; Get the environment all set up
 
 ; Set up our pointers
-	stx	BUF_P	; x is still zero
+	lda	#$00
+	sta	BUF_P
 	lda	#$1e		; SOS.KERNEL initially occupies $1e00 to $73ff
 	sta	BUF_P+1
 
 ; Say we're active
-	ldy	#$03
-:	lda	message_1,y
-	sta	$0400,y
-	dey
-	bpl	:-
-	iny			; Make y zero
+	ldx	#<message_1
+	jsr	Message
+
+; Ask for the kernel
+	lda #179
+	jsr IIIPUT	; Send a "3" to trigger the SOS.KERNEL download
 
 ; Poll the port until we get a magic incantation
+	ldy #$00
 Poll:
 	jsr	GRUBIIIGET
 	cmp	#$53		; First character will be "S" from "SOS" in SOS.KERNEL
@@ -90,7 +94,13 @@ Read:
 	bne	Read		; If not... go back for more
 
 ; Go fast again
-	jsr	RESTORE
+	lda	E_REG	; Read the environment register
+	and	#$7f	; Set 2MHz switch
+	sta	E_REG	; Write the environment register
+
+; Say we're done
+	ldx	#<message_4
+	jsr	Message
 
 ; Call SOSLDR entry point
 	jmp	$1e70	; SOSLDR v1.3 Entry point
@@ -118,21 +128,33 @@ IIIPUTC1:
 	sta	$C0F0		; Put character
 	rts
 
-RESTORE:
-	ldy	#$03
-:	lda	message_2,y
+Message:
+	stx	SelfMod+1
+	ldy	#$0e
+SelfMod:
+	lda	message_1,y
 	sta	$400,y
 	dey
-	bpl :-
+	bpl SelfMod
+	rts
+
+RESTORE:
 	lda	#$32
 	sta	E_REG
 	rts
 
 message_1:
-	.byte	"Loading Kernel:"
+	.byte	"LOADING KERNEL:"
 
 message_2:
-	.byte	$CF, $cb, $a1, $a0	; "OK!"
+	.byte	"LOADING INTERP:"
+
+message_3:
+	.byte	"LOADING DRIVER:"
+
+message_4:
+	.byte	$CF, $cb, $a1, $a0, $a0, $a0, $a0, $a0	; "OK!"
+	.byte	$a0, $a0, $a0, $a0, $a0, $a0
 
 .align	256
 	.byte	$00

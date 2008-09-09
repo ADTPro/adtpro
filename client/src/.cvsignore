@@ -1,3 +1,5 @@
 *.map
 *.lst
 MANUALBOOTSTRAP
+LOADER
+GRUB
