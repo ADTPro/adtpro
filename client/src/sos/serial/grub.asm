@@ -102,5 +102,5 @@ IIIGet:
 	lda	ACIADR	; Get character via ACIA data register
 	rts
 
-.align	256
-.assert	* = $a100, error, "Code got too big to fit in a block!  C'mon, someone is supposed to be able to type this into the monitor!"
+;.align	256
+;.assert	* = $a100, error, "Code got too big to fit in a block!  C'mon, someone is supposed to be able to type this into the monitor!"

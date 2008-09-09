@@ -209,6 +209,11 @@
 		<copy file="${projdir}/client/src/LOADER" tofile="${basedir}/org/adtpro/resources/SOSLoader.raw" />
 		<move file="${projdir}/client/src/ADTSOSETH" tofile="${builddir}/ADTSOSETH" />
 		<move file="${projdir}/client/src/sos/serial/SK.raw" tofile="${basedir}/org/adtpro/resources/SK.raw" />
+		<!--
+		Make dumpable versions
+		-->
+		<echo message="Dumping Grub..."/>
+		<appleDump infilename="${projdir}/client/src/GRUB" outfilename="${basedir}/org/adtpro/resources/grub.dmp" applename="GRUB" startaddrhex="A000" numbyteswide="8" decoration="end"/>
 	</target>
 
 	<target name="assembleCommon">
