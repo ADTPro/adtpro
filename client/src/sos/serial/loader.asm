@@ -24,11 +24,9 @@
 ; waiting Apple /// that has typed in the Grub loader.  The Grub loads this
 ; into $a100 and executes it, pulling in the (serial modified) SOS kernel.
 
-.export 	Message, ACIAINIT, IIIPUT
-
-KBDSTROBE	:= $C010
-E_REG		:= $FFDF
-BANK_REG	:= $FFEF
+KBDSTROBE	:= $c010
+E_REG		:= $ffdf
+BANK_REG	:= $ffef
 BUF_P		:= $7e
 
 ACIADR		:= $c0f0	; Data register. $c0f0 for ///, $c088+S0 for SSC
@@ -36,17 +34,17 @@ ACIASR		:= $c0f1	; Status register. $c0f1 for ///, $c089+S0 for SSC
 ACIAMR		:= $c0f2	; Command mode register. $c0f2 for ///, $c08a+S0 for SSC
 ACIACR		:= $c0f3	; Control register.  $c0f3 for ///, $c08b+S0 for SSC
 
-GRUBIIIGET	:= $a040	; Borrow the Grub's IIIGET
+GrubIIIGet	:= $a040	; Borrow the Grub's IIIGet
 
 Signature:
 	.byte	$47		; The first byte that grub will see: a "G" character
 	.org $a100
 Entry:
-	ldx	#$FB
+	ldx	#$fb
 	txs			; Some nonsense about .CONSOLE mucking with the stack
 	bit	KBDSTROBE
 	lda	#$40
-	sta	$FFCA		; Disable interrupts
+	sta	$ffca		; Disable interrupts
 	lda	#$07
 	sta	BANK_REG
 	ldx	#$00
@@ -56,7 +54,7 @@ BankTest:			; Find highest writable bank
 	lda	$2000
 	bne	BankTest
 
-	jsr	ACIAINIT	; Get the environment all set up
+	jsr	ACIAInit	; Get the environment all set up
 
 ; Set up our pointers
 	lda	#$00
@@ -70,12 +68,12 @@ BankTest:			; Find highest writable bank
 
 ; Ask for the kernel
 	lda #179
-	jsr IIIPUT	; Send a "3" to trigger the SOS.KERNEL download
+	jsr IIIPut	; Send a "3" to trigger the SOS.KERNEL download
 
 ; Poll the port until we get a magic incantation
 	ldy #$00
 Poll:
-	jsr	GRUBIIIGET
+	jsr	GrubIIIGet
 	cmp	#$53		; First character will be "S" from "SOS" in SOS.KERNEL
 	bne	Poll
 	sta	(BUF_P),y	; Save that first "S"
@@ -83,7 +81,7 @@ Poll:
 
 ; We got the magic signature; start reading data
 Read:	
-	jsr	GRUBIIIGET	; Pull a byte
+	jsr	GrubIIIGet	; Pull a byte
 	sta	(BUF_P),y	; Save it
 	sta	$0410		; Print it in the status area
 	iny
@@ -105,10 +103,10 @@ Read:
 ; Call SOSLDR entry point
 	jmp	$1e70	; SOSLDR v1.3 Entry point
 
-ACIAINIT:
+ACIAInit:
 ; Set up the environment
 	lda	E_REG		; Read the environment register
-	ora	#$F2		; Set 1MHz switch, Video + I/O space
+	ora	#$f2		; Set 1MHz switch, Video + I/O space
 	sta	E_REG		; Write the environment register
 ; Set up the serial port
 	lda	#$0b		; No parity, etc.
@@ -117,13 +115,13 @@ ACIAINIT:
 	sta	ACIACR		; Store via ACIA control register.
 	rts
 
-IIIPUT:
+IIIPut:
 	pha			; Push 'character to send' onto the stack
-IIIPUTC1:
-	lda	$C0F1		; Check status bits
+IIIPutC1:
+	lda	ACIASR		; Check status bits
 	and	#$70
 	cmp	#$10
-	bne	IIIPUTC1	; Output register is full, so loop
+	bne	IIIPutC1	; Output register is full, so loop
 	pla			; Pull 'character to send' back off the stack
 	sta	$C0F0		; Put character
 	rts
@@ -135,7 +133,7 @@ SelfMod:
 	lda	message_1,y
 	sta	$400,y
 	dey
-	bpl SelfMod
+	bpl	SelfMod
 	rts
 
 RESTORE:
@@ -153,7 +151,7 @@ message_3:
 	.byte	"LOADING DRIVER:"
 
 message_4:
-	.byte	$CF, $cb, $a1, $a0, $a0, $a0, $a0, $a0	; "OK!"
+	.byte	$cf, $cb, $a1, $a0, $a0, $a0, $a0, $a0	; "OK!"
 	.byte	$a0, $a0, $a0, $a0, $a0, $a0
 
 .align	256

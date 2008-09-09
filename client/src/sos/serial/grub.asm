@@ -52,7 +52,7 @@ ACIASR		:= $c0f1	; Status register. $c0f1 for ///, $c089+S0 for SSC
 ACIAMR		:= $c0f2	; Command mode register. $c0f2 for ///, $c08a+S0 for SSC
 ACIACR		:= $c0f3	; Control register.  $c0f3 for ///, $c08b+S0 for SSC
 
-entry:	sei
+Entry:	sei
 	cld
 	lda	#$40
 	sta	$ffca		; Disable interrupts
@@ -72,20 +72,20 @@ entry:	sei
 	sta	BUF_P+1		; Loader goes into $a100
 
 ; Say we're active in the upper-right hand corner
-	lda	#$47
+	lda	#$47		; "G"
 	sta	$0424
-	lda	#$4f
+	lda	#$4f		; "O"
 	sta	$0425
 
 ; Poll the port until we get a magic incantation
 Poll:
-	jsr	IIIGET
+	jsr	IIIGet
 	cmp	#$47		; First character will be "B" from bigger bootstrap loader
 	bne	Poll
 
 ; We got the magic signature; start reading data
 Read:	
-	jsr	IIIGET		; Pull a byte
+	jsr	IIIGet		; Pull a byte
 	sta	(BUF_P),y	; Save it
 	sta	$0427		; Print it in the status area
 	iny
@@ -94,11 +94,11 @@ Read:
 ; Call bootstrap entry point
 	jmp	$a100		; Bigger Booter Entry point
 
-IIIGET:
+IIIGet:
 	lda	ACIASR	; Check status bits via ACIA status register
 	and	#$68
 	cmp	#$08
-	bne	IIIGET	; Input register empty, loop
+	bne	IIIGet	; Input register empty, loop
 	lda	ACIADR	; Get character via ACIA data register
 	rts
 
