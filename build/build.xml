@@ -1,4 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+To get started, make a copy of ADTProBuild-default.properties, name it
+ADTProBuild.properties, leave it in the same directory, and customize it
+before running this. You'll want to add ant.jar to the build path, as well.
+
+See:
+http://adtpro.sourceforge.net/developing.html
+
+-->
+
 <!-- Note - running this under Java 1.6 caused "java -jar ac.jar" constructions
      to fail to produce good executables on the destination disk.  Seems odd
      stuff got changed to $3f all over the place; made code non-executable.

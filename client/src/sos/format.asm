@@ -32,7 +32,7 @@ FormatEntry:
 			;   NUMBLKS
 			;   NUMBLKS+1
 	bmi FormatAbort	; User wanted to abandon the format operation.
-
+	sta SLOWA		; Hang on to that accumulator
 	jsr LName		; Ask for a name
 	bcs Again
 
@@ -42,19 +42,20 @@ FormatEntry:
 	ldx #$01
 	cpx NUMBLKS+1
 	bne HighLevelFormat	; If it's not $118 blocks, it's not a .FMTDx-able device
-	tax			; Let's look at the item they selected in more detail
+	ldx SLOWA		; Let's look at the item they selected in more detail
 	jsr POINT_AT		; UTILPTR now points at the item in DEVICES table
 	ldy #$04
 	lda (UTILPTR),y		; Device+4 is where the device name starts (after the period)
 	cmp #$44
 	bne HighLevelFormat
-	iny
-	iny
+	iny			; y = 5
+	iny			; y = 6
 	lda (UTILPTR),y		; Device+6 is after the drive number; should be blank
 	cmp #$20
 	bne HighLevelFormat
-	dey
+	dey			; y = 5
 	lda (UTILPTR),y		; Device+5 is the drive number, so look for FMTD[A]
+	;jsr	$1910
 	and #$0F		; Read the bottom nybble [1-4]
 	tay
 	dey			; Make it zero-indexed [0-3]
