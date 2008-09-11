@@ -35,7 +35,12 @@ FormatEntry:
 	sta SLOWA		; Hang on to that accumulator
 	jsr LName		; Ask for a name
 	bcs Again
-
+	lda #$15
+	jsr TABV
+	ldy #PMTheOld
+	jsr WRITEMSGLEFT	; Ready to format (Y/N)?
+	jsr YNLOOP
+	beq Again		; 0 = No
 	ldx #$18		; Check for a floppy and its formatter device driver
 	cpx NUMBLKS
 	bne HighLevelFormat	; If it's not $118 blocks, it's not a .FMTDx-able device
@@ -123,22 +128,22 @@ FloppyLLFormat:
 	CALLOS OS_D_CONTROL, FMT_CONTROL_PARMS	; Format, baby!
 	clc
 	beq FloppyLLFormatOk
-	cmp #$27
+	cmp #IOERROR
 	bne :+
 	ldy #PMDead
 	jmp FloppyLLFormatDead
-:	cmp #$2B
+:	cmp #NOWRITE
 	bne :+
 	ldy #PMProtect
 	jmp FloppyLLFormatDead
-:	cmp #$33
+:	cmp #$33	; Device-specific return code: drive too slow
 	bne :+
 	jsr CROUT
 	ldax #FMTMsg01
 	ldy FMT_MSG_LEN_TBL
 	jsr IPShowMsg
 	jmp FloppyLLFormatOk
-:	cmp #$34
+:	cmp #$34	; Device-specific return code: drive too fast
 	bne :+
 	jsr CROUT
 	ldax #FMTMsg02

@@ -156,6 +156,8 @@ RWDIR:	CALLOS OS_READBLOCK, D_RW_PARMS
 	sta RWRESULT	; Remember the character we're going to use for this I/O result
 	jmp RWOK
 RWBAD:
+	cmp #DISKSK	; If we get a "disk switched" error, retry
+	beq RWDIR
 	lda #$01
 	sta ECOUNT
 	lda #CHR_X
