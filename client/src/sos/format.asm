@@ -114,7 +114,7 @@ SlotF:
 
 ;       Error codes returned:   $00 : good completion
 ;                               $27 : Unable to format (usually bad media)
-;                               $28 : Write-Protected
+;                               $28 : Write-Protected <-- Actually, it's $2B!
 ;                               $33 : Drive too SLOW                  /RRA82237/
 ;                               $34 : Drive too FAST                  /RRA82237/
 
@@ -127,7 +127,7 @@ FloppyLLFormat:
 	bne :+
 	ldy #PMDead
 	jmp FloppyLLFormatDead
-:	cmp #$28
+:	cmp #$2B
 	bne :+
 	ldy #PMProtect
 	jmp FloppyLLFormatDead
