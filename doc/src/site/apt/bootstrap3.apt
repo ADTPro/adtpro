@@ -1,0 +1,102 @@
+ -----
+ ADTPro Bootstrapping - Apple ///
+ -----
+ David Schmidt (david__schmidt at users dot souceforge dot net)
+ -----
+
+ADTPro Bootstrapping the Apple ///
+
+ If you already have the DOS version of ADT and the Apple II emulator on disk
+for your ///, you can use them to transfer the ADTPro disk image in 
+Apple II mode.  Just tell ADT that you're using an SSC in slot 7 
+(where the emulated SSC lives) and transfer away.  Reboot with the ADTPro
+disk, and you'll be ready to go.  If not... read on.
+
+ If you still need to connect your host and Apple /// computers through 
+ their serial ports, refer back to the
+ {{{connectionsserial.html#Apple3}Connections}} section.
+
+ If you'd rather have a pre-built disk arrive at your door than
+build one yourself, {{{http://retrofloppy.com/products.html#ADTPRO}click here}}.
+
+* {Starting from bare metal}
+
+ The Apple /// doesn't have the rich set of firmware the way the Apple II does.
+That means that the serial port setup and communications software has to be
+"bootstrapped" - that is, typed in - by you, dear reader.  
+
+ The Apple /// does have
+a minimally functional command line interface, or "monitor."  It is accessible with 
+the familiar (to Apple II fans) Ctrl-OpenApple-Reset key sequence.
+The machine will beep, and you will be presented with a blinking cursor 
+(typically an arrow).  You then proceed to type in the "Grub" bootstrap loader,
+and execute it.  The Grub then waits to accept the rest of 
+bootstrapping code from the ADTPro server.
+
+    [[1]] {{{connectionsserial.html#Apple3}Connect}} the two computers 
+    through their serial ports.
+
+    [[1]] Turn on the Apple ///; hit the Ctrl-OpenApple-Reset key sequence to
+    get the monitor command line interface.
+
+    [[1]] On the Apple ///, type in the Grub bootstrapping loader.  In the program 
+    below, note that every "0" character is a number zero, not a letter;
+    every "1" character is a number one, not a letter.
+    The sequence of lines to type is this:
+
+-----------------
+A000:78 D8 A9 40 8D CA FF AD
+A008:DF FF 09 F2 8D DF FF A9
+A010:0B 8D F2 C0 A9 1E 8D F3
+A018:C0 A9 00 85 7E A9 A1 85
+A020:7F A9 47 8D 24 04 A9 4F
+A028:8D 25 04 20 40 A0 C9 47
+A030:D0 F9 20 40 A0 91 7E 8D
+A038:27 04 C8 D0 F5 4C 00 A1
+A040:AD F1 C0 29 68 C9 08 D0
+A048:F7 AD F0 C0 60 
+-----------------
+
+    It is imperative that these numbers and letters be typed in exactly and precisely
+    as they appear above, with no errors.
+    It will be important to review and re-check the lines before actually running it.
+
+    [[1]] To see the entire program in memory once it has been typed
+    in, type the following command:
+
+-----------------
+A000.A04C
+-----------------
+
+    Any line can be corrected by re-typing that entire line (starting on a new,
+    blank line).
+
+    [[1]] Once you are satisfied that the program is error-free, run it with the
+    following command:
+
+-----------------
+A000G
+-----------------
+
+    [[1]] An inverse word "GO" should appear in the upper-right hand corner of the
+    screen.  The Apple /// is now waiting for further instructions from the ADTPro
+    server.
+
+    [[1]] On the ADTPro server, click on the "Bootstrapping->SOS" menu item.
+    Dismiss the dialog box that appears (since the Grub is already running).
+    The bootstrapping process should now continue without any further need for 
+    intervention.
+    When it is finished, the ADTPro SOS client should be running on the Apple ///.
+
+    [[1]] Use the ADTPro client's {{{misc.html#Format}format}} function to
+    format a diskette or two.  Note that in the SOS world, formatting
+    a diskette doesn't make it bootable - it just prepares the filesystem
+    for writing.
+    The next step of sending the ADTPro distribution diskette will create
+    bootable diskette for you.
+
+    [[1]] You are now ready to {{{receiving.html}receive}} the ADTPRO-v.r.m.DSK
+    disk image from the host.  Once you've done that, you've got a bootable SOS 
+    diskette that contains the ADTPro client program.
+
+    []

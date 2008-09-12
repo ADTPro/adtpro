@@ -25,8 +25,9 @@
     </menu>
 
     <menu name="Bootstrapping">
-      <item name="Serial" href="bootstrap.html"/>
-      <item name="Audio" href="bootstrapaudio.html"/>
+      <item name="Serial - Apple ][" href="bootstrap.html"/>
+      <item name="Serial - Apple ///" href="bootstrap3.html"/>
+      <item name="Audio - Apple ][" href="bootstrapaudio.html"/>
     </menu>
 
     <menu name="Operations">
