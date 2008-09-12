@@ -59,30 +59,26 @@ SCAN_DEVICE_LOOP:
 	bne :-
 	CALLOS OS_D_INFO, D_INFO_PARMS
 	bne SCAN_NEXT			; Skip it if we got an OS call error
-	lda D_INFO_OPTION+2		; Skip it if it isn't a block device
+	bit DEVMODE			; Check which kinds of devices we're looking for
+	bvs :+				; Looking for formatters?  Branch if so.
+	lda D_INFO_OPTION+2
+	bpl SCAN_NEXT			; Skip it if it isn't a block device
+	jmp SV				; Otherwise, check it out...
+:
+	lda D_INFO_OPTION+2
+	asl				; Add to the list of formattable things
+	asl
+	asl
 	bpl SCAN_NEXT
-	jsr SCAN_VOLUME
+SV:	jsr SCAN_VOLUME
 SCAN_NEXT:
-	cmp #$11			; Type = $11 can be FMTDx...
-	bne :+
-	lda D_INFO_OPTION+3
-	cmp #$01			; Subtype = $01 means FMTDx
-	bne :+
-	tya
-	pha				; Hang on to Y for a bit
-	ldy D_INFO_OPTION+1		; Get the unit number
-	lda D_INFO_NUM			; Get the device number
-	sta FMTDX,y			; Associate the formatter device with its unit number
-	pla
-	tay
-:	iny
+	iny
 	cpy #$19
 	bne SCAN_DEVICE_LOOP
 ODONE:
 	rts
 
 DUMP_INDEX:	.byte $00
-FMTDX:	.byte $00, $00, $00, $00
 
 ;---------------------------------------------------------
 ; SCAN_VOLUME
@@ -101,6 +97,8 @@ SCAN_VOLUME:
 :	dex
 	sta VOLUME_NAME,X		; Clear out the volume name space
 	bne :-
+	bit DEVMODE
+	bvs SV_NEW_NAME			; Looking for formatters?  Branch if so.
 	CALLOS OS_ONL, VOLUME_PARMS	; Retrieve the volume name
 	bne SV_NONE
 SV_NEW_NAME:
@@ -379,8 +377,15 @@ PRT1VOL:
 ;---------------------------------------------------------
 ; CLEARVOLUMES - invalidate the volume cache
 ;---------------------------------------------------------
+CLEARVOLFORMAT:
+	lda #$40
+	sta DEVMODE	; We want formatters
+	jmp CV2
 CLEARVOLUMES:
 	lda #$00
+	sta DEVMODE	; We want block devices
+CV2:	lda #$00
+	sta VCURROW
 	sta LASTVOL
 	rts
 
@@ -388,6 +393,7 @@ CLEARVOLUMES:
 PRT1PTR: .res $02
 
 LASTVOL:	.byte $00
+DEVMODE:	.byte $00	; Device mode: $00 means block devices, $40 means format-capable devices
 
 ; DEVICES structure:
 ;
