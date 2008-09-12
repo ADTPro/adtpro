@@ -77,6 +77,8 @@ http://adtpro.sourceforge.net/developing.html
 		<delete file="${builddir}/ADTPROAUD" />
 		<delete file="${builddir}/ADTPROETH" />
 		<delete file="${builddir}/ADTSOSETH" />
+		<delete file="${projdir}/client/src/GRUB" />
+		<delete file="${projdir}/client/src/LOADER" />
 		<delete file="${builddir}/${distName}.tar.gz" />
 		<delete file="${builddir}/${distName}.zip" />
 		<delete file="${builddir}/${distName}/disks/${diskName}.DSK" />
@@ -87,10 +89,14 @@ http://adtpro.sourceforge.net/developing.html
 		<delete file="${projdir}/org/adtpro/resources/adtpro.dmp" />
 		<delete file="${projdir}/org/adtpro/resources/adtproaud.dmp" />
 		<delete file="${projdir}/org/adtpro/resources/adtproeth.dmp" />
+		<delete file="${projdir}/org/adtpro/resources/grub.dmp" />
 		<delete file="${projdir}/org/adtpro/resources/adt.raw" />
 		<delete file="${projdir}/org/adtpro/resources/adtpro.raw" />
 		<delete file="${projdir}/org/adtpro/resources/adtproaud.raw" />
 		<delete file="${projdir}/org/adtpro/resources/adtproeth.raw" />
+		<delete file="${projdir}/org/adtpro/resources/adtsos.raw" />
+		<delete file="${projdir}/org/adtpro/resources/SK.raw" />
+		<delete file="${projdir}/org/adtpro/resources/SOSLoader.raw" />
 		<delete file="${projdir}/org/adtpro/resources/PD.dmp" />
 		<delete>
 			<fileset dir="${projdir}/client/src" includes="**/*.o"/>
