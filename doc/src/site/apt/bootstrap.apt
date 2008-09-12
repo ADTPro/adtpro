@@ -4,7 +4,7 @@
  David Schmidt (david__schmidt at users dot souceforge dot net)
  -----
 
-ADTPro Serial Bootstrapping
+Apple II Serial Bootstrapping
 
   If you already use the DOS version of ADT, you can use it to transfer the 
 virtual floppy containing ADTPro that comes with this project
@@ -34,8 +34,6 @@ more bootstrapping scenarios and configurations are detailed below.
  * {{{connectionsserial.html#USB_cabling}USB adapters}}
 
  []
-
- Note that the Apple /// can't be bootstrapped this way.
 
  If you'd rather have a pre-built disk arrive at your door than
 build one yourself, {{{http://retrofloppy.com/products.html#ADTPRO}click here}}.
@@ -153,7 +151,6 @@ Super Serial card, all the way to making a bootable ADTPro floppy:
 * {Starting from bare metal}
 
     [[1]] {{{connectionsserial.html}Connect}} the two computers through their serial ports.
-      Note that the Apple /// can't be bootstrapped this way.
 
     [[1]] Boot your Apple; hit Ctrl-Reset before it reads anything from the disk drive.
       It's important that it not load any OS, even DOS 3.3.
@@ -250,7 +247,7 @@ Super Serial card, all the way to making a bootable ADTPro floppy:
   If you don't need or want the extra features the ADTPro client provides
   beyond the DOS ADT client, you may only want to get started with the DOS
   ADT program.  The ADTPro server is compatible with both the DOS ADT and 
-  ADTPro clients.  Note that the Apple /// can't be bootstrapped this way.
+  ADTPro clients.
 
     [[1]] {{{connectionsserial.html}Connect}} the two computers through their serial ports.
 
