@@ -2484,7 +2484,7 @@ public class CommsThread extends Thread
           else
             if (resource.equals(Messages.getString("Gui.BS.SOSKERNEL")))
             {
-              Log.println(true, "DEBUG: Sending kernel file, SK.raw");
+              // Log.println(true, "DEBUG: Sending kernel file, SK.raw");
               resourceName = "org/adtpro/resources/SK.raw";
               slowFirstLines = 0;
               slowLastLines = 0;
@@ -2493,7 +2493,7 @@ public class CommsThread extends Thread
           else
             if (resource.equals(Messages.getString("Gui.BS.SOSINTERP")))
             {
-              Log.println(true, "DEBUG: Sending interp file, adtsos.raw");
+              // Log.println(true, "DEBUG: Sending interp file, adtsos.raw");
               resourceName = "org/adtpro/resources/adtsos.raw";
               slowFirstLines = 0;
               slowLastLines = 0;
@@ -2540,7 +2540,6 @@ public class CommsThread extends Thread
                       resourceName = "'CommsThread.requestSend() - not set! (non-AudioTransport)'";
     }
     Log.println(false, "CommsThread.requestSend() seeking resource named " + resourceName);
-    Log.println(true, "DEBUG: CommsThread.requestSend() seeking resource named " + resourceName);
     is = ADTPro.class.getClassLoader().getResourceAsStream(resourceName);
     if (is != null)
     {
@@ -2556,7 +2555,6 @@ public class CommsThread extends Thread
       {
         // Run this on a thread...
         Log.println(false, "CommsThread.requestSend() Reading " + resourceName);
-        Log.println(true, "DEBUG: CommsThread.requestSend() Reading " + resourceName);
         _parent.setMainText(Messages.getString("CommsThread.4")); //$NON-NLS-1$
         _parent.setSecondaryText(resourceName); //$NON-NLS-1$
         _worker = new Worker(resource, is, pacing, speed, slowFirstLines,
@@ -2566,7 +2564,6 @@ public class CommsThread extends Thread
       else
       {
         Log.println(false, "CommsThread.requestSend() found file sized " + fileSize + " bytes.");
-        Log.println(true, "DEBUG: CommsThread.requestSend() found file sized " + fileSize + " bytes.");
       }
     }
     else
@@ -2670,24 +2667,19 @@ public class CommsThread extends Thread
             byte[] buffer = new byte[bytesAvailable];
             bytesRead = _is.read(buffer);
             Log.println(false, "CommsThread.Worker.run() read " + bytesRead + " bytes from the stream.");
-            Log.println(true, "DEBUG: CommsThread.Worker.run() read " + bytesRead + " bytes from the stream.");
             while (bytesRead < bytesAvailable)
             {
               bytesRead += _is.read(buffer, bytesRead, bytesAvailable - bytesRead);
               Log.println(false, "CommsThread.Worker.run() read " + bytesRead + " more bytes from the stream.");
-              Log.println(true, "DEBUG: CommsThread.Worker.run() read " + bytesRead + " more bytes from the stream.");
             }
             if (_resource.equals(Messages.getString("Gui.BS.SOSINTERP")) ||
                 _resource.equals(Messages.getString("Gui.BS.SOSDRIVER")))
             {
-              Log.println(true, "DEBUG: Sending length of "+(buffer.length-1));
               // If we're sending SOS bootstrap stuff, we need to prepend the length and stuff
               _transport.writeByte(0x53); // Send an "S" to trigger the start
               _transport.writeByte(UnsignedByte.loByte(buffer.length-1)); // Send buffer LSB
               _transport.writeByte(UnsignedByte.hiByte(buffer.length-1)); // Send buffer MSB
             }
-            else
-              Log.println(true, "DEBUG: Not sending length information.");
             for (int i = 0; i < buffer.length; i++)
             {
               if (_shouldRun == false)
