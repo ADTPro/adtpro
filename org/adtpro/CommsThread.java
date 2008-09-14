@@ -2460,7 +2460,6 @@ public class CommsThread extends Thread
     }
     else
     {
-      Log.println(true,"Resource: "+resource+" Message: "+Messages.getString("Gui.BS.SOS"));
       if (resource.equals(Messages.getString("Gui.BS.ProDOS")))
       {
         resourceName = "org/adtpro/resources/PD.dmp";
