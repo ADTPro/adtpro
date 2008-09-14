@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path=""/>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/Java50"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/ANT_JAR"/>
 	<classpathentry kind="lib" path="build/lib/rxtx/RXTXcomm.jar"/>
 	<classpathentry kind="output" path=""/>
