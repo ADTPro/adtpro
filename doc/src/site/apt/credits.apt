@@ -82,6 +82,15 @@ Their licensing terms dictated that they be credited for their work.
 Their original notice remains in the 
 {{{http://adtpro.cvs.sourceforge.net/adtpro/adtpro/client/src/format.asm?view=markup}source code.}}
 
+ Invaluable Apple /// hardware and programming information was written by John Jeppson
+in an article titled: "John Jeppson's Guided Tour of Highway III" from
+Softalk Magazine, May 1983, pages 100-112.  One place that it is available online
+is {{{http://groups.google.com/group/comp.sys.apple2/tree/browse_frm/thread/fcd6000cbc75e86f/34b9b48df9af9231}here}}.
+
+ The Apple /// machine language monitor and ways of accessing it during program execution
+was critical to debugging operations.  Important information on how to accomplish that
+was published in the "/// Cheers!" magazine from A.P.P.L.E., available {{{http://www.callapple.org/magazines/cheers/summer_1985.html}here}}.
+
  Thanks to the {{{http://maven.apache.org}Maven}} project for web page generation.
 
 ADT Lineage
