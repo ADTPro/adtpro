@@ -268,6 +268,10 @@ public class UDPTransport extends ATransport
   {
   }
 
+  public void setFullSpeed(int speed)
+  {
+  }
+
   public void setSlowSpeed(int speed)
   {
   }

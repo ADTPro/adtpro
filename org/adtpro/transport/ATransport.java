@@ -29,6 +29,7 @@ public abstract class ATransport
   public abstract void open() throws Exception;
   public abstract void setSlowSpeed(int speed);
   public abstract void setFullSpeed();
+  public abstract void setFullSpeed(int speed);
   public abstract void writeByte(byte datum);
   public abstract void writeByte(char datum);
   public abstract void writeByte(int datum);

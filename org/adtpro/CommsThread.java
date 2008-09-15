@@ -281,6 +281,7 @@ public class CommsThread extends Thread
             _parent.setMainText(Messages.getString("CommsThread.5")); //$NON-NLS-1$
             _parent.setSecondaryText(""); //$NON-NLS-1$
             Log.println(false,"CommsThread.commandLoop() Received Apple /// SOS.INTERP dump command."); //$NON-NLS-1$
+            _transport.setFullSpeed(9600);
             requestSend(Messages.getString("Gui.BS.SOSINTERP"), true, 0, 9600);
             _busy = false;
             break;
@@ -291,11 +292,10 @@ public class CommsThread extends Thread
               Log.println(false,"CommsThread.commandLoop() Received Apple /// SOS.DRIVER dump command."); //$NON-NLS-1$
               requestSend(Messages.getString("Gui.BS.SOSDRIVER"), true, 0, 9600);
               _busy = false;
+              _transport.setFullSpeed();
               break;
           default:
-            Log
-                .println(
-                    false,
+            Log.println(false,
                     "CommsThread.commandLoop() Received unknown command: " + UnsignedByte.toString(oneByte)); //$NON-NLS-1$
             break;
         }

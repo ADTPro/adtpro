@@ -89,6 +89,11 @@ public class AudioTransport extends ATransport
   // Unnecessary, unimplemented
   }
 
+  public void setFullSpeed(int speed)
+  {
+  // Unnecessary, unimplemented
+  }
+
   /**
    * Writes an array of bytes into a packet.
    * 

@@ -408,6 +408,18 @@ public class SerialTransport extends ATransport
     }
   }
 
+  public void setFullSpeed(int speed)
+  {
+    try
+    {
+      port.setSerialPortParams(speed, 8, 1, 0);
+    }
+    catch (UnsupportedCommOperationException e)
+    {
+      Log.printStackTrace(e);
+    }
+  }
+
   public void setSlowSpeed(int speed)
   {
     Log.println(false, "SerialTransport.setSlowSpeed() setting speed to " + speed);
