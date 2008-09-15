@@ -18,6 +18,8 @@ ADTPro Release History
 
  Bug fixes:
 
+ * [Client] Occasional Ethernet "hang" during transfer fixed
+
  * [Client] SOS version recovers from "disk switched" notification when
    a floppy drive door is opened and closed
 
