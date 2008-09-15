@@ -29,15 +29,31 @@ That means that the serial port setup and communications software has to be
 a minimally functional command line interface, or "monitor."  It is accessible with 
 the familiar (to Apple II fans) Ctrl-OpenApple-Reset key sequence.
 The machine will beep, and you will be presented with a blinking cursor 
-(typically an arrow).  You then proceed to type in the "Grub" bootstrap loader,
-and execute it.  The Grub then waits to accept the rest of 
-bootstrapping code from the ADTPro server.
+next to an arrow prompt.  You then proceed to type in and run the "Grub" bootstrap
+loader; clicking on "Bootstrapping->SOS" from the ADTPro server gives instructions
+for that.
+The Grub then waits to accept the rest of bootstrapping code from the ADTPro server,
+which flows when you dismiss the ADTPro server dialog box.
+ADTPro will complete the bootstrapping process and leave you with your /// running
+the ADTPro client under SOS, where you can format blank disks and reconstitute software
+from virtual disk images.
+
+ Public domain Apple /// software is available {{{http://adtpro.sourceforge.net/apple3.html}here}},
+for example.
+
+* {Detailed steps}
 
     [[1]] {{{connectionsserial.html#Apple3}Connect}} the two computers 
     through their serial ports.
 
     [[1]] Turn on the Apple ///; hit the Ctrl-OpenApple-Reset key sequence to
-    get the monitor command line interface.
+    get the monitor command line interface.  The prompt should look like this:
+
+    *
+
+[images/bootstrap31.png]
+
+    []
 
     [[1]] On the Apple ///, type in the Grub bootstrapping loader.  In the program 
     below, note that every "0" character is a number zero, not a letter;
@@ -60,6 +76,9 @@ A048:F7 AD F0 C0 60
     It is imperative that these numbers and letters be typed in exactly and precisely
     as they appear above, with no errors.
     It will be important to review and re-check the lines before actually running it.
+    To make sure you never have to type this in more than once, follow all the way through
+    to the end of this procedure to format a new floppy and {{{receiving.html}receive}} the
+    full, bootable ADTPro disk that ships with this distribution.
 
     [[1]] To see the entire program in memory once it has been typed
     in, type the following command:
@@ -69,7 +88,13 @@ A000.A04C
 -----------------
 
     Any line can be corrected by re-typing that entire line (starting on a new,
-    blank line).
+    blank line).  After typing the program in, your screen would look something like this:
+    
+    *
+    
+[images/bootstrap32.png]
+
+    []
 
     [[1]] Once you are satisfied that the program is error-free, run it with the
     following command:
@@ -80,13 +105,36 @@ A000G
 
     [[1]] An inverse word "GO" should appear in the upper-right hand corner of the
     screen.  The Apple /// is now waiting for further instructions from the ADTPro
-    server.
+    server.  The screen would look something like this:
+
+    *
+    
+[images/bootstrap33.png]
+
+    []
 
     [[1]] On the ADTPro server, click on the "Bootstrapping->SOS" menu item.
     Dismiss the dialog box that appears (since the Grub is already running).
     The bootstrapping process should now continue without any further need for 
-    intervention.
-    When it is finished, the ADTPro SOS client should be running on the Apple ///.
+    intervention.  As data is sent from the ADTPro server down to the ///,
+    a character will flash to the right of the status message to indicate progress.
+    If the screen stays still, you will want to re-check your serial
+    {{{connectionsserial.html#Apple3}connections}}.
+    Some of the stages bootstrapping will be going through:
+
+    *
+    
+[images/bootstrap34.png]
+
+    []
+
+    [[1]] When it is finished, the ADTPro SOS client should be running on the Apple ///.
+
+    *
+    
+[images/bootstrap35.png]
+
+    []
 
     [[1]] Use the ADTPro client's {{{misc.html#Format}format}} function to
     format a diskette or two.  Note that in the SOS world, formatting
