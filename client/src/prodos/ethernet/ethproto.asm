@@ -707,6 +707,88 @@ COPYINPUT:
 @Done:	rts
 
 ;---------------------------------------------------------
+; DEBUGMSG - Handy debug routine to print and scroll "you are here"
+; messages
+;---------------------------------------------------------
+;DEBUGMSG:
+;	sty SLOWY
+;	stx SLOWX
+;	pha		; Save the byte to print
+;	lda CH
+;	sta CH_SAV
+;	lda CV
+;	sta CV_SAV
+;
+;	ldy #$00
+; :
+;	; Scroll messages
+;	lda $0480,y	; Line 2
+;	sta $0400,y	; Line 1
+;	lda $0500,y	; Line 3
+;	sta $0480,y	; Line 2
+;	lda $0580,y	; Line 4
+;	sta $0500,y	; Line 3
+;	lda $0600,y	; Line 5
+;	sta $0580,y	; Line 4
+;	lda $0680,y	; Line 6
+;	sta $0600,y	; Line 5
+;	lda $0700,y	; Line 7
+;	sta $0680,y	; Line 6
+;	lda $0780,y	; Line 8
+;	sta $0700,y	; Line 7
+;	lda $0428,y	; Line 9
+;	sta $0780,y	; Line 8
+;	lda $04a8,y	; Line 10
+;	sta $0428,y	; Line 9
+;	lda $0528,y	; Line 11
+;	sta $04a8,y	; Line 10
+;	lda $05a8,y	; Line 12
+;	sta $0528,y	; Line 11
+;	lda $0628,y	; Line 13
+;	sta $05a8,y	; Line 12
+;	; break for progress bar here - five lines
+;	lda $0550,y	; Line 19
+;	sta $0628,y	; Line 13
+;	lda $05d0,y	; Line 20
+;	sta $0550,y	; Line 19
+;	lda $0650,y	; Line 21
+;	sta $05d0,y	; Line 20
+;	lda $06d0,y	; Line 22
+;	sta $0650,y	; Line 21
+;	lda $0750,y	; Line 23
+;	sta $06d0,y	; Line 22
+;	lda $07d0,y	; Line 24
+;	sta $0750,y	; Line 23
+;
+;	iny
+;	cpy #$06
+;	bne :-
+;
+;	lda #$00
+;	sta CH
+;	lda #$17
+;	jsr TABV
+;
+;	pla		; Retrieve the "you are here" byte to print
+;	jsr PRBYTE
+;	lda #CHR_SP
+;	jsr COUT1
+;	lda state	; Retrieve the state
+;	jsr PRBYTE
+;
+;	lda CH_SAV
+;	sta CH
+;	lda CV_SAV
+;	sta CV
+;	jsr TABV
+;	ldy SLOWY
+;	ldx SLOWX
+;	rts
+;
+;CH_SAV:	.byte $00
+;CV_SAV:	.byte $00
+
+;---------------------------------------------------------
 ; Constants
 ;---------------------------------------------------------
 STATE_IDLE	= 0
