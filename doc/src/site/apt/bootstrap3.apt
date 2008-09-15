@@ -1,5 +1,5 @@
  -----
- ADTPro Bootstrapping - Apple 3
+ ADTPro Apple 3 Bootstrapping
  -----
  David Schmidt (david__schmidt at users dot souceforge dot net)
  -----
@@ -23,7 +23,9 @@ build one yourself, {{{http://retrofloppy.com/products.html#ADTPRO}click here}}.
 
  The Apple /// doesn't have the rich set of firmware the way the Apple II does.
 That means that the serial port setup and communications software has to be
-"bootstrapped" - that is, typed in - by you, dear reader.  
+"bootstrapped" - that is, typed in - by you, dear reader.  The bootstrapping 
+operation happens at 9600 baud, and is not customizable.  
+ADTPro client and server cooperate to set the speed automatically.
 
  The Apple /// does have
 a minimally functional command line interface, or "monitor."  It is accessible with 
@@ -55,8 +57,8 @@ for example.
 
     []
 
-    [[1]] On the Apple ///, type in the Grub bootstrapping loader.  In the program 
-    below, note that every "0" character is a number zero, not a letter;
+    [[1]] On the Apple ///, type in the Grub bootstrapping loader.  In the Grub program 
+    listing below, note that every "0" character is a number zero, not a letter;
     every "1" character is a number one, not a letter.
     The sequence of lines to type is this:
 
@@ -114,7 +116,8 @@ A000G
     []
 
     [[1]] On the ADTPro server, click on the "Bootstrapping->SOS" menu item.
-    Dismiss the dialog box that appears (since the Grub is already running).
+    Dismiss the dialog box that appears (since you have just followed the 
+    same instructions, the Grub is already running now).
     The bootstrapping process should now continue without any further need for 
     intervention.  As data is sent from the ADTPro server down to the ///,
     a character will flash to the right of the status message to indicate progress.
