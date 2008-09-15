@@ -27,6 +27,7 @@ public abstract class ATransport
 {
   public abstract int transportType();
   public abstract void open() throws Exception;
+  public abstract void setSpeed(int speed);
   public abstract void setSlowSpeed(int speed);
   public abstract void setFullSpeed();
   public abstract void setFullSpeed(int speed);

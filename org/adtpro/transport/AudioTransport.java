@@ -79,6 +79,11 @@ public class AudioTransport extends ATransport
     return TRANSPORT_TYPE_AUDIO;
   }
 
+  public void setSpeed(int speed)
+  {
+  // Unnecessary, unimplemented
+  }
+
   public void setSlowSpeed(int speed)
   {
   // Unnecessary, unimplemented

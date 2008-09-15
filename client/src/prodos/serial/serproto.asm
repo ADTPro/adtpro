@@ -22,11 +22,9 @@
 ; DIRREQUEST - Request current directory contents
 ;---------------------------------------------------------
 DIRREQUEST:
-	GO_SLOW
 	jsr PARMINT	; Clean up the comms device
 	lda #CHR_D	; Send "DIR" command to PC
 	jsr PUTC
-	GO_FAST
 	rts
 
 
@@ -63,23 +61,19 @@ DIRREPLY:
 ; DIRABORT - Abort current directory contents
 ;---------------------------------------------------------
 DIRABORT:
-	GO_SLOW
 	lda #$00
 	jmp PUTC	; ESCAPE, SEND 00 AND RETURN
-	GO_FAST
 	rts
 
 ;---------------------------------------------------------
 ; CDREQUEST - Request current directory change
 ;---------------------------------------------------------
 CDREQUEST:
-	GO_SLOW
 	jsr PARMINT	; Clean up the comms device
 	lda #CHR_C	; Ask host to Change Directory
 	jsr PUTC
 	jsr SENDFN	; Send directory name
 			; Implicit rts from SENDFN
-	GO_FAST
 	rts
 
 
@@ -91,7 +85,6 @@ CDREQUEST:
 ; CHR_H - half track send
 ;---------------------------------------------------------
 PUTREQUEST:
-	GO_SLOW
 	jsr PARMINT	; Clean up the comms device
 	lda SendType
 	jsr PUTC
@@ -102,7 +95,6 @@ PUTREQUEST:
 	jsr PUTC
 	lda NUMBLKS+1
 	jsr PUTC
-	GO_FAST
 	rts
 
 
@@ -128,12 +120,10 @@ PUTFINALACK:
 ; GETNIBREQUEST - Request a nibble image be sent from the host
 ;---------------------------------------------------------
 GETNIBREQUEST:
-	GO_SLOW
 	jsr PARMINT	; Clean up the comms device
 	lda #CHR_O	; Tell host we are Getting/Receiving a nibble
 	jsr PUTC
 	jsr SENDFN	; Send file name
-	GO_FAST
 	rts
 
 
@@ -141,12 +131,10 @@ GETNIBREQUEST:
 ; GETREQUEST - Request an image be sent from the host
 ;---------------------------------------------------------
 GETREQUEST:
-	GO_SLOW
 	jsr PARMINT	; Clean up the comms device
 	lda #CHR_G	; Tell host we are Getting/Receiving
 	jsr PUTC
 	jsr SENDFN	; Send file name
-	GO_FAST
 	rts
 
 
@@ -185,7 +173,6 @@ GETFINALACK:
 ; BATCHREQUEST - Request to send multiple images to the host
 ;---------------------------------------------------------
 BATCHREQUEST:
-	GO_SLOW
 	jsr PARMINT	; Clean up the comms device
 	lda #CHR_B	; Tell host we are Putting/Sending
 	jsr PUTC
@@ -196,7 +183,6 @@ BATCHREQUEST:
 	jsr PUTC
 	lda NUMBLKS+1
 	jsr PUTC
-	GO_FAST
 	rts
 
 
@@ -204,12 +190,10 @@ BATCHREQUEST:
 ; QUERYFNREQUEST/REPLY
 ;---------------------------------------------------------
 QUERYFNREQUEST:
-	GO_SLOW
 	jsr PARMINT	; Clean up the comms device
 	lda #CHR_Z	; Ask host for file size
 	jsr PUTC
 	jsr SENDFN	; Send file name
-	GO_FAST
 	rts
 
 QUERYFNREPLY:

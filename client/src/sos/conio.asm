@@ -27,6 +27,7 @@
 ;---------------------------------------------------------
 INIT_SCREEN:
 	; Prepare the system for our expecations
+	GO_SLOW
 	CALLOS OS_OPEN, OPEN_PARMS	; Open the console
 	jsr ERRORCK
 	lda OPEN_REF

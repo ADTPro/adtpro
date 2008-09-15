@@ -407,7 +407,6 @@ SRBLOX:
 	sta BLKPTR	; beginning of the Big Buffer(TM)
 	LDA_BIGBUF_ADDR_HI
 	sta BLKPTR+1
-	GO_SLOW		; Slow SOS down for this
 SRCALL:
 	LDA_CH
 	sta COL_SAV
@@ -469,7 +468,6 @@ SRNOB:	dec SRBCNT
 	jmp SRCALL
 
 SRBDONE:
-	GO_FAST		; Speed SOS back up
 	rts
 
 SRBCNT:	.byte $00

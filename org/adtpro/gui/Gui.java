@@ -316,15 +316,12 @@ public final class Gui extends JFrame implements ActionListener
         {
           try
           {
-            boolean success = startComms(new SerialTransport(_properties.getProperty("CommPort"), _properties
+            boolean success = startComms(new SerialTransport(this, _properties.getProperty("CommPort"), _properties
                 .getProperty("CommPortSpeed"), _properties.getProperty("HardwareHandshaking", "false")
                 .compareTo("true") == 0));
             if (success == true)
             {
-              String msg = Messages.getString("Gui.ServingSerialTitle");
-              msg = msg.replaceAll("%1", _properties.getProperty("CommPort"));
-              msg = msg.replaceAll("%2", _properties.getProperty("CommPortSpeed"));
-              setTitle(msg);
+              setSerialTitle();
               Log.println(false, "Gui.actionPerformed setting previous button to _serialButton.");
               _previousButton = _serialButton; // Remember last
               // button state
@@ -452,6 +449,25 @@ public final class Gui extends JFrame implements ActionListener
     }
     Log.println(false, "Gui.getWorkingDirectory(): " + _workingDirectory);
     return _workingDirectory;
+  }
+
+  public void setSerialTitle()
+  {
+    String msg = Messages.getString("Gui.ServingSerialTitle");
+    msg = msg.replaceAll("%1", _properties.getProperty("CommPort"));
+    msg = msg.replaceAll("%2", _properties.getProperty("CommPortSpeed"));
+    setTitle(msg);
+  }
+
+  public void setSerialSpeed(int speed)
+  {
+    if (speed == 0)
+      speed = Integer.parseInt(_properties.getProperty("CommPortSpeed"));
+    _commsThread.setSpeed(speed);
+    String oldSpeed = _properties.getProperty("CommPortSpeed");
+    _properties.setProperty("CommPortSpeed",new String(""+speed));
+    setSerialTitle();
+    _properties.setProperty("CommPortSpeed",oldSpeed);
   }
 
   public void serialConfigGui(int tab)

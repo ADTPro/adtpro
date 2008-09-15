@@ -292,7 +292,7 @@ public class CommsThread extends Thread
               Log.println(false,"CommsThread.commandLoop() Received Apple /// SOS.DRIVER dump command."); //$NON-NLS-1$
               requestSend(Messages.getString("Gui.BS.SOSDRIVER"), true, 0, 9600);
               _busy = false;
-              _transport.setFullSpeed();
+              _parent.setSerialSpeed(0);
               break;
           default:
             Log.println(false,
@@ -2857,9 +2857,7 @@ public class CommsThread extends Thread
     {
       try
       {
-        Log.println(false,
-            "CommsThread.setSpeed() Attempting to set the serial port's speed to "
-                + speed);
+        Log.println(false,"CommsThread.setSpeed() Attempting to set the serial port's speed to " + speed);
         ((SerialTransport) _transport).setSpeed(speed);
         Log.println(false, "CommsThread.setSpeed() successful.");
       }
