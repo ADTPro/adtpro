@@ -15,6 +15,13 @@ ADTPro Audio Connections
 
 [images/audiopatch.jpg]
 
+ Please note that the IIgs, the IIc, and the /// don't have cassette ports,
+ so these procedures will only work on the II, II+, and IIe computers.
+ If you have an Apple II with less than 64k of memory, you won't be able to 
+ use ADTPro at all; but a different project offers the ability to transfer
+ disks over audio connections with less memory:
+ {{{http://seb.riot.org/appleII/aladt.sml}Arme Leute Apple Disk Transfer (Poor Man's ADT)}}
+
  In the example images below, I have a convention for white and black wires.
  The white wire connects the host audio out to the Apple cassette in.
  The black wire connects the host audio in to the Apple cassette out.
@@ -28,8 +35,6 @@ ADTPro Audio Connections
  this exercise.  Note that the host's output volume control should be set at 
  50% of the maximum; this is probably substantially louder than you would 
  normally listen to your computer's speakers.
-
- Note that the Apple /// can't be connected this way.
 
 * Connections at the Apple
 
