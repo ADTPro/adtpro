@@ -12,11 +12,17 @@ ADTPro Protocol
 
  [{{{#Put}"Z" - Size}}]  Ask for file size (implies existence test; used as part of Put protocol)
 
- [{{{#Get}"G" - Get}}]  Initiate download
+ [{{{#Get}"G" - Get}}]  Initiate disk image download from host
 
- [{{{#Put}"P" - Put}}]  Inititate upload (always overwrite)
+ [{{{#Put}"P" - Put}}]  Inititate disk image upload to host(always overwrite)
 
  [{{{#Batch}"B" - Batch}}]  Inititate batch upload (unique suffix added to specified prefix)
+
+ [{{{#SOS_Kernel}"3" - Send SOS Kernel}}]  Inititate SOS kernel bootstrapping download
+
+ [{{{#SOS_Interpreter}"4" - Send SOS Interpreter}}]  Inititate SOS interpreter bootstrapping download
+
+ [{{{#SOS_Driver}"5" - Send SOS Driver}}]  Inititate SOS driver bootstrapping download
 
  [{{{#DIR}"D" - DIR}}]  DOS ADT compatible listing of the current directory
 
@@ -135,6 +141,43 @@ Apple sends: One byte: number of errors encountered
 
 ------------
 
+* {SOS Kernel} Download
+
+------------
+
+Apple sends:
+  One byte: "3" ($B3)
+
+Host sends:
+  Continuous byte stream of $56 pages ($5600 bytes) of SOS kernel file image
+
+------------
+
+* {SOS Interpreter} Download
+
+------------
+
+Apple sends:
+  One byte: "4" ($B4)
+
+Host sends:
+  Two bytes: image size in bytes (LSB, MSB)
+  Continuous byte stream of serial ADTPro SOS program file image
+
+------------
+
+* {SOS Driver} Download
+
+------------
+
+Apple sends:
+  One byte: "5" ($B5)
+
+Host sends:
+  Two bytes: image size in bytes (LSB, MSB)
+  Continuous byte stream of SOS driver file image
+
+------------
 
 ADT Compatibility
 

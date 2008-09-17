@@ -61,7 +61,7 @@ Java lib Version   = RXTX-2.1-7
 ~~ A client numbered 0.2.x and above will not communicate correctly with
 ~~ a 0.1.x server.  Upgrade both at the same time to minimize confusion.
 
-* Starting the Client
+* {Starting the Client} - ProDOS
 
  (If you don't have the ADTPro client software on your Apple II yet, 
  take a look at the {{{bootstrap.html}serial}} or {{{bootstrapaudio.html}audio}}
@@ -107,7 +107,7 @@ Java lib Version   = RXTX-2.1-7
  to the disk: <<<SAVE STARTUP>>>.  That program will be the one that starts
  automatically after booting from then on.  If you make a mistake and the Apple
  complains, <<<"PATH NOT FOUND">>> when you boot, check your <<<STARTUP>>>
- program by <<<LIST>>>ing it and checking the disk's contents with the <<<CAT>>>
+ program by <<<LIST>>>ing it and check the disk's contents with the <<<CAT>>>
  command.
 
  However you start it, the main screen comes up:
@@ -129,3 +129,15 @@ generally listen to computer speakers).
  <<IIgs Note:>> users running GSOS are advised to hit the '8' key while booting.
 That has the effect of starting the IIgs in 8-bit ProDOS (BASIC) mode.  
 The less contention for the serial hardware, the better.
+
+* {Starting the Client - SOS}
+
+ Booting a diskette in an Apple /// computer will automatically run
+ any program named <<<SOS.INTERP>>>.  The ADTPro distribution diskette comes
+ configured with the serial ADTPro client version named <<<SOS.INTERP>>>.
+ The ethernet version is also on the diskette, but is named <<<SOS.INTERPETH>>>.
+ In order to run the ethernet version, it will be necessary to rename
+ <<<SOS.INTERPETH>>> to <<<SOS.INTERP>>> (also deleting or renaming the original
+ <<<SOS.INTERP>>> program).  Any Apple disk image manipulation utility program like 
+ {{{http://ciderpress.sourceforge.net}CiderPress}} or 
+ {{{http://applecommander.sourceforge.net}AppleCommander}} can be used to do this.

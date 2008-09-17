@@ -24,12 +24,12 @@ build one yourself, {{{http://retrofloppy.com/products.html#ADTPRO}click here}}.
  The Apple /// doesn't have the rich set of firmware the way the Apple II does.
 That means that the serial port setup and communications software has to be
 "bootstrapped" - that is, typed in - by you, dear reader.  The bootstrapping 
-operation happens at 9600 baud, and is not customizable.  
+operation happens at 9600 baud, and that speed is not customizable.  
 ADTPro client and server cooperate to set the speed automatically.
 
  The Apple /// does have
 a minimally functional command line interface, or "monitor."  It is accessible with 
-the familiar (to Apple II fans) Ctrl-OpenApple-Reset key sequence.
+the familiar (to Apple IIe users) Ctrl-OpenApple-Reset key sequence.
 The machine will beep, and you will be presented with a blinking cursor 
 next to an arrow prompt.  You then proceed to type in and run the "Grub" bootstrap
 loader; clicking on "Bootstrapping->SOS" from the ADTPro server gives instructions
@@ -45,11 +45,12 @@ for example.
 
 * {Detailed steps}
 
-    [[1]] {{{connectionsserial.html#Apple3}Connect}} the two computers 
-    through their serial ports.
+    [[1]] {{{connectionsserial.html#Apple3}Connect}} your host and Apple /// computers 
+    through their respective serial ports.
 
     [[1]] Turn on the Apple ///; hit the Ctrl-OpenApple-Reset key sequence to
-    get the monitor command line interface.  The prompt should look like this:
+    get the monitor command line interface.  The prompt should look like this
+    in the upper left-hand corner of the screen:
 
     *
 
@@ -57,8 +58,8 @@ for example.
 
     []
 
-    [[1]] On the Apple ///, type in the Grub bootstrapping loader.  In the Grub program 
-    listing below, note that every "0" character is a number zero, not a letter;
+    [[1]] On the Apple ///, type in the Grub bootstrapping loader, below. 
+    Note that every "0" character is a number zero, not a letter;
     every "1" character is a number one, not a letter.
     The sequence of lines to type is this:
 
@@ -78,9 +79,9 @@ A048:F7 AD F0 C0 60
     It is imperative that these numbers and letters be typed in exactly and precisely
     as they appear above, with no errors.
     It will be important to review and re-check the lines before actually running it.
-    To make sure you never have to type this in more than once, follow all the way through
-    to the end of this procedure to format a new floppy and {{{receiving.html}receive}} the
-    full, bootable ADTPro disk that ships with this distribution.
+    To ensure that you never have to type this in more than once, follow all the way
+    through to the end of this procedure to format a new floppy and {{{receiving.html}receive}}
+    the full, bootable ADTPro disk that ships with this distribution.
 
     [[1]] To see the entire program in memory once it has been typed
     in, type the following command:
@@ -90,7 +91,8 @@ A000.A04C
 -----------------
 
     Any line can be corrected by re-typing that entire line (starting on a new,
-    blank line).  After typing the program in, your screen would look something like this:
+    blank line).  After typing the program in and checking it, your screen might
+    look something like this:
     
     *
     
@@ -105,9 +107,10 @@ A000.A04C
 A000G
 -----------------
 
-    [[1]] An inverse word "GO" should appear in the upper-right hand corner of the
-    screen.  The Apple /// is now waiting for further instructions from the ADTPro
-    server.  The screen would look something like this:
+    [[1]] If the Grub program is functioning correctly, an inverse word "GO" will
+    appear in the upper-right hand corner of the screen.  The Apple /// is now
+    waiting for further instructions from the ADTPro server.
+    The screen will look something like this:
 
     *
     

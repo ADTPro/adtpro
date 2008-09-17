@@ -20,15 +20,20 @@ ADTPro Ethernet Connections
  address assigned to the Uthernet card by ADTPro is
  <<<00:80:10:6d:76:30>>>.
 
- Note that the Apple /// version of ADTPro does not include Uthernet support.
-
 ADTPro Ethernet {Client IP Configuration}
 
- The ethernet version of the ADTPro client program is named <<<ADTPROETH>>> on the 
- distribution diskette.
+ The ProDOS ethernet version of the ADTPro client program is named <<<ADTPROETH>>>
+ on the distribution diskette.  Ways of making <<<ADTPROETH>>> start automatically
+ are discussed {{{starting.html#Starting_the_Client}here}}.
 
- Hitting the "G" key from <<<ADTPROETH>>>'s main menu brings up the ADTPro
-ethernet configuration screen:
+ The SOS ethernet version of the ADTPro client
+ program is named <<<SOS.INTERPETH>>> on the distribution diskette.  It will
+ be necessary to rename <<<SOS.INTERPETH>>> to <<<SOS.INTERP>>> (also deleting
+ or renaming the original <<<SOS.INTERP>>> program) in order to run it.  
+ Additional details are {{{starting.html#Starting_the_Client_-_SOS}here}}.
+ 
+ Hitting the "G" key from ADTPro's main menu brings up the ethernet 
+ configuration screen:
 
 [images/ethconfig.png]
 
@@ -45,8 +50,8 @@ left arrow keys.  Your Apple has right and left arrow keys; trust me.
 
 [images/ethconfigSlot.png]
 
- The most common slot is 3, but it 
-could be any slot from 1 to 7.  ADTPro will scan the slots to guess where
+ The most common slot is 3, but it could be any slot from 1 to 7 (1 to 4 in
+ Apple /// computers).  ADTPro will scan the slots to guess where
 it is for you.  But if you have multiple Uthernet cards in your system,
 you will need to choose which one to talk to.
 Pull off your Apple's lid to check if you need to.
@@ -71,10 +76,10 @@ configuration that works for you, select "YES" for SAVE CONFIG and hit Return.
 
 [images/ethconfigSave.png]
 
- This will save <<<ADTPROETH.CONF>>> to the same place where you started
-ADTPro from.
-When you start <<<ADTPROETH>>> again, it will use the configuration parameters you 
-saved last.
+ This will save a configuration file, <<<ADTPROETH.CONF>>>,
+ to the same place where you started ADTPro from.
+ When you start ADTPro again, it will use the configuration parameters you 
+ saved last.
 
 * IP Parameters
 
