@@ -41,11 +41,11 @@ DIR:
 	ldy #$00	; Reset counter
 
 DIRDISP:
-	lda (BLKPTR),Y	; Get byte from buffer
+	lda (Buffer),Y	; Get byte from buffer
 	php		; Save flags
 	iny		; Bump
 	bne DIRMORE	; Skip
-	inc BLKPTR+1	; Next 256 bytes
+	inc Buffer+1	; Next 256 bytes
 DIRMORE:
 	plp		; Restore flags
 	beq DIRPAGE	; Page or dir end?
@@ -55,7 +55,7 @@ DIRMORE:
 	jmp DIRDISP	; Loop back around
 
 DIRPAGE:
-	lda (BLKPTR),Y	; Get byte from buffer
+	lda (Buffer),Y	; Get byte from buffer
 	bne DIRCONT
 
 	ldy #PMSG30	; No more files, wait for a key

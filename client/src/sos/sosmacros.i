@@ -54,6 +54,16 @@
 	ldx FIND_SEG_BASE+1
 .endmacro
 
+.macro STA_BIGBUF_ADDR_HI
+	clc
+	sbc #$20
+	sta BLKPTR+1
+.endmacro
+
+.macro STA_BIGBUF_ADDR_LO
+	sta BLKPTR
+.endmacro
+
 .macro LDA_CH
 	txa
 	pha

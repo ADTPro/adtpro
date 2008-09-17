@@ -1,6 +1,6 @@
 ;
 ; ADTPro - Apple Disk Transfer ProDOS
-; Copyright (C) 2006, 2007 by David Schmidt
+; Copyright (C) 2006 - 2008 by David Schmidt
 ; david__schmidt at users.sourceforge.net
 ;
 ; This program is free software; you can redistribute it and/or modify it 
@@ -168,8 +168,8 @@ DIRREQUEST:
 ; DIRREPLY - serial compatibility and UDP callback entry points
 ;---------------------------------------------------------
 DIRREPLY1:
-	ldax #udp_inp + udp_data + 1	; Point BLKPTR at the UDP data buffer
-	stax BLKPTR
+	ldax #udp_inp + udp_data + 1	; Point Buffer at the UDP data buffer
+	stax Buffer
 DIRREPLY:
 	rts
 
@@ -185,13 +185,11 @@ DIRABORT:
 ; CDREQUEST - Request current directory change
 ;---------------------------------------------------------
 CDREQUEST:
-	LDA_BIGBUF_ADDR_LO	; Connect the block pointer to the
-	sta BLKPTR		; beginning of the Big Buffer(TM)
-	LDA_BIGBUF_ADDR_HI
-	sta BLKPTR+1
+	ldax #udp_inp + udp_data + 1	; Point Buffer at the UDP data buffer
+	stax Buffer
 	ldy #$00
 	lda #CHR_C
-	sta (BLKPTR),Y
+	sta (Buffer),Y
 	iny
 	jsr COPYINPUT
 	tya			; Max CD request will be 255 bytes
@@ -199,8 +197,7 @@ CDREQUEST:
 	stax udp_send_len	; much bigger than that anyway...
 	lda #STATE_CD
 	sta state
-	LDA_BIGBUF_ADDR_LO	; Was: ldax #BIGBUF
-	LDX_BIGBUF_ADDR_HI
+	ldax Buffer
 	jsr udp_send
 	jsr RECEIVE_LOOP_FAST
 	rts
@@ -244,28 +241,25 @@ GETREPLY2:
 ; CHR_H - half track send
 ;---------------------------------------------------------
 PUTREQUEST:
-	LDA_BIGBUF_ADDR_LO	; Connect the block pointer to the
-	sta BLKPTR		; beginning of the Big Buffer(TM)
-	LDA_BIGBUF_ADDR_HI
-	sta BLKPTR+1
+	ldax #udp_inp + udp_data + 1	; Point Buffer at the UDP data buffer
+	stax Buffer
 	ldy #$00
 	lda SendType
-	sta (BLKPTR),Y		; Accumulator still holds request type
+	sta (Buffer),Y		; Accumulator still holds request type
 	iny
 	jsr COPYINPUT
 	lda NUMBLKS		; Send the total block size
-	sta (BLKPTR),Y
+	sta (Buffer),Y
 	iny
 	lda NUMBLKS+1
-	sta (BLKPTR),Y
+	sta (Buffer),Y
 	iny
 	tya
 	ldx #$00
 	stax udp_send_len
 	lda #STATE_PUT
 	sta state
-	LDA_BIGBUF_ADDR_LO	; Was: ldax #BIGBUF
-	LDX_BIGBUF_ADDR_HI
+	ldax Buffer
 	jsr udp_send
 	jsr RECEIVE_LOOP_FAST
 	rts
@@ -312,13 +306,11 @@ GETFINALACK:
 ; GETREQUEST -
 ;---------------------------------------------------------
 GETREQUEST:
-	LDA_BIGBUF_ADDR_LO	; Connect the block pointer to the
-	sta BLKPTR		; beginning of the Big Buffer(TM)
-	LDA_BIGBUF_ADDR_HI
-	sta BLKPTR+1
+	ldax #udp_inp + udp_data + 1	; Point Buffer at the UDP data buffer
+	stax Buffer
 	ldy #$00
 	lda #CHR_G	; Ask host to send the file
-	sta (BLKPTR),Y
+	sta (Buffer),Y
 	iny
 	jsr COPYINPUT
 	tya
@@ -326,8 +318,7 @@ GETREQUEST:
 	stax udp_send_len
 	lda #STATE_GET	; Set up for GETREPLY1 callback
 	sta state
-	LDA_BIGBUF_ADDR_LO	; Was: ldax #BIGBUF
-	LDX_BIGBUF_ADDR_HI
+	ldax Buffer
 	jsr udp_send
 	jsr RECEIVE_LOOP_FAST
 	rts
@@ -336,28 +327,25 @@ GETREQUEST:
 ; BATCHREQUEST - Request to send multiple images to the host
 ;---------------------------------------------------------
 BATCHREQUEST:
-	LDA_BIGBUF_ADDR_LO	; Connect the block pointer to the
-	sta BLKPTR		; beginning of the Big Buffer(TM)
-	LDA_BIGBUF_ADDR_HI
-	sta BLKPTR+1
+	ldax #udp_inp + udp_data + 1	; Point Buffer at the UDP data buffer
+	stax Buffer
 	ldy #$00
 	lda #CHR_B		; Tell host we are Putting/Sending
-	sta (BLKPTR),Y
+	sta (Buffer),Y
 	iny
 	jsr COPYINPUT
 	lda NUMBLKS		; Send the total block size
-	sta (BLKPTR),Y
+	sta (Buffer),Y
 	iny
 	lda NUMBLKS+1
-	sta (BLKPTR),Y
+	sta (Buffer),Y
 	iny
 	tya
 	ldx #$00
 	stax udp_send_len
 	lda #STATE_PUT
 	sta state
-	LDA_BIGBUF_ADDR_LO	; Was: ldax #BIGBUF
-	LDX_BIGBUF_ADDR_HI
+	ldax Buffer
 	jsr udp_send
 	jsr RECEIVE_LOOP_FAST
 	rts
@@ -366,13 +354,11 @@ BATCHREQUEST:
 ; QUERYFNREQUEST
 ;---------------------------------------------------------
 QUERYFNREQUEST:
-	LDA_BIGBUF_ADDR_LO	; Connect the block pointer to the
-	sta BLKPTR	; beginning of the Big Buffer(TM)
-	LDA_BIGBUF_ADDR_HI
-	sta BLKPTR+1
+	ldax #udp_inp + udp_data + 1	; Point Buffer at the UDP data buffer
+	stax Buffer
 	ldy #$00
 	lda #CHR_Z	; Ask host for file size
-	sta (BLKPTR),Y
+	sta (Buffer),Y
 	iny
 	jsr COPYINPUT
 	tya
@@ -380,8 +366,7 @@ QUERYFNREQUEST:
 	stax udp_send_len
 	lda #STATE_QUERY	; Set up for the QUERYFNREPLY callback
 	sta state
-	LDA_BIGBUF_ADDR_LO	; Was: ldax #BIGBUF
-	LDX_BIGBUF_ADDR_HI
+	ldax Buffer
 	jsr udp_send
 	jsr RECEIVE_LOOP_FAST
 	rts
@@ -690,14 +675,14 @@ PUTC:
 	rts
 
 ;---------------------------------------------------------
-; COPYINPUT - Copy data from input area to (BLKPTR);
+; COPYINPUT - Copy data from input area to (Buffer);
 ; Y is assumed to point to the next available byte
-; after (BLKPTR); Y will point to the next byte on exit
+; after (Buffer); Y will point to the next byte on exit
 ;---------------------------------------------------------
 COPYINPUT:
 	ldx #$00
-@LOOP:	lda $0200,X
-	sta (BLKPTR),Y
+@LOOP:	lda INPUT_BUFFER,X
+	sta (Buffer),Y
 	php
 	inx
 	iny

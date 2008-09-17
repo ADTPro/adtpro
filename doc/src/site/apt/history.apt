@@ -10,6 +10,8 @@ ADTPro Release History
 
  New functionality:
 
+ * [Client] SOS version can use Ethernet UDP transport via the Uthernet card ({{http://a2retrosystems.com/}})
+ 
  * [Client] SOS version can format media
 
  * [Server] Apple /// computers can be bootstrapped from bare metal
