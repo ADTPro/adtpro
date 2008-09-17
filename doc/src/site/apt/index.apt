@@ -105,9 +105,9 @@ are detailed below.  Please note that you will need to use
 {{{bootstrapaudio.html}audio}} communications 
 (not ethernet) for this task.
 
- * Click {{{bootstrap.html}[II serial}}| {{{bootstrapaudio.html}II audio]}} to get started with an Apple II.
+ * Click {{{bootstrap.html}II serial}} or {{{bootstrapaudio.html}II audio}} to get started with an Apple II.
 
- * Click  {{{bootstrap3.html#Starting_from_bare_metal}/// serial}} to get started with an Apple ///.
+ * Click  {{{bootstrap3.html}/// serial}} to get started with an Apple ///.
 
  []
 
