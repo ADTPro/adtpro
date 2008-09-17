@@ -30,7 +30,7 @@ screen:
 
  From this screen, choose the volume (slot/drive) or device you want to format.
 When you make your choice, you will be asked for the new disk's name
-(ProDOS only), you will be asked for a confirmation, and once done
+(ProDOS only), you will be asked for a confirmation, and once finished,
 will be given a chance to format another volume:
  
 [images/format2.png]
@@ -42,7 +42,7 @@ will be given a chance to format another volume:
  variants worked, where the <<<INIT>>> command would make a disk bootable.
  In ProDOS and SOS, it's a whole different process.
 
- <<SOS Note:>> If SOS feels the disk drive is spinning too slowly or 
+ <<SOS Note:>> If SOS feels a floppy disk drive is spinning too slowly or 
  too quickly, it will fail to format the disk and will issue a message
  stating so.  If the drive is found to be too slow, the message will
  read: "<<<DRIVE TOO SLOW! ADJUST CLOCKWISE.>>>"   If too fast, the messasge

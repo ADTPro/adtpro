@@ -12,9 +12,9 @@ ADTPro Release History
 
  * [Client] SOS version can use Ethernet UDP transport via the Uthernet card ({{http://a2retrosystems.com/}})
  
- * [Client] SOS version can format media
+ * [Client] SOS version can {{{misc.html#Format}format}} media
 
- * [Server] Apple /// computers can be bootstrapped from bare metal
+ * [Server] Apple /// computers can be {{{bootstrap3.html}bootstrapped}} from bare metal over their built-in serial ports
 
  []
 
