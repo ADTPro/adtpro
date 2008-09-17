@@ -20,10 +20,15 @@ ADTPro Release History
 
  Bug fixes:
 
- * [Client] Occasional Ethernet "hang" during transfer fixed
+ * [Client] Occasional Ethernet "hang" during transfer
 
- * [Client] SOS version recovers from "disk switched" notification when
-   a floppy drive door is opened and closed
+ * [Client] Exiting the Ethernet configuration screen via the Return key
+   but without saving to disk caused changes to be forgotten until entering
+   and leaving the config screen a second time
+
+ * [Client] SOS version failed to write the first set of blocks when it
+   received a harmless "disk switched" notification (after swapping 
+   disks, for example)
 
  []
 
