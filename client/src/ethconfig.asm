@@ -188,12 +188,13 @@ NOTCTLD:
 
 	cmp #CHR_ESC
 	bne NOTESC
-	ldy #PARMNUM-1	; Escape pressed, restore previous values
 PARMRST:
-	lda OLDPARM,Y	; PARAMETERS AND STOP CONFIGURE
+	ldy #PARMNUM-1	; Escape pressed, restore previous values
+@PR1:
+	lda OLDPARM,Y	; Restore prior parameters and stop configuration
 	sta PARMS,Y
 	dey
-	bpl PARMRST
+	bpl @PR1
 	jmp NOSAVE
 ENDCFG:
 	; Save off IP parms
@@ -205,7 +206,7 @@ ENDCFG:
 	lda #$01
 	sta CONFIGYET
 
-	ldy #PARMNUM-1	; Save previous parameters
+	ldy #PARMNUM-1	; Save current parms as default
 SAVPARM2:
 	lda PARMS,Y
 	sta DEFAULT,Y
