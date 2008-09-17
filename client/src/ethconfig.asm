@@ -205,9 +205,6 @@ ENDCFG:
 	lda #$01
 	sta CONFIGYET
 
-	lda PSAVE	; Did they ask to save?
-	bne NOSAVE
-
 	ldy #PARMNUM-1	; Save previous parameters
 SAVPARM2:
 	lda PARMS,Y
@@ -216,6 +213,9 @@ SAVPARM2:
 	bpl SAVPARM2
 	lda #$00
 	sta CURPARM
+
+	lda PSAVE	; Did they ask to save?
+	bne NOSAVE
 	jsr BSAVE
 NOSAVE:
 	rts
@@ -247,7 +247,6 @@ DFTLOOP:
 	sta PARMS,X
 	dex
 	bpl DFTLOOP
-	jmp PARMDFTNEXT
 
 PARMDFTNEXT:
 ; No matter what, we put in the default value for 
