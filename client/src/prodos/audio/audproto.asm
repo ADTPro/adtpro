@@ -51,7 +51,7 @@ DIRREPLY:
 	sty TMOT	; Clear timeout processing
 	ldax #AUD_BUFFER
 	stax A1L
-	stax BLKPTR	; DIRDISP expects data at (BLKPTR)
+	stax Buffer	; DIRDISP expects data at (Buffer)
 	jsr aud_receive
 	rts
 
