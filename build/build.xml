@@ -15,7 +15,7 @@ http://adtpro.sourceforge.net/developing.html
      stuff got changed to $3f all over the place; made code non-executable.
      Switching back to Java 1.5 for compilation fixed it. -->
 <project name="ADTPro" default="all" basedir="..">
-	<property name="versionString" value="v.r.m" />
+	<property name="versionString" value="1.1.1" />
 	<property name="distName" value="ADTPro-${versionString}" />
 	<property name="diskName" value="ADTPRO-${versionString}" />
 	<property name="diskNameSOSCFIDE" value="ADTSOS-CFIDE-${versionString}" />
