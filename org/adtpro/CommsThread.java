@@ -281,7 +281,6 @@ public class CommsThread extends Thread
             _parent.setMainText(Messages.getString("CommsThread.5")); //$NON-NLS-1$
             _parent.setSecondaryText(""); //$NON-NLS-1$
             Log.println(false,"CommsThread.commandLoop() Received Apple /// SOS.INTERP dump command."); //$NON-NLS-1$
-            _transport.setFullSpeed(9600);
             requestSend(Messages.getString("Gui.BS.SOSINTERP"), true, 0, 9600);
             _busy = false;
             break;
@@ -2660,6 +2659,8 @@ public class CommsThread extends Thread
         {
           bytesAvailable = _is.available();
           _transport.setSlowSpeed(_speed);
+          _parent.setProgressMaximum(bytesAvailable);
+          // Log.println(true, "DEBUG: CommsThread.Worker.run() setting max to "+bytesAvailable+".");
           if (_isBinary)
           {
             // Binary processing
@@ -2675,6 +2676,7 @@ public class CommsThread extends Thread
                 _resource.equals(Messages.getString("Gui.BS.SOSDRIVER")))
             {
               // If we're sending SOS bootstrap stuff, we need to prepend the length and stuff
+              // Log.println(true, "DEBUG: CommsThread.Worker.run() writing length header.");
               _transport.writeByte(0x53); // Send an "S" to trigger the start
               _transport.writeByte(UnsignedByte.loByte(buffer.length-1)); // Send buffer LSB
               _transport.writeByte(UnsignedByte.hiByte(buffer.length-1)); // Send buffer MSB
@@ -2688,11 +2690,14 @@ public class CommsThread extends Thread
               }
               _transport.writeByte(buffer[i]);
               _transport.flushSendBuffer();
+              sleep(1);
               if (_shouldRun)
               {
                 _parent.setProgressValue(i + 1);
+                // Log.println(true, "DEBUG: CommsThread.Worker.run() setting progress to "+(i+1)+".");
               }
             }
+            _transport.flushSendBuffer();
           }
           else
           {
@@ -2711,7 +2716,6 @@ public class CommsThread extends Thread
             }
             Log.println(false, "commsThread.Worker.run() speed = " + _speed
                 + " pacing = " + _pacing);
-            _parent.setProgressMaximum(buffer.length);
             int numLines = 0;
             /*
              * Go through once and just count the number of lines in the file.
@@ -2742,7 +2746,7 @@ public class CommsThread extends Thread
               /*
                * We hit the end of a line.
                */
-              if ((buffer[i] == 0x0d) && (!_isBinary))
+              if (buffer[i] == 0x0d)
               {
                 _transport.writeByte(0x8d);
                 _transport.flushSendBuffer();
@@ -2776,7 +2780,7 @@ public class CommsThread extends Thread
                 currentLine++;
               }
               else
-                if ((buffer[i] != 0x0a) || (_isBinary)) _transport.writeByte(buffer[i]);
+                if (buffer[i] != 0x0a) _transport.writeByte(buffer[i]);
               if (_shouldRun)
               {
                 _parent.setProgressValue(i + 1);
