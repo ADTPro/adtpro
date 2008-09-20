@@ -224,6 +224,7 @@ CLRLOOP:
 	iny
 	bne CLRLOOP
 	txa
+	GO_SLOW		; Slow down for SOS
 	jsr PUTC	; Send ack/nak
 	lda BLKLO
 	jsr PUTC	; Send the block number (LSB)
@@ -237,6 +238,7 @@ CLRLOOP:
 	jsr GETC	; Receive reply
 	sta PCCRC	; Receive the CRC of that block
 	jsr GETC
+	GO_FAST		; Speed back up for SOS
 	sta PCCRC+1
 	jsr UNDIFF
 
@@ -346,12 +348,14 @@ SENDBLK:
 	sta <ZP
 
 SENDMORE:
+	GO_SLOW		; Slow down for SOS
 	jsr SENDHBLK
 	lda <CRC	; Send the CRC of that block
 	jsr PUTC
 	lda <CRC+1
 	jsr PUTC
 	jsr GETC	; Receive reply
+	GO_FAST		; Speed back up for SOS
 	cmp #CHR_ACK	; Is it ACK?  Loop back if NAK.
 	bne SENDMORE
 	inc <BLKPTR+1	; Get next 256 bytes

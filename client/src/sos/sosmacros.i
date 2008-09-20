@@ -83,15 +83,23 @@
 .endmacro
 
 .macro GO_SLOW
+	php
+	pha
 	lda $FFDF			; Read the environment register
 	ora #$80			; Set 1MHz switch
 	sta $FFDF			; Write the environment register
+	pla
+	plp
 .endmacro
 
 .macro GO_FAST
+	php
+	pha
 	lda $FFDF			; Read the environment register
 	and #$7f			; Set 2MHz switch
 	sta $FFDF			; Write the environment register
+	pla
+	plp
 .endmacro
 
 .macro CONDITION_CR

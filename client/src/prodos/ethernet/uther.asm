@@ -46,11 +46,13 @@
 ;---------------------------------------------------------
 INITUTHER:
 	jsr PATCHUTHER
+	GO_SLOW				; Slow down for SOS
 	jsr ip65_init
 	bcc @UTHEROK
 	ldy #PMUTHBAD
 	jsr WRITEMSGAREA
 	jsr PATCHNULL
+	GO_FAST				; Speed back up for SOS
 	rts
 @UTHEROK:
 	ldax #UDPDISPATCH
@@ -70,6 +72,7 @@ INITUTHER:
 	ldax #6502			; set destination port
 	stax udp_send_dest_port
 
+	GO_FAST				; Speed back up for SOS
 	rts
 
 ;---------------------------------------------------------
@@ -109,7 +112,9 @@ NULLUTHER:
 ; RESETUTHER - Clean up Uther every time we hit the main loop
 ;---------------------------------------------------------
 RESETUTHER:
+	GO_SLOW				; Slow down for SOS
 	jsr ip65_process
+	GO_FAST				; Speed back up for SOS
 	rts
 
 cnt:		.res 1

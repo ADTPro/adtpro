@@ -179,6 +179,7 @@ ABORT:	ldx top_stack	; Pop goes the stackptr
 AWBEEP:
 	lda PSOUND	; IF SOUND OFF, RETURN NOW
 	bne NOBEEP
+	GO_SLOW		; Slow SOS down for this
 	ldx #$0d	; Tone isn't quite the same as
 	jsr BEEP1	; Apple Writer ][, but at least
 	ldx #$0f	; it's the same on all CPU speeds.
@@ -188,4 +189,5 @@ BEEP3:	jsr DELAY
 	bit $C030	; WHAP SPEAKER
 	dey
 	bne BEEP2
+	GO_FAST		; Speed SOS back up
 NOBEEP:	rts

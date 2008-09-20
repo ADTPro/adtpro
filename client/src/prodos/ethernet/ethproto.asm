@@ -118,7 +118,9 @@ RECEIVE_LOOP_ENTRY2:
 	sta TMOT
 
 RECEIVE_LOOP_WARM:
+	GO_SLOW				; Slow down for SOS
 	jsr ip65_process
+	GO_FAST				; Speed back up for SOS
 	lda $C000
 	cmp #CHR_ESC	; Escape = abort
 	bne :+
@@ -197,8 +199,10 @@ CDREQUEST:
 	stax udp_send_len	; much bigger than that anyway...
 	lda #STATE_CD
 	sta state
+	GO_SLOW				; Slow down for SOS
 	ldax Buffer
 	jsr udp_send
+	GO_FAST				; Speed back up for SOS
 	jsr RECEIVE_LOOP_FAST
 	rts
 
@@ -259,8 +263,10 @@ PUTREQUEST:
 	stax udp_send_len
 	lda #STATE_PUT
 	sta state
+	GO_SLOW				; Slow down for SOS
 	ldax Buffer
 	jsr udp_send
+	GO_FAST				; Speed back up for SOS
 	jsr RECEIVE_LOOP_FAST
 	rts
 
@@ -299,7 +305,9 @@ GETFINALACK:
 	jsr BUFBYTE	; Send the half-block number
 	lda ECOUNT
 	jsr BUFBYTE	; Send number of errors encountered
+	GO_SLOW				; Slow down for SOS
 	jsr udp_send_nocopy
+	GO_FAST				; Speed back up for SOS
 	rts
 
 ;---------------------------------------------------------
@@ -318,8 +326,10 @@ GETREQUEST:
 	stax udp_send_len
 	lda #STATE_GET	; Set up for GETREPLY1 callback
 	sta state
+	GO_SLOW				; Slow down for SOS
 	ldax Buffer
 	jsr udp_send
+	GO_FAST				; Speed back up for SOS
 	jsr RECEIVE_LOOP_FAST
 	rts
 
@@ -345,8 +355,10 @@ BATCHREQUEST:
 	stax udp_send_len
 	lda #STATE_PUT
 	sta state
+	GO_SLOW				; Slow down for SOS
 	ldax Buffer
 	jsr udp_send
+	GO_FAST				; Speed back up for SOS
 	jsr RECEIVE_LOOP_FAST
 	rts
 
@@ -366,8 +378,10 @@ QUERYFNREQUEST:
 	stax udp_send_len
 	lda #STATE_QUERY	; Set up for the QUERYFNREPLY callback
 	sta state
+	GO_SLOW				; Slow down for SOS
 	ldax Buffer
 	jsr udp_send
+	GO_FAST				; Speed back up for SOS
 	jsr RECEIVE_LOOP_FAST
 	rts
 
@@ -402,7 +416,9 @@ SENDNIBPAGE:
 	stax UTILPTR
 	lda #$02
 	sta ZP
+	GO_SLOW				; Slow down for SOS
 	jsr SENDHBLK
+	GO_FAST				; Speed back up for SOS
 	lda #STATE_PUT	; Set up callback to PUTREPLY1
 	sta state
 	jsr RECEIVE_LOOP_FAST
@@ -416,9 +432,10 @@ SENDNIBPAGE:
 SENDBLK:
 	lda #$02
 	sta <ZP
-
 SENDMORE:
+	GO_SLOW				; Slow down for SOS
 	jsr SENDHBLK
+	GO_FAST				; Speed back up for SOS
 	lda #STATE_PUT	; Set up callback to PUTREPLY1
 	sta state
 	jsr RECEIVE_LOOP_FAST
@@ -535,9 +552,9 @@ CLRLOOP:
 	jsr BUFBYTE	; Send the block number (MSB)
 	lda <ZP
 	jsr BUFBYTE	; Send the half-block number
-
+	GO_SLOW			; Slow down for SOS
 	jsr udp_send_nocopy	; Send our ack package
-
+	GO_FAST			; Speed back up for SOS
 	lda #STATE_RECVHBLK	; Set up callback to RECVHBLK
 	sta state
 	jsr RECEIVE_LOOP_FAST
@@ -670,8 +687,10 @@ PUTC:
 	sta PUTCMSG		; PATCHUTHER.
 	ldax #PUTCMSGEND-PUTCMSG
 	stax udp_send_len
+	GO_SLOW			; Slow down for SOS
 	ldax #PUTCMSG
 	jsr udp_send
+	GO_FAST			; Speed back up for SOS
 	rts
 
 ;---------------------------------------------------------

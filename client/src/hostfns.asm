@@ -32,8 +32,10 @@ DIR:
 	ldy #PMWAIT
 	jsr WRITEMSGAREA
 
+	GO_SLOW			; Slow down for SOS
 	jsr DIRREQUEST
 	jsr DIRREPLY
+	GO_FAST			; Speed back up for SOS
 	ldy TMOT
 	bne DIRTIMEOUT
 
@@ -91,6 +93,7 @@ CD:
 CDSTART:
 	ldy #PMWAIT
 	jsr WRITEMSGAREA	; Tell user to have patience
+	GO_SLOW			; Slow down for SOS
 	jsr CDREQUEST
 	jsr CDREPLY
 	
@@ -100,10 +103,12 @@ CDSTART:
 	jsr PAUSE
 
 CDDONE:
+	GO_FAST			; Speed back up for SOS
 	rts
 
 CDERROR:
 	tay
 	jsr SHOWHM1
 	jsr PAUSE
+	GO_FAST			; Speed back up for SOS
 	jmp ABORT

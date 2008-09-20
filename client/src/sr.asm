@@ -83,8 +83,10 @@ SEND:
 	; Validate the filename won't overwite
 	ldy #PMWAIT
 	jsr WRITEMSGAREA	; Tell user to have patience
+	GO_SLOW			; Slow down for SOS
 	jsr QUERYFNREQUEST
 	jsr QUERYFNREPLY
+	GO_FAST			; Speed back up for SOS
 	cmp #$02	; File doesn't exist - so everything's ok
 	beq SMSTART
 	lda #$00
@@ -122,8 +124,10 @@ SMSTART:
 	ldy #PMWAIT
 	jsr WRITEMSGAREA	; Tell user to have patience
 
+	GO_SLOW			; Slow down for SOS
 	jsr PUTREQUEST		; Note - SendType holds the type of request
 	jsr PUTREPLY
+	GO_FAST			; Speed back up for SOS
 	beq PCOK
 	jmp PCERROR
 
@@ -154,7 +158,9 @@ SendStandard:
 	jsr GO_TRACK0
 SendPrep:		; Send standard 5.25"
 	jsr PREPPRG	; Prepare the progress screen
+	GO_SLOW			; Slow down for SOS
 	jsr PUTINITIALACK
+	GO_FAST			; Speed back up for SOS
 SMMORE:
 	lda NUMBLKS
 	sec
@@ -198,7 +204,9 @@ SMPARTIAL:
 	cmp NUMBLKS	; Compare low-order num blocks byte
 	bcc SMMORE
 
+	GO_SLOW			; Slow down for SOS
 	jsr PUTFINALACK
+	GO_FAST			; Speed back up for SOS
 
 	jsr COMPLETE
 SMDONE:	rts
@@ -216,8 +224,10 @@ RECEIVE:
 SRSTART:
 	ldy #PMWAIT
 	jsr WRITEMSGAREA	; Tell user to have patience
+	GO_SLOW			; Slow down for SOS
 	jsr QUERYFNREQUEST
 	jsr QUERYFNREPLY
+	GO_FAST			; Speed back up for SOS
 	cmp #$00
 	beq @Ok
 	jmp PCERROR
@@ -260,8 +270,10 @@ SROK2:
 	lda UNITNBR
 	sta PARMBUF+1
 
+	GO_SLOW			; Slow down for SOS
 	jsr GETREQUEST
 	jsr GETREPLY
+	GO_FAST			; Speed back up for SOS
 	beq SROK3
 	jmp PCERROR
 
@@ -319,7 +331,9 @@ SRPARTIAL:
 	cmp NUMBLKS	; Compare low-order num blocks byte
 	bcc SRMORE
 
+	GO_SLOW			; Slow down for SOS
 	jsr GETFINALACK
+	GO_FAST			; Speed back up for SOS
 
 	jsr COMPLETE
 SRDONE:

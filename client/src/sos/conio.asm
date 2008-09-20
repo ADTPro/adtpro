@@ -27,7 +27,6 @@
 ;---------------------------------------------------------
 INIT_SCREEN:
 	; Prepare the system for our expecations
-	GO_SLOW
 	CALLOS OS_OPEN, OPEN_PARMS	; Open the console
 	jsr ERRORCK
 	lda OPEN_REF
@@ -590,6 +589,7 @@ READPOSN:
 ; WAIT - # cycles = (5*A*A + 27*A + 26)/2
 ;---------------------------------------------------------
 DELAY:
+	GO_SLOW
 WAIT:	SEC		; Delay: # cycles = (5*A*A + 27*A + 26)/2
 WAIT2:	PHA
 WAIT3:	SBC #$01
@@ -597,6 +597,7 @@ WAIT3:	SBC #$01
 	PLA		;(13+27/2*A+5/2*A*A)
 	SBC #$01
 	BNE WAIT2
+	GO_FAST
 	RTS
 
 ;---------------------------------------------------------
