@@ -32,7 +32,7 @@ drive types, communications devices, and host operating systems.
 
     * Transfers any storage device ProDOS or SOS can access
 
-    * Runs on any Apple II, Apple ///, or clone computer with 64k memory
+    * Runs on any Apple II, Apple ///, or clone computer with 64k of memory
 
     * Runs on Linux, Mac OSX, OS/2, Windows, and probably Solaris
 
@@ -40,11 +40,11 @@ drive types, communications devices, and host operating systems.
 
     * Serves the original {{{compatability.html}ADT client}} as well as the updated ADTPro client
 
-    * Bootstraps Apple II and Apple /// computers from bare metal over {{{bootstrap.html}serial}} or {{{bootstrapaudio.html}cassette}} ports
+    * {{{#Bootstrapping}Bootstraps}} Apple II and Apple /// computers from bare metal over {{{bootstrap.html}serial}} or {{{bootstrapaudio.html}cassette}} ports
 
-    * Sends floppies in "{{{batch.html}batch}}" mode without having to name each one
+    * Sends floppies in {{{batch.html}"batch"}} mode without having to name each one
 
-    * {{{misc.html#Format}Formats}} media on the Apple II or Apple /// end
+    * {{{misc.html#Format}Formats}} media on the Apple II or Apple ///
 
  ADTPro may be used to transfer Apple diskette/disk images in DOS or ProDOS/SOS format.
 The Apple client side happens to run under ProDOS or SOS, but it is perfectly capable
@@ -53,7 +53,7 @@ of reading or writing Apple DOS (or Pascal, or CP/M, or...) diskettes.
  The latest ADTPro can always be 
 {{{https://sourceforge.net/project/showfiles.php?group_id=170262}downloaded}}
 from the SourceForge 
-{{{https://sourceforge.net/project/showfiles.php?group_id=170262}project page}}. 
+{{{https://sourceforge.net/project/showfiles.php?group_id=170262}project page.}}
 
 * Server
 
