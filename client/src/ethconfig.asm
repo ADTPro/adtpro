@@ -319,7 +319,7 @@ ENDVAL:	dex
 FindSlot:
 	lda PSSC
 	sta TempSlot
-	ldx #MINSLOT	; Slot number - start at min and work up
+	ldx #$00	; Slot number - start at min and work up
 FindSlotLoop:
 	stx PSSC	; ip65_init looks for PSSC to be the index
 	clc
@@ -328,7 +328,7 @@ FindSlotLoop:
 	ldx PSSC
 	inx
 	stx PSSC
-	cpx #MAXSLOT+1
+	cpx #MAXSLOT
 	bne FindSlotLoop
 	jmp FindSlotDone
 FoundSlot:

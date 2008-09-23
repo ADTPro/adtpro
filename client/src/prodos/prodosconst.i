@@ -23,8 +23,7 @@
 
 .export DELAY
 
-MINSLOT = $00	; The smallest slot number we're likely to encounter (zero-indexed)
-MAXSLOT = $06	; The largest slot number we're likely to encounter (zero-indexed)
+MAXSLOT = $07	; The largest slot number we're likely to encounter (one-indexed)
 
 ;---------------------------------------------------------
 ; Horizontal tabs for volume display
