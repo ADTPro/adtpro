@@ -6,6 +6,21 @@
 
 ADTPro Release History
 
+* Unreleased
+
+ New functionality:
+
+ * Nothing
+
+ []
+
+ Bug fixes:
+
+ * [Client] We weren't detecting comms devices in slot 7 (one of those off-by-one
+   counting problems)
+
+ []
+
 * 1.1.1 - September 18, 2008
 
  New functionality:
