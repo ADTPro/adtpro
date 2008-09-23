@@ -674,7 +674,7 @@ FindSlotLoop:
 	ldy	#$0b		; Lookup offset
 	lda	(msgptr),y
 	cmp	#$01		; Is $Cn0B == $01?
-	bne	FindSlotNext
+	bne	FindSlotMaybeIII
 	ldy	#$0c		; Lookup offset
 	lda	(msgptr),y
 	cmp	#$31		; Is $Cn0C == $31?
@@ -740,6 +740,16 @@ FindSlotBreak:
 	sta	default+2	; Store the slot number discovered as default
 FindSlotDone:
 	rts
+
+FindSlotMaybeIII:
+	cmp	#$08		; Is $Cn0B == $08?
+	bne	FindSlotNext
+	ldy	#$0c		; Lookup offset
+	lda	(msgptr),y
+	cmp	#$48		; Is $Cn0C == $48?
+	bne	FindSlotNext
+	jmp	GenericSSC	; It's an Apple /// SSC-like thing.
+
 TempSlot:	.byte 0
 TempIIgsSlot:	.byte 0
 
