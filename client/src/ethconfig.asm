@@ -328,7 +328,7 @@ FindSlotLoop:
 	ldx PSSC
 	inx
 	stx PSSC
-	cpx #MAXSLOT
+	cpx #MAXSLOT+1
 	bne FindSlotLoop
 	jmp FindSlotDone
 FoundSlot:
