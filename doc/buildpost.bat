@@ -1,6 +1,7 @@
 cd target\site
 perl -i.orig -p ..\..\removeMaven.re batch.html
 perl -i.orig -p ..\..\removeMaven.re bootstrap.html
+perl -i.orig -p ..\..\removeMaven.re bootstrap3.html
 perl -i.orig -p ..\..\removeMaven.re bootstrapaudio.html
 perl -i.orig -p ..\..\removeMaven.re bootstrapmain.html
 perl -i.orig -p ..\..\removeMaven.re compatability.html
