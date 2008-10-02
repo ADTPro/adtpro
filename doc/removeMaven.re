@@ -10,5 +10,6 @@ s@href="http://adt.berlios.de"@href="http://adt.berlios.de" target\="_new"@ig;
 s@href="http://www.connectworld.net/cgi-bin/iec/05MCAOSerial.html"@href="http://www.connectworld.net/cgi-bin/iec/05MCAOSerial.html" target\="_new"@ig;
 s@href="http://adtpro.sourceforge.net/apple3.html"@href="http://adtpro.sourceforge.net/apple3.html" target\="_new"@ig;
 s@href="http://seb.riot.org/appleII/aladt.sml"@href="http://seb.riot.org/appleII/aladt.sml" target\="_new"@ig;
+s@href="http://dreher.net/?s=projects/CFforAppleII&amp;c=projects/CFforAppleII/main.php"@href="http://dreher.net/?s=projects/CFforAppleII&amp;c=projects/CFforAppleII/main.php" target\="_new"@ig;
 s@webringreplaced@<script type="text/javascript"src="http://ss.webring.com/navbar?f=j;y=schmidtd;u=adtpro"></script>Powered by <a href="http://dir.webring.com/rw" target=_top>WebRing</a>.@ig;
 s@&amp;#223;@&#223;@ig;

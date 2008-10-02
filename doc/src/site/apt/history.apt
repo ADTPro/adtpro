@@ -16,8 +16,13 @@ ADTPro Release History
 
  Bug fixes:
 
- * [Client] We weren't detecting comms devices in slot 7 (one of those off-by-one
+ * [Client] We weren't detecting comms devices in the last slot (one of those off-by-one
    counting problems)
+
+ * [Client] Apple /// Grub bootstrapper was using an uninitialized register in an
+   alarming, but seemingly predictable, manner; initialize it for safety
+
+ * [Client] Simplified UDP timeout processing after consultation with MagerValp
 
  []
 
