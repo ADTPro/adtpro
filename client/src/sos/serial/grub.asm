@@ -67,6 +67,7 @@ Entry:	sei
 	sta	ACIACR		; Store via ACIA control register.
 ; Set up our pointers
 	lda	#$00
+	tay				; Clean out Y reg
 	sta	BUF_P
 	lda	#$a1
 	sta	BUF_P+1		; Loader goes into $a100
