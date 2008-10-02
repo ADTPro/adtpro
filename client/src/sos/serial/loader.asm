@@ -152,7 +152,7 @@ message_3:
 
 message_4:
 	.byte	$cf, $cb, $a1, $a0, $a0, $a0, $a0, $a0	; "OK!"
-	.byte	$a0, $a0, $a0, $a0, $a0, $a0
+	.byte	$a0, $a0, $a0, $a0, $a0, $a0, $a0
 
 .align	256
 	.byte	$00
