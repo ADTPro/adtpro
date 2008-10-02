@@ -67,13 +67,13 @@ for example.
 A000:78 D8 A9 40 8D CA FF AD
 A008:DF FF 09 F2 8D DF FF A9
 A010:0B 8D F2 C0 A9 1E 8D F3
-A018:C0 A9 00 85 7E A9 A1 85
-A020:7F A9 47 8D 24 04 A9 4F
-A028:8D 25 04 20 40 A0 C9 47
-A030:D0 F9 20 40 A0 91 7E 8D
-A038:27 04 C8 D0 F5 4C 00 A1
-A040:AD F1 C0 29 68 C9 08 D0
-A048:F7 AD F0 C0 60 
+A018:C0 A9 00 A8 85 7E A9 A1
+A020:85 7F A9 47 8D 24 04 A9
+A028:4F 8D 25 04 20 41 A0 C9
+A030:47 D0 F9 20 41 A0 91 7E
+A038:8D 27 04 C8 D0 F5 4C 00
+A040:A1 AD F1 C0 29 68 C9 08
+A048:D0 F7 AD F0 C0 60
 -----------------
 
     It is imperative that these numbers and letters be typed in exactly and precisely
@@ -87,15 +87,15 @@ A048:F7 AD F0 C0 60
     in, type the following command:
 
 -----------------
-A000.A04C
+A000.A04D
 -----------------
 
     Any line can be corrected by re-typing that entire line (starting on a new,
     blank line).  After typing the program in and checking it, your screen might
     look something like this:
-    
+
     *
-    
+
 [images/bootstrap32.png]
 
     []
