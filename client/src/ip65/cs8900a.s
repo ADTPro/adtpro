@@ -7,9 +7,6 @@
 	.include "cs8900a.i"
 
 
-	.import DELAY
-
-
 	.export eth_init
 	.export eth_rx
 	.export eth_tx
@@ -54,7 +51,6 @@ eth_inp_len:	.res 2		; input packet length
 eth_inp:	.res 1518	; space for input packet
 eth_outp_len:	.res 2		; output packet length
 eth_outp:	.res 1518	; space for output packet
-cs_timeout:	.res 1
 
 ; ethernet packet offsets
 eth_dest	= 0		; destination address
@@ -202,18 +198,14 @@ EMOD21:	sta cs_tx_len + 1
 EMOD31:	sta cs_packet_page
 	lda #>pp_bus_status
 EMOD35:	sta cs_packet_page + 1
-	lda #$00			; DLS
-	sta cs_timeout			; DLS
+waitspace:
 EMOD44:	lda cs_packet_data + 1		; wait for space
-EMOD40:	ldx cs_packet_data		; add timeout?
+EMOD40:	ldx cs_packet_data
 	lsr
-	bcs okgo			; DLS
-	lda #$0a			; DLS
-	jsr DELAY			; DLS Wait a bit for the condition to pass
-	inc cs_timeout			; DLS
-	lda cs_timeout			; DLS
-	bne EMOD40			; DLS Only wait $100 times... then go ahead anyway
-okgo:
+	bcs @gotspace
+	jsr cs_done2			; polling too fast doesn't work, delay some
+	jmp waitspace
+@gotspace:
 	ldax #eth_outp			; send packet
 	stax eth_packet
 
