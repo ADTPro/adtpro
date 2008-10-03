@@ -38,7 +38,7 @@
 ; from the serial port rather than the disk.
 
 ; This would need to be typed into the monitor (ctrl-OA-reset) and then
-; run (a000G).  Alternatively, you can test this by inserting the assembled
+; run (A000G).  Alternatively, you can test this by inserting the assembled
 ; code into sector zero (block zero) of a diskette and booting it.
 ; The /// ROM will pull it into $a000 and execute it.
 
@@ -73,10 +73,10 @@ Entry:	sei
 	sta	BUF_P+1		; Loader goes into $a100
 
 ; Say we're active in the upper-right hand corner
-	lda	#$47		; "G"
-	sta	$0424
-	lda	#$4f		; "O"
-	sta	$0425
+	ldx	#$48		; "H"
+	stx	$0424
+	inx			; "I"
+	stx	$0425
 
 ; Poll the port until we get a magic incantation
 Poll:
