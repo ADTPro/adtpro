@@ -19,6 +19,14 @@ disk, and you'll be ready to go.  If not... read on.
  If you'd rather have a pre-built disk arrive at your door than
 build one yourself, {{{http://retrofloppy.com/products.html#ADTPRO}click here}}.
 
+* Bootstrapping demonstration video
+
+  Here is a 5-minute overview video of the bootstrapping process.
+It shows the bare-metal bootstrapping scenario of an Apple /// with a
+null modem cable, all the way to making a bootable ADTPro floppy:
+
+ youtubereplace3
+
 * {Starting from bare metal}
 
  The Apple /// doesn't have the rich set of firmware the way the Apple II does.
