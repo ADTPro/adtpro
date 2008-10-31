@@ -81,7 +81,7 @@ Entry:	sei
 ; Poll the port until we get a magic incantation
 Poll:
 	jsr	IIIGet
-	cmp	#$47		; First character will be "B" from bigger bootstrap loader
+	cmp	#$47		; First character will be "G" from bigger bootstrap loader
 	bne	Poll
 
 ; We got the magic signature; start reading data
