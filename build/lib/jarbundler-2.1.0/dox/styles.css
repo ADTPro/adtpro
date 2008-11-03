@@ -1,0 +1,37 @@
+body { margin:1.5em; 
+       margin-right:3em;
+     }
+
+h1 {text-align:center;}
+
+h2 {margin-top:2em;}
+
+h3.datatype {margin-top:2em; 
+             margin-bottom:0.5em; 
+             font-family:monospace;}
+
+tt {font-family:monospace; 
+    font-size:1.15em;
+    font-weight:bold;}
+
+td tt {font-family:monospace; 
+       font-size:1em;
+       font-weight:normal;}
+
+li {margin-top:1em;}
+
+pre {margin-bottom:3em;
+     background-color:#eee;
+     padding:5px;
+     border:1px solid black;}
+
+td div {margin-top:0.5em;}
+
+
+.attribute {vertical-align:top; 
+           text-align:left; 
+           font-family:monospace; 
+           width:200px;}
+
+.description {vertical-align:top; 
+              text-align:left;}

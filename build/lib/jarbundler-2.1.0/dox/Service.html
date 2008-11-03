@@ -1,0 +1,56 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+        "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<title>Mac OS X JarBundler ANT Task - Services Properties</title>
+<meta http-equiv="Content-type" content="text/html; charset=iso-8859-1" />
+<meta http-equiv="Content-Language" content="en-us" />
+<link href="styles.css" rel="stylesheet" media="all" type="text/css" />
+<meta name="ROBOTS" content="ALL" />
+</head>
+
+<body>
+
+
+<h2>JarBundler - Apple System Services Properties</h2>
+
+<p>Documentation for creating Apple System Services Properties can be found <a
+href="http://developer.apple.com/documentation/Cocoa/Conceptual/SysServices/Concepts/properties.html#//apple_ref/doc/uid/20000852-97503">here</a>. 
+
+
+
+<h3>Services Task Example</h3>
+
+
+<pre style="padding-left:3em; margin-bottom:0em;">
+&lt;jarbundler dir="${basedir}" ... &gt; 
+                 
+  &lt;service portname="jarBundler"
+           message="processRequest"
+           menuitem="JarBundler/Process Request"
+           sendtypes="NSStringPboardType,NSFilenamesPboardType"
+           returntypes="NSStringPboardType"
+           keyequivalent="p"
+           userdata="a string passed to the method"
+           timeout="5000" /&gt;
+
+  &lt;service menuItem="jEdit/Open Files" 
+           message="openFile" 
+           sendTypes="NSStringPboardType,NSFilenamesPboardType"/&gt;
+           
+  &lt;service menuItem="jEdit/Insert Text" 
+           message="insertSelection" 
+           sendTypes="NSStringPboardType"/&gt;
+           
+  &lt;service menuItem="jEdit/New Buffer with Text" 
+           message="openSelection" 
+           sendTypes="NSStringPboardType"/&gt;
+                     
+&lt;/jarbundler&gt;
+    
+</pre>
+
+
+
+</body>
+</html>

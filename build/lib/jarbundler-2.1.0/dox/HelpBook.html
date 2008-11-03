@@ -1,0 +1,149 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+        "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<title>Mac OS X JarBundler ANT Task - HelpBook Nested Task</title>
+<meta http-equiv="Content-type" content="text/html; charset=iso-8859-1" />
+<meta http-equiv="Content-Language" content="en-us" />
+<link href="styles.css" rel="stylesheet" media="all" type="text/css" />
+<meta name="ROBOTS" content="ALL" />
+</head>
+
+<body>
+
+
+<h2>JarBundler - Including an Apple Help Book</h2>
+
+<p>Documentation for creating Apple Help Book support can be found <a
+href="http://developer.apple.com/qa/qa2001/qa1022.html">here</a>. Basically, one needs to
+specify both the Help Book directory (folder) name and the Help Book name (AppleTitle meta
+tag). The application <strong>must</strong> also have a unique Bundle ID so that the Help
+Viewer can reference the application.
+
+The Help Book consists of pure HTML files, images, and optional CSS styling. It is easy to
+create and develop a Help Book outside of the application.  The "Hello, World" Help Book HTML
+can be used as a starter or checkout any application's exiting Help Book folder now that you
+know where to find it.
+
+<p>The Help Book viewer does <strong>not</strong> automatcially open the file named
+<tt>index.html</tt> as does a web server.  The root file <strong>must</strong> contain a META
+tag specifing the name <tt>AppleTitle</tt>. The content of this tag must match the value
+specified in the <tt>helpbookname</tt> attributer of the <tt>jarbundler</tt> task. This META
+tag is used to both designate the root HTML file and its content is used by the Help Viewer in
+its "Library" listing.</p>
+
+<pre>
+&lt;html&gt;
+  &lt;head&gt;
+         .
+         .
+     &lt;meta name="AppleTitle" content="Hello World Help"/&gt;
+         .
+         .
+  &lt;/head&gt;
+
+</pre>
+
+<p>Finally, the developer needs to create a JNI library in order to communicate between the
+"Help" menu item and the "Help Book Viewer" or whichever application is being used to render
+Help Book help. This is a very simple file and usage is demonstrated in the "Hello, World"
+example. Windows and Linux users will not be able to generate the JNI library on their
+platforms. In order to generate a univeral binary JNI you can use Xcode and the tutorial found
+<a href="http://developer.apple.com/java/jniuniversal.html">here</a>.  This process can only
+be done under Mac OS X with the "Apple Developer Tools" installed.  Windows and Linux
+developer will have to obtain the JNI library from a Mac OS X system.
+
+<p>The <tt>example/build.xml</tt> file shows how to create a JNI library from source with
+ANT using command lines.
+
+
+<h3>Help Book Example</h3>
+
+<p>The application created in this example will have a single Help Book located at
+<tt>Contents/Resources/HelpBook</tt>. The next example shows how to support multiple Help Books
+for different languages.
+
+<pre style="padding-left:3em; margin-bottom:0em;">
+&lt;jarbundler dir="${basedir}"
+                      .
+                      .
+                      .
+            helpbookfolder="HelpBook"
+            helpbookname="Hello World Help" &gt; 
+                 
+  &lt;!-- Copy the HelpBook JNI library  --&gt;
+  &lt;javafilelist dir="${basedir}/build" files="libHelpBookJNI.jnilib"/&gt;
+
+  &lt;!-- Specify the HelpBook contents --&gt;   
+  &lt;helpbook&gt;
+     &lt;fileset dir="${basedir}/HelpBook"/&gt;
+  &lt;helpbook/&gt;
+                     
+&lt;/jarbundler&gt;
+    
+</pre>
+
+
+<h3>Internationalized Help Book Example</h3>
+<p>The following example shows the use of Help Books to support English, German and Swedish.
+The default Help Book folder name and Help Book name are set in the JarBundler tag.  The
+English Help Book uses these defaults.
+
+<p>The German Help Book specifes both the Help Book folder name and Help Book name, effectivly 
+overriding the JarBundler defaults.
+
+<p>The Swedish Help Book uses the default Help Book foldername but specifies it's own Help 
+Book name.  The Swedish locale is specfied using it's ISO country code, <tt>sv</tt>. The ISO
+codes of <tt>en</tt> and <tt>de</tt> could have been used in place of <tt>English</tt> and 
+<tt>German</tt>.
+
+<p>The directory <tt>HelpBook/commom</tt> could contain images and CSS stylesheets common to
+all Help Books. During help book development use a symbolic link to move the <tt>common</tt>
+directory into the HTML tree.
+
+
+<pre style="padding-left:3em; margin-bottom:0em;">
+&lt;jarbundler dir="${basedir}"
+                      .
+                      .
+                      .
+            helpbookfolder="HelpBook"
+            helpbookname="Hello World Help" &gt; 
+                      .
+                      .
+                      .
+  &lt;helpbook locale="English"&gt;
+    &lt;fileset dir="HelpBook/English" /&gt;
+    &lt;fileset dir="HelpBook/common" /&gt;
+  &lt;/helpbook&gt;
+      
+  &lt;helpbook foldername="Hilfebuch" name="Hallo Welt Hilfe" locale="German"&gt;
+    &lt;fileset dir="HelpBook/German" /&gt;
+    &lt;fileset dir="HelpBook/common" /&gt;
+  &lt;/helpbook&gt;
+  
+  &lt;helpbook name="Hjälp" locale="sv"&gt;
+    &lt;fileset dir="HelpBook/Swedish" /&gt;
+    &lt;fileset dir="HelpBook/common" /&gt;
+  &lt;/helpbook&gt;
+  
+&lt;/jarbundler&gt;
+</pre>
+
+
+
+<h3>Troubleshooting the Help Viewer cache.</h3> 
+<p>During development the Help Viewer sometimes 
+refuses to update the contents of a Help Book which changed.  The Apple Developer Docs
+<a href="http://developer.apple.com/qa/qa2005/qa1409.html">suggest</a> to delete or 
+edit the file <tt>~/Library/Preferences/com.apple.help.plist</tt>.  This file
+contains the list of known Help Books.  If you double-click on this file the XML Property Editor
+applicaiton will be launched and re can 'delete' your bundle ID entry and "save" this file.  Deleting
+this file does no harm but is a less elegant way to deal with the problem.
+
+<p>This document also suggests deleting the
+folder <tt>~/Library/Caches/com.apple.helpui</tt> to help with refresh problem during development.
+
+
+</body>
+</html>

@@ -27,9 +27,15 @@ http://adtpro.sourceforge.net/developing.html
 	<property file="${builddir}/ADTProBuild.properties"/>
 	<property file="${builddir}/ADTProBuild-default.properties"/>
 	<property name="acJar" value="${builddir}/lib/AppleCommander-1.3.5.2-ac.jar" />
+	<property name="jarBundlerJar" value="${builddir}/lib/jarbundler-2.1.0/jarbundler-2.1.0.jar" />
 	<property name="rxtxVersion" value="rxtx-2.1-7-bins-r2" />
 	<property name="rxtxZip" value="rxtx-2.1-7-bins-r2.zip" />
 	<taskdef name="appleDump" classname="org.adtpro.utilities.AppleDump" classpath="${projdir}"/>
+	<taskdef name="jarbundler" classname="net.sourceforge.jarbundler.JarBundler" classpath="${jarBundlerJar}"/>
+	<echo message="${distName} building on ${os.name}."/>
+	<condition property="isOSX">
+		<os name="Mac OS X"/>
+	</condition>
 
 	<target name="skipSOS" description="Order this before 'dev' or 'all' to skip building SOS parts.">
 		<property name="skipSOS" value="true"/>		
@@ -39,13 +45,14 @@ http://adtpro.sourceforge.net/developing.html
 		<property name="skipProDOS" value="true"/>		
 	</target>
 
-	<target name="all" depends="wipe, clean, setup, assemble, builddsk, scripts, jar" description="Bulid everything after wiping the output directory.">
+	<target name="all" depends="wipe, clean, setup, assemble, builddsk, scripts, jar, osx" description="Bulid everything after wiping the output directory.">
 	</target>
 
 	<target name="dev" depends="clean, setup, assemble, builddsk" description="Build everything but the Java GUI; don't wipe the output directory.">
 	</target>
 
 	<target name="setup">
+		<echo message="${distName} building on ${os.name}."/>
 		<copy file="${builddir}/ADTProBase.dsk" tofile="${builddir}/${distName}/disks/${diskName}.DSK" />
 		<condition property="SOS-needed">
 			<not>
@@ -416,6 +423,21 @@ http://adtpro.sourceforge.net/developing.html
 		<gzip destfile="${builddir}/${distName}.tar.gz"
 			src="${builddir}/${distName}.tar" />
 		<delete file="${builddir}/${distName}.tar" />
+	</target>
+
+	<target name="osx" if="isOSX">
+		<!-- Build a pretty Mac OSX .app bundle -->
+		<jarbundler dir="${builddir}"
+			name="${distName}"
+			mainclass="org.adtpro.ADTPro"
+			jar="${builddir}/${distName}/lib/${distName}.jar" />
+		<!-- Delete the JavaApplicationStub and replace it with a symbolic link -->
+		<!--   which should work on older and future versions of OS X -->
+		<delete file="${builddir}/${distName}.app/Contents/MacOS/JavaApplicationStub"/>
+		<exec executable="ln">
+			<arg line="-s /System/Library/Frameworks/JavaVM.framework/Resources/MacOS/JavaApplicationStub"/>
+			<arg value="${builddir}/${distName}.app/Contents/MacOS/JavaApplicationStub"/>
+		</exec>
 	</target>
 
 </project>

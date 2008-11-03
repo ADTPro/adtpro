@@ -1,0 +1,71 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+        "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+  <title>Creating a Disk Image</title>
+  <meta http-equiv="Content-type" content="text/html; charset=iso-8859-1" />
+  <meta http-equiv="Content-Language" content="en-us" />
+  <meta name="ROBOTS" content="ALL" />
+  <link href="styles.css" rel="stylesheet" media="all" type="text/css" />
+</head>
+
+<body>
+
+
+<h2>JarBundler - Creating a Disk Image</h2>
+
+
+<p>I'm writing to 
+contribute a shell script which creates a disk image via terminal commands. 
+I wrote it a few years ago so I can't quite explain how it works and likely 
+needs some cleanup - but it basically does the job.  It doesn't support a 
+background image yet nor icon positioning.</p>
+
+<p>Thanks,<br>
+Philip Weaver
+</p>
+
+<pre>
+
+&lt;exec dir="." os="Mac OS X" executable="/bin/sh"&gt;
+	&lt;arg value="-c"/&gt;
+	&lt;arg value="./scripts/mkdmg.sh /Users/Me/Development/ ./mac/ ./mac-image/ Project"/&gt;
+&lt;/exec&gt;
+&lt;gzip zipfile="${dist}/mac-image/MyTool .dmg.gz" src="${dist}/mac-image/MyTool.dmg"/&gt;
+
+</pre>
+
+<h3>mkdmg.sh</h3>
+<pre>
+#!/bin/sh
+
+BASE="$1"
+SRC="$2"
+DEST="$3"
+VOLUME="$4"
+
+echo Base Directory $1
+echo Source $2
+echo Destination $3
+echo Volume $4
+
+TEMP="TEMPORARY"
+
+cd BASE
+
+hdiutil create -megabytes 5 $DEST$TEMP.dmg -layout NONE
+MY_DISK=`hdid -nomount $DEST$TEMP.dmg`
+newfs_hfs -v $VOLUME $MY_DISK
+hdiutil eject $MY_DISK
+hdid $DEST$TEMP.dmg
+chflags -R nouchg,noschg "$SRC"
+ditto -rsrcFork -v "$SRC" "/Volumes/$VOLUME"
+#ditto -rsrcFork -v "./background/" "/Volumes/$VOLUME"
+hdiutil eject $MY_DISK
+hdiutil convert -format UDCO $DEST$TEMP.dmg -o $DEST$VOLUME.dmg
+hdiutil internet-enable -yes $DEST$VOLUME.dmg
+</pre>
+
+
+</body>
+</html>
