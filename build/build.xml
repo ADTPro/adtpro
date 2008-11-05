@@ -52,7 +52,6 @@ http://adtpro.sourceforge.net/developing.html
 	</target>
 
 	<target name="setup">
-		<echo message="${distName} building on ${os.name}."/>
 		<copy file="${builddir}/ADTProBase.dsk" tofile="${builddir}/${distName}/disks/${diskName}.DSK" />
 		<condition property="SOS-needed">
 			<not>
