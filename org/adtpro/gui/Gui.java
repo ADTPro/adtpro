@@ -74,6 +74,8 @@ public final class Gui extends JFrame implements ActionListener
 
   JMenuItem _dosAction2 = null;
 
+  JMenuItem _sosAction = null;
+
   JCheckBoxMenuItem _protoCompatMenuItem = null;
 
   JCheckBoxMenuItem _traceMenuItem = null;
@@ -145,7 +147,7 @@ public final class Gui extends JFrame implements ActionListener
     menuBootstrap.add(menuBootstrapProDOS);
     menuBootstrap.add(menuBootstrapDOS);
     MenuAction sosAction = new MenuAction(Messages.getString("Gui.BS.SOS")); //$NON-NLS-1$
-    menuBootstrap.add(sosAction);
+    _sosAction = menuBootstrap.add(sosAction);
     MenuAction serialConfigBootstrapAction = new MenuAction(Messages.getString("Gui.SerialConfigBootstrap")); //$NON-NLS-1$
     menuBootstrap.add(serialConfigBootstrapAction);
     menuBootstrap.setEnabled(false);
@@ -793,6 +795,7 @@ public final class Gui extends JFrame implements ActionListener
       {
         menuBootstrap.setEnabled(true);
         _dosAction2.setEnabled(_commsThread.transportType() == ATransport.TRANSPORT_TYPE_AUDIO);
+        _sosAction.setEnabled(_commsThread.transportType() != ATransport.TRANSPORT_TYPE_AUDIO);
       }
     }
     Log.println(false, "Gui.startComms() exit; returning " + success + ".");
