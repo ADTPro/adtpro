@@ -8,8 +8,8 @@ Apple II Serial Bootstrapping
 
   If you already use the DOS version of ADT, you can use it to transfer the 
 virtual floppy containing ADTPro that comes with this project
-(ADTPRO-v.r.m.DSK) to your Apple.  Reboot the Apple with the ADTPro floppy, and
-you're ready to go.
+(ADTPRO-v.r.m.DSK) to your Apple.  
+Reboot the Apple with the ADTPro floppy, and you're ready to go.
 
   If you don't use DOS ADT now, or don't have software for your Apple yet, 
 more bootstrapping scenarios and configurations are detailed below.
@@ -272,7 +272,7 @@ Super Serial card, all the way to making a bootable ADTPro floppy:
       Click on Ok with these values.
 
     [[1]] Click on the "Bootstrapping->EsDOS ][->{Send EsDOS ][ Part 1}" menu item.
-      (Serial bootstrapping won't require EsDOS ][ Part 2.)
+      (Serial bootstrapping doesn't require EsDOS ][ Part 2.)
       
     [[1]] A dialog box will come up instructing you to type a set of commands
       on the Apple.  They will be similar to the following:
@@ -309,10 +309,10 @@ Super Serial card, all the way to making a bootable ADTPro floppy:
       your Apple in memory only.
       Instructions will be left on the Apple screen for initializing
       the floppy disk in your drive.  You may wish to format (<<<INIT>>>)
-      more than one now.
+      one or more now.
 
     [[1]] <<Reboot>> your newly formatted floppy with the <<<PR#6>>> command
-      (where <<<6>>> is the number of the slot your Disk ][ card is in).      
+      (where <<<6>>> is the slot number of the slot your Disk ][ card is in).
 
     [[1]] Now that DOS is running, it will be necessary to slow down the transfer
       speed for the next step.  
@@ -360,15 +360,22 @@ Super Serial card, all the way to making a bootable ADTPro floppy:
       The progress bar on the ADTPro server will show how far along the
       transfer is.
 
-    [[1]] Once it's done, it will automatically save the DOS ADT program
-      to the floppy in the drive.  
-      You probably want to write-protect your new DOS ADT diskette by
-      covering the write notch with tape to be sure you don't ever have to send
-      all that stuff over the serial line again.
+    [[1]] Once the DOS ADT client transfer is done, it will automatically start
+      the DOS ADT client program.
+      The first thing you should do is go to the Configuration menu by
+      pressing the <<<C>>> key, press the spacebar enough times to move the
+      cursor down to the <<<SAVE CONFIG>>> menu item, and press the right-arrow
+      key.  That should change the value from <<<NO>>> to <<<YES>>>.  When
+      you press the Enter key, it will save the ADT program on your floppy disk:
 
-    [[1]] Boot your DOS ADT floppy.  The Apple command 
-      <<<BRUN ADT>>> will start the DOS ADT client up.  You may want to
-      go one extra step and use ADT now to transfer the full DOS ADT .dsk image
+      *
+      
+[images/ADTconfig.png]
+
+    [[1]] Now boot your DOS ADT floppy.  The Apple command 
+      <<<BRUN ADT>>> will start the DOS ADT client up once the disk is
+      done booting.  You may want to go one extra step and use ADT now
+      to transfer the full DOS ADT .dsk image
       that comes as part of the ADTPro distribution
       to a new floppy, as it has a <<<HELLO>>> program already set up
       to autostart ADT upon booting.
