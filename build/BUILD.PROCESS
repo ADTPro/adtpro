@@ -25,7 +25,10 @@ the stuff that gets uploaded to sourceforge.
    * Search for svspeed: and make it 6, not 5
    * Search for default: and make the '5' in position 4 be '6'
 
-3. Perform a build - ensure you are using the 'all' target, not 'dev'
+3. Perform a build
+   * Ensure you are using the 'all' target, not 'dev'
+   * Ensure your project properties for the Java Compiler are set to 1.4, not 5.0 or above
+     to suit our OSX 10.3.x friends
 
 4. Tests:
    * Ensure all files have a current date on the virtual disks
