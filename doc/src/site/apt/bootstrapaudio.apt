@@ -371,7 +371,7 @@ audio cables all the way to making a bootable ADTPro floppy:
 
       *
 
-[images/ADTconfig.png]
+[images/ADTConfig.png]
 
     [[1]] Now boot your DOS ADT floppy.  The Apple command 
       <<<BRUN ADT>>> will start the DOS ADT client up once the disk is
