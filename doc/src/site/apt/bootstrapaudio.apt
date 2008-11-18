@@ -323,9 +323,11 @@ audio cables all the way to making a bootable ADTPro floppy:
       on the Apple to format it.
 
     [[1]] Reboot your newly formatted floppy with the <<<PR#6>>> command
-      (where <<<6>>> is the number of the slot your Disk ][ card is in).      
+      (where <<<6>>> is the number of the slot your Disk ][ card is in).
+      You're done here if all you want is a bootable diskette.
 
-    [[1]] Remember, DOS ADT can't do audio transfers because it requires a serial card.
+    [[1]] Remember, DOS ADT can't do audio transfers because it requires
+      a serial connection.
       If you want to do audio transfers, you really want to use the
       ProDOS bare-metal bootstrapping procedure
       {{{bootstrapaudio.html#Starting_from_bare_metal}above}}.
@@ -365,8 +367,14 @@ audio cables all the way to making a bootable ADTPro floppy:
       menu by hitting the <<<C>>> key.  Use the space bar to navigate down
       to the <<<SAVE CONFIG>>> menu item.  Hit an arrow key to change
       <<<NO>>> to <<<YES>>> and hit Return on the Apple.  That will save
-      the DOS ADT client to the floppy drive.
+      the DOS ADT client to the floppy drive:
 
-    [[1]] You probably want to write-protect your new DOS ADT diskette by
-      covering the write notch with tape to be sure you don't ever have to send
-      all that stuff over the cassete port line again.
+      *
+
+[images/ADTconfig.png]
+
+    [[1]] Now boot your DOS ADT floppy.  The Apple command 
+      <<<BRUN ADT>>> will start the DOS ADT client up once the disk is
+      done booting.  Just remember that ADT running under DOS (as opposed to 
+      ADTPro running under ProDOS) is not capable of transferring disk images
+      over the audio connection you just used; DOS ADT can only use a serial connection.
