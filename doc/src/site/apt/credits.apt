@@ -16,14 +16,14 @@ ADTWin project is hosted here:
 {{http://www.apple2.org.za/gswv/a2zine/Sel/ADTWin.html}}
 
   The ability to read and analyze tracks at the nibble level was generously
-donated by Gerard Putter from his Virtual ][ project
-{{http://www.virtualii.com}}.  This makes it possible to archive some lightly
+donated by Gerard Putter from his Virtual ][ project:
+{{http://www.virtualii.com}}  This makes it possible to archive some lightly
 copy-protected disks and put them in .nib format, removing the need to run
 the likes of SST to generate the image.
    
  The routine to read a Disk II device much faster than ProDOS comes from 
 Jean-Marc Boutillon (Deckard) and his FASTDSK program: 
-{{http://boutillon.free.fr/Underground/Docs/Fastdsk/Fastdsk_en.html}}.
+{{http://boutillon.free.fr/Underground/Docs/Fastdsk/Fastdsk_en.html}}
 I dumbed-down the display from Deckard's pretty Locksmith-styled
 sector-by-sector status, but added slot independence.
 I also borrowed config file loading and saving from
@@ -44,7 +44,7 @@ etc. with concepts and code from the CiderPress project:
 from the jSyncManager project: {{http://jsyncmanager.sourceforge.net/}}
 
  The Java serial communications subsystem of ADTPro's server software is produced by
-the rxtx organization: {{http://www.rxtx.org/}}.
+the rxtx organization: {{http://www.rxtx.org/}}
 
  ProDOS assembly programming particulars were divined from the {{{ftp://a2central.com/a2c.essential/A2_BOOKS/Beneath_Apple_ProDOS.pdf}Beneath ProDOS}}
 book by Don Worth and Pieter Lechner, published by Quality Software in 1984.
@@ -56,12 +56,12 @@ using Pascal entry points in slot 2).
 
  The code to interface directly with the IIgs' Serial Communications Controller
 chip was borrowed partially from the "Warp Six BBS" code:
-{{http://www.apple2.org.za/gswv/a2zine/Utils/Z8530_SCCsamples_info.txt}}.
+{{http://www.apple2.org.za/gswv/a2zine/Utils/Z8530_SCCsamples_info.txt}}
 Note that the current code is not nearly as nice to the system as the BBS code is.
 It <<will>> break AppleTalk if it's running.
 
  The IP stack is taken from MagerValp's tight and fast ip65 project code at 
-{{http://www.paradroid.net/ip65/}}.
+{{http://www.paradroid.net/ip65/}}
 It was ported to the Apple II by Glenn Jones ({{http://a2retrosystems.com/}}).
 It turns out that the ip65's checksum algorithm is faulty, so not being smart enough
 to debug it myself, I simply transplanted the one from the Contiki project
@@ -69,9 +69,9 @@ to debug it myself, I simply transplanted the one from the Contiki project
 
  I learned a good deal about Java sound capture and playback from Gamelan in an
 introductory article here:
-{{http://www.developer.com/java/other/article.php/1565671}}.
+{{http://www.developer.com/java/other/article.php/1565671}}
 I found some very helpful audio code from the {{{http://www.jbother.org/}JBother}} project:
-{{http://www.jbother.org/api/src-html/com/valhalla/jbother/sound/SoundPlayer.html}}.
+{{http://www.jbother.org/api/src-html/com/valhalla/jbother/sound/SoundPlayer.html}}
 The audio code in ADTPro is a particularly undisciplined extension of these two sources.
 
  The ProDOS format code was lifted from the Hyper-FORMAT utility, which was in
@@ -85,11 +85,11 @@ Their original notice remains in the
  Invaluable Apple /// hardware and programming information was written by John Jeppson
 in an article titled: "John Jeppson's Guided Tour of Highway III" from
 Softalk Magazine, May 1983, pages 100-112.  One place that it is available online
-is {{{http://groups.google.com/group/comp.sys.apple2/tree/browse_frm/thread/fcd6000cbc75e86f/34b9b48df9af9231}here}}.
+is {{{http://groups.google.com/group/comp.sys.apple2/tree/browse_frm/thread/fcd6000cbc75e86f/34b9b48df9af9231}here.}}
 
  The Apple /// machine language monitor and ways of accessing it during program execution
 was critical to debugging operations.  Important information on how to accomplish that
-was published in the "/// Cheers!" magazine from A.P.P.L.E., available {{{http://www.callapple.org/magazines/cheers/summer_1985.html}here}}.
+was published in the "/// Cheers!" magazine from A.P.P.L.E., available {{{http://www.callapple.org/magazines/cheers/summer_1985.html}here.}}
 
  Thanks to the {{{http://maven.apache.org}Maven}} project for web page generation.
 

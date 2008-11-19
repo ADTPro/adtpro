@@ -28,7 +28,7 @@ because that's a step most people wouldn't ever want to do, and if it were there
 they'd need to have Maven installed.  
 
  Everyone has their favorite integrated development environment (IDE).  I happen
-to use {{{http://www.eclipse.org/}Eclipse}}, so I'll provide setup information
+to use {{{http://www.eclipse.org/}Eclipse,}} so I'll provide setup information
 for that.  Other IDEs are similar, and surely address your own pet peeves.
 This page happens to show screenshots of a Windows setup, but there's nothing
 particularly Windows-ey about the build process.  It should run on any platform
@@ -69,7 +69,7 @@ The minimum amount of work you'd go through to do so:
  Connect Eclipse to the ADTPro CVS repository on Sourceforge by going through
 the next few configuration dialogs in Eclipse.
  
- * From the Eclipse IDE: <<<File->New->Project>>>, then: <<<CVS->Projects from CVS>>>:
+ * From the Eclipse IDE: <<<File->New->Project,>>> then: <<<CVS->Projects from CVS:>>>
 
  ** 
 
@@ -115,7 +115,7 @@ then click on the Libraries tab:
 
 [images/eclipse6.jpg]
 
- Now, we need to build "User Libraries" to match <<<ANT_JAR>>>.
+ Now, we need to build "User Libraries" to match <<<ANT_JAR.>>>
 Click on the "Add Libarary..." button, and select the "User Library" item
 when the "Add Library" dialog box comes up:
 
@@ -133,7 +133,7 @@ when the "Add Library" dialog box comes up:
 
 [images/eclipse11.jpg]
 
- Now we'll fill in <<<ANT_JAR>>>.  Type <<<ANT_JAR>>> in as the name, and
+ Now we'll fill in <<<ANT_JAR.>>>  Type <<<ANT_JAR>>> in as the name, and
  hit the "OK" button.  The Preferences/User Libraries dialog box will come back
  up, and will now have the <<<ANT_JAR>>> user library name in it:
 
@@ -158,9 +158,9 @@ have yellow warnings (depending on how tidy the repository happens to be right t
 * {Configuring the Build Script}
 
  In the Package Explorer, expand the <<<build>>> section.  Look for the file named
- <<<ADTProBuild-default.properties>>>.  You want to make a copy of that and rename it
+ <<<ADTProBuild-default.properties.>>>  You want to make a copy of that and rename it
  <<<ADTProBuild.properties>>> and customize it for your location.
- The easiest way to do that is to click on <<<ADTProBuild-default.properties>>>,
+ The easiest way to do that is to click on <<<ADTProBuild-default.properties,>>>
  then hit Ctrl-C, then Ctrl-V.  That will copy and paste the file into the build
  directory, and demand you rename it all at the same time:
  
@@ -170,7 +170,7 @@ have yellow warnings (depending on how tidy the repository happens to be right t
  You will need to point the <<<assemblerPath>>> variable to
  where you have the cc65 toolchain <<<bin>>> directory installed.
  The full line should look something like this,
- assuming you unzipped cc65 into a directory named <<<cc65>>>:
+ assuming you unzipped cc65 into a directory named <<<cc65:>>>
 
  <<<\<property name="assemblerPath" value="/usr/local/cc65/bin" /> >>>
 
@@ -184,7 +184,7 @@ have yellow warnings (depending on how tidy the repository happens to be right t
 
  All that's left to do now is hit the shiny red build button.  (It's not actually red.)
 Right-click on the
-<<<build.xml>>> file in the Package Explorer, pick <<<Run As...->Ant Build>>>, and
+<<<build.xml>>> file in the Package Explorer, pick <<<Run As...->Ant Build,>>> and
 all the magic should happen:
 
 [images/eclipseBuild.jpg]

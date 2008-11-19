@@ -17,7 +17,7 @@ disk, and you'll be ready to go.  If not... read on.
  {{{connectionsserial.html#Apple3}Connections}} section.
 
  If you'd rather have a pre-built disk arrive at your door than
-build one yourself, {{{http://retrofloppy.com/products.html#ADTPRO}click here}}.
+build one yourself, {{{http://retrofloppy.com/products.html#ADTPRO}click here.}}
 
 * Bootstrapping demonstration video
 
@@ -48,7 +48,7 @@ ADTPro will complete the bootstrapping process and leave you with your /// runni
 the ADTPro client under SOS, where you can format blank disks and reconstitute software
 from virtual disk images.
 
- Public domain Apple /// software is available {{{http://adtpro.sourceforge.net/apple3.html}here}},
+ Public domain Apple /// software is available {{{http://adtpro.sourceforge.net/apple3.html}here,}}
 for example.
 
 * {Detailed steps}
@@ -133,7 +133,7 @@ A000G
     intervention.  As data is sent from the ADTPro server down to the ///,
     a character will flash to the right of the status message to indicate progress.
     If the screen stays still, you will want to re-check your serial
-    {{{connectionsserial.html#Apple3}connections}}.
+    {{{connectionsserial.html#Apple3}connections.}}
     Some of the stages bootstrapping will be going through:
 
     *

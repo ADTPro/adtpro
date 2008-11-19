@@ -18,19 +18,19 @@ ADTPro Ethernet Connections
  If your home network has MAC address filtering, you may need to add a
  rule for your router to allow the Apple to join the network.  The MAC
  address assigned to the Uthernet card by ADTPro is
- <<<00:80:10:6d:76:30>>>.
+ <<<00:80:10:6d:76:30.>>>
 
 ADTPro Ethernet {Client IP Configuration}
 
  The ProDOS ethernet version of the ADTPro client program is named <<<ADTPROETH>>>
  on the distribution diskette.  Ways of making <<<ADTPROETH>>> start automatically
- are discussed {{{starting.html#Starting_the_Client}here}}.
+ are discussed {{{starting.html#Starting_the_Client}here.}}
 
  The SOS ethernet version of the ADTPro client
  program is named <<<SOS.INTERPETH>>> on the distribution diskette.  It will
  be necessary to rename <<<SOS.INTERPETH>>> to <<<SOS.INTERP>>> (also deleting
  or renaming the original <<<SOS.INTERP>>> program) in order to run it.  
- Additional details are {{{starting.html#Starting_the_Client_-_SOS}here}}.
+ Additional details are {{{starting.html#Starting_the_Client_-_SOS}here.}}
  
  Hitting the "G" key from ADTPro's main menu brings up the ethernet 
  configuration screen:
@@ -76,7 +76,7 @@ configuration that works for you, select "YES" for SAVE CONFIG and hit Return.
 
 [images/ethconfigSave.png]
 
- This will save a configuration file, <<<ADTPROETH.CONF>>>,
+ This will save a configuration file, <<<ADTPROETH.CONF,>>>
  to the same place where you started ADTPro from.
  When you start ADTPro again, it will use the configuration parameters you 
  saved last.
@@ -90,17 +90,17 @@ Play with the screen for a minute and you'll get the hang of it.
 
 [images/ethconfigIp.png]
 
- For <<<SERVER IP ADDR>>>, enter the IP address of the machine running the 
+ For <<<SERVER IP ADDR,>>> enter the IP address of the machine running the 
 ADTPro server software.  When you have the server connect with Ethernet, it
 will say what IP address it is currently serving:
 
 [images/ethServerIp.png]
 
- For <<<LOCAL IP ADDR>>>, enter any IP address on your subnet that isn't already
+ For <<<LOCAL IP ADDR,>>> enter any IP address on your subnet that isn't already
 taken.  If your home network has IP addresses assigned by DHCP, this number might
 be tricky to come by.  But the final suffix of .123 is as likely a candidate as any.
 
- For <<<NETMASK>>> and <<<GATEWAY ADDR>>>, these will be the 
+ For <<<NETMASK>>> and <<<GATEWAY ADDR,>>> these will be the 
 same for the server computer as for your Apple, assuming you're on the same network.
 If the server is running Windows,
 you can find this information by issuing the command: <<<ipconfig /all>>> from the 
@@ -117,7 +117,7 @@ if you need it.
 key from the main menu (and escape) to ask for a directory once or twice.  
 It seems to take some networks a couple of tries to finally find the server.
 
- <<Note>>: if you ever end up saving a configuration that is not compatible
+ <<Note:>> if you ever end up saving a configuration that is not compatible
  with the Apple you're trying to run ADTPro on (because you move your
  Uthernet card to a different slot, for example) you may need to reset
  ADTPro to factory defaults.  To do that, boot the Apple with ProDOS, and 

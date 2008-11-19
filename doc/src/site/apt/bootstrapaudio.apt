@@ -32,7 +32,7 @@ Apple II Audio Bootstrapping
  {{{connectionsaudio.html}Connections}} section.
 
  If you'd rather have a pre-built disk arrive at your door than
-build one yourself, {{{http://retrofloppy.com/products.html#ADTPRO}click here}}.
+build one yourself, {{{http://retrofloppy.com/products.html#ADTPRO}click here.}}
 
 *  Bootstrapping Demonstration {Video}
 
@@ -65,19 +65,19 @@ audio cables all the way to making a bootable ADTPro floppy:
     [[1]] A dialog box will come up instructing you to type a set of commands
       on the Apple.  They will be similar to the following:
 
-    * <<<CALL -151>>> (The Apple should respond with the asterisk ("<<<*>>>") prompt.)
+    * <<<CALL -151>>> (The Apple should respond with the asterisk <<<(*)>>> prompt.)
 
-    * <<<2000.xxxxR>>> (Note the "<<<0>>>" is a zero, not the letter "O.")
+    * <<<2000.xxxxR>>> (Note the <<<"0">>> is a zero, not the letter "O.")
 
     []
-      Back on the Apple... the first command (<<<CALL -151>>>) will place
+      Back on the Apple... the first command <<<(CALL -151)>>> will place
       the Apple into its machine language "monitor."  
       That will allow you enter some commands that are not
       available to you in the Apple's normal BASIC mode.
       You should expect the prompt character change from the right-bracket
-      (<<<]>>>) to the asterisk (<<<*>>>).
+      <<<(])>>> to the asterisk <<<(*).>>>
       
-      The second command (<<<2000.xxxxR>>>) will instruct the Apple to start 
+      The second command <<<(2000.xxxxR)>>> will instruct the Apple to start 
       listening for data on its
       cassette-in port.  Fill in the real numbers for the four "x"
       characters above as given in the ADTPro server dialog box.
@@ -89,15 +89,15 @@ audio cables all the way to making a bootable ADTPro floppy:
       that the Apple is waiting for.
       The progress bar will show how far along the transfer is.  
       After the transfer finishes, you should
-      hear a "beep" at the Apple end and be returned to the asterisk prompt ("<<<*>>>").
+      hear a "beep" at the Apple end and be returned to the asterisk prompt <<<(*)>>>
       
-      * Note: If instead the Apple says "<<<ERR>>>" or never returns you to 
+      * Note: If instead the Apple says <<<"ERR">>> or never returns you to 
         a prompt, either the Apple isn't hearing 
         anything at all ({{{connectionsaudio.html}check}} the audio cable)
         or it isn't hearing things loudly enough.
         Make sure your sound volume is set at 50% of maximum and try again.  
         Hit Ctrl-Reset on the Apple to regain control and start again at
-        {{{bootstrapaudio.html#Decide_which_version}step 4 above}}.
+        {{{bootstrapaudio.html#Decide_which_version}step 4 above.}}
 
     [[1]] Once the transfer completes successfully,
       start the ADTPro client with the command <<<2000G>>>
@@ -145,14 +145,14 @@ audio cables all the way to making a bootable ADTPro floppy:
 
     * <<<CALL -151>>>
 
-    * <<<2000.xxxxR>>> (Note the "<<<0>>>" is a zero, not the letter "O.")
+    * <<<2000.xxxxR>>> (Note the <<<"0">>> is a zero, not the letter "O.")
 
-      Back on the Apple... the first command (<<<CALL -151>>>) will place
+      Back on the Apple... the first command <<<(CALL -151)>>> will place
       the Apple into its machine language "monitor."  
       That will allow you enter some commands that are not
       available to you in the Apple's normal BASIC mode.
       
-      The second command (<<<2000.xxxxR>>>) will instruct the Apple to start 
+      The second command <<<(2000.xxxxR)>>> will instruct the Apple to start 
       listening for data on its
       cassette-in port.  Fill in the real numbers for the four "x"
       characters above as given in the ADTPro server dialog box.
@@ -166,21 +166,21 @@ audio cables all the way to making a bootable ADTPro floppy:
       that the Apple is waiting for.
       The progress bar will show how far along the transfer is.  
       After the transfer finishes, you should
-      hear a "beep" at the Apple end and be returned to the asterisk prompt ("<<<*>>>").
+      hear a "beep" at the Apple end and be returned to the asterisk prompt <<<(*)>>>
       
-      * Note: If instead the Apple says "<<<ERR>>>" or never returns you to 
+      * Note: If instead the Apple says <<<"ERR">>> or never returns you to 
         a prompt, either the Apple isn't hearing 
         anything at all ({{{connectionsaudio.html}check}} the audio cable)
         or it isn't hearing things loudly enough.
         Make sure your sound volume is set at 50% of maximum and try again.  
         Hit Ctrl-Reset on the Apple to regain control and start again at
-        {{{bootstrapaudio.html#Send_ProDOS} step 4 above}}.
+        {{{bootstrapaudio.html#Send_ProDOS} step 4 above.}}
 
     [[1]] Once the transfer completes successfully, the kernel of ProDOS is sitting
       at memory location 2000 on your Apple, and needs to be booted.  Back on the Apple,
       enter the command: <<<2000G>>> from the asterisk prompt.
       This first boot stage should leave your screen looking something like this,
-      with the cursor blinking after an asterisk (<<<*>>>) prompt:
+      with the cursor blinking after an asterisk <<<(*)>>> prompt:
 
       *
 
@@ -198,11 +198,11 @@ audio cables all the way to making a bootable ADTPro floppy:
       bootstrapping operation will have left you at the asterisk prompt already.
       It won't hurt anything if you do, but you don't need to.)
 
-    * <<<2000.xxxxR>>> (Note the "<<<0>>>" is a zero, not the letter "O.")
+    * <<<2000.xxxxR>>> (Note the <<<"0">>> is a zero, not the letter "O.")
 
     []
 
-    In this scenario, you only need to enter the second command (<<<2000.xxxxR>>>)
+    In this scenario, you only need to enter the second command <<<(2000.xxxxR)>>>
     at your Apple.
 
     [[1]] Dismiss the ADTPro server dialog by clicking on the <<<Ok>>> button.
@@ -233,7 +233,7 @@ audio cables all the way to making a bootable ADTPro floppy:
   DOS bootstrapped using the audio connection - this procedure's for you.
   If instead you intend to do ADTPro client and server disk transfers, 
   you really want to do the ProDOS bare-metal bootstrapping procedure
-  {{{bootstrapaudio.html#Starting_from_bare_metal}above}}.
+  {{{bootstrapaudio.html#Starting_from_bare_metal}above.}}
 
   The full process looks like this:
 
@@ -252,9 +252,9 @@ audio cables all the way to making a bootable ADTPro floppy:
     * <<<HOME>>> (This is important because a message will appear as part of the
      transfer, and this command will help prevent it getting pushed off the top of the screen)
     
-    * <<<CALL -151>>> (The Apple will respond with the asterisk ("<<<*>>>") prompt.)
+    * <<<CALL -151>>> (The Apple will respond with the asterisk <<<(*)>>> prompt.)
 
-    * <<<3D0.xxxR>>> (Note the "<<<0>>>" is a zero, not the letter "O.")
+    * <<<3D0.xxxR>>> (Note the <<<"0">>> is a zero, not the letter "O.")
 
     []
 
@@ -265,9 +265,9 @@ audio cables all the way to making a bootable ADTPro floppy:
     [[1]] Dismiss the ADTPro server dialog by clicking on the <<<Ok>>> button.
       The progress bar will show how far along 
       the transfer is.  After the transfer finishes, you should
-      hear a "beep" and be returned to the asterisk prompt ("<<<*>>>").
+      hear a "beep" and be returned to the asterisk prompt <<<(*).>>>
       
-      * If instead it says "<<<ERR>>>" or never returns you to a prompt,
+      * If instead it says <<<"ERR">>> or never returns you to a prompt,
         either the Apple isn't hearing 
         anything at all ({{{connectionsaudio.html}check}} the audio cable)
         or it isn't hearing things loudly enough.  
@@ -288,9 +288,9 @@ audio cables all the way to making a bootable ADTPro floppy:
       
     [[1]] A dialog box will come up instructing you to type more commands at
       the Apple.  The only one you really need to enter if you're already at
-      the asterisk prompt ("<<<*>>>") is this:
+      the asterisk prompt <<<(*)>>> is this:
 
-    * <<<9D00.BFFFR>>> (Note the "<<<0>>>" is a zero, not the letter "O.")
+    * <<<9D00.BFFFR>>> (Note the <<<"0">>> is a zero, not the letter "O.")
 
     []
 
@@ -300,7 +300,7 @@ audio cables all the way to making a bootable ADTPro floppy:
     [[1]] Dismiss the ADTPro server dialog by clicking on the <<<Ok>>> button.
       The progress bar will show how far along the transfer is.
       After the transfer finishes, you should hear a "beep" and
-      be returned to the asterisk prompt ("<<<*>>>").
+      be returned to the asterisk prompt <<<(*).>>>
 
     [[1]] Back on the Apple, enter this command (the one you wrote down
      just a minute ago):
@@ -309,12 +309,12 @@ audio cables all the way to making a bootable ADTPro floppy:
 
     []
 
-    [[1]] The Apple should change from the asterisk prompt ("<<<*>>>")
-      to the Applesoft prompt ("<<<]>>>").
+    [[1]] The Apple should change from the asterisk prompt <<<(*)>>>
+      to the Applesoft prompt <<<(]).>>>
 
       You now have EsDOS II <in memory only> on your Apple until you 
       format a floppy.  Do this now with the <<<INIT>>> command on the Apple:
-      <<<INIT HELLO>>>.  Once the <<<INIT>>> operation completes, you now have
+      <<<INIT HELLO.>>>  Once the <<<INIT>>> operation completes, you now have
       a bootable DOS diskette.
 
     [[1]] You might 'init' another floppy now to get a second floppy formatted
@@ -330,7 +330,7 @@ audio cables all the way to making a bootable ADTPro floppy:
       a serial connection.
       If you want to do audio transfers, you really want to use the
       ProDOS bare-metal bootstrapping procedure
-      {{{bootstrapaudio.html#Starting_from_bare_metal}above}}.
+      {{{bootstrapaudio.html#Starting_from_bare_metal}above.}}
 
     [[1]] You may wish to create a disk with the DOS version of ADT on it now.
       {With a freshly formatted DOS floppy in the Apple drive}, send over the
@@ -340,9 +340,9 @@ audio cables all the way to making a bootable ADTPro floppy:
       The dialog box that pops up will give you commands to like these to type on the Apple.
       Do them now:
       
-      * <<<CALL -151>>> (The Apple will respond with the asterisk ("<<<*>>>") prompt.)
+      * <<<CALL -151>>> (The Apple will respond with the asterisk <<<(*)>>> prompt.)
 
-      * <<<803.xxxxR>>> (Note the "<<<0>>>" is a zero, not the letter "O.")
+      * <<<803.xxxxR>>> (Note the <<<"0">>> is a zero, not the letter "O.")
 
       []
       Back on the Apple... fill in the real numbers for the four "x"
@@ -352,9 +352,9 @@ audio cables all the way to making a bootable ADTPro floppy:
     [[1]] Dismiss the ADTPro server dialog by clicking on the <<<Ok>>> button.
       The progress bar will show how far along the transfer is.
       After the transfer finishes, you should hear a "beep" and 
-      be returned to the asterisk prompt ("<<<*>>>").
+      be returned to the asterisk prompt <<<(*).>>>
 
-      * If instead it says "<<<ERR>>>" or never returns you to a prompt,
+      * If instead it says <<<"ERR">>> or never returns you to a prompt,
         either the Apple isn't hearing 
         anything at all ({{{connectionsaudio.html}check}} the audio cable)
         or it isn't hearing things loudly enough.  

@@ -10,10 +10,10 @@ ADTPro Installation
 
  To get started, you will need a Java installation you can call from the
  command line.  This means that if you type the command 
- "<<<java -version>>>" from a terminal window it ought to produce 
+ <<<"java -version">>> from a terminal window it ought to produce 
  output other than complaints.
  One place to get a downloadable Java distribution is from Sun Microsystems:
- {{{http://java.sun.com/javase/downloads/index.jsp}Sun JRE download}}.
+ {{{http://java.sun.com/javase/downloads/index.jsp}Sun JRE download.}}
  When you get there, look for a "Java Runtime Environment (JRE)"
  download for your platform and install it.
 
@@ -76,7 +76,7 @@ java.library.path=/opt/IBMJava2-142/jre/bin:
 
  Keep working at your startup script or take a look at the RXTX
  install instructions in the <<<rxtx>>> directory.  Remember, you can always 
- {{{https://sourceforge.net/forum/forum.php?forum_id=582337}ask for help}}.
+ {{{https://sourceforge.net/forum/forum.php?forum_id=582337}ask for help.}}
 
 OS/2 RXTX Considerations
 

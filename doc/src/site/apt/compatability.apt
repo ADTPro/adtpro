@@ -21,9 +21,9 @@ ADT Compatability
 *-----:-----:------:------:------:------+
  <<Program>> | <<Latest Client Version>> | <<Client Platforms>> | <<Server Platforms>> | <<Comms>> | <<Notes>>
 *-----:-----:------:------+
- ADTPro | 1.1.0 | II,+,e,c,GS,Laser,/// | Linux, OS/2, OSX, Solaris, Windows (Java) | Serial, Uthernet, Audio | 
+ ADTPro | 1.1.1 | II,+,e,c,GS,Laser,/// | Linux, OS/2, OSX, Solaris, Windows (Java) | Serial, Uthernet, Audio | 
 *-----:-----:------:------+
- ADT (Shipped with ADTPro) | 2.2 | II,+,e,c,GS,Laser | (ADTPro) | Serial (115.2k) | Nibble/half-track capable
+ ADT (Shipped with ADTPro) | 2.2 | II,+,e,c,GS,Laser | OSX (Virtual ][ A2V2) | Serial (115.2k) | Nibble/half-track capable
 *-----:-----:------:------+
  ADT (Berlios) | 1.33 | II,+,e,c,GS,Laser | PC DOS, Windows | Serial (115.2k) | 
 *-----:-----:------:------+
@@ -65,18 +65,18 @@ ADT {Nibble}/Halftrack Usage
 [images/adtsend.png]
 
  From the send sub-menu, you can choose to send normal ("Simple") sector-based images
- (i.e. <<<.dsk>>>, <<<.po>>>) to the server with "S", nibble-based images
+ (i.e. <<<.dsk,>>> <<<.po>>>) to the server with "S", nibble-based images
  with "N", or half-track-based images with "H".  Selecting "N" brings up
  the Nibble send window, where you enter the name of the nibble image to
  save at the host.  Nibble images should be saved with the file extension
- <<<.nib>>>:
+ <<<.nib:>>>
 
 [images/adtsendnib.png]
 
  Alternatively, selecting "H" brings up the half-track send window, where you
  enter the name of the half-track image to save at the host.  Half-track images,
  usable only with the Virtual ][ emulator, should be saved with the file
- extension <<<.v2d>>>:
+ extension <<<.v2d:>>>
 
 [images/adtsendhlf.png]
 

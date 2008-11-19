@@ -36,7 +36,7 @@ more bootstrapping scenarios and configurations are detailed below.
  []
 
  If you'd rather have a pre-built disk arrive at your door than
-build one yourself, {{{http://retrofloppy.com/products.html#ADTPRO}click here}}.
+build one yourself, {{{http://retrofloppy.com/products.html#ADTPRO}click here.}}
 
 *  Bootstrapping Demonstration {Video}
 
@@ -116,14 +116,14 @@ Super Serial card, all the way to making a bootable ADTPro floppy:
 
       * <<< <ctrl-A>14B>>> (The number will depend on the speed you have chosen from the bootstrapping 
         tab on the serial configuration dialog box.  
-        When you hit <<< <ctrl-A> >>>, the Apple Super Serial card will respond with "<<<APPLE SSC:>>>" and the
+        When you hit <<< <ctrl-A>, >>> the Apple Super Serial card will respond with "<<<APPLE SSC:>>>" and the
         IIgs and IIc will respond with a blinking "<<<?>>>".  At that prompt, 
         enter the number in your dialog box and the <<<B>>>
         key with no spaces.  The Super Serial card will require you to hit the <<<Return>>> key, but the IIgs 
         and IIc will not.) 
 
       * Note: with some configurations, you will need
-        to hit <<< <ctrl-I> >>> instead of <<< <ctrl-A> >>>. (Where <<<I>>> is the capital letter I.)
+        to hit <<< <ctrl-I> >>> instead of <<< <ctrl-A>. >>> (Where <<<I>>> is the capital letter I.)
         If you hit <<< <ctrl-A> >>> and nothing happens, just hit the
         Return key and try <<< <ctrl-I> >>> instead.  The one that greets you with the "<<<APPLE SSC:>>>" 
         or <<<"?">>> is the one that you want.
@@ -172,14 +172,14 @@ Super Serial card, all the way to making a bootable ADTPro floppy:
 
     * <<< <ctrl-A>14B>>> (The number will depend on the speed you have chosen from the bootstrapping 
       tab on the serial configuration dialog box.  
-      When you hit <<< <ctrl-A> >>>, the Apple Super Serial card will respond with "<<<APPLE SSC:>>>" and the
+      When you hit <<< <ctrl-A>, >>> the Apple Super Serial card will respond with "<<<APPLE SSC:>>>" and the
       IIgs and IIc will respond with a blinking "<<<?>>>".  At that prompt, 
       enter the number in your dialog box and the <<<B>>>
       key with no spaces.  The Super Serial card will require you to hit the <<<Return>>> key, but the IIgs 
       and IIc will not.) 
 
     * Note: with some configurations, you will need
-      to hit <<< <ctrl-I> >>> instead of <<< <ctrl-A> >>>. (Where <<<I>>> is the capital letter I.)
+      to hit <<< <ctrl-I> >>> instead of <<< <ctrl-A>. >>> (Where <<<I>>> is the capital letter I.)
       If you hit <<< <ctrl-A> >>> and nothing happens, just hit the
       Return key and try <<< <ctrl-I> >>> instead.  The one that greets you with the "<<<APPLE SSC:>>>" 
       or <<<"?">>> is the one that you want.
@@ -216,7 +216,7 @@ Super Serial card, all the way to making a bootable ADTPro floppy:
 
     * <<< <ctrl-A>14B>>> (The number will depend on the speed you have chosen from the bootstrapping 
       tab on the serial configuration dialog box.  
-      When you hit <<< <ctrl-A> >>>, the Apple Super Serial card will respond with "<<<APPLE SSC:>>>" and the
+      When you hit <<< <ctrl-A>, >>> the Apple Super Serial card will respond with "<<<APPLE SSC:>>>" and the
       IIgs and IIc will respond with a blinking "<<<?>>>".  At that prompt, 
       enter the number in your dialog box and the <<<B>>>
       key with no spaces.  The Super Serial card will require you to hit the <<<Return>>> key, but the IIgs 
@@ -283,14 +283,14 @@ Super Serial card, all the way to making a bootable ADTPro floppy:
 
     * <<< <ctrl-A>14B>>> (The number will depend on the speed you have chosen from the bootstrapping 
       tab on the serial configuration dialog box.  
-      When you hit <<< <ctrl-A> >>>, the Apple Super Serial card will respond with "<<<APPLE SSC:>>>" and the
+      When you hit <<< <ctrl-A>, >>> the Apple Super Serial card will respond with "<<<APPLE SSC:>>>" and the
       IIgs and IIc will respond with a blinking "<<<?>>>".  At that prompt, 
       enter the number in your dialog box and the <<<B>>>
       key with no spaces.  The Super Serial card will require you to hit the <<<Return>>> key, but the IIgs 
       and IIc will not.) 
 
     * Note: with some configurations, you will need
-      to hit <<< <ctrl-I> >>> instead of <<< <ctrl-A> >>>. (Where <<<I>>> is the capital letter I.)
+      to hit <<< <ctrl-I> >>> instead of <<< <ctrl-A>. >>> (Where <<<I>>> is the capital letter I.)
       If you hit <<< <ctrl-A> >>> and nothing happens, just hit the
       Return key and try <<< <ctrl-I> >>> instead.  The one that greets you with the "<<<APPLE SSC:>>>" 
       or <<<"?">>> is the one that you want.
@@ -339,13 +339,13 @@ Super Serial card, all the way to making a bootable ADTPro floppy:
     * <<< <ctrl-A>10B>>> (The number will depend on the speed you have chosen from the bootstrapping 
       tab on the serial configuration dialog box.  If it still says 14B, you haven't re-set
       the transfer speed to slow down yet.  Go back and do that first.
-      When you hit <<< <ctrl-A> >>>, the Apple Super Serial card will respond with "<<<APPLE SSC:>>>" and the
+      When you hit <<< <ctrl-A>, >>> the Apple Super Serial card will respond with "<<<APPLE SSC:>>>" and the
       IIgs will respond with "<<<?>>>".  At that prompt, enter the number in your dialog box and the <<<B>>>
       key with no spaces.  The Super Serial card will require you to hit the <<<Return>>> key, but the IIgs 
       and IIc will not.) 
 
     * Note: with some configurations, you will need
-      to hit <<< <ctrl-I> >>> instead of <<< <ctrl-A> >>>. (Where <<<I>>> is the capital letter I.)
+      to hit <<< <ctrl-I> >>> instead of <<< <ctrl-A>. >>> (Where <<<I>>> is the capital letter I.)
       If you hit <<< <ctrl-A> >>> and nothing happens, just hit the
       Return key and try <<< <ctrl-I> >>> instead.  The one that greets you with the "<<<APPLE SSC:>>>" 
       or <<<"?">>> is the one that you want.
@@ -365,7 +365,7 @@ Super Serial card, all the way to making a bootable ADTPro floppy:
       The first thing you should do is go to the Configuration menu by
       pressing the <<<C>>> key, press the spacebar enough times to move the
       cursor down to the <<<SAVE CONFIG>>> menu item, and press the right-arrow
-      key.  That should change the value from <<<NO>>> to <<<YES>>>.  When
+      key.  That should change the value from <<<NO>>> to <<<YES.>>>  When
       you press the Enter key, it will save the ADT program on your floppy disk:
 
       *

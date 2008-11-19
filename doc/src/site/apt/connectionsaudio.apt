@@ -67,7 +67,7 @@ ADTPro Audio Connections
 
 [images/audiopcclose.jpg] Audio in/out ports on a random PC
 
- If you are only going to use audio to {{{bootstrapaudio.html}bootstrap}}, 
+ If you are only going to use audio to {{{bootstrapaudio.html}bootstrap,}}
  you only need to connect your host's audio out to the Apple's cassette in
  (the white wire in these examples).
 

@@ -20,7 +20,7 @@ selections.
  You can rotate through the options of a particular selection with the right and
 left arrow keys.  Your Apple has right and left arrow keys; trust me.
 
- <<Note>>: if you ever end up saving a configuration that is not compatible
+ <<Note:>> if you ever end up saving a configuration that is not compatible
  with the Apple you're trying to run ADTPro on (because you move your
  serial card to a different slot, for example) you may need to reset
  ADTPro to factory defaults.  To do that, boot the Apple with ProDOS, and 

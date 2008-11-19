@@ -96,7 +96,7 @@ ADTPro Release Ancient History
  First official public release after one year of beta iterations.
  Communications methods include:
 
-  * {{{connectionsserial.html#Super_Serial_cabling}Super Serial}} card, {{{connectionsserial.html#MiniDIN8}IIgs modem port}}, or {{{connectionsserial.html#DIN5}IIc/Laser 128 serial port}}
+  * {{{connectionsserial.html#Super_Serial_cabling}Super Serial}} card, {{{connectionsserial.html#MiniDIN8}IIgs modem port,}} or {{{connectionsserial.html#DIN5}IIc/Laser 128 serial port}}
 
   * {{{http://a2retrosystems.com/}Uthernet}} Ethernet card
 
@@ -118,7 +118,7 @@ ADTPro Release Ancient History
 
   * Bootstraps Apple II computers from bare metal over {{{bootstrap.html}serial}} or {{{bootstrapaudio.html}cassette}} ports
 
-  * Sends floppies in "{{{batch.html}batch}}" mode without having to name each one
+  * Sends floppies in {{{batch.html}"batch"}} mode without having to name each one
 
   * {{{misc.html#Format}Formats}} media on the Apple II end
 
@@ -410,7 +410,7 @@ ADTPro Release Ancient History
  * Turn "cold start" back off again on the client once it's been invoked - to keep
    from saving the cold start state when the user saves the configuration!
 
- * Switched to cc65/ca65 compiler/assembler suite.  See: {{http://www.cc65.org/}}.
+ * Switched to cc65/ca65 compiler/assembler suite.  See: {{http://www.cc65.org/}}
    ca65 is compatible with lots more platforms than SB-Assembler, though it is slower.
 
  * Refactored the code to make communications routines somewhat more "pluggable."

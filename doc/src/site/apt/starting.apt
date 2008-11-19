@@ -96,7 +96,7 @@ Java lib Version   = RXTX-2.1-7
   []
 
  For example, to always
- run <<<ADTPROAUD>>>, the program should look like this:
+ run <<<ADTPROAUD,>>> the program should look like this:
 
 +-------------+
 10 PRINT CHR$(4)"- ADTPROAUD"
@@ -104,7 +104,7 @@ Java lib Version   = RXTX-2.1-7
 
  When you have the line looking like you want it (remember Applesoft commands
  <<<NEW>>> to start over, and <<<LIST>>> to see the program) save it back out
- to the disk: <<<SAVE STARTUP>>>.  That program will be the one that starts
+ to the disk: <<<SAVE STARTUP.>>>  That program will be the one that starts
  automatically after booting from then on.  If you make a mistake and the Apple
  complains, <<<"PATH NOT FOUND">>> when you boot, check your <<<STARTUP>>>
  program by <<<LIST>>>ing it and check the disk's contents with the <<<CAT>>>
@@ -120,7 +120,7 @@ a response from the host, or if garbled data comes back, it will be necessary
 to check the physical connections, port names and speeds on both host and
 client ends.  The ethernet version of ADTPro (<<<ADTPROETH>>>) often needs 
 a couple of directory queries to find the server after setting up its 
-{{{configethernet.html}configuration}}.
+{{{configethernet.html}configuration.}}
 If you're using the audio
 version of ADTPro (<<<ADTPROAUD>>>), ensure the volume setting for your sound
 card is set to halfway up the scale (i.e. much louder than you'd 
@@ -133,9 +133,9 @@ The less contention for the serial hardware, the better.
 * {Starting the Client - SOS}
 
  Booting a diskette in an Apple /// computer will automatically run
- any program named <<<SOS.INTERP>>>.  The ADTPro distribution diskette comes
- configured with the serial ADTPro client version named <<<SOS.INTERP>>>.
- The ethernet version is also on the diskette, but is named <<<SOS.INTERPETH>>>.
+ any program named <<<SOS.INTERP.>>>  The ADTPro distribution diskette comes
+ configured with the serial ADTPro client version named <<<SOS.INTERP.>>>
+ The ethernet version is also on the diskette, but is named <<<SOS.INTERPETH.>>>
  In order to run the ethernet version, it will be necessary to rename
  <<<SOS.INTERPETH>>> to <<<SOS.INTERP>>> (also deleting or renaming the original
  <<<SOS.INTERP>>> program).  Any Apple disk image manipulation utility program like 
