@@ -64,6 +64,9 @@ cable like this:
 
 [images/superSerialCable.jpg]
 
+ Once you have your computers connected, you can move on to 
+{{{bootstrap.html}bootstrapping.}}
+
 * IIgs and IIc+ modem port ({MiniDIN8}) cabling
 
   You will need a serial cable setup that ultimately connects the round, 8-pin
@@ -154,6 +157,9 @@ looking into the cable at the pins:
         '-- 4     20     DTR
     7 ----- 1      8     DCD
 ---
+
+ Once you have your computers connected, you can move on to 
+{{{bootstrap.html}bootstrapping.}}
 
 * IIc and Laser 128 modem port ({DIN5}) cabling
 
@@ -253,6 +259,9 @@ checkbox in the serial config dialog box, brought up from the
 
  []
 
+ Once you have your computers connected, you can move on to 
+{{{bootstrap.html}bootstrapping.}}
+
 * {Apple3} /// RS-232-C port cabling
 
   The RS-232-C port on the back of the Apple /// has the same physical connector as 
@@ -289,6 +298,9 @@ They look like this:
  Within the DB-25 shell, tie together pins:
  4&20
 ---
+
+ Once you have your computers connected, you can move on to 
+{{{bootstrap3.html}bootstrapping.}}
 
 * {USB cabling}
 
