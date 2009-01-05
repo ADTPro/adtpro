@@ -305,8 +305,11 @@ They look like this:
 * {USB cabling}
 
   Several manufacturers make different types of USB to serial adapters.
-These types of devices will work fine with ADTPro.  I sell one that is compatible
-with Windows and OSX operating systems 
+These types of devices will work fine with ADTPro.
+When you use one, you will also need to install the appropriate device driver 
+that connects your host operating system to the USB adapter.
+
+ I sell one compatible with both Windows and OSX operating systems 
 {{{http://retrofloppy.com/products.html#USBDE9}here.}}
 They look like this:
 
@@ -343,7 +346,7 @@ ADTPro seems to be able to function normally using either flavor.
 including {{{bootstrap.html#Starting_from_bare_metal}bare metal}} bootstrapping
 operations.
 
-* {Pinout References}
+* {Other Serial Pinout References}
 
  Be careful - these sometimes disagree with one another:
 
