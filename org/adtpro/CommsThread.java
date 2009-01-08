@@ -583,8 +583,7 @@ public class CommsThread extends Thread
           int remainder = (int) length % 40;
           for (part = 0; part < numParts; part++)
           {
-            Log
-                .println(
+            Log.println(
                     false,
                     "receiveDisk() Receiving part " + (part + 1) + " of " + numParts + "; "); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
             for (halfBlock = 0; halfBlock < 80; halfBlock++)
@@ -610,7 +609,7 @@ public class CommsThread extends Thread
             {
               packetResult = receivePacket(buffer, halfBlock * 256,
                   (part * 80 + halfBlock), 1);
-              if (packetResult == -1) break;
+              if (packetResult != 0) break;
               blocksDone++;
               _parent.setProgressValue(blocksDone);
             }
@@ -631,13 +630,11 @@ public class CommsThread extends Thread
             // from us for sure!
             disk.makeDosOrder();
             disk.save();
-            Log
-                .println(false,
+            Log.println(false,
                     "CommsThread.receiveDisk() found a 140k disk; saved as DOS order format.");
           }
           else
-            Log
-                .println(
+            Log.println(
                     false,
                     "CommsThread.receiveDisk() found a disk of length "
                         + (length * 512)
