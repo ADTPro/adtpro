@@ -342,6 +342,11 @@ ADTPro seems to be able to function normally using either flavor.
 
 [images/osxServerPort.png]
 
+  An adapter with the Prolific chipset, for example, would populate the dialog box
+items like "usbserial":
+
+[images/usbserial.png]
+
   Once connected, ADTPro will be able to operate normally over the USB connection,
 including {{{bootstrap.html#Starting_from_bare_metal}bare metal}} bootstrapping
 operations.
