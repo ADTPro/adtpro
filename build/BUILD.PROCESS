@@ -53,7 +53,8 @@ the stuff that gets uploaded to sourceforge.
     Files go into /home/groups/a/ad/adtpro/htdocs; back up the 
     old version first (name it the prior version number),
     and move htdocsOLD/archive to htdocs/archive or the A3 library
-    will be inaccessible.
+    will be inaccessible.  WinSCP is an easy Windows GUI to do the
+    movement with.
 
 Need to do a batch renumber of dump files?
 /* */
