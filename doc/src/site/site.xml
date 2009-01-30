@@ -46,7 +46,7 @@
     </menu>
 
     <menu name="Resources">
-      <item name="Help Forum" href="forum.html/"/>
+      <item name="Help Forum" href="forum.html"/>
       <item name="Apple as a Terminal" href="http://dataswamp.net/apple2eserialterm/index.php" target="_new"/>
       <item name="French Language" href="http://site.voila.fr/ressources-apple2/adtpro/adtpro.html" target="_new"/>
       <item name="Korean Language" href="http://hanazam.net/apple/ageofii.htm" target="_new"/>
