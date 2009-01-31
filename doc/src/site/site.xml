@@ -15,6 +15,7 @@
     <menu name="ADTPro">
       <item name="Main" href="index.html"/>
       <item name="Credits" href="credits.html"/>
+      <item name="Help Forum" href="forum.html"/>
       <item name="Download" href="download.html"/>
     </menu>
 
