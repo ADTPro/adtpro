@@ -74,7 +74,7 @@ I found some very helpful audio code from the {{{http://www.jbother.org/}JBother
 {{http://www.jbother.org/api/src-html/com/valhalla/jbother/sound/SoundPlayer.html}}
 The audio code in ADTPro is a particularly undisciplined extension of these two sources.
 
- The ProDOS format code was lifted from the Hyper-FORMAT utility, which was in
+ The ProDOS disk formatting code was lifted from the Hyper-FORMAT utility, which was in
 public domain circulation in the mid '80s-'90s.  I had to enhance it to be able to
 format large media and to get rid of a few bugs based on 140k diskette assumptions.
 Hyper-FORMAT was originally written by Jerry Hewett and enhanced by Gary Desrochers.
@@ -125,5 +125,6 @@ Starting with the ADT base, he rewrote the client to run under ProDOS.
 This allowed the ability to transfer floppy disk, hard disk and ram disk
 images of arbitrary length.  While he was at it, he rewrote the C++
 server code in Java to extend the server's reach beyond PC DOS and Windows.
-It grew in functionality over the next year to the final release version
-1.0.0 on June 21, 2007.
+It grew in functionality over the next year to include audio and TCP/IP
+transport layers in addition to serial.  Version 1.0.0 was released on
+June 21, 2007.
