@@ -342,7 +342,7 @@ ADTPro seems to be able to function normally using either flavor.
 
 [images/osxServerPort.png]
 
-  An adapter with the Prolific chipset, for example, would populate the dialog box
+  An adapter with a Prolific or FTDI chipset, for example, would populate the dialog box
 items like "usbserial":
 
 [images/usbserial.png]
