@@ -1,4 +1,4 @@
-; Copyright (C) 2007 - 2008 by David Schmidt
+; Copyright (C) 2007 - 2009 by David Schmidt
 ; david__schmidt at users.sourceforge.net
 ;
 ; This program is free software; you can redistribute it and/or modify it 
@@ -46,6 +46,7 @@ FormatEntry:
 	ldy #PMFORMAT	; Format title line
 	jsr PICKVOL	; A now has index into DEVICES table; UNITNBR holds chosen unit
 	bmi FormatDone
+	sta DevIndex	; Hang on to that DEVICES index
 	ldy #PMNULL
 	jsr WRITEMSG
 	lda UNITNBR
@@ -261,7 +262,7 @@ LAbort:
 	jmp Again
 
 DIIForm:
-	jsr CLEARVOLUMES	; Invalidate volume name cache
+	jsr REPLACEVOLNAME	; Replace the volume name
 	jsr Format		; Format the disk
 	jsr CodeWr		; Form Bitmap
 	jmp Catalog		; Write Directory information to the disk
@@ -796,7 +797,6 @@ Ram3Form:
 	bit $C082		; Read ROM, use Bank 2(Put back on line)
 	bcs Ram3Err
 	plp
-	jsr CLEARVOLUMES	; Invalidate volume name cache
 	rts
 
 Ram3Dri:
@@ -833,7 +833,7 @@ SmartForm:
 	clc
 SmartFormDone:
 	plp
-	jsr CLEARVOLUMES	; Invalidate volume name cache
+	jsr REPLACEVOLNAME	; Replace the volume name
 	rts
 
 SmartDri:
@@ -900,6 +900,74 @@ LZero:
 	sta Buffer
 	lda #$68		; Reset Buffer to $6800
 	sta Buffer+1
+	rts
+
+REPLACEVOLNAME:
+	lda DevIndex
+	jsr Mult16		; Set x to the start of the DEVICES table
+	lda #>DEVICES
+	sta UTILPTR+1
+	lda #<DEVICES
+	sta UTILPTR
+	txa
+	clc
+	adc UTILPTR
+	sta UTILPTR
+	bcc :+
+	inc UTILPTR+1
+:
+	lda VolLen
+	and #$0f
+	sta Util
+	tay			; Set y to the number of digits to transfer
+:
+	lda VOLnam-1,y
+	sta (UTILPTR),y
+	dey
+	bne :-
+
+	ldy #$00
+	lda (UTILPTR),y		; Load the length of the dev name in DEVICES
+	and #$f0
+	sta (UTILPTR),y
+	clc
+	adc Util
+	sta (UTILPTR),y
+	rts
+
+zREPLACEVOLNAME:
+	lda DevIndex
+	jsr Mult16		; Set x to the start of the DEVICES table
+	lda #>DEVICES
+	sta UTILPTR+1
+	lda #<DEVICES
+	sta UTILPTR
+	txa
+	clc
+	adc UTILPTR
+	sta UTILPTR
+	bcc :+
+	inc UTILPTR+1
+:
+	lda VolLen
+	and #$0f
+	sta Util
+	tay			; Set y to the number of digits to transfer
+	iny
+:	lda VOLnam-1,y
+	sta (UTILPTR),y
+	dey
+	bpl :-
+
+	ldy #$00
+	lda (UTILPTR),y		; Load the length of the dev name in DEVICES
+	brk
+	and #$f0
+	sta (UTILPTR),y
+	clc
+	adc Util
+	lda Util
+	sta (UTILPTR),y
 	rts
 
 ;*************************
@@ -976,7 +1044,9 @@ TRKbeg:	.byte 00		; Starting track number
 TRKend:	.byte 35		; Ending track number
 FullPages:
 	.byte 00		; Number of BAM pages to fill
-
+DevIndex:
+	.byte 00		; Storage for index into DEVICES table
+Util:	.byte 00
 BootCode:
 ; Floppy boot code at block 0; block 1 is zeroed out
 	.byte $01,$38,$B0,$03,$4C,$32,$A1,$86,$43,$C9,$03,$08,$8A,$29,$70,$4A,$4A,$4A,$4A,$09,$C0,$85,$49,$A0

@@ -1,6 +1,6 @@
 ;
 ; ADTPro - Apple Disk Transfer ProDOS
-; Copyright (C) 2006 - 2008 by David Schmidt
+; Copyright (C) 2006 - 2009 by David Schmidt
 ; david__schmidt at users.sourceforge.net
 ;
 ; This program is free software; you can redistribute it and/or modify it 
@@ -230,20 +230,31 @@ INTERPRET_ONLINE:
 ;---------------------------------------------------------
 WHATUNIT:
 	stx SLOWX	; Preserve X
-	beq @READY
-	tax		; Send the index to the X register
-	lda #$00	; Now clear A out - need it for some arithmetic
-@MORE:
-	clc
-	adc #$10
-	dex
-	cpx #$00
-	bne @MORE
-@READY:
-	tax
+	jsr Mult16
 	lda DEVICES,x
 	and #$F0	; Extract unit number
 	ldx SLOWX	; Restore X
+	rts
+
+;---------------------------------------------------------
+; Mult16 - Multiply A by 16, return in X
+;
+; Input:
+;   A - number to multiply by 16 (0x10)
+;
+; Returns:
+;   X - A multipled by 16 (0x10
+;---------------------------------------------------------
+Mult16:
+	beq @Done
+	tax
+	lda #$00
+:	clc
+	adc #$10
+	dex
+	cpx #$00
+	bne :-
+@Done:	tax
 	rts
 
 ;---------------------------------------------------------
@@ -596,11 +607,6 @@ HOWBIG2:
 @H2EXIT:
 	pla
 	tax
-	rts
-
-CLEARVOLUMES:
-	lda #$00
-	sta LASTVOL
 	rts
 
 ;---------------------------------------------------------
