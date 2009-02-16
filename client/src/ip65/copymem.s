@@ -34,6 +34,9 @@ copymem:
 	iny
 	bne :-
 
+	inc copy_src + 1
+	inc copy_dest + 1
+
 	dex
 	bne :-
 
