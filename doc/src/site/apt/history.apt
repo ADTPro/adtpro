@@ -6,25 +6,23 @@
 
 ADTPro Release History
 
-~~* Unreleased
-~~
-~~ New functionality:
-~~
-~~ * Nothing
-~~
-~~ []
-~~
-~~ Bug fixes:
-~~
-~~ * [Client] We weren't detecting comms devices in the last slot (one of those off-by-one
-~~   counting problems)
-~~
-~~ * [Client] Apple /// Grub bootstrapper was using an uninitialized register in an
-~~   alarming, but seemingly predictable, manner; initialize it for safety
-~~
-~~ * [Client] Simplified UDP timeout processing after consultation with MagerValp
-~~
-~~ []
+* 1.1.2 - February 17, 2009
+
+ Bug fixes:
+
+ * [Client] Formatting a disk no longer invalidates the entire drive list cache,
+   eliminating the need to re-scan all drives; thanks to {{{https://apps.sourceforge.net/phpbb/adtpro/viewtopic.php?f=3&t=40}hackerb9}} for the 
+   impetus to fix it
+
+ * [Client] Comms devices weren't being detected in the last slot (one of those
+   off-by-one counting problems)
+
+ * [Client] Apple /// Grub bootstrapper was using an uninitialized register in an
+   alarming, but seemingly predictable, manner; initialize it for safety
+
+ * [Client] Simplified UDP timeout processing after consultation with MagerValp
+
+ []
 
 * 1.1.1 - September 18, 2008
 
@@ -83,73 +81,5 @@ ADTPro Release History
    for our Apple II and II+ friends
 
  * [Server] Improved batch logic for cleaning up after aborted image transfers
-
- []
-
-* 1.0.6 - February 10, 2008
-
- New functionality:
-
- * [Client] Ported the client to SOS (pronounced like "sauce") for the 
-   Apple /// supporting the built-in serial port and Super Serial card in
-   any of its four slots (SOS released 8/10/2008)
-
- []
-
- Bug fixes:
-
- * [Client] Formatting was unreliable for 5.25" media due to
-   timing-sensitive code placement
-
- * [Client] Formatting was unreliable for 3.5" media due to unfortunate
-   re-use of zero-page variable space
-
- * [Server] Included a copy of the rxtx library that no longer requires
-   lockfiles (1.0.6a.dmg for OSX only)
-
- []
-
-* 1.0.5 - February 3, 2008
-
- Bug fixes:
-
- * [Server] Hosts with zero audio mixers (a Java thing) were crashing with
-   java.lang.ArrayIndexOutOfBoundsException in AudioConfig.java
-
- * [Client] IIgs serial port initialization was not working for speeds
-   below 115.2kbps as a result of the 300 baud integration in v1.0.3
-
- []
-
-* 1.0.4 - January 21, 2008
-
- New functionality:
-
- * [DOS ADT Client] Included DOS ADT client, now at version 2.2,
-   with nibble and halftrack send capability for Disk II drives
-   from Gerard Putter and Eric Neilson 
-
- * [Server] Incorporated nibble and half track disk logic from
-   Gerard Putter's ADT-compatible Virtual ][ A2V2 transfer software -
-   it's still experimental, so support hasn't been added to ADTPro
-   client yet
-
- []
-
- Bug fixes:
-
- * [Client] Better automatic serial device detection for Apple IIc
-   computers (select Modem vs. Printer port)
-
- * [Client] Update track counter during fast Disk II reads (you had
-   to watch carefully to realize they weren't moving during read)
-
- * [Server] Audio data capture logic was refactored to be more
-   reliable and understandable by Marc S. Re&#223;l
-
- * [Client] Audio send protocol (from Apple to Host) was out of sync,
-   causing transfers to immediately abort
-
- * [Server] Fix progressive backoff timing for transmission failures
 
  []

@@ -1,6 +1,6 @@
 ;
 ; ADTPro - Apple Disk Transfer ProDOS
-; Copyright (C) 2008 by David Schmidt
+; Copyright (C) 2008, 2009 by David Schmidt
 ; david__schmidt at users.sourceforge.net
 ;
 ; This program is free software; you can redistribute it and/or modify it 
@@ -70,7 +70,7 @@ PHMMAX	= $0a		; This must be two greater than the largest host message
 ;---------------------------------------------------------
 ; Console messages
 ;---------------------------------------------------------
-	MSG01:	asc "v.r.m"
+	MSG01:	asc "1.1.2"
 	MSG01_END =*
 
 	MSG02:	asc "(S)END (R)ECEIVE (D)IR (B)ATCH (C)D"
