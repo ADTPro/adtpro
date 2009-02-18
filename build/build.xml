@@ -20,7 +20,7 @@ http://adtpro.sourceforge.net/developing.html
 	<property name="diskName" value="ADTPRO-${versionString}" />
 	<property name="diskNameSOSCFIDE" value="ADTSOS-CFIDE-${versionString}" />
 	<property name="volName" value="ADTPro.${versionString}" />
-	<property name="dosVersionString" value="22" />
+	<property name="dosVersionString" value="23" />
 	<property name="dosDistName" value="ADT${dosVersionString}" />
 	<property name="projdir" value="${basedir}" />
 	<property name="builddir" value="${basedir}/build" />

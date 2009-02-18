@@ -6,12 +6,19 @@
 
 ADTPro Release History
 
-* 1.1.2 - February 17, 2009
+* 1.1.2 - February 18, 2009
+
+ New functionality:
+
+ * [DOS ADT Client] Included DOS ADT client, now at version 2.3, that
+   automatically detects the Apple ///'s built-in serial port
+
+ []
 
  Bug fixes:
 
  * [Client] Formatting a disk no longer invalidates the entire drive list cache,
-   eliminating the need to re-scan all drives; thanks to {{{https://apps.sourceforge.net/phpbb/adtpro/viewtopic.php?f=3&t=40}hackerb9}} for the 
+   eliminating the need to re-scan all drives; thanks to {{{http://apps.sourceforge.net/phpbb/adtpro/viewtopic.php?f=3&t=40}hackerb9}} for the 
    impetus to fix it
 
  * [Client] Comms devices weren't being detected in the last slot (one of those

@@ -15,7 +15,8 @@ the stuff that gets uploaded to sourceforge.
 1. Make sure the version number is updated.  Places where 
    the version number is encoded:
    * build/build.xml: <property name="versionString" value="v.r.m" />
-   * DOS version number, if necessary: <property name="dosVersionString" value="vrm" />
+   * build/build.xml: DOS version number, if necessary: <property name="dosVersionString" value="vrm" />
+   * client/src/dos/adt.s: DOS version number, if necessary: version_no	"v.r.m"
    * client/src/messages.asm: MSG01:	asc "v.r.m"
    * org/adtpro/resources/messages.properties: Version.Number=v.r.m
 
