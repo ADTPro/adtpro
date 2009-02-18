@@ -14,7 +14,6 @@
 
     <menu name="ADTPro">
       <item name="Main" href="index.html"/>
-      <item name="Credits" href="credits.html"/>
       <item name="Help Forum" href="forum.html"/>
       <item name="Download" href="download.html"/>
     </menu>
@@ -58,6 +57,7 @@
       <item name="Release History" href="history.html" collapse="true">
         <item name="Ancient History" href="historyold.html" collapse="true"/>
       </item>
+      <item name="Credits" href="credits.html"/>
       <item name="Protocol" href="protocol.html"/>
       <item name="ADT Compatability" href="compatability.html"/>
       <item name="Development" href="developing.html"/>
