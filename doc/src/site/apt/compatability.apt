@@ -23,7 +23,7 @@ ADT Compatability
 *-----:-----:------:------+
  ADTPro | 1.1.1 | II,+,e,c,GS,Laser,/// | Linux, OS/2, OSX, Solaris, Windows (Java) | Serial, Uthernet, Audio | 
 *-----:-----:------:------+
- ADT (Shipped with ADTPro) | 2.2 | II,+,e,c,GS,Laser | OSX (Virtual ][ A2V2) | Serial (115.2k) | Nibble/half-track capable
+ ADT (Shipped with ADTPro) | 2.3 | II,+,e,c,GS,Laser | OSX (Virtual ][ A2V2) | Serial (115.2k) | Nibble/half-track capable
 *-----:-----:------:------+
  ADT (Berlios) | 1.33 | II,+,e,c,GS,Laser | PC DOS, Windows | Serial (115.2k) | 
 *-----:-----:------:------+
@@ -45,7 +45,7 @@ ADT Compatability
 
 ADT {Nibble}/Halftrack Usage
 
- ADT version 2.2, included as <<<ADT22.DSK>>> in the ADTPro package, introduces
+ ADT version 2.3, included as <<<ADT23.DSK>>> in the ADTPro package, introduces
  nibble and halftrack disk extraction.  Those capabiities are only present in
  the ADT client (i.e. the capability is not in the ADTPro client yet).  
  The ADTPro server 
@@ -54,7 +54,7 @@ ADT {Nibble}/Halftrack Usage
 
 * Starting ADT
 
- Booting the <<<ADT22.DSK>>> disk image brings up the DOS ADT program:
+ Booting the <<<ADT23.DSK>>> disk image brings up the DOS ADT program:
 
 [images/adtmain.png]
 

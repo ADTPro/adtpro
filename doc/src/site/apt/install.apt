@@ -46,7 +46,7 @@ ADTPro Installation
  Please report troubles, bugs, requests for help, etc. on the Help 
  forum for ADTPro at SourceForge:
 
- {{https://sourceforge.net/forum/forum.php?forum_id=582337}}
+ {{http://adtpro.sourceforge.net/forum.html}}
 
  Good luck - and have fun!
 
@@ -108,8 +108,8 @@ Distribution contents
  * <<<disks/ADTPRO-v.r.m.PO   >>> - ADTPro client-side software (an Apple 800K disk image)
 
  * <<<disks/ADTvrm.DSK        >>> - An enhanced legacy Apple DOS ADT client, capable 
-   of running on both Super Serial hardware as well as on the IIgs
-   modem port (an Apple 140K disk image)
+   of running with Super Serial hardware, the IIgs modem port, a Laser 128, and the Apple ///
+   (an Apple 140K disk image)
 
  * <<<lib/ADTPro-v.r.m.jar    >>> - ADTPro server-side software (a Java .jar file)
  
