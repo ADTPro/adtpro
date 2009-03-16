@@ -194,7 +194,7 @@ UPOK:	stx CURPARM
 NOTUP:
 	cmp #$8A
 	beq ISDOWN
-	cmp #$A0
+	cmp #$80	; Space chracter, after CONDITION_KEYPRESS... A0->80
 	bne NOTDOWN
 ISDOWN:
 	inx		; Down arrow or space pressed
