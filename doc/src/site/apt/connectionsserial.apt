@@ -74,7 +74,9 @@ cable like this:
   You will need a serial cable setup that ultimately connects the round, 8-pin
 mini-DIN modem connector of your IIgs or IIc+ to
 the serial port of your host computer - and also performs a null-modem function 
-in between.
+in between.  
+If you would like to purchase a null modem cable that is ready to use, click
+{{{http://retrofloppy.com/products.html#DIN8DE9}here.}}
 
   There are two 8-pin mini-DIN connectors on the backs of IIgs and IIc+ computers.
 One has the icon of a telephone, the other has an icon of a printer.
@@ -125,24 +127,6 @@ looking into the cable at the pins:
 
 [images/minidin8.png]
 
-  A straight-through cable, used if you connect through a null modem as pictured above, is wired like this
-  (Apple would call this a "Modem" cable):
-
----
-  Apple
- MiniDIN8  DE-9  DB-25  RS-232
-   Pin#    Pin#  Pin#    Name
- --------  ----  -----  ------
-    3 ----- 3      2     TxD
-    5 ----- 2      3     RxD
-    4 --,-- 5      7     GND
-    8 --'
-    2 ----- 8      5     CTS
-    1 --+-- 7      4     RTS
-        '-- 4     20     DTR
-    7 ----- 1      8     DCD
----
-
  A single-cable null-modem is wired like this (Apple would call this a "Printer" cable):
 
 ---
@@ -160,6 +144,25 @@ looking into the cable at the pins:
     7 ----- 1      8     DCD
 ---
 
+  A straight-through cable, used if you connect through a separate null modem as
+  pictured above, is wired like this
+  (Apple would call this a "Modem" cable):
+
+---
+  Apple
+ MiniDIN8  DE-9  DB-25  RS-232
+   Pin#    Pin#  Pin#    Name
+ --------  ----  -----  ------
+    3 ----- 3      2     TxD
+    5 ----- 2      3     RxD
+    4 --,-- 5      7     GND
+    8 --'
+    2 ----- 8      5     CTS
+    1 --+-- 7      4     RTS
+        '-- 4     20     DTR
+    7 ----- 1      8     DCD
+---
+
  Once you have your computers connected, you can move on to 
 {{{bootstrap.html}bootstrapping.}}
 
@@ -169,6 +172,8 @@ looking into the cable at the pins:
 DIN modem connector of your IIc or Laser 128 to
 the serial port of your host computer - and also performs a null-modem function 
 in between.
+If you would like to purchase a null modem that is ready to use, click
+{{{http://retrofloppy.com/products.html#DIN5DE9}here.}}
 
   There are two 5-pin DIN connectors on the backs of IIc and Laser 128 computers. 
 One has the icon of a telephone, the other has an icon of a printer. 
