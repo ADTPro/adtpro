@@ -28,8 +28,8 @@ http://adtpro.sourceforge.net/developing.html
 	<property file="${builddir}/ADTProBuild-default.properties"/>
 	<property name="acJar" value="${builddir}/lib/AppleCommander-1.3.5.2-ac.jar" />
 	<property name="jarBundlerJar" value="${builddir}/lib/jarbundler-2.1.0/jarbundler-2.1.0.jar" />
-	<property name="rxtxVersion" value="rxtx-2.1-7-bins-r2" />
-	<property name="rxtxZip" value="rxtx-2.1-7-bins-r2.zip" />
+	<property name="rxtxVersion" value="rxtx-2.2pre2-bins" />
+	<property name="rxtxZip" value="${rxtxVersion}.zip" />
 	<taskdef name="appleDump" classname="org.adtpro.utilities.AppleDump" classpath="${projdir}"/>
 	<taskdef name="jarbundler" classname="net.sourceforge.jarbundler.JarBundler" classpath="${jarBundlerJar}"/>
 	<echo message="${distName} building on ${os.name}."/>

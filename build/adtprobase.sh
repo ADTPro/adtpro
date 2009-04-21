@@ -23,18 +23,17 @@ OS=`uname`
 
 # For Linux, use this:
 if [ "$OS" = "Linux" ]; then
-  export RXTXLIB=lib/rxtx/Linux/i686-unknown-linux-gnu
+  export RXTXLIB=lib/rxtx/i686-pc-linux-gnu
 fi
 
 # For OSX, use this:
-# (Also remember to run fixperm.command in the rxtx directory once on OSX...)
 if [ "$OS" = "Darwin" ]; then
-  export RXTXLIB=lib/rxtx/Mac_OS_X
+  export RXTXLIB=lib/rxtx/mac-10.5
 fi
 
 # For Solaris, use this:
 if [ "$OS" = "SunOS" ]; then
-  export RXTXLIB=lib/rxtx/Solaris/sparc-solaris/sparc32-sun-solaris2.8
+  export RXTXLIB=lib/rxtx/sparc-sun-solaris2.10-32
 fi
 
 # Set up the library location.
