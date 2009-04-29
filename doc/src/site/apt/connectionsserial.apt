@@ -256,13 +256,13 @@ checkbox in the serial config dialog box, brought up from the
 
  * if <<<PRINT PEEK(64447)>>> returns 255, you have an original IIc (ROM revision '255').
  
- * if <<<PRINT PEEK(64447)>>> returns 0, you have an IIc with UniDisk 3.5 inch drive support (ROM revision '0').
+ * if <<<PRINT PEEK(64447)>>> returns 0, you have an Apple  IIc with UniDisk 3.5 inch drive support (ROM revision '0').
  
- * if <<<PRINT PEEK(64447)>>> returns 3, you have an IIc with memory expansion support (ROM revision '3').
+ * if <<<PRINT PEEK(64447)>>> returns 3, you have an Apple IIc with memory expansion support (ROM revision '3').
  
- * if <<<PRINT PEEK(64447)>>> returns 4, you have an IIc with a modified/fixed version of memory expansion support (ROM revision '4').
+ * if <<<PRINT PEEK(64447)>>> returns 4, you have an Apple IIc with a modified/fixed version of memory expansion support (ROM revision '4').
  
- * if <<<PRINT PEEK(64447)>>> returns 5, you have an Apple IIc Plus (ROM revision '5').
+ * if <<<PRINT PEEK(64447)>>> returns 5, you have an Apple IIc <<Plus>> (ROM revision '5').
 
  []
 
@@ -316,7 +316,8 @@ These types of devices will work fine with ADTPro.
 When you use one, you will also need to install the appropriate device driver 
 that connects your host operating system to the USB adapter.
 
- I sell one compatible with both Windows and OSX operating systems 
+ If you would like to purchase one that is compatible with both Windows
+and OSX operating systems, I offer one for sale
 {{{http://retrofloppy.com/products.html#USBMAC}here.}}
 They look like this:
 
@@ -361,8 +362,6 @@ operations.
 * {Other Serial Pinout References}
 
  Be careful - these sometimes disagree with one another:
-
- * {{http://www.mayin.org/aragorn/computers/serial.html}}
 
  * {{http://www.netbsd.org/docs/Hardware/Misc/serial.html}}
 
