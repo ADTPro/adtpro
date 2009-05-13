@@ -12,7 +12,13 @@ Go into the doc directory and run the command "mvn site".
 The resulting directory rooted at doc/target/site is
 the stuff that gets uploaded to sourceforge.
 
-1. Make sure the version number is updated.  Places where 
+1. Did ADTProBase.dsk change?  If so, bring it up in a hex editor and
+   change:
+   C360:4D3B28690BD003
+   to:
+   C360:4D3B28690BEAEA
+   
+2. Make sure the version number is updated.  Places where 
    the version number is encoded:
    * build/build.xml: <property name="versionString" value="v.r.m" />
    * build/build.xml: DOS version number, if necessary: <property name="dosVersionString" value="vrm" />
@@ -20,36 +26,36 @@ the stuff that gets uploaded to sourceforge.
    * client/src/messages.asm: MSG01:	asc "v.r.m"
    * org/adtpro/resources/messages.properties: Version.Number=v.r.m
 
-2. Make sure you've got the latest DOS ADT from the Berlios project;
+3. Make sure you've got the latest DOS ADT from the Berlios project;
    ensure the default baud rate is changed to 115k in adt.s:
    * Search for pspeed: and make it 6, not 5
    * Search for svspeed: and make it 6, not 5
    * Search for default: and make the '5' in position 4 be '6'
 
-3. Perform a build
+4. Perform a build
    * Ensure you are using the 'all' target, not 'dev'
    * Ensure your project properties for the Java Compiler are set to 1.4, not 5.0 or above
      to suit our OSX 10.3.x friends
 
-4. Tests:
+5. Tests:
    * Ensure all files have a current date on the virtual disks
    * Ensure each bootstrap text content works
    * Ensure that floppy formatting works
 
-5. Commit all changes
+6. Commit all changes
 
-6. Tag adtpro project with the version number.
+7. Tag adtpro project with the version number.
    The standard is:  v_[major]_[minor]_[service]
 
-7. Ungzip/untar the .tar.gz distro on a Mac; delete the non-Mac
+8. Ungzip/untar the .tar.gz distro on a Mac; delete the non-Mac
    stuff, build a ADTPro-v.r.m.dmg of the ADTPro-v.r.m directory  
 
-8. psftp into frs.sourceforge.net as your real SF ID and send
+9. psftp into frs.sourceforge.net as your real SF ID and send
    ADTPro-v.r.m.zip, .dmg and .tar.gz to the uploads directory.
 
-9. Release the file
+10. Release the file
 
-10. Upload updated web contents. use SFTP to web.sourceforge.net
+11. Upload updated web contents. use SFTP to web.sourceforge.net
     and User name: SFUSER,adtpro
     Files go into /home/groups/a/ad/adtpro/htdocs; back up the 
     old version first (name it the prior version number),
