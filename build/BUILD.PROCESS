@@ -12,11 +12,14 @@ Go into the doc directory and run the command "mvn site".
 The resulting directory rooted at doc/target/site is
 the stuff that gets uploaded to sourceforge.
 
-1. Did ADTProBase.dsk change?  If so, bring it up in a hex editor and
-   change:
+1. Did the boot sector of ADTProBase.dsk change?  If so, be sure to
+   re-enable booting on Franklin 1x00 computers.  Bring it up in
+   a hex editor and change:
    C360:4D3B28690BD003
    to:
    C360:4D3B28690BEAEA
+   If PRODOS on the disk changes, it'll lose the Bird's Better Bye
+   that's hacked into it.
    
 2. Make sure the version number is updated.  Places where 
    the version number is encoded:

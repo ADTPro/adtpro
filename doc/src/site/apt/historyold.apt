@@ -90,7 +90,7 @@ ADTPro Release Ancient History
    knocking) whenever the volume screen is shown
 
  * [Client] Removed last dependency on Applesoft string printing; enables
-   running on orignal integer Apple ][ (non-plus) ROM machines
+   running on original integer Apple ][ (non-plus) ROM machines
 
  * [Server] Always record 5-1/4" disks at the host as DOS order images
 
