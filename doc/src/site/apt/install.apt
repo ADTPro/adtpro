@@ -74,9 +74,8 @@ java.library.path=/opt/IBMJava2-142/jre/bin:
  thrown while loading gnu.io.RXTXCommDriver
 +-------
 
- Keep working at your startup script or take a look at the RXTX
- install instructions in the <<<rxtx>>> directory.  Remember, you can always 
- {{{https://sourceforge.net/forum/forum.php?forum_id=582337}ask for help.}}
+ Keep working at your startup script or
+ {{{http://adtpro.sourceforge.net/forum.html}ask for help.}}
 
 OS/2 RXTX Considerations
 

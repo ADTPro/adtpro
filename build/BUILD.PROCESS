@@ -28,7 +28,9 @@ the stuff that gets uploaded to sourceforge.
    * client/src/dos/adt.s: DOS version number, if necessary: version_no	"v.r.m"
    * client/src/messages.asm: MSG01:	asc "v.r.m"
    * org/adtpro/resources/messages.properties: Version.Number=v.r.m
-   * doc/removemaven.re: s@v\.r\.m@v.r.m@ig;
+   * doc/removemaven.re: s@v\.r\.m@v.r.m@ig;  <- Note: this one should stay
+     at the "current" release level instead of reverting to "v.r.m" because
+     it can go into documentation between releases.
 
 3. Make sure you've got the latest DOS ADT from the Berlios project;
    ensure the default baud rate is changed to 115k in adt.s:

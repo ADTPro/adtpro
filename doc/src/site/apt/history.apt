@@ -6,11 +6,11 @@
 
 ADTPro Release History
 
-* v.r.m - Unreleased
+* As-yet unreleased changes, in CVS now
 
  Bug fixes:
 
- * [Server] Integrated new level (2.2) of RXTX serial library; this offers
+ * [Server] Integrated new level (2.2Pre2) of RXTX serial library; this offers
    64-bit Windows support as well as improved Mac OS X support
 
  * [Client] Enabled ProDOS booting (and bootstrapping) on a Franklin Ace 1000/1200
