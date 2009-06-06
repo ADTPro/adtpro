@@ -87,6 +87,7 @@ http://adtpro.sourceforge.net/developing.html
 		<delete file="${projdir}/client/src/LOADER" />
 		<delete file="${builddir}/${distName}.tar.gz" />
 		<delete file="${builddir}/${distName}.zip" />
+		<delete file="${builddir}/${distName}.dmg" />
 		<delete file="${builddir}/${distName}/disks/${diskName}.DSK" />
 		<delete file="${builddir}/${distName}/disks/${diskName}.PO" />
 		<delete file="${builddir}/${distName}/disks/${diskNameSOSCFIDE}.DSK" />
@@ -276,7 +277,6 @@ http://adtpro.sourceforge.net/developing.html
 		<copy file="${builddir}/adtprobase.sh" tofile="${builddir}/${distName}/adtpro.sh" />
 		<replace file="${builddir}/${distName}/adtpro.sh" token="%ADTPRO_VERSION%" value="${distName}.jar"/>
 		<replace file="${builddir}/${distName}/adtpro.sh" token="%RXTX_VERSION%" value="${rxtxVersion}"/>
-		<copy file="${builddir}/${distName}/adtpro.sh" tofile="${builddir}/${distName}/adtpro.command" />
 	</target>
 
 	<target name="builddsk" depends="buildProDOSdsk, buildSOSdsk">
@@ -405,7 +405,7 @@ http://adtpro.sourceforge.net/developing.html
 			basedir="${projdir}"
 			includes="org/**/*.class org/**/*.java org/**/*.properties org/**/*.png org/**/*.dmp org/**/*.raw LICENSE" />
 		<chmod dir="${builddir}/${distName}" perm="ugo+rx"
-			includes="**/*.sh **/*.command"/>
+			includes="**/*.sh"/>
 		<!-- zip up the whole sheebang -->
 		<zip destfile="${builddir}/${distName}.zip"
 			basedir="${builddir}"
@@ -413,9 +413,8 @@ http://adtpro.sourceforge.net/developing.html
 		<tar destfile="${builddir}/${distName}.tar"
 			basedir="${builddir}"
 			includes="${distName}/**"
-			excludes="${distName}/adtpro.sh ${distName}/adtpro.command">
+			excludes="${distName}/adtpro.sh">
 			<tarfileset dir="${builddir}" mode="755">
-				<include name="${distName}/adtpro.command"/>
 				<include name="${distName}/adtpro.sh"/>
 			</tarfileset>
 		</tar>
@@ -425,18 +424,31 @@ http://adtpro.sourceforge.net/developing.html
 	</target>
 
 	<target name="osx" if="isOSX">
+
 		<!-- Build a pretty Mac OSX .app bundle -->
-		<jarbundler dir="${builddir}"
+		<jarbundler dir="${builddir}/${distName}"
 			name="${distName}"
+			shortname="ADTPro"
+			version="${versionString}"
+			bundleid="org.adtpro.ADTPro"
 			mainclass="org.adtpro.ADTPro"
-			jar="${builddir}/${distName}/lib/${distName}.jar" />
-		<!-- Delete the JavaApplicationStub and replace it with a symbolic link -->
-		<!--   which should work on older and future versions of OS X -->
-		<delete file="${builddir}/${distName}.app/Contents/MacOS/JavaApplicationStub"/>
-		<exec executable="ln">
-			<arg line="-s /System/Library/Frameworks/JavaVM.framework/Resources/MacOS/JavaApplicationStub"/>
-			<arg value="${builddir}/${distName}.app/Contents/MacOS/JavaApplicationStub"/>
+			icon="${builddir}/ADTPro.icns"
+			vmoptions="-Xms256m -Xmx512m -Djava.library.path=lib/rxtx/mac-10.5">
+			<jarfilelist dir="${builddir}/${distName}/lib">
+			    <file name="rxtx/RXTXcomm.jar"/>
+				<file name="${distName}.jar"/>
+			</jarfilelist>
+		</jarbundler>
+
+		<!-- Get rid of stuff the Apple crowd doesn't need -->
+		<delete file="${builddir}/${distName}/ADTPro.sh" />
+		<delete file="${builddir}/${distName}/ADTPro.bat" />
+		<delete file="${builddir}/${distName}/ADTPro.cmd" />
+
+		<!-- Package up a nice .dmg -->
+		<exec dir="${builddir}" os="Mac OS X" executable="/bin/sh">
+			<arg value="-c"/>
+			<arg value="${builddir}/mkdmg.sh ${builddir} ${distName} ${distName} ${distName}"/>
 		</exec>
 	</target>
-
 </project>
