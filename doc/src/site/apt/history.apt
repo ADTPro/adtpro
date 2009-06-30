@@ -8,15 +8,19 @@ ADTPro Release History
 
 * As-yet unreleased changes, in CVS now
 
+ New functionality:
+
+ * [Server] OSX distribution now comes with a double-clickable .app that automatically does all
+   the magic to start a Java program under the covers with no terminal window
+
+ * [Client] Enabled ProDOS booting (and bootstrapping) on a Franklin Ace 1000/1200
+
+ []
+
  Bug fixes:
 
  * [Server] Integrated new level (2.2Pre2) of RXTX serial library; this offers
    64-bit Windows support as well as improved Mac OS X support
-
- * [Server] OSX distribution now comes with a double-clickable .app that automatically does all
-   the magic to start a Java program under the covers.  No more console window. 
-
- * [Client] Enabled ProDOS booting (and bootstrapping) on a Franklin Ace 1000/1200
 
  []
 
