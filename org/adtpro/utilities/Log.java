@@ -109,7 +109,7 @@ public class Log
     }
     else // Trace turned off
     {
-      if (_out.getClass() == FileOutputStream.class)
+      if (_out.getClass() == PrintStream.class)
       {
         _out.flush();
         _out.close();
