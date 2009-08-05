@@ -28,8 +28,8 @@
 ;  * Set up just enough of the environment to run
 ;  * Put up a little prompt to show we're alive
 ;  * Poll the serial port for data
-;  * Once we see a "B" on the port, start reading $100 more bytes into $a100
-;  * After reading $100 bytes, jump to $a100 (we don't count the initial "B")
+;  * Once we see a "G" on the port, start reading $100 more bytes into $a100
+;  * After reading $100 bytes, jump to $a100 (we don't count the initial "G")
 ;
 ; That's it!  The loader that gets sent into $a100 is a more robust
 ; version that does some more environment preparation and pulls in the

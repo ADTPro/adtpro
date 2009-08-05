@@ -54,10 +54,17 @@ the stuff that gets uploaded to sourceforge.
    The standard is:  v_[major]_[minor]_[service]
 
 8. Ungzip/untar the .tar.gz distro on a Mac; delete the non-Mac
-   stuff, build a ADTPro-v.r.m.dmg of the ADTPro-v.r.m directory  
+   stuff, build a ADTPro-v.r.m.dmg of the ADTPro-v.r.m directory
+   (This happens automatically if you just do a regular build on a Mac)  
 
-9. psftp into frs.sourceforge.net as your real SF ID and send
-   ADTPro-v.r.m.zip, .dmg and .tar.gz to the uploads directory.
+9. Using the new SourceForge File Release System, navigate to
+   the ADTPro project:
+   https://sourceforge.net/project/admin/?group_id=170262
+   and get to the File Manager:
+   https://sourceforge.net/project/admin/explorer.php?group_id=170262
+   Expand directories, add a new one for the new release, and upload away.
+   Tag each file for the appropriate platform so it is automatically
+   presented to visitors looking to download.
 
 10. Release the file
 
@@ -67,7 +74,7 @@ the stuff that gets uploaded to sourceforge.
     old version first (name it the prior version number),
     and move htdocsOLD/archive to htdocs/archive or the A3 library
     will be inaccessible.  WinSCP is an easy Windows GUI to do the
-    movement with.
+    uploading and movement with.
 
 Need to do a batch renumber of dump files?
 /* */

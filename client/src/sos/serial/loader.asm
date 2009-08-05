@@ -22,7 +22,8 @@
 ;
 ; This code is sent by the ADTPro GUI a the user's request to a (hopefully)
 ; waiting Apple /// that has typed in the Grub loader.  The Grub loads this
-; into $a100 and executes it, pulling in the (serial modified) SOS kernel.
+; into $a100 and executes it, pulling in the (serial modified) SOS kernel,
+; driver, then interp (ADTPro itself).
 
 KBDSTROBE	:= $c010
 E_REG		:= $ffdf
@@ -34,7 +35,7 @@ ACIASR		:= $c0f1	; Status register. $c0f1 for ///, $c089+S0 for SSC
 ACIAMR		:= $c0f2	; Command mode register. $c0f2 for ///, $c08a+S0 for SSC
 ACIACR		:= $c0f3	; Control register.  $c0f3 for ///, $c08b+S0 for SSC
 
-GrubIIIGet	:= $a040	; Borrow the Grub's IIIGet
+GrubIIIGet	:= $a040	; Borrow the Grub's IIIGet routine
 
 Signature:
 	.byte	$47		; The first byte that grub will see: a "G" character
@@ -48,7 +49,7 @@ Entry:
 	lda	#$07
 	sta	BANK_REG
 	ldx	#$00
-BankTest:			; Find highest writable bank
+BankTest:			; Find and use the highest writable bank
 	dec	BANK_REG
 	stx	$2000
 	lda	$2000
