@@ -22,6 +22,9 @@ ADTPro Release History
  * [Server] Integrated new level (2.2Pre2) of RXTX serial library; this offers
    64-bit Windows support as well as improved Mac OS X support
 
+ * [Client] Space bar wasn't cycling through configuration items on machines
+   without up/down arrow keys
+
  []
 
 * 1.1.2 - February 18, 2009
