@@ -1,6 +1,6 @@
 ;
 ; ADTPro - Apple Disk Transfer ProDOS
-; Copyright (C) 2008 by David Schmidt
+; Copyright (C) 2008, 2009 by David Schmidt
 ; david__schmidt at users.sourceforge.net
 ;
 ; This program is free software; you can redistribute it and/or modify it 
@@ -124,7 +124,7 @@ IIIPutC1:
 	cmp	#$10
 	bne	IIIPutC1	; Output register is full, so loop
 	pla			; Pull 'character to send' back off the stack
-	sta	$C0F0		; Put character
+	sta	ACIADR		; Put character
 	rts
 
 Message:
