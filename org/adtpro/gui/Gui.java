@@ -648,8 +648,13 @@ public final class Gui extends JFrame implements ActionListener
                   setSecondaryText(jc.getSelectedFile().toString());
                   saveProperties();
                 }
-                else
-                  setSecondaryText(Messages.getString("Gui.InvalidCD"));
+								else
+								{
+                	String parent = jc.getSelectedFile().getParent();
+                  setWorkingDirectory(parent);
+                  setSecondaryText(parent);
+                  saveProperties();
+                }
               }
             }
             else
