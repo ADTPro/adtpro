@@ -23,10 +23,10 @@ ADTPro Release History
    without up/down arrow keys
 
  * [Server] Integrated new level (2.2Pre2) of RXTX serial library; this offers
-   64-bit Windows support as well as improved Mac OS X support
+   64-bit Windows support as well as improved Mac OS X support, including Snow Leopard
 
  * [Server] Made the "change working directory" work a little more sensibly on OSX -
-   allowing you to navigate "into" a directory an pick that as the current working 
+   allowing you to navigate "into" a directory and pick that as the current working 
    directory
  
  []
