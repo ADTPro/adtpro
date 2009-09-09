@@ -24,9 +24,9 @@
 @SET CWD=%CD%
 @if "%ADTPRO_CLASSPATH_SET%" == "1" goto start
 @set ADTPRO_CLASSPATH_SET=1
-@PATH=%PATH%;%ADTPRO_HOME%lib\rxtx\%rxtxarch%
+@PATH=%PATH%;%ADTPRO_HOME%lib\rxtx\%RXTX_VERSION%\%rxtxarch%
 
 :start
 @CD "%ADTPRO_HOME%disks"
-@start /min %MY_JAVA_HOME%java -Xms128m -Xmx256m -cp "%ADTPRO_HOME%lib\%ADTPRO_VERSION%";"%ADTPRO_HOME%lib\rxtx\RXTXcomm.jar" org.adtpro.ADTPro
+@start /min %MY_JAVA_HOME%java -Xms128m -Xmx256m -cp "%ADTPRO_HOME%lib\%ADTPRO_VERSION%";"%ADTPRO_HOME%lib\rxtx\%RXTX_VERSION%\RXTXcomm.jar" org.adtpro.ADTPro
 @CD "%CWD%"

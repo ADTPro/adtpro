@@ -23,17 +23,17 @@ OS=`uname`
 
 # For Linux, use this:
 if [ "$OS" = "Linux" ]; then
-  export RXTXLIB=lib/rxtx/i686-pc-linux-gnu
+  export RXTXLIB=lib/rxtx/%RXTX_VERSION%/i686-pc-linux-gnu
 fi
 
 # For OSX, use this:
 if [ "$OS" = "Darwin" ]; then
-  export RXTXLIB=lib/rxtx/mac-10.5
+  export RXTXLIB=lib/rxtx/%RXTX_VERSION%/mac-10.5
 fi
 
 # For Solaris, use this:
 if [ "$OS" = "SunOS" ]; then
-  export RXTXLIB=lib/rxtx/sparc-sun-solaris2.10-32
+  export RXTXLIB=lib/rxtx/%RXTX_VERSION%/sparc-sun-solaris2.10-32
 fi
 
 # Set up the library location.
@@ -44,8 +44,8 @@ export TWEAK=$TWEAK1$ADTPRO_HOME/$RXTXLIB
 # We want to execute Java (1), set a larger-than-default heap size (2),
 # tell the OS where to find a native library to support rxtx (3), set
 # the classpath to include ADTPro (4) and RXTXcomm (5), and finally
-# tell Java what the class to execute is.  
+# tell Java what the class to execute is (6).  
 # To wit:
 cd "$ADTPRO_HOME"/disks
-"$MY_JAVA_HOME"java -Xms256m -Xmx512m "$TWEAK" -cp ../lib/%ADTPRO_VERSION%:../lib/rxtx/RXTXcomm.jar org.adtpro.ADTPro
-#               (1)     (2)     (2)      (3)                     (4)                   (5)              (6)
+"$MY_JAVA_HOME"java -Xms256m -Xmx512m "$TWEAK" -cp ../lib/%ADTPRO_VERSION%:../lib/rxtx/%RXTX_VERSION%/RXTXcomm.jar org.adtpro.ADTPro
+#               (1)     (2)     (2)      (3)                     (4)                     (5)                            (6)
