@@ -7,17 +7,19 @@ BASE="$1"
 SRC="$2"
 DEST="$3"
 VOLUME="$4"
+MEGABYTES="$5"
 
 echo Base Directory $1
 echo Source $2
 echo Destination $3
 echo Volume $4
+echo Megabytes $5
 
 TEMP="TEMPORARY"
 
 cd $BASE
 
-hdiutil create -megabytes 5 $DEST$TEMP.dmg -layout NONE
+hdiutil create -megabytes $MEGABYTES $DEST$TEMP.dmg -layout NONE
 MY_DISK=`hdid -nomount $DEST$TEMP.dmg`
 newfs_hfs -v $VOLUME $MY_DISK
 hdiutil eject $MY_DISK
