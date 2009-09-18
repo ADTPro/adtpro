@@ -30,8 +30,6 @@ http://adtpro.sourceforge.net/developing.html
 	<property name="jarBundlerJar" value="${builddir}/lib/jarbundler-2.1.0/jarbundler-2.1.0.jar" />
 	<property name="rxtxVersion" value="rxtx-2.2pre2-local" />
 	<property name="rxtxZip" value="${rxtxVersion}.zip" />
-	<property name="rxtxVersionOld" value="rxtx-2.1-7-bins-r2" />
-	<property name="rxtxZipOld" value="${rxtxVersionOld}.zip" />
 	<property name="dmgmegabytes" value="6" />
 	<taskdef name="appleDump" classname="org.adtpro.utilities.AppleDump" classpath="${projdir}"/>
 	<taskdef name="jarbundler" classname="net.sourceforge.jarbundler.JarBundler" classpath="${jarBundlerJar}"/>
@@ -396,8 +394,6 @@ http://adtpro.sourceforge.net/developing.html
 	<target name="jar">
 		<unzip src="${builddir}/lib/rxtx/${rxtxZip}"
 			dest="${builddir}/${distName}/lib/rxtx"/>
-		<unzip src="${builddir}/lib/rxtx/${rxtxZipOld}"
-			dest="${builddir}/${distName}/lib/rxtx"/>
 		<copy file="${builddir}/README" todir="${builddir}/${distName}" />
 		<copy file="${builddir}/LICENSE" todir="${builddir}/${distName}" />
 		<copy file="${builddir}/ADTPro.html" todir="${builddir}/${distName}" />
@@ -439,21 +435,6 @@ http://adtpro.sourceforge.net/developing.html
 			vmoptions="-Xms256m -Xmx512m -Djava.library.path=lib/rxtx/${rxtxVersion}/mac-10.5">
 			<jarfilelist dir="${builddir}/${distName}/lib">
 			    <file name="rxtx/${rxtxVersion}/RXTXcomm.jar"/>
-				<file name="${distName}.jar"/>
-			</jarfilelist>
-		</jarbundler>
-
-		<!-- Build another pretty Mac OSX .app bundle -->
-		<jarbundler dir="${builddir}/${distName}"
-			name="${distName}-OlderSerial"
-			shortname="ADTProPanther"
-			version="${versionString}"
-			bundleid="org.adtpro.ADTPro"
-			mainclass="org.adtpro.ADTPro"
-			icon="${builddir}/ADTPro.icns"
-			vmoptions="-Xms256m -Xmx512m -Djava.library.path=lib/rxtx/${rxtxVersionOld}/Mac_OS_X">
-			<jarfilelist dir="${builddir}/${distName}/lib">
-			    <file name="rxtx/${rxtxVersionOld}/RXTXcomm.jar"/>
 				<file name="${distName}.jar"/>
 			</jarfilelist>
 		</jarbundler>
