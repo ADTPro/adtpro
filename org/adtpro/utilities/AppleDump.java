@@ -61,15 +61,15 @@ public class AppleDump extends Task
         {
           throw new BuildException(io);
         }
-        ps.println("");
+        ps.print("\r\n");
         if ((_decoration.equalsIgnoreCase("yes")) || 
            (_decoration.equalsIgnoreCase("begin")))
         {
-          ps.println("CALL -151");
+          ps.print("CALL -151\r\n");
         }
         else
         {
-          ps.println("");
+          ps.print("\r\n");
         }
         int addr = Integer.parseInt(_startAddrHex,16);
         int max = fis.available();
@@ -80,7 +80,7 @@ public class AppleDump extends Task
           if (j % _numBytes == 0)
           {
             if (j > 0)
-              ps.println();
+              ps.print("\r\n");
             address = Integer.toHexString(addr);
             ps.print(address.toUpperCase() + ":");
             addr += _numBytes;
@@ -93,13 +93,13 @@ public class AppleDump extends Task
         if ((_decoration.equalsIgnoreCase("yes")) ||
             (_decoration.equalsIgnoreCase("end")))
         {
-          ps.println();
-          ps.println(_startAddrHex + "G");
+          ps.print("\r\n");
+          ps.print(_startAddrHex + "G\r\n");
         }
         if (_finalLine != null)
         {
-          ps.println();
-          ps.println(_finalLine);
+          ps.print("\r\n");
+          ps.print(_finalLine+"\r\n");
         }
         ps.close();
         fis.close();
