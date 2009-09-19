@@ -1,6 +1,6 @@
 /*
  * ADTPro - Apple Disk Transfer ProDOS
- * Copyright (C) 2007 by David Schmidt
+ * Copyright (C) 2007 - 2009 by David Schmidt
  * david__schmidt at users.sourceforge.net
  *
  * This program is free software; you can redistribute it and/or modify it 
@@ -25,6 +25,8 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -77,6 +79,7 @@ public class SerialConfig extends JDialog implements ActionListener
   public JButton okButton = new JButton(Messages.getString("Gui.Ok"));
   public JButton cancelButton = new JButton(Messages.getString("Gui.Cancel"));
   public static Gui _parent;
+  private KeyAdapter myKeyListener = new MyKeyAdapter();
 
   public static final int CANCEL = 0, OK = 1;
 
@@ -116,7 +119,6 @@ public class SerialConfig extends JDialog implements ActionListener
     try
     {
       Log.println(false, "SerialConfig Constructor about to attempt to instantiate rxtx library.");
-      Log.print(true, Messages.getString("Gui.RXTX")); //$NON-NLS-1$
       String[] portNames = SerialTransport.getPortNames();
       for (int i = 0; i < portNames.length; i++)
       {
@@ -228,6 +230,13 @@ public class SerialConfig extends JDialog implements ActionListener
     _tabbedPane.addTab(Messages.getString("Gui.ConfigSerialTab"), null, configPanel, Messages.getString("Gui.ConfigSerialTab.Help"));
     _tabbedPane.addTab(Messages.getString("Gui.ConfigBootstrapTab"), null, bootstrapPanel, Messages.getString("Gui.ConfigBootstrapTab.Help"));
 
+    // Add key listeners
+    _tabbedPane.addKeyListener(myKeyListener);
+    comboSpeed.addKeyListener(myKeyListener);
+    comboComPort.addKeyListener(myKeyListener);
+    cancelButton.addKeyListener(myKeyListener);
+    okButton.addKeyListener(myKeyListener);
+    iicCheckBox.addKeyListener(myKeyListener);
     this.pack();
     this.setBounds(FrameUtils.center(this.getSize()));
     okButton.requestFocus();
@@ -342,5 +351,23 @@ public class SerialConfig extends JDialog implements ActionListener
   public int getExitStatus()
   {
     return _theSingleton.exitStatus;
+  }
+
+  /*
+   * MyKeyAdapter:  Listen for keyboard events 
+   */
+  class MyKeyAdapter extends KeyAdapter
+  {
+    public void keyPressed(KeyEvent evt)
+    {
+      System.out.println("bleah!");
+      /*
+       * Check for escape key
+       */
+    	if (evt.getKeyCode() == KeyEvent.VK_ESCAPE)
+      {
+    	  cancelButton.doClick();
+      }
+    }
   }
 }
