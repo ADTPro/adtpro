@@ -13,7 +13,7 @@ ADTPro Release History
  * [Server] OSX distribution now comes with a double-clickable .app that automatically does all
    the magic to start a Java program under the covers with no terminal window
 
- * [Client] Enabled ProDOS booting (and bootstrapping) on a Franklin Ace 1000/1200
+ * [Client] Enabled ProDOS booting (and bootstrapping) on the Franklin Ace 1000/1200
 
  []
 
