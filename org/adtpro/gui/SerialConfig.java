@@ -234,9 +234,12 @@ public class SerialConfig extends JDialog implements ActionListener
     _tabbedPane.addKeyListener(myKeyListener);
     comboSpeed.addKeyListener(myKeyListener);
     comboComPort.addKeyListener(myKeyListener);
+    comboBootstrapPacing.addKeyListener(myKeyListener);
+    comboBootstrapSpeed.addKeyListener(myKeyListener);
     cancelButton.addKeyListener(myKeyListener);
     okButton.addKeyListener(myKeyListener);
     iicCheckBox.addKeyListener(myKeyListener);
+
     this.pack();
     this.setBounds(FrameUtils.center(this.getSize()));
     okButton.requestFocus();
