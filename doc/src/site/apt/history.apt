@@ -6,7 +6,7 @@
 
 ADTPro Release History
 
-* As-yet unreleased changes, in CVS now
+* 1.1.3 - September 20, 2009
 
  New functionality:
 
@@ -22,7 +22,7 @@ ADTPro Release History
  * [Client] Space bar wasn't cycling through configuration items on machines
    without up/down arrow keys
 
- * [Server] Integrated new level (2.2Pre2) of RXTX serial library; this offers
+ * [Server] Integrated new level (2.2Pre2 + fixes) of RXTX serial library; this offers
    64-bit Windows support as well as improved Mac OS X support, including Snow Leopard
 
  * [Server] Made the "change working directory" work a little more sensibly on OSX -

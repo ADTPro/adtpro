@@ -10,15 +10,16 @@ http://adtpro.sourceforge.net/developing.html
 
 -->
 
-<!-- Note - running this under Java 1.6 caused "java -jar ac.jar" constructions
+<!--
+     Note - running this under Java 1.6 caused "java -jar ac.jar" constructions
      to fail to produce good executables on the destination disk.  Seems odd
-     stuff got changed to $3f all over the place; made code non-executable.
-     Switching back to Java 1.5 for compilation fixed it. -->
+     stuff got changed to $3f all over the place; made Apple II executable code
+     non-executable. Switching back to Java 1.5 for compilation fixed it.
+-->
 <project name="ADTPro" default="all" basedir="..">
-	<property name="versionString" value="v.r.m" />
+	<property name="versionString" value="1.1.3" />
 	<property name="distName" value="ADTPro-${versionString}" />
 	<property name="diskName" value="ADTPRO-${versionString}" />
-	<property name="diskNameSOSCFIDE" value="ADTSOS-CFIDE-${versionString}" />
 	<property name="volName" value="ADTPro.${versionString}" />
 	<property name="dosVersionString" value="23" />
 	<property name="dosDistName" value="ADT${dosVersionString}" />
@@ -26,11 +27,11 @@ http://adtpro.sourceforge.net/developing.html
 	<property name="builddir" value="${basedir}/build" />
 	<property file="${builddir}/ADTProBuild.properties"/>
 	<property file="${builddir}/ADTProBuild-default.properties"/>
-	<property name="acJar" value="${builddir}/lib/AppleCommander-1.3.5.2-ac.jar" />
+	<property name="acJar" value="${builddir}/lib/AppleCommander-1.3.5.6-ac.jar" />
 	<property name="jarBundlerJar" value="${builddir}/lib/jarbundler-2.1.0/jarbundler-2.1.0.jar" />
 	<property name="rxtxVersion" value="rxtx-2.2pre2-local" />
 	<property name="rxtxZip" value="${rxtxVersion}.zip" />
-	<property name="dmgmegabytes" value="6" />
+	<property name="dmgmegabytes" value="4" />
 	<taskdef name="appleDump" classname="org.adtpro.utilities.AppleDump" classpath="${projdir}"/>
 	<taskdef name="jarbundler" classname="net.sourceforge.jarbundler.JarBundler" classpath="${jarBundlerJar}"/>
 	<echo message="${distName} building on ${os.name}."/>
@@ -91,7 +92,6 @@ http://adtpro.sourceforge.net/developing.html
 		<delete file="${builddir}/${distName}.dmg" />
 		<delete file="${builddir}/${distName}/disks/${diskName}.DSK" />
 		<delete file="${builddir}/${distName}/disks/${diskName}.PO" />
-		<delete file="${builddir}/${distName}/disks/${diskNameSOSCFIDE}.DSK" />
 		<delete file="${builddir}/${distName}/disks/${dosDistName}.DSK" />
 		<delete file="${projdir}/org/adtpro/resources/adt.dmp" />
 		<delete file="${projdir}/org/adtpro/resources/adtpro.dmp" />
@@ -356,10 +356,6 @@ http://adtpro.sourceforge.net/developing.html
 
 	<target name="buildSOSdsk" if="SOS-needed">
 		<!--
-		Start disk images containing the release number
-		-->
-		<copy file="${builddir}/ADTSOSBaseCFIDE.dsk" tofile="${builddir}/${distName}/disks/${diskNameSOSCFIDE}.DSK" />
-		<!--
 		Put the assembled programs on the disk images
 		-->
 		<echo message="Adding ADTSOS to 5.25 disk image..."/>
@@ -370,22 +366,11 @@ http://adtpro.sourceforge.net/developing.html
 		<java jar="${acJar}" fork="true" dir="${builddir}" input="${builddir}/ADTSOSETH">
 			<arg line="-p ${distName}/disks/${diskName}.DSK SOS.INTERPETH sos 0000" />
 		</java>
-		<echo message="Adding ADTSOS to 5.25 CFIDE disk image..."/>
-		<java jar="${acJar}" fork="true" dir="${builddir}" input="${builddir}/ADTSOS">
-			<arg line="-p ${distName}/disks/${diskNameSOSCFIDE}.DSK SOS.INTERP sos 0000" />
-		</java>
-		<echo message="Adding ADTSOSETH to 5.25 CFIDE disk image..."/>
-		<java jar="${acJar}" fork="true" dir="${builddir}" input="${builddir}/ADTSOSETH">
-			<arg line="-p ${distName}/disks/${diskNameSOSCFIDE}.DSK SOS.INTERPETH sos 0000" />
-		</java>
 		<!--
 		Put a nice volume name on the disk images
 		-->
 		<java jar="${acJar}" fork="true" dir="${builddir}">
 			<arg line="-n ${distName}/disks/${diskName}.DSK ${volName}" />
-		</java>
-		<java jar="${acJar}" fork="true" dir="${builddir}">
-			<arg line="-n ${distName}/disks/${diskNameSOSCFIDE}.DSK ${volName}" />
 		</java>
 		<delete file="${builddir}/ADTSOS" />
 		<delete file="${builddir}/ADTSOSETH" />
