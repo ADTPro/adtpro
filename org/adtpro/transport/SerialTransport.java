@@ -29,6 +29,7 @@ import java.util.*;
 import org.adtpro.gui.Gui;
 import org.adtpro.resources.Messages;
 import org.adtpro.utilities.Log;
+import org.adtpro.utilities.UnsignedByte;
 
 import gnu.io.*;
 
@@ -52,6 +53,11 @@ public class SerialTransport extends ATransport
 
   protected Gui _parent = null;
   
+  int _outPacketPtr = 0;
+
+  byte[] _sendBuffer = null;
+
+
   /**
    * Create a new instance of the Comm API Transport. This constructor creates a
    * new instance of the Comm API Transport.
@@ -77,6 +83,7 @@ public class SerialTransport extends ATransport
     _parent = parent;
     _hardware = hardware;
     _currentSpeed = Integer.parseInt(speed);
+    _sendBuffer = new byte[1500];
     Log.println(false, "SerialTransport constructor exit.");
   }
 
@@ -307,30 +314,17 @@ public class SerialTransport extends ATransport
 
   public void writeBytes(byte data[], String log)
   {
-    try
+    if ((1499 - _outPacketPtr) >= data.length)
     {
-      /*
-       * Log.println(false, "SerialTransport.writeBytes() writing:"); for (int i =
-       * 0; i < data.length; i++) { Log.println(false,
-       * UnsignedByte.toString(data[i]) + " "); }
-       */
-      /*
-       * Problem: 300 baud garbles screen text while doing a 'directory' listing
-       * because it writes lotsa bytes at once as a stream. Solution: send bytes
-       * one at a time if we're going so slow; blast 'em otherwise.
-       */
-      if (_currentSpeed == 300)
+      // Log.println(false, "SerialTransport.writeBytes() writing " + data.length
+      // + " bytes into packet starting from " + _outPacketPtr + ".");
+      for (int i = 0; i < data.length; i++)
       {
-        for (int i = 0; i < data.length; i++)
-          outputStream.write(data[i]);
+        _sendBuffer[_outPacketPtr++] = data[i];
       }
-      else
-        outputStream.write(data, 0, data.length);
     }
-    catch (IOException ex)
-    {
-      Log.printStackTrace(ex);
-    }
+    else
+      Log.println(false, "SerialTransport.writeBytes() didn't have room!");
   }
 
   public void writeBytes(String str)
@@ -386,7 +380,25 @@ public class SerialTransport extends ATransport
 
   public void pushBuffer()
   {
-  // Serial port is byte-by-byte, no buffering
+    Log.println(false, "SerialTransport.pushBuffer() entry, pushing " + _outPacketPtr + " bytes.");
+	Log.println(false, "SerialTransport.pushBuffer() pushing data:");
+	for (int i = 0; i < _outPacketPtr; i++)
+	{
+	  if (((i % 32) == 0) && (i != 0)) Log.println(false, "");
+	  Log.print(false, UnsignedByte.toString(_sendBuffer[i]) + " ");
+	}
+	Log.println(false, "");
+
+	try
+	{
+      outputStream.write(_sendBuffer, 0, _outPacketPtr);
+	}
+	catch (IOException e)
+	{
+      e.printStackTrace();
+	}
+	_outPacketPtr = 0;
+    Log.println(false, "SerialTransport.pushBuffer() exit.");
   }
 
   public void flushReceiveBuffer()
