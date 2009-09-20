@@ -14,18 +14,15 @@ particular to the target platform:
   
 After unpacking the distribution file, you will find:
 
- * adtpro.bat             - A Windows server batch file
- * adtpro.command         - An OSX server startup command
-                            file (double-clickable)
- * adtpro.sh              - A Linux/Solaris server startup
+ * ADTPro-v.r.m.app       - OSX server application
+ * adtpro.bat             - Windows server startup batch file
+ * adtpro.cmd             - OS/2 server startup batch file
+ * adtpro.sh              - Linux/Solaris server startup
                             shell script
  * LICENSE                - The GNU Public License file
  * README                 - The info you're looking at now
  * disks/ADTPro-v.r.m.dsk - ADTPro client-side software
                             (an Apple 140K disk image)
- * disks/ADTSOS-CFIDE-v.r.m.DSK - A disk specifically for 
- 	                    Apple /// computers with Rich
- 	                    Dreher's Compact Flash board
  * disks/ADTPro-v.r.m.po  - ADTPro client-side software
                             (an Apple 800K disk image)
  * disks/ADTvr.dsk        - An enhanced legacy Apple DOS ADT
@@ -53,9 +50,10 @@ unpack it using your operating system's native facilities. You can
 either run the server startup program from the command line or, in
 Windows and OSX, double-click on the icon of the startup program:
 
-Windows:        adtpro.bat
-OSX:            adtpro.command
 Linux, Solaris: adtpro.sh
+OS/2:           adtpro.cmd
+OSX:            ADTPro-v.r.m.app
+Windows:        adtpro.bat
 
 You can modify the startup program to suit your environment.
 Especially for the Unix variants - it may need a little tweaking to
@@ -64,12 +62,7 @@ get the correct native serial library connected.
 When starting, you will see the following information echoed back
 on your console as the GUI is coming up:
 
-ADTPro Server version v.r.m
-
-RXTX: Stable Library
-=========================================
-Native lib Version = RXTX-2.1-7
-Java lib Version   = RXTX-2.1-7
+   ADTPro Server version v.r.m
 
 When the ADTPro GUI comes up, click one of the three connection
 buttons to choose your communications type.
@@ -87,22 +80,18 @@ your Apple.
 Please report troubles, bugs, requests for help, etc. on the Help
 forum for ADTPro at SourceForge:
 
-https://sourceforge.net/forum/forum.php?forum_id=582337
+http://sourceforge.net/apps/phpbb/adtpro/
 
 Good luck - and have fun!
 
 Unix RXTX Considerations
 ------------------------
 
-For Unix variants other than Mac OSX, make sure the user that will
-be running ADTPro is in the group lock or uucp so that lockfiles
-can work.
-
-The adtpro.sh and adtpro.command files can be customized to suit
-your environment. The main thing to do is to choose your platform
-for RXTX support. You may need to tweak the check for what your
-operating system returns from the uname command, and connect that
-to the appropriate RXTX library directory.
+The adtpro.sh file can be customized to suit your environment.
+The main thing to do is to choose your platform for RXTX support.
+You may need to tweak the check for what your operating system
+returns from the uname command, and connect that to the
+appropriate RXTX library directory.
 
 If you don't specify the right one, or if your platform is
 unsupported by RXTX, you will get an error similar to the one below
@@ -118,4 +107,4 @@ java.library.path=/opt/IBMJava2-142/jre/bin:
 Keep working at your startup script or take a look at the RXTX install
 instructions in the rxtx directory. Remember, you can always ask for
 help in the ADTPro help forum:
-https://sourceforge.net/forum/forum.php?forum_id=582337
+http://sourceforge.net/apps/phpbb/adtpro/
