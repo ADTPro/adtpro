@@ -16,7 +16,7 @@ Starting ADTPro
 
   [OS/2:] <<<adtpro.cmd>>>
 
-  [OSX:] <<<adtpro.command>>> (You downloaded the .dmg package, didn't you?)
+  [OSX:] <<<ADTPro-v.r.m.app>>> (You downloaded the .dmg package, didn't you?)
 
   [Windows:] <<<adtpro.bat>>>
 
@@ -29,11 +29,6 @@ Starting ADTPro
 
 +-------
 ADTPro Server version v.r.m
-
-RXTX: Stable Library
-=========================================
-Native lib Version = RXTX-2.1-7
-Java lib Version   = RXTX-2.1-7
 +-------
 
  Once started, the server program's GUI comes up:
