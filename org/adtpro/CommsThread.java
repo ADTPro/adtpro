@@ -99,9 +99,7 @@ public class CommsThread extends Thread
       Log.printStackTrace(ex);
       _shouldRun = false;
     }
-    Log
-        .println(false, "CommsThread constructor exit; _shouldRun="
-            + _shouldRun);
+    Log.println(false, "CommsThread constructor exit; _shouldRun=" + _shouldRun);
   }
 
   public void run()
@@ -269,13 +267,13 @@ public class CommsThread extends Thread
             _busy = false;
             break;
           case (byte) 179: // "3": Initiate SOS.KERNEL dump
-              _busy = true;
-              _parent.setMainText(Messages.getString("CommsThread.5")); //$NON-NLS-1$
-              _parent.setSecondaryText(""); //$NON-NLS-1$
-              Log.println(false,"CommsThread.commandLoop() Received Apple /// SOS.KERNEL dump command."); //$NON-NLS-1$
-              requestSend(Messages.getString("Gui.BS.SOSKERNEL"), true, 0, 9600);
-              _busy = false;
-              break;
+            _busy = true;
+            _parent.setMainText(Messages.getString("CommsThread.5")); //$NON-NLS-1$
+            _parent.setSecondaryText(""); //$NON-NLS-1$
+            Log.println(false,"CommsThread.commandLoop() Received Apple /// SOS.KERNEL dump command."); //$NON-NLS-1$
+            requestSend(Messages.getString("Gui.BS.SOSKERNEL"), true, 0, 9600);
+            _busy = false;
+            break;
           case (byte) 180: // "4": Initiate SOS.INTERP dump
             _busy = true;
             _parent.setMainText(Messages.getString("CommsThread.5")); //$NON-NLS-1$
@@ -285,14 +283,14 @@ public class CommsThread extends Thread
             _busy = false;
             break;
           case (byte) 181: // "5": Initiate SOS.DRIVER dump
-              _busy = true;
-              _parent.setMainText(Messages.getString("CommsThread.5")); //$NON-NLS-1$
-              _parent.setSecondaryText(""); //$NON-NLS-1$
-              Log.println(false,"CommsThread.commandLoop() Received Apple /// SOS.DRIVER dump command."); //$NON-NLS-1$
-              requestSend(Messages.getString("Gui.BS.SOSDRIVER"), true, 0, 9600);
-              _busy = false;
-              _parent.setSerialSpeed(0);
-              break;
+            _busy = true;
+            _parent.setMainText(Messages.getString("CommsThread.5")); //$NON-NLS-1$
+            _parent.setSecondaryText(""); //$NON-NLS-1$
+            Log.println(false,"CommsThread.commandLoop() Received Apple /// SOS.DRIVER dump command."); //$NON-NLS-1$
+            requestSend(Messages.getString("Gui.BS.SOSDRIVER"), true, 0, 9600);
+            _busy = false;
+            _parent.setSerialSpeed(0);
+            break;
           default:
             Log.println(false,
                     "CommsThread.commandLoop() Received unknown command: " + UnsignedByte.toString(oneByte)); //$NON-NLS-1$
@@ -2686,7 +2684,7 @@ public class CommsThread extends Thread
                 break;
               }
               _transport.writeByte(buffer[i]);
-              _transport.flushSendBuffer();
+              _transport.pushBuffer();
               sleep(1);
               if (_shouldRun)
               {
@@ -2694,7 +2692,6 @@ public class CommsThread extends Thread
                 // Log.println(true, "DEBUG: CommsThread.Worker.run() setting progress to "+(i+1)+".");
               }
             }
-            _transport.flushSendBuffer();
           }
           else
           {
@@ -2746,7 +2743,7 @@ public class CommsThread extends Thread
               if (buffer[i] == 0x0d)
               {
                 _transport.writeByte(0x8d);
-                _transport.flushSendBuffer();
+                _transport.pushBuffer();
                 try
                 {
                   /*
