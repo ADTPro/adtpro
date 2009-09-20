@@ -314,17 +314,24 @@ public class SerialTransport extends ATransport
 
   public void writeBytes(byte data[], String log)
   {
-    if ((1499 - _outPacketPtr) >= data.length)
+	Log.println(false,"SerialTransport.writeBytes() adding "+data.length+" bytes to the stream.");
+    if (_outPacketPtr + data.length > _sendBuffer.length)
     {
-      // Log.println(false, "SerialTransport.writeBytes() writing " + data.length
-      // + " bytes into packet starting from " + _outPacketPtr + ".");
-      for (int i = 0; i < data.length; i++)
-      {
-        _sendBuffer[_outPacketPtr++] = data[i];
-      }
+      Log.println(false, "SerialTransport.writeBytes() Re-allocating the send buffer: "+_sendBuffer.length+" bytes is the new size.");
+      byte newBuffer[] = new byte[_sendBuffer.length+data.length];
+      for (int i = 0; i < _sendBuffer.length; i++)
+        newBuffer[i] = _sendBuffer[i];
+      _sendBuffer = new byte[newBuffer.length * 2];
+      for (int i = 0; i < newBuffer.length; i++)
+        _sendBuffer[i] = newBuffer[i];
+      _outPacketPtr = newBuffer.length;
     }
-    else
-      Log.println(false, "SerialTransport.writeBytes() didn't have room!");
+    // Log.println(false, "SerialTransport.writeBytes() writing " + data.length
+    // + " bytes into packet starting from " + _outPacketPtr + ".");
+    for (int i = 0; i < data.length; i++)
+    {
+      _sendBuffer[_outPacketPtr++] = data[i];
+    }
   }
 
   public void writeBytes(String str)
@@ -381,24 +388,27 @@ public class SerialTransport extends ATransport
   public void pushBuffer()
   {
     Log.println(false, "SerialTransport.pushBuffer() entry, pushing " + _outPacketPtr + " bytes.");
-	Log.println(false, "SerialTransport.pushBuffer() pushing data:");
-	for (int i = 0; i < _outPacketPtr; i++)
-	{
-	  if (((i % 32) == 0) && (i != 0)) Log.println(false, "");
-	  Log.print(false, UnsignedByte.toString(_sendBuffer[i]) + " ");
-	}
-	Log.println(false, "");
+    if (_outPacketPtr > 0)
+    {
+      Log.println(false, "SerialTransport.pushBuffer() pushing data:");
+      for (int i = 0; i < _outPacketPtr; i++)
+	  {
+	    if (((i % 32) == 0) && (i != 0)) Log.println(false, "");
+	    Log.print(false, UnsignedByte.toString(_sendBuffer[i]) + " ");
+	  }
+	  Log.println(false, "");
 
-	try
-	{
-      outputStream.write(_sendBuffer, 0, _outPacketPtr);
-	}
-	catch (IOException e)
-	{
-      e.printStackTrace();
-	}
-	_outPacketPtr = 0;
-    Log.println(false, "SerialTransport.pushBuffer() exit.");
+      try
+	  {
+        outputStream.write(_sendBuffer, 0, _outPacketPtr);
+      }
+	  catch (IOException e)
+	  {
+        e.printStackTrace();
+      }
+	  _outPacketPtr = 0;
+    }
+	Log.println(false, "SerialTransport.pushBuffer() exit.");
   }
 
   public void flushReceiveBuffer()
