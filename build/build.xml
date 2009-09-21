@@ -17,7 +17,7 @@ http://adtpro.sourceforge.net/developing.html
      non-executable. Switching back to Java 1.5 for compilation fixed it.
 -->
 <project name="ADTPro" default="all" basedir="..">
-	<property name="versionString" value="1.1.3" />
+	<property name="versionString" value="v.r.m" />
 	<property name="distName" value="ADTPro-${versionString}" />
 	<property name="diskName" value="ADTPRO-${versionString}" />
 	<property name="volName" value="ADTPro.${versionString}" />
