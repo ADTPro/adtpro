@@ -333,10 +333,11 @@ public final class Gui extends JFrame implements ActionListener
               _previousButton.doClick();
             }
           }
-          catch (gnu.io.PortInUseException e1)
-          {
-            _disconnectButton.doClick();
-          }
+          // Let us run without having rxtx installed at all...
+          // catch (gnu.io.PortInUseException e1)
+          // {
+          //   _disconnectButton.doClick();
+          // }
           catch (Exception e1)
           {
             Log.printStackTrace(e1);
