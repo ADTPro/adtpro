@@ -35,6 +35,7 @@ import org.adtpro.disk.Disk;
 import org.adtpro.disk.NibbleOrder;
 import org.adtpro.gui.Gui;
 import org.adtpro.utilities.Log;
+import org.adtpro.utilities.StringUtilities;
 import org.adtpro.utilities.UnsignedByte;
 
 public class CommsThread extends Thread
@@ -656,8 +657,8 @@ public class CommsThread extends Thread
           if (report == 0x00)
           {
             msg = Messages.getString("CommsThread.19");
-            msg = msg.replaceAll("%1", f.getName());
-            msg = msg.replaceAll("%2", "" + _diffMillis);
+            msg = StringUtilities.replaceSubstring(msg, "%1", f.getName());
+            msg = StringUtilities.replaceSubstring(msg, "%2", "" + _diffMillis);
             _parent.setSecondaryText(msg);
             Log.println(true, "Apple sent disk image "
                 + name
@@ -668,8 +669,8 @@ public class CommsThread extends Thread
           else
           {
             msg = Messages.getString("CommsThread.20");
-            msg = msg.replaceAll("%1", f.getName());
-            msg = msg.replaceAll("%2", "" + _diffMillis);
+            msg = StringUtilities.replaceSubstring(msg, "%1", f.getName());
+            msg = StringUtilities.replaceSubstring(msg, "%2", "" + _diffMillis);
             _parent.setSecondaryText(msg);
             Log
                 .println(true,
@@ -985,8 +986,8 @@ public class CommsThread extends Thread
                 if (report == 0x00)
                 {
                   String msg = Messages.getString("CommsThread.19");
-                  msg = msg.replaceAll("%1", f.getName());
-                  msg = msg.replaceAll("%2", "" + _diffMillis);
+                  msg = StringUtilities.replaceSubstring(msg, "%1", f.getName());
+                  msg = StringUtilities.replaceSubstring(msg, "%2", "" + _diffMillis);
                   _parent.setSecondaryText(msg);
                   Log
                       .println(
@@ -1745,8 +1746,8 @@ public class CommsThread extends Thread
           if (report == 0x00)
           {
             String msg = Messages.getString("CommsThread.19");
-            msg = msg.replaceAll("%1", f.getName());
-            msg = msg.replaceAll("%2", "" + _diffMillis);
+            msg = StringUtilities.replaceSubstring(msg, "%1", f.getName());
+            msg = StringUtilities.replaceSubstring(msg, "%2", "" + _diffMillis);
             _parent.setSecondaryText(msg);
             Log.println(true, "Apple sent disk image "
                 + name
@@ -1934,8 +1935,8 @@ public class CommsThread extends Thread
               if (report == 0x00)
               {
                 String msg = Messages.getString("CommsThread.19");
-                msg = msg.replaceAll("%1", f.getName());
-                msg = msg.replaceAll("%2", "" + _diffMillis);
+                msg = StringUtilities.replaceSubstring(msg, "%1", f.getName());
+                msg = StringUtilities.replaceSubstring(msg, "%2", "" + _diffMillis);
                 _parent.setSecondaryText(msg);
                 Log
                     .println(

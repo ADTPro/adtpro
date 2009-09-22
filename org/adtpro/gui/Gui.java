@@ -41,6 +41,7 @@ import org.adtpro.transport.SerialTransport;
 import org.adtpro.transport.UDPTransport;
 import org.adtpro.utilities.BareBonesBrowserLaunch;
 import org.adtpro.utilities.Log;
+import org.adtpro.utilities.StringUtilities;
 import org.adtpro.ADTProperties;
 import org.adtpro.CommsThread;
 
@@ -363,7 +364,7 @@ public final class Gui extends JFrame implements ActionListener
           if (success)
           {
             String msg = Messages.getString("Gui.ServingEthernetTitle");
-            msg = msg.replaceAll("%1", InetAddress.getLocalHost().getHostAddress());
+            msg = StringUtilities.replaceSubstring(msg, "%1", InetAddress.getLocalHost().getHostAddress());
             setTitle(msg);
             Log.println(false, "Gui.actionPerformed ethernet button connected.");
             _previousButton = _ethernetButton; // Remember last button
@@ -457,8 +458,8 @@ public final class Gui extends JFrame implements ActionListener
   public void setSerialTitle()
   {
     String msg = Messages.getString("Gui.ServingSerialTitle");
-    msg = msg.replaceAll("%1", _properties.getProperty("CommPort"));
-    msg = msg.replaceAll("%2", _properties.getProperty("CommPortSpeed"));
+    msg = StringUtilities.replaceSubstring(msg, "%1", _properties.getProperty("CommPort"));
+    msg = StringUtilities.replaceSubstring(msg, "%2", _properties.getProperty("CommPortSpeed"));
     setTitle(msg);
   }
 
@@ -625,7 +626,7 @@ public final class Gui extends JFrame implements ActionListener
         if (e.getActionCommand().equals(Messages.getString("Gui.About"))) //$NON-NLS-1$
         {
           String aboutString = Messages.getString("Gui.AboutText");
-          aboutString = aboutString.replaceAll("%1", Messages.getString("Version.Number"));
+          aboutString = StringUtilities.replaceSubstring(aboutString, "%1", Messages.getString("Version.Number"));
           JOptionPane.showMessageDialog(null, aboutString, Messages.getString("Gui.About"),
               JOptionPane.INFORMATION_MESSAGE);
         }
@@ -731,8 +732,8 @@ public final class Gui extends JFrame implements ActionListener
                           .getProperty("CommPortSpeed")), _properties.getProperty("HardwareHandshaking", "false")
                           .compareTo("true") == 0);
                       String msg = Messages.getString("Gui.ServingSerialTitle");
-                      msg = msg.replaceAll("%1", _properties.getProperty("CommPort"));
-                      msg = msg.replaceAll("%2", _properties.getProperty("CommPortSpeed"));
+                      msg = StringUtilities.replaceSubstring(msg, "%1", _properties.getProperty("CommPort"));
+                      msg = StringUtilities.replaceSubstring(msg, "%2", _properties.getProperty("CommPortSpeed"));
                       setTitle(msg);
                     }
                   }
