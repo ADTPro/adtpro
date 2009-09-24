@@ -31,7 +31,9 @@ http://adtpro.sourceforge.net/developing.html
 	<property name="jarBundlerJar" value="${builddir}/lib/jarbundler-2.1.0/jarbundler-2.1.0.jar" />
 	<property name="rxtxVersion" value="rxtx-2.2pre2-local" />
 	<property name="rxtxZip" value="${rxtxVersion}.zip" />
-	<property name="dmgmegabytes" value="4" />
+	<property name="rxtxVersion2" value="rxtx-2.1-7-bins-r2" />
+	<property name="rxtxZip2" value="${rxtxVersion2}.zip" />
+	<property name="dmgmegabytes" value="6" />
 	<taskdef name="appleDump" classname="org.adtpro.utilities.AppleDump" classpath="${projdir}"/>
 	<taskdef name="jarbundler" classname="net.sourceforge.jarbundler.JarBundler" classpath="${jarBundlerJar}"/>
 	<echo message="${distName} building on ${os.name}."/>
@@ -278,6 +280,7 @@ http://adtpro.sourceforge.net/developing.html
 		<copy file="${builddir}/adtprobase.sh" tofile="${builddir}/${distName}/adtpro.sh" />
 		<replace file="${builddir}/${distName}/adtpro.sh" token="%ADTPRO_VERSION%" value="${distName}.jar"/>
 		<replace file="${builddir}/${distName}/adtpro.sh" token="%RXTX_VERSION%" value="${rxtxVersion}"/>
+		<replace file="${builddir}/${distName}/adtpro.sh" token="%RXTX_VERSION_OLD%" value="${rxtxVersion2}"/>
 	</target>
 
 	<target name="builddsk" depends="buildProDOSdsk, buildSOSdsk">
@@ -379,6 +382,8 @@ http://adtpro.sourceforge.net/developing.html
 	<target name="jar">
 		<unzip src="${builddir}/lib/rxtx/${rxtxZip}"
 			dest="${builddir}/${distName}/lib/rxtx"/>
+		<unzip src="${builddir}/lib/rxtx/${rxtxZip2}"
+			dest="${builddir}/${distName}/lib/rxtx"/>
 		<copy file="${builddir}/README" todir="${builddir}/${distName}" />
 		<copy file="${builddir}/LICENSE" todir="${builddir}/${distName}" />
 		<copy file="${builddir}/ADTPro.html" todir="${builddir}/${distName}" />
@@ -425,7 +430,7 @@ http://adtpro.sourceforge.net/developing.html
 		</jarbundler>
 
 		<!-- Get rid of stuff the Apple crowd doesn't need -->
-		<delete file="${builddir}/${distName}/ADTPro.sh" />
+		<move file="${builddir}/${distName}/ADTPro.sh" tofile="${builddir}/${distName}/ADTPro.command"/>
 		<delete file="${builddir}/${distName}/ADTPro.bat" />
 		<delete file="${builddir}/${distName}/ADTPro.cmd" />
 

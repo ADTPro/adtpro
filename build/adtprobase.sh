@@ -14,12 +14,14 @@ export ADTPRO_HOME=`pwd`
 
 # Uncomment and modify one or both of the lines below if you
 # want to specify a particular location for Java or ADTPro.
-# NOTE: be sure to include a trailing slash on MY_JAVA_HOME.
+# NOTE: be sure to include a trailing slash on MY_JAVA_HOME,
+# but not on ADTPRO_HOME.
 #
 # export MY_JAVA_HOME=/usr/local/java/bin/
 # export ADTPRO_HOME=~/myuser/adtpro
 
 OS=`uname`
+OS_ARCH=`uname -p`
 
 # For Linux, use this:
 if [ "$OS" = "Linux" ]; then
@@ -28,7 +30,11 @@ fi
 
 # For OSX, use this:
 if [ "$OS" = "Darwin" ]; then
-  export RXTXLIB=lib/rxtx/%RXTX_VERSION%/mac-10.5
+  if [ "$OS_ARCH" = "powerpc" ]; then
+    export RXTXLIB=lib/rxtx/%RXTX_VERSION_OLD%/Mac_OS_X
+  else
+    export RXTXLIB=lib/rxtx/%RXTX_VERSION%/mac-10.5
+  fi
 fi
 
 # For Solaris, use this:
@@ -47,5 +53,5 @@ export TWEAK=$TWEAK1$ADTPRO_HOME/$RXTXLIB
 # tell Java what the class to execute is (6).  
 # To wit:
 cd "$ADTPRO_HOME"/disks
-"$MY_JAVA_HOME"java -Xms256m -Xmx512m "$TWEAK" -cp ../lib/%ADTPRO_VERSION%:../lib/rxtx/%RXTX_VERSION%/RXTXcomm.jar org.adtpro.ADTPro
-#               (1)     (2)     (2)      (3)                     (4)                     (5)                            (6)
+"$MY_JAVA_HOME"java -Xms256m -Xmx512m "$TWEAK" -cp ../lib/%ADTPRO_VERSION%:../"$RXTXLIB"/../RXTXcomm.jar org.adtpro.ADTPro
+#               (1)     (2)     (2)      (3)                     (4)                     (5)                    (6)
