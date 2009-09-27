@@ -30,6 +30,7 @@ import org.adtpro.transport.audio.BytesToWav;
 import org.adtpro.transport.audio.CaptureThread;
 import org.adtpro.transport.audio.PlaybackThread;
 import org.adtpro.utilities.Log;
+import org.adtpro.utilities.StringUtilities;
 import org.adtpro.utilities.UnsignedByte;
 
 public class AudioTransport extends ATransport
@@ -415,7 +416,7 @@ public class AudioTransport extends ATransport
       endAddr = fileSize - 1 + 8192;
       String endAddrHex = UnsignedByte.toString(UnsignedByte.hiByte(endAddr))
           + UnsignedByte.toString(UnsignedByte.loByte(endAddr));
-      ret = ret.replaceFirst("%1%", endAddrHex);
+      ret = StringUtilities.replaceSubstring(ret, "%1%", endAddrHex);
     }
     else
       if (guiString.equals(Messages.getString("Gui.BS.DOS")))
@@ -424,8 +425,8 @@ public class AudioTransport extends ATransport
         endAddr = fileSize - 1 + 976;
         String endAddrHex = UnsignedByte.toString(UnsignedByte.hiByte(endAddr))
             + UnsignedByte.toString(UnsignedByte.loByte(endAddr));
-        ret = ret.replaceFirst("%1%", endAddrHex);
-        ret = ret.replaceFirst("0.0", "0."); // Remove the unsightly leading
+        ret = StringUtilities.replaceSubstring(ret, "%1%", endAddrHex);
+        ret = StringUtilities.replaceSubstring(ret, "0.0", "0."); // Remove the unsightly leading
         // zero
       }
       else
@@ -435,7 +436,7 @@ public class AudioTransport extends ATransport
           endAddr = fileSize - 1 + 2051;
           String endAddrHex = UnsignedByte.toString(UnsignedByte.hiByte(endAddr))
               + UnsignedByte.toString(UnsignedByte.loByte(endAddr));
-          ret = ret.replaceFirst("%1%", endAddrHex);
+          ret = StringUtilities.replaceSubstring(ret, "%1%", endAddrHex);
         }
         else
           if (guiString.equals(Messages.getString("Gui.BS.DOS2"))) ret = Messages
@@ -460,7 +461,7 @@ public class AudioTransport extends ATransport
               String endAddrHex = UnsignedByte.toString(UnsignedByte
                   .hiByte(endAddr))
                   + UnsignedByte.toString(UnsignedByte.loByte(endAddr));
-              ret = ret.replaceFirst("%1%", endAddrHex);
+              ret = StringUtilities.replaceSubstring(ret, "%1%", endAddrHex);
             }
     Log.println(false, "AudioTransport.getInstructions() returning:\n" + ret);
     return ret;

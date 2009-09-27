@@ -1,6 +1,6 @@
 /*
  * ADTPro - Apple Disk Transfer ProDOS
- * Copyright (C) 2007 by David Schmidt
+ * Copyright (C) 2007 - 2009 by David Schmidt
  * david__schmidt at users.sourceforge.net
  *
  * This program is free software; you can redistribute it and/or modify it 
@@ -62,10 +62,11 @@ public class PlaybackThread extends Thread
 
   public void play()
   {
-    GregorianCalendar startTime, endTime;
-    float diffMillis = 0;
+    long startTime;
+	long endTime;
+    long diffMillis = 0;
     Log.println(false, "PlaybackThread.play() entry.");
-    startTime = new GregorianCalendar();
+    startTime = System.currentTimeMillis();
     /*
      * From the AudioInputStream, i.e. from the sound file, we fetch information
      * about the format of the audio data. These information include the
@@ -173,11 +174,11 @@ public class PlaybackThread extends Thread
       line.close();
       if ((_parent != null) && (_shouldRun))
       {
-        endTime = new GregorianCalendar();
-        diffMillis = (float) (endTime.getTimeInMillis() - startTime.getTimeInMillis()) / (float) 1000;
+        endTime = System.currentTimeMillis();
+        diffMillis = endTime - startTime / 1000;
         _parent.setSecondaryText(Messages.getString("CommsThread.22") + " in " + diffMillis + " seconds.");
-        Log.println(true, "Text file sent in " + (float) (endTime.getTimeInMillis() - startTime.getTimeInMillis())
-            / (float) 1000 + " seconds.");
+        Log.println(true, "Text file sent in " + ((endTime - startTime)
+            / 1000) + " seconds.");
         Log.println(false, "PlaybackThread.play() exit.");
       }
     }

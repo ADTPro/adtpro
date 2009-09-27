@@ -1,6 +1,6 @@
 /*
  * ADTPro - Apple Disk Transfer ProDOS
- * Copyright (C) 2007 by David Schmidt
+ * Copyright (C) 2007 - 2009 by David Schmidt
  * david__schmidt at users.sourceforge.net
  *
  * This program is free software; you can redistribute it and/or modify it 
@@ -59,9 +59,9 @@ public class CommsThread extends Thread
 
   private int _maxRetries = 10;
 
-  GregorianCalendar _startTime = null, _endTime = null;
+  long _startTime, _endTime;
 
-  private float _diffMillis;
+  private long _diffMillis;
 
   private Worker _worker = null;
 
@@ -492,7 +492,7 @@ public class CommsThread extends Thread
   /* Main receive routine - Host <- Apple (Apple sends) */
   {
     Log.println(false, "CommsThread.receiveDisk() entry.");
-    _startTime = new GregorianCalendar();
+    _startTime = System.currentTimeMillis();
     try
     {
       Log.print(false, "Waiting for name..."); //$NON-NLS-1$
@@ -650,10 +650,8 @@ public class CommsThread extends Thread
         {
           String msg;
           report = waitForData(15);
-          _endTime = new GregorianCalendar();
-          _diffMillis = (float) (_endTime.getTimeInMillis() - _startTime
-              .getTimeInMillis())
-              / (float) 1000;
+          _endTime = System.currentTimeMillis();
+          _diffMillis = (_endTime - _startTime) / 1000;
           if (report == 0x00)
           {
             msg = Messages.getString("CommsThread.19");
@@ -663,8 +661,7 @@ public class CommsThread extends Thread
             Log.println(true, "Apple sent disk image "
                 + name
                 + " successfully in "
-                + (float) (_endTime.getTimeInMillis() - _startTime
-                    .getTimeInMillis()) / (float) 1000 + " seconds.");
+                + (_endTime - _startTime) / 1000 + " seconds.");
           }
           else
           {
@@ -737,7 +734,7 @@ public class CommsThread extends Thread
     byte ack, report;
     int length;
     boolean sendSuccess = false;
-    _startTime = new GregorianCalendar();
+    _startTime = System.currentTimeMillis();
     /*
      * ADT protocol: receive the requested file name
      */
@@ -813,10 +810,9 @@ public class CommsThread extends Thread
             if (sendSuccess)
             {
               report = waitForData(15);
-              _endTime = new GregorianCalendar();
-              _diffMillis = (float) (_endTime.getTimeInMillis() - _startTime
-                  .getTimeInMillis())
-                  / (float) 1000;
+              _endTime = System.currentTimeMillis();
+              _diffMillis = (_endTime - _startTime)
+                  / 1000;
               if (report == 0x00)
               {
                 _parent.setSecondaryText(Messages.getString("CommsThread.17")
@@ -824,7 +820,7 @@ public class CommsThread extends Thread
                 Log
                     .println(
                         true,
-                        "Apple received disk image " + name + " successfully in " + (float) (_endTime.getTimeInMillis() - _startTime.getTimeInMillis()) / (float) 1000 + " seconds."); //$NON-NLS-1$ //$NON-NLS-2$
+                        "Apple received disk image " + name + " successfully in " + (float) (_endTime - _startTime) / 1000 + " seconds."); //$NON-NLS-1$ //$NON-NLS-2$
               }
               else
               {
@@ -890,7 +886,7 @@ public class CommsThread extends Thread
    */
   public void send140kDisk()
   {
-    _startTime = new GregorianCalendar();
+    _startTime = System.currentTimeMillis();
     /*
      * ADT protocol: receive the requested file name
      */
@@ -979,10 +975,8 @@ public class CommsThread extends Thread
                  * ADT protocol: receive final error report
                  */
                 byte report = waitForData(15);
-                _endTime = new GregorianCalendar();
-                _diffMillis = (float) (_endTime.getTimeInMillis() - _startTime
-                    .getTimeInMillis())
-                    / (float) 1000;
+                _endTime = System.currentTimeMillis();
+                _diffMillis = (_endTime - _startTime) /  1000;
                 if (report == 0x00)
                 {
                   String msg = Messages.getString("CommsThread.19");
@@ -992,7 +986,7 @@ public class CommsThread extends Thread
                   Log
                       .println(
                           true,
-                          "Apple sent disk image " + name + " successfully in " + (float) (_endTime.getTimeInMillis() - _startTime.getTimeInMillis()) / (float) 1000 + " seconds."); //$NON-NLS-1$ //$NON-NLS-2$
+                          "Apple sent disk image " + name + " successfully in " + (float) (_endTime - _startTime) / 1000 + " seconds."); //$NON-NLS-1$ //$NON-NLS-2$
                 }
                 else
                 {
@@ -1243,7 +1237,7 @@ public class CommsThread extends Thread
     int chunk, chunksDone = 0;
     byte ack, report;
     boolean sendSuccess = false;
-    _startTime = new GregorianCalendar();
+    _startTime = System.currentTimeMillis();
     /*
      * ADT protocol: receive the requested file name
      */
@@ -1485,10 +1479,8 @@ public class CommsThread extends Thread
             if (sendSuccess)
             {
               report = waitForData(15);
-              _endTime = new GregorianCalendar();
-              _diffMillis = (float) (_endTime.getTimeInMillis() - _startTime
-                  .getTimeInMillis())
-                  / (float) 1000;
+              _endTime = System.currentTimeMillis();
+              _diffMillis = (_endTime - _startTime) / 1000;
               if (report == 0x00)
               {
                 _parent.setSecondaryText(Messages.getString("CommsThread.17")
@@ -1496,7 +1488,7 @@ public class CommsThread extends Thread
                 Log
                     .println(
                         true,
-                        "Apple received disk image " + name + " successfully in " + (float) (_endTime.getTimeInMillis() - _startTime.getTimeInMillis()) / (float) 1000 + " seconds."); //$NON-NLS-1$ //$NON-NLS-2$
+                        "Apple received disk image " + name + " successfully in " + (float) (_endTime - _startTime) / (float) 1000 + " seconds."); //$NON-NLS-1$ //$NON-NLS-2$
               }
               else
               {
@@ -1561,7 +1553,7 @@ public class CommsThread extends Thread
   {
     boolean shouldContinue = true;
     Log.println(false, "CommsThread.receiveNibbleDisk() entry.");
-    _startTime = new GregorianCalendar();
+    _startTime = System.currentTimeMillis();
     try
     {
       Log.print(false, "Waiting for name..."); //$NON-NLS-1$
@@ -1739,10 +1731,8 @@ public class CommsThread extends Thread
         if (packetResult == 0)
         {
           report = waitForData(15);
-          _endTime = new GregorianCalendar();
-          _diffMillis = (float) (_endTime.getTimeInMillis() - _startTime
-              .getTimeInMillis())
-              / (float) 1000;
+          _endTime = System.currentTimeMillis();
+          _diffMillis = (_endTime - _startTime) / 1000;
           if (report == 0x00)
           {
             String msg = Messages.getString("CommsThread.19");
@@ -1752,8 +1742,7 @@ public class CommsThread extends Thread
             Log.println(true, "Apple sent disk image "
                 + name
                 + " successfully in "
-                + (float) (_endTime.getTimeInMillis() - _startTime
-                    .getTimeInMillis()) / (float) 1000 + " seconds.");
+                + (_endTime - _startTime) / 1000 + " seconds.");
           }
           else
           {
@@ -1853,7 +1842,7 @@ public class CommsThread extends Thread
 
   public void receive140kDisk()
   {
-    _startTime = new GregorianCalendar();
+    _startTime = System.currentTimeMillis();
     try
     {
       String name = _parent.getWorkingDirectory() + receiveName();
@@ -1928,10 +1917,8 @@ public class CommsThread extends Thread
             if (packetResult == 0)
             {
               report = waitForData(15);
-              _endTime = new GregorianCalendar();
-              _diffMillis = (float) (_endTime.getTimeInMillis() - _startTime
-                  .getTimeInMillis())
-                  / (float) 1000;
+              _endTime = System.currentTimeMillis();
+              _diffMillis = (_endTime - _startTime) / 1000;
               if (report == 0x00)
               {
                 String msg = Messages.getString("CommsThread.19");
@@ -1941,7 +1928,7 @@ public class CommsThread extends Thread
                 Log
                     .println(
                         true,
-                        "Apple sent disk image " + name + " successfully in " + (float) (_endTime.getTimeInMillis() - _startTime.getTimeInMillis()) / (float) 1000 + " seconds."); //$NON-NLS-1$ //$NON-NLS-2$
+                        "Apple sent disk image " + name + " successfully in " + (float) (_endTime - _startTime) / (float) 1000 + " seconds."); //$NON-NLS-1$ //$NON-NLS-2$
               }
               else
               {
@@ -2617,7 +2604,7 @@ public class CommsThread extends Thread
     {
       Log.println(false, "CommsThread.Worker.run() entry.");
       int bytesRead, bytesAvailable;
-      _startTime = new GregorianCalendar();
+      _startTime = System.currentTimeMillis();
       _busy = true;
       if (_transport.transportType() == ATransport.TRANSPORT_TYPE_AUDIO)
       {
@@ -2785,16 +2772,14 @@ public class CommsThread extends Thread
           if (_shouldRun)
           {
             _transport.pushBuffer();
-            _endTime = new GregorianCalendar();
-            _diffMillis = (float) (_endTime.getTimeInMillis() - _startTime
-                .getTimeInMillis())
-                / (float) 1000;
+            _endTime = System.currentTimeMillis();
+            _diffMillis = (_endTime - _startTime)
+                / 1000;
             // sleep(1000);
             _parent.setSecondaryText(Messages.getString("CommsThread.22")
                 + " in " + _diffMillis + " seconds.");
             Log.println(true, "Text file sent in "
-                + (float) (_endTime.getTimeInMillis() - _startTime
-                    .getTimeInMillis()) / (float) 1000 + " seconds.");
+                + (_endTime - _startTime) / 1000 + " seconds.");
             String message = _transport.getInstructionsDone(_resource);
             if (!message.equals(""))
             {

@@ -1,6 +1,6 @@
 /*
  * ADTPro - Apple Disk Transfer ProDOS
- * Copyright (C) 2006 by David Schmidt
+ * Copyright (C) 2006, 2009 by David Schmidt
  * david__schmidt at users.sourceforge.net
  *
  * Serial Transport notions derived from the jSyncManager project
@@ -29,6 +29,7 @@ import java.util.*;
 import org.adtpro.gui.Gui;
 import org.adtpro.resources.Messages;
 import org.adtpro.utilities.Log;
+import org.adtpro.utilities.StringUtilities;
 import org.adtpro.utilities.UnsignedByte;
 
 import gnu.io.*;
@@ -578,7 +579,7 @@ public class SerialTransport extends ATransport
       default:
         baudCommand = "6";
     }
-    ret = ret.replaceFirst("%1%", baudCommand);
+    ret = StringUtilities.replaceSubstring(ret, "%1%", baudCommand);
 
     Log.println(false, "SerialTransport.getInstructionsDone() returning:\n"
         + ret);
