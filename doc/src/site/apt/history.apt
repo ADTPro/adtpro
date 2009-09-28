@@ -6,6 +6,18 @@
 
 ADTPro Release History
 
+* In CVS now, as-yet unreleased
+
+~~ New functionality:
+~~
+~~ []
+
+ Bug fixes:
+
+ * [Server] Removed most post Java-1.3 code so server can run on Java 1.3 (i.e. Mac OSX 10.2)
+
+ []
+
 * 1.1.3 - September 20, 2009
 
  New functionality:
