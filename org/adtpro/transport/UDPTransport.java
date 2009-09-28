@@ -1,6 +1,6 @@
 /*
  * ADTPro - Apple Disk Transfer ProDOS
- * Copyright (C) 2006 by David Schmidt
+ * Copyright (C) 2006 - 2009 by David Schmidt
  * david__schmidt at users.sourceforge.net
  *
  * Serial Transport notions derived from the jSyncManager project
@@ -26,7 +26,6 @@ package org.adtpro.transport;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
-import java.net.SocketException;
 
 import org.adtpro.resources.Messages;
 import org.adtpro.utilities.Log;
@@ -77,7 +76,7 @@ public class UDPTransport extends ATransport
       {
         pullBuffer(seconds);
       }
-      catch (SocketException e1)
+      catch (java.net.SocketTimeoutException e1)
       {
         throw (new TransportTimeoutException());
       }
@@ -92,7 +91,7 @@ public class UDPTransport extends ATransport
       {
         pullBuffer(seconds);
       }
-      catch (SocketException e1)
+      catch (java.net.SocketTimeoutException e1)
       {
         throw (new TransportTimeoutException());
       }
@@ -241,7 +240,7 @@ public class UDPTransport extends ATransport
     _socket.setSoTimeout(seconds*1000);
     _socket.receive(_packet);
     Log.println(false,"UDPTransport.pullBuffer() received a packet.");
-    _socket.connect(_packet.getAddress(), 0);
+    _socket.connect(_packet.getSocketAddress());
     Log.println(false,"UDPTransport.pullBuffer() connected to socket.");
     _receiveBuffer = _packet.getData();
     _inPacketLen = _packet.getLength();
