@@ -116,29 +116,7 @@ public class SerialConfig extends JDialog implements ActionListener
     this.getContentPane().add(buttonPanel,BorderLayout.SOUTH);
     Log.getSingleton();
     comboComPort = new JComboBox();
-    try
-    {
-      Log.println(false, "SerialConfig Constructor about to attempt to instantiate rxtx library.");
-      String[] portNames = SerialTransport.getPortNames();
-      for (int i = 0; i < portNames.length; i++)
-      {
-        String nextName = portNames[i];
-        if (nextName == null) continue;
-        if (!nextName.startsWith("LPT")) // Get rid of LPTx ports, since we're
-                                         // not likely to run on parallel
-                                         // hardware...
-        comboComPort.addItem(nextName);
-      }
-      _parent.setSerialAvailable(true);
-      Log.println(false, "SerialConfig Constructor completed instantiating rxtx library.");
-    }
-    catch (Throwable t)
-    {
-      Log.println(true, Messages.getString("Gui.NoRXTX")); //$NON-NLS-1$
-      Log.println(false, "SerialConfig Constructor could not instantiate the rxtx library.");
-      _parent.setSerialAvailable(false);
-    }
-
+    enumeratePorts();
     comboSpeed = new JComboBox();
     comboSpeed.addItem("300"); //$NON-NLS-1$
     comboSpeed.addItem("9600"); //$NON-NLS-1$
@@ -300,6 +278,7 @@ public class SerialConfig extends JDialog implements ActionListener
   public static void showSingleton(Gui parent, int tab)
   {
     Log.println(false,"SerialConfig.showSingleton() showing tab "+tab+".");
+    _theSingleton.enumeratePorts();
     _theSingleton.setModal(true);
     _theSingleton.setBounds(FrameUtils.center(_theSingleton.getSize(),parent.getBounds()));
     _theSingleton._tabbedPane.setSelectedIndex(tab);
@@ -349,6 +328,36 @@ public class SerialConfig extends JDialog implements ActionListener
       this.setVisible(false);
     }
     Log.println(false,"SerialConfig.actionPerformed() exit.");
+  }
+
+  public void enumeratePorts()
+  {
+    Log.println(false,"SerialConfig.enumeratePorts() entry.");
+    comboComPort.removeAllItems();
+    try
+    {
+      Log.println(false, "SerialConfig.enumeratePorts() about to attempt to instantiate rxtx library.");
+      String[] portNames = SerialTransport.getPortNames();
+      for (int i = 0; i < portNames.length; i++)
+      {
+        String nextName = portNames[i];
+        if (nextName == null) continue;
+        if (!nextName.startsWith("LPT")) // Get rid of LPTx ports, since we're
+                                         // not likely to run on parallel
+                                         // hardware...
+        comboComPort.addItem(nextName);
+      }
+      _parent.setSerialAvailable(true);
+      Log.println(false, "SerialConfig.enumeratePorts() completed instantiating rxtx library.");
+    }
+    catch (Throwable t)
+    {
+      Log.println(true, Messages.getString("Gui.NoRXTX")); //$NON-NLS-1$
+      Log.println(false, "SerialConfig Constructor could not instantiate the rxtx library.");
+      _parent.setSerialAvailable(false);
+    }
+
+    Log.println(false,"SerialConfig.enumeratePorts() exit.");
   }
 
   public int getExitStatus()
