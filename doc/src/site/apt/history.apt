@@ -16,6 +16,9 @@ ADTPro Release History
 
  * [Server] Removed most post-Java-1.3 code so server can run on Java 1.3 (i.e. Mac OSX 10.2)
 
+ * [Server] Re-scan for serial ports every time the serial config gui comes up; detects USB
+   port changes
+
  []
 
 * 1.1.3 - September 20, 2009
