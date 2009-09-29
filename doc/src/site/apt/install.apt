@@ -86,32 +86,32 @@ OS/2 RXTX Considerations
 
 Distribution contents
 
- The distribution should contain:
+ The distribution should contain most of these files, depending on platform:
 
- * <<<adtpro.bat    >>> - A Windows server startup batch file
+ [<<<adtpro.bat>>>] A Windows server startup batch file
 
- * <<<adtpro.cmd    >>> - An OS/2 server startup command file
+ [<<<adtpro.cmd>>>] An OS/2 server startup command file
 
- * <<<adtpro.command>>> - An OSX server startup command file
+ [<<<ADTPro-v.r.m.app>>>] An OSX server application for OSX 10.3 and above
 
- * <<<adtpro.sh     >>> - A Linux/Solaris server startup shell script
+ [<<<adtpro.command>>>] An OSX server startup command file for OSX 10.2 and below
 
- * <<<LICENSE       >>> - The GNU Public License file
+ [<<<adtpro.sh>>>] A Linux/Solaris server startup shell script
 
- * <<<README        >>> - The info you're looking at now, mostly
+ [<<<LICENSE>>>] The GNU Public License file
 
- * <<<disks/ADTPRO-v.r.m.DSK  >>> - ADTPro client-side software (an Apple 140K disk image)
+ [<<<README>>>] The info you're looking at now, mostly
 
- * <<<disks/ADTSOS-CFIDE-v.r.m.DSK>>> - A disk specifically for Apple /// computers with Rich Dreher's {{{http://dreher.net/?s=projects/CFforAppleII&c=projects/CFforAppleII/main.php}Compact Flash}} board driver in slot 1
+ [<<<disks/ADTPRO-v.r.m.DSK>>>] ADTPro client-side software (an Apple 140K disk image)
 
- * <<<disks/ADTPRO-v.r.m.PO   >>> - ADTPro client-side software (an Apple 800K disk image)
+ [<<<disks/ADTPRO-v.r.m.PO>>>] ADTPro client-side software (an Apple 800K disk image)
 
- * <<<disks/ADTvrm.DSK        >>> - An enhanced legacy Apple DOS ADT client, capable 
+ [<<<disks/ADTvrm.DSK>>>] An enhanced legacy Apple DOS ADT client, capable 
    of running with Super Serial hardware, the IIgs modem port, a Laser 128, and the Apple ///
    (an Apple 140K disk image)
 
- * <<<lib/ADTPro-v.r.m.jar    >>> - ADTPro server-side software (a Java .jar file)
+ [<<<lib/ADTPro-v.r.m.jar>>>] ADTPro server-side software (a Java .jar file)
  
- * <<<lib/rxtx/...            >>> - Java serial library files
+ [<<<lib/rxtx/...>>>] Java serial library files
 
  []

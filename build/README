@@ -12,9 +12,10 @@ particular to the target platform:
   * ADTPro-v.r.m.dmg - Mac OSX
   * ADTPro-v.r.m.zip - Windows/OS/2
   
-After unpacking the distribution file, you will find:
+Your distribution should contain most of these, depending on platform:
 
- * ADTPro-v.r.m.app       - OSX server application
+ * ADTPro-v.r.m.app       - OSX server application for OSX 10.3 and above
+ * adtpro.command         - OSX server startup command file for OSX 10.2 and below
  * adtpro.bat             - Windows server startup batch file
  * adtpro.cmd             - OS/2 server startup batch file
  * adtpro.sh              - Linux/Solaris server startup
@@ -52,7 +53,7 @@ Windows and OSX, double-click on the icon of the startup program:
 
 Linux, Solaris: adtpro.sh
 OS/2:           adtpro.cmd
-OSX:            ADTPro-v.r.m.app
+OSX:            ADTPro-v.r.m.app or adtpro.command
 Windows:        adtpro.bat
 
 You can modify the startup program to suit your environment.
