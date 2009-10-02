@@ -1,32 +1,35 @@
-@REM
-@REM ADTPro - Windows startup batch file
-@REM
-@REM You can set two variables here:
-@REM   1. %JAVA_HOME% - to pick a particular java to run under
-@REM   2. %ADTPRO_HOME% - to say where you installed ADTPro
-@REM
-@REM e.g. uncomment (remove the "@REM" from in front) and customize
-@REM      the following SET statements.  
-@REM Note: They must have a trailing backslash as in the examples!
+@echo off
+REM
+REM ADTPro - Windows startup batch file
+REM
+REM You can set two variables here:
+REM   1. %JAVA_HOME% - to pick a particular java to run under
+REM   2. %ADTPRO_HOME% - to say where you installed ADTPro
+REM
+REM e.g. uncomment (remove the "@REM" from in front) and customize
+REM      the following SET statements.  
+REM Note: They must have a trailing backslash as in the examples!
 
-@SET ADTPRO_HOME=%CD%\
-@REM SET ADTPRO_HOME=C:\src\workspace\311\adtpro\build\
-@REM SET MY_JAVA_HOME=C:\Progra~1\IBM\Java142\bin\
+SET ADTPRO_HOME=%CD%\
+REM SET ADTPRO_HOME=C:\src\workspace\35\adtpro\build\
+REM SET MY_JAVA_HOME=C:\Progra~1\IBM\Java142\bin\
 
-@IF "%PROCESSOR_ARCHITECTURE%"=="x86" (
-@set rxtxarch=win32
-) ELSE IF "%PROCESSOR_ARCHITECTURE%"=="ia64" (
-@set rxtxarch=none
-) ELSE (
-@set rxtxarch=win64
-)
+set RXTX_PATH=%RXTX_VERSION_OLD%
+set RXTX_ARCH=%RXTX_PATH%\Windows\i368-mingw32
 
-@SET CWD=%CD%
-@if "%ADTPRO_CLASSPATH_SET%" == "1" goto start
-@set ADTPRO_CLASSPATH_SET=1
-@PATH=%PATH%;%ADTPRO_HOME%lib\rxtx\%RXTX_VERSION%\%rxtxarch%
+IF "%PROCESSOR_ARCHITECTURE%"=="x86" goto add_classpath
+
+:bit64
+set RXTX_PATH=%RXTX_VERSION%
+set RXTX_ARCH=%RXTX_PATH%\win64
+
+:add_classpath
+SET CWD=%CD%
+if "%ADTPRO_CLASSPATH_SET%" == "1" goto start
+set ADTPRO_CLASSPATH_SET=1
+PATH=%PATH%;%ADTPRO_HOME%lib\rxtx\%RXTX_ARCH%
 
 :start
-@CD "%ADTPRO_HOME%disks"
-@start /min %MY_JAVA_HOME%java -Xms128m -Xmx256m -cp "%ADTPRO_HOME%lib\%ADTPRO_VERSION%";"%ADTPRO_HOME%lib\rxtx\%RXTX_VERSION%\RXTXcomm.jar" org.adtpro.ADTPro
-@CD "%CWD%"
+CD "%ADTPRO_HOME%disks"
+start /min %MY_JAVA_HOME%java -Xms128m -Xmx256m -cp "%ADTPRO_HOME%lib\%ADTPRO_VERSION%";"%ADTPRO_HOME%lib\rxtx\%RXTX_PATH%\RXTXcomm.jar" org.adtpro.ADTPro
+CD "%CWD%"
