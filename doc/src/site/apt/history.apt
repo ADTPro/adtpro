@@ -21,6 +21,14 @@ ADTPro Release History
 
  []
 
+* 1.1.3-2 - October 2, 2009
+
+ Bug fix:
+
+ * [Server] Reverted to older version of RXTX library on Windows distribution only 
+
+ []
+
 * 1.1.3 - September 20, 2009
 
  New functionality:
