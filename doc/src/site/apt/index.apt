@@ -38,7 +38,7 @@ drive types, communications devices, and host operating systems.
 
     * Understands many digital disk formats: .DSK, .PO, .NIB, 2IMG
 
-    * Serves the original {{{compatability.html}ADT client}} as well as the updated ADTPro client
+    * Serves the original {{{compatibility.html}ADT client}} as well as the updated ADTPro client
 
     * {{{#Bootstrapping}Bootstraps}} Apple II and Apple /// computers from bare metal over {{{bootstrap.html}serial}} or {{{bootstrapaudio.html}cassette}} ports
 

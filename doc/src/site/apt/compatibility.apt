@@ -1,12 +1,12 @@
  -----
- ADTPro-ADT Compatability
+ ADTPro-ADT Compatibility
  -----
  David Schmidt (david__schmidt at users dot souceforge dot net)
  -----
 
-ADT Compatability
+ADT Compatibility
 
- The compatability of ADTPro and related programs is starting to
+ The compatibility of ADTPro and related programs is starting to
  get a little tricky.  A goal of ADTPro is for the server to remain
  compatible with the vast majority of ADT and ADT-derived clients
  currently in use, while providing a superset of functionality in

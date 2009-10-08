@@ -14,7 +14,7 @@ Miscellaneous Functions
 
  The nibble/half track send function is still experimental, and so far
  has only been incorporated into the included DOS ADT client.
- See the {{{compatability.html#Nibble}ADT Compatibility page}} for more 
+ See the {{{compatibility.html#Nibble}ADT Compatibility page}} for more 
  information.
 
 * {Format} Volumes (disks)

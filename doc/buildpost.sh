@@ -5,7 +5,7 @@ perl -i.orig -p ../../removeMaven.re bootstrap.html
 perl -i.orig -p ../../removeMaven.re bootstrap3.html
 perl -i.orig -p ../../removeMaven.re bootstrapaudio.html
 perl -i.orig -p ../../removeMaven.re bootstrapmain.html
-perl -i.orig -p ../../removeMaven.re compatability.html
+perl -i.orig -p ../../removeMaven.re compatibility.html
 perl -i.orig -p ../../removeMaven.re configmain.html
 perl -i.orig -p ../../removeMaven.re configaudio.html
 perl -i.orig -p ../../removeMaven.re configaudiomain.html

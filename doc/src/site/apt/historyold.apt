@@ -182,7 +182,7 @@ ADTPro Release Ancient History
 
   * Understands many digital disk formats: .DSK, .PO, .NIB, 2IMG
 
-  * Serves the original {{{compatability.html}ADT client}} as well as the updated ADTPro client
+  * Serves the original {{{compatibility.html}ADT client}} as well as the updated ADTPro client
 
   * Bootstraps Apple II computers from bare metal over {{{bootstrap.html}serial}} or {{{bootstrapaudio.html}cassette}} ports
 
