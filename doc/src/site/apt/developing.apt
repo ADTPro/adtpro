@@ -6,7 +6,7 @@
 
 Developing ADTPro
 
- The full build system for ADTPro actually uses several components
+ The build system for ADTPro actually uses several components
 that are not readily visible.  The full list looks like this:
 
  * {{{http://ant.apache.org/}Ant}} - orchestrates the build process
@@ -56,12 +56,10 @@ The minimum amount of work you'd go through to do so:
 
  * Download and install Eclipse from {{{http://www.eclipse.org/}http://www.eclipse.org}}
  
- * Download and install a Java {{{http://download.eclipse.org/eclipse/downloads/drops/R-3.2.2-200702121330//java-runtimes.html}JRE}} if your Eclipse distribution doesn't come with one
+ * Download and install a Java {{{http://download.eclipse.org/eclipse/downloads/drops/R-3.2.2-200702121330//java-runtimes.html}JDK}} if your Eclipse distribution doesn't come with one
  
- * Download and install the cc65 toolchain from {{{http://www.cc65.org/}http://www.cc65.org}}
+ * Download and install the cc65 toolchain from {{{http://www.cc65.org/}http://www.cc65.org}} - you only need the one for your development platform (Windows, OS/2, Linux - not the 8-bit support modules)
  
- * Download and install the rxtx library from {{{http://www.rxtx.org/}http://rxtx.org}} - select the Download link, and grab the latest binary release
-
  []
 
 * {Downloading/Importing the ADTPro Project}
@@ -96,7 +94,7 @@ the next few configuration dialogs in Eclipse.
  []
 
  You now have the entire ADTPro project checked out to your workspace,
-and it probably looks mad (see the red X marks):
+and it probably looks angry (see the red X marks):
 
 [images/eclipse5.png]
 
