@@ -42,7 +42,7 @@ ADTPro Release History
 
  Bug fixes:
 
- * [Client] Space bar wasn't cycling through configuration items on machines
+ * [Client] Space bar wasn't cycling through configuration items on Apple II machines
    without up/down arrow keys
 
  * [Server] Fixed breathtakingly slow operations with FTDI-based USB serial adapters
