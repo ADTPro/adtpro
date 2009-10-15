@@ -15,12 +15,6 @@ server code to Java.  The Win32 GUI code was written by Sean Gugler.  The
 ADTWin project is hosted here:
 {{http://www.apple2.org.za/gswv/a2zine/Sel/ADTWin.html}}
 
-  The ability to read and analyze tracks at the nibble level was generously
-donated by Gerard Putter from his Virtual ][ project:
-{{http://www.virtualii.com}}  This makes it possible to archive some lightly
-copy-protected disks and put them in .nib format, removing the need to run
-the likes of SST to generate the image.
-   
  The routine to read a Disk II device much faster than ProDOS comes from 
 Jean-Marc Boutillon (Deckard) and his FASTDSK program: 
 {{http://boutillon.free.fr/Underground/Docs/Fastdsk/Fastdsk_en.html}}
@@ -29,9 +23,15 @@ sector-by-sector status, but added slot independence.
 I also borrowed config file loading and saving from
 the FASTDSK package, and added config file creation as well.
 
- The routine to decide what kind of block device a particular slot/drive 
-combination contains was generously donated by Mark Percival.  It originates
-from his DiskMaker 8 program: {{http://www.markpercival.net/DM8/}}
+ {{{http://a2retrosystems.com}Glenn Jones}} generously donated an Uthernet card
+to enable IP transport development for both II and /// machines. 
+ 
+ The IP stack is taken from MagerValp's tight and fast ip65 project code at 
+{{http://www.paradroid.net/ip65/}}
+It was ported to the Apple II by Glenn Jones.
+It turns out that the ip65's checksum algorithm is faulty, so not being smart enough
+to debug it myself, I simply transplanted the one from the Contiki project
+({{http://www.sics.se/contiki/}}).
 
  The disk abstraction layer of ADTPro's server software was borrowed from the 
 AppleCommander project: {{http://applecommander.sourceforge.net/}}
@@ -40,15 +40,22 @@ AppleCommander project: {{http://applecommander.sourceforge.net/}}
 etc. with concepts and code from the CiderPress project:
 {{http://ciderpress.sourceforge.net/}}
 
- The serial communications layer conceps of ADTPro's server software were borrowed
+ The serial communications layer concepts of ADTPro's server software were borrowed
 from the jSyncManager project: {{http://jsyncmanager.sourceforge.net/}}
 
  Hardware-level serial communications in Java comes from
 the rxtx organization: {{http://www.rxtx.org/}}
 
- ProDOS assembly programming particulars were divined from the {{{ftp://a2central.com/a2c.essential/A2_BOOKS/Beneath_Apple_ProDOS.pdf}Beneath ProDOS}}
-book by Don Worth and Pieter Lechner, published by Quality Software in 1984.
+ The routine to decide what kind of block device a particular slot/drive 
+combination contains was generously donated by Mark Percival.  It originates
+from his DiskMaker 8 program: {{http://www.markpercival.net/DM8/}}
 
+  The ability to read and analyze tracks at the nibble level was generously
+donated by Gerard Putter from his Virtual ][ project:
+{{http://www.virtualii.com}}  This makes it possible to archive some lightly
+copy-protected disks and put them in .nib format, removing the need to run
+the likes of SST to generate the image.
+   
  The Pascal entry point serial communications code was contributed by {{{http://jaoswald.wordpress.com/2006/07/25/apple-ii-disk-transfer/}Joseph Oswald}}.
 It was originally used to support the IIgs at 19,200 baud, but is now being used
 to support the Laser 128's serial port (and anything else that can communicate
@@ -60,12 +67,13 @@ chip was borrowed partially from the "Warp Six BBS" code:
 Note that the current code is not nearly as nice to the system as the BBS code is.
 It <<will>> break AppleTalk if it's running.
 
- The IP stack is taken from MagerValp's tight and fast ip65 project code at 
-{{http://www.paradroid.net/ip65/}}
-It was ported to the Apple II by Glenn Jones ({{http://a2retrosystems.com/}}).
-It turns out that the ip65's checksum algorithm is faulty, so not being smart enough
-to debug it myself, I simply transplanted the one from the Contiki project
-({{http://www.sics.se/contiki/}}).
+ The ProDOS disk formatting code was lifted from the Hyper-FORMAT utility, which was in
+public domain circulation in the mid '80s-'90s.  I had to enhance it to be able to
+format large media and to get rid of a few bugs based on 140k diskette assumptions.
+Hyper-FORMAT was originally written by Jerry Hewett and enhanced by Gary Desrochers.
+Their licensing terms dictated that they be credited for their work.
+Their original notice remains in the 
+{{{http://adtpro.cvs.sourceforge.net/viewvc/adtpro/adtpro/client/src/prodos/format.asm?view=markup}source code.}}
 
  I learned a good deal about Java sound capture and playback from Gamelan in an
 introductory article here:
@@ -74,13 +82,8 @@ I found some very helpful audio code from the {{{http://www.jbother.org/}JBother
 {{http://www.jbother.org/api/src-html/com/valhalla/jbother/sound/SoundPlayer.html}}
 The audio code in ADTPro is a particularly undisciplined extension of these two sources.
 
- The ProDOS disk formatting code was lifted from the Hyper-FORMAT utility, which was in
-public domain circulation in the mid '80s-'90s.  I had to enhance it to be able to
-format large media and to get rid of a few bugs based on 140k diskette assumptions.
-Hyper-FORMAT was originally written by Jerry Hewett and enhanced by Gary Desrochers.
-Their licensing terms dictated that they be credited for their work.
-Their original notice remains in the 
-{{{http://adtpro.cvs.sourceforge.net/viewvc/adtpro/adtpro/client/src/prodos/format.asm?view=markup}source code.}}
+ ProDOS assembly programming particulars were divined from the {{{ftp://a2central.com/a2c.essential/A2_BOOKS/Beneath_Apple_ProDOS.pdf}Beneath ProDOS}}
+book by Don Worth and Pieter Lechner, published by Quality Software in 1984.
 
  Invaluable Apple /// hardware and programming information was written by John Jeppson
 in an article titled: "John Jeppson's Guided Tour of Highway III" from
