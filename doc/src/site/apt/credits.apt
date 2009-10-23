@@ -27,9 +27,9 @@ the FASTDSK package, and added config file creation as well.
 to enable IP transport development for both II and /// machines. 
  
  The IP stack is taken from MagerValp's tight and fast ip65 project code at 
-{{http://www.paradroid.net/ip65/}}
+{{http://ip65.sourceforge.net/}}
 It was ported to the Apple II by Glenn Jones.
-It turns out that the ip65's checksum algorithm is faulty, so not being smart enough
+It turns out that ip65's checksum algorithm is faulty, so not being smart enough
 to debug it myself, I simply transplanted the one from the Contiki project
 ({{http://www.sics.se/contiki/}}).
 
