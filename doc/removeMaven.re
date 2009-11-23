@@ -8,6 +8,7 @@ s@href="http://site.voila.fr/ressources-apple2/adtpro/adtpro.html"@href="http://
 s@href="http://hanazam.net/apple/ageofii.htm"@href="http://hanazam.net/apple/ageofii.htm" target\="_new"@ig;
 s@href="http://a2retrosystems.com/"@href="http://a2retrosystems.com/" target\="_new"@ig;
 s@href="http://adt.berlios.de"@href="http://adt.berlios.de" target\="_new"@ig;
+s@href="http://apple3.org(.*)"@href="http://apple3.org\1" target\="_new"@ig;
 s@href="http://www.connectworld.net/cgi-bin/iec/05MCAOSerial.html"@href="http://www.connectworld.net/cgi-bin/iec/05MCAOSerial.html" target\="_new"@ig;
 s@href="http://adtpro.sourceforge.net/apple3.html"@href="http://adtpro.sourceforge.net/apple3.html" target\="_new"@ig;
 s@href="http://seb.riot.org/appleII/aladt.sml"@href="http://seb.riot.org/appleII/aladt.sml" target\="_new"@ig;
