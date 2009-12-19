@@ -99,20 +99,6 @@ public final class Gui extends JFrame implements ActionListener
     Log.getSingleton().setTrace(_properties.getProperty("TraceEnabled", "false").compareTo("true") == 0);
     Log.println(false, "Gui Constructor entry.");
 
-    Log.println(true, "Locale: "+Locale.getDefault().getCountry());
-    if (Locale.getDefault().getCountry().equals("KR"))
-    {
-      javax.swing.plaf.FontUIResource f = new FontUIResource(new Font("SansSerif",Font.BOLD,14));
-      java.util.Enumeration keys = UIManager.getDefaults().keys();
-      while (keys.hasMoreElements())
-      {
-        Object key = keys.nextElement();
-        Object value = UIManager.get (key);
-        if (value instanceof javax.swing.plaf.FontUIResource)
-          UIManager.put (key, f);
-      }
-    }
-
     addWindowListener(new WindowCloseMonitor());
     setTitle(Messages.getString("Gui.Title") + " " + Messages.getString("Version.Number")); //$NON-NLS-1$ //$NON-NLS-2$
     try
