@@ -134,7 +134,6 @@ public class AudioConfig extends JDialog implements ActionListener
         */
       }
     }
-    Log.println(false, "AudioConfig().ctor completed.");
 /*
     Log.println(true, Messages.getString("Gui.NoAudio")); //$NON-NLS-1$
     Log.println(false, "AudioConfig Constructor could not instantiate the rxtx library.");
