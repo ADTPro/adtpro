@@ -176,7 +176,7 @@ public final class Gui extends JFrame implements ActionListener
     progressBar.setValue(0);
     progressBar.setStringPainted(true);
 
-    _serialButton = new JRadioButton("Serial", new ImageIcon(Toolkit.getDefaultToolkit().getImage(
+    _serialButton = new JRadioButton(Messages.getString("Gui.SerialButton"), new ImageIcon(Toolkit.getDefaultToolkit().getImage(
         getClass().getResource("/org/adtpro/resources/serialDeselected.png"))));
     _serialButton.setHorizontalTextPosition(SwingConstants.CENTER);
     _serialButton.setVerticalTextPosition(SwingConstants.BOTTOM);
@@ -184,7 +184,7 @@ public final class Gui extends JFrame implements ActionListener
     _serialButton.setSelectedIcon(new ImageIcon(Toolkit.getDefaultToolkit().getImage(
         getClass().getResource("/org/adtpro/resources/serialSelected.png"))));
     _serialButton.addActionListener(this);
-    _ethernetButton = new JRadioButton("Ethernet", new ImageIcon(Toolkit.getDefaultToolkit().getImage(
+    _ethernetButton = new JRadioButton(Messages.getString("Gui.EthernetButton"), new ImageIcon(Toolkit.getDefaultToolkit().getImage(
         getClass().getResource("/org/adtpro/resources/ethernetDeselected.png"))));
     _ethernetButton.setHorizontalTextPosition(SwingConstants.CENTER);
     _ethernetButton.setVerticalTextPosition(SwingConstants.BOTTOM);
@@ -192,7 +192,7 @@ public final class Gui extends JFrame implements ActionListener
     _ethernetButton.setSelectedIcon(new ImageIcon(Toolkit.getDefaultToolkit().getImage(
         getClass().getResource("/org/adtpro/resources/ethernetSelected.png"))));
     _ethernetButton.addActionListener(this);
-    _audioButton = new JRadioButton("Audio", new ImageIcon(Toolkit.getDefaultToolkit().getImage(
+    _audioButton = new JRadioButton(Messages.getString("Gui.AudioButton"), new ImageIcon(Toolkit.getDefaultToolkit().getImage(
         getClass().getResource("/org/adtpro/resources/audioDeselected.png"))));
     _audioButton.setHorizontalTextPosition(SwingConstants.CENTER);
     _audioButton.setVerticalTextPosition(SwingConstants.BOTTOM);
@@ -200,7 +200,7 @@ public final class Gui extends JFrame implements ActionListener
     _audioButton.setSelectedIcon(new ImageIcon(Toolkit.getDefaultToolkit().getImage(
         getClass().getResource("/org/adtpro/resources/audioSelected.png"))));
     _audioButton.addActionListener(this);
-    _disconnectButton = new JRadioButton("Disconnect", new ImageIcon(Toolkit.getDefaultToolkit().getImage(
+    _disconnectButton = new JRadioButton(Messages.getString("Gui.DisconnectButton"), new ImageIcon(Toolkit.getDefaultToolkit().getImage(
         getClass().getResource("/org/adtpro/resources/disconnectDeselected.png"))));
     _disconnectButton.setHorizontalTextPosition(SwingConstants.CENTER);
     _disconnectButton.setVerticalTextPosition(SwingConstants.BOTTOM);
