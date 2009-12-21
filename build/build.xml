@@ -394,8 +394,8 @@ everywhere it is invoked:
 
 	<target name="jar">
 		<!-- Convert localized resource properties to ascii -->
-		<native2ascii src="${projdir}/org/adtpro/resources" dest="${projdir}/org/adtpro/resources"
-		   includes="**/*.native" ext=".properties"/>
+		<native2ascii encoding="EUC_KR" src="${projdir}/org/adtpro/resources" dest="${projdir}/org/adtpro/resources"
+		   includes="messages_ko_KR.native" ext=".properties" />
 		<unzip src="${builddir}/lib/rxtx/${rxtxZip}"
 			dest="${builddir}/${distName}/lib/rxtx"/>
 		<unzip src="${builddir}/lib/rxtx/${rxtxZip2}"
