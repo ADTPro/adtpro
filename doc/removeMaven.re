@@ -3,12 +3,13 @@ s@\<a href="http://maven.apache.org/" title="Built by Maven" class="poweredBy"\>
 s@\<img alt="Built by Maven" src="\./images/logos/maven-feather.png"\>\</img\>@<p>@ig;
 s@\</body\>@\<script src\=\"http\:\/\/www.google-analytics.com\/urchin.js\" type\=\"text\/javascript\"\>\<\/script\>\<script type\=\"text\/javascript\"\>_uacct \= \"UA-697468-1\";urchinTracker\(\);\<\/script\>\<\/body\>@ig;
 s@href="https://sourceforge.net/project/showfiles.php\?group_id\=170262"@href="https://sourceforge.net/project/showfiles.php\?group_id\=170262" target\="_new"@ig;
+s@(href="http://www.youtube.com/watch\?v=CMF3PL17kqg)(.*)"@\1\2" target\="_new"@ig;
 s@href="http://dataswamp.net/apple2eserialterm/index.php"@href="http://dataswamp.net/apple2eserialterm/index.php" target\="_new"@ig;
 s@href="http://site.voila.fr/ressources-apple2/adtpro/adtpro.html"@href="http://site.voila.fr/ressources-apple2/adtpro/adtpro.html" target\="_new"@ig;
 s@href="http://hanazam.net/apple/ageofii.htm"@href="http://hanazam.net/apple/ageofii.htm" target\="_new"@ig;
 s@href="http://a2retrosystems.com/"@href="http://a2retrosystems.com/" target\="_new"@ig;
 s@href="http://adt.berlios.de"@href="http://adt.berlios.de" target\="_new"@ig;
-s@href="http://apple3.org(.*)"@href="http://apple3.org\1" target\="_new"@ig;
+s@(href\=\"http://apple3.org)(.*)\"@\1\2" target\="_new"@ig;
 s@href="http://www.connectworld.net/cgi-bin/iec/05MCAOSerial.html"@href="http://www.connectworld.net/cgi-bin/iec/05MCAOSerial.html" target\="_new"@ig;
 s@href="http://adtpro.sourceforge.net/apple3.html"@href="http://adtpro.sourceforge.net/apple3.html" target\="_new"@ig;
 s@href="http://seb.riot.org/appleII/aladt.sml"@href="http://seb.riot.org/appleII/aladt.sml" target\="_new"@ig;
