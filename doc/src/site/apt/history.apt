@@ -6,18 +6,22 @@
 
 ADTPro Release History
 
-* In CVS now, as-yet unreleased
+* 1.1.4 - January 24, 2010
 
-~~ New functionality:
-~~
-~~ []
-
- Bug fixes:
-
- * [Server] Removed most post-Java-1.3 code so server can run on Java 1.3 (i.e. Mac OSX 10.2)
+ New functionality:
 
  * [Server] Re-scan for serial ports every time the serial config gui comes up; detects USB
    port changes
+
+ []
+
+ Bug fixes:
+
+ * [Server] Fixed a protocol bug that made the server abort when it received garbled acknowledgement packets that looked almost correct
+
+ * [Server] Increased microphone sensitivity so recent Mac Java releases can "hear" the audio stream correctly
+
+ * [Server] Removed most post-Java-1.3 code so server can run on Java 1.3 (i.e. Mac OSX 10.2)
 
  []
 
