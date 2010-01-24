@@ -333,6 +333,7 @@ public class SerialConfig extends JDialog implements ActionListener
   public void enumeratePorts()
   {
     Log.println(false,"SerialConfig.enumeratePorts() entry.");
+    String previousSelection = (String) comboComPort.getSelectedItem();
     comboComPort.removeAllItems();
     try
     {
@@ -348,6 +349,7 @@ public class SerialConfig extends JDialog implements ActionListener
         comboComPort.addItem(nextName);
       }
       _parent.setSerialAvailable(true);
+      comboComPort.setSelectedItem(previousSelection);
       Log.println(false, "SerialConfig.enumeratePorts() completed instantiating rxtx library.");
     }
     catch (Throwable t)
