@@ -116,6 +116,7 @@ public class PlaybackThread extends Thread
     if (_parent != null) _parent.setProgressMaximum(_audioData.length);
     int i, nBytesWritten = 0;
     int chunk = _audioData.length / 100;
+    Log.print(false, "PlaybackThread.play() Bytes written:");
     for (i = 0; i < 100; i++)
     {
       if (_shouldRun)
@@ -124,7 +125,7 @@ public class PlaybackThread extends Thread
         if (i % 25 == 0)
         {
           // Only write one in 4 for this...
-          Log.println(false, "PlaybackThread.play() Bytes written: " + nBytesWritten);
+          Log.print(false, " " + nBytesWritten);
         }
         if ((_parent != null) && (_shouldRun))
         {
@@ -132,6 +133,7 @@ public class PlaybackThread extends Thread
         }
       }
     }
+    Log.println(false, "");
     /*
      * Wait until all data are played. This is only necessary because of the bug
      * noted below. (If we do not wait, we would interrupt the playback by
