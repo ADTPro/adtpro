@@ -1,6 +1,6 @@
 /*
  * ADTPro - Apple Disk Transfer ProDOS
- * Copyright (C) 2007 - 2009 by David Schmidt
+ * Copyright (C) 2007 - 2010 by David Schmidt
  * david__schmidt at users.sourceforge.net
  *
  * This program is free software; you can redistribute it and/or modify it 
@@ -612,12 +612,10 @@ public class CommsThread extends Thread
             // from us for sure!
             disk.makeDosOrder();
             disk.save();
-            Log.println(false,
-                    "CommsThread.receiveDisk() found a 140k disk; saved as DOS order format.");
+            Log.println(false, "CommsThread.receiveDisk() found a 140k disk; saved as DOS order format.");
           }
           else
-            Log.println(
-                    false,
+            Log.println(false,
                     "CommsThread.receiveDisk() found a disk of length "
                         + (length * 512)
                         + "; left it alone (didn't change to DOS order), because it expected length "
@@ -668,16 +666,12 @@ public class CommsThread extends Thread
       }
       catch (FileNotFoundException ex)
       {
-        _transport.writeByte(0x02); // New ADT protocol: HMFIL - unable
-        // to write
-        // file
+        _transport.writeByte(0x02); // New ADT protocol: HMFIL - unable to write file
         _transport.pushBuffer();
       }
       catch (IOException ex2)
       {
-        _transport.writeByte(0x02); // New ADT protocol: HMFIL - unable
-        // to write
-        // file
+        _transport.writeByte(0x02); // New ADT protocol: HMFIL - unable to write file
         _transport.pushBuffer();
       }
       finally
@@ -744,8 +738,7 @@ public class CommsThread extends Thread
         if (disk.getImageOrder() != null)
         {
           // If the file exists, then...
-          _transport.writeByte(0x00); // Tell Apple ][ we're ready to
-          // go
+          _transport.writeByte(0x00); // Tell Apple ][ we're ready to go
           _transport.pushBuffer();
           Log.println(false, "CommsThread.sendDisk() about to wait for initial ack.");
           ack = waitForData(15);
@@ -838,8 +831,7 @@ public class CommsThread extends Thread
     }
     catch (ProtocolVersionException e2)
     {
-      Log.println(false,
-          "CommsThread.sendDisk() aborting due to protocol mismatch.");
+      Log.println(false, "CommsThread.sendDisk() aborting due to protocol mismatch.");
       _parent.setSecondaryText(Messages.getString("CommsThread.21"));
     }
 
