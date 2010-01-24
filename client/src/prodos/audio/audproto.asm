@@ -1,6 +1,6 @@
 ;
 ; ADTPro - Apple Disk Transfer ProDOS
-; Copyright (C) 2007 by David Schmidt
+; Copyright (C) 2007 - 2010 by David Schmidt
 ; david__schmidt at users.sourceforge.net
 ;
 ; This program is free software; you can redistribute it and/or modify it 
@@ -377,6 +377,7 @@ RECVBLK:
 	sta ACK_CHAR
 
 RECVMORE:
+;	jsr PRINTBLOCK	; DEBUG
 	lda #$00	; Clear out the new half-block
 	tay
 CLRLOOP:
@@ -415,6 +416,7 @@ CLRLOOP:
 
 	lda #CHR_ACK
 	sta ACK_CHAR
+
 	inc <BLKPTR+1	; Get next 256 bytes
 	dec <ZP
 RECOK:	bne RECVMORE
@@ -444,6 +446,7 @@ RECVHBLK:
 	lda #$00
 	sta RLEPREV	; Used as Y-index to BLKPTR buffer (output)
 	sta UDPI	; Used as Y-index to UTILPTR buffer (input)
+
 	jsr aud_receive
 
 	ldy #$00
@@ -725,13 +728,19 @@ PUTCMSG:
 ;	sta $0680,y
 ;	lda $0780,y
 ;	sta $0700,y
+;	lda $0428,y
+;	sta $0780,y
+;	lda $04a8,y
+;	sta $0428,y
+;	lda $0528,y
+;	sta $04a8,y
 ;	iny
 ;	cpy #$28
 ;	bne :-
 ;
 ;	lda #$00
 ;	sta CH
-;	lda #$07
+;	lda #$0a
 ;	jsr TABV
 ;
 ;	jsr CLREOL
@@ -744,22 +753,24 @@ PUTCMSG:
 ;	jmp DEBUG_MSG_1_PRINT
 ;DEBUG_MSG_DONE:
 ;
-;	lda NUMBLKS+1	; Print block number in hex
-;	jsr $FDDA		; PRBYTE
-;	lda NUMBLKS
+;	lda BLKHI	; Print block number in hex
+;	jsr PRBYTE
+;	lda BLKLO
 ;	jsr PRBYTE
 ;	lda #CHR_SP
 ;	jsr COUT1
 ;	
+;	lda ZP			; Print half-block number (1 or 2)
+;	jsr PRBYTE
+;	lda #CHR_SP
+;	jsr COUT1
+;
 ;	lda BLKPTR+1	; Print MSB of block pointer in hex
 ;	jsr PRBYTE
 ;	lda #CHR_SP
 ;	jsr COUT1
-;	lda ZP
-;	jsr PRBYTE
-;	lda #CHR_SP
-;	jsr COUT1
-;	lda ACK_CHAR
+;
+;	lda ACK_CHAR	; Print acknowledgement character from host
 ;	jsr COUT1
 ;
 ;	lda CH_SAV
@@ -771,4 +782,4 @@ PUTCMSG:
 ;
 ;CH_SAV:	.byte $00
 ;CV_SAV:	.byte $00
-;DEBUG_MSG_1: ascz "BLKPTR: "
+;DEBUG_MSG_1: ascz "BLK: "
