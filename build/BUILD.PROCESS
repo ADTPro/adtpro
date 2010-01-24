@@ -66,9 +66,7 @@ the stuff that gets uploaded to sourceforge.
    Tag each file for the appropriate platform so it is automatically
    presented to visitors looking to download.
 
-10. Release the file
-
-11. Upload updated web contents. use SFTP to web.sourceforge.net
+10. Upload updated web contents. use SFTP to web.sourceforge.net
     and User name: SFUSER,adtpro
     Files go into /home/groups/a/ad/adtpro/htdocs; back up the 
     old version first (name it the prior version number),
