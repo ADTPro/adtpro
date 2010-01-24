@@ -349,7 +349,8 @@ public class SerialConfig extends JDialog implements ActionListener
         comboComPort.addItem(nextName);
       }
       _parent.setSerialAvailable(true);
-      comboComPort.setSelectedItem(previousSelection);
+      if (previousSelection != null)
+        comboComPort.setSelectedItem(previousSelection);
       Log.println(false, "SerialConfig.enumeratePorts() completed instantiating rxtx library.");
     }
     catch (Throwable t)
