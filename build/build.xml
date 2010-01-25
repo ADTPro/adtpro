@@ -18,8 +18,9 @@ everywhere it is invoked:
      <jvmarg line="-Dconsole.encoding=ISO-8859-15" />
 
 -->
+
 <project name="ADTPro" default="all" basedir="..">
-	<property name="versionString" value="1.1.4" />
+	<property name="versionString" value="v.r.m" />
 	<property name="distName" value="ADTPro-${versionString}" />
 	<property name="diskName" value="ADTPRO-${versionString}" />
 	<property name="volName" value="ADTPro.${versionString}" />
@@ -120,6 +121,8 @@ everywhere it is invoked:
 
 	<target name="assemble">
 		<mkdir dir="${builddir}/${distName}"/>
+		<copy file="${projdir}/client/src/messagesOrig.asm" tofile="${projdir}/client/src/messages.asm" overwrite="true" />
+		<replace file="${projdir}/client/src/messages.asm" token="%ADTPRO_VERSION%" value="${versionString}"/>
 		<antcall target="assembleProDOS"/>
 		<antcall target="assembleSOS"/>
 	</target>
@@ -393,6 +396,8 @@ everywhere it is invoked:
 	</target>
 
 	<target name="jar">
+		<copy file="${projdir}/org/adtpro/resources/messagesOrig.properties" tofile="${projdir}/org/adtpro/resources/messages.properties" overwrite="true" />
+		<replace file="${projdir}/org/adtpro/resources/messages.properties" token="%ADTPRO_VERSION%" value="${versionString}"/>
 		<!-- Convert localized resource properties to ascii -->
 		<native2ascii encoding="EUC_KR" src="${projdir}/org/adtpro/resources" dest="${projdir}/org/adtpro/resources"
 		   includes="messages_ko_KR.native" ext=".properties" />
