@@ -70,7 +70,7 @@ PHMMAX	= $0a		; This must be two greater than the largest host message
 ;---------------------------------------------------------
 ; Console messages
 ;---------------------------------------------------------
-	MSG01:	asc "1.1.4"
+	MSG01:	asc "%ADTPRO_VERSION%"
 	MSG01_END =*
 
 	MSG02:	asc "(S)END (R)ECEIVE (D)IR (B)ATCH (C)D"
