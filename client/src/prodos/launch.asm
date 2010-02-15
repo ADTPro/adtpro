@@ -94,43 +94,38 @@ ERROR_NUMBER:
 PRESS_ANY_KEY:
 	.asciiz	" - PRESS ANY KEY "
 
+SUFFIX:
+	.asciiz ".BIN"
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 .segment	"CODE_2000"
 
 STARTUP:
 	; Reset stack
-	ldx	#$FF
+	ldx #$FF
 	txs
 
 	; Relocate CODE_0300 and DATA_0300
-	ldx	#<(__CODE_0300_SIZE__ + __DATA_0300_SIZE__)
-:	lda	__CODE_0300_LOAD__ - 1,x
-	sta	__CODE_0300_RUN__ - 1,x
+	ldx #<(__CODE_0300_SIZE__ + __DATA_0300_SIZE__)
+:	lda __CODE_0300_LOAD__ - 1,x
+	sta __CODE_0300_RUN__ - 1,x
 	dex
-	bne	:-
+	bne :-
 
 	; Add ".BIN" to KEYBUFF
-	lda	KEYBUFF
-
+	lda KEYBUFF
 	tax
-	lda #$AE		; "."
-	sta	KEYBUFF + 1,x
-	inx
-	lda #CHR_B		; "B"
-	sta	KEYBUFF + 1,x
-	inx
-	lda #CHR_I		; "I"
-	sta	KEYBUFF + 1,x
-	inx
-	lda #CHR_N		; "N"
-	sta	KEYBUFF + 1,x
-	; Add trailing '\0' to KEYBUFF
-	inx
-	lda	#$00
-	sta	KEYBUFF + 1,x
-	;inx
-	stx	KEYBUFF
+	clc
+	adc #$04
+	sta KEYBUFF 
+
+	ldy #$ff
+:	inx
+	iny
+	lda SUFFIX,y
+	sta KEYBUFF,x	; Copy over suffix, including null terminator
+	bne :-
 
 	; Provide some user feedback
 	lda #$00
