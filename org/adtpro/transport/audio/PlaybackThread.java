@@ -177,10 +177,9 @@ public class PlaybackThread extends Thread
       if ((_parent != null) && (_shouldRun))
       {
         endTime = System.currentTimeMillis();
-        diffMillis = endTime - startTime / 1000;
+        diffMillis = (endTime - startTime) / 1000;
         _parent.setSecondaryText(Messages.getString("CommsThread.22") + " in " + diffMillis + " seconds.");
-        Log.println(true, "Text file sent in " + ((endTime - startTime)
-            / 1000) + " seconds.");
+        Log.println(true, "Text file sent in " + ((endTime - startTime) / 1000) + " seconds.");
         Log.println(false, "PlaybackThread.play() exit.");
       }
     }

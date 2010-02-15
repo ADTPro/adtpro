@@ -2631,13 +2631,11 @@ public class CommsThread extends Thread
           {
             _transport.pushBuffer();
             _endTime = System.currentTimeMillis();
-            _diffMillis = (_endTime - _startTime)
-                / 1000;
+            _diffMillis = (_endTime - _startTime) / 1000;
             // sleep(1000);
             _parent.setSecondaryText(Messages.getString("CommsThread.22")
                 + " in " + _diffMillis + " seconds.");
-            Log.println(true, "Text file sent in "
-                + (_endTime - _startTime) / 1000 + " seconds.");
+            Log.println(true, "Text file sent in " + (_endTime - _startTime) / 1000 + " seconds.");
             String message = _transport.getInstructionsDone(_resource);
             if (!message.equals(""))
             {
