@@ -97,8 +97,9 @@ COUT1	= $FDF0	; Character output
 CROUT	= $FD8E	; Output return character
 PRDEC	= $ED24	; Print pointer as decimal
 DELAY	= $FCA8 ; Monitor delay: # cycles = (5*A*A + 27*A + 26)/2
-MEMMOVE	= $FE2C	; PERFORM MEMORY MOVE A1-A2 TO A4
-ROM	= $C082 ; Enables rom
+MEMMOVE	= $FE2C	; Perform memory move: A1-A2 TO A4
+VERSION	= $FBB3 ; Version byte 
+ROM		= $C082 ; Enables rom
 
 ;---------------------------------------------------------
 ; Equates from imported formatting code
@@ -107,8 +108,7 @@ Home     = $FC58		; Monitor clear screen and home cursor
 DevCnt   = $BF31		; Prodos device count
 DevList  = $BF32		; List of devices for ProDOS
 DevAdr   = $BF10		; Given slot this is the address of driver
-IN       = $200			; Keyboard input buffer
-INPUT_BUFFER = $200
+IN_BUF	 = $200			; Keyboard input buffer
 WARMDOS  = $BE00		; BASIC Warm-start vector
 LAST     = $BF30		; Last device accessed by ProDOS
 CLRLN    = $FC9C		; Clear Line routine
