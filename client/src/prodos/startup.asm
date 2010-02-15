@@ -36,7 +36,7 @@
 
 GET_FILE_INFO_PARAM:
 	.byte	$0A		;PARAM_COUNT
-	.addr	KEYBUFF	;KEYBUFF
+	.addr	KEYBUFF	;Keyboard buffer repurposed for file name storage
 	.byte	$00		;ACCESS
 	.byte	$00		;FILE_TYPE
 FILE_INFO_ADDR:
@@ -50,7 +50,7 @@ FILE_INFO_ADDR:
 
 OPEN_PARAM:
 	.byte	$03		;PARAM_COUNT
-	.addr	KEYBUFF	;KEYBUFF
+	.addr	KEYBUFF	;Keyboard buffer repurposed for file name storage
 	.addr	PRODOS_MLI - 1024	;IO_BUFFER
 OPEN_REF:	.byte	$00	;REF_NUM
 
@@ -159,36 +159,36 @@ PRESS_ANY_KEY:
 	jsr ToggleLine
 
 KbdLoop:
-	lda #$01
+	lda #$01		; Cursor the significant letter
 	sta CH 
 	jsr RDKEY		; Read a key
 	and #$DF		; Convert to upper case
 
-	cmp #CHR_S	; Serial?
+	cmp #CHR_S	; S = Serial?
 	bne :+
 	lda #$04
 	sta NEWLINE
 	jmp KbdDone	
 
-:	cmp #CHR_A	; Audio?
+:	cmp #CHR_A	; A = Audio?
 	bne :+
 	lda #$05
 	sta NEWLINE
 	jmp KbdDone	
 	
-:	cmp #CHR_E	; Ethernet?
+:	cmp #CHR_E	; E = Ethernet?
  	bne :+
 	lda #$06
 	sta NEWLINE
 	jmp KbdDone	
 
-:	cmp #$8d		; Return?
+:	cmp #$8d		; Return key pressed?
 	bne :+
 	jmp KbdDone 
 	
-:	cmp #$88		; Left?
+:	cmp #$88		; Left key?
 	beq IsLeft
-	cmp #$8b		; Up?
+	cmp #$8b		; Up key?
 	bne NotLeft
 IsLeft:
 	lda CV
@@ -206,9 +206,9 @@ LeftWrap:
 	jmp LeftGo
 
 NotLeft:
-	cmp #$95		; Right?
+	cmp #$95		; Right key?
 	beq IsRight
-	cmp #$8a		; Down?
+	cmp #$8a		; Down key?
 	bne NotRight
 IsRight:
 	lda CV
@@ -226,8 +226,7 @@ RightWrap:
 	jmp RightGo
 
 NotRight:
-	cmp #$0d
-	jmp KbdLoop
+	jmp KbdLoop		; Nothing else to check for; loop back around
 
 KbdDone:
 	jsr HighlightLine
