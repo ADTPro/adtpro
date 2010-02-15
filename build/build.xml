@@ -86,10 +86,14 @@ everywhere it is invoked:
 		<!-- <delete file="${projdir}/client/src/dos/ADT" /> -->
 		<delete file="${builddir}/ADT" />
 		<delete file="${builddir}/ADTPRO" />
+		<delete file="${builddir}/ADTPRO.SYSTEM" />
 		<delete file="${builddir}/ADTSOS" />
 		<delete file="${builddir}/ADTPROAUD" />
 		<delete file="${builddir}/ADTPROETH" />
 		<delete file="${builddir}/ADTSOSETH" />
+		<delete file="${builddir}/ADTPROAUD.BIN" />
+		<delete file="${builddir}/ADTPROETH.BIN" />
+		<delete file="${builddir}/ADTSOSETH.BIN" />
 		<delete file="${projdir}/client/src/GRUB" />
 		<delete file="${projdir}/client/src/LOADER" />
 		<delete file="${builddir}/${distName}.tar.gz" />
@@ -143,6 +147,13 @@ everywhere it is invoked:
 		<exec dir="${projdir}/client/src" executable="${assemblerPath}/ca65">
 			<arg line="-l -t none prodos/serial/sermain.asm" />
 		</exec>
+		<echo message="Assembling ADTPRO Launcher source..."/>
+		<exec dir="${projdir}/client/src" executable="${assemblerPath}/ca65">
+			<arg line="-l -t none prodos/launch.asm" />
+		</exec>
+		<exec dir="${projdir}/client/src" executable="${assemblerPath}/ca65">
+			<arg line="-l -t none prodos/startup.asm" />
+		</exec>
 		<!--
 		Assemble and link the ADT source
 		-->
@@ -153,36 +164,47 @@ everywhere it is invoked:
 		<!--
 		Link the bits
 		-->
+		<echo message="Linking Startup/Launcher..."/>
+		<exec dir="${projdir}/client/src" executable="${assemblerPath}/ld65">
+			<arg line="-C prodos/adtprolaunch.cfg -o STARTUP.SYSTEM prodos/startup.o" />
+		</exec>
+		<exec dir="${projdir}/client/src" executable="${assemblerPath}/ld65">
+			<arg line="-C prodos/adtprolaunch.cfg -o ADTPRO prodos/launch.o" />
+		</exec>
 		<echo message="Linking ADTPRO..."/>
 		<exec dir="${projdir}/client/src" executable="${assemblerPath}/ld65">
-			<arg line="-m adtproser.map -C prodos/serial/adtpro.cfg -o ADTPRO prodos/serial/sermain.o tail.o" />
+			<arg line="-m adtproser.map -C prodos/serial/adtpro.cfg -o ADTPRO.BIN prodos/serial/sermain.o tail.o" />
 		</exec>
 		<echo message="Linking ADTPROAUD..."/>
 		<exec dir="${projdir}/client/src" executable="${assemblerPath}/ld65">
-			<arg line="-m adtproaud.map -C prodos/audio/adtpro.cfg -o ADTPROAUD prodos/audio/audmain.o tail.o" />
+			<arg line="-m adtproaud.map -C prodos/audio/adtpro.cfg -o ADTPROAUD.BIN prodos/audio/audmain.o tail.o" />
 		</exec>
 		<echo message="Linking ADTPROETH..."/>
 		<exec dir="${projdir}/client/src" executable="${assemblerPath}/ld65">
-			<arg line="-m adtproeth.map -C prodos/ethernet/adtpro.cfg -o ADTPROETH prodos/ethernet/ethmain.o ip65/ip65.lib tail.o" />
+			<arg line="-m adtproeth.map -C prodos/ethernet/adtpro.cfg -o ADTPROETH.BIN prodos/ethernet/ethmain.o ip65/ip65.lib tail.o" />
 		</exec>
 		<!--
 		Move the object code to the build directory
 		-->
+		<move file="${projdir}/client/src/STARTUP.SYSTEM" tofile="${builddir}/STARTUP.SYSTEM" />
+		<copy file="${projdir}/client/src/ADTPRO" tofile="${builddir}/ADTPROAUD" />
+		<copy file="${projdir}/client/src/ADTPRO" tofile="${builddir}/ADTPROETH" />
 		<move file="${projdir}/client/src/ADTPRO" tofile="${builddir}/ADTPRO" />
-		<copy file="${builddir}/ADTPRO" tofile="${basedir}/org/adtpro/resources/adtpro.raw" />
-		<move file="${projdir}/client/src/ADTPROAUD" tofile="${builddir}/ADTPROAUD" />
-		<copy file="${builddir}/ADTPROAUD" tofile="${basedir}/org/adtpro/resources/adtproaud.raw" />
-		<move file="${projdir}/client/src/ADTPROETH" tofile="${builddir}/ADTPROETH" />
-		<copy file="${builddir}/ADTPROETH" tofile="${basedir}/org/adtpro/resources/adtproeth.raw" />
+		<move file="${projdir}/client/src/ADTPRO.BIN" tofile="${builddir}/ADTPRO.BIN" />
+		<copy file="${builddir}/ADTPRO.BIN" tofile="${basedir}/org/adtpro/resources/adtpro.raw" />
+		<move file="${projdir}/client/src/ADTPROAUD.BIN" tofile="${builddir}/ADTPROAUD.BIN" />
+		<copy file="${builddir}/ADTPROAUD.BIN" tofile="${basedir}/org/adtpro/resources/adtproaud.raw" />
+		<move file="${projdir}/client/src/ADTPROETH.BIN" tofile="${builddir}/ADTPROETH.BIN" />
+		<copy file="${builddir}/ADTPROETH.BIN" tofile="${basedir}/org/adtpro/resources/adtproeth.raw" />
 		<move file="${projdir}/client/src/dos/ADT" tofile="${builddir}/ADT" />
 		<copy file="${builddir}/ADT" tofile="${basedir}/org/adtpro/resources/adt.raw" />
 		<!--
 		Make dumpable versions
 		-->
 		<appleDump infilename="${projdir}/org/adtpro/resources/PD.raw" outfilename="${basedir}/org/adtpro/resources/PD.dmp" applename="PD" startaddrhex="2000" numbyteswide="10" decoration="begin" finalline="2000G E000G"/>
-		<appleDump infilename="${builddir}/ADTPROETH" outfilename="${basedir}/org/adtpro/resources/adtproeth.dmp" applename="ADTPROETH" startaddrhex="2000" numbyteswide="10" decoration="begin" finalline="2000G"/>
-		<appleDump infilename="${builddir}/ADTPROAUD" outfilename="${basedir}/org/adtpro/resources/adtproaud.dmp" applename="ADTPROAUD" startaddrhex="2000" numbyteswide="10" decoration="begin" finalline="2000G"/>
-		<appleDump infilename="${builddir}/ADTPRO" outfilename="${basedir}/org/adtpro/resources/adtpro.dmp" applename="ADTPRO" startaddrhex="2000" numbyteswide="10"  decoration="begin" finalline="2000G"/>
+		<appleDump infilename="${builddir}/ADTPROETH.BIN" outfilename="${basedir}/org/adtpro/resources/adtproeth.dmp" applename="ADTPROETH.BIN" startaddrhex="800" numbyteswide="10" decoration="begin" finalline="800G"/>
+		<appleDump infilename="${builddir}/ADTPROAUD.BIN" outfilename="${basedir}/org/adtpro/resources/adtproaud.dmp" applename="ADTPROAUD.BIN" startaddrhex="800" numbyteswide="10" decoration="begin" finalline="800G"/>
+		<appleDump infilename="${builddir}/ADTPRO.BIN" outfilename="${basedir}/org/adtpro/resources/adtpro.dmp" applename="ADTPRO.BIN" startaddrhex="800" numbyteswide="10"  decoration="begin" finalline="2000G"/>
 		<appleDump infilename="${builddir}/ADT" outfilename="${basedir}/org/adtpro/resources/adt.dmp" applename="ADT" startaddrhex="803" numbyteswide="10" decoration="yes" />
 	</target>
 
@@ -301,38 +323,79 @@ everywhere it is invoked:
 		<!--
 		Put the assembled programs on the disk images
 		-->
-		<echo message="Adding ADTPRO to 5.25 disk image..."/>
+
+		<echo message="Adding startup files to 5.25 disk image..."/>
+		<java jar="${acJar}" fork="true" dir="${builddir}" input="${builddir}/STARTUP.SYSTEM">
+			<jvmarg line="-Dconsole.encoding=ISO-8859-15" />
+			<arg line="-p ${distName}/disks/${diskName}.DSK STARTUP.SYSTEM sys 8192" />
+		</java>
 		<java jar="${acJar}" fork="true" dir="${builddir}" input="${builddir}/ADTPRO">
 			<jvmarg line="-Dconsole.encoding=ISO-8859-15" />
 			<arg line="-p ${distName}/disks/${diskName}.DSK ADTPRO sys 8192" />
 		</java>
-		<echo message="Adding ADTPROAUD to 5.25 disk image..."/>
-		<java jar="${acJar}" fork="true" dir="${builddir}" input="${builddir}/ADTPROAUD">
+		<java jar="${acJar}" fork="true" dir="${builddir}" input="${builddir}/ADTPRO">
 			<jvmarg line="-Dconsole.encoding=ISO-8859-15" />
 			<arg line="-p ${distName}/disks/${diskName}.DSK ADTPROAUD sys 8192" />
 		</java>
-		<echo message="Adding ADTPROETH to 5.25 disk image..."/>
-		<java jar="${acJar}" fork="true" dir="${builddir}" input="${builddir}/ADTPROETH">
+		<java jar="${acJar}" fork="true" dir="${builddir}" input="${builddir}/ADTPRO">
 			<jvmarg line="-Dconsole.encoding=ISO-8859-15" />
 			<arg line="-p ${distName}/disks/${diskName}.DSK ADTPROETH sys 8192" />
+		</java>
+
+		<echo message="Adding ADTPRO to 5.25 disk image..."/>
+		<java jar="${acJar}" fork="true" dir="${builddir}" input="${builddir}/ADTPRO.BIN">
+			<jvmarg line="-Dconsole.encoding=ISO-8859-15" />
+			<arg line="-p ${distName}/disks/${diskName}.DSK ADTPRO.BIN bin 2048" />
+		</java>
+
+		<echo message="Adding ADTPROAUD to 5.25 disk image..."/>
+		<java jar="${acJar}" fork="true" dir="${builddir}" input="${builddir}/ADTPROAUD.BIN">
+			<jvmarg line="-Dconsole.encoding=ISO-8859-15" />
+			<arg line="-p ${distName}/disks/${diskName}.DSK ADTPROAUD.BIN bin 2048" />
+		</java>
+
+		<echo message="Adding ADTPROETH to 5.25 disk image..."/>
+		<java jar="${acJar}" fork="true" dir="${builddir}" input="${builddir}/ADTPROETH.BIN">
+			<jvmarg line="-Dconsole.encoding=ISO-8859-15" />
+			<arg line="-p ${distName}/disks/${diskName}.DSK ADTPROETH.BIN bin 2048" />
 		</java>
 		<!--
 		And the .po version...
 		-->
-		<echo message="Adding ADTPRO to 3.5 disk image..."/>
+		<echo message="Adding startup files to 3.5 disk image..."/>
+		<java jar="${acJar}" fork="true" dir="${builddir}" input="${builddir}/STARTUP.SYSTEM">
+			<jvmarg line="-Dconsole.encoding=ISO-8859-15" />
+			<arg line="-p ${distName}/disks/${diskName}.PO STARTUP.SYSTEM sys 8192" />
+		</java>
 		<java jar="${acJar}" fork="true" dir="${builddir}" input="${builddir}/ADTPRO">
 			<jvmarg line="-Dconsole.encoding=ISO-8859-15" />
 			<arg line="-p ${distName}/disks/${diskName}.PO ADTPRO sys 8192" />
 		</java>
-		<echo message="Adding ADTPROAUD to 3.5 disk image..."/>
-		<java jar="${acJar}" fork="true" dir="${builddir}" input="${builddir}/ADTPROAUD">
+		<java jar="${acJar}" fork="true" dir="${builddir}" input="${builddir}/ADTPRO">
 			<jvmarg line="-Dconsole.encoding=ISO-8859-15" />
 			<arg line="-p ${distName}/disks/${diskName}.PO ADTPROAUD sys 8192" />
 		</java>
-		<echo message="Adding ADTPROETH to 3.5 disk image..."/>
-		<java jar="${acJar}" fork="true" dir="${builddir}" input="${builddir}/ADTPROETH">
+		<java jar="${acJar}" fork="true" dir="${builddir}" input="${builddir}/ADTPRO">
 			<jvmarg line="-Dconsole.encoding=ISO-8859-15" />
 			<arg line="-p ${distName}/disks/${diskName}.PO ADTPROETH sys 8192" />
+		</java>
+
+		<echo message="Adding ADTPRO to 3.5 disk image..."/>
+		<java jar="${acJar}" fork="true" dir="${builddir}" input="${builddir}/ADTPRO.BIN">
+			<jvmarg line="-Dconsole.encoding=ISO-8859-15" />
+			<arg line="-p ${distName}/disks/${diskName}.PO ADTPRO.BIN bin 2048" />
+		</java>
+
+		<echo message="Adding ADTPROAUD to 3.5 disk image..."/>
+		<java jar="${acJar}" fork="true" dir="${builddir}" input="${builddir}/ADTPROAUD.BIN">
+			<jvmarg line="-Dconsole.encoding=ISO-8859-15" />
+			<arg line="-p ${distName}/disks/${diskName}.PO ADTPROAUD.BIN bin 2048" />
+		</java>
+
+		<echo message="Adding ADTPROETH to 3.5 disk image..."/>
+		<java jar="${acJar}" fork="true" dir="${builddir}" input="${builddir}/ADTPROETH.BIN">
+			<jvmarg line="-Dconsole.encoding=ISO-8859-15" />
+			<arg line="-p ${distName}/disks/${diskName}.PO ADTPROETH.BIN bin 2048" />
 		</java>
 		<!--
 		Put the assembled DOS ADT program on the .dsk image
@@ -367,8 +430,13 @@ everywhere it is invoked:
 		</java>
 		<delete file="${builddir}/ADT" />
 		<delete file="${builddir}/ADTPRO" />
+		<delete file="${builddir}/ADTPRO.SYSTEM" />
+		<delete file="${builddir}/STARTUP.SYSTEM" />
 		<delete file="${builddir}/ADTPROAUD" />
 		<delete file="${builddir}/ADTPROETH" />
+		<delete file="${builddir}/ADTPRO.BIN" />
+		<delete file="${builddir}/ADTPROETH.BIN" />
+		<delete file="${builddir}/ADTPROAUD.BIN" />
 	</target>
 
 	<target name="buildSOSdsk" if="SOS-needed">

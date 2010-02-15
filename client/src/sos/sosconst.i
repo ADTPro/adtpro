@@ -1,6 +1,6 @@
 ;
 ; ADTPro - Apple Disk Transfer ProDOS
-; Copyright (C) 2008 by David Schmidt
+; Copyright (C) 2008 - 2010 by David Schmidt
 ; david__schmidt at users.sourceforge.net
 ;
 ; This program is free software; you can redistribute it and/or modify it 
@@ -36,4 +36,4 @@ VOL_LINE_LEN = $26
 ;--------------------------------------------------------- 
 OS_CALL_OFFSET	= 1	; Offset to the SOS call type byte
 CHR_RETURN	= $0d	; Carriage return
-INPUT_BUFFER	= CONSREAD_INPUT
+IN_BUF		= CONSREAD_INPUT

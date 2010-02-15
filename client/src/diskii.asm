@@ -1,6 +1,6 @@
 ;
 ; ADTPro - Apple Disk Transfer ProDOS
-; Copyright (C) 2007 by David Schmidt
+; Copyright (C) 2007 - 2010 by David Schmidt
 ; david__schmidt at users.sourceforge.net
 ;
 ; This program is free software; you can redistribute it and/or modify it 
@@ -28,6 +28,85 @@ NBUF2	= $AA
 ZBUFFER	= $44 ; and $45 : 256 bytes buffer addr
 RD_ERR	= $42 ; read data field err code
 CHECKSUM	= $3A ; sector checksum
+
+;************************************
+;*                                  *
+;* TRANS - Transfer track in memory *
+;* to target device                 *
+;*                                  *
+;* Note - this needs to keep within *
+;* a single page of memory.         *
+;************************************
+Trans:
+	lda #$00		; Set Buffer to $6700
+	ldx #$67
+	sta Buffer
+	stx Buffer+1
+Trans2:
+; Trans2 entry point preconditions:
+;   Buffer set to the start of nibble page to write (with leading sync bytes)
+	ldy #$32		; Set Y offset to 1st sync byte (max=50)
+	ldx SlotF		; Set X offset to FORMAT slot/drive
+	sec			; (assume the disk is write protected)
+	lda DiskWR,x		; Write something to the disk
+	lda ModeRD,x		; Reset Mode softswitch to READ
+	bmi LWRprot		; If > $7F then disk was write protected
+	lda #$FF		; Write a sync byte to the disk
+	sta ModeWR,x
+	cmp DiskRD,x
+	nop			; (kill some time for WRITE sync...)
+	jmp LSync2
+LSync1:
+	eor #$80		; Set MSB, converting $7F to $FF (sync byte)
+	nop			; (kill time...)
+	nop
+	jmp MStore
+LSync2:
+	pha			; (kill more time... [ sheesh! ])
+	pla
+LSync3:
+	lda (Buffer),y		; Fetch byte to WRITE to disk
+	cmp #$80		;  Is it a sync byte? ($7F)
+	bcc LSync1		;  Yep. Turn it into an $FF
+	nop
+MStore:
+	sta DiskWR,x		; Write byte to the disk
+	cmp DiskRD,x		; Set Read softswitch
+	iny			; Increment Y offset
+	bne LSync2
+	inc Buffer+1		; Increment Buffer by one page
+; We may have to let everybody use the $6600 buffer space after all.
+; That lets us avoid the extra boundary checking, and just use the 'bpl' 
+; method of waiting for the pointer to go above $7f to page $80.
+	bpl LSync3		; If < $8000 get more FORMAT data
+	lda ModeRD,x		; Restore Mode softswitch to READ
+	lda DiskRD,x		; Restore Read softswitch to READ
+	clc
+	rts
+LWRprot:
+	clc			; Disk is write protected
+	jsr Done		; Turn the drive off
+	lda #$2B
+	pla
+	pla
+	pla
+	pla
+	jmp Died		; Prompt for another FORMAT...
+
+
+;---------------------------------------------------------
+; Two tables used in the arm movements. They must
+; lie in one page.
+;---------------------------------------------------------
+delaytb1:
+	.byte $01,$30,$28,$24,$20,$1e 
+	.byte $1d,$1c,$1c,$1c,$1c,$1c
+
+delaytb2:
+	.byte $70,$2c,$26,$22,$1f,$1e
+	.byte $1d,$1c,$1c,$1c,$1c,$1c
+
+
 ;---------------------------------------------------------
 ; calibrat - Calibrate the disk arm to track #0
 ; The code is essentially like in the Disk ][ card
@@ -227,84 +306,6 @@ armdela3:
 	sbc	#$01
 	bne	armdelay
 	rts
-
-;---------------------------------------------------------
-; Next are two tables used in the arm movements. They must
-; also lie in one page.
-;---------------------------------------------------------
-delaytb1:
-	.byte $01,$30,$28,$24,$20,$1e 
-	.byte $1d,$1c,$1c,$1c,$1c,$1c
-
-delaytb2:
-	.byte $70,$2c,$26,$22,$1f,$1e
-	.byte $1d,$1c,$1c,$1c,$1c,$1c
-
-
-;************************************
-;*                                  *
-;* TRANS - Transfer track in memory *
-;* to target device                 *
-;*                                  *
-;* Note - this needs to keep within *
-;* a single page of memory.         *
-;************************************
-Trans:
-	lda #$00		; Set Buffer to $6700
-	ldx #$67
-	sta Buffer
-	stx Buffer+1
-Trans2:
-; Trans2 entry point preconditions:
-;   Buffer set to the start of nibble page to write (with leading sync bytes)
-	ldy #$32		; Set Y offset to 1st sync byte (max=50)
-	ldx SlotF		; Set X offset to FORMAT slot/drive
-	sec			; (assume the disk is write protected)
-	lda DiskWR,x		; Write something to the disk
-	lda ModeRD,x		; Reset Mode softswitch to READ
-	bmi LWRprot		; If > $7F then disk was write protected
-	lda #$FF		; Write a sync byte to the disk
-	sta ModeWR,x
-	cmp DiskRD,x
-	nop			; (kill some time for WRITE sync...)
-	jmp LSync2
-LSync1:
-	eor #$80		; Set MSB, converting $7F to $FF (sync byte)
-	nop			; (kill time...)
-	nop
-	jmp MStore
-LSync2:
-	pha			; (kill more time... [ sheesh! ])
-	pla
-LSync3:
-	lda (Buffer),y		; Fetch byte to WRITE to disk
-	cmp #$80		;  Is it a sync byte? ($7F)
-	bcc LSync1		;  Yep. Turn it into an $FF
-	nop
-MStore:
-	sta DiskWR,x		; Write byte to the disk
-	cmp DiskRD,x		; Set Read softswitch
-	iny			; Increment Y offset
-	bne LSync2
-	inc Buffer+1		; Increment Buffer by one page
-; We may have to let everybody use the $6600 buffer space after all.
-; That lets us avoid the extra boundary checking, and just use the 'bpl' 
-; method of waiting for the pointer to go above $7f to page $80.
-	bpl LSync3		; If < $8000 get more FORMAT data
-	lda ModeRD,x		; Restore Mode softswitch to READ
-	lda DiskRD,x		; Restore Read softswitch to READ
-	clc
-	rts
-LWRprot:
-	clc			; Disk is write protected
-	jsr Done		; Turn the drive off
-	lda #$2B
-	pla
-	pla
-	pla
-	pla
-	jmp Died		; Prompt for another FORMAT...
-
 
 ;---------------------------------------------------------
 ; slot2x - Sets configured slot * 16 in x and in a

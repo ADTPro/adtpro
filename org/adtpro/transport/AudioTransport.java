@@ -1,6 +1,6 @@
 /*
  * ADTPro - Apple Disk Transfer ProDOS
- * Copyright (C) 2007 by David Schmidt
+ * Copyright (C) 2007 - 2010 by David Schmidt
  * david__schmidt at users.sourceforge.net
  *
  * Serial Transport notions derived from the jSyncManager project
@@ -413,7 +413,7 @@ public class AudioTransport extends ATransport
     if (guiString.equals(Messages.getString("Gui.BS.ProDOS")))
     {
       ret = Messages.getString("Gui.BS.DumpProDOSAudioInstructions");
-      endAddr = fileSize - 1 + 8192;
+      endAddr = fileSize - 1 + 2048;
       String endAddrHex = UnsignedByte.toString(UnsignedByte.hiByte(endAddr))
           + UnsignedByte.toString(UnsignedByte.loByte(endAddr));
       ret = StringUtilities.replaceSubstring(ret, "%1%", endAddrHex);
@@ -457,7 +457,7 @@ public class AudioTransport extends ATransport
                     if (guiString.equals(Messages
                         .getString("Gui.BS.ADTProEthernet"))) ret = Messages
                         .getString("Gui.BS.DumpProEthernetAudioInstructions");
-              endAddr = fileSize - 1 + 8192;
+              endAddr = fileSize - 1 + 2048;
               String endAddrHex = UnsignedByte.toString(UnsignedByte
                   .hiByte(endAddr))
                   + UnsignedByte.toString(UnsignedByte.loByte(endAddr));

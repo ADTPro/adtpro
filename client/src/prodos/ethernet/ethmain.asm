@@ -1,6 +1,6 @@
 ;
 ; ADTPro - Apple Disk Transfer ProDOS
-; Copyright (C) 2006 - 2008 by David Schmidt
+; Copyright (C) 2006 - 2010 by David Schmidt
 ; david__schmidt at users.sourceforge.net
 ;
 ; This program is free software; you can redistribute it and/or modify it 
@@ -22,11 +22,12 @@
 	.include "prodos/prodosmacros.i"		; OS macros
 	.include "prodos/prodosconst.i"			; OS equates, characters, etc.
 	.include "ip65/common.i"
-	.include "main.asm"				; Contains positionally dependent format code
+	.include "diskii.asm"					; Contains positionally dependent format code
 
 ;---------------------------------------------------------
 ; Pull in all the rest of the code
 ;---------------------------------------------------------
+	.include "main.asm"
 	.include "prodos/prodosvars.asm"		; Variables
 	.include "prodos/ethernet/ethmessages.asm"	; Messages
 	.include "prodos/conio.asm"		; Console I/O
@@ -40,7 +41,6 @@
 	.include "input.asm"
 	.include "prodos/ethernet/ethconfigpro.asm"
 	.include "hostfns.asm"
-	.include "diskii.asm"
 	.include "nibble.asm"
 	.include "prodos/ethernet/ethproto.asm"
 	.include "prodos/ethernet/ipconfig.asm"

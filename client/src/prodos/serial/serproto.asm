@@ -1,6 +1,6 @@
 ;
 ; ADTPro - Apple Disk Transfer ProDOS
-; Copyright (C) 2006, 2007 by David Schmidt
+; Copyright (C) 2006 - 2010 by David Schmidt
 ; david__schmidt at users.sourceforge.net
 ;
 ; This program is free software; you can redistribute it and/or modify it 
@@ -407,11 +407,11 @@ SS4:	tya		; DIFFERENCE NOT A ZERO
 ;---------------------------------------------------------
 ; SENDFN - Send a file name
 ;
-; Assumes input is at INPUT_BUFFER
+; Assumes input is at IN_BUF
 ;---------------------------------------------------------
 SENDFN:
 	ldx #$00	
-FNLOOP:	lda INPUT_BUFFER,X
+FNLOOP:	lda IN_BUF,X
 	jsr PUTC
 	beq @Done
 	inx
