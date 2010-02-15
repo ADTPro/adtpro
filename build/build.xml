@@ -204,7 +204,7 @@ everywhere it is invoked:
 		<appleDump infilename="${projdir}/org/adtpro/resources/PD.raw" outfilename="${basedir}/org/adtpro/resources/PD.dmp" applename="PD" startaddrhex="2000" numbyteswide="10" decoration="begin" finalline="2000G E000G"/>
 		<appleDump infilename="${builddir}/ADTPROETH.BIN" outfilename="${basedir}/org/adtpro/resources/adtproeth.dmp" applename="ADTPROETH.BIN" startaddrhex="800" numbyteswide="10" decoration="begin" finalline="800G"/>
 		<appleDump infilename="${builddir}/ADTPROAUD.BIN" outfilename="${basedir}/org/adtpro/resources/adtproaud.dmp" applename="ADTPROAUD.BIN" startaddrhex="800" numbyteswide="10" decoration="begin" finalline="800G"/>
-		<appleDump infilename="${builddir}/ADTPRO.BIN" outfilename="${basedir}/org/adtpro/resources/adtpro.dmp" applename="ADTPRO.BIN" startaddrhex="800" numbyteswide="10"  decoration="begin" finalline="2000G"/>
+		<appleDump infilename="${builddir}/ADTPRO.BIN" outfilename="${basedir}/org/adtpro/resources/adtpro.dmp" applename="ADTPRO.BIN" startaddrhex="800" numbyteswide="10"  decoration="begin" finalline="800G"/>
 		<appleDump infilename="${builddir}/ADT" outfilename="${basedir}/org/adtpro/resources/adt.dmp" applename="ADT" startaddrhex="803" numbyteswide="10" decoration="yes" />
 	</target>
 
