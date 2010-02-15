@@ -413,7 +413,7 @@ public class AudioTransport extends ATransport
     if (guiString.equals(Messages.getString("Gui.BS.ProDOS")))
     {
       ret = Messages.getString("Gui.BS.DumpProDOSAudioInstructions");
-      endAddr = fileSize - 1 + 2048;
+      endAddr = fileSize - 1 + 8192;
       String endAddrHex = UnsignedByte.toString(UnsignedByte.hiByte(endAddr))
           + UnsignedByte.toString(UnsignedByte.loByte(endAddr));
       ret = StringUtilities.replaceSubstring(ret, "%1%", endAddrHex);
