@@ -97,6 +97,9 @@ PRESS_ANY_KEY:
 SUFFIX:
 	.asciiz ".BIN"
 
+SYSTEM:
+	.asciiz ".SYSTEM"
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 .segment	"CODE_2000"
@@ -113,7 +116,28 @@ STARTUP:
 	dex
 	bne :-
 
-	; Add ".BIN" to KEYBUFF
+	; Check for .SYSTEM suffix
+	lda KEYBUFF
+	ldy #$07
+	tax
+	inx
+:
+	dex
+	dey
+	bmi :+
+	lda KEYBUFF,x
+	cmp SYSTEM,y
+	beq :-
+	bne ADD	; bra
+:
+	; Remove .SYSTEM if it's there
+	lda KEYBUFF
+	sec
+	sbc #$07
+	sta KEYBUFF	
+
+ADD:
+	; Add ".BIN" to suffix
 	lda KEYBUFF
 	tax
 	clc
@@ -148,78 +172,77 @@ STARTUP:
 	jsr PRODOS_MLI
 	.byte	OS_GET_FILE_INFO
 	.word	GET_FILE_INFO_PARAM
-	bcc	:+
-	jmp	ERROR
+	bcc :+
+	jmp ERROR
 
-:	jsr	PRODOS_MLI
+:	jsr PRODOS_MLI
 	.byte	OS_OPEN
 	.word	OPEN_PARAM
-	bcc	:+
-	jmp	ERROR
+	bcc :+
+	jmp ERROR
 
 	; Copy file reference number
-:	lda	OPEN_REF
-	sta	READ_REF
-	sta	CLOSE_REF
+:	lda OPEN_REF
+	sta READ_REF
+	sta CLOSE_REF
 
 	; Get load address from aux-type
-	lda	FILE_INFO_ADDR
-	ldx	FILE_INFO_ADDR + 1
-	sta	READ_ADDR
-	stx	READ_ADDR + 1
+	lda FILE_INFO_ADDR
+	ldx FILE_INFO_ADDR + 1
+	sta READ_ADDR
+	stx READ_ADDR + 1
 
 	; It's high time to leave this place
-	jmp	__CODE_0300_RUN__
+	jmp __CODE_0300_RUN__
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-.segment	"CODE_0300"
+.segment "CODE_0300"
 
-	jsr	PRODOS_MLI
+	jsr PRODOS_MLI
 	.byte	OS_READFILE
 	.word	READ_PARAM
-	bcs	ERROR
+	bcs ERROR
 
-	jsr	PRODOS_MLI
+	jsr PRODOS_MLI
 	.byte	OS_CLOSE
 	.word	CLOSE_PARAM
-	bcs	ERROR
+	bcs ERROR
 
 	; Go for it ...
-	jmp	(READ_ADDR)
+	jmp (READ_ADDR)
 
 PRINT:
-	sta	A1L
-	stx	A1H
-	ldx	VERSION
-	ldy	#$00
+	sta A1L
+	stx A1H
+	ldy #$00
 PrintNext:
-	lda	(A1L),y
-	beq	PrintDone
+	lda (A1L),y
+	beq PrintDone
 	ora #$80
-	jsr	COUT
+	jsr COUT
 	iny
-	bne	PrintNext	; bra
+	bne PrintNext	; bra
 PrintDone:
 	rts
 
 ERROR:
-	cmp	#FNFERR
-	bne	:+
-	lda	#<FILE_NOT_FOUND
-	ldx	#>FILE_NOT_FOUND
-	jsr	PRINT
-	beq	:++		; bra
+	cmp #FNFERR
+	bne :+
+	lda #<FILE_NOT_FOUND
+	ldx #>FILE_NOT_FOUND
+	jsr PRINT
+	beq :++		; bra
 :	pha
-	lda	#<ERROR_NUMBER
-	ldx	#>ERROR_NUMBER
-	jsr	PRINT
+	lda #<ERROR_NUMBER
+	ldx #>ERROR_NUMBER
+	jsr PRINT
 	pla
-	jsr	PRBYTE
-:	lda	#<PRESS_ANY_KEY
-	ldx	#>PRESS_ANY_KEY
-	jsr	PRINT
-	jsr	RDKEY
-	jsr	PRODOS_MLI
+	jsr PRBYTE
+:	lda #<PRESS_ANY_KEY
+	ldx #>PRESS_ANY_KEY
+	jsr PRINT
+	jsr RDKEY
+	jsr PRODOS_MLI
 	.byte	OS_QUIT
 	.word	QUIT_PARAM
