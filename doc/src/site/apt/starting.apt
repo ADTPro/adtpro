@@ -69,43 +69,51 @@ ADTPro Server version v.r.m
 
  You can navigate among the choices by pressing the first letter of the program,
  or by using arrow keys and hitting enter to select one.
-
  Be sure to choose a client program at the Apple II end to match the communications
  device being used at the host end.
- You can choose which one will start by default by replacing the
- supplied <<<STARTUP>>> program on the disk.  
- Your very simple autostart <<<STARTUP>>> program could look like this:
 
-+-------------+
-10 PRINT CHR$(4)"- ADTPRO"
-+-------------+
+ You can have a particular version always start automatically by making it the first
+ (or only) program that ends in <<<.SYSTEM>>> on the disk.
+ Each communications version of ADTPro has two parts: a ProDOS loader, and a corresponding
+ binary program.
+ So, the three versions are named like this:
 
- Just change <<<ADTPRO>>> specified in line 10 to the program of your choice:
- 
-  * <<<ADTPRO>>> - for serial cards, the IIgs modem port, or the IIc serial port
-  
-  * <<<ADTPROAUD>>> - for Audio communications via sound card/cassette ports
+ * <<<ADTPRO>>> - ProDOS loader for serial cards, the IIgs modem port, or the IIc serial port
 
-  * <<<ADTPROETH>>> - for the Ethernet communications via the Uthernet card
-  
-  []
+ * <<<ADTPRO.BIN>>> - binary program for serial
 
- For example, to always
- run <<<ADTPROAUD,>>> the program should look like this:
+ * <<<ADTPROAUD>>> - ProDOS loader for Audio communications via sound card/cassette ports
 
-+-------------+
-10 PRINT CHR$(4)"- ADTPROAUD"
-+-------------+
+ * <<<ADTPROAUD.BIN>>> - binary program for audio
 
- When you have the line looking like you want it (remember Applesoft commands
- <<<NEW>>> to start over, and <<<LIST>>> to see the program) save it back out
- to the disk: <<<SAVE STARTUP.>>>  That program will be the one that starts
- automatically after booting from then on.  If you make a mistake and the Apple
- complains, <<<"PATH NOT FOUND">>> when you boot, check your <<<STARTUP>>>
- program by <<<LIST>>>ing it and check the disk's contents with the <<<CAT>>>
- command.
+ * <<<ADTPROETH>>> - ProDOS loader for the Ethernet communications via the Uthernet card 
 
- However you start it, the main screen comes up:
+ * <<<ADTPROETH.BIN>>> - binary program for Ethernet
+
+ []
+
+ In order to make one of them start by default (i.e. without having to pick one
+ every time the disk is booted), you can go through these steps: 
+
+ [[1]] Remove the original <<<STARTUP.SYSTEM>>> from the distribution diskette
+
+ [[1]] Rename the version you want to start to <<<MYADTPRO.SYSTEM>>>
+
+ [[1]] Rename the corresponding version with <<<.BIN>>> suffix to <<<MYADTPRO.BIN>>>
+
+ []
+
+ So, for example - to always automatically start the audio version, you would:
+
+ [[1]] Remove <<<STARTUP.SYSTEM>>>
+
+ [[1]] Rename <<<ADTPROAUD>>> to <<<MYADTPRO.SYSTEM>>>
+
+ [[1]] Rename <<<ADTPROAUD.BIN>>> to <<<MYADTPRO.BIN>>>
+
+ []
+
+ Once it starts, the main screen comes up:
 
 [images/adtpro.png]
 
@@ -133,6 +141,7 @@ The less contention for the serial hardware, the better.
  The ethernet version is also on the diskette, but is named <<<SOS.INTERPETH.>>>
  In order to run the ethernet version, it will be necessary to rename
  <<<SOS.INTERPETH>>> to <<<SOS.INTERP>>> (also deleting or renaming the original
- <<<SOS.INTERP>>> program).  Any Apple disk image manipulation utility program like 
+ <<<SOS.INTERP>>> program).  
+ The Apple /// utilities disk or any Apple disk image manipulation utility program like
  {{{http://ciderpress.sourceforge.net}CiderPress}} or 
  {{{http://applecommander.sourceforge.net}AppleCommander}} can be used to do this.
