@@ -68,7 +68,7 @@ ADTPro Server version v.r.m
 [images/hello.png]
 
  You can navigate among the choices by pressing the first letter of the program,
- or by using arrow keys and hitting enter to select one.
+ or by using arrow keys and hitting the Return key to select one.
  Be sure to choose a client program at the Apple II end to match the communications
  device being used at the host end.
 
@@ -93,9 +93,16 @@ ADTPro Server version v.r.m
  []
 
  In order to make one of them start by default (i.e. without having to pick one
- every time the disk is booted), you can go through these steps: 
+ every time the disk is booted), rename the pair of files 
+ (the ProDOS loader and accompanying binary program) to have the same name, except the
+ loader needs to have a <<<.SYSTEM>>> suffix and the binary program needs to have the <<<.BIN>>>
+ suffix.  What you rename them to is up to you -  but ProDOS limits names to 15 characters.
+ You can't rename <<<ADTPROETH>>> to <<<ADTPROETH.SYSTEM>>>, for example... you need to pick something
+ a little shorter. 
 
- [[1]] Remove the original <<<STARTUP.SYSTEM>>> from the distribution diskette
+ These are the specific steps: 
+
+ [[1]] Delete the original <<<STARTUP.SYSTEM>>> from the distribution diskette
 
  [[1]] Rename the version you want to start to <<<MYADTPRO.SYSTEM>>>
 
@@ -105,7 +112,7 @@ ADTPro Server version v.r.m
 
  So, for example - to always automatically start the audio version, you would:
 
- [[1]] Remove <<<STARTUP.SYSTEM>>>
+ [[1]] Delete <<<STARTUP.SYSTEM>>>
 
  [[1]] Rename <<<ADTPROAUD>>> to <<<MYADTPRO.SYSTEM>>>
 

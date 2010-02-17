@@ -38,7 +38,7 @@ will be given a chance to format another volume:
  <<Note:>> The act of formatting a floppy or other drive does not 
  make it <bootable.>  When you get done formatting a disk, you might
  want to write an image to it that will ultimately make it bootable
- to ProDOS or SOS.  This is different from the way DOS 3.3 and its
+ to an operating system.  This is different from the way DOS 3.3 and its
  variants worked, where the <<<INIT>>> command would make a disk bootable.
  In ProDOS and SOS, it's a whole different process.
 
@@ -52,13 +52,6 @@ will be given a chance to format another volume:
  Start by rotating it 1/8 turn in the suggested direction with a jewler's
  screwdriver; then retry formatting.
  
- <<Note:>> The formatter in ADTPro version 1.0.0 produced erroneous
- 3-1/2" (800k) disks when formatted for the very
- first time.  They would incorrectly report they had a capacity of zero
- blocks.  This has been corrected in subsequent releases, but version
- 1.0.0 can still overcome this problem by formatting these disks a second
- time.  They will then correctly report their capacity of 1600 blocks.
-
 * Change Working Directory
 
  Whatever directory the host software starts in will be the "Current working
@@ -68,10 +61,12 @@ the client:
 
 [images/cd.png]
 
- You can enter any absolute or relative directory change from this screen.  For
-example, changing to a full directory specification:
+ You can enter any absolute or relative directory change from this screen.  
+ For example, changing to a full directory specification:
 
 [images/cdDone.png]
+
+ Note that you can also change the working directory from the server.
 
 * Directory
 
