@@ -1,6 +1,6 @@
 ;
 ; ADTPro - Apple Disk Transfer ProDOS
-; Copyright (C) 2006 - 2008 by David Schmidt
+; Copyright (C) 2006 - 2010 by David Schmidt
 ; david__schmidt at users.sourceforge.net
 ;
 ; This program is free software; you can redistribute it and/or modify it 
@@ -32,9 +32,9 @@ PARMINT:
 	jmp INITSSC	; Y holds slot number
 DRIVERS:
 	cmp #$09
-	bpl LASER
+	bpl PASCALEP
 	jmp INITZGS
-LASER:
+PASCALEP:
 	jmp INITPAS
 
 ;---------------------------------------------------------
@@ -82,19 +82,7 @@ FoundNotIIgs:
 	ldy #$00
 	lda (UTILPTR),y
 	cmp #$da		; Is $Cn00 == $DA?
-	bne NotLaser		; If not, it's not a Laser 128.
-	cpx #$02
-	bne FindSlotNext
-	lda #$09		; Ok, this is a Laser 128.
-	sta TempSlot
-	lda PSPEED		; Were we trying to go too fast (115.2k)?
-	cmp #$03
-	bne :+
-	lda #$02		; Yes, slow it down to 19200.
-	sta PSPEED
-	sta DEFAULT+1		; And make that the default.
-:
-	jmp FindSlotNext
+	beq ProcessIIc		; Yes - it's a Laser 128.  Treat it like a IIc.
 NotLaser:
 	ldy #$0a
 	lda (UTILPTR),y
@@ -148,7 +136,7 @@ PARMTXT:
 	ascz "SSC SLOT 6"
 	ascz "SSC SLOT 7"
 	ascz "IIGS MODEM"
-	ascz "LASER MODEM"
+	ascz "GENERIC SLOT 2"
 	ascz "300"
 	ascz "9600"
 	ascz "19200"
