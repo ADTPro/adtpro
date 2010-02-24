@@ -10,15 +10,15 @@ ADTPro Release History
 
  New functionality:
 
- * [Client] Implemented native assembly ProDOS selector/launcher; no more BASIC anywhere
+ * [Client] Implemented native assembly ProDOS selector/launcher; no need for BASIC
+
+ * [Client] Laser 128 machines now run as SSC port 2 at 115.2kbps
 
  []
 
  Bug fixes:
 
  * [Server] Build hygiene - automate version numbering
-
- * [Client] Laser 128 machines now run as SSC, port 2, at 115.2kbps
 
  []
 

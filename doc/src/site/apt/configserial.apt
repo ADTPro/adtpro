@@ -36,7 +36,7 @@ left arrow keys.  Your Apple has right and left arrow keys; trust me.
 
 * Comms Device
 
- <<Super Serial Card/IIc Serial>>
+ <<Super Serial Card (includes IIc and Laser 128 serial)>>
 
  Select the slot your communications card is in.
 
@@ -46,7 +46,7 @@ left arrow keys.  Your Apple has right and left arrow keys; trust me.
  be scanned for a serial card or port automatically (until you explicitly
  {{{configserial.html#Save_Configuration}save}} a configuration).
  The lowest-numbered slot with a card will be selected by default.
- The IIc and IIc+ computers use the "SSC SLOT 2" setting for their
+ The IIc+, IIc and compatible computers use the "SSC SLOT 2" setting for their
  modem ports.
 
  If you have an IIgs and you want to use a Super Serial card in it, ensure you select
@@ -78,21 +78,16 @@ If you normally start with GSOS, you can hit the '8' key as the computer is disp
 the initial "Apple IIgs" screen and it'll start 8-bit ProDOS and drop you into the
 BASIC interpreter, just like the old days.
 
- <<Laser 128 Modem Port>>
+ <<Miscellaneous Serial Devices>>
 
- The Laser 128's modem port is not quite compatible with either the Super
- Serial card or the IIc.  There is special support just for it: 
- 
+ Miscellaneous serial devices that do not otherwise have direct support may work
+ with the "GENERIC SLOT 2" setting:
+
 [images/configLaser.png]
 
- The "LASER MODEM" selection can actually be used for any serial device in
+ The "GENERIC SLOT 2" selection can be used for any serial device in
  slot 2 that conforms to the Pascal entry point API.  All devices in this
- scheme are limited to 19,200 baud.
-
- ADTPro on a Laser 128 will require a "null modem" cable or adapter when connecting 
-to the host computer.  See the 
-{{{connectionsserial.html#DIN5}Laser 128 modem port}}
-connections section for details.
+ scheme are limited to a maximum of 19,200 baud.
 
  <<Apple /// Serial>>
 

@@ -13,7 +13,7 @@ ADTPro Serial Connections
 
  * {{{connectionsserial.html#MiniDIN8}IIgs and IIc+ modem ports}}
 
- * {{{connectionsserial.html#DIN5}IIc and Laser 128 modem ports}}
+ * {{{connectionsserial.html#DIN5}IIc, Laser 128, and Franklin Ace 500 modem ports}}
 
  * {{{connectionsserial.html#Apple3}Apple /// RS-232-C port}}
 
@@ -166,16 +166,16 @@ looking into the cable at the pins:
  Once you have your computers connected, you can move on to 
 {{{bootstrap.html}bootstrapping.}}
 
-* IIc and Laser 128 modem port ({DIN5}) cabling
+* IIc, Laser 128, and Franklin Ace 500 modem port ({DIN5}) cabling
 
   You will need a serial cable setup that ultimately connects the round, 5-pin
-DIN modem connector of your IIc or Laser 128 to
+DIN modem connector of your IIc, Laser 128, or Franklin Ace 500 to
 the serial port of your host computer - and also performs a null-modem function 
 in between.
 If you would like to purchase a null modem that is ready to use, click
 {{{http://retrofloppy.com/products.html#DIN5DE9}here.}}
 
-  There are two 5-pin DIN connectors on the backs of IIc and Laser 128 computers. 
+  There are two 5-pin DIN connectors on the backs of IIc computers and compatibles. 
 One has the icon of a telephone, the other has an icon of a printer. 
 Be sure you are plugging into the telephone (modem) one, on the far left as you look 
 at the back of the IIc:
@@ -227,12 +227,7 @@ Apple's (not DIN's!) standard:
 ---
 
   This null modem cable ties all the handshaking lines together at the host
-end and at the IIc/Laser end.  This effectively disables hardware handshaking.
-
-  One thing to note with Laser 128 machines: you will need to keep your 
-hands off the keyboard while transfers are taking place.  It turns out
-that keypresses are injected directly into the serial stream, corrupting
-image transfers.
+end and at the Apple end.  This effectively disables hardware handshaking.
 
   There are two pinouts for a single-cable null-modem that will work with ADTPro:
 an "Imagewriter I" cable (one that does some amount of "hardware handshaking")
@@ -245,7 +240,7 @@ checkbox in the serial config dialog box, brought up from the
 
 [images/tickiic.png]
 
-  The Laser 128 will not work with the Imagewriter I cable.
+  The Laser 128 and Franklin Ace 500 will not work with the Imagewriter I cable.
 
  Note that the original IIc motherboard is not able to operate the serial 
  port accurately at speeds higher than 300 baud, so you may have to go really
