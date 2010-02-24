@@ -18,6 +18,8 @@ ADTPro Release History
 
  * [Server] Build hygiene - automate version numbering
 
+ * [Client] Laser 128 machines now run as SSC, port 2, at 115.2kbps
+
  []
 
 * 1.1.4 - January 24, 2010

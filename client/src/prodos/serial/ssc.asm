@@ -54,9 +54,8 @@ PUTC1:	lda $C000
 	beq PABORT
 
 MOD1:	lda $C089	; Check status bits
-	and #$70
-	cmp #$10
-	bne PUTC1	; Output register is full, so loop
+	and #$10
+	beq	PUTC1	; Output register is full, so loop
 	pla
 MOD2:	sta $C088	; Put character
 	rts
@@ -70,9 +69,8 @@ SSCGET:
 	cmp #CHR_ESC	; Escape = abort
 	beq PABORT
 MOD3:	lda $C089	; Check status bits
-	and #$68
-	cmp #$8
-	bne SSCGET	; Input register empty, loop
+	and #$8
+	beq SSCGET	; Input register empty, loop
 MOD4:	lda $C088	; Get character
 	rts
 
