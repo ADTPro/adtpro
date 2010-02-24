@@ -83,7 +83,7 @@ BASIC interpreter, just like the old days.
  Miscellaneous serial devices that do not otherwise have direct support may work
  with the "GENERIC SLOT 2" setting:
 
-[images/configLaser.png]
+[images/configGeneric.png]
 
  The "GENERIC SLOT 2" selection can be used for any serial device in
  slot 2 that conforms to the Pascal entry point API.  All devices in this
