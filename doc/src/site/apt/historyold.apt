@@ -6,6 +6,66 @@
 
 ADTPro Release Ancient History
 
+* 1.1.1 - September 18, 2008
+
+ New functionality:
+
+ * [Client] SOS version can use Ethernet UDP transport via the Uthernet card ({{http://a2retrosystems.com/}})
+ 
+ * [Client] SOS version can {{{misc.html#Format}format}} media
+
+ * [Server] Apple /// computers can be {{{bootstrap3.html}bootstrapped}} from bare metal over their built-in serial ports
+
+ []
+
+ Bug fixes:
+
+ * [Client] Occasional Ethernet "hang" during transfer
+
+ * [Client] Exiting the Ethernet configuration screen via the Return key
+   but without saving to disk caused changes to be forgotten until entering
+   and leaving the config screen a second time
+
+ * [Client] SOS version failed to write the first set of blocks when it
+   received a harmless "disk switched" notification (after swapping 
+   disks, for example)
+
+ []
+
+* 1.1.0 - August 30, 2008
+
+ New functionality:
+
+ * [Client] Client software comes on a combined "dual boot"
+   ProDOS/SOS disk for both Apple II and Apple /// computers
+
+ * [Client] Format routine now recognizes ProFile drives
+
+ []
+
+ Bug fixes:
+
+ * [Client] Reorganized
+   the entire client code base in order to single-source ProDOS and SOS versions -
+   probably leading to several new bugs in the ProDOS client
+
+ * [Client] Fixed formatter volume name input routine to correctly handle
+   special characters
+
+ * [Client] Fixed a fiddly problem with the IIgs and Uthernet where hitting
+   a key while waiting for a response from the host would make it ignore the esc key
+   from then on
+
+ * [Client] Shortened UDP timeout for waiting for packet responses so things don't
+   appear to "hang" when a response isn't received
+
+ * [Client] Re-integrated Bird's Better Bye (which was inexplicably removed)
+   for our Apple II and II+ friends
+
+ * [Server] Improved batch logic for cleaning up after aborted image transfers
+
+ []
+
 * 1.0.6 - February 10, 2008
 
  New functionality:
