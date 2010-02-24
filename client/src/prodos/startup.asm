@@ -60,6 +60,8 @@ NAME_ETHERNET:
 	.asciiz	"ADTPROETH.BIN"
 NAME_AUDIO:
 	.asciiz	"ADTPROAUD.BIN"
+NAME_QUIT:
+	.asciiz	"BASIC"
 
 NEWLINE:
 	.byte $04
@@ -80,6 +82,10 @@ AudioLineEnd:
 EthernetLine:
 	asc "(E)THERNET : A2RETROSYSTEMS UTHERNET"
 EthernetLineEnd:
+	.byte $8d
+QuitLine:
+	asc "(Q)UIT"
+QuitLineEnd:
 	.byte $00
 
 LOADING:
@@ -182,6 +188,12 @@ KbdLoop:
 	sta NEWLINE
 	jmp KbdDone	
 
+:	cmp #CHR_Q	; Q = Quit?
+ 	bne :+
+	lda #$07
+	sta NEWLINE
+	jmp KbdDone	
+
 :	cmp #$8d		; Return key pressed?
 	bne :+
 	jmp KbdDone 
@@ -201,7 +213,7 @@ LeftGo:
 	jsr HighlightLine
 	jmp KbdLoop
 LeftWrap:
-	lda #$06
+	lda #$07
 	sta NEWLINE
 	jmp LeftGo
 
@@ -212,7 +224,7 @@ NotLeft:
 	bne NotRight
 IsRight:
 	lda CV
-	cmp #$06
+	cmp #$07
 	beq RightWrap
 	clc
 	adc #$01
@@ -307,12 +319,25 @@ Line5:
 	stx KEYBUFF
 	rts
 Line6:
+	cmp #$06
+	bne Line7
 	tay
 	lda #EthernetLineEnd-EthernetLine
 	jsr INVERSE
 	ldx #$ff
 :	inx
 	lda NAME_ETHERNET,x
+	sta KEYBUFF+1,x
+	bne :-
+	stx KEYBUFF
+	rts
+Line7:
+	tay
+	lda #QuitLineEnd-QuitLine
+	jsr INVERSE
+	ldx #$ff
+:	inx
+	lda NAME_QUIT,x
 	sta KEYBUFF+1,x
 	bne :-
 	stx KEYBUFF
