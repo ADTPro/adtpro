@@ -26,25 +26,27 @@ ADTPro Serial Connections
 
 * {Super Serial cabling}
 
-  If you need a Super Serial card, they can be purchased {{{http://retrofloppy.com/products.html#SSC}here.}}.
-
-  The serial cable can either be straight-through or of the
-null modem variety; there is a jumper block on the Super Serial card that will take
+  The cable to connect a Super Serial card to your host computer's serial
+or USB port can either be straight-through or of the null modem variety.
+There is a jumper block on the Super Serial card that will take
 care of signal switching for you if you have one or the other and need to switch.
 
-  If you have a straight-through cable, set the super serial card's block to point
+  If you need serial cables, I offer a variety of them for sale
+{{{http://retrofloppy.com/products.html}here.}}
+
+  To connect with a straight-through cable, set the Super Serial card's block to point
 downwards toward the word "Terminal," as in this picture:
 
 [images/ss1.jpg]
 
-  If you have a null-modem cable, set the super serial card's block to point
+  To connect with a null-modem cable, set the Super Serial card's block to point
 upwards toward the word "Modem," as in this picture:
 
 [images/ss2.jpg]
 
  Once ADT and ADTPro are up and running, they set the card's configuration
 switches through software.  But to ensure trouble-free operation in the
-initial bootstrap step, you can set the swtiches like so:
+initial bootstrap step, you can set the switches like so:
 
 +---
 SW1: 1001111  SW2: 1101110
@@ -73,31 +75,25 @@ cable like this:
 
   You will need a serial cable setup that ultimately connects the round, 8-pin
 mini-DIN modem connector of your IIgs or IIc+ to
-the serial port of your host computer - and also performs a null-modem function 
+the serial or USB port of your host computer - and also performs a null-modem function 
 in between.  
 If you would like to purchase a null modem cable that is ready to use, click
-{{{http://retrofloppy.com/products.html#DIN8DE9}here.}}
+{{{http://retrofloppy.com/products.html#DIN8DE9}here.}}  They look like this:
+
+[images/iigsNullModem3.jpg]
 
   There are two 8-pin mini-DIN connectors on the backs of IIgs and IIc+ computers.
 One has the icon of a telephone, the other has an icon of a printer.
-Be sure you are plugging into the telephone (modem) one, on the far left as you 
-look at the back of the computer.  The IIgs looks like this:
-
-[images/iigsmodemport.jpg]
-
-  And the IIc+ looks like this:
+Be sure you are plugging into the telephone (modem) one.
+The IIc+ plug is located here:
 
 [images/iicplusmodemport.png]
 
-  If you are wiring a null modem yourself, the pinout to use is below.
-The parts you need can be found at swap meets, Jameco, Mouser, Radio Shack, etc.
-If you would rather purchase one that is ready to use, click
-{{{http://retrofloppy.com/products.html#DIN8DE9}here.}}
-They look like this:
+  And the IIgs connector is located here:
 
-[images/iigsNullModem3.jpg]
-  
-  For the IIgs, you will first need to verify a couple of things in the control panel.  
+[images/iigsmodemport.jpg]
+
+  For the IIgs, you will also need to verify a couple of things in the control panel.  
 You bring up the IIgs control panel with the key sequence 
 <<<Control-OpenApple-Escape.>>>
 
@@ -117,13 +113,10 @@ You bring up the IIgs control panel with the key sequence
 
 [images/iigsControl2.png]
 
-  One possible "frankencable" setup that connects a male DE9 serial port to the IIgs' 8-pin
-mini-DIN connector with a null modem in between looks like this:
 
-[images/nullModem.jpg]
-
-  These pinouts describe the round "MiniDIN8" male connector
-looking into the cable at the pins:
+ If you are building your own cable, this is the pinout to use.
+It describes the round "MiniDIN8" male connector looking into the cable
+at the pins:
 
 [images/minidin8.png]
 
@@ -144,25 +137,6 @@ looking into the cable at the pins:
     7 ----- 1      8     DCD
 ---
 
-  A straight-through cable, used if you connect through a separate null modem as
-  pictured above, is wired like this
-  (Apple would call this a "Modem" cable):
-
----
-  Apple
- MiniDIN8  DE-9  DB-25  RS-232
-   Pin#    Pin#  Pin#    Name
- --------  ----  -----  ------
-    3 ----- 3      2     TxD
-    5 ----- 2      3     RxD
-    4 --,-- 5      7     GND
-    8 --'
-    2 ----- 8      5     CTS
-    1 --+-- 7      4     RTS
-        '-- 4     20     DTR
-    7 ----- 1      8     DCD
----
-
  Once you have your computers connected, you can move on to 
 {{{bootstrap.html}bootstrapping.}}
 
@@ -170,10 +144,12 @@ looking into the cable at the pins:
 
   You will need a serial cable setup that ultimately connects the round, 5-pin
 DIN modem connector of your IIc, Laser 128, or Franklin Ace 500 to
-the serial port of your host computer - and also performs a null-modem function 
+the serial or USB port of your host computer - and also performs a null-modem function 
 in between.
 If you would like to purchase a null modem that is ready to use, click
-{{{http://retrofloppy.com/products.html#DIN5DE9}here.}}
+{{{http://retrofloppy.com/products.html#DIN5DE9}here.}}  They look like this:
+
+[images/nullModemDIN5DE9v2.jpg]
 
   There are two 5-pin DIN connectors on the backs of IIc computers and compatibles. 
 One has the icon of a telephone, the other has an icon of a printer. 
@@ -188,14 +164,7 @@ printer port:
 [images/lasermodemport.jpg]
 
   If you are wiring a null-modem yourself, the following is the pinout to use.
-The parts you need can be found at swap meets, Jameco, Mouser, Radio Shack, etc.
-If you would rather purchase one that is ready to use, click
-{{{http://retrofloppy.com/products.html#DIN5DE9}here.}}
-They look like this:
-
-[images/nullModemDIN5DE9v2.jpg]
-
-  This pinout describes the round male connector
+This pinout describes the round male connector
 looking into the cable at the pins.  Note that this is numbered using
 Apple's (not DIN's!) standard:
 
@@ -266,6 +235,15 @@ checkbox in the serial config dialog box, brought up from the
 
 * {Apple3} /// RS-232-C port cabling
 
+  You will need a serial cable setup that ultimately connects the connector
+labeled "PORT C" on the back of your Apple /// to the serial or USB port of 
+your host computer - and also performs a null-modem function in between.
+If you would like to purchase a null modem cable that is ready to use, click
+{{{http://retrofloppy.com/products.html#DB25DE9NULL}here.}}
+They look like this:
+
+[images/a3NullModem.png]
+
   The RS-232-C port on the back of the Apple /// has the same physical connector as 
 the Super Serial card: a female DB-25.  But unlike the SSC, it can't be configured
 to use a null modem or not: it is hardwired to require one.  At the back of the 
@@ -274,15 +252,8 @@ Apple ///, connect your null modem to the RS-232-C connector
 
 [images/a3Back.png]
 
-  If you are wiring a null modem yourself, the pinout to use is below.
-The parts you need can be found at swap meets, Jameco, Mouser, Radio Shack, etc.
-If you would rather purchase one that is ready to use, click
-{{{http://retrofloppy.com/products.html#DB25DE9NULL}here.}}
-They look like this:
-
-[images/a3NullModem.png]
-
- A single-cable null-modem is wired like this:
+  If you are building your own cable, the pinout for a single-cable
+null-modem is below:
 
 ---
  DE-9     DB-25  RS-232
@@ -313,8 +284,8 @@ that connects your host operating system to the USB adapter.
 
  If you would like to purchase one that is compatible with both Windows
 and OSX operating systems, I offer one for sale
-{{{http://retrofloppy.com/products.html#USBMAC}here.}}
-They look like this:
+{{{http://retrofloppy.com/products.html#USBMAC}here}} that works with the
+null modem cables shown above.  They look like this:
 
 [images/USBMac.jpg]
 

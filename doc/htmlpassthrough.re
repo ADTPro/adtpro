@@ -7,6 +7,4 @@ s@<img src="images/nullModemDIN5DE9v2.jpg" />@<a href="http://retrofloppy.com/pr
 s@<img src="images/USBMac.jpg" />@<a href="http://retrofloppy.com/products.html#USBMAC" target\="_new"><img src="images/USBMac.jpg" /></a>@ig;
 s@<img src="images/a3NullModem.png" />@<a href="http://retrofloppy.com/products.html#DB25DE9NULL" target\="_new"><img src="images/a3NullModem.png" /></a>@ig;
 s@<img src="images/USBMac.jpg" />@<a href="http://retrofloppy.com/products.html#USBMAC" target\="_new"><img src="images/USBMac.jpg" /></a>@ig;
-s@<img src="images/ss1.jpg" />@<a href="http://retrofloppy.com/products.html#SSC" target\="_new"><img src="images/ss1.jpg" /></a>@ig;
-s@<img src="images/ss2.jpg" />@<a href="http://retrofloppy.com/products.html#SSC" target\="_new"><img src="images/ss2.jpg" /></a>@ig;
 s@<img src="images/ADTProPPT.png" />@<a href="http://adtpro.sourceforge.net/ADTProIntro.ppt" target\="_new"><img src="images/ADTProPPT.png" /></a>@ig;
