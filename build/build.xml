@@ -94,6 +94,7 @@ everywhere it is invoked:
 		<delete file="${builddir}/ADTPROAUD.BIN" />
 		<delete file="${builddir}/ADTPROETH.BIN" />
 		<delete file="${builddir}/ADTSOSETH.BIN" />
+		<delete file="${projdir}/client/src/messages.asm" />
 		<delete file="${projdir}/client/src/GRUB" />
 		<delete file="${projdir}/client/src/LOADER" />
 		<delete file="${builddir}/${distName}.tar.gz" />
@@ -115,6 +116,8 @@ everywhere it is invoked:
 		<delete file="${projdir}/org/adtpro/resources/SK.raw" />
 		<delete file="${projdir}/org/adtpro/resources/SOSLoader.raw" />
 		<delete file="${projdir}/org/adtpro/resources/PD.dmp" />
+		<delete file="${projdir}/org/adtpro/resources/messages.properties" />
+		<delete file="${projdir}/org/adtpro/resources/messages_ko_KR.properties" />
 		<delete>
 			<fileset dir="${projdir}/client/src" includes="**/*.o"/>
 			<fileset dir="${projdir}/client/src" includes="**/*.map"/>
