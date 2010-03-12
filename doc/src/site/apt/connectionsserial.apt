@@ -158,10 +158,14 @@ at the back of the IIc:
   
 [images/iicmodemport.jpg]
 
- And on the Laser 128, it's on the right side of the case, but just to the left of the
+ On the Laser 128, it's on the right side of the case, but just to the left of the
 printer port:
 
 [images/lasermodemport.jpg]
+
+ The modem port on the Franklin Ace 500 is the left-most connector: 
+ 
+[images/franklin500back.png]
 
   If you are wiring a null-modem yourself, the following is the pinout to use.
 This pinout describes the round male connector
