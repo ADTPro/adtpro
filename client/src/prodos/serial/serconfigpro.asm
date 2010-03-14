@@ -82,7 +82,12 @@ FoundNotIIgs:
 	ldy #$00
 	lda (UTILPTR),y
 	cmp #$da		; Is $Cn00 == $DA?
-	beq ProcessIIc		; Yes - it's a Laser 128.  Treat it like a IIc.
+	bne NotLaser		; No - it's not a Laser 128
+	lda #$10		; Yes - it's a Laser 128.  Set SSCPUT to ignore DSR.
+	sta MOD5+1
+	lda #$08		; Ignore DSR and DCD
+	sta MOD6+1
+	jmp ProcessIIc		; Now treat it like a IIc.
 NotLaser:
 	ldy #$0a
 	lda (UTILPTR),y
@@ -90,7 +95,12 @@ NotLaser:
 	beq ProcessIIc
 NotNewIIc:
 	cmp #$25		; Is this an older IIc - $Cn0a == $25?
-	bne GenericSSC
+	beq ProcessIIc
+NotOldIIc:
+	ldy #$01
+	lda (UTILPTR),y
+	cmp #$a7		; Is this a Franklin Ace 500 - $Cn01 == $A7?
+	bne GenericSSC		; No - call it a generic SSC.  Yes - treat it like a IIc.
 ProcessIIc:
 	cpx #$02		; Only bothering to check IIc Modem slot (2)
 	bne FindSlotNext
@@ -98,6 +108,10 @@ ProcessIIc:
 	jmp FindSlotBreak	; Don't check port #1 on an IIc - we don't care
 GenericSSC:
 	stx TempSlot		; Nope, nothing special.  Just a Super Serial card.
+	lda #$50		; Make sure we can watch for DSR
+	sta MOD5+1
+	lda #$68		; Make sure we can watch for DSR and DCD
+	sta MOD6+1
 
 FindSlotNext:
 	dex
