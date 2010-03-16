@@ -10,15 +10,20 @@ ADTPro Release History
 
  New functionality:
 
- * [Client] Implemented native assembly ProDOS selector/launcher eliminating the need
- for Applesoft; results in 30% faster booting and executing from floppy
+ * [Client] Implemented native assembly ProDOS selector/
+   launcher eliminating the need for Applesoft; results
+   in 30% faster booting and executing from floppy
 
- * [Client] Laser 128 machines can now use their native modem port at 115.2kbps 
- using the SSC port 2 setting
+ * [Client] Laser 128 machines can now use their native
+   modem port at 115.2kbps using the SSC port 2 setting
 
  []
 
  Bug fixes:
+
+ * [Client] Better automatic serial device detection for
+   Franklin Ace 500 computers (select Modem vs. Printer
+   port)
 
  * [Server] Build hygiene - automate version numbering
 
@@ -28,18 +33,22 @@ ADTPro Release History
 
  New functionality:
 
- * [Server] Re-scan for serial ports every time the serial config gui comes up; detects USB
-   port changes
+ * [Server] Re-scan for serial ports every time the serial
+   config gui comes up; detects USB port changes
 
  []
 
  Bug fixes:
 
- * [Server] Fixed a protocol bug that made the server abort when it received garbled acknowledgement packets that looked almost correct
+ * [Server] Fixed a protocol bug that made the server abort
+   when it received garbled acknowledgement packets that
+   looked almost correct
 
- * [Server] Increased microphone sensitivity so recent Mac Java releases can "hear" the audio stream correctly
+ * [Server] Increased microphone sensitivity so recent Mac
+   Java releases can "hear" the audio stream correctly
 
- * [Server] Removed most post-Java-1.3 code so server can run on Java 1.3 (i.e. Mac OSX 10.2)
+ * [Server] Removed most post-Java-1.3 code so server can
+   run on Java 1.3 (i.e. Mac OSX 10.2)
 
  []
 
