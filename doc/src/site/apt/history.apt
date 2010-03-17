@@ -25,6 +25,9 @@ ADTPro Release History
    Franklin Ace 500 computers (select Modem vs. Printer
    port)
 
+ * [DOS ADT Client] Reset the screen after a disk send
+   is complete 
+
  * [Server] Build hygiene - automate version numbering
 
  []

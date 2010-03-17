@@ -19,7 +19,7 @@ of the ADTPro server, and a 4-digit serial number and the suffix <<<".PO">>>
 be appended to it.  If the current working directory were <<</apple/disks,>>>
 the first disk would be saved as <<</apple/disks/BIGUPLOAD0000.PO.>>>
 The next disk would be saved as <<</apple/disks/BIGUPLOAD0001.PO,>>> and so on.
-If you run out of space (i.e. you already have 9,999 batch images saved), the
+If you run out of space (i.e. you already have 10,000 batch images saved), the
 ADTPro server will increment the number without any zero padding.
 
  After hitting Return to specify the filename prefix, ADTPro will present you with
@@ -73,3 +73,6 @@ the ADTPro server will show the current disk name on its window.
 
  You can hit the Escape key at any time to stop the batch sending process
  and bring you back to the main ADTPro menu.
+ Any time you abort a transmission, it is best to hit the "Disconnect" button 
+ on the server and re-connect by clicking on the button representing the
+ connection type you are using.

@@ -12,8 +12,7 @@ Apple II Audio Bootstrapping
  The goal here is to get the ADTPro client
  down to the Apple so that you can easily transfer all the rest of the
  great Apple II software that is available on the Internet.
- Getting to that goal will take a series of steps, depending on where
- you are starting from.  
+ Getting to that goal will take a series of detailed steps.  
  You may be able to save yourself some of those steps, depending on 
  what software you currently have available to you.  
 
@@ -31,8 +30,8 @@ Apple II Audio Bootstrapping
  audio and cassette ports, refer back to the
  {{{connectionsaudio.html}Connections}} section.
 
- If you'd rather have a pre-built disk arrive at your door than
-build one yourself, {{{http://retrofloppy.com/products.html#ADTPRO}click here.}}
+ If you'd rather have a pre-built ADTPro floppy disk arrive at your door than
+create one yourself, {{{http://retrofloppy.com/products.html#ADTPRO}click here.}}
 
 *  Bootstrapping Demonstration {Video}
 
@@ -67,7 +66,7 @@ audio cables all the way to making a bootable ADTPro floppy:
 
     * <<<CALL -151>>> (The Apple should respond with the asterisk <<<(*)>>> prompt.)
 
-    * <<<2000.xxxxR>>> (Note the <<<"0">>> is a zero, not the letter "O.")
+    * <<<800.xxxxR>>> (Note the <<<"0">>> is a zero, not the letter "O.")
 
     []
       Back on the Apple... the first command <<<(CALL -151)>>> will place
@@ -77,7 +76,7 @@ audio cables all the way to making a bootable ADTPro floppy:
       You should expect the prompt character change from the right-bracket
       <<<(])>>> to the asterisk <<<(*).>>>
       
-      The second command <<<(2000.xxxxR)>>> will instruct the Apple to start 
+      The second command <<<(800.xxxxR)>>> will instruct the Apple to start 
       listening for data on its
       cassette-in port.  Fill in the real numbers for the four "x"
       characters above as given in the ADTPro server dialog box.
@@ -326,14 +325,14 @@ audio cables all the way to making a bootable ADTPro floppy:
       (where <<<6>>> is the number of the slot your Disk ][ card is in).
       You're done here if all you want is a bootable diskette.
 
-    [[1]] Remember, DOS ADT can't do audio transfers because it requires
-      a serial connection.
+    [[1]] Remember, DOS ADT can't do audio transfers because it only
+      knows how to communicate over a serial connection.
       If you want to do audio transfers, you really want to use the
       ProDOS bare-metal bootstrapping procedure
       {{{bootstrapaudio.html#Starting_from_bare_metal}above.}}
 
     [[1]] You may wish to create a disk with the DOS version of ADT on it now.
-      {With a freshly formatted DOS floppy in the Apple drive}, send over the
+      With a freshly formatted DOS floppy in the Apple drive, send over the
       DOS version of ADT to the Apple.
       
     [[1]] On the ADTPro server, click on "Bootstrapping->EsDOS ][ ->Send DOS ADT Client."

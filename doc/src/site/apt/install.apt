@@ -39,7 +39,9 @@ ADTPro Installation
  command line or by clicking on the startup program for your host operating
  system.
 
- [[1]] Bootstrap the client software on your Apple II via {{{bootstrap.html}serial}} or {{{bootstrapaudio.html}cassette}} ports.
+ [[1]] Bootstrap the client software on your Apple II via
+ {{{bootstrap.html}serial}} or {{{bootstrapaudio.html}cassette}} ports;
+ or bootstrap it on your Apple /// via its {{{bootstrap3.html}serial}} port.
 
  []
 
@@ -74,7 +76,7 @@ java.library.path=/opt/IBMJava2-142/jre/bin:
  thrown while loading gnu.io.RXTXCommDriver
 +-------
 
- Keep working at your startup script or
+ Keep working at your startup script or just 
  {{{http://adtpro.sourceforge.net/forum.html}ask for help.}}
 
 OS/2 RXTX Considerations
@@ -106,8 +108,8 @@ Distribution contents
 
  [<<<disks/ADTPRO-v.r.m.PO>>>] ADTPro client-side software (an Apple 800K disk image)
 
- [<<<disks/ADTvrm.DSK>>>] An enhanced legacy Apple DOS ADT client, capable 
-   of running with Super Serial hardware, the IIgs modem port, a Laser 128, and the Apple ///
+ [<<<disks/ADTvr.DSK>>>] An enhanced legacy Apple DOS ADT client, capable 
+   of running with Super Serial hardware, the IIgs, the IIc and compatibles, and the Apple ///
    (an Apple 140K disk image)
 
  [<<<lib/ADTPro-v.r.m.jar>>>] ADTPro server-side software (a Java .jar file)

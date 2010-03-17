@@ -25,7 +25,7 @@ you want saved at the host:
     Note that the AppleWin emulator expects a ".hdv" instead of ".po"
     extension for any large disk image.  The Sweet16 emulator
     will mount ".po" images as if they were 5.25" floppies and ".hdv"
-    images as large disk drives.
+    images as hard disk drives.
 
   * Keeping to these naming conventions will ensure your images will work with
     emulators that only distinguish between bit ordering formats by filename.
@@ -89,3 +89,9 @@ of solid blocks:
 
  If an image contains at least one "bad" block, an error message will appear both
 at the Apple and at the host end.
+
+ You can hit the Escape key at any time to stop the disk sending process
+ and bring you back to the main ADTPro menu.
+ Any time you abort a transmission, it is best to hit the "Disconnect" button 
+ on the server and re-connect by clicking on the button representing the
+ connection type you are using.

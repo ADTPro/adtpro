@@ -16,8 +16,8 @@ disk, and you'll be ready to go.  If not... read on.
  their serial ports, refer back to the
  {{{connectionsserial.html#Apple3}Connections}} section.
 
- If you'd rather have a pre-built disk arrive at your door than
-build one yourself, {{{http://retrofloppy.com/products.html#ADTPRO}click here.}}
+ If you'd rather have a pre-built ADTPro floppy disk arrive at your door than
+create one yourself, {{{http://retrofloppy.com/products.html#ADTPRO}click here.}}
 
 * Bootstrapping demonstration video
 
@@ -39,10 +39,10 @@ ADTPro client and server cooperate to set the speed automatically.
 a minimally functional command line interface, or "monitor."  It is accessible with 
 the familiar (to Apple IIe users) Ctrl-OpenApple-Reset key sequence.
 The machine will beep, and you will be presented with a blinking cursor 
-next to an arrow prompt.  You then proceed to type in and run the "Grub" bootstrap
+next to an arrow prompt.  You then proceed to type in and run a short bootstrap
 loader; clicking on "Bootstrapping->SOS" from the ADTPro server gives instructions
 for that.
-The Grub then waits to accept the rest of bootstrapping code from the ADTPro server,
+The bootstrap loader then waits to accept the rest of bootstrapping code from the ADTPro server,
 which flows when you dismiss the ADTPro server dialog box.
 ADTPro will complete the bootstrapping process and leave you with your /// running
 the ADTPro client under SOS, where you can format blank disks and reconstitute software
@@ -66,7 +66,7 @@ for example.
 
     []
 
-    [[1]] On the Apple ///, type in the Grub bootstrapping loader, below. 
+    [[1]] On the Apple ///, type in the bootstrapping loader, below. 
     Note that every "0" character is a number zero, not a letter;
     every "1" character is a number one, not a letter.
     The sequence of lines to type is this:
@@ -91,8 +91,8 @@ A048:F7 AD F0 C0 60
     through to the end of this procedure to format a new floppy and {{{receiving.html}receive}}
     the full, bootable ADTPro disk that ships with this distribution.
 
-    [[1]] To see the entire program in memory once it has been typed
-    in, type the following command:
+    [[1]] To review the entire bootstrap loader program you typed in,
+    type the following command:
 
 -----------------
 A000.A04C
@@ -115,7 +115,7 @@ A000.A04C
 A000G
 -----------------
 
-    [[1]] If the Grub program is functioning correctly, an inverse word "HI" will
+    [[1]] If the bootstrap loader is functioning correctly, an inverse word "HI" will
     appear in the upper-right hand corner of the screen.  The Apple /// is now
     waiting for further instructions from the ADTPro server.
     The screen will look something like this:
@@ -128,7 +128,7 @@ A000G
 
     [[1]] On the ADTPro server, click on the "Bootstrapping->SOS" menu item.
     Dismiss the dialog box that appears (since you have just followed the 
-    same instructions, the Grub is already running now).
+    same instructions, the bootstrap loader is already running now).
     The bootstrapping process should now continue without any further need for 
     intervention.  As data is sent from the ADTPro server down to the ///,
     a character will flash to the right of the status message to indicate progress.

@@ -94,6 +94,10 @@ is {{{archive/AppleIIIBits.html}here.}}
 was critical to debugging operations.  Important information on how to accomplish that
 was published in the "/// Cheers!" magazine from A.P.P.L.E., available {{{http://www.callapple.org/magazines/cheers/summer_1985.html}here.}}
 
+ The ProDOS loader concepts used to speed up booting (by eliminating the need for Applesoft)
+were from Oliver Schmidt's LOADER.SYSTEM contribution to cc65, available
+{{{http://cc65.oldos.net/contrib/loader-1.4.txt}here}}.
+
  Thanks to the {{{http://maven.apache.org}Maven}} project for web page generation.
 
 ADT Lineage

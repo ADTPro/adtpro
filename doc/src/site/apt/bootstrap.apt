@@ -35,8 +35,8 @@ more bootstrapping scenarios and configurations are detailed below.
 
  []
 
- If you'd rather have a pre-built disk arrive at your door than
-build one yourself, {{{http://retrofloppy.com/products.html#ADTPRO}click here.}}
+ If you'd rather have a pre-built ADTPro floppy disk arrive at your door than
+create one yourself, {{{http://retrofloppy.com/products.html#ADTPRO}click here.}}
 
 *  Bootstrapping Demonstration {Video}
 
@@ -55,8 +55,8 @@ Super Serial card, all the way to making a bootable ADTPro floppy:
  that's the fastest the Apple could handle without some measure of line
  pacing or flow control.
  Having DOS 3.3 booted substantially slows down the pace at which the
- Apple can respond to data, so it's important to leave the Apple un-
- booted (i.e. hit reset before any DOS loads when turning the machine on).
+ Apple can respond to data, so it's important to leave the Apple un-booted
+ (i.e. hit reset before any disk loads after turning the machine on).
 
  The defaults now are to send bootstrapping data at 9600 baud, with 
  a 150 millisecond delay after each line.  The first few (and the last
