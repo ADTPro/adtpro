@@ -554,6 +554,7 @@ sendtype:
 	cmp	#_'S'		; SEND?
 	bne	:+		; Nope, invalid input
 	jsr	send		; YES, DO SEND ROUTINE
+	jmp	redraw		; changed the screen, so restore
 :
 	cmp	#esc
 	beq	mainlup
@@ -579,15 +580,16 @@ kconf:	cmp	#_'C'		; CONFIGURE?
 
 kabout: cmp	#$9f		; ABOUT MESSAGE? ("?" KEY)
 	bne	kquit		; NOPE, TRY QUIT
-	jsr home
+	jsr	home
 	ldy	#mabout		; YES, SHOW MESSAGE, WAIT
 	jsr	showm1		; FOR KEY, AND RETURN
 	jsr	rdkey
 	jmp	redraw
 
 kquit:	cmp	#_'Q'		; QUIT?
-	bne	mainlup		; NOPE, WAS A BAD KEY
-	lda	dosbyte		; YES, RESTORE DOS CHECKSUM CODE
+	beq	:+		; Yes - need to do a bit of jumping
+	jmp	mainlup		; NOPE, WAS A BAD KEY
+:	lda	dosbyte		; YES, RESTORE DOS CHECKSUM CODE
 	sta	$b92e
 	lda	dosbyte+1
 	sta	$b98a
