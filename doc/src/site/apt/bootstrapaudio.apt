@@ -100,10 +100,10 @@ audio cables all the way to making a bootable ADTPro floppy:
         {{{bootstrapaudio.html#Decide_which_version}step 4 above.}}
 
     [[1]] Once the transfer completes successfully,
-      start the ADTPro client with the command <<<2000G>>>
+      start the ADTPro client with the command <<<800G>>>
       from the asterisk prompt at the Apple.
       Or, if you happen to put yourself back at the Applesoft prompt,
-      you can also start the ADTPro client with the <<<CALL 8192>>> command
+      you can also start the ADTPro client with the <<<CALL 2048>>> command
       from Applesoft.
       
     [[1]] If you need to format a new floppy or two now, go to ADTPro's 
@@ -198,20 +198,20 @@ audio cables all the way to making a bootable ADTPro floppy:
       bootstrapping operation will have left you at the asterisk prompt already.
       It won't hurt anything if you do, but you don't need to.)
 
-    * <<<2000.xxxxR>>> (Note the <<<"0">>> is a zero, not the letter "O.")
+    * <<<800.xxxxR>>> (Note the <<<"0">>> is a zero, not the letter "O.")
 
     []
 
-    In this scenario, you only need to enter the second command <<<(2000.xxxxR)>>>
+    In this scenario, you only need to enter the second command <<<(800.xxxxR)>>>
     at your Apple.
 
     [[1]] Dismiss the ADTPro server dialog by clicking on the <<<Ok>>> button.
 
     [[1]] Once the transfer completes successfully,
-      start the ADTPro client with the command <<<2000G>>>
+      start the ADTPro client with the command <<<800G>>>
       from the asterisk prompt at the Apple.
       Or, if you happen to put yourself back at the Applesoft prompt,
-      you can also start the ADTPro client with the <<<CALL 8192>>> command
+      you can also start the ADTPro client with the <<<CALL 2048>>> command
       from Applesoft.
       
     [[1]] Use the ADTPro client's {{{misc.html#Format}format}} function to
