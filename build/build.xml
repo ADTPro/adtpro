@@ -20,11 +20,11 @@ everywhere it is invoked:
 -->
 
 <project name="ADTPro" default="all" basedir="..">
-	<property name="versionString" value="v.r.m" />
+	<property name="versionString" value="1.1.5" />
 	<property name="distName" value="ADTPro-${versionString}" />
 	<property name="diskName" value="ADTPRO-${versionString}" />
 	<property name="volName" value="ADTPro.${versionString}" />
-	<property name="dosVersionString" value="23" />
+	<property name="dosVersionString" value="24" />
 	<property name="dosDistName" value="ADT${dosVersionString}" />
 	<property name="projdir" value="${basedir}" />
 	<property name="builddir" value="${basedir}/build" />

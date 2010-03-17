@@ -28,7 +28,7 @@ the stuff that gets uploaded to sourceforge.
      at the "current" release level instead of reverting to "v.r.m" because
      it can go into documentation between releases.
    * build/build.xml: DOS version number, if necessary: <property name="dosVersionString" value="vrm" />
-   * client/src/dos/adt.s: DOS version number, if necessary: version_no	"v.r.m"
+   * client/src/dos/adt.s: DOS version number, if necessary: version_no	"v.r"
 
 3. Make sure you've got the latest DOS ADT from the Berlios project;
    ensure the default baud rate is changed to 115k in adt.s:

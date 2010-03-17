@@ -156,6 +156,10 @@
 ; Version History:
 ; ----------------
 
+; Version 2.4 March 2010 
+; - Fix to allow Laser 128 machines to run at 115.2kbps
+; - Fix slot scan for Franklin Ace 500 computers
+
 ; Version 2.3 February 2009
 ; - Add slot scan for Apple /// computers
 
@@ -219,7 +223,7 @@
 ; Version 1.00 - FIRST PUBLIC RELEASE
 
 ; The version number as a macro. Must not be more than 7 characters.
-.define		version_no	"2.3"
+.define		version_no	"2.4"
 
 ; Protocol number. Note it must be assigned a higher value when the protcol is
 ; modified, and must never be < $0101 or > $01FF
@@ -698,19 +702,12 @@ FoundNotIIgs:
 	ldy	#$00
 	lda	(msgptr),y
 	cmp	#$da		; Is $Cn00 == $DA?
-	bne	NotLaser	; If not, it's not a Laser 128.
-	cpx	#$02
-	bne	FindSlotNext
-	lda	#$09		; Ok, this is a Laser 128.
-	sta	TempSlot
-	lda	pspeed		; Were we trying to go too fast (115.2k)?
-	cmp	#$06
-	bne	:+
-	lda	#$05		; Yes, slow it down to 19200.
-	sta	pspeed
-	sta	default+3	; And make that the default.
-:
-	jmp	FindSlotNext
+	bne	NotLaser	; No - it's not a Laser 128
+	lda	#$10		; Yes - it's a Laser 128.  Set SSCPUT to ignore DSR.
+	sta	mod5+1
+	lda	#$08		; Set SSCGET to ignore DSR and DCD.
+	sta	mod6+1
+	jmp	ProcessIIc	; Now treat it like a IIc.
 NotLaser:
 	ldy	#$0a
 	lda	(msgptr),y
@@ -718,7 +715,12 @@ NotLaser:
 	beq	ProcessIIc
 NotNewIIc:
 	cmp	#$25		; Is this an older IIc - $Cn0a == $25?
-	bne	GenericSSC
+	beq	ProcessIIc	; Yes - treat it like a IIc.
+NotOldIIc:
+	ldy	#$01
+	lda	(msgptr),y
+	cmp	#$a7		; Is this a Franklin Ace 500 - $Cn01 == $A7?
+	bne	GenericSSC	; No - call it a generic SSC.  Yes - treat it like a IIc.
 ProcessIIc:
 	cpx	#$02		; Only bothering to check IIc Modem slot (2)
 	bne	FindSlotNext
@@ -726,6 +728,10 @@ ProcessIIc:
 	jmp	FindSlotBreak	; Don't check port #1 on an IIc - we don't care
 GenericSSC:
 	stx	TempSlot	; Nope, nothing special.  Just a Super Serial card.
+	lda	#$50		; Make sure we can watch for DSR
+	sta	mod5+1
+	lda	#$68		; Make sure we can watch for DSR and DCD
+	sta	mod6+1
 
 FindSlotNext:
 	dex
@@ -752,7 +758,11 @@ FindSlotMaybeIII:
 	lda	(msgptr),y
 	cmp	#$48		; Is $Cn0C == $48?
 	bne	FindSlotNext
-	jmp	GenericSSC	; It's an Apple /// SSC-like thing.
+	lda	#$10		; Yes - it's a Laser 128.  Set SSCPUT to ignore DSR.
+	sta	mod5+1
+	lda	#$08		; Set SSCGET to ignore DSR and DCD.
+	sta	mod6+1
+	jmp	FindSlotNext	; It's an Apple /// SSC-like thing.
 
 TempSlot:	.byte 0
 TempIIgsSlot:	.byte 0
@@ -1144,7 +1154,7 @@ parmint:
 	asl			; NOW $S0
 	sta	iobslt		; STORE IN IOB
 	adc	#$89		; NOW $89+S0
-	sta	mod5+1		; SELF-MOD FOR "DRIVES ON"
+	sta	drvmod+1	; SELF-MOD FOR "DRIVES ON"
 
 	ldy	pdrive		; GET DRIVE# (0..1)
 	iny			; NOW 1..2
@@ -1470,7 +1480,7 @@ srokay:
 	lda	savtrk		; BLOCK
 	cmp	#$1c
 	beq	notone
-mod5:	bit	$c089
+drvmod:	bit	$c089
 
 notone: dec	trkcnt
 	beq	srend
@@ -2542,7 +2552,7 @@ parmtxt:
 	ascz "SSC SLOT 6"
 	ascz "SSC SLOT 7"
 	ascz "IIGS MODEM"
-	ascz "LASER MODEM"
+	ascz "GENERIC SLOT 2"
 	ascz "300"
 	ascz "1200"
 	ascz "2400"
