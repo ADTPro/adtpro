@@ -1,6 +1,6 @@
 ;
 ; ADTPro - Apple Disk Transfer ProDOS
-; Copyright (C) 2006 - 2008 by David Schmidt
+; Copyright (C) 2006 - 2010 by David Schmidt
 ; david__schmidt at users.sourceforge.net
 ;
 ; This program is free software; you can redistribute it and/or modify it 
@@ -228,9 +228,13 @@ PARMINT:
 	lda CONFIGYET
 	beq NOPE
 	jsr INITUTHER
-	jsr PINGREQUEST
-	jsr PINGREQUEST
-	jmp :+
+	lda #$a0
+	jsr DELAY
+	jsr PINGREQUEST	; Do a couple of ping requests to prime the pump
+	lda #$10
+	jsr DELAY
+	jsr PINGREQUEST	; Do a couple of ping requests to prime the pump
+	rts
 NOPE:	jsr PATCHNULL
 :	rts
 
