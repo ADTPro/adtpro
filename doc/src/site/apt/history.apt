@@ -6,6 +6,15 @@
 
 ADTPro Release History
 
+* Unreleased - changes in CVS now
+
+ Bug fixes:
+
+ * [Client] Ethernet version can now connect immediately
+   after startup without having to do DIR commands first
+
+ []
+
 * 1.1.5 - March 17, 2010
 
  New functionality:
