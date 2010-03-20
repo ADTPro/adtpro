@@ -48,7 +48,7 @@ ADTPro Installation
  Please report troubles, bugs, requests for help, etc. on the Help 
  forum for ADTPro at SourceForge:
 
- {{http://adtpro.sourceforge.net/forum.html}}
+ {{{forum.html}http://adtpro.sourceforge.net/forum.html}}
 
  Good luck - and have fun!
 
@@ -77,7 +77,7 @@ java.library.path=/opt/IBMJava2-142/jre/bin:
 +-------
 
  Keep working at your startup script or just 
- {{{http://adtpro.sourceforge.net/forum.html}ask for help.}}
+ {{{forum.html}ask for help.}}
 
 OS/2 RXTX Considerations
 

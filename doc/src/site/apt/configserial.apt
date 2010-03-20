@@ -36,7 +36,7 @@ left arrow keys.  Your Apple has right and left arrow keys; trust me.
 
 * Comms Device
 
- <<Super Serial Card (includes IIc and Laser 128 serial)>>
+ <<Super Serial Card (includes IIc, Laser 128 and Franklin Ace 500 modem ports)>>
 
  Select the slot your communications card is in.
 
@@ -56,12 +56,12 @@ and select that same slot number here.
  If you have an Apple ///, the internal serial adapter will always be chosen by default.
 If you want to use a Super Serial card instead, you will need to select its slot here.
 
- Various serial connection options are discussed in the
+ Various serial cabling options are discussed in the
  {{{connectionsserial.html}serial connections}} section.
 
  <<IIgs Modem Port>>
 
- If you want to use the IIgs' native serial modem port, rotate through the 
+ If you want to use the IIgs modem port, rotate through the 
 <<<COMMS DEVICE>>> selections until "IIGS MODEM" shows up:
 
 [images/configIIgs.png]
@@ -71,11 +71,10 @@ to the host computer.  See the
 {{{connectionsserial.html#MiniDIN8}IIgs modem port}}
 connections section for details.
 
- Note that it's not particularly reliable to start up with GSOS and then use
-ADTPro.  It's best to start up under ProDOS - the distribution diskette is 
-well suited to this.
-If you normally start with GSOS, you can hit the '8' key as the computer is displaying
-the initial "Apple IIgs" screen and it'll start 8-bit ProDOS and drop you into the
+ Note that it's not particularly reliable to run ADTPro under GSOS.
+It's best to start up under ProDOS - the distribution diskette is well suited to this.
+If you normally start with GSOS, you can hit the '8' key as the computer booting
+and it'll start in 8-bit ProDOS and drop you into the
 BASIC interpreter, just like the old days.
 
  <<Miscellaneous Serial Devices>>
@@ -108,8 +107,8 @@ connections section for details.
 
 [images/configBaud.png]
 
- 115200 is the absolute maximum that ADTPro supports.  If you have a good
-serial cable, this speed will work reliably.
+ 115200 is the absolute maximum baud rate that ADTPro supports.
+If you have a good serial cable, this speed will work reliably.
 9600 will work as long as the two computers are less than a mile apart from one another.
 If you can't get 9600 to work reliably, something else is wrong.
 
@@ -130,6 +129,6 @@ configuration that works for you, select "YES" for SAVE CONFIG and hit Return.
 
 [images/configSave.png]
 
- This will save <<<ADTPRO.CONF>>> to the same place where you started
-ADTPro from.  When you start <<<ADTPRO>>> again, it will use the
+ This will save a configuration file named <<<ADTPRO.CONF>>> to the same place where
+you started ADTPro from.  When you start ADTPro again, it will use the
 configuration parameters you saved last.

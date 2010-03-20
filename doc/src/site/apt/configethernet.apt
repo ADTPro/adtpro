@@ -11,8 +11,7 @@ ADTPro Ethernet Connections
  Connecting your Apple to your home network is as easy as plugging the
  {{{http://a2retrosystems.com}Uthernet card}} into the Apple, and then
  plugging a Cat-5 Ethernet cable from the card into your home router or
- switch.  You just need to tell ADTPro which slot your Uthernet card is
- in, then set the IP parameters (details 
+ switch.  You just need to set ADTPro's IP parameters (details 
  {{{configethernet.html#Client_IP_Configuration}below}}).
  
  If your home network has MAC address filtering, you may need to add a
