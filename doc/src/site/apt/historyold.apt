@@ -6,643 +6,90 @@
 
 ADTPro Release Ancient History
 
-* 1.1.1 - September 18, 2008
+* New Features
 
- New functionality:
+ 1.1.5 - March 17, 2010
 
- * [Client] SOS version can use Ethernet UDP transport via the Uthernet card ({{http://a2retrosystems.com/}})
+    * [Client] Laser 128 machines can use their modem port at 115.2kbps using the SSC port 2 setting
+
+ 1.1.1 - September 18, 2008
+
+    * [Client] SOS version can use Ethernet UDP transport via the {{{http://a2retrosystems.com/}Uthernet}} card
+    
+    * [Client] SOS version can format media
+    
+    * [Server] Apple /// computers can be bootstrapped from bare metal over their built-in serial ports
+
+ 1.0.6 - February 10, 2008
+
+    * [Client] Ported the client to SOS (pronounced like "sauce") for the Apple /// supporting the built-in serial port and Super Serial card in any of its four slots (SOS released 8/10/2008)
+
+ 1.0.4 - January 21, 2008
+
+    * [Server] Incorporated nibble and half track disk logic from Gerard Putter's ADT-compatible Virtual ][ A2V2 transfer software - it's still experimental, so support hasn't been added to ADTPro client yet
+
+ 1.0.2 - August 11, 2007
+
+    * [Client] Borrowed very fast Disk II reading routines from {{{http://boutillon.free.fr/Underground/Docs/Fastdsk/Fastdsk_en.html}FASTDSK}}; reduces Disk II transfer time from Apple II to Host by 25%-33%.
+    
+    * [Client] Incorporated Bird's Better Bye program selector for Apple II+ users - because the 40-column ProDOS program selector is the very definition of user hostility
+
+ 1.0.1 - July 8, 2007
+
+    * [Client] Added support for Laser 128 serial via generic Pascal entry points on slot 2
+
+ 1.0.0 - June 21, 2007
+
+    * [Client] Added media formatting
  
- * [Client] SOS version can {{{misc.html#Format}format}} media
+ 0.2.6 - June 3, 2007
 
- * [Server] Apple /// computers can be {{{bootstrap3.html}bootstrapped}} from bare metal over their built-in serial ports
+    * [Client] Scan slots for communications devices if the manual configuration hasn't been done yet; preference is given to SSC cards over IIgs ports if both exist, and slots are scanned high-to-low, last-one-found-wins
 
- []
+ 0.2.4 - May 12, 2007
 
- Bug fixes:
+    * Added bootstrapping from bare metal directly to ProDOS
 
- * [Client] Occasional Ethernet "hang" during transfer
+ 0.1.5 - March 18, 2007
 
- * [Client] Exiting the Ethernet configuration screen via the Return key
-   but without saving to disk caused changes to be forgotten until entering
-   and leaving the config screen a second time
+    * Added support for audio transfers and bootstrapping using a host sound card and the Apple cassette port.
 
- * [Client] SOS version failed to write the first set of blocks when it
-   received a harmless "disk switched" notification (after swapping 
-   disks, for example)
+ 0.1.3 - December 15, 2006
 
- []
+    * Added support for Ethernet UDP transport via the Uthernet card 
 
-* 1.1.0 - August 30, 2008
+ 0.1.2 - November 27, 2006
 
- New functionality:
+    * Added a "batch send" mode to repeatedly send the same volume (i.e. one floppy after another)
 
- * [Client] Client software comes on a combined "dual boot"
-   ProDOS/SOS disk for both Apple II and Apple /// computers
+ 0.1.1 - November 16, 2006
 
- * [Client] Format routine now recognizes ProFile drives
+    * [Server] Serves bare-metal bootstrapping data (ESDOS II, DOS ADT client)
 
- []
+ 0.0.7 - August 27, 2006
 
- Bug fixes:
+    * [Client] Support for IIgs serial (modem) port at a maximum rate of 115,200 BPS
 
- * [Client] Reorganized
-   the entire client code base in order to single-source ProDOS and SOS versions -
-   probably leading to several new bugs in the ProDOS client
+ 0.0.5 - July 30, 2006
 
- * [Client] Fixed formatter volume name input routine to correctly handle
-   special characters
+    * [Client] Support for IIgs serial (modem) port at a maximum rate of 19,200 BPS
 
- * [Client] Fixed a fiddly problem with the IIgs and Uthernet where hitting
-   a key while waiting for a response from the host would make it ignore the esc key
-   from then on
+ 0.0.4 - July 9, 2006
 
- * [Client] Shortened UDP timeout for waiting for packet responses so things don't
-   appear to "hang" when a response isn't received
+    * [Server] Change working directory via file dialog
 
- * [Client] Re-integrated Bird's Better Bye (which was inexplicably removed)
-   for our Apple II and II+ friends
+ 0.01 - June 21, 2006
 
- * [Server] Improved batch logic for cleaning up after aborted image transfers
+ First prototypical release on SourceForge. Main functionality:
 
- []
-
-* 1.0.6 - February 10, 2008
-
- New functionality:
-
- * [Client] Ported the client to SOS (pronounced like "sauce") for the 
-   Apple /// supporting the built-in serial port and Super Serial card in
-   any of its four slots (SOS released 8/10/2008)
-
- []
-
- Bug fixes:
-
- * [Client] Formatting was unreliable for 5.25" media due to
-   timing-sensitive code placement
-
- * [Client] Formatting was unreliable for 3.5" media due to unfortunate
-   re-use of zero-page variable space
-
- * [Server] Included a copy of the rxtx library that no longer requires
-   lockfiles (1.0.6a.dmg for OSX only)
-
- []
-
-* 1.0.5 - February 3, 2008
-
- Bug fixes:
-
- * [Server] Hosts with zero audio mixers (a Java thing) were crashing with
-   java.lang.ArrayIndexOutOfBoundsException in AudioConfig.java
-
- * [Client] IIgs serial port initialization was not working for speeds
-   below 115.2kbps as a result of the 300 baud integration in v1.0.3
-
- []
-
-* 1.0.4 - January 21, 2008
-
- New functionality:
-
- * [DOS ADT Client] Included DOS ADT client, now at version 2.2,
-   with nibble and halftrack send capability for Disk II drives
-   from Gerard Putter and Eric Neilson 
-
- * [Server] Incorporated nibble and half track disk logic from
-   Gerard Putter's ADT-compatible Virtual ][ A2V2 transfer software -
-   it's still experimental, so support hasn't been added to ADTPro
-   client yet
-
- []
-
- Bug fixes:
-
- * [Client] Better automatic serial device detection for Apple IIc
-   computers (select Modem vs. Printer port)
-
- * [Client] Update track counter during fast Disk II reads (you had
-   to watch carefully to realize they weren't moving during read)
-
- * [Server] Audio data capture logic was refactored to be more
-   reliable and understandable by Marc S. Re&#223;l
-
- * [Client] Audio send protocol (from Apple to Host) was out of sync,
-   causing transfers to immediately abort
-
- * [Server] Fix progressive backoff timing for transmission failures
-
- []
-
-* 1.0.3 - October 7, 2007
-
- New functionality:
-
- * Support for 300 baud operation to help non-upgraded ROM 255 Apple IIc
-   computers with the serial timing problem
-
- []
-
- Bug fixes:
-
- * [Client] Only re-scan drives for volume information the first time, and
-   thereafter only when requested; this saves time (and, potentially, drive
-   knocking) whenever the volume screen is shown
-
- * [Client] Removed last dependency on Applesoft string printing; enables
-   running on original integer Apple ][ (non-plus) ROM machines
-
- * [Server] Always record 5-1/4" disks at the host as DOS order images
-
- * [Server] Corrected DOS audio addresses coming from bootstrapping 
-   instructions
-
- * [Server] Honor the "Apple IIc Serial" checkbox (which disables hardware
-   handshaking) on startup; previously, one had to open the communications
-   dialog box and explicitly hit OK to get it recognized
-
- []
-
-* 1.0.2 - August 11, 2007
-
- New functionality:
-
- * [Client] Borrowed very fast Disk II reading routines from FASTDSK
-   (See: {{http://boutillon.free.fr/Underground/Docs/Fastdsk/Fastdsk_en.html}});
-   reduces Disk II transfer time from Apple II to Host by 25%-33%.
-
- * [Client] Refactored client programs as ProDOS 8 system (SYS) 
-   applications.  This means that saving a configuration no longer BSAVEs
-   the entire client, but instead writes a little config file.
-
- * [Client] Incorporated Bird's Better Bye program selector for Apple II+
-   users - because the 40-column ProDOS program selector is the very
-   definition of user hostility
-
- * [Server] Eliminated the need for bootstrapping operations to send the
-   ProDOS BASIC interpreter
-
- []
-
- Bug fixes:
-
- * [Server] The routine to determine physical sector ordering was made
-   more accurate, especially for 5-1/4" disks.
-
- * [Server] Bulk transfers of Disk II images wrote DOS-order images,
-   but named them "*.PO," making it easy to mistake them for 
-   ProDOS-order images.  Now bulk transfers coming from Disk IIs are
-   named "*.DSK."
-
- []
-
-* 1.0.1 - July 8, 2007
-
- New functionality:
-
- * [Client] Support added for Laser 128 serial via generic Pascal entry
-   points on slot 2; included a copy of DOS ADT similarly enhanced
-
- []
-
- Bug fixes:
-
- * [Client] Unformatted media in an 800k drive would get an incorrect 
-   free block count after formatting.
-
- * [Client] Changed bootstrapping to rely less on pure Apple-isms in the
-   monitor.  Improved ProDOS stage 1 bootstrapping to not require the 
-   tricky control key sequence to get at the comms card from the monitor.
-   This enables Laser and Franklin compatibles.
-
- * [Server] Slowed down default bootstrap pacing to 150ms.
-
- []
-
-* 1.0.0 - June 21, 2007
-
- First official public release after one year of beta iterations.
- Communications methods include:
-
-  * {{{connectionsserial.html#Super_Serial_cabling}Super Serial}} card, {{{connectionsserial.html#MiniDIN8}IIgs modem port,}} or {{{connectionsserial.html#DIN5}IIc/Laser 128 serial port}}
-
-  * {{{http://a2retrosystems.com/}Uthernet}} Ethernet card
-
-  * The Apple's {{{connectionsaudio.html}cassette ports}}
-
- []
-
- Feature set includes:
-
-  * Transfers any storage device ProDOS can access
-
-  * Runs on any Apple II (or clone) computer with 64k memory
-
-  * Runs on Linux, Mac OSX, OS/2, Windows, and probably Solaris
-
-  * Understands many digital disk formats: .DSK, .PO, .NIB, 2IMG
-
-  * Serves the original {{{compatibility.html}ADT client}} as well as the updated ADTPro client
-
-  * Bootstraps Apple II computers from bare metal over {{{bootstrap.html}serial}} or {{{bootstrapaudio.html}cassette}} ports
-
-  * Sends floppies in {{{batch.html}"batch"}} mode without having to name each one
-
-  * {{{misc.html#Format}Formats}} media on the Apple II end
-
- []
-
- New functionality over final beta:
-
- * [Client] The formatting function is now integrated instead of being a
-   separate program
-
- * [Client] Volume picker screen sets the default slot/drive for the 
-   BASIC interpreter
-
- []
-
- Bug fixes from final beta:
-
- * [Client] (Finally) fixed audio transfer retry logic - darn Java and its
-   signed bytes!  Audio transfers are reliable at last.  Slow as ever,
-   but reliable.
-
- * [Client] Fixed 15-character volume name bugs: one in the formatter, one in
-   the online displayer/picker
-
- * [Client] Made the Uther slot-scanning algorithm a little less intrusive,
-   and used a MHz-insensitive timing loop to make UDP timeouts
-   a little more reasonable on accelerated machines
-
- * [Client] Used a MHz-insensitive timing loop to make the delightful beeping
-   noise sound the same no matter how fast the CPU is going
-
- * [Server] Better flow control for serial bootstrapping - improves life for
-   serial interfaces that do their own buffering (i.e. Keyspan USA-28)
-
- []
-
-* 0.2.6 - June 3, 2007
-
- New functionality:
-
- * The client will scan slots for communications devices if the 
-   manual configuration hasn't been done yet; 
-   preference is given to SSC cards
-   over IIgs ports if both exist, and slots are scanned high-to-low,
-   last-one-found-wins
-
- * Included DOS ADT similarly enhanced to scan for serial ports
-
- * Added a simple Applesoft menu when booting the distribution diskette
-
- * Added an 800k distribution disk image
-
- * Server gives instruction messages at the end as well as at the beginning
-   of bootstrap sends for Audio transfers - so you don't have to have the
-   website up in front of you to succeed
-
- []
-
- Bug fixes:
-
- * Fixed formatter code to more correctly format disks larger than
-   140k and to recognize and format hard drives/CFFA cards
-
- * Switched diskette image and bootstrapping data to use Apple's 
-   publicly available ProDOS version 1.9, BASIC 1.4.1 as
-   downloaded from Apple
-   {{{http://download.info.apple.com/Apple_Support_Area/Apple_Software_Updates/English-North_American/Apple_II/Apple_II_Supplemental/Apple_II_System_Disk_3.2.sea.bin}here.}}
-
- []
-
-* 0.2.5 - May 18, 2007
-
- New functionality:
-
- * Removed the requirement to "install" RXTX - we just point the
-   startup scripts at the unpacked location
-
- * Made an OSX startup script (adtpro.command) and made it 
-   double-clickable to start the server
-
- []
-
- Bug fixes:
-
- * Switching a protocol or hitting the disconnect button puts up
-   a confirmation dialog box if there is an active transfer going on
-
- * Bumped Java heap size in startup scripts with -Xmx128m (Windows) and
-   -Xmx256m (*ix) to support 32M images
-
- []
-
-* 0.2.4 - May 12, 2007
-
- New functionality:
-
- * Bootstrapping from bare metal directly to ProDOS
-
- * Made serial bootstrapping pacing and speed configurable - making much
-   higher baud rates possible (and reliable)
-
- * Included a ProDOS floppy formatting utility (because you don't have any
-   formatted disks yet, remember?)
-
- * Saving any 140k disk at the host always creates DOS order images;
-   this increases compatibility with older emulators that don't understand
-   ProDOS order images
-
- []
-
- Bug fixes:
-
- * Better recovery from initialization when there's no Uthernet card in
-   the default slot
-
- * Cosmetic right-justification issue with online
-   volume block number display (extant since 0.1.1)
-
- []
-
-* 0.2.3 - April 26, 2007
-
- Bug fixes:
-
- * Current working directory was being handled incorrectly - not consistently
-   putting a trailing separator character after the path
-
- * Ethernet bootstrap image was missing from resources
-
- []
-
-* 0.2.2 - April 24, 2007
-
- New functionality:
-
- * Server-side creature comforts:
- 
-   * Added graphical buttons for communications devices
-
-   * Server automatically saves its last window position and size
-
- []
-
-* 0.2.1 - April 2, 2007
-
- New functionality:
-
- * Protocol enhanced to always communicate block numbers: enables recovery
-   from lost acknowledgements which can ultimately result in corrupt
-   transfers even if all CRCs match.  New version retains 
-   {{{starting.html#change}compatibility}}
-   with ADTPro v0.1.x clients with a checkbox in the File menu.
-
- * Added date/timestamps to trace log entries.
-
- []
-
- Bug fixes:
-
- * ProDOS volumes with full names (15 characters) would walk all over memory,
-   causing a crash when initiating a send.  Thanks to James Putnam for going
-   the extra mile to snail-mail me a physical floppy exhibiting the problem 
-   as we tried to figure out what went wrong.
-
- * Made RXTX library optional
-
- * Made build slightly friendlier for new developers
-
- * Filled out the {{{protocol.html}Protocol}} documentation (I'm not saying it's pretty, or
-   necessarily understandable - but at least it matches reality)
-
- []
-
-* 0.1.5 - March 18, 2007
-
- New functionality:
-
- * Added support for audio transfers and bootsrapping using a host
-   sound card and the Apple cassette port.
-
- * Apple IIc support (disable hardware handshaking) is now selectable via a 
-   checkbox in the File menu.
-
- * Added a logging/tracing capability via checkbox in the File menu.
-   Enabling tracing logs verbose tracing information to a file name 
-   ADTProTrace.txt in the server's startup directory.
-
- []
-
- Bug fixes:
-
- * Managing serial timeouts better fixes two problems:
-   
-   * "Hang" when disconnecting on *nix boxes, especially after transfers;
-     though sometimes it still seems to take a while (i.e. several seconds)
-     to fully disconnect after hitting the disconnect button
-   
-   * Dropped data on some Wintel chipsets due to (erroneous) rapid toggling
-     of port timeout values
-
- []
-
-* 0.1.4 - December 30, 2006
-
- New functionality:
-
- * Ethernet version now has a timeout function at the client end.
-   This addresses one class of problem we have with UDP
-   dropping packets.
-
- * Included DOS ADT 1.31 in the package as well as part
-   of bare-metal bootstrapping function.  The main 
-   improvement of DOS ADT 1.31 over 1.30 is the capability
-   of self-saving the configuration (no need for the 
-   Applesoft configuration program)
-
- []
-
-* 0.1.3 - December 15, 2006
-
- New functionality:
-
- * Added support for Ethernet UDP transport via the Uthernet card ({{http://a2retrosystems.com/}}).
-   The best reliability is achieved with machines on a wired network in the same
-   subnet (on the same ethernet switch).  Sending (Apple/client->host/server)
-   has reliable retry logic since the server, in Java, can control timeout intervals.  
-   Receiving is a different story.  It won't give you corrupt images, it'll just
-   hang if acknowledgement packets get lost.  TODO: add a timeout function to the 
-   client side as well.
-
- * Added a batch file for Windows and a shell script for Linux/OSX to start the server
-
- []
-
-* 0.1.2 - November 27, 2006
-
- New functionality:
-
- * Added a "{{{batch.html}batch send}}" mode to repeatedly send the same volume (i.e. one floppy after another)
-
- * ADTPro server can send the ADTPro client as bootstrap text; the destination Apple would have to already be running ProDOS
-
- []
-
- Bug fix:
-
- * Split up bootstrap text into lines of 8 bytes each to help the slowest Apples keep up
-
- []
-
-* 0.1.1 - November 16, 2006
-
- New functionality:
-
- * ADTPro server now has the ability to serve bare-metal
-   bootstrapping data (ESDOS II, DOS ADT client)
-
- * DOS ADT client enhanced to use either SSC or IIgs native
-   serial communications at speeds up to 115kbps
-
- []
-
-* 0.0.9 - September 23, 2006
-
- Bug fix:
-
- * 2IMG images with optional headers/chunks failed to transfer properly - patch also supplied to the AppleCommander project where the bug originated
-
- []
-
-* 0.0.8 - September 20, 2006
-
- New functionality:
-
- * You can interrupt the interminable volume scan with the escape key
-
- []
-
- Bug fixes:
-
- * Cured Linux/OSX's "hang" when disconnecting
-
- * Initiating any communication now resets the comms card - makes things much more
-   reliable with starting/stopping the host end at random intervals
-
- * Greyed out the port/speed buttons on the server while connected to make it more clear
-   exactly what you can change and when
-
- * Turn "cold start" back off again on the client once it's been invoked - to keep
-   from saving the cold start state when the user saves the configuration!
-
- * Switched to cc65/ca65 compiler/assembler suite.  See: {{http://www.cc65.org/}}
-   ca65 is compatible with lots more platforms than SB-Assembler, though it is slower.
-
- * Refactored the code to make communications routines somewhat more "pluggable."
-   We aren't quite at the point of device drivers yet, but it's getting closer.
-   I long for the days of the simplicty of ADT's one-file assembly!  It used to 
-   be so elegant!
-
- []
-
-* 0.0.7 - August 27, 2006
-
- New functionality:
-
- * Support for native IIgs serial (modem) port at a maximum rate of 115,200 BPS
-
- * Ability to "cold start" by resetting configuration parameters back to "factory defaults"
-   (useful when a configuration as saved is incompatible with a particular machine:
-   <<<bload adtpro:poke 2052,1:call 2051>>>)
-   Later versions moved this poke by one byte:
-   <<<bload adtpro:poke 2053,1:call 2051>>>)
-
- []
-
-* 0.0.6 - August 10, 2006
-
- Bug fix:
-
- * Cosmetic fix for IIgs native send progress indicator
-
- []
-
-* 0.0.5 - July 30, 2006
-
- New functionality:
-
- * Support for native IIgs serial (modem) port at a maximum rate of 19,200 BPS
-
- []
-
- Bug fixes:
-
- * Handle serial port-in-use exceptions at host end
-
- * A few usability tweaks along the way
-
-* 0.0.4 - July 9, 2006
-
- New functionality:
-
- * Overwrite confirmation when an image already exists at the host
-
- * Option to write mismatched image sizes (i.e. put a smaller image on a bigger disk)
-
- * Host has the ability to change working directory via file dialog
-
- []
-
- Bug fixes:
-
- * Client configuration-save function uses initial slot/drive combination to BSAVE itself
-
- * Cosmetic changes for buffer send/receive/read/write screen
-
-
-* 0.0.3 - July 2, 2006
-
- New functionality:
-
- * Host saves its last known good configuration (ADTPro.properties in startup directory)
-
- * Client saves configuration on demand (it really just BSAVEs itself)
-
- []
-
- Bug fixes:
-
- * Isolated host messages from client messages to better separate valid messages vs. garbage coming back from the host
-
- * Misc. updates to build process - have AppleCommander build a custom volume name, etc.
-
-
-* 0.0.2 - June 28, 2006
-
- Bug fixes:
-
- * Fixed ability to start/stop/restart communications on the host end
-
- * Fixed some Change Directory semantics, particularly for changing relative directories
-
- * Made some minor message improvements at the client end
-
-
-* 0.01 - June 21, 2006
-
- First prototypical release on SourceForge.  Main functionality:
-
- * Compatibility with Super Serial Card up to 115,200 BPS
-
- * Compatibility with anything ProDOS can read
-
- * Compatibility with any Apple ][ computer with 64k memory
-
- * Compatibility with many diskette/disk image formats: .DSK, .PO, .NIB, 2IMG
-
- * Ability to change working directory on the fly
-
- * Server written in Java, compatible with DOS-based ADT and ADTPro
+    * Compatibility with Super Serial Card up to 115,200 BPS
+    
+    * Compatibility with anything ProDOS can read
+    
+    * Compatibility with any Apple ][ computer with 64k memory
+    
+    * Compatibility with many diskette/disk image formats: .DSK, .PO, .NIB, 2IMG
+    
+    * Ability to change working directory on the fly
+    
+    * Server written in Java, compatible with DOS-based ADT and ADTPro

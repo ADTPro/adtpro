@@ -17,6 +17,7 @@ perl -i.orig -p ..\..\removeMaven.re credits.html
 perl -i.orig -p ..\..\removeMaven.re developing.html
 perl -i.orig -p ..\..\removeMaven.re history.html
 perl -i.orig -p ..\..\removeMaven.re historyold.html
+perl -i.orig -p ..\..\removeMaven.re historyolddetail.html
 perl -i.orig -p ..\..\removeMaven.re index.html
 perl -i.orig -p ..\..\removeMaven.re install.html
 perl -i.orig -p ..\..\removeMaven.re misc.html
