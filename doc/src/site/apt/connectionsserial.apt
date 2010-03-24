@@ -62,9 +62,9 @@ Here are two examples with switches in the correct position for 300 baud operati
 
 [images/switch2.jpg]
 
-  Strapped as a terminal (arrow on the jumper block pointing downwards
-on the SSC card), you can connect computers with a straight-through serial 
-cable like this:
+  Configured as a "terminal" (with the arrow on the jumper block pointing downwards
+on the SSC card), a connection with a straight-through serial 
+cable would look like this:
 
 [images/superSerialCable.jpg]
 
