@@ -775,19 +775,25 @@ public class CommsThread extends Thread
             }
             if (sendSuccess)
             {
+              String msg;
               report = waitForData(15);
               _endTime = System.currentTimeMillis();
               _diffMillis = (_endTime - _startTime)
                   / 1000;
               if (report == 0x00)
               {
-                _parent.setSecondaryText(Messages.getString("CommsThread.17")
-                    + " in " + _diffMillis + " seconds.");
+                msg = Messages.getString("CommsThread.17");
+                msg = StringUtilities.replaceSubstring(msg, "%1", name);
+                msg = StringUtilities.replaceSubstring(msg, "%2", "" + _diffMillis);
+                _parent.setSecondaryText(msg);
                 Log.println(true, "Apple received disk image " + name + " successfully in " + (float) (_endTime - _startTime) / 1000 + " seconds."); //$NON-NLS-1$ //$NON-NLS-2$
               }
               else
               {
-                _parent.setSecondaryText(Messages.getString("CommsThread.18"));
+                msg = Messages.getString("CommsThread.18");
+                msg = StringUtilities.replaceSubstring(msg, "%1", name);
+                msg = StringUtilities.replaceSubstring(msg, "%2", "" + _diffMillis);
+                _parent.setSecondaryText(msg);
                 Log.println(true, "Apple received disk image " + name + " with " + report + " errors."); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
               }
             }
@@ -1380,18 +1386,24 @@ public class CommsThread extends Thread
             }
             if (sendSuccess)
             {
+              String msg;
               report = waitForData(15);
               _endTime = System.currentTimeMillis();
               _diffMillis = (_endTime - _startTime) / 1000;
               if (report == 0x00)
               {
-                _parent.setSecondaryText(Messages.getString("CommsThread.17")
-                    + " in " + _diffMillis + " seconds.");
+                msg = Messages.getString("CommsThread.17");
+                msg = StringUtilities.replaceSubstring(msg, "%1", name);
+                msg = StringUtilities.replaceSubstring(msg, "%2", "" + _diffMillis);
+                _parent.setSecondaryText(msg);
                 Log.println(true, "Apple received disk image " + name + " successfully in " + (float) (_endTime - _startTime) / (float) 1000 + " seconds."); //$NON-NLS-1$ //$NON-NLS-2$
               }
               else
               {
-                _parent.setSecondaryText(Messages.getString("CommsThread.18"));
+                msg = Messages.getString("CommsThread.18");
+                msg = StringUtilities.replaceSubstring(msg, "%1", name);
+                msg = StringUtilities.replaceSubstring(msg, "%2", "" + _diffMillis);
+                _parent.setSecondaryText(msg);
                 Log.println(true, "Apple received disk image " + name + " with " + report + " errors."); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
               }
             }
