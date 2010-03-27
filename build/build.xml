@@ -472,6 +472,8 @@ everywhere it is invoked:
 		<!-- Convert localized resource properties to ascii -->
 		<native2ascii encoding="EUC_KR" src="${projdir}/org/adtpro/resources" dest="${projdir}/org/adtpro/resources"
 		   includes="messages_ko_KR.native" ext=".properties" />
+		<native2ascii encoding="ISO-8859-1" src="${projdir}/org/adtpro/resources" dest="${projdir}/org/adtpro/resources"
+		   includes="messages_fr.native" ext=".properties" />
 		<unzip src="${builddir}/lib/rxtx/${rxtxZip}"
 			dest="${builddir}/${distName}/lib/rxtx"/>
 		<unzip src="${builddir}/lib/rxtx/${rxtxZip2}"
@@ -520,6 +522,8 @@ everywhere it is invoked:
 				<file name="${distName}.jar"/>
 			</jarfilelist>
 		</jarbundler>
+		<mkdir dir="${builddir}/${distName}/${distName}.app/Contents/Resources/French.lproj"/>
+		<mkdir dir="${builddir}/${distName}/${distName}.app/Contents/Resources/Korean.lproj"/>
 
 		<!-- Get rid of stuff the Apple crowd doesn't need -->
 		<move file="${builddir}/${distName}/ADTPro.sh" tofile="${builddir}/${distName}/ADTPro.command"/>
