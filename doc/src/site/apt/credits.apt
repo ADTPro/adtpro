@@ -98,6 +98,15 @@ was published in the "/// Cheers!" magazine from A.P.P.L.E., available {{{http:/
 were from Oliver Schmidt's LOADER.SYSTEM contribution to cc65, available
 {{{http://cc65.oldos.net/contrib/loader-1.4.txt}here}}.
 
+ Thanks to ADTPro's translators:
+ 
+*-------+-----+
+| <<Language>> | <<Translator>> |
+*-------:-----+
+| Korean | Steven Y. Choi |
+| French | Antoine VIGNAU |
+*-------:-----+
+
  Thanks to the {{{http://maven.apache.org}Maven}} project for web page generation.
 
 ADT Lineage
