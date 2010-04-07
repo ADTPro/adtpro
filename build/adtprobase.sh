@@ -25,7 +25,15 @@ OS_ARCH=`uname -p`
 
 # For Linux, use this:
 if [ "$OS" = "Linux" ]; then
-  export RXTXLIB=lib/rxtx/%RXTX_VERSION%/i686-pc-linux-gnu
+  if [ "$OS_ARCH" = "i686" ]; then
+    export RXTXLIB=lib/rxtx/rxtx-2.2pre2-local/i686-pc-linux-gnu
+  else
+    if [ "$OS_ARCH" = "i386" ]; then
+      export RXTXLIB=lib/rxtx/rxtx-2.2pre2-local/i686-pc-linux-gnu
+    else  
+      export RXTXLIB=lib/rxtx/rxtx-2.2pre2-local/x86_64-unknown-linux-gnu
+    fi
+  fi
 fi
 
 # For OSX, use this:
