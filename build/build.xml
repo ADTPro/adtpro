@@ -474,6 +474,8 @@ everywhere it is invoked:
 		   includes="messages_ko_KR.native" ext=".properties" />
 		<native2ascii encoding="ISO-8859-1" src="${projdir}/org/adtpro/resources" dest="${projdir}/org/adtpro/resources"
 		   includes="messages_fr.native" ext=".properties" />
+		<native2ascii encoding="ISO-8859-1" src="${projdir}/org/adtpro/resources" dest="${projdir}/org/adtpro/resources"
+		   includes="messages_es.native" ext=".properties" />
 		<unzip src="${builddir}/lib/rxtx/${rxtxZip}"
 			dest="${builddir}/${distName}/lib/rxtx"/>
 		<unzip src="${builddir}/lib/rxtx/${rxtxZip2}"
