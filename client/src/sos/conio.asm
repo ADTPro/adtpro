@@ -600,6 +600,26 @@ WAIT3:	SBC #$01
 	GO_FAST
 	RTS
 
+GO_SLOW_SOS:
+	php
+	pha
+	lda $FFDF			; Read the environment register
+	ora #$80			; Set 1MHz switch
+	sta $FFDF			; Write the environment register
+	pla
+	plp
+	rts
+
+GO_FAST_SOS:
+	php
+	pha
+	lda $FFDF			; Read the environment register
+	and #$7f			; Set 2MHz switch
+	sta $FFDF			; Write the environment register
+	pla
+	plp
+	rts
+
 ;---------------------------------------------------------
 ; Quit to SOS
 ;---------------------------------------------------------

@@ -1,6 +1,6 @@
 ;
 ; ADTPro - Apple Disk Transfer ProDOS
-; Copyright (C) 2008 by David Schmidt
+; Copyright (C) 2008, 2010 by David Schmidt
 ; david__schmidt at users.sourceforge.net
 ;
 ; This program is free software; you can redistribute it and/or modify it 
@@ -35,7 +35,7 @@
 .endmacro
 
 .macro CONDITION_KEYPRESS
-	and #$DF	; Conver to upper case
+	and #$DF	; Convert to upper case
 	ora #$80	; Turn high bit on
 .endmacro
 
@@ -83,30 +83,18 @@
 .endmacro
 
 .macro GO_SLOW
-	php
-	pha
-	lda $FFDF			; Read the environment register
-	ora #$80			; Set 1MHz switch
-	sta $FFDF			; Write the environment register
-	pla
-	plp
+	jsr GO_SLOW_SOS		; Defined in conio.asm
 .endmacro
 
 .macro GO_FAST
-	php
-	pha
-	lda $FFDF			; Read the environment register
-	and #$7f			; Set 2MHz switch
-	sta $FFDF			; Write the environment register
-	pla
-	plp
+	jsr GO_FAST_SOS		; Defined in conio.asm
 .endmacro
 
 .macro CONDITION_CR
-	cmp #$8d			; If the character is $8d, strip off $80
+	cmp #$8d		; If the character is $8d, strip off $80
 	bne :+
 	lda #$0d
-	:				; Need a place to go
+	:			; Need a place to go
 .endmacro
 
 .macro JSR_GET_PREFIX
