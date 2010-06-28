@@ -2,20 +2,19 @@
  * ADTPro - Apple Disk Transfer ProDOS
  * Copyright (C) 2010 by David Schmidt
  * david__schmidt at users.sourceforge.net
- * Spanish translation by ?
+ * Traducción al Español por Jorge Castillo y Gabriel Calomeni
  *
- * This program is free software; you can redistribute it and/or modify it 
- * under the terms of the GNU General Public License as published by the 
- * Free Software Foundation; either version 2 of the License, or (at your 
- * option) any later version.
+ * Este programa es software gratuito; usted lo puede redistribuir y/o modificar 
+ * bajo los términos de la GNU General Public License como fuera publicada por la
+ * Free Software Foundation; tanto en la versión 2 de la licencia, o cualquier versión
+ * posterior (a su elección).
  *
- * This program is distributed in the hope that it will be useful, but 
- * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY 
- * or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License 
- * for more details.
+ * Este programa es distribuido con la esperanza de que sea útil, pero SIN NINGUNA
+ * GARANTÍA; ni siquiera la garantía implícita de COMERCIALIZACIÓN o IDONEIDAD PARA UN
+ * PROPÓSITO PARTICULAR. Refiérase a la  GNU General Public License por más detalles.
  *
- * You should have received a copy of the GNU General Public License along 
- * with this program; if not, write to the Free Software Foundation, Inc., 
+ * Usted debería haber recibido una copia de la GNU General Public License junto 
+ * con este programa; caso contrario, escriba a la Free Software Foundation, Inc., 
  * 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
@@ -25,138 +24,118 @@ Gui.Ok=Ok
 Gui.Cancel=Cancelar
 Gui.Name=ADTPro
 Gui.Title=ADTPro Servidor versión
-Gui.SerialButton=Serial
+Gui.SerialButton=Serie
 Gui.EthernetButton=Ethernet
 Gui.AudioButton=Audio
 Gui.DisconnectButton=Desconectar
-Gui.ServingSerialTitle=ADTPro Serving %1 at %2 Baud
-Gui.ServingEthernetTitle=ADTPro Serving IP %1
-Gui.ServingAudioTitle=ADTPro Serving Audio
-Gui.NoAudio=There are no audio devices available to Java on this machine.
-Gui.NoAudioDialogTitle=No Audio Devices
-Gui.NoAudioDialogText=<html>There are no audio devices available to Java on this machine.</html>
-Gui.DefaultAudioMixer=ADTPro Default Audio Capture
-Gui.NoRXTX=Serial library not installed.
-Gui.NoRXTXDialogTitle=No Serial Ports
-Gui.NoRXTXDialogText=<html>There are no serial ports, or the serial library RXTX is not installed or visible.<br>Please see http://adtpro.sourceforge.net/install.html for details.</html>
+Gui.ServingSerialTitle=ADTPro brindando servicio %1 a %2 baudios
+Gui.ServingEthernetTitle=ADTPro brindando servicio en IP %1
+Gui.ServingAudioTitle=ADTPro brindando servicio de audio
+Gui.NoAudio=Java no tiene dispositivos de audio disponibles en este equipo.
+Gui.NoAudioDialogTitle=No hay dispositivos de audio
+Gui.NoAudioDialogText=<html>Java no tiene dispositivos de audio disponibles en este equipo.</html>
+Gui.DefaultAudioMixer=ADTPro Captura de audio por defecto
+Gui.NoRXTX=La librería serie no está instalada.
+Gui.NoRXTXDialogTitle=No hay puertos serie
+Gui.NoRXTXDialogText=<html>No hay puertos serie, o la librería serie RXTX no está instalada o visible.<br>Por favor recurra a http://adtpro.sourceforge.net/install.html para más detalles.</html>
 Gui.File=Archivo
 Gui.Config=Configuración
-Gui.IIc=Apple IIc w/Imagewriter Cable
-Gui.ProtocolCompatability=Old ADTPro 0.1.x protocol
-Gui.Trace=Activate Trace
-Gui.Quit=Quit
-Gui.CD=Change working directory
-Gui.CDSet=Set working directory
-Gui.Port=Port
-Gui.Speed=Speed
-Gui.BootstrapPacing=Pacing
-Gui.BootstrapSpeed=Speed
-Gui.ConfigSerialTab=Port
-Gui.ConfigSerialTab.Help=Configures details of serial port
+Gui.IIc=Apple IIc con cable Imagewriter
+Gui.ProtocolCompatability=Antiguo protocolo ADTPro 0.1.x
+Gui.Trace=Activar traza
+Gui.Quit=Salir
+Gui.CD=Cambiar directorio de trabajo
+Gui.CDSet=Seleccionar directorio de trabajo
+Gui.Port=Puerto
+Gui.Speed=Velocidad
+Gui.BootstrapPacing=Intervalo
+Gui.BootstrapSpeed=Velocidad
+Gui.ConfigSerialTab=Puerto
+Gui.ConfigSerialTab.Help=Configura parámetros del puerto serie
 Gui.ConfigBootstrapTab=Bootstrapping
-Gui.ConfigBootstrapTab.Help=Configures serial details specific to bootstrapping
+Gui.ConfigBootstrapTab.Help=Configura parámetros del puerto serie específicos para bootstrapping
 Gui.Help=Ayuda
 Gui.About=Sobre ADTPro
-Gui.Website=ADTPro Sitio Web
-Gui.AboutText=<html>Apple Disk Transfer ProDOS (ADTPro) v%1<br><br>ADTPro is a ProDOS (and SOS!) version of the venerable<br>Apple Disk Transfer program, ADT.  Anything<br>that ProDOS or SOS can read, ADTPro can transfer.<br>Legacy DOS ADT client programs (the Apple ][ side)<br>are compatible with this ADTPro server.<br><br>ADTPro was written by David Schmidt, and is based<br>in part on works by Paul Guertin and many others.<br>Visit ADTPro on the web at:<br>http://adtpro.sourceforge.net<br><br>ADTPro is licensed under the GNU<br>General Public License (GPL) Version 2.</center></html>
+Gui.Website=Sitio web ADTPro
+Gui.AboutText=<html>Apple Disk Transfer ProDOS (ADTPro) v%1<br><br>ADTPro es una versión ProDOS (y SOS!) del venerable<br>programa de transferencia de discos Apple, ADT. Todo<br>lo que el ProDOS o SOS puede leer, ADTPro lo puede transferir.<br>Los programas cliente DOS ADT originales (del lado Apple ][)<br>son compatibles con este server ADTPro.<br><br>ADTPro fue escrito por David Schmidt, y está basado<br>en parte, del trabajo de Paul Guertin y otros tantos.<br>Visite ADTPro en la web en:<br>http://adtpro.sourceforge.net<br><br>ADTPro está licenciado bajo la GNU<br>General Public License (GPL) Version 2.</center></html>
 Gui.Disconnect=Desconectar
 Gui.Connect=Conectar
-Gui.Quiesced=Sin actividad.
-Gui.Disconnected=Sin conexión.
+Gui.Quiesced=No hay actividad.
+Gui.Disconnected=No conectado.
 Gui.Connected=Conectado.
-Gui.InvalidCD=Not a directory.
-Gui.PortInUse=Selected port is in use.
-Gui.PortDoesNotExist=The serial port used last time cannot be found now; please check the configuration.
+Gui.InvalidCD=No es un directorio.
+Gui.PortInUse=El puerto seleccionado está en uso.
+Gui.PortDoesNotExist=El puerto serial usado la última vez no puede ser encontrado ahora; por favor revise la configuración.
 Gui.Ethernet=TCP/IP
 Gui.Audio=Audio
-Gui.AudioConfig=Audio Configuration
-Gui.AudioConfigMixer=Audio Capture Device
-Gui.BusyTitle=Confirmar la Interrupción
-Gui.Busy=La transferencia está en curso. ¿Estás seguro de que desea interrumpirlo?
-
-/*
- * Translators note -
- * 
- * Gui.SerialConfig and Gui.SerialConfigBootstrap must
- * contain different translated strings; they cannot be
- * identical, or the different tabs will not come up as expected.
- *
- */
-Gui.SerialConfig=Serial Configuration
-Gui.SerialConfigBootstrap=Serial Pacing
-
+Gui.AudioConfig=Configuración de Audio
+Gui.AudioConfigMixer=Dispositivo de Caputura de Audio
+Gui.BusyTitle=Confirme interrupción
+Gui.Busy=La transferencia está en curso. ¿Está seguro que desea interrumpirlo?
+Gui.SerialConfig=Configuración serie
+Gui.SerialConfigBootstrap=Intervalo serie
 Gui.Bootstrap=Bootstrapping
 Gui.BootstrapProDOS=ProDOS
 Gui.BootstrapDOS=EsDOS ][
 Gui.BootstrapSOS=SOS
-Gui.BS.DOS=Send EsDOS ][ Part 1
-Gui.BS.DOS2=Send EsDOS ][ Part 2
-Gui.BS.ProDOS=Send ProDOS
+Gui.BS.DOS=Envíe la parte 1 de EsDOS ][
+Gui.BS.DOS2=Envíe la parte 2 de EsDOS ][
+Gui.BS.ProDOS=Envíe ProDOS
 
-/*
- * Translators note - do not translate Gui.BS.SOS*.
- *
- * /
 Gui.BS.SOS=SOS
 Gui.BS.SOSKERNEL=Gui.BS.SOSKERNEL
 Gui.BS.SOSINTERP=Gui.BS.SOSINTERP
 Gui.BS.SOSDRIVER=Gui.BS.SOSDRIVER
 
-Gui.BS.ADT=Send DOS ADT Client
-Gui.BS.ADTPro=Send ADTPro Serial Client
-Gui.BS.ADTProAudio=Send ADTPro Audio Client
-Gui.BS.ADTProEthernet=Send ADTPro Ethernet Client
+Gui.BS.ADT=Envíe cliente DOS ADT
+Gui.BS.ADTPro=Envíe cliente serie ADTPro
+Gui.BS.ADTProAudio=Envíe cliente de audio ADTPro
+Gui.BS.ADTProEthernet=Envíe cliente Ethernet ADTPro
 
-/*
- * Translators note -
- *
- * All of the *Instructions are rendered in HTML with embedded HTML tags.
- *
- */
-Gui.BS.DumpDOSInstructions=<html>You must have a floppy diskette in the drive!<br><br><p>On the Apple, enter:<br><code>IN#2&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code>(Number depends on card slot)<br><code>&lt;ctrl-A&gt;%1%B&nbsp;&nbsp;</code>(May be <code>&lt;ctrl-I&gt;</code> (the letter 'I'))<br><br><p>Click the Ok button when ready...</html>
-Gui.BS.DumpDOSInstructionsDone=<html>All done.<br><br>Now, <code>INIT</code> some disks or send the DOS ADT client.</html>
-Gui.BS.DumpDOSAudioInstructions=<html>Be sure your audio cable is connected, volume 1/2 up.<p><p>On the Apple, enter:<p><code>HOME<br>CALL -151<br>3D0.%1%R<br><br></code><p>Click the Ok button after hitting Return on the Apple...</html>
-Gui.BS.DumpDOSAudioInstructionsDone=If the send succeeded, then send EsDOS ][ part 2 now.
-Gui.BS.DumpDOSAudioInstructions2=<html>Be sure your audio cable is connected, volume 1/2 up.<br><br>On the Apple, enter:<br><code>9D00.BFFFR</code><br><br>Click the Ok button after hitting Return on the Apple...</html>
-Gui.BS.DumpDOSAudioInstructions2Done=<html>If the send succeeded, then on the Apple, enter:<br><code>9D84G</code><br><br>After entering <code>9D84G</code>, you may also wish to<br><code>INIT</code> a floppy disk or two.</html>
-Gui.BS.DumpProDOSInstructions=<html>On the Apple, enter:<br><code>IN#2&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code>(Number depends on card slot)<br><code>&lt;ctrl-A&gt;%1%B&nbsp;&nbsp;</code>(May be <code>&lt;ctrl-I&gt;</code> (the letter 'I'))<br><br>Click the Ok button when ready...</html>
-Gui.BS.DumpProDOSInstructionsDone=<html>All done.<br><br>Next, send the ADTPro serial client.</html>
-Gui.BS.DumpProDOSAudioInstructions=<html>Be sure your audio cable is connected, volume 1/2 up.<br><br>On the Apple, enter:<br><code>CALL -151<br>2000.%1%R</code><br><br>Click the Ok button after hitting Return on the Apple...</html>
-Gui.BS.DumpProDOSAudioInstructionsDone=<html>If the send succeeded, then on the Apple, enter:<br><code>2000G&nbsp;&nbsp;</code>(those are zeroes, not 'O' letters)<br><br>Next, send the ADTPro audio client.</html>
-Gui.BS.DumpSOSInstructions=<html><ol><li>Start the Apple /// monitor with Ctrl-OpenApple-Reset.</li><li>Type in this program exactly as shown:<br><code>A000:78 D8 A9 40 8D CA FF AD</code><br><code>A008:DF FF 09 F2 8D DF FF A9</code><br><code>A010:0B 8D F2 C0 A9 1E 8D F3</code><br><code>A018:C0 A9 00 A8 85 7E A9 A1</code><br><code>A020:85 7F A2 48 8E 24 04 E8</code><br><code>A028:8E 25 04 20 40 A0 C9 47</code><br><code>A030:D0 F9 20 40 A0 91 7E 8D</code><br><code>A038:27 04 C8 D0 F5 4C 00 A1</code><br><code>A040:AD F1 C0 29 68 C9 08 D0</code><br><code>A048:F7 AD F0 C0 60</code></li><li>Enter this command to run it:<pre>A000G</pre></li><li>If you get the inverse "HI" message on the ///, click OK on this dialog box.</li><li>If not, restart at step 1 and re-check your work.</li></ol>
-Gui.BS.DumpSOSInstructionsDone=<html>SOS kernel is bootstrapping!</html>
-Gui.BS.DumpADTInstructions=<html>You must have a DOS formatted floppy in the drive!<br><b>*** Have you slowed down the pacing? ***</b><br><br>On the Apple, enter:<br><code>IN#2&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code>(Number depends on card slot)<br><code>&lt;ctrl-A&gt;%1%B&nbsp;&nbsp;</code>(May be &lt;ctrl-I&gt; (the letter 'I'))<br><br>Click the Ok button when ready...</html>
-Gui.BS.DumpADTAudioInstructions=<html>Be sure your audio cable is connected, volume 1/2 up.<br><br>On the Apple, enter:<br><code>CALL -151<br>803.%1%R<br><br></code>Click the Ok button after hitting Return on the Apple...</html>
-Gui.BS.DumpADTAudioInstructionsDone=<html>If the send succeeded, then on the Apple, enter:<br><code>803G&nbsp;&nbsp;</code>(that is a zero, not the letter 'O')</html>
-Gui.BS.DumpProInstructions=<html>You must have a ProDOS formatted floppy or partition ready!<br><br>On the Apple, enter:<br><code>IN#2&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code>(Number depends on card slot)<br><code>&lt;ctrl-A&gt;%1%B&nbsp;&nbsp;</code>(May be <code>&lt;ctrl-I&gt;</code> (the letter 'I'))<br><br>Click the Ok button when ready...</html>
-Gui.BS.DumpProAudioInstructions=<html>Be sure your audio cable is connected, volume 1/2 up.<br><br>On the Apple, enter:<br><code>CALL -151<br>800.%1%R<br><br></code>Click the Ok button after hitting Return on the Apple...</html>
-Gui.BS.DumpProAudioInstructionsDone=<html>If the send succeeded, then on the Apple, enter:<br><code>800G&nbsp;&nbsp;</code>(that is a zero, not the letter 'O')</html>
-Gui.BS.DumpProAudioAudioInstructions=<html>Be sure your audio cable is connected, volume 1/2 up.<br><br>On the Apple, enter:<br><code>CALL -151<br>800.%1%R<br><br></code>Click the Ok button after hitting Return on the Apple...</html>
-Gui.BS.DumpProAudioAudioInstructionsDone=<html>If the send succeeded, then on the Apple, enter:<br><code>800G&nbsp;&nbsp;</code>(that is a zero, not the letter 'O')</html>
-Gui.BS.DumpProAudioSerialInstructions=<html>You must have a ProDOS formatted floppy or partition ready!<br><br>On the Apple, enter:<br><code>IN#2&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code>(Number depends on card slot)<br><code>&lt;ctrl-A&gt;%1%B&nbsp;&nbsp;</code>(May be <code>&lt;ctrl-I&gt;</code> (the letter 'I'))<br><br>Click the Ok button when ready...</html>
-Gui.BS.DumpProEthernetInstructions=<html>You must have a ProDOS formatted floppy or partition ready!<br><br>On the Apple, enter:<br><code>IN#2&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code>(Number depends on card slot)<br><code>&lt;ctrl-A&gt;%1%B&nbsp;&nbsp;</code>(May be <code>&lt;ctrl-I&gt;</code> (the letter 'I'))<br><br>Click the Ok button when ready...</html>
-Gui.BS.DumpProEthernetAudioInstructions=<html>Be sure your audio cable is connected, volume 1/2 up.<br><br>On the Apple, enter:<br><code>CALL -151<br>800.%1%R<br><br></code>Click the Ok button after hitting Return on the Apple...</html>
-Gui.BS.DumpProEthernetAudioInstructionsDone=<html>If the send succeeded, then on the Apple, enter:<br><code>800G&nbsp;&nbsp;</code>(that is a zero, not the letter 'O')</html>
+Gui.BS.DumpDOSInstructions=<html>Debe haber un disquete en el dispositivo!<br><br><p>En la Apple, ingrese:<br><code>IN#2&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code>(el número depende de la ranura de la tarjeta)<br><code>&lt;ctrl-A&gt;%1%B&nbsp;&nbsp;</code>(debe ser <code>&lt;ctrl-I&gt;</code> (la letra 'I'))<br><br><p>Presione el botón Ok cuando esté listo...</html>
+Gui.BS.DumpDOSInstructionsDone=<html>Realizado.<br><br>Ahora, <code>INIT</code> algunos discos o envíe el cliente DOS ADT.</html>
+Gui.BS.DumpDOSAudioInstructions=<html>Asegúrese que su cable de audio está conectado, y el volumen hata la mitad.<p><p>En la Apple, ingrese:<p><code>HOME<br>CALL -151<br>3D0.%1%R<br><br></code><p>Presione el botón Ok después de presionar Return en la Apple...</html>
+Gui.BS.DumpDOSAudioInstructionsDone=Si el envío fue exitoso, ahora envíe la parte 2 de EsDOS ][.
+Gui.BS.DumpDOSAudioInstructions2=<html>Asegúrese que su cable de audio está conectado, y el volumen hata la mitad.<br><br>En la Apple, ingrese:<br><code>9D00.BFFFR</code><br><br>Presione el botón Ok después de presionar Return en la Apple...</html>
+Gui.BS.DumpDOSAudioInstructions2Done=<html>Si el envío fue exitoso, entonces en la Apple, ingrese:<br><code>9D84G</code><br><br>Despúes ingresando <code>9D84G</code>, también podría desear <br><code>INIT</code> un disquete o dos.</html>
+Gui.BS.DumpProDOSInstructions=<html>En la Apple, ingrese:<br><code>IN#2&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code>(el número depende de la ranura de la tarjeta)<br><code>&lt;ctrl-A&gt;%1%B&nbsp;&nbsp;</code>(debe ser <code>&lt;ctrl-I&gt;</code> (la letra 'I'))<br><br>Presione el botón Ok cuando esté listo...</html>
+Gui.BS.DumpProDOSInstructionsDone=<html>Completado.<br><br>A continuación, envíe el cliente serie ADTPro.</html>
+Gui.BS.DumpProDOSAudioInstructions=<html>Asegúrese que su cable de audio está conectado, y el volumen hata la mitad.<br><br>En la Apple, ingrese:<br><code>CALL -151<br>2000.%1%R</code><br><br>Presione el botón Ok después de presionar Return en la Apple...</html>
+Gui.BS.DumpProDOSAudioInstructionsDone=<html>Si el envío fue exitoso, ahora en la Apple, ingrese:<br><code>2000G&nbsp;&nbsp;</code>(son ceros, no letras 'O')<br><br>A continuación, envíe el cliente de audio ADTPro.</html>
+Gui.BS.DumpSOSInstructions=<html><ol><li>Inicie el monitor Apple /// con Ctrl-OpenApple-Reset.</li><li>Tipee en este programa exactamente lo que se muestra:<br><code>A000:78 D8 A9 40 8D CA FF AD</code><br><code>A008:DF FF 09 F2 8D DF FF A9</code><br><code>A010:0B 8D F2 C0 A9 1E 8D F3</code><br><code>A018:C0 A9 00 A8 85 7E A9 A1</code><br><code>A020:85 7F A2 48 8E 24 04 E8</code><br><code>A028:8E 25 04 20 40 A0 C9 47</code><br><code>A030:D0 F9 20 40 A0 91 7E 8D</code><br><code>A038:27 04 C8 D0 F5 4C 00 A1</code><br><code>A040:AD F1 C0 29 68 C9 08 D0</code><br><code>A048:F7 AD F0 C0 60</code></li><li>Ingrese este comando y ejecútelo:<pre>A000G</pre></li><li>Si usted obtiene el mensaje "HI" en video inverso en la ///, presione OK en el cuadro de diálogo.</li><li>Caso contrario, reinicie desde el paso 1 y revise su trabajo.</li></ol>
+Gui.BS.DumpSOSInstructionsDone=<html>SOS kernel está realizando bootstrapping!</html>
+Gui.BS.DumpADTInstructions=<html>Debe tener un disquete formateado DOS en el dispositivo!<br><b>*** Ha disminuído el intervalo? ***</b><br><br>En la Apple, ingrese:<br><code>IN#2&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code>(el número depende de la ranura de la tarjeta)<br><code>&lt;ctrl-A&gt;%1%B&nbsp;&nbsp;</code>(debe ser &lt;ctrl-I&gt; (la letra 'I'))<br><br>Presione el botón Ok cuando esté listo...</html>
+Gui.BS.DumpADTAudioInstructions=<html>Asegúrese que su cable de audio está conectado, y el volumen hata la mitad.<br><br>En la Apple, ingrese:<br><code>CALL -151<br>803.%1%R<br><br></code>Presione el botón Ok después de presionar Return en la Apple...</html>
+Gui.BS.DumpADTAudioInstructionsDone=<html>Si el envío fue exitoso, entonces en la Apple, ingrese:<br><code>803G&nbsp;&nbsp;</code>(es cero, no la letra 'O')</html>
+Gui.BS.DumpProInstructions=<html>Debe tener un disquete o partición formateado ProDOS listo!<br><br>En la Apple, ingrese:<br><code>IN#2&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code>(el número depende de la ranura de la tarjeta)<br><code>&lt;ctrl-A&gt;%1%B&nbsp;&nbsp;</code>(Debe ser <code>&lt;ctrl-I&gt;</code> (la letra 'I'))<br><br>Presione el botón Ok cuando esté listo...</html>
+Gui.BS.DumpProAudioInstructions=<html>Asegúrese que su cable de audio está conectado, y el volumen hata la mitad.<br><br>En la Apple, ingrese:<br><code>CALL -151<br>800.%1%R<br><br></code>Presione el botón Ok después de presionar Return en la Apple...</html>
+Gui.BS.DumpProAudioInstructionsDone=<html>Si el envío fue exitoso, entonces en la Apple, ingrese:<br><code>800G&nbsp;&nbsp;</code>(es cero, no la letra 'O')</html>
+Gui.BS.DumpProAudioAudioInstructions=<html>Asegúrese que su cable de audio está conectado, y el volumen hata la mitad.<br><br>En la Apple, ingrese:<br><code>CALL -151<br>800.%1%R<br><br></code>Presione el botón Ok después de presionar Return en la Apple...</html>
+Gui.BS.DumpProAudioAudioInstructionsDone=<html>Si el envío fue exitoso, entonces en la Apple, ingrese:<br><code>800G&nbsp;&nbsp;</code>(es cero, no la letra 'O')</html>
+Gui.BS.DumpProAudioSerialInstructions=<html>Debe tener un disquete o partición formateado ProDOS listo!<br><br>En la Apple, ingrese:<br><code>IN#2&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code>(el número depende de la ranura de la tarjeta)<br><code>&lt;ctrl-A&gt;%1%B&nbsp;&nbsp;</code>(Debe ser <code>&lt;ctrl-I&gt;</code> (la letra 'I'))<br><br>Presione el botón Ok cuando esté listo...</html>
+Gui.BS.DumpProEthernetInstructions=<html>Debe tener un disquete o partición formateado ProDOS listo!<br><br>En la Apple, ingrese:<br><code>IN#2&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code>(el número depende de la ranura de la tarjeta)<br><code>&lt;ctrl-A&gt;%1%B&nbsp;&nbsp;</code>(Debe ser <code>&lt;ctrl-I&gt;</code> (la letra 'I'))<br><br>Presione el botón Ok cuando esté listo...</html>
+Gui.BS.DumpProEthernetAudioInstructions=<html>Asegúrese que su cable de audio está conectado, y el volumen hata la mitad.<br><br>En la Apple, ingrese:<br><code>CALL -151<br>800.%1%R<br><br></code>Presione el botón Ok después de presionar Return en la Apple...</html>
+Gui.BS.DumpProEthernetAudioInstructionsDone=<html>Si el envío fue exitoso, entonces en la Apple, ingrese:<br><code>800G&nbsp;&nbsp;</code>(es cero, no la letra 'O')</html>
 
-Gui.BS.DoneTitle=Next Step
-SerialTransport.2=Unable to find class "CommPortIdentifier"
+Gui.BS.DoneTitle=Próximo paso
+SerialTransport.2=No se pudo encontrar la clase "CommPortIdentifier"
 SerialTransport.3=ADTProSerial
-CommsThread.1=Solicitud: directory contents
-CommsThread.2=Solicitud: change directory
-CommsThread.3=Solicitud: image from host to Apple
-CommsThread.4=Solicitud: Send bootstrap data
-CommsThread.5=Solicitud: Half Track from Apple to host
-CommsThread.6=Solicitud: Half Track from host to Apple
-CommsThread.11=Solicitud: ADT from host to Apple
-CommsThread.12=Solicitud: Nibble from Apple to host
-CommsThread.13=Solicitud: Nibble from host to Apple
-CommsThread.14=Solicitud: query file size
-CommsThread.15=Solicitud: ADT from Apple to host
+CommsThread.1=Solicitud: contenido del disco
+CommsThread.2=Solicitud: cambio de directorio
+CommsThread.3=Solicitud: imagen desde el host a la Apple
+CommsThread.4=Solicitud: envío de datos bootstrap
+CommsThread.5=Solicitud: Half Track desde la Apple al host
+CommsThread.6=Solicitud: Half Track desde el host a la Apple
+CommsThread.11=Solicitud: ADT desde el host a la Apple
+CommsThread.12=Solicitud: Nibble desde la Apple al host
+CommsThread.13=Solicitud: Nibble desde el host a la Apple
+CommsThread.14=Solicitud: consulta del tamaño del archivo
+CommsThread.15=Solicitud: ADT desde la Apple al host
 CommsThread.16=Solicitud: image from Apple to host
-CommsThread.17=Image %1 sent in %2 seconds.
-CommsThread.18=Image %1 sent with errors in %2 seconds.
-CommsThread.19=Image %1 received in %2 seconds.
-CommsThread.20=Image %1 received with errors in %2 seconds.
-CommsThread.21=Image transfer aborted.
+CommsThread.17=Image %1 enviados en %2 segundos.
+CommsThread.18=Image %1 enviados con errores en %2 segundos.
+CommsThread.19=Image %1 recibidos en %2 segundos.
+CommsThread.20=Image %1 recibidos con errores en %2 segundos.
+CommsThread.21=Transferencia de imagen abortada.
 CommsThread.22=Archivo enviado
-CommsThread.23=Ping received from client.
+CommsThread.23=Ping recibido desde el cliente.
