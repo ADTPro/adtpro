@@ -525,6 +525,7 @@ everywhere it is invoked:
 			</jarfilelist>
 		</jarbundler>
 		<!-- Add an empty directory in the .app for each languge we translate into -->
+		<mkdir dir="${builddir}/${distName}/${distName}.app/Contents/Resources/English.lproj"/>
 		<mkdir dir="${builddir}/${distName}/${distName}.app/Contents/Resources/French.lproj"/>
 		<mkdir dir="${builddir}/${distName}/${distName}.app/Contents/Resources/Korean.lproj"/>
  		<mkdir dir="${builddir}/${distName}/${distName}.app/Contents/Resources/Spanish.lproj"/>
