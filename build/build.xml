@@ -527,6 +527,7 @@ everywhere it is invoked:
 		<!-- Add an empty directory in the .app for each languge we translate into -->
 		<mkdir dir="${builddir}/${distName}/${distName}.app/Contents/Resources/French.lproj"/>
 		<mkdir dir="${builddir}/${distName}/${distName}.app/Contents/Resources/Korean.lproj"/>
+ 		<mkdir dir="${builddir}/${distName}/${distName}.app/Contents/Resources/Spanish.lproj"/>
 
 		<!-- Get rid of stuff the Apple crowd doesn't need -->
 		<move file="${builddir}/${distName}/ADTPro.sh" tofile="${builddir}/${distName}/ADTPro.command"/>
