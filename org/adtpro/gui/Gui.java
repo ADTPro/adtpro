@@ -1,6 +1,6 @@
 /*
  * ADTPro - Apple Disk Transfer ProDOS
- * Copyright (C) 2006 - 2009 by David Schmidt
+ * Copyright (C) 2006 - 2010 by David Schmidt
  * david__schmidt at users.sourceforge.net
  *
  * This program is free software; you can redistribute it and/or modify it 
@@ -70,7 +70,7 @@ public final class Gui extends JFrame implements ActionListener
 
   private JLabel labelMainProgress, labelSubProgress;
 
-  private ADTProperties _properties = new ADTProperties(Messages.getString("PropertiesFileName"));
+  public ADTProperties _properties = new ADTProperties(Messages.getString("PropertiesFileName"));
 
   boolean _isSerialAvailable = false;
 

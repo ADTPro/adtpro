@@ -2408,7 +2408,7 @@ public class CommsThread extends Thread
         Log.println(false, "CommsThread.requestSend() Reading " + resourceName);
         _parent.setMainText(Messages.getString("CommsThread.4")); //$NON-NLS-1$
         _parent.setSecondaryText(resourceName); //$NON-NLS-1$
-        _worker = new Worker(resource, is, pacing, speed, slowFirstLines,
+        _worker = new Worker(_parent, resource, is, pacing, speed, slowFirstLines,
             slowLastLines, isBinary);
         _worker.start();
       }
@@ -2454,13 +2454,15 @@ public class CommsThread extends Thread
    */
   public class Worker extends Thread
   {
+    private org.adtpro.ADTProperties _properties = null;
 
-    public Worker(String resource, InputStream is, int pacing, int speed,
+    public Worker(Gui parent, String resource, InputStream is, int pacing, int speed,
         int slowFirstLines, int slowLastLines, boolean isBinary)
     {
       Log.println(false, "CommsThread Worker inner class instantiation.");
       Log.println(false, "CommsThread Worker Pacing = " + pacing + ", speed = "
           + speed);
+      _parent = parent;
       _is = is;
       _pacing = pacing;
       _speed = speed;
@@ -2606,7 +2608,7 @@ public class CommsThread extends Thread
                 {
                   /*
                    * Are we within the boundaries of what was supposed to be
-                   * send with slower pacing - at the beginning or end of the
+                   * sent with slower pacing - at the beginning or end of the
                    * file?
                    */
                   if ((_slowFirst > currentLine)
@@ -2616,7 +2618,7 @@ public class CommsThread extends Thread
                   }
                   else
                   {
-                    sleep(_pacing);
+                    sleep(Integer.parseInt(_parent._properties.getProperty("CommPortBootstrapPacing","150")));
                   }
                 }
                 catch (InterruptedException e)
@@ -2670,6 +2672,11 @@ public class CommsThread extends Thread
     {
       _shouldRun = false;
       _busy = false;
+    }
+
+    public void setPacing(int pacing)
+    {
+      _pacing = pacing;
     }
 
     InputStream _is;
