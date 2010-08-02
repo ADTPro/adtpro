@@ -117,8 +117,8 @@ everywhere it is invoked:
 		<delete file="${projdir}/org/adtpro/resources/SOSLoader.raw" />
 		<delete file="${projdir}/org/adtpro/resources/PD.dmp" />
 		<delete file="${projdir}/org/adtpro/resources/messages.properties" />
-		<delete file="${projdir}/org/adtpro/resources/messages_ko_KR.properties" />
 		<delete>
+			<fileset dir="${projdir}/org/adtpro/resources" includes="messages_*.properties"/>
 			<fileset dir="${projdir}/client/src" includes="**/*.o"/>
 			<fileset dir="${projdir}/client/src" includes="**/*.map"/>
 			<fileset dir="${projdir}/client/src" includes="**/*.lst"/>
