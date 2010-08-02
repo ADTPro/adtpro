@@ -12,7 +12,8 @@ ADTPro Release History
 
  * [Server] French translation provided by Antoine VIGNAU
 
- * [Server] Spanish translation provided by Gabriel Alejandro Calomeni
+ * [Server] Spanish translation provided by 
+   Gabriel Alejandro Calomeni
 
  []
 
@@ -20,6 +21,9 @@ ADTPro Release History
 
  * [Client] Ethernet version can now connect immediately
    after startup without having to do DIR commands first
+
+ * [Server] Better button handling when disconnecting and
+   otherwise interrupting transfers
 
  []
 
