@@ -406,10 +406,17 @@ public final class Gui extends JFrame implements ActionListener
           {
             if (_previousButton != _disconnectButton)
             {
-              startComms(null);
-              setTitle(Messages.getString("Gui.Title") + " " + Messages.getString("Version.Number")); //$NON-NLS-1$ //$NON-NLS-2$
-              _previousButton = _disconnectButton;
-              Log.println(false, "Gui.actionPerformed setting previous button to _disconnectButton.");
+              boolean success = startComms(null);
+              if (success)
+              {
+                setTitle(Messages.getString("Gui.Title") + " " + Messages.getString("Version.Number")); //$NON-NLS-1$ //$NON-NLS-2$
+                _previousButton = _disconnectButton;
+                Log.println(false, "Gui.actionPerformed setting previous button to _disconnectButton.");
+              }
+              else
+              {
+                _previousButton.doClick();
+              }
             }
           }
           else
@@ -740,9 +747,10 @@ public final class Gui extends JFrame implements ActionListener
       if (_commsThread.isBusy())
       {
         // Something is going on. Ask if we want to interrupt.
-        int n = JOptionPane.showConfirmDialog(this, Messages.getString("Gui.Busy"),
-            Messages.getString("Gui.BusyTitle"), JOptionPane.YES_NO_CANCEL_OPTION);
-        if (n != JOptionPane.YES_OPTION) success = false;
+        Object[] options = { Messages.getString("Gui.Yes"), Messages.getString("Gui.No") };
+        int n = JOptionPane.showOptionDialog(null, Messages.getString("Gui.Busy"), Messages.getString("Gui.BusyTitle"), 
+        JOptionPane.DEFAULT_OPTION, JOptionPane.WARNING_MESSAGE, null, options, options[0]);
+        if (n != JOptionPane.YES_OPTION) success = false;  // No == want to abort switch operation
       }
       /*
        * If there was a comms thread existing before, get rid of it.
