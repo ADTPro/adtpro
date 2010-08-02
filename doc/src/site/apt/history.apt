@@ -22,6 +22,9 @@ ADTPro Release History
  * [Client] Ethernet version can now connect immediately
    after startup without having to do DIR commands first
 
+ * [Client] Clear out system memory bitmap so bootstrapping
+   on top of BASIC.SYSTEM will work correctly 
+
  * [Server] Better button handling when disconnecting and
    otherwise interrupting transfers
 
