@@ -112,10 +112,6 @@ details.  Feel free to
 {{{http://adtpro.sourceforge.net/forum.html}ask for help}}
 if you need it.
 
- Once you get your addresses set up, save your configuration and hit the "D" 
-key from the main menu (and escape) to ask for a directory once or twice.  
-It seems to take some networks a couple of tries to finally find the server.
-
  <<Note:>> if you ever end up saving a configuration that is not compatible
  with the Apple you're trying to run ADTPro on (because you move your
  Uthernet card to a different slot, for example) you may need to reset

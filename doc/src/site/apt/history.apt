@@ -6,7 +6,7 @@
 
 ADTPro Release History
 
-* Unreleased - changes in CVS now
+* 1.1.6 - August 2, 2010
 
  New functionality:
 
@@ -22,11 +22,15 @@ ADTPro Release History
  * [Client] Ethernet version can now connect immediately
    after startup without having to do DIR commands first
 
- * [Client] Clear out system memory bitmap so bootstrapping
-   on top of BASIC.SYSTEM will work correctly 
+ * [Client] Clearing out system memory bitmap enables
+   bootstrapping on top of BASIC.SYSTEM (the not-quite-
+   bare metal bootstrapping scenario)
 
  * [Server] Better button handling when disconnecting and
    otherwise interrupting transfers
+
+ * [Server] Changes to bootstrapping pacing interval affect
+   an active transfer in real time
 
  []
 
