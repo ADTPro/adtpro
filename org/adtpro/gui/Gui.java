@@ -307,44 +307,46 @@ public final class Gui extends JFrame implements ActionListener
     {
       if (_isSerialAvailable)
       {
-        if ((_properties.getProperty("CommPortSpeed") == null) || (_properties.getProperty("CommPort") == null))
+        if (startComms(null)) // Can we successfully disconnect if something was already running?
         {
-          serialConfigGui(0);
-          if (SerialConfig.getSingleton(this).getExitStatus() == SerialConfig.OK)
+          if ((_properties.getProperty("CommPortSpeed") == null) || (_properties.getProperty("CommPort") == null))
           {
-            _serialButton.doClick();
+            serialConfigGui(0);
+            if (SerialConfig.getSingleton(this).getExitStatus() == SerialConfig.OK)
+            {
+              _serialButton.doClick();
+            }
+            else
+            {
+              _disconnectButton.doClick();
+            }
           }
           else
           {
-            _disconnectButton.doClick();
+            try
+            {
+              setSerialTitle();
+              Log.println(false, "Gui.actionPerformed setting previous button to _serialButton.");
+              JRadioButton localButton = _previousButton;
+              _previousButton = _serialButton; // Remember last button state
+              boolean success = startComms(new SerialTransport(this, _properties.getProperty("CommPort"), _properties
+                  .getProperty("CommPortSpeed"), _properties.getProperty("HardwareHandshaking", "false")
+                  .compareTo("true") == 0));
+              if (success == false)
+              {
+                localButton.doClick();
+              }
+            }
+            catch (Exception e1)
+            {
+              Log.printStackTrace(e1);
+              _disconnectButton.doClick();
+            }
           }
         }
         else
         {
-          try
-          {
-            setSerialTitle();
-            Log.println(false, "Gui.actionPerformed setting previous button to _serialButton.");
-            JRadioButton localButton = _previousButton;
-            _previousButton = _serialButton; // Remember last button state
-            boolean success = startComms(new SerialTransport(this, _properties.getProperty("CommPort"), _properties
-                .getProperty("CommPortSpeed"), _properties.getProperty("HardwareHandshaking", "false")
-                .compareTo("true") == 0));
-            if (success == false)
-            {
-              localButton.doClick();
-            }
-          }
-          // Let us run without having rxtx installed at all...
-          // catch (gnu.io.PortInUseException e1)
-          // {
-          //   _disconnectButton.doClick();
-          // }
-          catch (Exception e1)
-          {
-            Log.printStackTrace(e1);
-            _disconnectButton.doClick();
-          }
+          _previousButton.doClick();
         }
       }
       else
@@ -368,8 +370,7 @@ public final class Gui extends JFrame implements ActionListener
             msg = StringUtilities.replaceSubstring(msg, "%1", InetAddress.getLocalHost().getHostAddress());
             setTitle(msg);
             Log.println(false, "Gui.actionPerformed ethernet button connected.");
-            _previousButton = _ethernetButton; // Remember last button
-            // state
+            _previousButton = _ethernetButton; // Remember last button state
           }
           else
           {
