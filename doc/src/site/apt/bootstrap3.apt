@@ -66,7 +66,7 @@ for example.
 
     []
 
-    [[1]] On the Apple ///, type in the bootstrapping loader, below. 
+    [[1]] On the Apple ///, type in the bootstrap loader, below. 
     Note that every "0" character is a number zero, not a letter;
     every "1" character is a number one, not a letter.
     The sequence of lines to type is this:
