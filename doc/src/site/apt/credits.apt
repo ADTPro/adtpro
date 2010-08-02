@@ -103,8 +103,9 @@ were from Oliver Schmidt's LOADER.SYSTEM contribution to cc65, available
 *-------+-----+
 | <<Language>> | <<Translator>> |
 *-------:-----+
-| Korean | Steve Y. Choi |
 | French | Antoine VIGNAU |
+| Korean | Steve Y. Choi |
+| Spanish | Gabriel Alejandro Calomeni |
 *-------:-----+
 
  Thanks to the {{{http://maven.apache.org}Maven}} project for web page generation.
