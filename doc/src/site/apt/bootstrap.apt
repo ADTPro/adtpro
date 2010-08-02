@@ -159,7 +159,7 @@ Super Serial card, all the way to making a bootable ADTPro floppy:
 
     [[1]] On the ADTPro server, push the "Serial" button.  if this is the first time
       you've connected via the serial port, you will be presented with the serial configuration
-      dialog box, where you'll need to set up the serial connection.
+      dialog box, where you'll need to choose which serial port to use.
 
     [[1]] Click on the "Bootstrapping->ProDOS->{Send ProDOS}" menu item.
 
@@ -239,15 +239,15 @@ Super Serial card, all the way to making a bootable ADTPro floppy:
 
     [[1]] You are now ready to {{{receiving.html}receive}} the ADTPRO-v.r.m.DSK (5.25" version)
       or ADTPro-v.r.m.PO (3.5" version) disk
-      image from the host.  Once you've done that, you've got a bootable ProDOS 
+      image from the host.  Once you've done that, you've got a bootable 
       diskette that contains all the ADTPro client programs.
 
 * {Bootstrapping DOS}
 
   If you don't need or want the extra features the ADTPro client provides
-  beyond the DOS ADT client, you may only want to get started with the DOS
-  ADT program.  The ADTPro server is compatible with both the DOS ADT and 
-  ADTPro clients.
+  beyond the original DOS ADT client, you may only need to get started with the DOS
+  ADT program.  The ADTPro server is compatible with both the older DOS ADT and 
+  the newer ADTPro client.
 
     [[1]] {{{connectionsserial.html}Connect}} the two computers through their serial ports.
 
@@ -258,7 +258,7 @@ Super Serial card, all the way to making a bootable ADTPro floppy:
 
     [[1]] On the ADTPro server, push the "Serial" button.  if this is the first time
       you've connected via the serial port, you will be presented with the serial configuration
-      dialog box, where you'll need to set up the serial connection.
+      dialog box, where you'll need to choose which serial port to use.
 
     [[1]] If the dialog box doesn't come up on it own, 
       click on Bootstrapping->Serial Pacing.
