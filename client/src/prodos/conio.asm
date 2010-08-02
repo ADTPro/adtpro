@@ -1,6 +1,6 @@
 ;
 ; ADTPro - Apple Disk Transfer ProDOS
-; Copyright (C) 2008 by David Schmidt
+; Copyright (C) 2008 - 2010 by David Schmidt
 ; david__schmidt at users.sourceforge.net
 ;
 ; This program is free software; you can redistribute it and/or modify it 
@@ -32,6 +32,25 @@ INIT_SCREEN:
 	jsr $FB2F	; TEXT MODE, FULL WINDOW
 	jsr $FE89	; INPUT FROM KEYBOARD
 	jsr $FE93	; OUTPUT TO 40-COL SCREEN
+
+	; Clean out the whole system bit map
+	ldx	#($C0 / 8) - 1
+
+	; Set protection for pages $B8 - $BF
+	lda	#%00000001
+	sta	BITMAP,x
+	dex
+
+	; Set protection for pages $08 - $B7
+	lda	#%00000000
+:	sta	BITMAP,x
+	dex
+	bne	:-
+
+	; Set protection for pages $00 - $07
+	lda	#%11001111
+	sta	BITMAP,x
+
 	rts
 
 ;---------------------------------------------------------
