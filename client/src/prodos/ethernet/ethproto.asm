@@ -101,8 +101,8 @@ UDPSKIP:
 ; 
 ;---------------------------------------------------------
 RECEIVE_LOOP_FAST:
-	lda #$1f		; Short delay
-	sta RECEIVE_LOOP_PAUSE+1
+	lda #$1f
+	sta PauseValue+1	; Short pause
 	lda #$00
 	jmp RECEIVE_LOOP_ENTRY2
 
@@ -112,15 +112,15 @@ RECEIVE_LOOP:
 				; kept in sync with the
 				; byte kept in uther.asm,
 	lda #$00		; PATCHUTHER.
-	sta RECEIVE_LOOP_PAUSE+1; Long pause
+	sta PauseValue+1	; Long pause
 RECEIVE_LOOP_ENTRY2:
 	sta TIMEOUT
 	sta TMOT
 
 RECEIVE_LOOP_WARM:
-	GO_SLOW				; Slow down for SOS
+	GO_SLOW		; Slow down for SOS
 	jsr ip65_process
-	GO_FAST				; Speed back up for SOS
+	GO_FAST		; Speed back up for SOS
 	lda $C000
 	cmp #CHR_ESC	; Escape = abort
 	bne :+
@@ -138,8 +138,31 @@ RECEIVE_LOOP_WARM:
 	rts
 
 RECEIVE_LOOP_PAUSE:
+	lda #$5a
+	sta $c05a
+	sta $c05a
+	sta $c05a
+	sta $c05a	; Unlock ZipChip
+
+	lda #$00
+	sta $c05a	; Disable ZipChip	
+
+	lda #$01
+	sta $C074	; Disable TransWarp
+
+PauseValue:
 	lda #$7f
-	jsr DELAY
+	jsr DELAY	; Wait!
+
+	lda #$00
+	sta $c05b	; Enable ZipChip
+
+	lda #$a5
+	sta $c05a	; Lock ZipChip
+
+	lda #$00	; Enable TransWarp
+	sta $C074
+
 	jmp RECEIVE_LOOP_WARM
 
 TIMEOUT:	.res 1
