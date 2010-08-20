@@ -14,6 +14,13 @@ ADTPro Release History
 
  []
 
+ Bug fixes:
+
+ * [Client] Disable ZipChip and TransWarp accelerators during
+   timeout loops in Ethernet version
+
+ []
+
 * 1.1.6 - August 2, 2010
 
  New functionality:
