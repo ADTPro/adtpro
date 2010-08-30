@@ -25,7 +25,7 @@
 ;---------------------------------------------------------
 PARMINT:
 	ldy PSSC	; Get parm index# (0..7)
-	iny		; Now slot# = 1..8 (where 8=IIgs)
+	iny		; Now slot# = 1..8 (where 8=IIgs, 9=Pascal entry points)
 	tya
 	cmp #$08
 	bpl DRIVERS
@@ -72,7 +72,7 @@ FindSlotLoop:
 	ldy #$1b		; Lookup offset
 	lda (UTILPTR),y
 	cmp #$eb		; Do we have a goofy XBA instruction in $C01B?
-	bne FoundNotIIgs	; If not, it's not an IIgs.
+	bne FoundNotIIgs	; If not, it's not a IIgs.
 	cpx #$02		; Only bothering to check IIgs Modem slot (2)
 	bne FindSlotNext
 	lda #$07		; We found the IIgs modem port, so store it

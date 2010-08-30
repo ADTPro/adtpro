@@ -1,6 +1,6 @@
 ;
 ; ADTPro - Apple Disk Transfer ProDOS
-; Copyright (C) 2008 by David Schmidt
+; Copyright (C) 2008 - 2010 by David Schmidt
 ; david__schmidt at users.sourceforge.net
 ;
 ; This program is free software; you can redistribute it and/or modify it 
@@ -44,8 +44,8 @@
 
 	.org $a000
 
-E_REG		:= $ffdf
-BUF_P		:= $7e		; Just a random, hopefully unused zero page pointer
+E_REG		:= $ffdf	; Environment register; sets machine configuration
+BUF_P		:= $7e		; Just a random, hopefully unused zero page pointer (2 bytes; $7e & $7f)
 
 ACIADR		:= $c0f0	; Data register. $c0f0 for ///, $c088+S0 for SSC
 ACIASR		:= $c0f1	; Status register. $c0f1 for ///, $c089+S0 for SSC
@@ -93,7 +93,7 @@ Read:
 	bne	Read		; Only going to pull $100 bytes
 
 ; Call bootstrap entry point
-	jmp	$a100		; Bigger Booter Entry point
+	jmp	$a100		; Bigger booter entry point
 
 IIIGet:
 	lda	ACIASR	; Check status bits via ACIA status register
