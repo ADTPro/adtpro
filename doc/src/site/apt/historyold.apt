@@ -8,10 +8,6 @@ ADTPro Release Ancient History
 
 * New Features
 
- 1.1.5 - March 17, 2010
-
-    * [Client] Laser 128 machines can use their modem port at 115.2kbps using the SSC port 2 setting
-
  1.1.1 - September 18, 2008
 
     * [Client] SOS version can use Ethernet UDP transport via the {{{http://a2retrosystems.com/}Uthernet}} card
