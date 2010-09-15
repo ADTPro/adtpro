@@ -67,15 +67,18 @@ an attempt is made to contact the host:
 [images/receiveInit.png]
 
  If the image size from the host does not match the size of the destination 
-volume, you will be alerted to that fact.  You generally don't want to copy 
+volume, you will be alerted to the {mismatch}.  You generally don't want to copy 
 a differently sized image to a disk drive, but if it happens that you really 
 do - you have the option to go ahead and do it anyway:
 
 [images/receiveMismatch.png]
 
- It will generally be successful as long as the destination has more capacity
-than the source (i.e. the host image is smaller than the destination disk at
-the Apple).  Some space will be wasted, but it will be entirely usable.
+ From a purely ProDOS standpoint, the operation will generally work if the 
+destination has more capacity than the source (i.e. the host image is smaller 
+than the destination disk at the Apple).  Some space will be wasted in the process.
+But if you are trying to put a 5.25" .DSK image of a game, say, onto a 3.5" floppy,
+don't expect that to work.  It won't be bootable, and DOS won't understand how
+to operate the 3.5" disk.   
 
  Once contact is made with the host, the disk information starts receiving and 
 writing.  The line across the screen represents a 20k buffer that is alternately
