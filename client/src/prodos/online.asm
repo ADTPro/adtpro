@@ -115,7 +115,7 @@ OERROR:
 	STA PARMBUF+1
 	RTS
 
-; DEVMSG - Add a message to the "Volume name" area of the device
+; DEVMSG - Add a hardcoded message to the "Volume name" area of the device
 DEVMSG:
 	stx XSTASH	; Preserve X - the index into DEVICES structure
 	lda MSGTBL,Y	; Y has an index into the messages table
@@ -135,6 +135,7 @@ DEVMSG:
 	adc #<DEVICES
 	sta BLKPTR
 	lda #>DEVICES
+	adc #$00	; Be sure to carry all the way to MSB
 	sta BLKPTR+1	; BLKPTR now holds DEVICES + X
 DMLOOP:
 	lda (UTILPTR),Y
