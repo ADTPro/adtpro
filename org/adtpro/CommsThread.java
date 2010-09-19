@@ -2454,7 +2454,6 @@ public class CommsThread extends Thread
    */
   public class Worker extends Thread
   {
-    private org.adtpro.ADTProperties _properties = null;
 
     public Worker(Gui parent, String resource, InputStream is, int pacing, int speed,
         int slowFirstLines, int slowLastLines, boolean isBinary)

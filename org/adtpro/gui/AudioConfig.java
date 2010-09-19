@@ -26,11 +26,8 @@ import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioSystem;
-import javax.sound.sampled.DataLine;
 import javax.sound.sampled.Mixer;
-import javax.sound.sampled.TargetDataLine;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
@@ -39,7 +36,6 @@ import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 
 import org.adtpro.resources.Messages;
-import org.adtpro.transport.audio.CaptureThread;
 import org.adtpro.utilities.Log;
 import org.adtpro.ADTProperties;
 
@@ -103,7 +99,7 @@ public class AudioConfig extends JDialog implements ActionListener
     comboAudioDevice = new JComboBox();
     comboAudioDevice.addItem(Messages.getString("Gui.DefaultAudioMixer"));
     Mixer.Info[] mixerInfo = AudioSystem.getMixerInfo();
-    AudioFormat audioFormat = CaptureThread.getAudioFormat();
+    //AudioFormat audioFormat = CaptureThread.getAudioFormat();
     String nextName = null;
     _audioDeviceIndices = new int[mixerInfo.length + 1];
     _audioDeviceIndices[0] = 0;
@@ -111,11 +107,11 @@ public class AudioConfig extends JDialog implements ActionListener
     for (int i = 0; i < mixerInfo.length; i++)
     {
       nextName = null;
-      DataLine.Info dataLineInfo = new DataLine.Info(TargetDataLine.class, audioFormat);
-      Mixer mixer = AudioSystem.getMixer(mixerInfo[i]);
+      //DataLine.Info dataLineInfo = new DataLine.Info(TargetDataLine.class, audioFormat);
+      //Mixer mixer = AudioSystem.getMixer(mixerInfo[i]);
       try
       {
-        TargetDataLine targetDataLine = (TargetDataLine) mixer.getLine(dataLineInfo);
+        //TargetDataLine targetDataLine = (TargetDataLine) mixer.getLine(dataLineInfo);
         nextName = mixerInfo[i].getName();
         if (!nextName.equals("")) /* Skip it if it's name is blank... */
         {

@@ -44,14 +44,6 @@ String _fileName = null;
     _fileName = fileName;
     load();
   }
- 
-  /**
-   * Private constructor to prohibit instantiation without parameters
-   */
-  private ADTProperties()
-  {
-    // Prohibit no-parameter instantiation
-  }
 
   /**
    * Load up the properties

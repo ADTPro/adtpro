@@ -86,8 +86,8 @@ public class Disk
    * Constructor for a Disk - used only to generate FilenameFilter objects.
    * Prevent parameter-less instantiation.
    */
-  private Disk()
-  {}
+//  private Disk()
+//  {}
 
   /**
    * Construct a Disk with the given byte array.

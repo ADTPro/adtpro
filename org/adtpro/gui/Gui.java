@@ -21,7 +21,6 @@
 package org.adtpro.gui;
 
 import java.awt.BorderLayout;
-import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
@@ -32,10 +31,8 @@ import java.awt.event.*;
 import java.io.File;
 import java.io.IOException;
 import java.net.InetAddress;
-import java.util.Locale;
 
 import javax.swing.*;
-import javax.swing.plaf.FontUIResource;
 
 import org.adtpro.resources.Messages;
 import org.adtpro.transport.ATransport;
