@@ -19,6 +19,9 @@ ADTPro Release History
  * [Client] Disable ZipChip and TransWarp accelerators during
    timeout loops in Ethernet version
 
+ * [Client] Booting into ProDOS 8 from GSOS sometimes caused
+   the 'Quit' operation to fail
+
  []
 
 * 1.1.6 - August 2, 2010
