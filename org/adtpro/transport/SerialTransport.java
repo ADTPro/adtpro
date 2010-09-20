@@ -140,8 +140,8 @@ public class SerialTransport extends ATransport
 
   public static String[] getPortNames()
   {
-    Vector v = new Vector();
-    Enumeration enumeration = null;
+    Vector<String> v = new Vector<String>();
+    Enumeration<?> enumeration = null;
 
     try
     {
@@ -160,7 +160,7 @@ public class SerialTransport extends ATransport
 
     String ret[] = new String[v.size()];
     for (int j = 0; j < v.size(); j++)
-      ret[j] = (String) v.elementAt(j);
+      ret[j] = v.elementAt(j);
     return ret;
   }
 

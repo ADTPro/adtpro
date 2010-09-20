@@ -78,7 +78,7 @@ public class NibbleBufferMap
   NibbleBufferMap(byte[] inBuffer)
   {
     buffer = inBuffer;
-    mapEntries = new Vector();
+    mapEntries = new Vector<NibbleBufferEntry>();
     buildMap();
   }
 
@@ -196,7 +196,7 @@ public class NibbleBufferMap
     // Returns the index in mapEntries of the entry found, or -1 in the case of error.
     int rv = 0;
     NibbleBufferEntry entry;
-    Iterator it = mapEntries.iterator();
+    Iterator<NibbleBufferEntry> it = mapEntries.iterator();
     while (it.hasNext())
     {
       entry = (NibbleBufferEntry)it.next();
@@ -325,7 +325,7 @@ public class NibbleBufferMap
     int rv = 0;
     int bestSoFar = 0;
     NibbleBufferEntry entry;
-    Iterator it = mapEntries.iterator();
+    Iterator<NibbleBufferEntry> it = mapEntries.iterator();
     while (it.hasNext())
     {
       entry = (NibbleBufferEntry)it.next();
@@ -341,7 +341,7 @@ public class NibbleBufferMap
     return rv;
   }
 
-  Vector mapEntries;
+  Vector<NibbleBufferEntry> mapEntries;
   public double accuracy = 0.0;
   byte[] buffer;
   int currentGapSequence = -1;
