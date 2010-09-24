@@ -1,6 +1,6 @@
 ;
 ; ADTPro - Apple Disk Transfer ProDOS
-; Copyright (C) 2007 by David Schmidt
+; Copyright (C) 2007-2010 by David Schmidt
 ; david__schmidt at users.sourceforge.net
 ;
 ; This program is free software; you can redistribute it and/or modify it 
@@ -48,9 +48,6 @@ SELFMOD:
 	lda $C210		; PASCAL STATUS ENTRY POINT
 	sta MODSTAT1+1		; MOD CODE!!
 	sta MODSTAT2+1		; MOD CODE!!
-	iny
-	iny
-	lda $C212		; PASCAL CONTROL ENTRY POINT
 	rts
 
 ;---------------------------------------------------------
@@ -60,9 +57,8 @@ INITSLOT:
 	ldx #$C2		; $CN, N=SLOT
 	ldy #$20		; $N0, N=SLOT
 	lda #0
-	stx MSLOT
 MODINIT:
-	jsr $C245		; PASCAL INIT ENTRY POINT
+	jsr $C200		; PASCAL INIT ENTRY POINT
 	rts
 
 ;---------------------------------------------------------
@@ -134,14 +130,14 @@ OK8E2:
 	ldy #$20		; $N0
 	lda #0			; READY FOR OUTPUT?
 MODSTAT1:
-	jsr $C248		; PASCAL STATUS ENTRY POINT
+	jsr $C200		; PASCAL STATUS ENTRY POINT
 	bcc K8D8		; CC MEANS NOT READY
 	ldx #$C2		; $CN
 	ldy #$20		; $N0
 	pla			; RETRIEVE CHAR
 	pha			; MUST SAVE FOR RETURN
 MODWRITE:
-	jsr $C247		; PASCAL WRITE ENTRY POINT
+	jsr $C200		; PASCAL WRITE ENTRY POINT
 	pla
 	.byte $7A		; PLY
 	.byte $FA		; PLX
@@ -164,12 +160,12 @@ OK90C:
 	ldy #$20		; $N0
 	lda #1			; INPUT READY?
 MODSTAT2:
-	jsr $C248		; PASCAL STATUS ENTRY POINT
+	jsr $C200		; PASCAL STATUS ENTRY POINT
 	bcc K902		; CC MEANS NO INPUT READY
 	ldx #$C2		; $CN
 	ldy #$20		; $N0
 MODREAD:
-	jsr $C246		; PASCAL READ ENTRY POINT
+	jsr $C200		; PASCAL READ ENTRY POINT
 	.byte $7A		; PLY
 	.byte $FA		; PLX
 	and #$FF
