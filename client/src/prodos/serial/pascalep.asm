@@ -1,6 +1,6 @@
 ;
 ; ADTPro - Apple Disk Transfer ProDOS
-; Copyright (C) 2007-2010 by David Schmidt
+; Copyright (C) 2007 - 2010 by David Schmidt
 ; david__schmidt at users.sourceforge.net
 ;
 ; This program is free software; you can redistribute it and/or modify it 
@@ -71,12 +71,12 @@ MODINIT:
 ; interpreting any of the binary data.
 ;
 INITSEND:
-	ldy #$b4		; Start with ascii "4"
+	ldy CHR_4		; Start with ascii "4"
 	lda PSPEED
 	bne :+			; Is speed set to low (300)?
-	lda #$b0		; Load up ascii "0"
+	lda CHR_0		; Load up ascii "0"
 	sta BAUDR+1
-	lda #$b6		; Load up ascii "6"
+	lda CHR_6		; Load up ascii "6"
 	sta BAUDR+2
 	jmp INITFOUNDSPEED
 :
@@ -84,7 +84,7 @@ INITSEND:
 	bne :+
 	iny			; Yes, bump "4" to "5"
 :	sty BAUDR+2
-	ldy #$b1		; Load up ascii "1"
+	ldy CHR_1		; Load up ascii "1"
 	sty BAUDR+1		; We now have "Ctrl-A1[4|5]B"
 INITFOUNDSPEED:
 	ldy #0
@@ -98,14 +98,12 @@ SIDONE:
 	rts
 
 INITSTRING:
-	.byte $01,$d8,$c4	; ctrl-A X D - disable XON/XOFF
-	.byte $01,$c3,$c4	; ctrl-A C D - disable auto CR
-	.byte $01,$c6,$c4	; ctrl-A F D - suppress keyboard
-	.byte $01,$cb		; ctrl-A K - disable auto LF after CR
+	.byte $01,CHR_X, CHR_SP, CHR_D	; ctrl-A X D - disable XON/XOFF
+	.byte $01,CHR_F, CHR_SP, CHR_D	; ctrl-A F D - suppress keyboard
 BAUDR:
-	.byte $01,$b1,$b5,$c2	; ctrl-A 1n B - set baud rate
-	.byte $01,$da		; ctrl-A Z - disable firmware control chars
-	.byte $00		; terminate string
+	.byte $01,CHR_1, CHR_5, CHR_B	; ctrl-A 1n B - set baud rate
+	.byte $01,CHR_Z			; ctrl-A Z - disable firmware control chars
+	.byte $00			; terminate string
 
 ;---------------------------------------------------------
 ; RESETPAS - Clean up every time we hit the main loop
@@ -117,21 +115,21 @@ RESETPAS:
 ; PUTCPAS - Send accumulator out the serial port
 ;---------------------------------------------------------
 PUTCPAS:
-	.byte $DA		; PHX
-	.byte $5A		; PHY
+	stx SLOWX		; PHX
+	sty SLOWY		; PHY
 	pha
-K8D8:
+PPASLOOP:
 	lda $C000
 	cmp #CHR_ESC		; Escape = abort
-	bne OK8E2
+	bne :+
 	jmp PABORT
-OK8E2:
+:
 	ldx #$C2		; $CN, N=SLOT
 	ldy #$20		; $N0
 	lda #0			; READY FOR OUTPUT?
 MODSTAT1:
 	jsr $C200		; PASCAL STATUS ENTRY POINT
-	bcc K8D8		; CC MEANS NOT READY
+	bcc PPASLOOP		; CC MEANS NOT READY
 	ldx #$C2		; $CN
 	ldy #$20		; $N0
 	pla			; RETRIEVE CHAR
@@ -139,8 +137,8 @@ MODSTAT1:
 MODWRITE:
 	jsr $C200		; PASCAL WRITE ENTRY POINT
 	pla
-	.byte $7A		; PLY
-	.byte $FA		; PLX
+	ldy SLOWY		; PLY
+	ldx SLOWX		; PLX
 	and #$FF
 	rts
 
@@ -148,26 +146,26 @@ MODWRITE:
 ; GETCPAS - Get a character from the serial port (XY unchanged)
 ;---------------------------------------------------------
 GETCPAS:
-	.byte $DA		; PHX
-	.byte $5A		; PHY
-K902:
+	stx SLOWX		; PHX
+	sty SLOWY		; PHY
+GPASLOOP:
 	lda $C000
 	cmp #CHR_ESC		; Escape = abort
-	bne OK90C
+	bne :+
 	jmp PABORT
-OK90C:
+:
 	ldx #$C2		; $CN, N=SLOT
 	ldy #$20		; $N0
 	lda #1			; INPUT READY?
 MODSTAT2:
 	jsr $C200		; PASCAL STATUS ENTRY POINT
-	bcc K902		; CC MEANS NO INPUT READY
+	bcc GPASLOOP		; CC MEANS NO INPUT READY
 	ldx #$C2		; $CN
 	ldy #$20		; $N0
 MODREAD:
 	jsr $C200		; PASCAL READ ENTRY POINT
-	.byte $7A		; PLY
-	.byte $FA		; PLX
+	ldy SLOWY		; PLY
+	ldx SLOWX		; PLX
 	and #$FF
 	rts
 
