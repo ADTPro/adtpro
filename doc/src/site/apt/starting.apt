@@ -14,9 +14,9 @@ Starting ADTPro
 
   [Linux, Solaris:] <<<adtpro.sh>>> (You downloaded the .tar.gz package, didn't you?)
 
-  [OS/2:] <<<adtpro.cmd>>>
-
   [OSX:] <<<ADTPro-v.r.m.app>>> (You downloaded the .dmg package, didn't you?)
+
+  [OS/2:] <<<adtpro.cmd>>>
 
   [Windows:] <<<adtpro.bat>>>
 
@@ -136,9 +136,10 @@ version of ADTPro (<<<ADTPROAUD>>>), ensure the volume setting for your sound
 card is set to halfway up the scale (i.e. much louder than you'd 
 generally listen to computer speakers).
 
- <<IIgs Note:>> users running GSOS are advised to hit the '8' key while booting.
+ <<IIgs/GSOS Note:>> users running GSOS are advised to hit the '8' key while booting.
 That has the effect of starting the IIgs in 8-bit ProDOS (BASIC) mode.  
-The less contention for the serial hardware, the better.
+ADTPro can't maintain the tight timing necessary for serial communications when the full
+GSOS has booted and modifies the serial environment.
 
 * {Starting the Client - SOS}
 
