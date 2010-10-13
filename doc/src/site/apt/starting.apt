@@ -139,7 +139,7 @@ generally listen to computer speakers).
  <<IIgs/GSOS Note:>> users running GSOS are advised to hit the '8' key while booting.
 That has the effect of starting the IIgs in 8-bit ProDOS (BASIC) mode.  
 ADTPro can't maintain the tight timing necessary for serial communications when the full
-GSOS has booted and modifies the serial environment.
+GSOS has booted, as it modifies the serial environment.
 
 * {Starting the Client - SOS}
 
