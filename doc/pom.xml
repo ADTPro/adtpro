@@ -7,6 +7,9 @@
   <name>ADTPro</name>
   <url>http://maven.apache.org/maven2</url>
   <inceptionYear>2006</inceptionYear>
+  <organization>
+    <name>David Schmidt</name>
+  </organization>
   <distributionManagement>
     <site>
       <id>website</id>
