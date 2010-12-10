@@ -20,6 +20,7 @@ perl -i.orig -p ../../removeMaven.re history.html
 perl -i.orig -p ../../removeMaven.re historyold.html
 perl -i.orig -p ../../removeMaven.re index.html
 perl -i.orig -p ../../removeMaven.re install.html
+perl -i.orig -p ../../removeMaven.re lc.html
 perl -i.orig -p ../../removeMaven.re misc.html
 perl -i.orig -p ../../removeMaven.re protocol.html
 perl -i.orig -p ../../removeMaven.re receiving.html

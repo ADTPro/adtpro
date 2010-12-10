@@ -22,7 +22,7 @@
       <item name="Serial" href="connectionsserial.html"/>
       <item name="Audio" href="connectionsaudio.html"/>
       <item name="Ethernet" href="configethernet.html"/>
-      <item name="Apple IIe Card/Mac LC" href="lc.html"/>
+      <item name="Mac LC/Apple IIe Card" href="lc.html"/>
     </menu>
 
     <menu name="Bootstrapping">

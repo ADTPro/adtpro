@@ -1,0 +1,57 @@
+ -----
+ Using the Mac LC Apple IIe Card with ADTPro
+ -----
+ David Schmidt (david__schmidt at users dot souceforge dot net)
+ -----
+
+Using The Mac LC - Apple IIe Card with ADTPro
+
+[http://upload.wikimedia.org/wikipedia/commons/thumb/5/5e/Apple_IIe_Card.jpg/450px-Apple_IIe_Card.jpg]
+
+ ADTPro can work with a Macintosh LC computer equipped with the {{{http://en.wikipedia.org/wiki/Apple_IIe_Card}Apple IIe Card}} 
+ (Apple Computer part number 820-0444-A).  There are just a few settings that need to be attended to.
+ 
+ First, your LC must be running System 7.5.5 in order to support the Apple IIe Card and its emulation software.
+ Further, you must turn 32 bit addressing off via the Memory control panel, like so:
+
+[images/LC32BitsOff.jpg]
+
+=====
+
+ Next, ensure that AppleTalk is inactive.  AppleTalk would conflict with the serial ports if it were running.
+ The Chooser application will show you its status, and you can set it to "Inactive" from there: 
+
+[images/LCAppleTalkInactive.jpg]
+
+=====
+
+ From the Apple IIe Card option panel, set the slots to include the "Serial Card" in slot 2: 
+
+[images/LCSlotsConfig.jpg]
+
+=====
+
+ And finally, set the Serial Card to 19200 baud, etc. as shown below:
+
+[images/LCModemConfig.jpg]
+
+ The ADTPro client running within the Apple IIe Card will need to be configured to
+ use the Super Serial Card in slot 2, and changed to use 19200 baud as well:
+ 
+[images/LCClientComms.png]  
+
+=====
+
+ Changing the values of printer vs. modem will likely have an effect on which kind of serial cable you need -
+ i.e. null modem or straight-through.  Configured as shown here, you will need a null modem or "printer" 
+ cable to connect between the LC's modem port and the ADTPro server.
+
+ Here are some excellent references on the Apple IIe Card:
+
+ {{{http://www.vectronicsappleworld.com/appleii/appleiiecard.html}http://www.vectronicsappleworld.com/appleii/appleiiecard.html}}
+ 
+ {{{http://en.wikipedia.org/wiki/Apple_IIe_Card}http://en.wikipedia.org/wiki/Apple_IIe_Card}}
+ 
+ {{{http://www.worldlingo.com/ma/enwiki/en/Apple_IIe_Card}http://www.worldlingo.com/ma/enwiki/en/Apple_IIe_Card}}
+
+ {{{http://www.vintagemacworld.com/lc_card_faq.html}http://www.vintagemacworld.com/lc_card_faq.html}}
