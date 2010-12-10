@@ -12,28 +12,28 @@ Using The Mac LC - Apple IIe Card with ADTPro
  (Apple Computer part number 820-0444-A).  There are just a few settings that need to be attended to.
  
  First, your LC must be running System 7.5.5 in order to support the Apple IIe Card and its emulation software.
- Further, you must turn 32 bit addressing off via the Memory control panel, like so:
+ Further, you must turn 32 bit addressing <<off>> via the Memory control panel, like so:
 
-[images/LC32BitsOff.jpg]
+[images/LC32BitsOff.png]
 
 =====
 
  Next, ensure that AppleTalk is inactive.  AppleTalk would conflict with the serial ports if it were running.
  The Chooser application will show you its status, and you can set it to "Inactive" from there: 
 
-[images/LCAppleTalkInactive.jpg]
+[images/LCAppleTalkInactive.png]
 
 =====
 
  From the Apple IIe Card option panel, set the slots to include the "Serial Card" in slot 2: 
 
-[images/LCSlotsConfig.jpg]
+[images/LCSlotsConfig.png]
 
 =====
 
  Set the Serial Card to 19200 baud, etc. as shown below:
 
-[images/LCModemConfig.jpg]
+[images/LCModemConfig.png]
 
  The ADTPro client running within the Apple IIe Card will need to be configured to
  use the Super Serial Card in slot 2, and changed to use 19200 baud as well:
