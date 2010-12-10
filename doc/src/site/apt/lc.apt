@@ -31,14 +31,18 @@ Using The Mac LC - Apple IIe Card with ADTPro
 
 =====
 
- And finally, set the Serial Card to 19200 baud, etc. as shown below:
+ Set the Serial Card to 19200 baud, etc. as shown below:
 
 [images/LCModemConfig.jpg]
 
  The ADTPro client running within the Apple IIe Card will need to be configured to
  use the Super Serial Card in slot 2, and changed to use 19200 baud as well:
- 
+
 [images/LCClientComms.png]  
+
+ And the ADTPro server's serial connection needs to be changed to use 19200 so all agree: 
+
+[images/LCServerSpeed.png]
 
 =====
 
