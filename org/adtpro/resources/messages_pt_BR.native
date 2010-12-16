@@ -1,6 +1,6 @@
 /*
  * ADTPro - Apple Disk Transfer ProDOS
- * Copyright (C) 2006 - 2009 by David Schmidt
+ * Copyright (C) 2006 - 2010 by David Schmidt
  * david__schmidt at users.sourceforge.net
  * Brazilian Portuguese translation by Neo Winston
  *
@@ -32,9 +32,9 @@ Gui.DisconnectButton=Desconectado
 Gui.ServingSerialTitle=ADTPro Conectado em %1 com %2 Baud
 Gui.ServingEthernetTitle=ADTPro Endereço IP %1
 Gui.ServingAudioTitle=ADTPro Conecção de Áudio
-Gui.NoAudio=Não existem dispositivos de audio diponíveis para Java neste computador. 
+Gui.NoAudio=Não existem dispositivos de áudio diponíveis para Java neste computador. 
 Gui.NoAudioDialogTitle=Sem dispositivos de áudio
-Gui.NoAudioDialogText=<html>Não existem dispositivos de audio diponíveis para Java neste computador.</html>
+Gui.NoAudioDialogText=<html>Não existem dispositivos de áudio diponíveis para Java neste computador.</html>
 Gui.DefaultAudioMixer=ADTPro Captura de Áudio Padrão 
 Gui.NoRXTX=Biblioteca Serial não instalada.
 Gui.NoRXTXDialogTitle=Portas seriais não disponíveis
@@ -104,16 +104,16 @@ Gui.BS.ProDOS=Enviar ProDOS
  * Translators note - do not translate Gui.BS.SOS*.
  *
  * /
- Gui.BS.SOS=SOS
- Gui.BS.SOSKERNEL=Gui.BS.SOSKERNEL
- Gui.BS.SOSINTERP=Gui.BS.SOSINTERP
- Gui.BS.SOSDRIVER=Gui.BS.SOSDRIVER
- 
- Gui.BS.ADT=Send DOS ADT Client
- Gui.BS.ADTPro=Send ADTPro Serial Client
- Gui.BS.ADTProAudio=Send ADTPro Audio Client
- Gui.BS.ADTProEthernet=Send ADTPro Ethernet Client
- 
+Gui.BS.SOS=SOS
+Gui.BS.SOSKERNEL=Gui.BS.SOSKERNEL
+Gui.BS.SOSINTERP=Gui.BS.SOSINTERP
+Gui.BS.SOSDRIVER=Gui.BS.SOSDRIVER
+
+Gui.BS.ADT=Enviar Cliente DOS ADT
+Gui.BS.ADTPro=Enviar Cliente ADTPro Serial
+Gui.BS.ADTProAudio=Enviar Cliente ADTPro Audio
+Gui.BS.ADTProEthernet=Enviar Cliente ADTPro Ethernet
+
  /*
  * Translators note -
  *
