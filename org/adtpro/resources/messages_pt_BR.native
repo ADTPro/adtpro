@@ -1,0 +1,169 @@
+/*
+ * ADTPro - Apple Disk Transfer ProDOS
+ * Copyright (C) 2006 - 2009 by David Schmidt
+ * david__schmidt at users.sourceforge.net
+ * Brazilian Portuguese translation by Neo Winston
+ *
+ * This program is free software; you can redistribute it and/or modify it 
+ * under the terms of the GNU General Public License as published by the 
+ * Free Software Foundation; either version 2 of the License, or (at your 
+ * option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but 
+ * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY 
+ * or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License 
+ * for more details.
+ *
+ * You should have received a copy of the GNU General Public License along 
+ * with this program; if not, write to the Free Software Foundation, Inc., 
+ * 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+ */
+
+Gui.Yes=Sim
+Gui.No=Não 
+Gui.Ok=Ok
+Gui.Cancel=Cancelar
+Gui.Name=ADTPro
+Gui.Title=ADTPro Servidor
+Gui.SerialButton=Serial
+Gui.EthernetButton=Ethernet
+Gui.AudioButton=Áudio
+Gui.DisconnectButton=Desconectado
+Gui.ServingSerialTitle=ADTPro Conectado em %1 com %2 Baud
+Gui.ServingEthernetTitle=ADTPro Endereço IP %1
+Gui.ServingAudioTitle=ADTPro Conecção de Áudio
+Gui.NoAudio=Não existem dispositivos de audio diponíveis para Java neste computador. 
+Gui.NoAudioDialogTitle=Sem dispositivos de áudio
+Gui.NoAudioDialogText=<html>Não existem dispositivos de audio diponíveis para Java neste computador.</html>
+Gui.DefaultAudioMixer=ADTPro Captura de Áudio Padrão 
+Gui.NoRXTX=Biblioteca Serial não instalada.
+Gui.NoRXTXDialogTitle=Portas seriais não disponíveis
+Gui.NoRXTXDialogText=<html>Não há portas seriais ou a Biblioteca serial RXTX não está instalada ou visível.<br>Please see http://adtpro.sourceforge.net/install.html for details.</html>
+Gui.File=Arquivo
+Gui.Config=Configuração 
+Gui.IIc=Apple IIc com Cabo Imagewriter 
+Gui.ProtocolCompatability=Antigo protocolo ADTPro 0.1.x
+Gui.Trace=Traçamento ativado
+Gui.Quit=Sair
+Gui.CD=Mudar diretório
+Gui.CDSet=Confirmar diretório
+Gui.Port=Porta
+Gui.Speed=Velocidade
+/*
+ * Translators note - "Pacing" is a word that needs some explanation to translate correctly.
+ *
+ * In this context, I'm talking about the period of time to wait between successive lines of 
+ * text to send. So, send a line, wait for the "pacing" time interval, then send the next line.
+ * Pacing is an interval of time to wait between lines.
+ */
+Gui.BootstrapPacing=Intervalo de transmissão 
+Gui.BootstrapSpeed=Velocidade
+Gui.ConfigSerialTab=Porta
+Gui.ConfigSerialTab.Help=Configura detalhes da porta serial
+Gui.ConfigBootstrapTab=Boot
+Gui.ConfigBootstrapTab.Help=Configura detalhes específicos do boot 
+Gui.Help=Ajuda
+Gui.About=Sobre ADTPro
+Gui.Website=ADTPro Website
+Gui.AboutText=<html>Apple ProDOS Transferência de Disco (ADTPro) v%1<br><br>ADTPro ProDOS (e SOS!) é uma versão do venerável programa<br>Transferência de Disco Apple, ADT.  Qualquer coisa<br>que ProDOS ou SOS podem ler, ADTPro pode transferir.<br>O programa DOS Tradicional ADT (no computador Apple ][)<br>é compatível com este servidor ADTPro.<br><br>ADTPro foi programado por David Schmidt, baseado<br>parcialmente nos trabalhos de Paul Guertin e vários outros programadores.<br>Visite ADTPro na Internet em:<br>http://adtpro.sourceforge.net<br><br>ADTPro é licenciado sob o GNU<br>Licença Pública Geral(GPL) Versão 2.</center></html>
+Gui.Disconnect=Desconectado
+Gui.Connect=Conectado
+Gui.Quiesced=Sem atividade.
+Gui.Disconnected=Não conectado.
+Gui.Connected=Conectado.
+Gui.InvalidCD=Não é um diretório.
+Gui.PortInUse=A porta selecionada está em uso.
+Gui.PortDoesNotExist=A porta serial usada pela última vez não pôde ser encontrada agora; por favor verifique a configuração.
+Gui.Ethernet=TCP/IP
+Gui.Audio=Áudio
+Gui.AudioConfig=Configuração de Áudio
+Gui.AudioConfigMixer=Dispositivo de Captura de Áudio
+Gui.BusyTitle=Confirmar Interrupção 
+Gui.Busy=Uma transferência está sendo feita agora. Tem certeza de que gostaria de interrompê-la?
+
+/*
+ * Translators note -
+ * 
+ * Gui.SerialConfig and Gui.SerialConfigBootstrap must
+ * contain different translated strings; they cannot be
+ * identical, or the different tabs will not come up as expected.
+ *
+ */
+Gui.SerialConfig=Configuração Serial
+Gui.SerialConfigBootstrap=Intervalo de Transmissão Serial
+
+Gui.Bootstrap=Boot
+Gui.BootstrapProDOS=ProDOS
+Gui.BootstrapDOS=EsDOS ][
+Gui.BootstrapSOS=SOS
+Gui.BS.DOS=Enviar EsDOS ][ Parte 1
+Gui.BS.DOS2=Enviar EsDOS ][ Parte 2
+Gui.BS.ProDOS=Enviar ProDOS
+
+/*
+ * Translators note - do not translate Gui.BS.SOS*.
+ *
+ * /
+ Gui.BS.SOS=SOS
+ Gui.BS.SOSKERNEL=Gui.BS.SOSKERNEL
+ Gui.BS.SOSINTERP=Gui.BS.SOSINTERP
+ Gui.BS.SOSDRIVER=Gui.BS.SOSDRIVER
+ 
+ Gui.BS.ADT=Send DOS ADT Client
+ Gui.BS.ADTPro=Send ADTPro Serial Client
+ Gui.BS.ADTProAudio=Send ADTPro Audio Client
+ Gui.BS.ADTProEthernet=Send ADTPro Ethernet Client
+ 
+ /*
+ * Translators note -
+ *
+ * All of the *Instructions are rendered in HTML with embedded HTML tags.
+ *
+ */
+Gui.BS.DumpDOSInstructions=<html>Você precisa de um disquete no drive!<br><br><p>No computador Apple, digite:<br><code>IN#2&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code>(O número depende do slot em que o cartão serial está instalado)<br><code>&lt;ctrl-A&gt;%1%B&nbsp;&nbsp;</code>(Pode Ser<code>&lt;ctrl-I&gt;</code> (a letra 'I'))<br><br><p>Clique no botão Ok quando estiver pronto...</html>
+Gui.BS.DumpDOSInstructionsDone=<html>Pronto.<br><br>Agora, <code>INIT</code> alguns disquetes ou envie o programa cliente DOS ADT.</html>
+Gui.BS.DumpDOSAudioInstructions=<html>Certifique-se de que o cabo de áudio está conectado, com o volume em 50%.<p><p>No computador Apple, digite:<p><code>HOME<br>CALL -151<br>3D0.%1%R<br><br></code><p>Clique no botão Ok depois de pressionar Return no computador Apple...</html>
+Gui.BS.DumpDOSAudioInstructionsDone=Se a transferência ocorreu com sucesso, agora transfira o EsDOS ][ parte 2.
+Gui.BS.DumpDOSAudioInstructions2=<html>Certifique-se de que o cabo de áudio está conectado, com o volume em 50%.<br><br>No computador Apple, digite:<br><code>9D00.BFFFR</code><br><br>Clique no botão Ok depois de pressionar Return no computador Apple...</html>
+Gui.BS.DumpDOSAudioInstructions2Done=<html>Se a transferência ocorreu com sucesso, digite no computador Apple:<br><code>9D84G</code><br><br>Após digitar <code>9D84G</code>, você pode querer também<br><code>INIT</code> um ou dois disquetes.</html>
+Gui.BS.DumpProDOSInstructions=<html>No computador Apple, digite:<br><code>IN#2&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code>(O número depende do slot em que o cartão serial está instalado)<br><code>&lt;ctrl-A&gt;%1%B&nbsp;&nbsp;</code>(Pode ser<code>&lt;ctrl-I&gt;</code> (a letra 'I'))<br><br>Clique no botão Ok quando estiver pronto...</html>
+Gui.BS.DumpProDOSInstructionsDone=<html>Pronto.<br><br>Agora, envie o cliente (programa) serial ADTPro.</html>
+Gui.BS.DumpProDOSAudioInstructions=<html>Certifique-se de que o cabo de áudio está conectado, com o volume em 50%.<br><br>No computador Apple, digite:<br><code>CALL -151<br>2000.%1%R</code><br><br>Clique no botão Ok depois de pressionar Return no computador Apple...</html>
+Gui.BS.DumpProDOSAudioInstructionsDone=<html>Se a transferência ocorreu com sucesso, agora digite no computador Apple:<br><code>2000G&nbsp;&nbsp;</code>(estes são zeros e não, letras 'O')<br><br>Agora, envie o cliente (programa) de áudio ADTPro.</html>
+Gui.BS.DumpSOSInstructions=<html><ol><li>Ligue o Apple /// monitor com Ctrl-OpenApple-Reset.</li><li>Digite o seguinte programa, exatamente como é mostrado:<br><code>A000:78 D8 A9 40 8D CA FF AD</code><br><code>A008:DF FF 09 F2 8D DF FF A9</code><br><code>A010:0B 8D F2 C0 A9 1E 8D F3</code><br><code>A018:C0 A9 00 A8 85 7E A9 A1</code><br><code>A020:85 7F A2 48 8E 24 04 E8</code><br><code>A028:8E 25 04 20 40 A0 C9 47</code><br><code>A030:D0 F9 20 40 A0 91 7E 8D</code><br><code>A038:27 04 C8 D0 F5 4C 00 A1</code><br><code>A040:AD F1 C0 29 68 C9 08 D0</code><br><code>A048:F7 AD F0 C0 60</code></li><li>Digite este comando para rodá-lo:<pre>A000G</pre></li><li>Se você obtiver o contrário da mensagem "HI" no ///, clique OK nesta caixa de diálogo.</li><li>Se não, reinicie do primeiro passo e verique se houve algum erro.</li></ol>
+Gui.BS.DumpSOSInstructionsDone=<html>Iniciando SOS kernel!</html>
+Gui.BS.DumpADTInstructions=<html>Você precisa de um disquete formatado em DOS no drive!<br><b>*** Você diminuiu o intervalo de tempo da transmissão? ***</b><br><br>No computador Apple, digite:<br><code>IN#2&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code>(O número depende do slot em que o cartão serial está instalado)<br><code>&lt;ctrl-A&gt;%1%B&nbsp;&nbsp;</code>(Pode ser &lt;ctrl-I&gt; (a letra 'I'))<br><br>Clique no botão Ok quando estiver pronto...</html>
+Gui.BS.DumpADTAudioInstructions=<html>Certifique-se de que o cabo de áudio está conectado, com o volume em 50%.<br><br>Agora, digite no computador Apple:<br><code>CALL -151<br>803.%1%R<br><br></code>Clique no botão Ok depois de pressionar Return no computador Apple...</html>
+Gui.BS.DumpADTAudioInstructionsDone=<html>Se a transferência ocorreu com sucesso, agora digite no computador Apple:<br><code>803G&nbsp;&nbsp;</code>(isto é um zero, e não a letra 'O')</html>
+Gui.BS.DumpProInstructions=<html>Você precisa de um disquete ou uma partição formatada em ProDOS!<br><br>Agora, digite no computador Apple:<br><code>IN#2&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code>(O número depende do slot em que o cartão serial está instalado)<br><code>&lt;ctrl-A&gt;%1%B&nbsp;&nbsp;</code>(Pode ser <code>&lt;ctrl-I&gt;</code> (A letra 'I'))<br><br>Clique no botão Ok quando estiver pronto...</html>
+Gui.BS.DumpProAudioInstructions=<html>Certifique-se de que o cabo de áudio está conectado, com o volume em 50%.<Agora, digite no computador Apple: Apple:<br><code>CALL -151<br>800.%1%R<br><br></code>Clique no botão Ok depois de pressionar Return no computador Apple...</html>
+Gui.BS.DumpProAudioInstructionsDone=<html>Se a transferência ocorreu com sucesso, agora digite no computador Apple:<br><code>800G&nbsp;&nbsp;</code>(isto é um zero, e não a letra 'O')</html>
+Gui.BS.DumpProAudioAudioInstructions=<html>Certifique-se de que o cabo de áudio está conectado, com o volume em 50%.<br><br>Agora, digite no computador Apple:<br><code>CALL -151<br>800.%1%R<br><br></code>Clique no botão Ok depois de pressionar Return no computador Apple...</html>
+Gui.BS.DumpProAudioAudioInstructionsDone=<html>Se a transferência ocorreu com sucesso, agora digite no computador Apple:<br><code>800G&nbsp;&nbsp;</code>(isto é um zero, e não a letra 'O')</html>
+Gui.BS.DumpProAudioSerialInstructions=<html>Você precisa de um disquete ou uma partição formatada em ProDOS!<br><br>Agora, digite no computador Apple:<br><code>IN#2&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code>(O número depende do slot em que o cartão serial está instalado)<br><code>&lt;ctrl-A&gt;%1%B&nbsp;&nbsp;</code>(Pode ser <code>&lt;ctrl-I&gt;</code> (A letra 'I'))<br><br>Clique no botão Ok quando estiver pronto...</html>
+Gui.BS.DumpProEthernetInstructions=<html>Você precisa de um disquete ou uma partição formatada em ProDOS!<br><br>Agora, digite no computador Apple:<br><code>IN#2&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code>(O número depende do slot em que o cartão serial está instalado)<br><code>&lt;ctrl-A&gt;%1%B&nbsp;&nbsp;</code>(Pode ser <code>&lt;ctrl-I&gt;</code> (A letra 'I'))<br><br>Clique no botão Ok quando estiver pronto...</html>
+Gui.BS.DumpProEthernetAudioInstructions=<html>Certifique-se de que o cabo de áudio está conectado, com o volume em 50%.<br><br>Agora, digite no computador Apple:<br><code>CALL -151<br>800.%1%R<br><br></code>Clique no botão Ok depois de pressionar Return no computador Apple...</html>
+Gui.BS.DumpProEthernetAudioInstructionsDone=<html>Se a transferência ocorreu com sucesso, agora digite no computador Apple:<br><code>800G&nbsp;&nbsp;</code>(isto é um zero, e não a letra 'O')</html>
+
+Gui.BS.DoneTitle=Próximo Passo
+SerialTransport.2=Não foi possível encontrar a classe "CommPortIdentifier"
+SerialTransport.3=ADTProSerial
+CommsThread.1=Request: conteúdos do diretório
+CommsThread.2=Request: mudar diretório
+CommsThread.3=Request: imagem do servidor para o Apple
+CommsThread.4=Request: enviar dados de boot 
+CommsThread.5=Request: Meia Trilha do Apple para o servidor
+CommsThread.6=Request: Meia Trilha do servidor para o Apple
+CommsThread.11=Request: ADT do servidor para o ADT no Apple
+CommsThread.12=Request: Nibble do Apple para o servidor Nibble
+CommsThread.13=Request: Nibble do servidor para o Apple
+CommsThread.14=Request: verificar o tamanho do arquivo
+CommsThread.15=Request: ADT do Apple para o servidor
+CommsThread.16=Request: imagem do Apple para o servidor 
+CommsThread.17=Image %1 enviado em %2 segundos.
+CommsThread.18=Image %1 enviado com erros em %2 segundos.
+CommsThread.19=Image %1 recebido em %2 seconds.
+CommsThread.20=Image %1 recebido com erros em %2 segundos.
+CommsThread.21=Transferência de imagem abortada.
+CommsThread.22=Arquivo enviado.
+CommsThread.23=Ping recebido do cliente.
