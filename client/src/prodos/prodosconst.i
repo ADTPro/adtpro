@@ -1,6 +1,6 @@
 ;
 ; ADTPro - Apple Disk Transfer ProDOS
-; Copyright (C) 2008 by David Schmidt
+; Copyright (C) 2008 - 2010 by David Schmidt
 ; david__schmidt at users.sourceforge.net
 ;
 ; This program is free software; you can redistribute it and/or modify it 
@@ -84,7 +84,6 @@ A2H	= $3f
 A4L	= $42
 A4H	= $43
 KEYBUFF	= $0280	; Keyboard buffer
-MSLOT	= $07f8	; Pascal entry point scrren hole
 BASCALC	= $FBC1 ; Calculate screen line
 CLREOL	= $FC9C	; Clear to end of line
 CLREOP	= $FC42	; Clear to end of screen
