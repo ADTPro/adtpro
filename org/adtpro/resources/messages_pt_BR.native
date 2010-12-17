@@ -2,7 +2,7 @@
  * ADTPro - Apple Disk Transfer ProDOS
  * Copyright (C) 2006 - 2010 by David Schmidt
  * david__schmidt at users.sourceforge.net
- * Brazilian Portuguese translation by Neo Winston
+ * Brazilian Portuguese translation by Mario Sergio Almeida
  *
  * This program is free software; you can redistribute it and/or modify it 
  * under the terms of the GNU General Public License as published by the 
@@ -32,18 +32,18 @@ Gui.DisconnectButton=Desconectado
 Gui.ServingSerialTitle=ADTPro Conectado em %1 com %2 Baud
 Gui.ServingEthernetTitle=ADTPro Endereço IP %1
 Gui.ServingAudioTitle=ADTPro Conecção de Áudio
-Gui.NoAudio=Não existem dispositivos de áudio diponíveis para Java neste computador. 
-Gui.NoAudioDialogTitle=Sem dispositivos de áudio
-Gui.NoAudioDialogText=<html>Não existem dispositivos de áudio diponíveis para Java neste computador.</html>
+Gui.NoAudio=Não existem dispositivos de áudio diponíveis para o console Java neste computador. 
+Gui.NoAudioDialogTitle=Dispositivos de áudio não encontrados
+Gui.NoAudioDialogText=<html>Não existem dispositivos de áudio diponíveis para o console Java neste computador.</html>
 Gui.DefaultAudioMixer=ADTPro Captura de Áudio Padrão 
-Gui.NoRXTX=Biblioteca Serial não instalada.
+Gui.NoRXTX=Biblioteca Serial não instalada
 Gui.NoRXTXDialogTitle=Portas seriais não disponíveis
 Gui.NoRXTXDialogText=<html>Não há portas seriais ou a Biblioteca serial RXTX não está instalada ou visível.<br>Please see http://adtpro.sourceforge.net/install.html for details.</html>
 Gui.File=Arquivo
 Gui.Config=Configuração 
 Gui.IIc=Apple IIc com Cabo Imagewriter 
 Gui.ProtocolCompatability=Antigo protocolo ADTPro 0.1.x
-Gui.Trace=Traçamento ativado
+Gui.Trace=Ativar Intervalo de Transmissão
 Gui.Quit=Sair
 Gui.CD=Mudar diretório
 Gui.CDSet=Confirmar diretório
@@ -63,9 +63,9 @@ Gui.ConfigSerialTab.Help=Configura detalhes da porta serial
 Gui.ConfigBootstrapTab=Boot
 Gui.ConfigBootstrapTab.Help=Configura detalhes específicos do boot 
 Gui.Help=Ajuda
-Gui.About=Sobre ADTPro
+Gui.About=Sobre o ADTPro
 Gui.Website=ADTPro Website
-Gui.AboutText=<html>Apple ProDOS Transferência de Disco (ADTPro) v%1<br><br>ADTPro ProDOS (e SOS!) é uma versão do venerável programa<br>Transferência de Disco Apple, ADT.  Qualquer coisa<br>que ProDOS ou SOS podem ler, ADTPro pode transferir.<br>O programa DOS Tradicional ADT (no computador Apple ][)<br>é compatível com este servidor ADTPro.<br><br>ADTPro foi programado por David Schmidt, baseado<br>parcialmente nos trabalhos de Paul Guertin e vários outros programadores.<br>Visite ADTPro na Internet em:<br>http://adtpro.sourceforge.net<br><br>ADTPro é licenciado sob o GNU<br>Licença Pública Geral(GPL) Versão 2.</center></html>
+Gui.AboutText=<html>Apple ProDOS Transferência de Disco (ADTPro) v%1<br><br>ADTPro ProDOS (e SOS!) é uma versão do venerável programa<br>Transferência de Disco Apple, ADT.  Qualquer coisa<br>que ProDOS ou SOS podem ler, ADTPro pode transferir.<br>O programa DOS Tradicional ADT (no computador Apple ][)<br>é compatível com este servidor ADTPro.<br><br>ADTPro foi programado por David Schmidt, baseado<br>parcialmente nos trabalhos de Paul Guertin e vários outros programadores.<br>Visite ADTPro na Internet em:<br>http://adtpro.sourceforge.net<br><br>ADTPro é licenciado sob o GNU<br>Licença Pública Geral (GPL) Versão 2.</center></html>
 Gui.Disconnect=Desconectado
 Gui.Connect=Conectado
 Gui.Quiesced=Sem atividade.
@@ -110,11 +110,11 @@ Gui.BS.SOSINTERP=Gui.BS.SOSINTERP
 Gui.BS.SOSDRIVER=Gui.BS.SOSDRIVER
 
 Gui.BS.ADT=Enviar Cliente DOS ADT
-Gui.BS.ADTPro=Enviar Cliente ADTPro Serial
-Gui.BS.ADTProAudio=Enviar Cliente ADTPro Audio
-Gui.BS.ADTProEthernet=Enviar Cliente ADTPro Ethernet
+Gui.BS.ADTPro=Enviar Cliente ADTPro via Serial
+Gui.BS.ADTProAudio=Enviar Cliente ADTPro via Áudio
+Gui.BS.ADTProEthernet=Enviar Cliente ADTPro via Ethernet
 
- /*
+/*
  * Translators note -
  *
  * All of the *Instructions are rendered in HTML with embedded HTML tags.
@@ -148,22 +148,22 @@ Gui.BS.DumpProEthernetAudioInstructionsDone=<html>Se a transferência ocorreu com
 Gui.BS.DoneTitle=Próximo Passo
 SerialTransport.2=Não foi possível encontrar a classe "CommPortIdentifier"
 SerialTransport.3=ADTProSerial
-CommsThread.1=Request: conteúdos do diretório
-CommsThread.2=Request: mudar diretório
-CommsThread.3=Request: imagem do servidor para o Apple
-CommsThread.4=Request: enviar dados de boot 
-CommsThread.5=Request: Meia Trilha do Apple para o servidor
-CommsThread.6=Request: Meia Trilha do servidor para o Apple
-CommsThread.11=Request: ADT do servidor para o ADT no Apple
-CommsThread.12=Request: Nibble do Apple para o servidor Nibble
-CommsThread.13=Request: Nibble do servidor para o Apple
-CommsThread.14=Request: verificar o tamanho do arquivo
-CommsThread.15=Request: ADT do Apple para o servidor
-CommsThread.16=Request: imagem do Apple para o servidor 
-CommsThread.17=Image %1 enviado em %2 segundos.
-CommsThread.18=Image %1 enviado com erros em %2 segundos.
-CommsThread.19=Image %1 recebido em %2 seconds.
-CommsThread.20=Image %1 recebido com erros em %2 segundos.
+CommsThread.1=Requisição do Apple II: Conteúdo do diretório do Servidor
+CommsThread.2=Requisição: Mudar diretório
+CommsThread.3=Requisição: Enviar imagem do servidor para o Apple II
+CommsThread.4=Requisição: Enviar dados de boot 
+CommsThread.5=Requisição: Enviar Meia Trilha do Apple para o servidor
+CommsThread.6=Requisição: Enviar Meia Trilha do servidor para o Apple II
+CommsThread.11=Requisição: Enviar ADT do servidor para o ADT no Apple II
+CommsThread.12=Requisição: Enviar Nibble do Apple II para o Nibble servidor
+CommsThread.13=Requisição: Enviar Nibble do servidor para o Apple II
+CommsThread.14=Requisição do Apple II: Verificar o tamanho do arquivo no Servidor
+CommsThread.15=Requisição: Enviar ADT do Apple II para o servidor
+CommsThread.16=Requisição: Enviar imagem do Apple II para o servidor	
+CommsThread.17=Imagem %1 enviada em %2 segundos.
+CommsThread.18=Imagem %1 enviada com erros em %2 segundos.
+CommsThread.19=Imagem %1 recebida em %2 seconds.
+CommsThread.20=Imagem %1 recebida com erros em %2 segundos.
 CommsThread.21=Transferência de imagem abortada.
 CommsThread.22=Arquivo enviado.
 CommsThread.23=Ping recebido do cliente.
