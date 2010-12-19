@@ -1,6 +1,6 @@
 ;
 ; ADTPro - Apple Disk Transfer ProDOS
-; Copyright (C) 2006 - 2008 by David Schmidt
+; Copyright (C) 2006 - 2010 by David Schmidt
 ; david__schmidt at users.sourceforge.net
 ;
 ; This program is free software; you can redistribute it and/or modify it 
@@ -76,6 +76,9 @@ SCAN_NEXT:
 	cpy #$19
 	bne SCAN_DEVICE_LOOP
 ODONE:
+	lda LASTVOL
+	sta LASTVOLZERO
+	dec LASTVOLZERO
 	rts
 
 DUMP_INDEX:	.byte $00
@@ -146,8 +149,9 @@ SV_DONE:
 
 SV_NONE:
 	cmp #VNFERR
-	beq DEVMSG3		; Volume not found - "<NO DISK>"
-	cmp #NOTNATIVE
+	bne :+
+	jmp SV_DONE		; Volume not found - don't keep it
+:	cmp #NOTNATIVE
 	beq DEVMSG1		; Not an SOS volume - "<NO NAME>"
 	jmp DEVMSG2		; Punt - generic I/O error
 
@@ -180,12 +184,6 @@ DEVMSG1:
 ; DEVMSG2 - Add "<I/O ERROR>" to the "Volume name"
 DEVMSG2:
 	ldy #PMIOERR
-	jsr DEVMSG
-	jmp SV_NEW_NAME
-
-; DEVMSG3 - Add "<NO DISK>" to the "Volume name"
-DEVMSG3:
-	ldy #PMNODISK
 	jsr DEVMSG
 	jmp SV_NEW_NAME
 

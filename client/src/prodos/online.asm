@@ -1,6 +1,6 @@
 ;
 ; ADTPro - Apple Disk Transfer ProDOS
-; Copyright (C) 2006 - 2009 by David Schmidt
+; Copyright (C) 2006 - 2010 by David Schmidt
 ; david__schmidt at users.sourceforge.net
 ;
 ; This program is free software; you can redistribute it and/or modify it 
@@ -92,8 +92,8 @@ OLLOOP:
 	jmp skip
 @2:	cmp #$28	; No device connected
 	bne @3
-	jsr DEVMSG3
-	jmp skip
+	jsr nodevice	; Need to remove this device from the table
+	jmp OLLOOP
 @3:	cmp #$2F	; Empty (typical of slot 5)
 	bne skip
 	jsr DEVMSG3
@@ -107,6 +107,9 @@ skip:
 	tax
 	bcc OLLOOP
 ODONE:
+	lda LASTVOL
+	sta LASTVOLZERO
+	dec LASTVOLZERO
 	rts
 
 OERROR:
@@ -174,6 +177,42 @@ DEVMSG3:
 	rts
 
 ;---------------------------------------------------------
+; nodevice - remove the device pointed to by X and 
+;            compress the DEVICES table
+;---------------------------------------------------------
+nodevice:
+	cpx #$f0	; If the last device in the chain is the one to remove, 
+	beq clearlastdevice	; simply clear the first byte of that entry.
+	txa
+	sec
+	sbc #$ff
+	sta XSTASH
+	clc
+	txa
+	adc #<DEVICES
+	sta A4L
+	lda #>DEVICES
+	adc #$00
+	sta A4H
+	clc
+	lda A4L
+	adc #$10
+	sta A1L
+	lda A4H
+	adc #$00
+	sta A1H
+	ldy #$00
+:	lda (A1L),y
+	sta (A4L),y
+	iny
+	cpy XSTASH
+	bne :-
+clearlastdevice:
+	lda #$00
+	sta DEVICES+$F0
+	rts
+
+;---------------------------------------------------------
 ; INTERPRET_ONLINE
 ;
 ; Input: the row "enter" was hit in A
@@ -231,31 +270,14 @@ INTERPRET_ONLINE:
 ;---------------------------------------------------------
 WHATUNIT:
 	stx SLOWX	; Preserve X
-	jsr Mult16
+	asl		; * 0x02
+	asl		; * 0x04
+	asl		; * 0x08
+	asl		; * 0x10
+	tax
 	lda DEVICES,x
 	and #$F0	; Extract unit number
 	ldx SLOWX	; Restore X
-	rts
-
-;---------------------------------------------------------
-; Mult16 - Multiply A by 16, return in X
-;
-; Input:
-;   A - number to multiply by 16 (0x10)
-;
-; Returns:
-;   X - A multipled by 16 (0x10
-;---------------------------------------------------------
-Mult16:
-	beq @Done
-	tax
-	lda #$00
-:	clc
-	adc #$10
-	dex
-	cpx #$00
-	bne :-
-@Done:	tax
 	rts
 
 ;---------------------------------------------------------

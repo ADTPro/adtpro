@@ -1,4 +1,4 @@
-; Copyright (C) 2007 - 2009 by David Schmidt
+; Copyright (C) 2007 - 2010 by David Schmidt
 ; david__schmidt at users.sourceforge.net
 ;
 ; This program is free software; you can redistribute it and/or modify it 
@@ -904,7 +904,12 @@ LZero:
 
 REPLACEVOLNAME:
 	lda DevIndex
-	jsr Mult16		; Set x to the start of the DEVICES table
+	asl
+	asl
+	asl
+	asl
+	tax
+	;jsr Mult16		; Set x to the start of the DEVICES table
 	lda #>DEVICES
 	sta UTILPTR+1
 	lda #<DEVICES
@@ -932,41 +937,6 @@ REPLACEVOLNAME:
 	sta (UTILPTR),y
 	clc
 	adc Util
-	sta (UTILPTR),y
-	rts
-
-zREPLACEVOLNAME:
-	lda DevIndex
-	jsr Mult16		; Set x to the start of the DEVICES table
-	lda #>DEVICES
-	sta UTILPTR+1
-	lda #<DEVICES
-	sta UTILPTR
-	txa
-	clc
-	adc UTILPTR
-	sta UTILPTR
-	bcc :+
-	inc UTILPTR+1
-:
-	lda VolLen
-	and #$0f
-	sta Util
-	tay			; Set y to the number of digits to transfer
-	iny
-:	lda VOLnam-1,y
-	sta (UTILPTR),y
-	dey
-	bpl :-
-
-	ldy #$00
-	lda (UTILPTR),y		; Load the length of the dev name in DEVICES
-	brk
-	and #$f0
-	sta (UTILPTR),y
-	clc
-	adc Util
-	lda Util
 	sta (UTILPTR),y
 	rts
 

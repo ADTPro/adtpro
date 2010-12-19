@@ -1,6 +1,6 @@
 ;
 ; ADTPro - Apple Disk Transfer ProDOS
-; Copyright (C) 2006 - 2008 by David Schmidt
+; Copyright (C) 2006 - 2010 by David Schmidt
 ; david__schmidt at users.sourceforge.net
 ;
 ; This program is free software; you can redistribute it and/or modify it 
@@ -31,8 +31,6 @@ PICKVOL:
 	jsr PRINTVOL
 	jsr INVROW
 	lda LASTVOL
-	sta LASTVOLZERO
-	dec LASTVOLZERO
 	jsr VOLLOOP
 	rts
 
