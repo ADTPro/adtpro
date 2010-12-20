@@ -61,9 +61,7 @@ situations:
 *-------:-----+
 |  \<NO NAME\> | A DOS 3.3 disk is in the drive (which is ok) |
 *-------:-----+
-|  \<I/O ERROR\> | Can't read the disk in the drive |
-*-------:-----+
-|  \<NO DISK\> | No disk is found in the drive |
+|  \<I/O ERROR\> | Can't read the disk in the drive, or the drive is empty |
 *-------:-----+
 
  Once you pick the volume to send, an attempt is made to contact the host:
