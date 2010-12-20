@@ -6,9 +6,6 @@
 
 ADTPro Audio Configuration
 
- The audio version of the ADTPro client program is named <<<ADTPROAUD>>> on the 
- distribution diskette.
-
  Hitting the "G" key from <<<ADTPROAUD>>>'s main menu brings up the ADTPro
 configuration screen, which doesn't really have much to configure:
 

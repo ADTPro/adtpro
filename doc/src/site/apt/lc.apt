@@ -46,9 +46,8 @@ Using The Mac LC - Apple IIe Card with ADTPro
 
 =====
 
- Changing the values of printer vs. modem will likely have an effect on which kind of serial cable you need -
- i.e. null modem or straight-through.  Configured as shown here, you will need a null modem or "printer" 
- cable to connect between the LC's modem port and the ADTPro server.
+ Configured as shown here, you will need a null modem or "printer" 
+ cable to connect between the LC's modem port and the machine running the ADTPro server.
 
  Here are some excellent references on the Apple IIe Card:
 

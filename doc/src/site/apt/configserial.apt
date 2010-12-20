@@ -6,9 +6,6 @@
 
 ADTPro Serial Configuration
 
- The serial version of the ADTPro client program is named <<<ADTPRO>>> on the 
- distribution diskette.
-
  Hitting the "G" key from <<<ADTPRO>>>'s main menu brings up the ADTPro configuration screen:
 
 [images/config.png]
@@ -49,7 +46,7 @@ left arrow keys.  Your Apple has right and left arrow keys; trust me.
  The IIc+, IIc and compatible computers use the "SSC SLOT 2" setting for their
  modem ports.
 
- If you have an IIgs and you want to use a Super Serial card in it, ensure you select
+ If you have a IIgs and you want to use a Super Serial card in it, ensure you select
 "Your Card" in the IIgs' control panel for the slot your SSC card is in,
 and select that same slot number here.
 

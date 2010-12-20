@@ -148,8 +148,8 @@ GSOS has booted, as it modifies the serial environment.
  configured with the serial ADTPro client version named <<<SOS.INTERP.>>>
  The ethernet version is also on the diskette, but is named <<<SOS.INTERPETH.>>>
  In order to run the ethernet version, it will be necessary to rename
- <<<SOS.INTERPETH>>> to <<<SOS.INTERP>>> (also deleting or renaming the original
- <<<SOS.INTERP>>> program).  
+ <<<SOS.INTERPETH>>> to <<<SOS.INTERP>>> (also deleting or renaming the
+ original serial <<<SOS.INTERP>>> program).  
  The Apple /// utilities disk or any Apple disk image manipulation utility program like
  {{{http://ciderpress.sourceforge.net}CiderPress}} or 
  {{{http://applecommander.sourceforge.net}AppleCommander}} can be used to do this.

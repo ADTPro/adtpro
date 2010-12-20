@@ -8,7 +8,7 @@ Sending Disks in Batch
 
  Hitting the "B" key from the main menu starts the Batch send process.
 You enter a filename prefix, pick the volume to (repeatedly) send, and
-the ADTPro server will append a unique number to filename for each
+the ADTPro server will append a unique number to the filename for each
 image sent.  
 
 [images/sendBatch.png]
@@ -66,7 +66,7 @@ operations.
 which you must acknowledge by hitting a key.  You are then prompted to insert
 the next disk to send and hit a key.  When you do, the same volume will be
 read and sent to the ADTPro server (presumably, with a different diskette that
-you inserted).  The numeric prefix will be incremented with each disk you send;
+you inserted).  The numeric suffix will be incremented with each disk you send;
 the ADTPro server will show the current disk name on its window.
 
  You can hit the Escape key at any time to stop the batch sending process

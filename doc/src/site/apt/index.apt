@@ -6,23 +6,20 @@
 
 ADTPro
 
- Apple Disk Transfer ProDOS (ADTPro) transfers diskettes and
-disk images between Apple II-era computers and the modern world.
-If you're familiar with the {{{http://adt.berlios.de}original ADT,}}
-ADTPro extends ADT's reach by working with more disk formats,
-drive types, communications devices, and host operating systems.
-
- There is a host (server) component that runs on modern computers with
- Java, and an Apple (client) component that runs on any Apple II or Apple ///
- compatible computer with at least 64k of memory:
-
 [images/serverBusy.png]
 
 [images/sendingsmall.png]
 
+ Apple Disk Transfer ProDOS (ADTPro) is a pair of programs that
+transfer diskettes and disk images between Apple II-era computers
+and the modern world.
+There is a host (server) component that runs on modern computers with
+Java, and an Apple (client) component that runs on any Apple II or Apple ///
+compatible computer with at least 64k of memory.
+
  ADTPro transfers disks using any of these communications devices:
 
-    * {{{connectionsserial.html#Super_Serial_cabling}Super Serial}} card, {{{connectionsserial.html#MiniDIN8}IIgs modem}} port, {{{connectionsserial.html#DIN5}IIc/compatible modem}} port, or the {{{connectionsserial.html#Apple3}Apple /// serial}} port
+    * {{{connectionsserial.html}Serial}} ports
 
     * {{{http://a2retrosystems.com/}Uthernet}} {{{configethernet.html}Ethernet}} card
 
@@ -38,6 +35,8 @@ drive types, communications devices, and host operating systems.
 
     * Understands many digital disk formats: .DSK, .PO, .NIB, 2IMG
 
+    * Understands many physical Apple disk formats: DOS, ProDOS, SOS, Pascal, CP/M, among others 
+
     * Serves the original {{{compatibility.html}ADT client}} as well as the updated ADTPro client
 
     * {{{#Bootstrapping}Bootstraps}} Apple II and Apple /// computers from bare metal over {{{bootstrap.html}serial}} or {{{bootstrapaudio.html}cassette}} ports
@@ -45,10 +44,6 @@ drive types, communications devices, and host operating systems.
     * Sends floppies in {{{batch.html}"batch"}} mode without having to name each one
 
     * {{{misc.html#Format}Formats}} blank disks
-
- ADTPro may be used to transfer Apple disk images in DOS or ProDOS/SOS format.
-The Apple client side happens to run under ProDOS or SOS, but it is perfectly capable
-of reading or writing Apple DOS (or Pascal, or CP/M, or...) diskettes.
 
  The latest ADTPro can always be 
 {{{download.html}downloaded}}
@@ -85,9 +80,9 @@ are detailed below.
 
  youtubereplaced
 
-* Brief {Demo} Presentation
+* {Demo} Presentation
 
- Attached below are slides to a demonstration presentation I gave to a local 
+ Attached below are slides to a brief demonstration presentation I gave to a local 
  Mac users group.  It goes through the basic steps it takes to bootstrap the 
  Apple II.  There are speaker notes, and it contains a few resources and links.
 

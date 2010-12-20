@@ -21,6 +21,9 @@ ADTPro Serial Connections
 
  []
 
+ In addition, using the modem port of a Mac LC, it is possible to run ADTPro on a
+{{{lc.html}Apple IIe card}}.
+
  Once you have your computers connected, you can move on to 
 {{{bootstrap.html}bootstrapping.}}
 
@@ -44,12 +47,12 @@ upwards toward the word "Modem," as in this picture:
 
 [images/ss2.jpg]
 
- Once ADT and ADTPro are up and running, they set the card's configuration
+ Once ADTPro is up and running, it sets the card's configuration
 switches through software.  But to ensure trouble-free operation in the
 initial bootstrap step, you can set the switches like so:
 
 +---
-SW1: 1001111  SW2: 1101110
+SW1: 1001111  SW2: 1101100
 +---
 
   Where <<<0>>> means <<<off,>>> <<<down,>>> or <<<open,>>> and 
