@@ -18,13 +18,12 @@ ADTPro Release History
 
  Bug fixes:
 
- * [Client] Phantom disk drives are no longer reported on volume display screen 
+ * [Client] Eliminated phantom disk drives from volume display screen 
 
- * [Client] Disable ZipChip and TransWarp accelerators during
+ * [Client] Disabled ZipChip and TransWarp accelerators during
    timeout loops in Ethernet version
 
- * [Client] Booting into ProDOS 8 from GSOS sometimes caused
-   the 'Quit' operation to fail
+ * [Client] Fixed intermittent crash on 'Quit' when booted into ProDOS 8 from GSOS
 
  []
 
@@ -104,65 +103,5 @@ ADTPro Release History
 
  * [Server] Removed most post-Java-1.3 code so server can
    run on Java 1.3 (i.e. Mac OSX 10.2)
-
- []
-
-* 1.1.3-2 - October 2, 2009
-
- Bug fix:
-
- * [Server] Reverted to older version of RXTX library on Windows distribution only 
-
- []
-
-* 1.1.3 - September 20, 2009
-
- New functionality:
-
- * [Server] OSX distribution now comes with a double-clickable .app that automatically does all
-   the magic to start a Java program under the covers with no terminal window
-
- * [Client] Enabled ProDOS booting (and bootstrapping) on the Franklin Ace 1000/1200
-
- []
-
- Bug fixes:
-
- * [Client] Space bar wasn't cycling through configuration items on Apple II machines
-   without up/down arrow keys
-
- * [Server] Fixed breathtakingly slow operations with FTDI-based USB serial adapters
-
- * [Server] Integrated new level (2.2Pre2 + fixes) of RXTX serial library; this offers
-   64-bit Windows support as well as improved Mac OS X support, including Snow Leopard
-
- * [Server] Made the "change working directory" work a little more sensibly on OSX -
-   allowing you to navigate "into" a directory and pick that as the current working 
-   directory
- 
- []
-
-* 1.1.2 - February 18, 2009
-
- New functionality:
-
- * [DOS ADT Client] Included DOS ADT client, now at version 2.3, that
-   automatically detects the Apple ///'s built-in serial port
-
- []
-
- Bug fixes:
-
- * [Client] Formatting a disk no longer invalidates the entire drive list cache,
-   eliminating the need to re-scan all drives; thanks to {{{http://apps.sourceforge.net/phpbb/adtpro/viewtopic.php?f=3&t=40}hackerb9}} for the 
-   impetus to fix it
-
- * [Client] Comms devices weren't being detected in the last slot (one of those
-   off-by-one counting problems)
-
- * [Client] Apple /// Grub bootstrapper was using an uninitialized register in an
-   alarming, but seemingly predictable, manner; initialize it for safety
-
- * [Client] Simplified UDP timeout processing after consultation with MagerValp
 
  []

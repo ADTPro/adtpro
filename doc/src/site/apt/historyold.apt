@@ -8,6 +8,16 @@ ADTPro Release Ancient History
 
 * New Features
 
+ 1.1.3 - September 20, 2009
+
+    * [Server] OSX distribution now comes with a double-clickable .app
+
+    * [Client] Enabled ProDOS booting (and bootstrapping) on the Franklin Ace 1000/1200
+
+ 1.1.2 - February 18, 2009
+
+    * [DOS ADT Client] DOS ADT client, now at version 2.3, automatically detects the Apple ///'s built-in serial port
+
  1.1.1 - September 18, 2008
 
     * [Client] SOS version can use Ethernet UDP transport via the {{{http://a2retrosystems.com/}Uthernet}} card
