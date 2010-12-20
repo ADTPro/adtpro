@@ -1,6 +1,6 @@
 ;
 ; ADTPro - Apple Disk Transfer ProDOS
-; Copyright (C) 2008 by David Schmidt
+; Copyright (C) 2008 - 2010 by David Schmidt
 ; david__schmidt at users.sourceforge.net
 ;
 ; This program is free software; you can redistribute it and/or modify it 
@@ -53,7 +53,7 @@ PSOUND:	.byte 0		; Sounds? (YES)
 PSAVE:	.byte 1		; Save parms? (NO)
 
 ip_parms:
-serverip:	.byte 192, 168,   0,   2
+serverip:	.byte 192, 168,   0,  12
 cfg_ip:		.byte 192, 168,   0, 123
 cfg_netmask:	.byte 255, 255, 248,   0
 cfg_gateway:	.byte 192, 168,   0,   1

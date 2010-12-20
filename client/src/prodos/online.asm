@@ -171,12 +171,6 @@ DEVMSG2:
 	jsr DEVMSG
 	rts
 
-; DEVMSG3 - Add "<NO DISK>" to the "Volume name"
-DEVMSG3:
-	ldy #PMNODISK
-	jsr DEVMSG
-	rts
-
 ;---------------------------------------------------------
 ; nodevice - remove the device pointed to by X and 
 ;            compress the DEVICES table
@@ -184,9 +178,10 @@ DEVMSG3:
 nodevice:
 	cpx #$f0	; If the last device in the chain is the one to remove, 
 	beq clearlastdevice	; simply clear the first byte of that entry.
-	txa
+	stx XSTASH
+	lda #$00
 	sec
-	sbc #$ff
+	sbc XSTASH
 	sta XSTASH
 	clc
 	txa
