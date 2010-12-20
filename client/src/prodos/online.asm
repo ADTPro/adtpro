@@ -96,7 +96,8 @@ OLLOOP:
 	jmp OLLOOP
 @3:	cmp #$2F	; Empty (typical of slot 5)
 	bne skip
-	jsr DEVMSG3
+	jsr nodevice	; Need to remove this device from the table
+	jmp OLLOOP
 
 skip:
 	jsr PRT1VOL

@@ -18,6 +18,8 @@ ADTPro Release History
 
  Bug fixes:
 
+ * [Client] Phantom disk drives are no longer reported on volume display screen 
+
  * [Client] Disable ZipChip and TransWarp accelerators during
    timeout loops in Ethernet version
 
