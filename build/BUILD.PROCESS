@@ -58,9 +58,7 @@ the stuff that gets uploaded to sourceforge.
 9. Using the new SourceForge File Release System, navigate to
    the ADTPro project:
    https://sourceforge.net/project/admin/?group_id=170262
-   and get to the File Manager:
-   https://sourceforge.net/project/admin/explorer.php?group_id=170262
-   Expand directories, add a new one for the new release, and upload away.
+   and use whatever system they have in place today to add the release.
    Tag each file for the appropriate platform so it is automatically
    presented to visitors looking to download.
 
@@ -70,7 +68,12 @@ the stuff that gets uploaded to sourceforge.
     old version first (name it the prior version number),
     and move htdocsOLD/archive to htdocs/archive or the A3 library
     will be inaccessible.  WinSCP is an easy Windows GUI to do the
-    uploading and movement with.
+    uploading and movement with.  I haven't found a good GUI client
+    for OSX or Linux.
+
+11. After upload and announcements go out (comp.sys.apple2, Freshmeat,
+    Softpedia, cnet downloads, etc.) change build/build.xml back to
+    unreleased: <property name="versionString" value="v.r.m" />
 
 Need to do a batch renumber of dump files?
 /* */
