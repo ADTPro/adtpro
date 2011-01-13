@@ -21,13 +21,6 @@
 	.exportzp eth_type
 	.exportzp eth_data
 
-	.import cs_init
-	.import cs_packet_page
-	.import cs_packet_data
-	.import cs_rxtx_data
-	.import cs_tx_cmd
-	.import cs_tx_len
-
 	.import cfg_mac
 	.import PSSC	; From mainline code
 
@@ -58,13 +51,18 @@ eth_src		= 6		; source address
 eth_type	= 12		; packet type
 eth_data	= 14		; packet data
 
+; cs hardware addresses
+cs_rxtx_data	= $c0b0
+cs_tx_cmd	= $c0b4
+cs_tx_len	= $c0b6
+cs_packet_page	= $c0ba
+cs_packet_data	= $c0bc
 
 	.code
 
 ; initialize, return clc on success
 eth_init:
 	jsr cs_self_modify
-	jsr cs_init
 	lda #0			; check magic signature
 	jsr cs_read_page
 	cpx #$0e
