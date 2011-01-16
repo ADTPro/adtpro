@@ -13,11 +13,13 @@
 	.export arp_mac
 	.export arp_cache
 
+	.export fix_eth_tx_00
+	.export fix_eth_tx_01
+
 	.import eth_inp
 	.import eth_inp_len
 	.import eth_outp
 	.import eth_outp_len
-	.import eth_tx
 	.import eth_set_broadcast_dest
 	.import eth_set_my_mac_src
 	.import eth_set_proto
@@ -147,7 +149,7 @@ arp_lookup:
 
 	ldax arptimeout		; check if we've timed out
 	jsr timer_timeout
-	bcs @notimeout		; no, don't send
+	bcs al_notimeout		; no, don't send
 
 @sendrequest:			; send out arp request
 	jsr eth_set_broadcast_dest
@@ -181,7 +183,8 @@ arp_lookup:
 	lda #>ap_packlen
 	sta eth_outp_len + 1
 
-	jsr eth_tx		; send packet
+fix_eth_tx_00:
+	jsr $0000		; send packet
 
 	lda #arp_wait		; waiting for reply
 	sta arp_state
@@ -194,7 +197,7 @@ arp_lookup:
 	adc #>1000
 	sta arptimeout + 1
 
-@notimeout:
+al_notimeout:
 	sec 			; set carry to indicate that
 	rts			; no result is availble
 
@@ -237,30 +240,24 @@ findip:
 
 ; handle incoming arp packets
 arp_process:
-;	lda eth_inp_len		; check packet size
-;	cmp #<ap_packlen
-;	bne @badpacket
-;	lda eth_inp_len + 1
-;	cmp #>ap_packlen
-;	bne @badpacket
 
 	lda eth_inp + ap_op	; should be 0
-	bne @badpacket
+	bne ap_badpacket
 	lda eth_inp + ap_op + 1	; check opcode
 	cmp #1			; request?
-	beq @request
+	beq ap_request
 	cmp #2			; reply?
-	beq @reply
+	beq ap_reply
 
-@badpacket:
+ap_badpacket:
 	sec
 	rts
 
-@request:
+ap_request:
 	ldx #3
 :	lda eth_inp + ap_tp,x	; check if they're asking for
 	cmp cfg_ip,x		; my address
-	bne @done
+	bne ap_done
 	dex
 	bpl :-
 
@@ -298,24 +295,17 @@ arp_process:
 	lda #>ap_packlen
 	sta eth_outp_len + 1
 
-	jsr eth_tx		; send packet
+fix_eth_tx_01:
+	jsr $0000		; send packet
 
-@done:
+ap_done:
 	clc
 	rts
 
-@reply:
+ap_reply:
 	lda arp_state
 	cmp #arp_wait		; are we waiting for a reply?
-	bne @badpacket
-
-;	ldx #0
-;:	lda gotmsg,x
-;	beq :+
-;	jsr $ffd2
-;	inx
-;	bne :-
-;:
+	bne ap_badpacket
 
 	ldax #eth_inp + ap_shw
 	jsr ac_add_source	; add to cache
@@ -324,12 +314,6 @@ arp_process:
 	sta arp_state
 
 	rts
-
-;gotmsg:
-;	.byte "gOT arp REPLY",13,0
-;
-;addmsg:
-;	.byte "aDDING ARP ENTRY",13,0
 
 
 ; add arp_mac and arp_ip to the cache

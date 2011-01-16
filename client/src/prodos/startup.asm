@@ -1,6 +1,6 @@
 ;
 ; ADTPro - Apple Disk Transfer ProDOS
-; Copyright (C) 2010 by David Schmidt
+; Copyright (C) 2010 - 2011 by David Schmidt
 ; david__schmidt at users.sourceforge.net
 ;
 ; This program is free software; you can redistribute it and/or modify it 
@@ -80,7 +80,7 @@ AudioLine:
 AudioLineEnd:
 	.byte $8d
 EthernetLine:
-	asc "(E)THERNET : A2RETROSYSTEMS UTHERNET"
+	asc "(E)THERNET : UTHERNET OR LANCEGS"
 EthernetLineEnd:
 	.byte $8d
 QuitLine:

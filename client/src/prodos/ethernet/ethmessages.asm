@@ -1,6 +1,6 @@
 ;
 ; ADTPro - Apple Disk Transfer ProDOS
-; Copyright (C) 2008 by David Schmidt
+; Copyright (C) 2008 - 2011 by David Schmidt
 ; david__schmidt at users.sourceforge.net
 ;
 ; This program is free software; you can redistribute it and/or modify it 
@@ -27,7 +27,7 @@
 	MSG11_END =*
 	MSG12: .byte	$20,$A0,$A0,$20,$A0,$20,$A0,$A0,$20,$A0,$A0,$A0,$20,$8D
 	MSG12_END =*
-	MSG26: asc	"UTHER SLOT"
+	MSG26: asc	"ETHERNET SLOT"
 	MSG26_END =*
 	MSG27:
 	MSG27_END =*			; Note - no message 27 in ethernet.

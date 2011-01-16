@@ -2,27 +2,29 @@
 ;
 ; Based on Doc Bacardi's tftp source
 
-
 	.include "common.i"
 	.include "cs8900a.i"
 
+	.export uth_init
 
-	.export eth_init
-	.export eth_rx
-	.export eth_tx
+	.importzp eth_dest
+	.importzp eth_src
+	.importzp eth_type
+	.importzp eth_data
 
-	.export eth_inp
-	.export eth_inp_len
-	.export eth_outp
-	.export eth_outp_len
-
-	.exportzp eth_dest
-	.exportzp eth_src
-	.exportzp eth_type
-	.exportzp eth_data
+	.import fix_eth_rx_00	; transmit/receive fixup addresses
+	.import fix_eth_rx_01
+	.import fix_eth_tx_00
+	.import fix_eth_tx_01
+	.import fix_eth_tx_02
+	.import fix_eth_tx_03
 
 	.import cfg_mac
 	.import PSSC	; From mainline code
+	.import eth_inp_len	; input packet length
+	.import eth_inp		; space for input packet
+	.import eth_outp_len	; output packet length
+	.import eth_outp	; space for output packet
 
 	.macro write_page page, value
 	lda #page/2
@@ -31,25 +33,11 @@
 	jsr cs_write_page
 	.endmacro
 
-
 	.segment "IP65ZP" : zeropage
 
 eth_packet:	.res 2
 
-
 	.bss
-
-; input and output buffers
-eth_inp_len:	.res 2		; input packet length
-eth_inp:	.res 1518	; space for input packet
-eth_outp_len:	.res 2		; output packet length
-eth_outp:	.res 1518	; space for output packet
-
-; ethernet packet offsets
-eth_dest	= 0		; destination address
-eth_src		= 6		; source address
-eth_type	= 12		; packet type
-eth_data	= 14		; packet data
 
 ; cs hardware addresses
 cs_rxtx_data	= $c0b0
@@ -61,7 +49,7 @@ cs_packet_data	= $c0bc
 	.code
 
 ; initialize, return clc on success
-eth_init:
+uth_init:
 	jsr cs_self_modify
 	lda #0			; check magic signature
 	jsr cs_read_page
@@ -107,7 +95,7 @@ eth_init:
 
 
 ; receive a packet
-eth_rx:
+uth_rx:
 	lda #$24			; check rx status
 EMOD30:	sta cs_packet_page
 	lda #$01
@@ -173,7 +161,7 @@ cs_done1:
 
 
 ; send a packet
-eth_tx:
+uth_tx:
 	;jsr dbg_dump_eth_header
 
 	lda #$c9			; ask for buffer space
@@ -267,10 +255,30 @@ EMOD46:	sty cs_packet_data + 1
 	rts
 
 ;
-; cs_self_modify - make all entry points variable so we can move the
-;   uther card around in the Apple
+; cs_self_modify - fix up all relative addresses so we can move the
+;   Uther card around in the Apple
 ;
 cs_self_modify:
+	ldax #uth_tx		; Fixup transmit addresses
+	sta fix_eth_tx_00 +1
+	stx fix_eth_tx_00 +2
+	sta fix_eth_tx_01 +1
+	stx fix_eth_tx_01 +2
+	sta fix_eth_tx_02 +1
+	stx fix_eth_tx_02 +2
+	sta fix_eth_tx_03 +1
+	stx fix_eth_tx_03 +2
+	ldax #uth_rx		; Fixup receive addresses
+	sta fix_eth_rx_00 + 1
+	stx fix_eth_rx_00 + 2
+	sta fix_eth_rx_01 + 1
+	stx fix_eth_rx_01 + 2
+
+	lda #$10		; Mix up our mac a little
+	sta cfg_mac + 2
+	lda #$6d
+	sta cfg_mac + 3
+
 	ldy PSSC	; GET SLOT# (0..6)
 	iny		; NOW 1..7
 	tya

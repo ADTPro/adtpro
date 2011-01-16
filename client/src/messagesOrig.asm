@@ -1,6 +1,6 @@
 ;
 ; ADTPro - Apple Disk Transfer ProDOS
-; Copyright (C) 2008 - 2010 by David Schmidt
+; Copyright (C) 2008 - 2011 by David Schmidt
 ; david__schmidt at users.sourceforge.net
 ;
 ; This program is free software; you can redistribute it and/or modify it 
@@ -205,7 +205,7 @@ PHMMAX	= $0a		; This must be two greater than the largest host message
 	MFEX_END =*
 
 	MUTHBAD:
-		asc "UTHERNET INIT FAILED; PLEASE RUN CONFIG."
+		asc "ETHERNET INIT FAILED; PLEASE RUN CONFIG."
 	MUTHBAD_END =*
 
 	MPREFIX:

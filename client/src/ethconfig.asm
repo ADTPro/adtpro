@@ -1,6 +1,6 @@
 ;
 ; ADTPro - Apple Disk Transfer ProDOS
-; Copyright (C) 2006 - 2010 by David Schmidt
+; Copyright (C) 2006 - 2011 by David Schmidt
 ; david__schmidt at users.sourceforge.net
 ;
 ; This program is free software; you can redistribute it and/or modify it 
@@ -50,7 +50,7 @@ SAVPARM:
 	ldx #$05	; Column
 	ldy #$03	; Row
 	jsr GOTOXY
-	ldy #PMSG26	; 'UTHER SLOT'
+	ldy #PMSG26	; 'ETHERNET SLOT'
 	jsr WRITEMSG
 
 	ldx #$05	; Column
@@ -236,7 +236,7 @@ PARMINT:
 	jsr PINGREQUEST	; Do a couple of ping requests to prime the pump
 	rts
 NOPE:	jsr PATCHNULL
-:	rts
+	rts
 
 ;---------------------------------------------------------
 ; PARMDFT - Set parameters to last saved values (uses A,X)
