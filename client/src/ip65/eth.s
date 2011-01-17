@@ -8,10 +8,19 @@
 	.export eth_set_my_mac_src
 	.export eth_set_proto
 
+	.export eth_inp_len	; input packet length
+	.export eth_inp		; space for input packet
+	.export eth_outp_len	; output packet length
+	.export eth_outp	; space for output packet
+
+	.export eth_dest	; destination address
+	.export eth_src		; source address
+	.export eth_type	; packet type
+	.export eth_data	; packet data
+
+	.exportzp eth_packet
 	.exportzp eth_proto_ip
 	.exportzp eth_proto_arp
-
-	.import eth_outp
 
 	.import cfg_mac
 
@@ -26,6 +35,17 @@ eth_data	= 14		; packet data
 eth_proto_ip	= 0
 eth_proto_arp	= 6
 
+	.segment "IP65ZP" : zeropage
+
+eth_packet:	.res 2		; Packet pointer
+
+	.bss
+
+; input and output buffers
+eth_inp_len:	.res 2		; input packet length
+eth_inp:	.res 1518	; space for input packet
+eth_outp_len:	.res 2		; output packet length
+eth_outp:	.res 1518	; space for output packet
 
 	.code
 

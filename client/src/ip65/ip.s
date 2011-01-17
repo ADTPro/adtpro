@@ -13,7 +13,9 @@
 	.export ip_inp
 	.export ip_outp
 	.export ip_broadcast
-	.export fix_eth_tx_03
+
+	.export fix_eth_tx_00
+
 	.exportzp ip_cksum_ptr
 	.exportzp ip_ver_ihl
 	.exportzp ip_tos
@@ -30,7 +32,6 @@
 	.exportzp ip_proto_icmp
 	.exportzp ip_proto_tcp
 	.exportzp ip_proto_udp
-
 
 	.import cfg_mac
 	.import cfg_ip
@@ -65,7 +66,6 @@
 
 ; checksum
 ip_cksum_ptr:	.res 2		; data pointer
-
 
 	.bss
 
@@ -334,8 +334,8 @@ ip_send:
 
 	;jsr dbg_dump_ip_header
 
-fix_eth_tx_03:
-	jmp $0000			; send packet and return status
+fix_eth_tx_00:
+	jmp $0000			; jmp eth_tx send packet and return status
 
 ; calculate checksum for ip header
 ip_calc_cksum:

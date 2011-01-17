@@ -41,16 +41,6 @@
 	.importzp ip_src
 	.import ip_inp
 
-	.export eth_inp_len	; input packet length
-	.export eth_inp		; space for input packet
-	.export eth_outp_len	; output packet length
-	.export eth_outp	; space for output packet
-
-	.exportzp eth_dest
-	.exportzp eth_src
-	.exportzp eth_type
-	.exportzp eth_data
-
 ;---------------------------------------------------------
 ; INITUTHER - Initialize Uther card
 ;---------------------------------------------------------
@@ -131,15 +121,3 @@ cnt:		.res 1
 replyaddr:	.res 4
 replyport:	.res 2
 state:		.res 2
-
-; input and output buffers
-eth_inp_len:	.res 2		; input packet length
-eth_inp:	.res 1518	; space for input packet
-eth_outp_len:	.res 2		; output packet length
-eth_outp:	.res 1518	; space for output packet
-
-; ethernet packet offsets
-eth_dest	= 0		; destination address
-eth_src		= 6		; source address
-eth_type	= 12		; packet type
-eth_data	= 14		; packet data

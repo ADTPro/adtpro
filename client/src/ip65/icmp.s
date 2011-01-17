@@ -8,15 +8,15 @@
 
 	.export icmp_callback
 
-	.export fix_eth_tx_02
-
 	.export icmp_inp
 	.export icmp_outp
+
+	.export fix_eth_tx_01
+
 	.exportzp icmp_type
 	.exportzp icmp_code
 	.exportzp icmp_cksum
 	.exportzp icmp_data
-
 
 	.import ip_calc_cksum
 	.import ip_inp
@@ -155,8 +155,8 @@ icmp_process:
 	jsr ip_calc_cksum
 	stax ip_outp + ip_header_cksum
 
-fix_eth_tx_02:
-	jsr $0000			; send packet
+fix_eth_tx_01:
+	jsr $0000			; jsr eth_tx send packet
 
 	clc
 	rts

@@ -13,8 +13,8 @@
 	.export arp_mac
 	.export arp_cache
 
-	.export fix_eth_tx_00
-	.export fix_eth_tx_01
+	.export fix_eth_tx_02
+	.export fix_eth_tx_03
 
 	.import eth_inp
 	.import eth_inp_len
@@ -149,7 +149,7 @@ arp_lookup:
 
 	ldax arptimeout		; check if we've timed out
 	jsr timer_timeout
-	bcs al_notimeout		; no, don't send
+	bcs al_notimeout	; no, don't send
 
 @sendrequest:			; send out arp request
 	jsr eth_set_broadcast_dest
@@ -183,8 +183,8 @@ arp_lookup:
 	lda #>ap_packlen
 	sta eth_outp_len + 1
 
-fix_eth_tx_00:
-	jsr $0000		; send packet
+fix_eth_tx_02:
+	jsr $0000		; jsr eth_tx send packet
 
 	lda #arp_wait		; waiting for reply
 	sta arp_state
@@ -240,6 +240,12 @@ findip:
 
 ; handle incoming arp packets
 arp_process:
+;	lda eth_inp_len		; check packet size
+;	cmp #<ap_packlen
+;	bne ap_badpacket
+;	lda eth_inp_len + 1
+;	cmp #>ap_packlen
+;	bne ap_badpacket
 
 	lda eth_inp + ap_op	; should be 0
 	bne ap_badpacket
@@ -295,8 +301,8 @@ ap_request:
 	lda #>ap_packlen
 	sta eth_outp_len + 1
 
-fix_eth_tx_01:
-	jsr $0000		; send packet
+fix_eth_tx_03:
+	jsr $0000		; jsr eth_tx send packet
 
 ap_done:
 	clc
@@ -307,6 +313,14 @@ ap_reply:
 	cmp #arp_wait		; are we waiting for a reply?
 	bne ap_badpacket
 
+;	ldx #0
+;:	lda gotmsg,x
+;	beq :+
+;	jsr $ffd2
+;	inx
+;	bne :-
+;:
+
 	ldax #eth_inp + ap_shw
 	jsr ac_add_source	; add to cache
 
@@ -314,6 +328,12 @@ ap_reply:
 	sta arp_state
 
 	rts
+
+;gotmsg:
+;	.byte "gOT arp REPLY",13,0
+;
+;addmsg:
+;	.byte "aDDING ARP ENTRY",13,0
 
 
 ; add arp_mac and arp_ip to the cache

@@ -6,25 +6,26 @@
 	.include "cs8900a.i"
 
 	.export uth_init
+	.export uth_rx
+	.export uth_tx
 
-	.importzp eth_dest
-	.importzp eth_src
-	.importzp eth_type
-	.importzp eth_data
+	.import eth_inp
+	.import eth_inp_len
+	.import eth_outp
+	.import eth_outp_len
 
-	.import fix_eth_rx_00	; transmit/receive fixup addresses
-	.import fix_eth_rx_01
-	.import fix_eth_tx_00
-	.import fix_eth_tx_01
-	.import fix_eth_tx_02
-	.import fix_eth_tx_03
+	.import fix_eth_tx_00	; from ip.s
+	.import fix_eth_tx_01	; from icmp.s
+	.import fix_eth_tx_02	; from arp.s
+	.import fix_eth_tx_03	; from arp.s
+
+	.import fix_eth_rx_00	; from arp.s
+	.import fix_eth_rx_01	; from arp.s
 
 	.import cfg_mac
 	.import PSSC	; From mainline code
-	.import eth_inp_len	; input packet length
-	.import eth_inp		; space for input packet
-	.import eth_outp_len	; output packet length
-	.import eth_outp	; space for output packet
+
+	.importzp eth_packet
 
 	.macro write_page page, value
 	lda #page/2
@@ -33,11 +34,6 @@
 	jsr cs_write_page
 	.endmacro
 
-	.segment "IP65ZP" : zeropage
-
-eth_packet:	.res 2
-
-	.bss
 
 ; cs hardware addresses
 cs_rxtx_data	= $c0b0
@@ -255,10 +251,11 @@ EMOD46:	sty cs_packet_data + 1
 	rts
 
 ;
-; cs_self_modify - fix up all relative addresses so we can move the
-;   Uther card around in the Apple
+; cs_self_modify - make all entry points variable so we can move the
+;   uther card around in the Apple
 ;
 cs_self_modify:
+
 	ldax #uth_tx		; Fixup transmit addresses
 	sta fix_eth_tx_00 +1
 	stx fix_eth_tx_00 +2
@@ -268,16 +265,12 @@ cs_self_modify:
 	stx fix_eth_tx_02 +2
 	sta fix_eth_tx_03 +1
 	stx fix_eth_tx_03 +2
+
 	ldax #uth_rx		; Fixup receive addresses
 	sta fix_eth_rx_00 + 1
 	stx fix_eth_rx_00 + 2
 	sta fix_eth_rx_01 + 1
 	stx fix_eth_rx_01 + 2
-
-	lda #$10		; Mix up our mac a little
-	sta cfg_mac + 2
-	lda #$6d
-	sta cfg_mac + 3
 
 	ldy PSSC	; GET SLOT# (0..6)
 	iny		; NOW 1..7
@@ -342,4 +335,15 @@ cs_self_modify:
 	sta EMOD44+1
 	sta EMOD45+1
 	sta EMOD46+1
+
+; Copy over the mac
+	ldx #$03
+:	lda uth_mac,x
+	sta cfg_mac+2,x
+	dex
+	bpl :-
+
 	rts
+
+uth_mac:
+	.byte $10, $6d, $76, $30

@@ -5,32 +5,27 @@
 
 	.include "common.i"
 
-	.export lan_eth_init
+	.export lan_init
+	.export lan_rx
+	.export lan_tx
+
+	.import eth_inp
+	.import eth_inp_len
+	.import eth_outp
+	.import eth_outp_len
+
+	.import fix_eth_tx_00	; from ip.s
+	.import fix_eth_tx_01	; from icmp.s
+	.import fix_eth_tx_02	; from arp.s
+	.import fix_eth_tx_03	; from arp.s
+
+	.import fix_eth_rx_00	; from arp.s
+	.import fix_eth_rx_01	; from arp.s
 
 	.import PSSC	; From mainline code
 	.import cfg_mac
-	.import eth_inp_len	; input packet length
-	.import eth_inp		; space for input packet
-	.import eth_outp_len	; output packet length
-	.import eth_outp	; space for output packet
 
-	.import fix_eth_rx_00	; transmit/receive fixup addresses
-	.import fix_eth_rx_01
-	.import fix_eth_tx_00
-	.import fix_eth_tx_01
-	.import fix_eth_tx_02
-	.import fix_eth_tx_03
-	
-	.importzp eth_dest
-	.importzp eth_src
-	.importzp eth_type
-	.importzp eth_data
-
-	.segment "IP65ZP" : zeropage
-
-eth_packet:	.res 2
-
-	.bss
+	.importzp eth_packet
 
 ; LANceGS hardware addresses
 ethbsr		:= $c00E	; Bank select register             R/W (2B)
@@ -71,7 +66,7 @@ ethercv		:= $c00C	; Early RCV register               R/W (2B)
 	.code
 
 ; initialize, return clc on success
-lan_eth_init:
+lan_init:
 	jsr lan_self_modify
 	lda #$01
 fixlan00:
@@ -171,7 +166,7 @@ lanerror:
 
 
 ; send a packet
-lan_eth_tx:
+lan_tx:
 	lda eth_outp_len + 1	;
 	ora #%00100000
 fixlan23:
@@ -256,7 +251,7 @@ fixlan37:
 
 
 ; receive a packet
-lan_eth_rx:
+lan_rx:
 fixlan38:
 	lda ethist
 	and #%00000001	; Check receive interrupt
@@ -324,13 +319,13 @@ fixlan47:
 	rts
 
 
-
 ;
-; lan_self_modify - fix up all relative addresses so we can move the
+; lan_self_modify - make all entry points variable so we can move the
 ;   LANceGS card around in the Apple
 ;
 lan_self_modify:
-	ldax #lan_eth_tx	; Fixup transmit addresses
+
+	ldax #lan_tx		; Fixup transmit addresses
 	sta fix_eth_tx_00 +1
 	stx fix_eth_tx_00 +2
 	sta fix_eth_tx_01 +1
@@ -339,16 +334,12 @@ lan_self_modify:
 	stx fix_eth_tx_02 +2
 	sta fix_eth_tx_03 +1
 	stx fix_eth_tx_03 +2
-	ldax #lan_eth_rx	; Fixup receive addresses
+
+	ldax #lan_rx		; Fixup receive addresses
 	sta fix_eth_rx_00 + 1
 	stx fix_eth_rx_00 + 2
 	sta fix_eth_rx_01 + 1
 	stx fix_eth_rx_01 + 2
-
-	lda #$0f		; Mix up our mac a little
-	sta cfg_mac + 2
-	lda #$11
-	sta cfg_mac + 3
 
 	ldy PSSC	; GET SLOT# (0..6)
 	iny		; NOW 1..7
@@ -449,4 +440,14 @@ lan_self_modify:
 	sta fixlan11 + 1
 	sta fixlan21 + 1
 
+; Copy over the mac
+	ldx #$03
+:	lda lan_mac,x
+	sta cfg_mac+2,x
+	dex
+	bpl :-
+
 	rts
+
+lan_mac:
+	.byte $0f, $10, $18, $67
