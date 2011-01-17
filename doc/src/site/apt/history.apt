@@ -6,6 +6,14 @@
 
 ADTPro Release History
 
+* Unreleased - in CVS now
+
+ New functionality:
+
+ * [Client] Added support for LANceGS Ethernet card 
+
+ []
+
 * 1.1.7 - December 21, 2010
 
  New functionality:

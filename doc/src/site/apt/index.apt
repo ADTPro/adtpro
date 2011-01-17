@@ -21,7 +21,7 @@ compatible computer with at least 64k of memory.
 
     * {{{connectionsserial.html}Serial}} ports
 
-    * {{{http://a2retrosystems.com/}Uthernet}} {{{configethernet.html}Ethernet}} card
+    * {{{http://a2retrosystems.com/}Uthernet}} or {{{http://www.wbwip.com/shh/}LANceGS}} {{{configethernet.html}Ethernet}} card
 
     * The Apple's {{{connectionsaudio.html}cassette ports}}
 

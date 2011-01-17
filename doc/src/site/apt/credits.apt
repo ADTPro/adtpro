@@ -110,6 +110,8 @@ were from Oliver Schmidt's LOADER.SYSTEM contribution to cc65, available
 | Spanish | Gabriel Alejandro Calomeni |
 *-------:-----+
 
+ Thanks to {{{http://a2central.com/}Sean Fahey}} for lending me his LANceGS cards so I could add support for them. 
+
  Thanks to the {{{http://maven.apache.org}Maven}} project for web page generation.
 
 ADT Lineage

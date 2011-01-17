@@ -9,15 +9,19 @@ ADTPro Ethernet Connections
 [images/uthernet.jpg]
 
  Connecting your Apple to your home network is as easy as plugging the
- {{{http://a2retrosystems.com}Uthernet card}} into the Apple, and then
+ {{{http://a2retrosystems.com}Uthernet}} or the {{{http://www.wbwip.com/shh/}LANceGS}}
+ card into the Apple, and then
  plugging a Cat-5 Ethernet cable from the card into your home router or
  switch.  You just need to set ADTPro's IP parameters (details 
  {{{configethernet.html#Client_IP_Configuration}below}}).
+ ADTPro will automatically detect which kind of ethernet card you have, as well
+ as the slot it is in. 
  
  If your home network has MAC address filtering, you may need to add a
  rule for your router to allow the Apple to join the network.  The MAC
  address assigned to the Uthernet card by ADTPro is
- <<<00:80:10:6d:76:30.>>>
+ <<<00:80:10:6d:76:30>>>.  The MAC address assigned to the LANceGS card by
+ ADTPro is <<<00:80:0f:10:18:67>>>.
 
 ADTPro Ethernet {Client IP Configuration}
 
@@ -44,17 +48,17 @@ left arrow keys.  Your Apple has right and left arrow keys; trust me.
 
 * Comms Device
 
- Select the slot your Uthernet card is in.
+ Select the slot your Ethernet card is in.
 
 [images/ethconfigSlot.png]
 
  The most common slot is 3, but it could be any slot from 1 to 7 (1 to 4 in
  Apple /// computers).  ADTPro will scan the slots to guess where
-it is for you.  But if you have multiple Uthernet cards in your system,
+it is for you.  But if you have multiple Ethernet cards in your system,
 you will need to choose which one to talk to.
 Pull off your Apple's lid to check if you need to.
 If you have an IIgs, ensure you select "Your Card" in the IIgs' control
-panel for the slot your Uthernet card is in, and select that same slot
+panel for the slot your Ethernet card is in, and select that same slot
 number here.
 
 * Enable Sound
@@ -106,14 +110,14 @@ command line.  If the server is running Linux or OSX, you can generally find it
 with the command: <<<ifconfig en0>>> or <<<ifconfig eth0>>> from a terminal window.
 The graphical network configuration program for your operating system will have all
 the details you need, but you may have to do some digging to get at them.
-Chances are, though, that if you bought an Uther card... you know these kinds of
+Chances are, though, that if you bought one of these cards... you know these kinds of
 details.  Feel free to
 {{{http://adtpro.sourceforge.net/forum.html}ask for help}}
 if you need it.
 
  <<Note:>> if you ever end up saving a configuration that is not compatible
  with the Apple you're trying to run ADTPro on (because you move your
- Uthernet card to a different slot, for example) you may need to reset
+ Ethernet card to a different slot, for example) you may need to reset
  ADTPro to factory defaults.  To do that, boot the Apple with ProDOS, and 
  get to a BASIC prompt (perhaps using the
  ADTPro diskette itself). Delete the configuration file:
