@@ -20,7 +20,7 @@ everywhere it is invoked:
 -->
 
 <project name="ADTPro" default="all" basedir="..">
-	<property name="versionString" value="1.1.8" />
+	<property name="versionString" value="v.r.m" />
 	<property name="distName" value="ADTPro-${versionString}" />
 	<property name="diskName" value="ADTPRO-${versionString}" />
 	<property name="volName" value="ADTPro.${versionString}" />
