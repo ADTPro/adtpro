@@ -98,18 +98,8 @@ was published in the "/// Cheers!" magazine from A.P.P.L.E., available {{{http:/
 were from Oliver Schmidt's LOADER.SYSTEM contribution to cc65, available
 {{{http://cc65.oldos.net/contrib/loader-1.4.txt}here}}.
 
- Thanks to ADTPro's translators:
+ Thanks to ADTPro's {{{translations.html}translators}}.
  
-*-------+-----+
-| <<Language>> | <<Translator>> |
-*-------:-----+
-| Brazilian Portuguese | Mario Sergio Almeida |
-| French | Antoine VIGNAU |
-| Italian | Mauro Rospocher |
-| Korean | Steve Y. Choi |
-| Spanish | Gabriel Alejandro Calomeni |
-*-------:-----+
-
  Thanks to {{{http://a2central.com/}Sean Fahey}} for lending me his LANceGS cards so I could add support for them. 
 
  Thanks to the {{{http://maven.apache.org}Maven}} project for web page generation.
