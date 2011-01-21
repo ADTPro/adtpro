@@ -17,10 +17,10 @@ ADTPro Ethernet Connections
  ADTPro will automatically detect which kind of ethernet card you have, as well
  as the slot it is in. 
  
- If your home network has MAC address filtering, you may need to add a
+ If your local network has MAC address filtering, you may need to add a
  rule for your router to allow the Apple to join the network.  The MAC
- address assigned to the Uthernet card by ADTPro is
- <<<00:80:10:6d:76:30>>>.  The MAC address assigned to the LANceGS card by
+ address assigned to an Uthernet card by ADTPro is
+ <<<00:80:10:6d:76:30>>>.  The MAC address assigned to a LANceGS card by
  ADTPro is <<<00:80:0f:10:18:67>>>.
 
 ADTPro Ethernet {Client IP Configuration}

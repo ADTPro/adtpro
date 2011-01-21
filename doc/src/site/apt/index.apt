@@ -21,7 +21,7 @@ compatible computer with at least 64k of memory.
 
     * {{{connectionsserial.html}Serial}} ports
 
-    * {{{http://a2retrosystems.com/}Uthernet}} or {{{http://www.wbwip.com/shh/}LANceGS}} {{{configethernet.html}Ethernet}} card
+    * {{{http://a2retrosystems.com/}Uthernet}} or {{{http://www.wbwip.com/shh/}LANceGS}} {{{configethernet.html}Ethernet}} cards
 
     * The Apple's {{{connectionsaudio.html}cassette ports}}
 
@@ -37,13 +37,13 @@ compatible computer with at least 64k of memory.
 
     * Understands many physical Apple disk formats: DOS, ProDOS, SOS, Pascal, CP/M, among others 
 
-    * Serves the original {{{compatibility.html}ADT client}} as well as the updated ADTPro client
+    * Serves the original {{{compatibility.html}ADT client}} as well as the ADTPro client
 
     * {{{#Bootstrapping}Bootstraps}} Apple II and Apple /// computers from bare metal over {{{bootstrap.html}serial}} or {{{bootstrapaudio.html}cassette}} ports
 
     * Sends floppies in {{{batch.html}"batch"}} mode without having to name each one
 
-    * {{{misc.html#Format}Formats}} blank disks
+    * {{{misc.html#Format}Formats}} disks
 
  The latest ADTPro can always be 
 {{{download.html}downloaded}}
