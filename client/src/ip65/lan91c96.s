@@ -19,8 +19,8 @@
 	.import fix_eth_tx_02	; from arp.s
 	.import fix_eth_tx_03	; from arp.s
 
-	.import fix_eth_rx_00	; from arp.s
-	.import fix_eth_rx_01	; from arp.s
+	.import fix_eth_rx_00	; from ip65.s
+	.import fix_eth_rx_01	; from ip65.s
 
 	.import PSSC	; From mainline code
 	.import cfg_mac
