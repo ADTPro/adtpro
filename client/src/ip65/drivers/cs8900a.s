@@ -1,9 +1,15 @@
-; Ethernet driver for CS8900A
+; Ethernet driver for CS8900A chip (as used in RR-NET and Uthernet adapters)
 ;
 ; Based on Doc Bacardi's tftp source
 
-	.include "common.i"
-	.include "cs8900a.i"
+
+.ifndef KPR_API_VERSION_NUMBER
+  .define EQU     =
+  .include "../inc/kipper_constants.i"
+.endif
+
+.include "../inc/common.i"
+.include "cs8900a.i"
 
 	.export uth_init
 	.export uth_rx
@@ -19,13 +25,25 @@
 	.import fix_eth_tx_02	; from arp.s
 	.import fix_eth_tx_03	; from arp.s
 
-	.import fix_eth_rx_00	; from arp.s
-	.import fix_eth_rx_01	; from arp.s
+	.import fix_eth_rx_00	; from ip65.s
+
+	.importzp eth_dest
+	.importzp eth_src
+	.importzp eth_type
+	.importzp eth_data
+	.importzp eth_packet
+
+	.import cs_init
+	.import cs_packet_page
+	.import cs_packet_data
+	.import cs_rxtx_data
+	.import cs_tx_cmd
+	.import cs_tx_len
+
+	.import ip65_error
 
 	.import cfg_mac
-	.import PSSC	; From mainline code
-
-	.importzp eth_packet
+	.import COMMSLOT
 
 	.macro write_page page, value
 	lda #page/2
@@ -34,19 +52,15 @@
 	jsr cs_write_page
 	.endmacro
 
-
-; cs hardware addresses
-cs_rxtx_data	= $c0b0
-cs_tx_cmd	= $c0b4
-cs_tx_len	= $c0b6
-cs_packet_page	= $c0ba
-cs_packet_data	= $c0bc
-
 	.code
 
-; initialize, return clc on success
+;initialize the Ethernet adaptor
+;inputs: none
+;outputs: carry flag is set if there was an error, clear otherwise
 uth_init:
+;	jsr cs_init
 	jsr cs_self_modify
+
 	lda #0			; check magic signature
 	jsr cs_read_page
 	cpx #$0e
@@ -63,7 +77,6 @@ uth_init:
 	write_page pp_self_ctl, $0055	; $0114, reset chip
 
 	write_page pp_rx_ctl, $0d05	; $0104, accept individual and broadcast packets
-	;write_page pp_rx_ctl, $0d85	; $0104, promiscuous mode
 
 	lda #pp_ia/2			; $0158, write mac address
 	ldx cfg_mac
@@ -90,7 +103,13 @@ uth_init:
 	rts
 
 
-; receive a packet
+;receive a packet
+;inputs: none
+;outputs:
+; if there was an error receiving the packet (or no packet was ready) then carry flag is set
+; if packet was received correctly then carry flag is clear, 
+; eth_inp contains the received packet, 
+; and eth_inp_len contains the length of the packet
 uth_rx:
 	lda #$24			; check rx status
 EMOD30:	sta cs_packet_page
@@ -157,9 +176,14 @@ cs_done1:
 
 
 ; send a packet
+;inputs:
+; eth_outp: packet to send
+; eth_outp_len: length of packet to send
+;outputs:
+; if there was an error sending the packet then carry flag is set
+; otherwise carry flag is cleared
 uth_tx:
-	;jsr dbg_dump_eth_header
-
+	
 	lda #$c9			; ask for buffer space
 EMOD10:	sta cs_tx_cmd
 	lda #0
@@ -169,10 +193,10 @@ EMOD11:	sta cs_tx_cmd + 1
 EMOD20:	sta cs_tx_len
 	lda eth_outp_len + 1
 EMOD21:	sta cs_tx_len + 1
-	and #$f8
-	beq :+
-
-	;inc $d020
+	cmp #6
+  bmi :+
+  lda #KPR_ERROR_INPUT_TOO_LARGE
+  sta ip65_error
 	sec				; oversized packet
 	rts
 
@@ -180,6 +204,7 @@ EMOD21:	sta cs_tx_len + 1
 EMOD31:	sta cs_packet_page
 	lda #>pp_bus_status
 EMOD35:	sta cs_packet_page + 1
+
 waitspace:
 EMOD44:	lda cs_packet_data + 1		; wait for space
 EMOD40:	ldx cs_packet_data
@@ -269,10 +294,8 @@ cs_self_modify:
 	ldax #uth_rx		; Fixup receive addresses
 	sta fix_eth_rx_00 + 1
 	stx fix_eth_rx_00 + 2
-	sta fix_eth_rx_01 + 1
-	stx fix_eth_rx_01 + 2
 
-	ldy PSSC	; GET SLOT# (0..6)
+	ldy COMMSLOT	; GET SLOT# (0..6)
 	iny		; NOW 1..7
 	tya
 	asl
@@ -281,6 +304,14 @@ cs_self_modify:
 	asl
 	clc
 	adc #$80	; Now $80+S0 ($c0b0)
+	; Make the accumulator contain slot number plus $80
+	;   i.e. Slot 1 = $90
+	;   i.e. Slot 2 = $A0
+	;   i.e. Slot 3 = $B0
+	;   i.e. Slot 4 = $C0
+	;   i.e. Slot 5 = $D0
+	;   i.e. Slot 6 = $E0
+	;   i.e. Slot 7 = $F0
 ; Save off all cs_rxtx_data mods
 	sta EMOD0+1
 	sta EMOD1+1
@@ -347,3 +378,22 @@ cs_self_modify:
 
 uth_mac:
 	.byte $10, $6d, $76, $30
+
+;-- LICENSE FOR cs8900a.s --
+; The contents of this file are subject to the Mozilla Public License
+; Version 1.1 (the "License"); you may not use this file except in
+; compliance with the License. You may obtain a copy of the License at
+; http://www.mozilla.org/MPL/
+; 
+; Software distributed under the License is distributed on an "AS IS"
+; basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
+; License for the specific language governing rights and limitations
+; under the License.
+; 
+; The Original Code is ip65.
+; 
+; The Initial Developer of the Original Code is Per Olofsson,
+; MagerValp@gmail.com.
+; Portions created by the Initial Developer are Copyright (C) 2009
+; Per Olofsson. All Rights Reserved.  
+; -- LICENSE END --

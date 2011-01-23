@@ -1,10 +1,14 @@
-; Ethernet driver for LAN91C96
+; Ethernet driver for SMC LAN91C96 chip 
 ;
-; By David Schmidt
-; Based on Contiki source by Adam Dunkels, Josef Soucek and Oliver Schmidt
 
-	.include "common.i"
+.ifndef KPR_API_VERSION_NUMBER
+  .define EQU     =
+  .include "../inc/kipper_constants.i"
+.endif
 
+.include "../inc/common.i"
+
+	.export lan_mac
 	.export lan_init
 	.export lan_rx
 	.export lan_tx
@@ -20,12 +24,13 @@
 	.import fix_eth_tx_03	; from arp.s
 
 	.import fix_eth_rx_00	; from ip65.s
-	.import fix_eth_rx_01	; from ip65.s
 
-	.import PSSC	; From mainline code
+	.import COMMSLOT
 	.import cfg_mac
 
 	.importzp eth_packet
+
+	.data
 
 ; LANceGS hardware addresses
 ethbsr		:= $c00E	; Bank select register             R/W (2B)
@@ -63,16 +68,16 @@ ethmgmt		:= $c008	; Management interface             R/W (2B)
 ethrev		:= $c00A	; Revision register                R/W (2B)
 ethercv		:= $c00C	; Early RCV register               R/W (2B)
 
-	.code
-
-; initialize, return clc on success
+;initialize the Ethernet adaptor
+;inputs: none
+;outputs: carry flag is set if there was an error, clear otherwise
 lan_init:
 	jsr lan_self_modify
 	lda #$01
 fixlan00:
-	sta ethbsr			; Select register bank 1
+	sta ethbsr		; Select register bank 1
 fixlan01:
-	lda ethcr			; Read first four bytes - $31, $20, $67, $18
+	lda ethcr		; Read bytes 0, 2, and 3 should be $31, $67, $18
 	cmp #$31
 	bne lanerror
 fixlan03:
@@ -85,7 +90,7 @@ fixlan04:
 	bne lanerror
 	; we have the magic signature
 
-	; Reset ETH card
+	; Reset chip
 	lda #$00		; Bank 0
 fixlan05:
 	sta ethbsr
@@ -162,12 +167,17 @@ fixlan22:
 lanerror:
 	sec
 	rts
-
-
+	
 
 ; send a packet
+;inputs:
+; eth_outp: packet to send
+; eth_outp_len: length of packet to send
+;outputs:
+; if there was an error sending the packet then carry flag is set
+; otherwise carry flag is cleared
 lan_tx:
-	lda eth_outp_len + 1	;
+	lda eth_outp_len + 1
 	ora #%00100000
 fixlan23:
 	sta ethmmucr	; Allocate memory for transmission
@@ -249,8 +259,13 @@ fixlan37:
 	clc
 	rts
 
-
-; receive a packet
+;receive a packet
+;inputs: none
+;outputs:
+; if there was an error receiving the packet (or no packet was ready) then carry flag is set
+; if packet was received correctly then carry flag is clear, 
+; eth_inp contains the received packet, 
+; and eth_inp_len contains the length of the packet
 lan_rx:
 fixlan38:
 	lda ethist
@@ -317,11 +332,11 @@ fixlan47:
 
 	clc
 	rts
-
+	
 
 ;
 ; lan_self_modify - make all entry points variable so we can move the
-;   LANceGS card around in the Apple
+;   hardware addresses around in the Apple
 ;
 lan_self_modify:
 
@@ -338,10 +353,8 @@ lan_self_modify:
 	ldax #lan_rx		; Fixup receive addresses
 	sta fix_eth_rx_00 + 1
 	stx fix_eth_rx_00 + 2
-	sta fix_eth_rx_01 + 1
-	stx fix_eth_rx_01 + 2
 
-	ldy PSSC	; GET SLOT# (0..6)
+	ldy COMMSLOT	; GET SLOT# (0..6)
 	iny		; NOW 1..7
 	tya
 	asl
@@ -350,6 +363,14 @@ lan_self_modify:
 	asl
 	clc
 	adc #$80	; Now $80+S0 ($c0b0)
+	; Make the accumulator contain slot number plus $80
+	;   i.e. Slot 1 = $90
+	;   i.e. Slot 2 = $A0
+	;   i.e. Slot 3 = $B0
+	;   i.e. Slot 4 = $C0
+	;   i.e. Slot 5 = $D0
+	;   i.e. Slot 6 = $E0
+	;   i.e. Slot 7 = $F0
 ; $C0s0: Save off all ethtcr, ethcr, ethmmucr, and ethmt mods
 	sta fixlan01 + 1
 	sta fixlan09 + 1
@@ -449,5 +470,23 @@ lan_self_modify:
 
 	rts
 
+
 lan_mac:
 	.byte $0f, $10, $18, $67
+
+; The contents of this file are subject to the Mozilla Public License
+; Version 1.1 (the "License"); you may not use this file except in
+; compliance with the License. You may obtain a copy of the License at
+; http://www.mozilla.org/MPL/
+; 
+; Software distributed under the License is distributed on an "AS IS"
+; basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
+; License for the specific language governing rights and limitations
+; under the License.
+; 
+; The Original Code is ip65.
+; 
+; The Initial Developer of the Original Code is David Schmidt
+; Portions created by the Initial Developer is Copyright (C) 2011
+; All Rights Reserved.  
+; -- LICENSE END --

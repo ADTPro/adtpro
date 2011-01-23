@@ -24,7 +24,7 @@
 ; PARMINT - INTERPRET PARAMETERS
 ;---------------------------------------------------------
 PARMINT:
-	ldy PSSC	; Get parm index# (0..4)
+	ldy COMMSLOT	; Get parm index# (0..4)
 	iny		; Now slot# = 1..5 (where 5=///)
 	tya
 	cmp #$05
@@ -68,7 +68,7 @@ CONFIG_FILE_NAME:	.byte 11
 			.byte "ADTSOS.CONF"
 
 PARMS:
-PSSC:	.byte 4		; Comms slot (5)
+COMMSLOT:	.byte 4		; Comms slot (5)
 PSPEED:	.byte 3		; Comms speed (115200)
 PSOUND:	.byte 0		; Sounds? (YES)
 PSAVE:	.byte 1		; Save parms? (NO)

@@ -24,7 +24,7 @@
 ; PARMINT - INTERPRET PARAMETERS
 ;---------------------------------------------------------
 PARMINT:
-	ldy PSSC	; Get parm index# (0..7)
+	ldy COMMSLOT	; Get parm index# (0..7)
 	iny		; Now slot# = 1..8 (where 8=IIgs, 9=Pascal entry points)
 	tya
 	cmp #$08
@@ -121,12 +121,12 @@ FindSlotBreak:
 	ldx TempSlot
 	beq :+
 	dex			; Subtract 1 to match slot# to parm index
-	stx PSSC
+	stx COMMSLOT
 	stx DEFAULT		; Store the slot number discovered as default
 	rts
 :	lda TempIIgsSlot
 	beq FindSlotDone	; Didn't find anything in particular
-	sta PSSC
+	sta COMMSLOT
 	sta DEFAULT		; Store the slot number discovered as default
 FindSlotDone:
 	rts
@@ -166,7 +166,7 @@ CONFIG_FILE_NAME:	.byte 11
 			.byte "ADTPRO.CONF"
 
 PARMS:
-PSSC:	.byte 1		; Comms slot (2)
+COMMSLOT:	.byte 1		; Comms slot (2)
 PSPEED:	.byte 3		; Comms speed (115200)
 PSOUND:	.byte 0		; Sounds? (YES)
 PSAVE:	.byte 1		; Save parms? (NO)

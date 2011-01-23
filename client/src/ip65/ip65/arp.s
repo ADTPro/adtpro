@@ -1,17 +1,16 @@
 ; ARP address resolution
 
-
-	.include "common.i"
-
+.include "../inc/common.i"
 
 	.export arp_init
 	.export arp_lookup
 	.export arp_process
-	.export arp_add
-
+	.export arp_add 
+	.export arp_calculate_gateway_mask
 	.export arp_ip
 	.export arp_mac
 	.export arp_cache
+	.exportzp ac_size
 
 	.export fix_eth_tx_02
 	.export fix_eth_tx_03
@@ -20,11 +19,12 @@
 	.import eth_inp_len
 	.import eth_outp
 	.import eth_outp_len
+	.import eth_tx
 	.import eth_set_broadcast_dest
 	.import eth_set_my_mac_src
 	.import eth_set_proto
 	.importzp eth_proto_arp
-
+  
 	.import cfg_mac
 	.import cfg_ip
 	.import cfg_netmask
@@ -32,12 +32,12 @@
 
 	.import timer_read
 	.import timer_timeout
-
-
+  
 	.segment "IP65ZP" : zeropage
 
 ap:		.res 2
 
+ARP_TIMEOUT_MS=100
 
 	.bss
 
@@ -48,14 +48,14 @@ arp_state:	.res 1		; current activity
 
 ; arguments for lookup and add 
 arp:				; ptr to mac/ip pair
-arp_mac:	.res 6		; result is delivered here
-arp_ip:		.res 4		; set ip before calling lookup
+arp_mac:	.res 6		; result is delivered here when arp_lookup returns with carry flag clear  
+arp_ip:		.res 4		; set arp_ip before calling arp_lookup
 
 ; arp cache
 ac_size		= 8		; lookup cache
 ac_ip		= 6  		; offset for ip
 ac_mac		= 0		; offset for mac
-arp_cache:	.res (6+4)*ac_size
+arp_cache:	.res (6+4)*ac_size ;cache of IP addresses and corresponding MAC addresses
 
 ; offsets for arp packet generation
 ap_hw		= 14		; hw type (eth = 0001)
@@ -79,15 +79,19 @@ arptimeout:	.res 2		; time when we will have timed out
 
 
 	.code
-
-; initialize arp
+;initialize arp (including clearing the arp cache)
+;inputs: none
+;outputs: none
 arp_init:
 	lda #0
 
 	ldx #(6+4)*ac_size - 1	; clear cache
-:	sta arp_cache,x
+:	
+  sta arp_cache,x
 	dex
 	bpl :-
+
+arp_calculate_gateway_mask:
 
 	lda #$ff		; counter for netmask length - 1
 	sta gw_last
@@ -111,10 +115,30 @@ arp_init:
 	rts
 
 
-; lookup an ip
-; clc = mac returned in ap_mac
-; sec = request sent, call again for result
+;lookup the mac address for an ip
+;inputs: arp_ip should be set to ip address to be resolved
+;outputs: 
+;   if carry flag is clear, then arp_mac will be set to correct mac address
+;   if carry flag is set, then the correct mac address could not be found in
+;   the arp cache, so an arp request was sent. so the caller should wait a while
+;   (to allow time for an arp response message to arrive) and then call arp_lookup again.
 arp_lookup:
+
+  lda arp_ip		; check for broadcast IP (255.255.255.255)
+	and arp_ip + 1
+	and arp_ip + 2
+	and arp_ip + 3
+	cmp #$ff
+	bne @notbroadcast
+  ldx #6        ;copy ff:ff:ff:ff:ff:ff to ap_mac
+: sta arp_mac,x
+  dex
+  bpl :-
+  clc
+  rts
+  
+@notbroadcast:
+
 	ldx gw_last		; check if address is on our subnet
 :	lda arp_ip,x
 	ora gw_mask,x
@@ -125,6 +149,7 @@ arp_lookup:
 	bmi @local
 
 @notlocal:
+
 	ldx #3			; copy gateway's ip address
 :	lda cfg_gateway,x
 	sta arp_ip,x
@@ -191,10 +216,10 @@ fix_eth_tx_02:
 
 	jsr timer_read		; read current timer value
 	clc
-	adc #<1000		; set timeout to now + 1000 ms
+	adc #<ARP_TIMEOUT_MS		; set timeout to now + ARP_TIMEOUT_MS
 	sta arptimeout
 	txa
-	adc #>1000
+	adc #>ARP_TIMEOUT_MS
 	sta arptimeout + 1
 
 al_notimeout:
@@ -205,9 +230,9 @@ al_notimeout:
 ; find arp_ip in the cache
 ; clc returns pointer to entry in (ap)
 findip:
-	ldax #arp_cache
-	stax ap
 
+	ldax #arp_cache
+	stax ap  
 	ldx #ac_size
 @compare:			; compare cache entry
 	ldy #ac_ip
@@ -219,8 +244,8 @@ findip:
 	iny
 	cpy #ac_ip + 4
 	bne :-
-
-	clc			; return
+    
+	clc			; return  
 	rts
 
 @next:				; next entry
@@ -238,14 +263,15 @@ findip:
 	rts
 
 
-; handle incoming arp packets
+;handle incoming arp packets
+;inputs: eth_inp should contain an arp packet
+;outputs: 
+;   carry flag is set if there was an error processing the arp packet, clear otherwise
+;   the arp_cache will be updated with the mac & ip address (whether the inbound 
+;   message was a request or a response). if the incoming packet was an arp 
+;   request for this machine, then an arp response will be  created (overwriting
+;   eth_outp) and sent out
 arp_process:
-;	lda eth_inp_len		; check packet size
-;	cmp #<ap_packlen
-;	bne ap_badpacket
-;	lda eth_inp_len + 1
-;	cmp #>ap_packlen
-;	bne ap_badpacket
 
 	lda eth_inp + ap_op	; should be 0
 	bne ap_badpacket
@@ -313,30 +339,21 @@ ap_reply:
 	cmp #arp_wait		; are we waiting for a reply?
 	bne ap_badpacket
 
-;	ldx #0
-;:	lda gotmsg,x
-;	beq :+
-;	jsr $ffd2
-;	inx
-;	bne :-
-;:
-
 	ldax #eth_inp + ap_shw
 	jsr ac_add_source	; add to cache
 
 	lda #arp_idle
 	sta arp_state
-
+  
 	rts
-
-;gotmsg:
-;	.byte "gOT arp REPLY",13,0
-;
-;addmsg:
-;	.byte "aDDING ARP ENTRY",13,0
 
 
 ; add arp_mac and arp_ip to the cache
+;inputs: 
+;  arp_ip is ip address to add to cache
+;  arp_mac is corresponding mac address of specified ip  
+;outputs: 
+;  arp_cache is updated
 arp_add:
 	jsr findip		; check if ip is already in cache
 	bcs @add
@@ -346,51 +363,26 @@ arp_add:
 	sta (ap),y
 	dey
 	bpl :-
+  
 	rts
 
 @add:
 	ldax #arp		; add
 
 
-; add source to cache
+;add source to cache
 ac_add_source:
 	stax ap
 
-;	ldx #0
-;:	lda addmsg,x
-;	beq :+
-;	jsr $ffd2
-;	inx
-;	bne :-
-;:
-
 	ldx #9			; make space in the arp cache
 :
-;	lda arp_cache + 140,x
-;	sta arp_cache + 150,x
-;	lda arp_cache + 130,x
-;	sta arp_cache + 140,x
-;	lda arp_cache + 120,x
-;	sta arp_cache + 130,x
 
-;	lda arp_cache + 110,x
-;	sta arp_cache + 120,x
-;	lda arp_cache + 100,x
-;	sta arp_cache + 110,x
-;	lda arp_cache + 90,x
-;	sta arp_cache + 100,x
-;	lda arp_cache + 80,x
-;	sta arp_cache + 90,x
-
-;	lda arp_cache + 70,x
-;	sta arp_cache + 80,x
 	lda arp_cache + 60,x
 	sta arp_cache + 70,x
 	lda arp_cache + 50,x
 	sta arp_cache + 60,x
 	lda arp_cache + 40,x
 	sta arp_cache + 50,x
-
 	lda arp_cache + 30,x
 	sta arp_cache + 40,x
 	lda arp_cache + 20,x
@@ -433,3 +425,24 @@ makearppacket:
 	sta eth_outp + ap_protolen
 
 	rts
+
+
+
+;-- LICENSE FOR arp.s --
+; The contents of this file are subject to the Mozilla Public License
+; Version 1.1 (the "License"); you may not use this file except in
+; compliance with the License. You may obtain a copy of the License at
+; http://www.mozilla.org/MPL/
+; 
+; Software distributed under the License is distributed on an "AS IS"
+; basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
+; License for the specific language governing rights and limitations
+; under the License.
+; 
+; The Original Code is ip65.
+; 
+; The Initial Developer of the Original Code is Per Olofsson,
+; MagerValp@gmail.com.
+; Portions created by the Initial Developer are Copyright (C) 2009
+; Per Olofsson. All Rights Reserved.  
+; -- LICENSE END --

@@ -1,6 +1,6 @@
 ;
 ; ADTPro - Apple Disk Transfer ProDOS
-; Copyright (C) 2008 - 2010 by David Schmidt
+; Copyright (C) 2008 - 2011 by David Schmidt
 ; david__schmidt at users.sourceforge.net
 ;
 ; This program is free software; you can redistribute it and/or modify it 
@@ -19,6 +19,12 @@
 ;
 
 .include "ethconfig.asm"
+	.export cfg_ip
+	.export cfg_netmask
+	.export cfg_gateway
+	.export cfg_dns
+	.export dhcp_server
+	.export cfg_tftp_server
 
 ;---------------------------------------------------------
 ; Configuration
@@ -48,16 +54,20 @@ CONFIG_FILE_NAME:	.byte 14
 YSAVE:	.byte $00
 
 PARMS:
-PSSC:	.byte 2		; Zero-indexed Comms slot (3)
+COMMSLOT:
+	.byte 2		; Zero-indexed Comms slot (3)
 PSOUND:	.byte 0		; Sounds? (YES)
 PSAVE:	.byte 1		; Save parms? (NO)
 
 ip_parms:
 serverip:	.byte 192, 168,   0,  12
-cfg_ip:		.byte 192, 168,   0, 123
-cfg_netmask:	.byte 255, 255, 248,   0
-cfg_gateway:	.byte 192, 168,   0,   1
+cfg_ip:		.byte   0,   0,   0,   0 ; ip address of local machine (will be overwritten if dhcp_init is called)
+cfg_netmask:	.byte   0,   0,   0,   0 ; netmask of local network (will be overwritten if dhcp_init is called)
+cfg_gateway:	.byte   0,   0,   0,   0 ; ip address of router on local network (will be overwritten if dhcp_init is called)
 
 DEFAULT:	.byte 2,0,1	; Default parm indices
 CONFIGYET:	.byte 0		; Has the user configged yet?
 PARMSEND:
+cfg_dns:	.byte   0,   0,   0,   0 ; ip address of dns server to use (will be overwritten if dhcp_init is called)
+dhcp_server:	.byte   0,   0,   0,   0 ; will be set address of dhcp server that configuration was obtained from
+cfg_tftp_server: .byte   0,   0,   0,   0 ; ip address of server to send tftp requests to (can be a broadcast address)

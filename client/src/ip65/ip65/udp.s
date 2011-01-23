@@ -1,8 +1,14 @@
-	.include "common.i"
+;UDP (user datagram protocol) functions
 
+.include "../inc/common.i"
+.ifndef KPR_API_VERSION_NUMBER
+  .define EQU     =
+  .include "../inc/kipper_constants.i"
+.endif
 
 	;.import dbg_dump_udp_header
 
+  .import ip65_error
 
 	.export udp_init
 	.export udp_process
@@ -48,22 +54,24 @@
 	.importzp copy_dest
 
 	.import cfg_ip
+  
+  .data
+  udp_cbtmp:	jmp $ffff			; temporary vector - gets filled in later
 
 
 	.bss
 
 ; argument for udp_add_listener
-udp_callback:	.res 2
+udp_callback:	.res 2  ;vector to routine to be called when a udp packet arrives
 
 ; arguments for udp_send
-udp_send_dest:		.res 4
-udp_send_src_port:	.res 2
-udp_send_dest_port:	.res 2
-udp_send_len:		.res 2
+udp_send_dest:		.res 4  ;set to ip address that udp packet will be sent to
+udp_send_src_port:	.res 2 ;set to port that udp packet will be sent from
+udp_send_dest_port:	.res 2 ;set to port that udp packet will be sent to
+udp_send_len:		.res 2 ;set to length of data to be sent in udp packet (excluding ethernet,ip & udp headers)
 
 ; udp listener callbacks
 udp_cbmax	= 4
-udp_cbtmp:	.res 3			; temporary vector
 udp_cbveclo:	.res udp_cbmax		; table of listener vectors (lsb)
 udp_cbvechi:	.res udp_cbmax		; table of listener vectors (msb)
 udp_cbportlo:	.res udp_cbmax		; table of ports (lsb)
@@ -71,13 +79,13 @@ udp_cbporthi:	.res udp_cbmax		; table of ports (msb)
 udp_cbcount:	.res 1			; number of active listeners
 
 ; udp packet offsets
-udp_inp		= ip_inp + ip_data
-udp_outp	= ip_outp + ip_data
-udp_src_port	= 0
-udp_dest_port	= 2
-udp_len		= 4
-udp_cksum	= 6
-udp_data	= 8
+udp_inp		= ip_inp + ip_data  ;pointer to udp packet inside inbound ethernet frame
+udp_outp	= ip_outp + ip_data ;pointer to udp packet inside outbound ethernet frame
+udp_src_port	= 0 ;offset of source port field in udp packet
+udp_dest_port	= 2 ;offset of destination port field in udp packet
+udp_len		= 4 ;offset of length field in udp packet
+udp_cksum	= 6 ;offset of checksum field in udp packet
+udp_data	= 8 ;offset of data in udp packet
 
 ; virtual header
 udp_vh		= udp_outp - 12
@@ -95,15 +103,23 @@ port:   	.res 2
 	.code
 
 ; initialize udp
+; inputs: none
+; outputs: none
 udp_init:
 	lda #0
 	sta udp_cbcount
-	lda #$4c			; jmp addr
-	sta udp_cbtmp
 	rts
 
 
-; process incoming udp packet
+;process incoming udp packet
+;inputs:
+; eth_inp: should contain an ethernet frame encapsulating an inbound udp packet
+;outputs:
+; carry flag set if any error occured (including if no handler for specified port
+;  was found)
+; carry flag clear if no error
+; if handler was found, an outbound message may be created, overwriting eth_outp
+
 udp_process:
 	lda udp_cbcount			; any installed udp listeners?
 	beq @drop
@@ -121,7 +137,9 @@ udp_process:
 	bpl @checkport
 
 @drop:
-	sec
+  lda #KPR_ERROR_NO_SUCH_LISTENER
+  sta  ip65_error
+  sec
 	rts
 
 @handle:
@@ -134,8 +152,12 @@ udp_process:
 	rts
 
 
-; add an udp listener
-; udp port in A/X, vector in udp_callback
+;add a udp listener
+;inputs:
+; udp_callback: vector to call when udp packet arrives on specified port
+; AX: set to udp port to listen on
+;outputs:
+; carry flag set if too may listeners already installed, clear otherwise
 udp_add_listener:
 	sta port
 	stx port + 1
@@ -169,18 +191,26 @@ udp_add_listener:
 	rts
 @full:
 @busy:
+  lda #KPR_ERROR_LISTENER_NOT_AVAILABLE
+  sta  ip65_error
+  sec
 	sec
 	rts
 
 
 ; remove an udp listener
-; udp port in A/X
+; inputs:
+; AX = port to stop listening on
+; outputs:
+; carry flag clear of handler found and removed
+; carry flag set if handler for specified port not found
 udp_remove_listener:
 	sta port
 	stx port + 1
 
 	ldy udp_cbcount			; any listeners installed?
 	beq @notfound
+  dey
 @check:
 	lda udp_cbportlo,y		; check if port is handled
 	cmp port
@@ -188,9 +218,8 @@ udp_remove_listener:
 	lda udp_cbporthi,y
 	cmp port + 1
 	beq @remove
-:	iny
-	cpy udp_cbcount
-	bne @check
+:	dey
+	bpl @check
 @notfound:
 	sec
 	rts
@@ -219,14 +248,15 @@ udp_remove_listener:
 	rts
 
 
-; send udp packet
-;
-; but first:
-;
-; set destination address
-; set source port
-; set destination port
-; set length
+;send udp packet
+;inputs:
+;   udp_send_dest:  destination ip address (4 bytes)
+;   udp_send_dest_port: destination port (2 bytes)
+;   udp_send_src_port: source port (2 bytes)
+;   udp_send_len: length of data to send (exclusive of any headers)
+;   AX: pointer to buffer containing data to be sent
+;outputs:
+;   carry flag is set if an error occured, clear otherwise
 udp_send:
 	stax copy_src			; copy data to output buffer
 	ldax #udp_outp + udp_data
@@ -312,3 +342,24 @@ udp_send_nocopy:
 	;jsr dbg_dump_udp_header
 
 	jmp ip_send			; send packet, sec on error
+
+
+
+;-- LICENSE FOR udp.s --
+; The contents of this file are subject to the Mozilla Public License
+; Version 1.1 (the "License"); you may not use this file except in
+; compliance with the License. You may obtain a copy of the License at
+; http://www.mozilla.org/MPL/
+; 
+; Software distributed under the License is distributed on an "AS IS"
+; basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
+; License for the specific language governing rights and limitations
+; under the License.
+; 
+; The Original Code is ip65.
+; 
+; The Initial Developer of the Original Code is Per Olofsson,
+; MagerValp@gmail.com.
+; Portions created by the Initial Developer are Copyright (C) 2009
+; Per Olofsson. All Rights Reserved.  
+; -- LICENSE END --

@@ -321,27 +321,27 @@ ENDVAL:	dex
 ; FindSlot - Find an uther card
 ;---------------------------------------------------------
 FindSlot:
-	lda PSSC
+	lda COMMSLOT
 	sta TempSlot
 	ldx #$00	; Slot number - start at min and work up
 FindSlotLoop:
-	stx PSSC	; ip65_init looks for PSSC to be the index
+	stx COMMSLOT	; ip65_init looks for COMMSLOT to be the index
 	clc
 	jsr ip65_init
 	bcc FoundSlot
-	ldx PSSC
+	ldx COMMSLOT
 	inx
-	stx PSSC
+	stx COMMSLOT
 	cpx #MAXSLOT
 	bne FindSlotLoop
 	jmp FindSlotDone
 FoundSlot:
-	lda PSSC
+	lda COMMSLOT
 	sta TempSlot
 FindSlotDone:
 ; All done now, so clean up
 	ldx TempSlot
-	stx PSSC
+	stx COMMSLOT
 	stx DEFAULT
 	rts
 

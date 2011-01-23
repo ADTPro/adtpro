@@ -20,6 +20,7 @@
 
 	.import ip65_init
 	.import ip65_process
+	.import dhcp_init
 
 	.import udp_add_listener
 	.import udp_callback
@@ -55,6 +56,14 @@ INITUTHER:
 	GO_FAST				; Speed back up for SOS
 	rts
 @UTHEROK:
+	jsr dhcp_init
+	bcc @UTHEROK2
+	ldy #PMUTHBAD
+	jsr WRITEMSGAREA
+	jsr PATCHNULL
+	GO_FAST				; Speed back up for SOS
+	rts
+@UTHEROK2:
 	ldax #UDPDISPATCH
 	stax udp_callback
 	ldax #6502

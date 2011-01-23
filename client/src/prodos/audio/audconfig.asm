@@ -268,7 +268,7 @@ CONFIG_FILE_NAME:	.byte 14
 			asc "ADTPROAUD.CONF"
 
 PARMS:
-PSSC:			; Need a reference; not really used in audio version
+COMMSLOT:			; Need a reference; not really used in audio version
 PSOUND:	.byte 0		; Sounds? (YES)
 PSAVE:	.byte 1		; Save parms? (NO)
 

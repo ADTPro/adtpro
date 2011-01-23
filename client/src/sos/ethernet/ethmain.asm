@@ -1,6 +1,6 @@
 ;
 ; ADTPro - Apple Disk Transfer ProDOS
-; Copyright (C) 2006 - 2008 by David Schmidt
+; Copyright (C) 2006 - 2011 by David Schmidt
 ; david__schmidt at users.sourceforge.net
 ;
 ; This program is free software; you can redistribute it and/or modify it 
@@ -23,7 +23,7 @@
 	.include "sos/sosconst.i"	; OS equates, characters, etc.
 	.include "sos/sosvars.asm"	; DATA segment
 	.include "sos/ethernet/ethmessages.asm"	; Messages - DATA segment
-	.include "ip65/common.i"	; More macros - ldax, for example
+	.include "ip65/inc/common.i"	; More macros - ldax, for example
 
 	.include "main.asm"	; STARTUP segment
 

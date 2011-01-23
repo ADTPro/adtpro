@@ -1,6 +1,6 @@
 ;
 ; ADTPro - Apple Disk Transfer ProDOS
-; Copyright (C) 2006 - 2010 by David Schmidt
+; Copyright (C) 2006 - 2011 by David Schmidt
 ; david__schmidt at users.sourceforge.net
 ;
 ; This program is free software; you can redistribute it and/or modify it 
@@ -18,10 +18,6 @@
 ; 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 ;
 
-	.export cfg_ip
-	.export cfg_netmask
-	.export cfg_gateway
-
 raw_x:		.byte $00
 raw_y:		.byte $00
 xpos:		.byte $14
@@ -29,10 +25,10 @@ ypos:		.byte $07
 current_value:	.byte $00
 new_digit:	.byte $09
 ip_parms_temp:
-	.byte 192, 168,   0,  12
-	.byte 192, 168,   0, 123
-	.byte 255, 255, 248,   0
-	.byte 192, 168,   0,   1
+		.byte 192, 168,   0,  12
+		.byte   0,   0,   0,   0
+		.byte   0,   0,   0,   0
+		.byte   0,   0,   0,   0
 ip_parms_temp_done:
 Hundred = $64
 Ten = $0a

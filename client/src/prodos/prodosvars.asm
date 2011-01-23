@@ -1,6 +1,6 @@
 ;
 ; ADTPro - Apple Disk Transfer ProDOS
-; Copyright (C) 2008 by David Schmidt
+; Copyright (C) 2008 - 2011 by David Schmidt
 ; david__schmidt at users.sourceforge.net
 ;
 ; This program is free software; you can redistribute it and/or modify it 
@@ -18,9 +18,11 @@
 ; 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 ;
 
+.export output_buffer
+
 .global CAPBLKS, DEVICES, PARMBUF, BLKLO, BLKHI, BIGBUF, CRCTBLL, CRCTBLH
 .global NUMBLKS, HOSTBLX, UNITNBR
-.global PARMS, PSSC, PSPEED, PSOUND, PSAVE, PGSSLOT, SR_WR_C, SLOWA, SLOWX, SLOWY
+.global PARMS, COMMSLOT, PSPEED, PSOUND, PSAVE, PGSSLOT, SR_WR_C, SLOWA, SLOWX, SLOWY
 .global PCCRC, COLDSTART, BAUD, NonDiskII, SendType
 
 .globalzp ZP, UTILPTR, COL_SAV, RLEPREV, UNUSED1, CRC, BLKPTR, Buffer
@@ -42,6 +44,7 @@ BLKHI	= PARMBUF+$05	; Part of PARMBUF structure
 
 BIGBUF	= $6600		; The place where all the action happens
 ; Note: we now have 6 pages of free space between $B600 and $BC00.
+output_buffer = BIGBUF	; For ip65 buffer space
 CRCTBLL	= $BC00		; CRC LOW TABLE  ($100 Bytes)
 CRCTBLH	= $BD00		; CRC HIGH TABLE ($100 Bytes)
 
