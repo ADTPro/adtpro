@@ -20,12 +20,8 @@
 	.import eth_outp
 	.import eth_outp_len
 
-	.import fix_eth_tx_00	; from ip.s
-	.import fix_eth_tx_01	; from icmp.s
-	.import fix_eth_tx_02	; from arp.s
-	.import fix_eth_tx_03	; from arp.s
-
-	.import fix_eth_rx_00	; from ip65.s
+	.import fix_eth_tx
+	.import fix_eth_rx
 
 	.importzp eth_dest
 	.importzp eth_src
@@ -281,19 +277,11 @@ EMOD46:	sty cs_packet_data + 1
 ;
 cs_self_modify:
 
-	ldax #uth_tx		; Fixup transmit addresses
-	sta fix_eth_tx_00 +1
-	stx fix_eth_tx_00 +2
-	sta fix_eth_tx_01 +1
-	stx fix_eth_tx_01 +2
-	sta fix_eth_tx_02 +1
-	stx fix_eth_tx_02 +2
-	sta fix_eth_tx_03 +1
-	stx fix_eth_tx_03 +2
+	ldax #uth_tx		; Fixup transmit addresses in the stack
+	jsr fix_eth_tx
 
-	ldax #uth_rx		; Fixup receive addresses
-	sta fix_eth_rx_00 + 1
-	stx fix_eth_rx_00 + 2
+	ldax #uth_rx		; Fixup receive addresses in the stack
+	jsr fix_eth_rx
 
 	ldy COMMSLOT	; GET SLOT# (0..6)
 	iny		; NOW 1..7

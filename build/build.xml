@@ -184,7 +184,7 @@ everywhere it is invoked:
 		</exec>
 		<echo message="Linking ADTPROETH..."/>
 		<exec dir="${projdir}/client/src" executable="${assemblerPath}/ld65">
-			<arg line="-m adtproeth.map -C prodos/ethernet/adtpro.cfg -o ADTPROETH.BIN prodos/ethernet/ethmain.o ip65/ip65.lib ip65/a2uther.lib ip65/a2lancegs.lib tail.o" />
+			<arg line="-m adtproeth.map -C prodos/ethernet/adtpro.cfg -o ADTPROETH.BIN prodos/ethernet/ethmain.o ip65/ip65.lib tail.o" />
 		</exec>
 		<!--
 		Move the object code to the build directory
@@ -244,7 +244,7 @@ everywhere it is invoked:
 		</exec>
 		<echo message="Linking ADTSOSETH..."/>
 		<exec dir="${projdir}/client/src" executable="${assemblerPath}/ld65">
-			<arg line="-m adtsoseth.map -C sos/ethernet/adtpro.cfg -o ADTSOSETH sos/ethernet/ethmain.o ip65/ip65.lib ip65/a2uther.lib ip65/a2lancegs.lib tail.o" />
+			<arg line="-m adtsoseth.map -C sos/ethernet/adtpro.cfg -o ADTSOSETH sos/ethernet/ethmain.o ip65/ip65.lib tail.o" />
 		</exec>
 		<echo message="Linking grub..."/>
 		<exec dir="${projdir}/client/src" executable="${assemblerPath}/ld65">
@@ -300,16 +300,7 @@ everywhere it is invoked:
 		<apply executable="${assemblerPath}/ar65" dir="${projdir}/client/src/ip65" output="ar65garbageoutputdeleteme">
 			<arg line="a ip65.lib "/>
 			<fileset dir="${projdir}/client/src/ip65/ip65" includes="**/*.o"/>
-		</apply>
-		<delete file="ar65garbageoutputdeleteme" />
-		<apply executable="${assemblerPath}/ar65" dir="${projdir}/client/src/ip65" output="ar65garbageoutputdeleteme">
-			<arg line="a a2uther.lib"/>
-			<fileset dir="${projdir}/client/src/ip65/drivers" includes="uthernet.o a2timer.o a2input.o cs8900a.o"/>
-		</apply>
-		<delete file="ar65garbageoutputdeleteme" />
-		<apply executable="${assemblerPath}/ar65" dir="${projdir}/client/src/ip65" output="ar65garbageoutputdeleteme">
-			<arg line="a a2lancegs.lib"/>
-			<fileset dir="${projdir}/client/src/ip65/drivers" includes="lancegs.o a2timer.o a2input.o lan91c96.o"/>
+			<fileset dir="${projdir}/client/src/ip65/drivers" includes="**/*.o"/>
 		</apply>
 		<delete file="ar65garbageoutputdeleteme" />
 	</target>
