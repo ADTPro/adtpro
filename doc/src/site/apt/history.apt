@@ -10,7 +10,9 @@ ADTPro Release History
 
  New functionality:
 
- * [Client] Enabled DHCP auto-configuration from Jonno Downes' latest ip65 code  
+ * [Client] Enabled DHCP auto-configuration from Jonno Downes' latest ip65 code
+   Note - Saved configuration files for Ethernet aren't compatible; so delete or
+   re-save them with this release
 
  []
 
