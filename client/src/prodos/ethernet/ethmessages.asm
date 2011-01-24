@@ -29,8 +29,8 @@
 	MSG12_END =*
 	MSG26: asc	"ETHERNET SLOT"
 	MSG26_END =*
-	MSG27:
-	MSG27_END =*			; Note - no message 27 in ethernet.
+	MSG27: asc	"CONFIGURE DHCP"
+	MSG27_END =*
 
 	IPMsg01: asc	"SERVER IP ADDR"
 	IPMsg01_END =*

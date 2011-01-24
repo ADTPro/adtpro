@@ -30,19 +30,21 @@
 ; Configuration
 ;---------------------------------------------------------
 
-PARMNUM	= $03		; Number of configurable parms
+PARMNUM	= $04		; Number of configurable parms
 ;			; Note - add bytes to OLDPARM if this is expanded.
-PARMSIZ: .byte 4,2,2	; Number of options for each parm
+PARMSIZ: .byte 4,2,2,2	; Number of options for each parm
 LINECNT:	.byte 00		; CURRENT LINE NUMBER
 CURPARM:	.byte 00		; ACTIVE PARAMETER
 CURVAL:		.byte 00		; VALUE OF ACTIVE PARAMETER
-OLDPARM:	.byte $00,$00,$00	; There must be PARMNUM bytes here...
+OLDPARM:	.byte $00,$00,$00,$00	; There must be PARMNUM bytes here...
 
 PARMTXT:
 	ascz "1"
 	ascz "2"
 	ascz "3"
 	ascz "4"
+	ascz "YES"
+	ascz "NO"
 	ascz "YES"
 	ascz "NO"
 	ascz "YES"
@@ -55,9 +57,10 @@ YSAVE:	.byte $00
 
 PARMS:
 COMMSLOT:
-	.byte 2		; Zero-indexed Comms slot (3)
+	.byte 2		; Zero-indexed comms slot (3)
 PSOUND:	.byte 0		; Sounds? (YES)
 PSAVE:	.byte 1		; Save parms? (NO)
+PDHCP:	.byte 1		; DHCP Configuration? (NO)
 
 ip_parms:
 serverip:	.byte 192, 168,   0,  12
@@ -65,9 +68,10 @@ cfg_ip:		.byte   0,   0,   0,   0 ; ip address of local machine (will be overwri
 cfg_netmask:	.byte   0,   0,   0,   0 ; netmask of local network (will be overwritten if dhcp_init is called)
 cfg_gateway:	.byte   0,   0,   0,   0 ; ip address of router on local network (will be overwritten if dhcp_init is called)
 
-DEFAULT:	.byte 2,0,1	; Default parm indices
-CONFIGYET:	.byte 0		; Has the user configged yet?
+DEFAULT:	.byte 2,0,1,1	; Default parm indices
+CONFIGYET:	.byte 0		; Has the user configged yet? (YES)
 PARMSEND:
 cfg_dns:	.byte   0,   0,   0,   0 ; ip address of dns server to use (will be overwritten if dhcp_init is called)
 dhcp_server:	.byte   0,   0,   0,   0 ; will be set address of dhcp server that configuration was obtained from
-cfg_tftp_server: .byte   0,   0,   0,   0 ; ip address of server to send tftp requests to (can be a broadcast address)
+cfg_tftp_server:
+		.byte   0,   0,   0,   0 ; ip address of server to send tftp requests to (can be a broadcast address)

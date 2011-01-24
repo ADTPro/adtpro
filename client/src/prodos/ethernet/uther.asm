@@ -56,6 +56,8 @@ INITUTHER:
 	GO_FAST				; Speed back up for SOS
 	rts
 @UTHEROK:
+	lda PDHCP
+	bne @UTHEROK2
 	jsr dhcp_init
 	bcc @UTHEROK2
 	ldy #PMUTHBAD

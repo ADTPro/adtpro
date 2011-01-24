@@ -65,29 +65,35 @@ SAVPARM:
 	ldy #PMSG28a	; 'SAVE CONFIGURATION'
 	jsr WRITEMSG
 
+	ldx #$05	; Column
+	ldy #$06	; Row
+	jsr GOTOXY
+	ldy #PMSG27	; 'DHCP CONFIGURATION'
+	jsr WRITEMSG
+
 	ldx #$05
-	ldy #$07
+	ldy #$08
 	jsr GOTOXY
 	ldax #IPMsg01
 	ldy IP_MSG_LEN_TBL
 	jsr IPShowMsg	; 'SERVER IP ADDR'
 
 	ldx #$05
-	ldy #$08
+	ldy #$09
 	jsr GOTOXY
 	ldax #IPMsg02
 	ldy IP_MSG_LEN_TBL+1
 	jsr IPShowMsg	; 'LOCAL IP ADDR'
 	
 	ldx #$05
-	ldy #$09
+	ldy #$0a
 	jsr GOTOXY
 	ldax #IPMsg03
 	ldy IP_MSG_LEN_TBL+2
 	jsr IPShowMsg	; 'NETMASK'
 	
 	ldx #$05
-	ldy #$0a
+	ldy #$0b
 	jsr GOTOXY
 	ldax #IPMsg04
 	ldy IP_MSG_LEN_TBL+3
