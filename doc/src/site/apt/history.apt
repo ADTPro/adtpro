@@ -6,6 +6,14 @@
 
 ADTPro Release History
 
+* Unreleased - in CVS now
+
+ New functionality:
+
+ * [Client] Enabled DHCP auto-configuration from Jonno Downes' latest ip65 code  
+
+ []
+
 * 1.1.8 - January 17, 2011
 
  New functionality:
