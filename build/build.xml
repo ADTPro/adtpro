@@ -140,29 +140,29 @@ everywhere it is invoked:
 		-->
 		<echo message="Assembling ADTPROAUD source..."/>
 		<exec dir="${projdir}/client/src" executable="${assemblerPath}/ca65">
-			<arg line="-l -t none prodos/audio/audmain.asm" />
+			<arg line="-t none -l prodos/audio/audmain.lst prodos/audio/audmain.asm" />
 		</exec>
 		<echo message="Assembling ADTPROETH source..."/>
 		<exec dir="${projdir}/client/src" executable="${assemblerPath}/ca65">
-			<arg line="-l -t none prodos/ethernet/ethmain.asm" />
+			<arg line="-t none -l prodos/ethernet/ethmain.lst prodos/ethernet/ethmain.asm" />
 		</exec>
 		<echo message="Assembling ADTPRO source..."/>
 		<exec dir="${projdir}/client/src" executable="${assemblerPath}/ca65">
-			<arg line="-l -t none prodos/serial/sermain.asm" />
+			<arg line="-t none -l prodos/serial/sermain.lst prodos/serial/sermain.asm" />
 		</exec>
 		<echo message="Assembling ADTPRO Launcher source..."/>
 		<exec dir="${projdir}/client/src" executable="${assemblerPath}/ca65">
-			<arg line="-l -t none prodos/launch.asm" />
+			<arg line="-t none -l prodos/launch.lst prodos/launch.asm" />
 		</exec>
 		<exec dir="${projdir}/client/src" executable="${assemblerPath}/ca65">
-			<arg line="-l -t none prodos/startup.asm" />
+			<arg line="-t none -l prodos/startup.lst prodos/startup.asm" />
 		</exec>
 		<!--
 		Assemble and link the ADT source
 		-->
 		<echo message="Assembling ADT source..."/>
 		<exec dir="${projdir}/client/src/dos" executable="${assemblerPath}/cl65">
-			<arg line="-l -t none adt.s -o ADT" />
+			<arg line="-t none -l adt.lst adt.s -o ADT" />
 		</exec>
 		<!--
 		Link the bits
@@ -217,23 +217,23 @@ everywhere it is invoked:
 		-->
 		<echo message="Assembling ADTSOSSER source..."/>
 		<exec dir="${projdir}/client/src" executable="${assemblerPath}/ca65">
-			<arg line="-l -t none sos/serial/sermain.asm" />
+			<arg line="-t none sos/serial/sermain.asm" />
 		</exec>
 		<echo message="Assembling ADTSOSETH source..."/>
 		<exec dir="${projdir}/client/src" executable="${assemblerPath}/ca65">
-			<arg line="-l -t none sos/ethernet/ethmain.asm" />
+			<arg line="-t none sos/ethernet/ethmain.asm" />
 		</exec>
 		<echo message="Assembling SOS serial Grub source..."/>
 		<exec dir="${projdir}/client/src" executable="${assemblerPath}/ca65">
-			<arg line="-l -t none sos/serial/grub.asm" />
+			<arg line="-t none sos/serial/grub.asm" />
 		</exec>
 		<echo message="Assembling SOS serial Loader source..."/>
 		<exec dir="${projdir}/client/src" executable="${assemblerPath}/ca65">
-			<arg line="-l -t none sos/serial/loader.asm" />
+			<arg line="-t none sos/serial/loader.asm" />
 		</exec>
 		<echo message="Assembling SOS Kernel..."/>
 		<exec dir="${projdir}/client/src" executable="${assemblerPath}/ca65">
-			<arg line="-l -t none sos/serial/kernel.asm" />
+			<arg line="-t none sos/serial/kernel.asm" />
 		</exec>
 		<!--
 		Link the bits
@@ -285,13 +285,24 @@ everywhere it is invoked:
 		Assemble the IP65 stack source
 		-->
 		<echo message="Assembling IP65 source..."/>
-		<apply executable="${assemblerPath}/ca65" dir="${projdir}/client/src/ip65/drivers">
-			<arg line="-l -t c64" />
-			<fileset dir="${projdir}/client/src/ip65/drivers" includes="**/*.s"/>
-		</apply>
-		<apply executable="${assemblerPath}/ca65" dir="${projdir}/client/src/ip65/ip65">
-			<arg line="-l -t c64" />
+		<apply executable="${assemblerPath}/ca65" dir="${projdir}/client/src/ip65/ip65" relative="true">
 			<fileset dir="${projdir}/client/src/ip65/ip65" includes="**/*.s"/>
+			<arg value="-t"/>
+			<arg value="c64"/>
+			<arg value="-l"/>
+			<mapper type="glob" from="*.s" to="*.lst"/>
+			<targetfile/>
+			<srcfile/>
+		</apply>
+		<echo message="Assembling IP65 drivers..."/>
+		<apply executable="${assemblerPath}/ca65" dir="${projdir}/client/src/ip65/drivers" relative="true">
+			<fileset dir="${projdir}/client/src/ip65/drivers" includes="**/*.s"/>
+			<arg value="-t"/>
+			<arg value="c64"/>
+			<arg value="-l"/>
+			<mapper type="glob" from="*.s" to="*.lst"/>
+			<targetfile/>
+			<srcfile/>
 		</apply>
 		<!--
 		Package the IP65 stack library
