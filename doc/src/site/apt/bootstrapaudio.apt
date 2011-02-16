@@ -8,6 +8,8 @@ Apple II Audio Bootstrapping
 
  Please note that the IIgs, the IIc, and the /// don't have cassette ports, 
  so these procedures will only work on the II, II+, and IIe computers.
+ Also, while DOS ADT runs in 48k, ProDOS ADTPro requires your Apple to have 64k of memory.
+ You can still use the DOS bootstrap procedure here to get DOS going on a 48k Apple.
 
  The goal here is to get the ADTPro client
  down to the Apple so that you can easily transfer all the rest of the
