@@ -16,6 +16,12 @@ ADTPro Release History
 
  []
 
+ Bug fixes:
+
+ * [Client] Attempting to format a write-protected 5-1/4" floppy was hanging 
+
+ []
+
 * 1.1.8 - January 17, 2011
 
  New functionality:

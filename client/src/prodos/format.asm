@@ -1,4 +1,4 @@
-; Copyright (C) 2007 - 2010 by David Schmidt
+; Copyright (C) 2007 - 2011 by David Schmidt
 ; david__schmidt at users.sourceforge.net
 ;
 ; This program is free software; you can redistribute it and/or modify it 
@@ -507,7 +507,6 @@ MLIError:
 ;*                                 *
 ;***********************************
 Format:
-	php
 	lda Slot		; Fetch target drive SLOTNUM value
 	pha			; Store it on the stack
 	and #$70		; Mask off bit 7 and the lower 4 bits
@@ -558,7 +557,6 @@ LNext:
 Done:
 	ldx SlotF		; Turn the drive off
 	lda DiskOFF,x
-	plp
 	rts			; FORMAT is finished. Return to calling routine
 DiedII:
 	pha			; Save MLI error code on the stack
@@ -780,7 +778,6 @@ Phase:
 ;*                                *
 ;**********************************
 Ram3Form:
-	php
 	lda #3			; Format Request number
 	sta $42
 	lda Slot		; Slot of /Ram
@@ -796,14 +793,12 @@ Ram3Form:
 	jsr Ram3Dri
 	bit $C082		; Read ROM, use Bank 2(Put back on line)
 	bcs Ram3Err
-	plp
 	rts
 
 Ram3Dri:
 	jmp (Addr)
 Ram3Err:
 	tax
-	plp
 	pla
 	pla
 	txa
@@ -815,7 +810,6 @@ Ram3Err:
 ;*                                *
 ;**********************************
 SmartForm:
-	php
 	lda ShouldLLFormat	; Will be $08 if so
 	beq SmartFormDone
 	lda #3  		; Give Protocol Converter a Format Request
@@ -832,7 +826,6 @@ SmartForm:
 	bcs SmartErr		; Skip the test for successful low level formatting
 	clc
 SmartFormDone:
-	plp
 	jsr REPLACEVOLNAME	; Replace the volume name
 	rts
 
@@ -840,7 +833,6 @@ SmartDri:
 	jmp (Addr)
 SmartErr:
 	tax
-	plp
 	pla
 	pla
 	txa

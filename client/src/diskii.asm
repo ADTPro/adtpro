@@ -1,6 +1,6 @@
 ;
 ; ADTPro - Apple Disk Transfer ProDOS
-; Copyright (C) 2007 - 2010 by David Schmidt
+; Copyright (C) 2007 - 2011 by David Schmidt
 ; david__schmidt at users.sourceforge.net
 ;
 ; This program is free software; you can redistribute it and/or modify it 
@@ -84,15 +84,11 @@ MStore:
 	clc
 	rts
 LWRprot:
-	clc			; Disk is write protected
-	jsr Done		; Turn the drive off
-	lda #$2B
 	pla
-	pla
-	pla
-	pla
-	jmp Died		; Prompt for another FORMAT...
-
+	pla			; Pop a return address off the stack
+	lda #$2B	; Disk is write protected
+	sec
+	rts
 
 ;---------------------------------------------------------
 ; Two tables used in the arm movements. They must
