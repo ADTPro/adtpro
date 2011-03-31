@@ -17,6 +17,8 @@ There is a host (server) component that runs on modern computers with
 Java, and an Apple (client) component that runs on any Apple II or Apple ///
 compatible computer with at least 64k of memory.
 
+[images/download.png]
+
  ADTPro transfers disks using any of these communications devices:
 
     * {{{connectionsserial.html}Serial}} ports
