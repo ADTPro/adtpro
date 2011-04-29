@@ -1,6 +1,6 @@
 ;
 ; ADTPro - Apple Disk Transfer ProDOS
-; Copyright (C) 2006 - 2008 by David Schmidt
+; Copyright (C) 2006 - 2011 by David Schmidt
 ; david__schmidt at users.sourceforge.net
 ;
 ; This program is free software; you can redistribute it and/or modify it 
@@ -344,6 +344,7 @@ COMPLETE:
 	jsr WRITEMSGAREA
 	lda ECOUNT
 	beq CNOERR
+ 	jsr AWBEEP	; Beep on error
 	ldy #PMSG15
 	jsr WRITEMSG
 CNOERR:
