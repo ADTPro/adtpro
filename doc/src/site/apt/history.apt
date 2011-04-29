@@ -15,11 +15,13 @@ ADTPro Release History
    or re-save them with this release
 
  * [Client] Beep at the completion of a disk transfer that had read or write
-   errors.
+   errors
 
  []
 
  Bug fixes:
+
+ * [Client] Duplicate volume names caused incorrect/repeated volume size display
 
  * [Client] Attempting to format a write-protected 5-1/4" floppy was hanging 
 

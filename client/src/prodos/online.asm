@@ -1,6 +1,6 @@
 ;
 ; ADTPro - Apple Disk Transfer ProDOS
-; Copyright (C) 2006 - 2010 by David Schmidt
+; Copyright (C) 2006 - 2011 by David Schmidt
 ; david__schmidt at users.sourceforge.net
 ;
 ; This program is free software; you can redistribute it and/or modify it 
@@ -578,10 +578,12 @@ HOWBIG2:
 	clc
 	adc #$01	; Add one for the leading "/"
 	sta VOLNAME	; Store total name length
-	txa			; Preserve X
-	pha			; by pushing it onto the stack
+	txa		; Preserve X
+	pha		; by pushing it onto the stack
 	lda #'/'
 	sta VOLNAME+1
+	lda DEVICES,x	; Get ready to do an ONLINE query
+	STA PARMBUF+1	; for the device number before GET_FILE_INFO
 	ldy #$01
 @H2LOOP:
 	inx
@@ -591,13 +593,28 @@ HOWBIG2:
 	cpy VOLNAME
 	bne @H2LOOP
 
-@H2NAME:
-	LDA #$0A	; MLI call: FILE-INFO
+@H2ONLINE:
+	; Do an ONLINE query of the device to set the default device.
+	; This helps in the case of duplicate volume directory names.
+	LDA #$02
+	STA PARMBUF
+	LDA #<BIGBUF	; Don't really care about output
+	STA PARMBUF+2
+	LDA #>BIGBUF
+	STA PARMBUF+3
+	; MLI call: ONLINE status
+	CALLOS OS_ONL, PARMBUF
+	; Note: don't care about an error here, we're just
+	; pre-setting the device number since GET_FILE_INFO
+	; doesn't allow us to query by device number.
+
+	LDA #$0A
 	STA PARMBUF
 	LDA #<VOLNAME
 	STA PARMBUF+1
 	LDA #>VOLNAME
 	STA PARMBUF+2
+	; MLI call: FILE-INFO
 	CALLOS OS_GET_FILE_INFO, PARMBUF
 	BNE @H2ERROR
 	pla		; Grab the original X
