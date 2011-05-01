@@ -15,7 +15,8 @@ ADTPro Ethernet Connections
  switch.  You just need to set ADTPro's IP parameters (details 
  {{{configethernet.html#Client_IP_Configuration}below}}).
  ADTPro will automatically detect which kind of ethernet card you have, as well
- as the slot it is in. 
+ as the slot it is in.  It will ask for network parameters from DHCP by default, or
+ you can set them explicitly yourself.
  
  If your local network has MAC address filtering, you may need to add a
  rule for your router to allow the Apple to join the network.  The MAC
@@ -73,7 +74,7 @@ heard, but not everyone feels that way.  Express your own personal feelings here
 
 * Save Configuration
 
- Hit the "Return" key to work with these parameters.  Once you get a 
+ Hit the "Return" key any time to work with the parameters on-screen.  Once you get a 
 configuration that works for you, select "YES" for SAVE CONFIG and hit Return.
 
 [images/ethconfigSave.png]
@@ -82,6 +83,19 @@ configuration that works for you, select "YES" for SAVE CONFIG and hit Return.
  to the same place where you started ADTPro from.
  When you start ADTPro again, it will use the configuration parameters you 
  saved last.
+
+* Configure DHCP
+
+ You can either get your local IP address and other configuration elements from your
+network's DHCP server, or you can enter them manually.
+Leave "CONFIGURE DHCP" set to "YES" to request a DHCP
+configuration if you don't already have one assigned.
+
+ If, instead, you'd rather manage all the parameters yourself - simply set 
+"CONFIGURE DHCP" to "NO" and configure away.  Note that in all cases, you will still
+need to manually enter the server's IP address (see below).  
+
+[images/ethconfigDHCP.png]
 
 * IP Parameters
 
@@ -98,9 +112,12 @@ will say what IP address it is currently serving:
 
 [images/ethServerIp.png]
 
+ The rest of the parameters will be filled in for you automatically if you keep the
+default <<<CONFIGURE DHCP>>> setting of <<<YES>>>.  If you would rather fill them
+in yourself, the following paragraphs will go over that. 
+
  For <<<LOCAL IP ADDR,>>> enter any IP address on your subnet that isn't already
-taken.  If your home network has IP addresses assigned by DHCP, this number might
-be tricky to come by.  But the final suffix of .123 is as likely a candidate as any.
+taken.  The final suffix of .123 is as likely a candidate as any to work.
 
  For <<<NETMASK>>> and <<<GATEWAY ADDR,>>> these will be the 
 same for the server computer as for your Apple, assuming you're on the same network.

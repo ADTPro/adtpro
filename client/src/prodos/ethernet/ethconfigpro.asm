@@ -63,7 +63,7 @@ COMMSLOT:
 	.byte 2		; Zero-indexed comms slot (3)
 PSOUND:	.byte 0		; Sounds? (YES)
 PSAVE:	.byte 1		; Save parms? (NO)
-PDHCP:	.byte 1		; DHCP Configuration? (NO)
+PDHCP:	.byte 0		; DHCP Configuration? (YES)
 
 ip_parms:
 serverip:	.byte 192, 168,   0,  12
@@ -71,7 +71,7 @@ cfg_ip:		.byte   0,   0,   0,   0 ; ip address of local machine (will be overwri
 cfg_netmask:	.byte   0,   0,   0,   0 ; netmask of local network (will be overwritten if dhcp_init is called)
 cfg_gateway:	.byte   0,   0,   0,   0 ; ip address of router on local network (will be overwritten if dhcp_init is called)
 
-DEFAULT:	.byte 2,0,1,1	; Default parm indices
+DEFAULT:	.byte 2,0,1,0	; Default parm indices
 CONFIGYET:	.byte 0		; Has the user configged yet? (YES)
 PARMSEND:
 cfg_dns:	.byte   0,   0,   0,   0 ; ip address of dns server to use (will be overwritten if dhcp_init is called)
