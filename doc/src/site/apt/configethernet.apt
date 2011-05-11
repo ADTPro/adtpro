@@ -33,7 +33,8 @@ ADTPro Ethernet {Client IP Configuration}
  program is named <<<SOS.INTERPETH>>> on the distribution diskette.  It will
  be necessary to rename <<<SOS.INTERPETH>>> to <<<SOS.INTERP>>> (also deleting
  or renaming the original serial <<<SOS.INTERP>>> program) in order to run it.  
- Additional details are {{{starting.html#Starting_the_Client_-_SOS}here.}}
+ Additional details about starting the client on SOS are 
+ {{{starting.html#Starting_the_Client_-_SOS}here.}}
  
  Hitting the "G" key from ADTPro's main menu brings up the ethernet 
  configuration screen:
@@ -47,7 +48,7 @@ selections.
  You can rotate through the options of a particular selection with the right and
 left arrow keys.  Your Apple has right and left arrow keys; trust me.
 
-* Comms Device
+* Ethernet Slot
 
  Select the slot your Ethernet card is in.
 
