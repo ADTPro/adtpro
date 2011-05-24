@@ -360,7 +360,7 @@ public final class Gui extends JFrame implements ActionListener
         Log.println(false, "Gui.actionPerformed acting on the ethernet button.");
         try
         {
-          boolean success = startComms(new UDPTransport("6502"));
+          boolean success = startComms(new UDPTransport(_properties.getProperty("UDPServerPort", "6502")));
           if (success)
           {
             String msg = Messages.getString("Gui.ServingEthernetTitle");
