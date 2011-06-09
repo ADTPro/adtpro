@@ -5,7 +5,7 @@ s@\</body\>@\<script src\=\"http\:\/\/www.google-analytics.com\/urchin.js\" type
 s@href="https://sourceforge.net/project/showfiles.php\?group_id\=170262"@href="https://sourceforge.net/project/showfiles.php\?group_id\=170262" target\="_new"@ig;
 s@(href="http://www.youtube.com/watch\?v=CMF3PL17kqg)(.*)"@\1\2" target\="_new"@ig;
 s@href="http://dataswamp.net/apple2eserialterm/index.php"@href="http://dataswamp.net/apple2eserialterm/index.php" target\="_new"@ig;
-s@href="http://site.voila.fr/ressources-apple2/adtpro/adtpro.html"@href="http://site.voila.fr/ressources-apple2/adtpro/adtpro.html" target\="_new"@ig;
+s@href="http://ressources-apple2.voila.net/adtpro/adtpro.html"@href="http://ressources-apple2.voila.net/adtpro/adtpro.html" target\="_new"@ig;
 s@href="http://boutillon.free.fr/Underground/Outils/ADTPro_iMac/ADTPro_iMac.html"@href="http://boutillon.free.fr/Underground/Outils/ADTPro_iMac/ADTPro_iMac.html" target\="_new"@ig;
 s@href="http://hanazam.net/apple/ageofii.htm"@href="http://hanazam.net/apple/ageofii.htm" target\="_new"@ig;
 s@href="http://a2retrosystems.com/"@href="http://a2retrosystems.com/" target\="_new"@ig;
