@@ -6,6 +6,15 @@
 
 ADTPro Release History
 
+* Unreleased - in CVS now:
+
+ Bug fixes:
+
+ * [Server] If a serial configuration isn't usable, it doesn't just
+   put up the dialog box saying you should change the configuration -
+   it brings up the change configuration dialog so you can actually
+   do it.
+
 * 1.1.9 - May 1, 2011
 
  New functionality:
