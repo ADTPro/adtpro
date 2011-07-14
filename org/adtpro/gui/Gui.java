@@ -806,6 +806,10 @@ public final class Gui extends JFrame implements ActionListener
     JOptionPane.showMessageDialog(this, Messages.getString(msgId));
     Log.println(false, "Gui.cancelCommsThread() Done showing dialog.");
     cleanupWindow();
+    if ((msgId == "Gui.PortDoesNotExist") || (msgId == "Gui.PortInUse"))
+    {
+      serialConfigGui(0);
+    }
   }
 
   public void cleanupWindow()
