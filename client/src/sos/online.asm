@@ -151,7 +151,6 @@ SV_DONE:
 	rts
 
 SV_NONE:
-	sta $0400
 	cmp #VNFERR
 	bne :+
 	jmp SV_DONE		; Volume not found - don't keep it
