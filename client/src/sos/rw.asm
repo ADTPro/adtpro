@@ -1,6 +1,6 @@
 ;
 ; ADTPro - Apple Disk Transfer ProDOS
-; Copyright (C) 2008 by David Schmidt
+; Copyright (C) 2008 - 2011 by David Schmidt
 ; david__schmidt at users.sourceforge.net
 ;
 ; This program is free software; you can redistribute it and/or modify it 
@@ -156,7 +156,7 @@ RWDIR:	CALLOS OS_READBLOCK, D_RW_PARMS
 	sta RWRESULT	; Remember the character we're going to use for this I/O result
 	jmp RWOK
 RWBAD:
-	cmp #DISKSK	; If we get a "disk switched" error, retry
+	cmp #DISKSW	; If we get a "disk switched" error, retry
 	beq RWDIR
 	lda #$01
 	sta ECOUNT

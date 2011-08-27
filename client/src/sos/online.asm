@@ -102,8 +102,11 @@ SCAN_VOLUME:
 	bne :-
 	bit DEVMODE
 	bvs SV_NEW_NAME			; Looking for formatters?  Branch if so.
-	CALLOS OS_ONL, VOLUME_PARMS	; Retrieve the volume name
+:	CALLOS OS_ONL, VOLUME_PARMS	; Retrieve the volume name
+	beq SV_NEW_NAME
+	cmp #DISKSW			; If we get a "disk switched" error, retry 
 	bne SV_NONE
+	jmp :-
 SV_NEW_NAME:
 	ldx LASTVOL
 	jsr POINT_AT
@@ -148,6 +151,7 @@ SV_DONE:
 	rts
 
 SV_NONE:
+	sta $0400
 	cmp #VNFERR
 	bne :+
 	jmp SV_DONE		; Volume not found - don't keep it

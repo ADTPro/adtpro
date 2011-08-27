@@ -1,6 +1,6 @@
 ;
 ; ADTPro - Apple Disk Transfer ProDOS
-; Copyright (C) 2006 - 2008 by David Schmidt
+; Copyright (C) 2006 - 2011 by David Schmidt
 ; david__schmidt at users.sourceforge.net
 ;
 ; This program is free software; you can redistribute it and/or modify it 
@@ -91,7 +91,7 @@ NORESRC			= $24
 BADOP			= $25
 IOERROR			= $27
 NOWRITE			= $2B
-DISKSK			= $2E
+DISKSW			= $2E
 
 BADPATH			= $40
 CFCBFULL		= $41
