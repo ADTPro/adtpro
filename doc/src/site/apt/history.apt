@@ -10,6 +10,9 @@ ADTPro Release History
 
  Bug fixes:
 
+ * [Client] Apple /// responds a little better to disk switched 
+   errors like those produced by the CFFA300 card
+
  * [Server] If a serial configuration isn't usable, it doesn't just
    put up the dialog box saying you should change the configuration -
    it brings up the change configuration dialog so you can actually
