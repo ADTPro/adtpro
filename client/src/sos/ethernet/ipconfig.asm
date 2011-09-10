@@ -21,11 +21,13 @@
 raw_x:		.byte $00
 raw_y:		.byte $00
 xpos:		.byte $14
-ypos:		.byte $07
+ypos:		.byte $08
 current_value:	.byte $00
 new_digit:	.byte $09
 ip_parms_temp:
 		.byte 192, 168,   0,  12
+		.byte   0,   0,   0,   0
+		.byte   0,   0,   0,   0
 		.byte   0,   0,   0,   0
 		.byte   0,   0,   0,   0
 		.byte   0,   0,   0,   0
