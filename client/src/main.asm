@@ -1,6 +1,6 @@
 ;
 ; ADTPro - Apple Disk Transfer ProDOS
-; Copyright (C) 2006 - 2008 by David Schmidt
+; Copyright (C) 2006 - 2011 by David Schmidt
 ; david__schmidt at users.sourceforge.net
 ;
 ; This program is free software; you can redistribute it and/or modify it 
@@ -23,7 +23,7 @@ entrypoint:
 ;---------------------------------------------------------
 ; Start us up
 ;---------------------------------------------------------
-	sei
+	;sei
 	cld
 
 	tsx		; Get a handle to the stackptr
@@ -142,8 +142,8 @@ KFORMAT:
 KQUIT:
 	cmp #CHR_Q	; Quit?
 	bne FORWARD	; No, it was an unknown key
-	cli
-	jmp QUIT	; Head into ProDOS oblivion
+	;cli
+	jmp QUIT	; Head into OS oblivion
 
 FORWARD:
 	jmp MAINL

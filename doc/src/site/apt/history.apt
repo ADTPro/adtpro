@@ -10,16 +10,19 @@ ADTPro Release History
 
  Bug fixes:
 
+ * [Server] If a serial configuration isn't usable, it doesn't just
+   put up the dialog box saying you should change the configuration -
+   it brings up the change configuration dialog so you can actually
+   do it.
+
+ * [Client] Don't lock out interrupts during program execution -
+   it hinders things like the GS Desk Accessory bringup
+
  * [Client] Apple /// responds a little better to disk switched 
    errors like those produced by the CFFA300 card
 
  * [Client] Apple /// Ethernet screen layout was missing DHCP
    configuration option
-
- * [Server] If a serial configuration isn't usable, it doesn't just
-   put up the dialog box saying you should change the configuration -
-   it brings up the change configuration dialog so you can actually
-   do it.
 
 * 1.1.9 - May 1, 2011
 
