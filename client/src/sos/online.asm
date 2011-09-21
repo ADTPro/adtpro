@@ -1,6 +1,6 @@
 ;
 ; ADTPro - Apple Disk Transfer ProDOS
-; Copyright (C) 2006 - 2010 by David Schmidt
+; Copyright (C) 2006 - 2011 by David Schmidt
 ; david__schmidt at users.sourceforge.net
 ;
 ; This program is free software; you can redistribute it and/or modify it 
@@ -160,7 +160,12 @@ SV_NONE:
 
 ; DEVMSG - Add message in Y to the "Volume name" area of the device
 DEVMSG:
-	lda MSGTBL,Y	; Y has an index into the messages table
+	lda D_INFO_OPTION+5
+	bne :+
+	lda D_INFO_OPTION+6
+	bne :+
+	jmp SV_DONE		; Skip it if it has zero blocks
+	lda MSGTBL,Y		; Y has an index into the messages table
 	sta UTILPTR2
 	lda MSGTBL+1,Y
 	sta UTILPTR2+1
