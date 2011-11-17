@@ -514,14 +514,14 @@ public class CommsThread extends Thread
                 zeroPad = "";
           nameGen = zeroPad + lastFileNumber;
           if ((length * 512) == Disk.APPLE_140KB_DISK) f = new File(name
-              + nameGen + ".DSK");
+              + nameGen + ".dsk");
           else
             f = new File(name + nameGen + ".PO");
           lastFileNumber++;
         }
         while (f.exists());
         if ((length * 512) == Disk.APPLE_140KB_DISK) name = name + nameGen
-            + ".DSK";
+            + ".dsk";
         else
           name = name + nameGen + ".PO";
       }
