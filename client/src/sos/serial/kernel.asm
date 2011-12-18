@@ -7638,6 +7638,7 @@ L5AAE:  plp
         .byte   $3C
         lsr     $50
         .byte   $5A
+JOYSTICK:
         lda     $C1
         cmp     #$08
         bcc     L5B29
