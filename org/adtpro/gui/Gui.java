@@ -292,6 +292,27 @@ public final class Gui extends JFrame implements ActionListener
     this.setVisible(true);
     SerialConfig.getSingleton(this);
     AudioConfig.getSingleton(this, _properties);
+    Log.println(true,"args.length = "+args.length);
+    if (args.length > 0)
+    {
+      String arg0 = args[0];
+      Log.println(true,"args [0] = "+arg0);
+      if ((arg0.equalsIgnoreCase(Messages.getString("Gui.EthernetButton"))) ||
+    	  (arg0.equalsIgnoreCase("ethernet")))
+      {
+        _ethernetButton.doClick();
+      }
+      else if ((arg0.equalsIgnoreCase(Messages.getString("Gui.SerialButton"))) ||
+               (arg0.equalsIgnoreCase("serial")))
+      {
+        _serialButton.doClick();
+      }
+      else if ((arg0.equalsIgnoreCase(Messages.getString("Gui.AudioButton"))) ||
+               (arg0.equalsIgnoreCase("audio")))
+      {
+        _audioButton.doClick();
+      }
+    }
     Log.println(false, "Gui Constructor exit.");
   }
 

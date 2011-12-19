@@ -34,5 +34,5 @@ PATH=%PATH%;%ADTPRO_HOME%lib\rxtx\%RXTX_ARCH%
 
 :start
 CD "%ADTPRO_HOME%disks"
-start /min %MY_JAVA_HOME%java -Xms128m -Xmx256m %ADTPRO_EXTRA_JAVA_PARMS% -cp "%ADTPRO_HOME%lib\%ADTPRO_VERSION%";"%ADTPRO_HOME%lib\rxtx\%RXTX_PATH%\RXTXcomm.jar" org.adtpro.ADTPro
+start /min %MY_JAVA_HOME%java -Xms128m -Xmx256m %ADTPRO_EXTRA_JAVA_PARMS% -cp "%ADTPRO_HOME%lib\%ADTPRO_VERSION%";"%ADTPRO_HOME%lib\rxtx\%RXTX_PATH%\RXTXcomm.jar" org.adtpro.ADTPro %*
 CD "%CWD%"
