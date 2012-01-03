@@ -36,6 +36,8 @@ everywhere it is invoked:
 	<property name="rxtxZip" value="${rxtxVersion}.zip" />
 	<property name="rxtxVersion2" value="rxtx-2.1-7-bins-r2" />
 	<property name="rxtxZip2" value="${rxtxVersion2}.zip" />
+	<property name="rxtxVersionCloudHopperWin64" value="ch-rxtx-2.2-20081207-win-x64" />
+	<property name="rxtxZipCHWin64" value="${rxtxVersionCloudHopperWin64}.zip" />
 	<property name="dmgmegabytes" value="6" />
 	<taskdef name="appleDump" classname="org.adtpro.utilities.AppleDump" classpath="${projdir}"/>
 	<taskdef name="jarbundler" classname="net.sourceforge.jarbundler.JarBundler" classpath="${jarBundlerJar}"/>
@@ -323,6 +325,7 @@ everywhere it is invoked:
 		<replace file="${builddir}/${distName}/adtpro.bat" token="%ADTPRO_VERSION%" value="${distName}.jar"/>
 		<replace file="${builddir}/${distName}/adtpro.bat" token="%RXTX_VERSION%" value="${rxtxVersion}"/>
 		<replace file="${builddir}/${distName}/adtpro.bat" token="%RXTX_VERSION_OLD%" value="${rxtxVersion2}"/>
+		<replace file="${builddir}/${distName}/adtpro.bat" token="%RXTX_VERSION_WIN64%" value="${rxtxVersionCloudHopperWin64}"/>
 		<replace file="${builddir}/${distName}/adtpro.cmd" token="%ADTPRO_VERSION%" value="${distName}.jar"/>
 		<replace file="${builddir}/${distName}/adtpro.cmd" token="%RXTX_VERSION%" value="${rxtxVersion}"/>
 		<replace file="${builddir}/${distName}/adtpro.sh" token="%ADTPRO_VERSION%" value="${distName}.jar"/>
@@ -499,6 +502,8 @@ everywhere it is invoked:
 		<unzip src="${builddir}/lib/rxtx/${rxtxZip}"
 			dest="${builddir}/${distName}/lib/rxtx"/>
 		<unzip src="${builddir}/lib/rxtx/${rxtxZip2}"
+			dest="${builddir}/${distName}/lib/rxtx"/>
+		<unzip src="${builddir}/lib/rxtx/${rxtxZipCHWin64}"
 			dest="${builddir}/${distName}/lib/rxtx"/>
 		<copy file="${builddir}/README" todir="${builddir}/${distName}" />
 		<copy file="${builddir}/LICENSE" todir="${builddir}/${distName}" />

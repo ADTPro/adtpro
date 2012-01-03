@@ -23,8 +23,8 @@ IF "%PROCESSOR_ARCHITECTURE%"=="x86" goto add_classpath
 
 :bit64
 REM Assume 64 bit Windows if not x86
-set RXTX_PATH=%RXTX_VERSION%
-set RXTX_ARCH=%RXTX_PATH%\win64
+set RXTX_PATH=%RXTX_VERSION_WIN64%
+set RXTX_ARCH=%RXTX_PATH%
 
 :add_classpath
 SET CWD=%CD%

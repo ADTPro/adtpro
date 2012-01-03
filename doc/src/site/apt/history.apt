@@ -10,6 +10,9 @@ ADTPro Release History
 
  Bug fixes:
 
+ * [Server] Integrate Cloudhopper's 64-bit Windows RXTX dll - 
+   fixes 2-way Windows 7 64-bit serial communications
+
  * [Server] If a serial configuration isn't usable, it doesn't just
    put up the dialog box saying you should change the configuration -
    it brings up the change configuration dialog so you can actually

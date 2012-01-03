@@ -104,6 +104,9 @@ were from Oliver Schmidt's LOADER.SYSTEM contribution to cc65, available
 
  Thanks to the {{{http://maven.apache.org}Maven}} project for web page generation.
 
+ The RXTX binary build for 64-bit Windows is provided as a courtesy of Cloudhopper.
+ Please see {{{http://rxtx.cloudhopper.net/}}rxtx.cloudhopper.net} for more info.
+
 ADT Lineage
 
  Rich Williamson (glitch at eskimo dot com) released SENDDISK on April 9, 1993.

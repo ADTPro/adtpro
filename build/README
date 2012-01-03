@@ -109,3 +109,6 @@ Keep working at your startup script or take a look at the RXTX install
 instructions in the rxtx directory. Remember, you can always ask for
 help in the ADTPro help forum:
 http://sourceforge.net/apps/phpbb/adtpro/
+
+RXTX binary build for 64-bit Windows provided as a courtesy of Cloudhopper.
+Please see http://rxtx.cloudhopper.net/ for more info.
