@@ -45,8 +45,8 @@ from the jSyncManager project: {{http://jsyncmanager.sourceforge.net/}}
 
  Hardware-level serial communications in Java comes from
 the rxtx organization: {{http://www.rxtx.org/}}.
- The RXTX binary build for 64-bit Windows is provided as a courtesy of Cloudhopper:
-{{http://rxtx.cloudhopper.net/}}.
+ The RXTX binaries for 64-bit Windows are provided as a courtesy of Cloudhopper:
+{{http://cloudhopper.com/opensource/rxtx}}.
 
  The routine to decide what kind of block device a particular slot/drive 
 combination contains was generously donated by Mark Percival.  It originates
