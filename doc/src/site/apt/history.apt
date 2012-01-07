@@ -18,7 +18,7 @@ ADTPro Release History
    it brings up the change configuration dialog so you can actually
    do it.
 
- * [Client] Be consistent when automatically adding suffixes (.dsk 
+ * [Server] Be consistent when automatically adding suffixes (.dsk 
    vs. .DSK)
 
  * [Client] Don't lock out interrupts during program execution -
