@@ -25,9 +25,9 @@ ADT Compatibility
 *-----:-----:------:------+
  ADT (Shipped with ADTPro) | 2.4 | II,+,e,c,GS,Laser,/// | ADTPro or Virtual ][ A2V2 on OSX | Serial (115.2k) | Nibble/half-track capable with A2V2
 *-----:-----:------:------+
- ADT (Berlios) | 1.33 | II,+,e,c,GS,Laser | PC DOS, Windows | Serial (115.2k) | 
+ ADT ({{{https://github.com/david-schmidt/adt/wiki}GitHub}}) | 1.33 | II,+,e,c,GS,Laser | PC DOS, Windows | Serial (115.2k) | 
 *-----:-----:------:------+
- A2V2 (Shipped with Virtual ][) | 2.1 |  II,+,e,c  | Virtual ][ A2V2 on OSX | Serial (19.2k) | Nibble/half-track capable with A2V2
+ A2V2 (Shipped with Virtual ][) | 2.1 |  II,+,e,c  | Virtual ][ A2V2 on OSX | Serial (19.2k) | Nibble/half-track capable
 *-----:-----:------:------+
  MacADT | 1.21 |  II,+,e,c  | Mac OS9 and earlier | Serial (19.2k) |
 *-----:-----:------:------+
