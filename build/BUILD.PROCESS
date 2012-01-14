@@ -71,7 +71,7 @@ the stuff that gets uploaded to sourceforge.
     uploading and movement with.  I haven't found a good GUI client
     for OSX or Linux.
 
-11. After upload and announcements go out (comp.sys.apple2, Freshmeat,
+11. After upload and announcements go out (comp.sys.apple2, Freecode,
     Softpedia, cnet downloads, etc.) change build/build.xml back to
     unreleased: <property name="versionString" value="v.r.m" />
 
