@@ -7,11 +7,11 @@ http://adtpro.sourceforge.net
 The ADTPro distribution comes as a single file named
 something similar to ADTPro-v.r.m with an extension
 particular to the target platform:
- 
+
   * ADTPro-v.r.m.tar.gz - Linux/Solaris
   * ADTPro-v.r.m.dmg - Mac OSX
   * ADTPro-v.r.m.zip - Windows/OS/2
-  
+
 Your distribution should contain most of these, depending on platform:
 
  * ADTPro-v.r.m.app       - OSX server application for OSX 10.3 and above
