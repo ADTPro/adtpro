@@ -562,7 +562,13 @@ everywhere it is invoked:
 		<delete file="${builddir}/${distName}/ADTPro.bat" />
 		<delete file="${builddir}/${distName}/ADTPro.cmd" />
 
-		<!-- Package up a nice .dmg -->
+		<!-- Push the "ADTPro-v.r.m" directory one level deeper.  I couldn't seem to get Ant to do what I wanted, so I just dumped in the simple shell commands I needed. -->
+		<tempfile property="tempFile"/>
+		<exec dir="${builddir}" os="Mac OS X" executable="/bin/sh">
+			<arg value="-c"/>
+			<arg value="mkdir ${tempFile};mv ${distName} ${tempFile};mv ${tempFile} ${distName}"/>
+		</exec>
+		<!-- Package up a pretty .dmg -->
 		<exec dir="${builddir}" os="Mac OS X" executable="/bin/sh">
 			<arg value="-c"/>
 			<arg value="${builddir}/mkdmg.sh ${builddir} ${distName} ${distName} ${distName} ${dmgmegabytes}"/>
