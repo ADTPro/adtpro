@@ -2,6 +2,9 @@
 REM
 REM ADTPro - Windows startup batch file
 REM
+REM Note:
+REM   Invoke with the name of the communications button to push
+REM   in order to start with that mode active (i.e. 'adtpro ethernet')
 
 SET ADTPRO_HOME=%CD%\
 

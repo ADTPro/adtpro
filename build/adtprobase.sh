@@ -2,6 +2,10 @@
 #
 # ADTPro - *nix startup shell script
 #
+# Note:
+#   Invoke with the name of the communications button to push
+#   in order to start with that mode active (i.e. './adtpro.sh ethernet')
+#
 # You can set two variables here:
 #   1. $MY_JAVA_HOME - to pick a particular java to run under
 #   2. $ADTPRO_HOME - to say where you installed ADTPro

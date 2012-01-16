@@ -20,23 +20,18 @@ Starting ADTPro
 
   [Windows:] <<<adtpro.bat>>>
 
- You can modify the startup program to suit your 
- environment.  Especially for the Unix variants - it may need
- a little tweaking to get the correct native serial library connected.
-
- When starting, you will see the following information echoed back on
- your console as the GUI is coming up:
-
-+-------
-ADTPro Server version v.r.m
-+-------
-
  Once started, the server program's GUI comes up:
 
 [images/serverInit.png]
 
  From here, you can select the communications device you want to use at 
  the host end by clicking one of the shiny buttons (besides Disconnect, of course).
+ If you would like to start the server up already listening in particular mode, you can
+ supply the startup script with the name of the communications mode of choice (as shown
+ on the button).
+ In English, those are Serial, Ethernet, and Audio.  For example, the invocation 
+ 'adtpro ethernet' starts up the server with the Ethernet button "pushed."
+
  Note that serial communications has an additional set of
  configuration options, accessible from the <<<File->Serial Configuration>>>
  menu item.  The first time you use serial communications, the Serial Configuration
