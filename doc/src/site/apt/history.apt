@@ -15,6 +15,8 @@ ADTPro Release History
  * [Server] Start up the server with any of the communications 
    buttons "pressed" - enabling headless server operations
 
+ []
+
  Bug fixes:
 
  * [Server] Integrate Cloudhopper's 64-bit Windows RXTX dll - 
