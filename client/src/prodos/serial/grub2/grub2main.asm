@@ -34,6 +34,9 @@ esc		= $9b		; ESCAPE KEY
 home		= $fc58		; CLEAR WHOLE SCREEN
 cout		= $fded		; Output character
 
+slotnumloc	= $058b		; Location on screen of slot number
+mliupdateloc	= $058b		; Location on screen of mli update progress
+
 .org	$7000
 
 init:
@@ -56,10 +59,32 @@ main:
 	bmi	fail
 	clc
 	adc	#$b1		; Make number printable; also increment (zero-indexed slot)
-	sta	$058b		; Show the discovered slot number
+	sta	slotnumloc	; Show the discovered slot number
 				; in the upper-left corner of the screen, for now
 	jsr	msg
 	.byte	" SLOT",$8d,$00
+
+;---------------------------------------------------------
+; PARMINT - INTERPRET PARAMETERS
+;---------------------------------------------------------
+parmint:
+	ldy	comm_slot	; Get parm index# (0..7)
+	iny			; Now slot# = 1..8 (where 8=IIgs, 9=Pascal entry points)
+	tya
+	cmp	#$08
+	bpl	drivers
+	jsr	initssc		; Y holds slot number
+	jmp	configged
+drivers:
+	cmp	#$09
+	bpl	pascalep
+	jsr 	initzgs
+	jmp	configged
+pascalep:
+	jsr	initssc
+
+configged:
+	jsr	resetio
 
 PullMLI:
 	jsr	msg
@@ -85,10 +110,10 @@ Poll:
 ReadMLI:			; We got the magic signature; start reading data
 	jsr	getc		; Pull a byte
 	sta	(b_p),y		; Save it
-	sta	$0410		; Print it in the status area
+	;sta	mliupdateloc	; Print it in the status area
 	iny
 	cpy	size		; Is y equal to the LSB of our target?
-	bne	:+			; No... check for next pageness
+	bne	:+		; No... check for next pageness
 	lda	size+1		; LSB is equal; is MSB?
 	beq	ReadMLIDone	; Yes... so done
 :	cpy	#$00
@@ -146,6 +171,7 @@ next_task:
 
 resetio:
 	jsr	$0000		; Pseudo-indirect JSR to reset the IO device
+	rts
 
 ;***********************************************
 ;
