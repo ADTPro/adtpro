@@ -47,7 +47,6 @@ public class AppleDump extends Task
     if (checkArgs(args) == true)
     {
       byte datum;
-      int fileLength = 0;
       FileInputStream fis = null;
       try
       {
@@ -86,7 +85,6 @@ public class AppleDump extends Task
             addr += _numBytes;
           }
           ps.print(UnsignedByte.toString(datum));
-          fileLength++;
           if (j % _numBytes < (_numBytes - 1) )
             ps.print(" ");
         }
