@@ -260,14 +260,22 @@ public class CommsThread extends Thread
             receiveNibbleDisk(false, 70);
             _busy = false;
             break;
+          case (byte) 178: // "2": Initiate PD dump
+              _busy = true;
+              _parent.setMainText(Messages.getString("CommsThread.5")); //$NON-NLS-1$
+              _parent.setSecondaryText(""); //$NON-NLS-1$
+              Log.println(false,"CommsThread.commandLoop() Received Apple II PD dump command."); //$NON-NLS-1$
+              requestSend(Messages.getString("Gui.BS.ProDOSRaw"), true, 0, 115200);
+              _busy = false;
+              break;
           case (byte) 179: // "3": Initiate SOS.KERNEL dump
-            _busy = true;
-            _parent.setMainText(Messages.getString("CommsThread.5")); //$NON-NLS-1$
-            _parent.setSecondaryText(""); //$NON-NLS-1$
-            Log.println(false,"CommsThread.commandLoop() Received Apple /// SOS.KERNEL dump command."); //$NON-NLS-1$
-            requestSend(Messages.getString("Gui.BS.SOSKERNEL"), true, 0, 9600);
-            _busy = false;
-            break;
+              _busy = true;
+              _parent.setMainText(Messages.getString("CommsThread.5")); //$NON-NLS-1$
+              _parent.setSecondaryText(""); //$NON-NLS-1$
+              Log.println(false,"CommsThread.commandLoop() Received Apple /// SOS.KERNEL dump command."); //$NON-NLS-1$
+              requestSend(Messages.getString("Gui.BS.SOSKERNEL"), true, 0, 9600);
+              _busy = false;
+              break;
           case (byte) 180: // "4": Initiate SOS.INTERP dump
             _busy = true;
             _parent.setMainText(Messages.getString("CommsThread.5")); //$NON-NLS-1$
@@ -2325,6 +2333,13 @@ public class CommsThread extends Thread
           slowLastLines = 0;
         }
         else
+            if (resource.equals(Messages.getString("Gui.BS.ProDOSRaw")))
+            {
+              resourceName = "org/adtpro/resources/PD.raw";
+              slowFirstLines = 0;
+              slowLastLines = 0;
+            }
+        else
           if (resource.equals(Messages.getString("Gui.BS.SOS")))
           {
             resourceName = "org/adtpro/resources/SOSLoader.raw";
@@ -2366,12 +2381,19 @@ public class CommsThread extends Thread
                 slowLastLines = 4;
               }
               else
-                if (resource.equals(Messages.getString("Gui.BS.ADTPro")))
-                {
-                  resourceName = "org/adtpro/resources/adtpro.dmp";
-                  slowFirstLines = 5;
-                  slowLastLines = 4;
-                }
+                  if (resource.equals(Messages.getString("Gui.BS.ADTPro")))
+                  {
+                    resourceName = "org/adtpro/resources/adtpro.dmp";
+                    slowFirstLines = 5;
+                    slowLastLines = 4;
+                  }
+                  else
+                      if (resource.equals(Messages.getString("Gui.BS.ADTProRaw")))
+                      {
+                        resourceName = "org/adtpro/resources/adtpro.raw";
+                        slowFirstLines = 0;
+                        slowLastLines = 0;
+                      }
                 else
                   if (resource.equals(Messages.getString("Gui.BS.ADTProAudio")))
                   {
@@ -2527,11 +2549,25 @@ public class CommsThread extends Thread
               Log.println(false, "CommsThread.Worker.run() read " + bytesRead + " more bytes from the stream.");
             }
             if (_resource.equals(Messages.getString("Gui.BS.SOSINTERP")) ||
+                _resource.equals(Messages.getString("Gui.BS.ProDOSRaw")) ||
+                _resource.equals(Messages.getString("Gui.BS.ADTProRaw")) ||
                 _resource.equals(Messages.getString("Gui.BS.SOSDRIVER")))
             {
-              // If we're sending SOS bootstrap stuff, we need to prepend the length and stuff
+              // If we're sending binary bootstrap stuff, we need to prepend the length and stuff
               // Log.println(true, "DEBUG: CommsThread.Worker.run() writing length header.");
-              _transport.writeByte(0x53); // Send an "S" to trigger the start
+                if (_resource.equals(Messages.getString("Gui.BS.SOSINTERP")) ||
+                    _resource.equals(Messages.getString("Gui.BS.SOSDRIVER")))
+                {
+                	_transport.writeByte(0x53); // Send an "S" to trigger the start
+                }
+                else if (_resource.equals(Messages.getString("Gui.BS.ProDOSRaw")))
+               {
+               	_transport.writeByte(0x50); // Send a "P" to trigger the start
+               }
+                else if (_resource.equals(Messages.getString("Gui.BS.ADTProRaw")))
+               {
+               	_transport.writeByte(0x41); // Send an "A" to trigger the start
+               }
               _transport.writeByte(UnsignedByte.loByte(buffer.length-1)); // Send buffer LSB
               _transport.writeByte(UnsignedByte.hiByte(buffer.length-1)); // Send buffer MSB
             }

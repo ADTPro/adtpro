@@ -98,6 +98,7 @@ everywhere it is invoked:
 		<delete file="${builddir}/ADTSOSETH.BIN" />
 		<delete file="${projdir}/client/src/messages.asm" />
 		<delete file="${projdir}/client/src/GRUB" />
+		<delete file="${projdir}/client/src/GRUB2" />
 		<delete file="${projdir}/client/src/LOADER" />
 		<delete file="${builddir}/${distName}.tar.gz" />
 		<delete file="${builddir}/${distName}.zip" />
@@ -110,6 +111,7 @@ everywhere it is invoked:
 		<delete file="${projdir}/org/adtpro/resources/adtproaud.dmp" />
 		<delete file="${projdir}/org/adtpro/resources/adtproeth.dmp" />
 		<delete file="${projdir}/org/adtpro/resources/grub.dmp" />
+		<delete file="${projdir}/org/adtpro/resources/grub2.dmp" />
 		<delete file="${projdir}/org/adtpro/resources/adt.raw" />
 		<delete file="${projdir}/org/adtpro/resources/adtpro.raw" />
 		<delete file="${projdir}/org/adtpro/resources/adtproaud.raw" />
@@ -159,6 +161,10 @@ everywhere it is invoked:
 		<exec dir="${projdir}/client/src" executable="${assemblerPath}/ca65">
 			<arg line="-t none -l prodos/startup.lst prodos/startup.asm" />
 		</exec>
+		<echo message="Assembling ProDOS serial Grub source..."/>
+		<exec dir="${projdir}/client/src" executable="${assemblerPath}/ca65">
+			<arg line="-t none -l prodos/serial/grub2/grub2.lst prodos/serial/grub2/grub2.asm" />
+		</exec>
 		<!--
 		Assemble and link the ADT source
 		-->
@@ -188,6 +194,10 @@ everywhere it is invoked:
 		<exec dir="${projdir}/client/src" executable="${assemblerPath}/ld65">
 			<arg line="-o ADTPROETH.BIN -m adtproeth.map -C prodos/ethernet/adtpro.cfg prodos/ethernet/ethmain.o ip65/ip65.lib tail.o" />
 		</exec>
+		<echo message="Linking grub2..."/>
+		<exec dir="${projdir}/client/src" executable="${assemblerPath}/ld65">
+			<arg line="-o GRUB2 -m grub2.map -C prodos/serial/grub2/grub2.cfg prodos/serial/grub2/grub2.o" />
+		</exec>
 		<!--
 		Move the object code to the build directory
 		-->
@@ -203,6 +213,7 @@ everywhere it is invoked:
 		<copy file="${builddir}/ADTPROETH.BIN" tofile="${basedir}/org/adtpro/resources/adtproeth.raw" />
 		<move file="${projdir}/client/src/dos/ADT" tofile="${builddir}/ADT" />
 		<copy file="${builddir}/ADT" tofile="${basedir}/org/adtpro/resources/adt.raw" />
+		<move file="${projdir}/client/src/GRUB2" tofile="${builddir}/GRUB2" />
 		<!--
 		Make dumpable versions
 		-->
@@ -211,6 +222,7 @@ everywhere it is invoked:
 		<appleDump infilename="${builddir}/ADTPROAUD.BIN" outfilename="${basedir}/org/adtpro/resources/adtproaud.dmp" applename="ADTPROAUD.BIN" startaddrhex="800" numbyteswide="10" decoration="begin" finalline="800G"/>
 		<appleDump infilename="${builddir}/ADTPRO.BIN" outfilename="${basedir}/org/adtpro/resources/adtpro.dmp" applename="ADTPRO.BIN" startaddrhex="800" numbyteswide="10"  decoration="begin" finalline="800G"/>
 		<appleDump infilename="${builddir}/ADT" outfilename="${basedir}/org/adtpro/resources/adt.dmp" applename="ADT" startaddrhex="803" numbyteswide="10" decoration="yes" />
+		<appleDump infilename="${builddir}/GRUB2" outfilename="${basedir}/org/adtpro/resources/grub2.dmp" applename="GRUB2" startaddrhex="7000" numbyteswide="10" decoration="yes" />
 	</target>
 
 	<target name="assembleSOS" depends="assembleCommon" if="SOS-needed">
@@ -362,6 +374,10 @@ everywhere it is invoked:
 		<java jar="${acJar}" fork="true" dir="${builddir}" input="${builddir}/ADTPRO">
 			<jvmarg line="-Dconsole.encoding=ISO-8859-15" />
 			<arg line="-p ${distName}/disks/${diskName}.DSK ADTPROETH sys 8192" />
+		</java>
+		<java jar="${acJar}" fork="true" dir="${builddir}" input="${builddir}/GRUB2">
+			<jvmarg line="-Dconsole.encoding=ISO-8859-15" />
+			<arg line="-p ${distName}/disks/${diskName}.DSK GRUB2 bin 28672" /> <!-- $7000 -->
 		</java>
 
 		<echo message="Adding ADTPRO to 5.25 disk image..."/>
