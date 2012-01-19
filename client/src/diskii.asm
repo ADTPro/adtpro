@@ -1251,7 +1251,7 @@ DRVRD_MOD12:
 	LDY #$AC	; +2c. Y [$AC,$FF] = $54 nibbles to read
 DECODE:
 	EOR NIB_2_6BB-$96,X	; +4c. Translate nibble to 6-bit byte+checksum
-	LDX NBUF2-$AC,Y	; +4c. Bits from auxiliary buffer
+	LDX $FE ;NBUF2-$AC,Y	; +4c. Bits from auxiliary buffer
 	EOR BIT_PAIR_TBL+2,X	; +4c. Merge in
 STORE3:
 	STA $FF00,Y	; +5c. Store byte in top third
