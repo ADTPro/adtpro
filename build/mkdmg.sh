@@ -46,6 +46,8 @@ echo '
            set position of item "'${VOLUME}'" of container window to {83, 101}
            set position of item "Applications" of container window to {242, 101}
            update without registering applications
+           close
+           open
            delay 5
      end tell
    end tell
