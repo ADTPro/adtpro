@@ -96,9 +96,9 @@ everywhere it is invoked:
 		<delete file="${builddir}/ADTPROAUD.BIN" />
 		<delete file="${builddir}/ADTPROETH.BIN" />
 		<delete file="${builddir}/ADTSOSETH.BIN" />
+		<delete file="${builddir}/GRUB2" />
 		<delete file="${projdir}/client/src/messages.asm" />
 		<delete file="${projdir}/client/src/GRUB" />
-		<delete file="${projdir}/client/src/GRUB2" />
 		<delete file="${projdir}/client/src/LOADER" />
 		<delete file="${builddir}/${distName}.tar.gz" />
 		<delete file="${builddir}/${distName}.zip" />
@@ -120,6 +120,7 @@ everywhere it is invoked:
 		<delete file="${projdir}/org/adtpro/resources/SK.raw" />
 		<delete file="${projdir}/org/adtpro/resources/SOSLoader.raw" />
 		<delete file="${projdir}/org/adtpro/resources/PD.dmp" />
+		<delete file="${projdir}/org/adtpro/resources/PDSpeed.dmp" />
 		<delete file="${projdir}/org/adtpro/resources/messages.properties" />
 		<delete>
 			<fileset dir="${projdir}/org/adtpro/resources" includes="messages_*.properties"/>
@@ -375,10 +376,6 @@ everywhere it is invoked:
 			<jvmarg line="-Dconsole.encoding=ISO-8859-15" />
 			<arg line="-p ${distName}/disks/${diskName}.DSK ADTPROETH sys 8192" />
 		</java>
-		<java jar="${acJar}" fork="true" dir="${builddir}" input="${builddir}/GRUB2">
-			<jvmarg line="-Dconsole.encoding=ISO-8859-15" />
-			<arg line="-p ${distName}/disks/${diskName}.DSK GRUB2 bin 28672" /> <!-- $7000 -->
-		</java>
 
 		<echo message="Adding ADTPRO to 5.25 disk image..."/>
 		<java jar="${acJar}" fork="true" dir="${builddir}" input="${builddir}/ADTPRO.BIN">
@@ -475,6 +472,7 @@ everywhere it is invoked:
 		<delete file="${builddir}/ADTPRO.BIN" />
 		<delete file="${builddir}/ADTPROETH.BIN" />
 		<delete file="${builddir}/ADTPROAUD.BIN" />
+		<delete file="${builddir}/GRUB2" />
 	</target>
 
 	<target name="buildSOSdsk" if="SOS-needed">

@@ -293,6 +293,14 @@ public class CommsThread extends Thread
             _busy = false;
             _parent.setSerialSpeed(0);
             break;
+          case (byte) 182: // "6": Initiate ADTPro dump
+              _busy = true;
+              _parent.setMainText(Messages.getString("CommsThread.5")); //$NON-NLS-1$
+              _parent.setSecondaryText(""); //$NON-NLS-1$
+              Log.println(false,"CommsThread.commandLoop() Received ADTPro serial dump command."); //$NON-NLS-1$
+              requestSend(Messages.getString("Gui.BS.ADTProRaw"), true, 0, 115200);
+              _busy = false;
+              break;
           default:
             Log.println(false,
                     "CommsThread.commandLoop() Received unknown command: " + UnsignedByte.toString(oneByte)); //$NON-NLS-1$
@@ -2320,10 +2328,18 @@ public class CommsThread extends Thread
     }
     else
     {
+      if (resource.equals(Messages.getString("Gui.BS.ProDOSFast")))
+      {
+        resourceName = "org/adtpro/resources/grub2.dmp";
+        slowFirstLines = 4;
+        slowLastLines = 0;
+      }
+      else
       if (resource.equals(Messages.getString("Gui.BS.ProDOS")))
       {
         resourceName = "org/adtpro/resources/PD.dmp";
         slowFirstLines = 4;
+        slowLastLines = 0;
       }
       else
         if (resource.equals(Messages.getString("Gui.BS.DOS")))
@@ -2335,9 +2351,10 @@ public class CommsThread extends Thread
         else
             if (resource.equals(Messages.getString("Gui.BS.ProDOSRaw")))
             {
-              resourceName = "org/adtpro/resources/PD.raw";
+              resourceName = "org/adtpro/resources/PDSpeed.raw";
               slowFirstLines = 0;
               slowLastLines = 0;
+              isBinary = true;
             }
         else
           if (resource.equals(Messages.getString("Gui.BS.SOS")))
@@ -2393,6 +2410,7 @@ public class CommsThread extends Thread
                         resourceName = "org/adtpro/resources/adtpro.raw";
                         slowFirstLines = 0;
                         slowLastLines = 0;
+                        isBinary=true;
                       }
                 else
                   if (resource.equals(Messages.getString("Gui.BS.ADTProAudio")))

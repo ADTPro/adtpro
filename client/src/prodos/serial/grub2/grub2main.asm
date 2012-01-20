@@ -24,27 +24,27 @@
 ; message and start listening on our best-guess port for data.
 
 
-; ZERO PAGE LOCATIONS (ALL UNUSED BY DOS, BASIC & MONITOR)
+; Zero page variables (all unused by DOS, BASIC and Monitor)
 msgptr		= $6		; POINTER TO MESSAGE TEXT (2B)
 b_p		= $8
 
-; Escape key definition
+; Apple constants
 esc		= $9b		; ESCAPE KEY
 
 home		= $fc58		; CLEAR WHOLE SCREEN
 cout		= $fded		; Output character
+delay		= $fca8		; Monitor delay: # cycles = (5*A*A + 27*A + 26)/2
 
+; Local constants
 slotnumloc	= $058b		; Location on screen of slot number
-mliupdateloc	= $058b		; Location on screen of mli update progress
+mliupdateloc	= $060f		; Location on screen of mli update progress
+adtproupdateloc	= $0612		; Location on screen of ADTPro update progress
 
-.org	$7000
+.org	$7000	; Make the listing more legible
 
 init:
-	lda	next_task
-	beq	main
-	cmp	#$01
-	jmp	PullClient
- 
+	jmp	main
+
 fail:
 	jsr	msg
 	.byte	" NO SERIAL SLOT.",$00
@@ -60,7 +60,6 @@ main:
 	clc
 	adc	#$b1		; Make number printable; also increment (zero-indexed slot)
 	sta	slotnumloc	; Show the discovered slot number
-				; in the upper-left corner of the screen, for now
 	jsr	msg
 	.byte	" SLOT",$8d,$00
 
@@ -86,16 +85,24 @@ pascalep:
 configged:
 	jsr	resetio
 
+SitAround:			; Delay a little bit after resetting the I/O
+	lda	#$ff
+	jsr	delay
+
+	lda	next_task
+	beq	PullMLI
+	jmp	PullClient
+
 PullMLI:
 	jsr	msg
-	.byte	"REQUESTED MLI: ",$00
+	.byte	"REQUESTED MLI:",$00
 	lda	#$B2		; Ask for the ProDOS MLI
 	jsr	putc		; Send a "2" to trigger the PD download
 
 ; Poll the port until we get a magic incantation
-	lda	#$20		; Store MLI at $2000
-	sta	b_p+1
-	ldy	#$00
+	ldy	#$20		; Prepare to store MLI at $2000
+	sty	b_p+1
+	ldy	#$00		; Prep y reg with zero for pointer ops later
 	sty	b_p
 Poll:
 	jsr	getc
@@ -110,7 +117,7 @@ Poll:
 ReadMLI:			; We got the magic signature; start reading data
 	jsr	getc		; Pull a byte
 	sta	(b_p),y		; Save it
-	;sta	mliupdateloc	; Print it in the status area
+	sta	mliupdateloc	; Print it in the status area
 	iny
 	cpy	size		; Is y equal to the LSB of our target?
 	bne	:+		; No... check for next pageness
@@ -123,17 +130,19 @@ ReadMLI:			; We got the magic signature; start reading data
 	jmp	ReadMLI		; Go back for more
 
 ReadMLIDone:
+	lda	#$01
+	sta	next_task	; Once MLI is done, re-entry should pull the client
 	jmp	$2000		; Fire up the MLI
 
 PullClient:
 	jsr	msg
-	.byte	$8d,"REQUESTED ADTPRO:",$00
+	.byte	"REQUESTED ADTPRO:",$00
 	lda	#$B6		; Ask for the Serial client
-	jsr	putc		; Send a "2" to trigger the PD download
+	jsr	putc		; Send a "6" to trigger the ADTPro serial client download
 
 ; Poll the port until we get a magic incantation
-	lda	#$08		; Store ADTPro at $0800
-	sta	b_p+1
+	ldy	#$08		; Store ADTPro at $0800
+	sty	b_p+1
 	ldy	#$00
 	sty	b_p
 PollC:
@@ -149,14 +158,14 @@ PollC:
 ReadClient:			; We got the magic signature; start reading data
 	jsr	getc		; Pull a byte
 	sta	(b_p),y		; Save it
-	sta	$0410		; Print it in the status area
+	sta	adtproupdateloc	; Print it in the status area
 	iny
 	cpy	size		; Is y equal to the LSB of our target?
 	bne	:+			; No... check for next pageness
 	lda	size+1		; LSB is equal; is MSB?
 	beq	ReadClientDone	; Yes... so done
 :	cpy	#$00
-	bne	ReadClient		; Check for page increment
+	bne	ReadClient	; Check for page increment
 	inc	b_p+1		; Increment another page
 	dec	size+1
 	jmp	ReadClient		; Go back for more
@@ -164,14 +173,6 @@ ReadClient:			; We got the magic signature; start reading data
 ReadClientDone:
 	jmp	$0800		; Fire up ADTPro
 
-next_task:
-	.byte	$00	; Tasks:
-			; 00 = Initial startup, need to seek the serial hardware and wait for ProDOS
-			; 01 = Load ADTPro client
-
-resetio:
-	jsr	$0000		; Pseudo-indirect JSR to reset the IO device
-	rts
 
 ;***********************************************
 ;
@@ -197,13 +198,26 @@ msgx:	lda msgptr+1
 	rts
 
 ;---------------------------------------------------------
-; PUTC - SEND ACC OVER THE SERIAL LINE (AXY UNCHANGED)
+; putc - SEND ACC OVER THE SERIAL LINE (AXY UNCHANGED)
 ;---------------------------------------------------------
 putc:	jmp	$0000	; Pseudo-indirect JSR - self-modified
 
 ;---------------------------------------------------------
-; GETC - GET A CHARACTER FROM SERIAL LINE (XY UNCHANGED)
+; getc - GET A CHARACTER FROM SERIAL LINE (XY UNCHANGED)
 ;---------------------------------------------------------
 getc:	jmp	$0000	; Pseudo-indirect JSR - self-modified
 
-size:	.res	2
+;---------------------------------------------------------
+; resetio - clean up the I/O device
+;---------------------------------------------------------
+resetio:
+	jsr	$0000	; Pseudo-indirect JSR to reset the I/O device
+	rts
+
+size:	.res	2	; Size of file to transfer (in bytes)
+comm_speed:
+	.byte	6	; 0 = 300, 1 = 1200, 2 = 2400, 3 = 4800, 4 = 9600, 5=19200, 6=115200
+next_task:
+	.byte	$00	; Tasks:
+			; 00 = Initial startup, need to seek the serial hardware and wait for ProDOS
+			; 01 = Load ADTPro client

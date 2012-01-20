@@ -491,7 +491,13 @@ public class SerialTransport extends ATransport
     Log.println(false,"SerialTransport.getInstructionsDone() getting instructions for: "
             + guiString);
     String ret = "";
-    if (guiString.equals(Messages.getString("Gui.BS.ProDOS")))
+    if (guiString.equals(Messages.getString("Gui.BS.ProDOSFast")))
+    {
+      _parent.setSerialSpeed(115200);
+      // ret = Messages.getString("Gui.BS.DumpProDOSFastInstructionsDone");
+    }
+    else
+      if (guiString.equals(Messages.getString("Gui.BS.ProDOS")))
     {
       ret = Messages.getString("Gui.BS.DumpProDOSInstructionsDone");
     }
@@ -519,6 +525,9 @@ public class SerialTransport extends ATransport
   public String getInstructions(String guiString, int fileSize, int speed)
   {
     String ret = "'SerialTransport.getInstructions() - returned null!'";
+    if (guiString.equals(Messages.getString("Gui.BS.ProDOSFast"))) ret = Messages
+    .getString("Gui.BS.DumpProDOSFastInstructions");
+    else
     if (guiString.equals(Messages.getString("Gui.BS.ProDOS"))) ret = Messages
         .getString("Gui.BS.DumpProDOSInstructions");
     else

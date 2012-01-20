@@ -126,4 +126,3 @@ FindSlotMaybeIII:
 TempSlot:	.byte 0
 TempIIgsSlot:	.byte 0
 comm_slot:	.byte	$ff		; COMMS SLOT
-comm_speed: .byte	6		; COMMS SPEED (115k)
