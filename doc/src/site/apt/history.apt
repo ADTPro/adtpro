@@ -10,6 +10,8 @@ ADTPro Release History
 
  New functionality:
 
+ * Much faster serial bootstrapping - from 7+ minutes down to 2:22
+
  * [Server] Mac OSX has a prettier "installer" via the DMG -
    just drag/drop the ADTPro folder to Applications
 
