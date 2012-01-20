@@ -18,18 +18,12 @@
 ; 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 ;
 
-; Serial bootstrapper grub
-;
-; After learning enough information about the serial hardware, put up a 
-; message and start listening on our best-guess port for data.
-
-
 ; Zero page variables (all unused by DOS, BASIC and Monitor)
-msgptr		= $6		; POINTER TO MESSAGE TEXT (2B)
+UTILPTR		= $6
 b_p		= $8
 
 ; Apple constants
-esc		= $9b		; ESCAPE KEY
+CHR_ESC		= $9b		; ESCAPE KEY
 
 home		= $fc58		; CLEAR WHOLE SCREEN
 cout		= $fded		; Output character
@@ -46,6 +40,7 @@ init:
 	jmp	main
 
 fail:
+INITPAS:
 	jsr	msg
 	.byte	" NO SERIAL SLOT.",$00
 	rts
@@ -55,49 +50,31 @@ main:
 	jsr	msg
 	.byte	$8d,"ADTPRO SERIAL BOOTSTRAPPER",$8d,$8d,"FOUND",$00
 	jsr	FindSlot	; Sniff out a likely comm slot
-	lda	comm_slot
+	lda	COMMSLOT
 	bmi	fail
 	clc
 	adc	#$b1		; Make number printable; also increment (zero-indexed slot)
 	sta	slotnumloc	; Show the discovered slot number
 	jsr	msg
 	.byte	" SLOT",$8d,$00
-
-;---------------------------------------------------------
-; PARMINT - INTERPRET PARAMETERS
-;---------------------------------------------------------
-parmint:
-	ldy	comm_slot	; Get parm index# (0..7)
-	iny			; Now slot# = 1..8 (where 8=IIgs, 9=Pascal entry points)
-	tya
-	cmp	#$08
-	bpl	drivers
-	jsr	initssc		; Y holds slot number
-	jmp	configged
-drivers:
-	cmp	#$09
-	bpl	pascalep
-	jsr 	initzgs
-	jmp	configged
-pascalep:
-	jsr	initssc
-
-configged:
-	jsr	resetio
+	jsr	PARMINT
+	jsr	RESETIO
 
 SitAround:			; Delay a little bit after resetting the I/O
 	lda	#$ff
 	jsr	delay
 
+	jsr	msg
+	.byte	"LOADING ",$00
 	lda	next_task
 	beq	PullMLI
 	jmp	PullClient
 
 PullMLI:
 	jsr	msg
-	.byte	"REQUESTED MLI:",$00
+	.byte	"MLI:",$00
 	lda	#$B2		; Ask for the ProDOS MLI
-	jsr	putc		; Send a "2" to trigger the PD download
+	jsr	PUTC		; Send a "2" to trigger the PD download
 
 ; Poll the port until we get a magic incantation
 	ldy	#$20		; Prepare to store MLI at $2000
@@ -105,17 +82,17 @@ PullMLI:
 	ldy	#$00		; Prep y reg with zero for pointer ops later
 	sty	b_p
 Poll:
-	jsr	getc
+	jsr	GETC
 	cmp	#$50		; First character will be "P" for ProDOS
 	bne	Poll
-	jsr	getc		; LSB of length
+	jsr	GETC		; LSB of length
 	sta	size
-	jsr	getc		; MSB of length
+	jsr	GETC		; MSB of length
 	beq	Poll		; Better not be zero
 	sta	size+1		; We're ready to read everything else now
 
 ReadMLI:			; We got the magic signature; start reading data
-	jsr	getc		; Pull a byte
+	jsr	GETC		; Pull a byte
 	sta	(b_p),y		; Save it
 	sta	mliupdateloc	; Print it in the status area
 	iny
@@ -136,9 +113,9 @@ ReadMLIDone:
 
 PullClient:
 	jsr	msg
-	.byte	"REQUESTED ADTPRO:",$00
+	.byte	"ADTPRO:",$00
 	lda	#$B6		; Ask for the Serial client
-	jsr	putc		; Send a "6" to trigger the ADTPro serial client download
+	jsr	PUTC		; Send a "6" to trigger the ADTPro serial client download
 
 ; Poll the port until we get a magic incantation
 	ldy	#$08		; Store ADTPro at $0800
@@ -146,17 +123,17 @@ PullClient:
 	ldy	#$00
 	sty	b_p
 PollC:
-	jsr	getc
+	jsr	GETC
 	cmp	#$41		; First character will be "A" for ADTPro
 	bne	PollC
-	jsr	getc		; LSB of length
+	jsr	GETC		; LSB of length
 	sta	size
-	jsr	getc		; MSB of length
+	jsr	GETC		; MSB of length
 	beq	PollC		; MSB better not be zero
 	sta	size+1		; We're ready to read everything else now
 
 ReadClient:			; We got the magic signature; start reading data
-	jsr	getc		; Pull a byte
+	jsr	GETC		; Pull a byte
 	sta	(b_p),y		; Save it
 	sta	adtproupdateloc	; Print it in the status area
 	iny
@@ -168,7 +145,7 @@ ReadClient:			; We got the magic signature; start reading data
 	bne	ReadClient	; Check for page increment
 	inc	b_p+1		; Increment another page
 	dec	size+1
-	jmp	ReadClient		; Go back for more
+	jmp	ReadClient	; Go back for more
 
 ReadClientDone:
 	jmp	$0800		; Fire up ADTPro
@@ -179,44 +156,57 @@ ReadClientDone:
 ; msg -- print an in-line message
 ;
 msg:	pla
-	sta msgptr
+	sta	UTILPTR
 	pla
-	sta msgptr+1
-	ldy #0
-msg1:	inc msgptr
-	bne :+
-	inc msgptr+1
-:	lda (msgptr),y
-	beq msgx
-	ora #%10000000
-	jsr cout
-	jmp msg1
-msgx:	lda msgptr+1
+	sta	UTILPTR+1
+	ldy	#0
+msg1:	inc	UTILPTR
+	bne	:+
+	inc	UTILPTR+1
+:	lda	(UTILPTR),y
+	beq	msgx
+	ora	#%10000000
+	jsr	cout
+	jmp	msg1
+msgx:	lda	UTILPTR+1
 	pha
-	lda msgptr
+	lda	UTILPTR
 	pha
 	rts
 
 ;---------------------------------------------------------
-; putc - SEND ACC OVER THE SERIAL LINE (AXY UNCHANGED)
+; PUTC - SEND ACC OVER THE SERIAL LINE (AXY UNCHANGED)
 ;---------------------------------------------------------
-putc:	jmp	$0000	; Pseudo-indirect JSR - self-modified
+PUTC:	jmp	$0000	; Pseudo-indirect JSR - self-modified
 
 ;---------------------------------------------------------
-; getc - GET A CHARACTER FROM SERIAL LINE (XY UNCHANGED)
+; GETC - GET A CHARACTER FROM SERIAL LINE (XY UNCHANGED)
 ;---------------------------------------------------------
-getc:	jmp	$0000	; Pseudo-indirect JSR - self-modified
+GETC:	jmp	$0000	; Pseudo-indirect JSR - self-modified
 
 ;---------------------------------------------------------
-; resetio - clean up the I/O device
+; RESETIO - clean up the I/O device
 ;---------------------------------------------------------
-resetio:
+RESETIO:
 	jsr	$0000	; Pseudo-indirect JSR to reset the I/O device
 	rts
 
+;---------------------------------------------------------
+; abort - stop everything
+;---------------------------------------------------------
+PABORT:	ldx	#$ff		; POP GOES THE STACKPTR
+	txs
+	jmp	main		; Let next_task sort 'em out
+
+;---------------------------------------------------------
+; Variables
+;---------------------------------------------------------
 size:	.res	2	; Size of file to transfer (in bytes)
-comm_speed:
-	.byte	6	; 0 = 300, 1 = 1200, 2 = 2400, 3 = 4800, 4 = 9600, 5=19200, 6=115200
+PSPEED:
+	.byte	3	; 0 = 300, 1 = 9600, 2 = 19200, 3 = 115200
+COMMSLOT:
+DEFAULT:
+	.byte	$ff	; Start with -1 for a slot number so we can tell when we find no slot
 next_task:
 	.byte	$00	; Tasks:
 			; 00 = Initial startup, need to seek the serial hardware and wait for ProDOS

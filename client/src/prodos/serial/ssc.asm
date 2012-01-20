@@ -1,6 +1,6 @@
 ;
 ; ADTPro - Apple Disk Transfer ProDOS
-; Copyright (C) 2006 - 2010 by David Schmidt
+; Copyright (C) 2006 - 2012 by David Schmidt
 ; david__schmidt at users.sourceforge.net
 ;
 ; This program is free software; you can redistribute it and/or modify it 
@@ -51,7 +51,7 @@ SSCPUT:
 	pha		; Push A onto the stack
 PUTC1:	lda $C000
 	cmp #CHR_ESC	; Escape = abort
-	beq PABORT
+	beq SABORT
 
 MOD1:	lda $C089	; Check status bits
 MOD5:	and #$50	; Mask for DSR (must ignore for Laser 128)
@@ -68,13 +68,15 @@ MOD2:	sta $C088	; Put character
 SSCGET:
 	lda $C000
 	cmp #CHR_ESC	; Escape = abort
-	beq PABORT
+	beq SABORT
 MOD3:	lda $C089	; Check status bits
 MOD6:	and #$68
 	cmp #$8
 	bne SSCGET	; Input register empty, loop
 MOD4:	lda $C088	; Get character
 	rts
+
+SABORT:	jmp PABORT
 
 ;---------------------------------------------------------
 ; RESETSSC - Clean up SSC

@@ -36,6 +36,7 @@
 	.include "prodos/online.asm"
 	.include "prodos/rw.asm"
 	.include "sr.asm"
+	.include "prodos/serial/findslot.asm"
 	.include "prodos/serial/ssc.asm"
 	.include "prodos/serial/iigsscc.asm"
 	.include "crc.asm"

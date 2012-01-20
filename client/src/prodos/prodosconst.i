@@ -114,20 +114,4 @@ CLRLN    = $FC9C		; Clear Line routine
 PRBYTE   = $FDDA		; Print Byte routine (HEX value)
 COUT     = $FDED		; Character output routine (print to screen)
 
-;---------------------------------------------------------
-; Apple IIgs SCC Z8530 registers and constants
-;---------------------------------------------------------
-
-GSCMDB	=	$C038
-GSDATAB	=	$C03A
-
-GSCMDA	=	$C039
-GSDATAA	=	$C03B
-
-RESETA	=	%11010001	; constant to reset Channel A
-RESETB	=	%01010001	; constant to reset Channel B
-WR11A	=	%11010000	; init wr11 in Ch A
-WR11BXTAL	=	%00000000	; init wr11 in Ch B - use external clock
-WR11BBRG	=	%01010000	; init wr11 in Ch B - use baud rate generator
-
 CASSLOT		= $08	; Selection number for cassette transport

@@ -24,6 +24,6 @@
 ; message and start listening on our best-guess port for data.
 
 	.include "grub2main.asm"
-	.include "findslot.asm"
-	.include "iigsscc.asm"
-	.include "ssc.asm"
+	.include "../findslot.asm"
+	.include "../iigsscc.asm"
+	.include "../ssc.asm"
