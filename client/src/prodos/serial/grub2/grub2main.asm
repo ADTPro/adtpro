@@ -31,8 +31,8 @@ delay		= $fca8		; Monitor delay: # cycles = (5*A*A + 27*A + 26)/2
 
 ; Local constants
 slotnumloc	= $058b		; Location on screen of slot number
-mliupdateloc	= $060f		; Location on screen of mli update progress
-adtproupdateloc	= $0612		; Location on screen of ADTPro update progress
+mliupdateloc	= $060d		; Location on screen of mli update progress
+adtproupdateloc	= $0610		; Location on screen of ADTPro update progress
 
 .org	$7000	; Make the listing more legible
 
