@@ -414,7 +414,15 @@ public class SerialTransport extends ATransport
 
   public void flushReceiveBuffer()
   {
-  // Serial port is byte-by-byte, no buffering
+    try
+    {
+      flush();
+    }
+    catch (IOException e)
+    {
+      Log.println(false,
+          "SerialTransport.flushReceiveBuffer() failed to flush the stream.");
+    }
   }
 
   public void flushSendBuffer()
