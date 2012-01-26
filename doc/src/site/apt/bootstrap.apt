@@ -46,7 +46,7 @@ create one yourself, {{{http://retrofloppy.com/products.html#ADTPRO}click here.}
 It shows the bare-metal bootstrapping scenario of an Apple IIe with a
 Super Serial card, all the way to making a bootable ADTPro floppy:
 
- youtubereplaced
+ youtubereplace4
 
 * {Starting from bare metal}
 
@@ -115,6 +115,28 @@ Super Serial card, all the way to making a bootable ADTPro floppy:
       or ADTPro-v.r.m.PO (3.5" version) disk
       image from the host.  Once you've done that, you've got a bootable 
       diskette that contains all the ADTPro client programs.
+
+* {If Speediboot doesn't work for you}
+
+  Before Speediboot was developed, the method of boostrapping Apple II computers
+  over serial cables involved first sending ProDOS, then the ADTPro client completely
+  in text mode.
+  If Speediboot doesn't work for you, there is likely something wrong with the 
+  serial connection, or the hardware involved.
+  But the older scheme is still available to try.
+  Briefly, the steps are:
+
+  On the host side, select these menu items one at a time and follow the prompts:
+
+    [[1]] Bootstrapping->ProDOS->Send ProDOS
+
+    [[1]] Bootstrapping->ProDOS->Send ADTPro Serial Client
+
+    []
+
+  A 5-minute video showing the older bootstrapping scheme is available here:
+  
+   youtubereplaced
 
 * {If you already have ProDOS}
 
