@@ -88,7 +88,7 @@ Super Serial card, all the way to making a bootable ADTPro floppy:
       follow automatically.
       
       The text that flows at first is a program that searches for compatible 
-      serial hardware, which uses that connection to request ProDOS and ADTPro programs.
+      serial hardware, which then uses that connection to complete the bootstrapping operation.
       Once the bootstrapper is running, the block should be flashing random characters,
       signifying that the rest of the necessary code is loading.
       Some of the stages you will see the bootstrap operation go through:  
@@ -99,11 +99,8 @@ Super Serial card, all the way to making a bootable ADTPro floppy:
 
     []
 
-    [[1]] Once the transfers complete successfully, ADTPro will automatically start.
-      Take a look at the ADTPro 
-      {{{configserial.html}configuration}} screen and make
-      sure it has picked the correct serial device for you.
-      
+    [[1]] Once the transfers complete successfully, ADTPro will start.
+
     [[1]] Use the ADTPro client's {{{misc.html#Format}format}} function to
       format a diskette or two.  Note that in the ProDOS world, formatting
       a diskette doesn't make it bootable - it just prepares the filesystem
@@ -114,7 +111,7 @@ Super Serial card, all the way to making a bootable ADTPro floppy:
     [[1]] You are now ready to {{{receiving.html}receive}} the ADTPRO-v.r.m.DSK (5.25" version)
       or ADTPro-v.r.m.PO (3.5" version) disk
       image from the host.  Once you've done that, you've got a bootable 
-      diskette that contains all the ADTPro client programs.
+      ADTPro diskette.
 
 * {If Speediboot doesn't work for you}
 
