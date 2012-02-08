@@ -145,33 +145,33 @@ everywhere it is invoked:
 		-->
 		<echo message="Assembling ADTPROAUD source..."/>
 		<exec dir="${projdir}/client/src" executable="${assemblerPath}/ca65">
-			<arg line="-t none -l prodos/audio/audmain.lst prodos/audio/audmain.asm" />
+			<arg line="-t none -l prodos/audio/audmain.asm" />
 		</exec>
 		<echo message="Assembling ADTPROETH source..."/>
 		<exec dir="${projdir}/client/src" executable="${assemblerPath}/ca65">
-			<arg line="-t none -l prodos/ethernet/ethmain.lst prodos/ethernet/ethmain.asm" />
+			<arg line="-t none -l prodos/ethernet/ethmain.asm" />
 		</exec>
 		<echo message="Assembling ADTPRO source..."/>
 		<exec dir="${projdir}/client/src" executable="${assemblerPath}/ca65">
-			<arg line="-t none -l prodos/serial/sermain.lst prodos/serial/sermain.asm" />
+			<arg line="-t none -l prodos/serial/sermain.asm" />
 		</exec>
 		<echo message="Assembling ADTPRO Launcher source..."/>
 		<exec dir="${projdir}/client/src" executable="${assemblerPath}/ca65">
-			<arg line="-t none -l prodos/launch.lst prodos/launch.asm" />
+			<arg line="-t none -l prodos/launch.asm" />
 		</exec>
 		<exec dir="${projdir}/client/src" executable="${assemblerPath}/ca65">
-			<arg line="-t none -l prodos/startup.lst prodos/startup.asm" />
+			<arg line="-t none -l prodos/startup.asm" />
 		</exec>
 		<echo message="Assembling ProDOS serial Grub source..."/>
-		<exec dir="${projdir}/client/src" executable="${assemblerPath}/ca65">
-			<arg line="-t none -l prodos/serial/grub2/grub2.lst prodos/serial/grub2/grub2.asm" />
+		<exec dir="${projdir}/client/src/prodos/serial/grub2" executable="${assemblerPath}/ca65">
+			<arg line="-t none -l grub2.asm" />
 		</exec>
 		<!--
 		Assemble and link the ADT source
 		-->
 		<echo message="Assembling ADT source..."/>
 		<exec dir="${projdir}/client/src/dos" executable="${assemblerPath}/cl65">
-			<arg line="-t none -l adt.lst adt.s -o ADT" />
+			<arg line="-t none -l adt.s -o ADT" />
 		</exec>
 		<!--
 		Link the bits
@@ -305,8 +305,6 @@ everywhere it is invoked:
 			<arg value="-t"/>
 			<arg value="c64"/>
 			<arg value="-l"/>
-			<mapper type="glob" from="*.s" to="*.lst"/>
-			<targetfile/>
 			<srcfile/>
 		</apply>
 		<echo message="Assembling IP65 drivers..."/>
@@ -315,8 +313,6 @@ everywhere it is invoked:
 			<arg value="-t"/>
 			<arg value="c64"/>
 			<arg value="-l"/>
-			<mapper type="glob" from="*.s" to="*.lst"/>
-			<targetfile/>
 			<srcfile/>
 		</apply>
 		<!--
