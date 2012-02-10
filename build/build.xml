@@ -232,23 +232,23 @@ everywhere it is invoked:
 		-->
 		<echo message="Assembling ADTSOSSER source..."/>
 		<exec dir="${projdir}/client/src" executable="${assemblerPath}/ca65">
-			<arg line="-t none -l sos/serial/sermain.lst sos/serial/sermain.asm" />
+			<arg line="-t none -l sos/serial/sermain.asm" />
 		</exec>
 		<echo message="Assembling ADTSOSETH source..."/>
 		<exec dir="${projdir}/client/src" executable="${assemblerPath}/ca65">
-			<arg line="-t none -l sos/ethernet/ethmain.lst sos/ethernet/ethmain.asm" />
+			<arg line="-t none -l sos/ethernet/ethmain.asm" />
 		</exec>
 		<echo message="Assembling SOS serial Grub source..."/>
 		<exec dir="${projdir}/client/src" executable="${assemblerPath}/ca65">
-			<arg line="-t none -l sos/serial/grub.lst sos/serial/grub.asm" />
+			<arg line="-t none -l sos/serial/grub.asm" />
 		</exec>
 		<echo message="Assembling SOS serial Loader source..."/>
 		<exec dir="${projdir}/client/src" executable="${assemblerPath}/ca65">
-			<arg line="-t none -l sos/serial/loader.lst sos/serial/loader.asm" />
+			<arg line="-t none -l sos/serial/loader.asm" />
 		</exec>
 		<echo message="Assembling SOS Kernel..."/>
 		<exec dir="${projdir}/client/src" executable="${assemblerPath}/ca65">
-			<arg line="-t none -l sos/serial/kernel.lst sos/serial/kernel.asm" />
+			<arg line="-t none -l sos/serial/kernel.asm" />
 		</exec>
 		<!--
 		Link the bits
