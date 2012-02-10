@@ -584,4 +584,32 @@ everywhere it is invoked:
 			<arg value="${builddir}/mkdmg.sh ${builddir} ${distName} ${distName} ${distName} ${dmgmegabytes}"/>
 		</exec>
 	</target>
+
+	<target name="doc">
+		<!-- Generate website documentation -->
+		<delete dir="${projdir}/doc/target" />
+		<exec dir="${projdir}/doc" executable="mvn">
+			<arg value="site"/>
+		</exec>
+		<echo message="Doc passing through HTML..."/>
+		<apply executable="perl" dir="${projdir}/doc/target/site" relative="true">
+			<fileset dir="${projdir}/doc/target/site" includes="**/*.html"/>
+			<arg value="-i.orig"/>
+			<arg value="-p"/>
+			<arg value="../../htmlpassthrough.re"/>
+			<srcfile/>
+		</apply>
+		<echo message="Doc replacing Maven..."/>
+		<apply executable="perl" dir="${projdir}/doc/target/site" relative="true">
+			<fileset dir="${projdir}/doc/target/site" includes="**/*.html"/>
+			<arg value="-i.orig"/>
+			<arg value="-p"/>
+			<arg value="../../removeMaven.re"/>
+			<srcfile/>
+		</apply>
+		<delete>
+			<fileset dir="${projdir}/doc/target/site" includes="*.orig"/>
+		</delete>
+	</target>
+
 </project>
