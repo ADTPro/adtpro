@@ -18,6 +18,13 @@ ADTPro Release History
 
  []
 
+ Bug fixes:
+
+ * [Server] Improve serial error recovery by flushing serial
+   port after checksum errors
+
+ []
+
 * 1.2.0 - January 14, 2012
 
  New functionality:
