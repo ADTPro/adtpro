@@ -32,11 +32,9 @@ cp ../org/adtpro/resources/ADTProMacInstallBackground.png "/Volumes/$VOLUME/.bac
 cp ADTProDMG.icns "/Volumes/$VOLUME/.VolumeIcon.icns"
 SetFile -c icns "/Volumes/$VOLUME/.VolumeIcon.icns"
 SetFile -a C /Volumes/$VOLUME
-cp ADTProFolder.icns "/Volumes/$VOLUME/$VOLUME/.VolumeIcon.icns"
-SetFile -c icns "/Volumes/$VOLUME/$VOLUME/.VolumeIcon.icns"
-SetFile -a C /Volumes/$VOLUME/$VOLUME
-#rm -rf /Volumes/$VOLUME/.Trashes
-#rm -rf /Volumes/$VOLUME/.fseventsd
+./lib/setfileicon ADTProFolder.icns /Volumes/$VOLUME/$VOLUME
+rm -rf /Volumes/$VOLUME/.Trashes
+rm -rf /Volumes/$VOLUME/.fseventsd
 
 echo '
    tell application "Finder"
