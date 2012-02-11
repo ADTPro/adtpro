@@ -30,11 +30,13 @@ ditto -rsrcFork -v "$SRC" "/Volumes/$VOLUME"
 mkdir "/Volumes/$VOLUME/.background"
 cp ../org/adtpro/resources/ADTProMacInstallBackground.png "/Volumes/$VOLUME/.background/background.png"
 cp ADTProDMG.icns "/Volumes/$VOLUME/.VolumeIcon.icns"
+SetFile -c icns "/Volumes/$VOLUME/.VolumeIcon.icns"
 SetFile -a C /Volumes/$VOLUME
 cp ADTProFolder.icns "/Volumes/$VOLUME/$VOLUME/.VolumeIcon.icns"
+SetFile -c icns "/Volumes/$VOLUME/$VOLUME/.VolumeIcon.icns"
 SetFile -a C /Volumes/$VOLUME/$VOLUME
-rm /Volumes/$VOLUME/.Trashes
-rm /Volumes/$VOLUME/.fseventsd
+#rm -rf /Volumes/$VOLUME/.Trashes
+#rm -rf /Volumes/$VOLUME/.fseventsd
 
 echo '
    tell application "Finder"
