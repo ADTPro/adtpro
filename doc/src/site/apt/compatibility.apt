@@ -19,7 +19,7 @@ ADT Compatibility
  various ways.  A quick survey of the major players:
  
 *-----:-----:------:------:------:------+
- <<Program>> | <<Latest Client Version>> | <<Client Platforms>> | <<Server Platforms>> | <<Comms>> | <<Notes>>
+|| <<Program>> || <<Latest Client Version>> || <<Client Platforms>> || <<Server Platforms>> || <<Comms>> || <<Notes>>
 *-----:-----:------:------+
  ADTPro | v.r.m | II,+,e,c,GS,Laser,/// | Linux, OS/2, OSX, Solaris, Windows (Java) | Serial, Uthernet, Audio | 
 *-----:-----:------:------+

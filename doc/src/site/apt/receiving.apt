@@ -37,7 +37,7 @@ keys or the space bar to pick the volume to be sent to the host:
 block contains 512 bytes of data.  Typical disk sizes are:
 
 *-------:-----+
-| <<Blocks>> | <<Disk>> |
+|| <<Blocks>> || <<Disk>> |
 *-------:-----+
 |   127 | 64k RAM disk (128k Apples) |
 *-------:-----+
@@ -52,7 +52,7 @@ block contains 512 bytes of data.  Typical disk sizes are:
 situations:
 
 *-------:-----+
-| <<Message>> | <<Meaning>> |
+|| <<Message>> || <<Meaning>> |
 *-------:-----+
 |  \<NO NAME\> | A DOS 3.3 disk is in the drive (which is ok) |
 *-------:-----+

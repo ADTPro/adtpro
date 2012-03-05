@@ -7,7 +7,7 @@
 ADTPro Client Configuration Overview
 
 *---------------:--------------+
-| <<Click:>> | <<To Learn:>>
+|| <<Click:>> || <<To Learn:>>
 *---------------:--------------+
 | {{{configserial.html}Serial}} | Configuration of the serial client |
 *---------------:--------------+
