@@ -532,14 +532,14 @@ public class CommsThread extends Thread
           if ((length * 512) == Disk.APPLE_140KB_DISK) f = new File(name
               + nameGen + ".dsk");
           else
-            f = new File(name + nameGen + ".PO");
+            f = new File(name + nameGen + ".po");
           lastFileNumber++;
         }
         while (f.exists());
         if ((length * 512) == Disk.APPLE_140KB_DISK) name = name + nameGen
             + ".dsk";
         else
-          name = name + nameGen + ".PO";
+          name = name + nameGen + ".po";
       }
       else
       {
@@ -646,7 +646,7 @@ public class CommsThread extends Thread
         if (packetResult == 0)
         {
           String msg;
-          report = waitForData(15);
+          report = waitForData(60);
           _endTime = System.currentTimeMillis();
           _diffMillis = (_endTime - _startTime) / 1000;
           if (report == 0x00)
