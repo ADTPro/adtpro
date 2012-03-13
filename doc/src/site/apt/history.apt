@@ -20,8 +20,10 @@ ADTPro Release History
 
  Bug fixes:
 
- * [Server] Improve serial error recovery by flushing serial
-   port after checksum errors
+ * [Server] Improve serial error recovery for two different 
+   scenarios: 1, by waiting (much) longer before timing out 
+   to allow for problemtatic/errorful block reads, and 2) 
+   flushing the serial port after things like checksum errors
 
  []
 
