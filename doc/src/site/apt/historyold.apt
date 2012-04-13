@@ -8,6 +8,31 @@ ADTPro Release Ancient History
 
 * New Features
 
+ 1.1.7 - December 21, 2010
+
+   * [Server] Italian translation provided by Mauro Rospocher
+
+   * [Server] Brazilian Portuguese translation provided by Mario Sergio Almeida
+
+ 1.1.6 - August 2, 2010
+
+    * [Server] French translation provided by Antoine VIGNAU
+
+    * [Server] Spanish translation provided by Gabriel Alejandro Calomeni
+    
+ 1.1.5 - March 17, 2010
+
+    * [Client] Implemented native assembly ProDOS selector/ launcher eliminating the need for Applesoft; results in 30% faster booting and executing from floppy
+
+    * [Client] Laser 128 machines can now use their native modem port at 115.2kbps using the SSC port 2 setting
+
+    * [Server] Korean translation provided by Steven Y. Choi
+ 
+
+ 1.1.4 - January 24, 2010
+
+    * [Server] Re-scan for serial ports every time the serial configuration GUI comes up; detects USB port changes
+
  1.1.3 - September 20, 2009
 
     * [Server] OSX distribution now comes with a double-clickable .app
