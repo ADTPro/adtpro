@@ -60,9 +60,12 @@ main:
 	jsr	PARMINT
 	jsr	RESETIO
 
+	ldx	#$02
 SitAround:			; Delay a little bit after resetting the I/O
 	lda	#$ff
 	jsr	delay
+	dex
+	bne	SitAround
 
 	jsr	msg
 	.byte	"LOADING ",$00
