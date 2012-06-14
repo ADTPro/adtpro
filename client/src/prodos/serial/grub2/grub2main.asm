@@ -60,7 +60,7 @@ main:
 	jsr	PARMINT
 	jsr	RESETIO
 
-	ldx	#$02
+	ldx	#$04
 SitAround:			; Delay a little bit after resetting the I/O
 	lda	#$ff
 	jsr	delay

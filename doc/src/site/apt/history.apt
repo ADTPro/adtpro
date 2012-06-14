@@ -11,8 +11,8 @@ ADTPro Release History
  Bug fixes:
 
  * [Client] Speediboot pauses longer after serial reset to
-   give accelerated GS machines enough time to recover before
-   sending out the first downlaod request
+   give various machines enough time to recover before
+   sending out the first download request
 
 * 1.2.1 - April 12, 2012
 
