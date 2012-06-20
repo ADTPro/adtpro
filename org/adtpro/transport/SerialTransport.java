@@ -491,7 +491,7 @@ public class SerialTransport extends ATransport
     _hardware = state;
     if (state) port.setFlowControlMode(SerialPort.FLOWCONTROL_NONE);
     else
-      port.setFlowControlMode(SerialPort.FLOWCONTROL_RTSCTS_IN);
+      port.setFlowControlMode(SerialPort.FLOWCONTROL_RTSCTS_IN | SerialPort.FLOWCONTROL_RTSCTS_OUT);
   }
 
   public String getInstructionsDone(String guiString)

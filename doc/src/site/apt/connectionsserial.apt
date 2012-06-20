@@ -24,7 +24,7 @@ ADTPro Serial Connections
  In addition, using the modem port of a Mac LC, it is possible to run ADTPro on a
 {{{lc.html}Apple IIe card}}.
 
- Once you have your computers connected, you can move on to 
+ Once you have your computers connected, you may move on to 
 {{{bootstrap.html}bootstrapping.}}
 
 * {Super Serial cabling}
@@ -49,7 +49,7 @@ upwards toward the word "Modem," as in this picture:
 
  Once ADTPro is up and running, it sets the card's configuration
 switches through software.  But to ensure trouble-free operation in the
-initial bootstrap step, you can set the switches like so:
+initial bootstrap step, you should set the switches like so:
 
 +---
 SW1: 1001111  SW2: 1101100
@@ -71,7 +71,7 @@ cable would look like this:
 
 [images/superSerialCable.jpg]
 
- Once you have your computers connected, you can move on to 
+ Once you have your computers connected, you may move on to 
 {{{bootstrap.html}bootstrapping.}}
 
 * IIgs and IIc+ modem port ({MiniDIN8}) cabling
@@ -140,7 +140,7 @@ at the pins:
     7 ----- 1      8     DCD
 ---
 
- Once you have your computers connected, you can move on to 
+ Once you have your computers connected, you may move on to 
 {{{bootstrap.html}bootstrapping.}}
 
 * IIc, Laser 128, and Franklin Ace 500 modem port ({DIN5}) cabling
@@ -222,7 +222,7 @@ checkbox in the serial config dialog box, brought up from the
  port accurately at speeds higher than 300 baud, so you may have to go really
  slowly if you have one of those.  I have used my ROM revision '255' machine
  flawlessly at 115kbps, but your mileage my vary.
- You can check the revision of your IIc by checking
+ You may check the revision of your IIc by checking
  memory location 64447:
 
  * if <<<PRINT PEEK(64447)>>> returns 255, you have an original IIc (ROM revision '255').
@@ -237,7 +237,7 @@ checkbox in the serial config dialog box, brought up from the
 
  []
 
- Once you have your computers connected, you can move on to 
+ Once you have your computers connected, you may move on to 
 {{{bootstrap.html}bootstrapping.}}
 
 * {Apple3} /// RS-232-C port cabling
@@ -279,7 +279,7 @@ null-modem is below:
  4&20
 ---
 
- Once you have your computers connected, you can move on to 
+ Once you have your computers connected, you may move on to 
 {{{bootstrap3.html}bootstrapping.}}
 
 * {USB cabling}

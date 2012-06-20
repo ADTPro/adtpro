@@ -11,7 +11,7 @@ you can use it to transfer the
 virtual floppy containing ADTPro that comes with this project
 (ADTPRO-v.r.m.DSK) to your Apple.  
 Reboot the Apple with the ADTPro floppy, and you're ready to go.
-Note that while DOS ADT runs in 48k, ProDOS ADTPro requires your Apple to have 64k of memory.
+Note that while DOS ADT runs in 48k, ProDOS ADTPro requires your Apple to have at least 64k of memory.
 
   If you don't use ADT or ADTPro, or don't have any software for your Apple yet, 
 more bootstrapping scenarios and configurations are detailed below.
@@ -43,8 +43,8 @@ create one yourself, {{{http://retrofloppy.com/products.html#ADTPRO}click here.}
 *  Bootstrapping Demonstration {Video}
 
   Here is a 5-minute overview video of the bootstrapping process.
-It shows the bare-metal bootstrapping scenario of an Apple IIe with a
-Super Serial card, all the way to making a bootable ADTPro floppy:
+It shows the bare-metal bootstrapping scenario of an Apple IIc compatible,
+all the way to making a bootable ADTPro floppy:
 
  youtubereplace4
 
