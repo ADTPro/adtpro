@@ -31,6 +31,8 @@ everywhere it is invoked:
 	<property file="${builddir}/ADTProBuild.properties"/>
 	<property file="${builddir}/ADTProBuild-default.properties"/>
 	<property name="acJar" value="${builddir}/lib/AppleCommander-1.3.5.10-ac.jar" />
+	<property name="shrinkitJarVersion" value="v.r.m" />
+	<property name="shrinkitJar" value="${builddir}/lib/ShrinkItArchive/ShrinkItArchive-${shrinkitJarVersion}.jar" />
 	<property name="jarBundlerJar" value="${builddir}/lib/jarbundler-2.1.0/jarbundler-2.1.0.jar" />
 	<property name="rxtxVersion" value="rxtx-2.2pre2-local" />
 	<property name="rxtxZip" value="${rxtxVersion}.zip" />
@@ -335,11 +337,13 @@ everywhere it is invoked:
 		<replace file="${builddir}/${distName}/adtpro.bat" token="%RXTX_VERSION%" value="${rxtxVersion}"/>
 		<replace file="${builddir}/${distName}/adtpro.bat" token="%RXTX_VERSION_OLD%" value="${rxtxVersion2}"/>
 		<replace file="${builddir}/${distName}/adtpro.bat" token="%RXTX_VERSION_WIN64%" value="${rxtxVersionCloudHopperWin64}"/>
+		<replace file="${builddir}/${distName}/adtpro.bat" token="%SHRINKIT_VERSION%" value="${shrinkitJarVersion}"/>
 		<replace file="${builddir}/${distName}/adtpro.cmd" token="%ADTPRO_VERSION%" value="${distName}.jar"/>
 		<replace file="${builddir}/${distName}/adtpro.cmd" token="%RXTX_VERSION%" value="${rxtxVersion}"/>
 		<replace file="${builddir}/${distName}/adtpro.sh" token="%ADTPRO_VERSION%" value="${distName}.jar"/>
 		<replace file="${builddir}/${distName}/adtpro.sh" token="%RXTX_VERSION%" value="${rxtxVersion}"/>
 		<replace file="${builddir}/${distName}/adtpro.sh" token="%RXTX_VERSION_OLD%" value="${rxtxVersion2}"/>
+		<replace file="${builddir}/${distName}/adtpro.sh" token="%SHRINKIT_VERSION%" value="${shrinkitJarVersion}"/>
 	</target>
 
 	<target name="builddsk" depends="buildProDOSdsk, buildSOSdsk">
@@ -515,6 +519,7 @@ everywhere it is invoked:
 			dest="${builddir}/${distName}/lib/rxtx"/>
 		<unzip src="${builddir}/lib/rxtx/${rxtxZipCHWin64}"
 			dest="${builddir}/${distName}/lib/rxtx"/>
+		<copy file="${shrinkitJar}" todir="${builddir}/${distName}/lib/ShrinkItArchive" />
 		<copy file="${builddir}/README" todir="${builddir}/${distName}" />
 		<copy file="${builddir}/LICENSE" todir="${builddir}/${distName}" />
 		<copy file="${builddir}/ADTPro.html" todir="${builddir}/${distName}" />
@@ -555,7 +560,8 @@ everywhere it is invoked:
 			icon="${builddir}/ADTPro.icns"
 			vmoptions="-Xms256m -Xmx512m -Djava.library.path=lib/rxtx/${rxtxVersion}/mac-10.5">
 			<jarfilelist dir="${builddir}/${distName}/lib">
-			    <file name="rxtx/${rxtxVersion}/RXTXcomm.jar"/>
+				<file name="rxtx/${rxtxVersion}/RXTXcomm.jar"/>
+				<file name="${shrinkitJar}"/>
 				<file name="${distName}.jar"/>
 			</jarfilelist>
 		</jarbundler>
