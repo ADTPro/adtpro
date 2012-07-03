@@ -22,8 +22,9 @@ package org.adtpro.test;
 
 import java.io.IOException;
 
-import org.adtpro.disk.Disk;
 import org.adtpro.utilities.Log;
+
+import com.webcodepro.applecommander.storage.Disk;
 
 public class GuessOrderTest
 {

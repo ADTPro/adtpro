@@ -30,12 +30,13 @@ import org.adtpro.transport.SerialTransport;
 import org.adtpro.transport.TransportTimeoutException;
 import org.adtpro.transport.UDPTransport;
 
-import org.adtpro.disk.Disk;
-import org.adtpro.disk.NibbleOrder;
 import org.adtpro.gui.Gui;
 import org.adtpro.utilities.Log;
 import org.adtpro.utilities.StringUtilities;
 import org.adtpro.utilities.UnsignedByte;
+
+import com.webcodepro.applecommander.storage.Disk;
+import com.webcodepro.applecommander.storage.physical.NibbleOrder;
 
 public class CommsThread extends Thread
 {
@@ -623,7 +624,7 @@ public class CommsThread extends Thread
               + Disk.APPLE_140KB_DISK);
           if ((length * 512) == Disk.APPLE_140KB_DISK)
           {
-            Disk disk = new Disk(name, true); // Force disk order to start out
+            Disk disk = new Disk(name);
             // as ProDOS - because it came
             // from us for sure!
             disk.makeDosOrder();

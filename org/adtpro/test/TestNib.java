@@ -24,9 +24,10 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
-import org.adtpro.disk.Disk;
 import org.adtpro.utilities.Log;
 import org.adtpro.utilities.UnsignedByte;
+
+import com.webcodepro.applecommander.storage.Disk;
 
 public class TestNib
 {
