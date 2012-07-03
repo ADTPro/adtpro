@@ -10,6 +10,10 @@ ADTPro Release History
 
  Bug fixes:
 
+ New functionality:
+
+ * ShrinkIt "SDK" disk images are recognized and dealt with as any other disk image
+
  * [Client] Speediboot pauses longer after serial reset to
    give various machines enough time to recover before
    sending out the first download request
