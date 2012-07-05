@@ -47,7 +47,6 @@ OSTART:
 	sta UTILPTR
 	lda #>DEVICES
 	sta UTILPTR+1
-	ldy #$00
 	lda #$00
 	ldy #$01			; SOS devices are numbered $1-$18
 SCAN_DEVICE_LOOP:
@@ -165,7 +164,7 @@ DEVMSG:
 	lda D_INFO_OPTION+6
 	bne :+
 	jmp SV_DONE		; Skip it if it has zero blocks
-	lda MSGTBL,Y		; Y has an index into the messages table
+:	lda MSGTBL,Y		; Y has an index into the messages table
 	sta UTILPTR2
 	lda MSGTBL+1,Y
 	sta UTILPTR2+1
