@@ -59,4 +59,4 @@ export TWEAK1="-Djava.library.path="
 export TWEAK=$TWEAK1$ADTPRO_HOME/$RXTXLIB
 
 cd "$ADTPRO_HOME"/disks
-"$MY_JAVA_HOME"java -Xms256m -Xmx512m "$TWEAK" $ADTPRO_EXTRA_JAVA_PARMS -cp ../lib/%ADTPRO_VERSION%:../"$RXTXLIB"/../RXTXcomm.jar:../lib/ShrinkItArchive/ShrinkItArchive-%SHRINKIT_VERSION%.jar org.adtpro.ADTPro $*
+"$MY_JAVA_HOME"java -Xms256m -Xmx512m "$TWEAK" $ADTPRO_EXTRA_JAVA_PARMS -cp ../lib/%ADTPRO_VERSION%:../"$RXTXLIB"/../RXTXcomm.jar:../lib/AppleCommander/AppleCommander-%AC_VERSION%.jar org.adtpro.ADTPro $*

@@ -10,18 +10,18 @@ ADTPro Release History
 
  New functionality:
 
- * ShrinkIt "SDK" disk images are recognized and dealt with
+ * [Server] ShrinkIt "SDK" disk images are recognized and dealt with
    as any other disk image
-
- * [Client] Speediboot pauses longer after serial reset to
-   give various machines enough time to recover before
-   sending out the first download request
 
  []
 
  Bug fixes:
 
- * [A3 Client] Volume display function regularly crashed
+ * [Client] SOS version volume display function regularly crashed
+
+ * [Client] Speediboot pauses longer after serial reset to
+   give various machines enough time to recover before
+   sending out the first download request
 
  []
 
