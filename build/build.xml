@@ -41,6 +41,7 @@ everywhere it is invoked:
 	<property name="rxtxZipCHWin64" value="${rxtxVersionCloudHopperWin64}.zip" />
 	<property name="dmgmegabytes" value="7" />
 	<taskdef name="appleDump" classname="org.adtpro.utilities.AppleDump" classpath="${projdir}"/>
+	<taskdef name="appleCommander" classname="org.adtpro.utilities.ACAntHelper" classpath="${projdir};${acJar}"/>
 	<taskdef name="jarbundler" classname="net.sourceforge.jarbundler.JarBundler" classpath="${jarBundlerJar}"/>
 	<echo message="${distName} building on ${os.name}."/>
 	<condition property="isOSX">
@@ -348,120 +349,82 @@ everywhere it is invoked:
 	<target name="builddsk" depends="buildProDOSdsk, buildSOSdsk">
 	</target>
 
+	<target name="actest">
+		<appleCommander command="p" input="${builddir}/STARTUP.SYSTEM" imagename="${distName}/disks/${diskName}.DSK" filename="STARTUP.SYSTEM" type="sys" address="8192"/>
+<!--
+		<java jar="${acJar}" fork="true" dir="${builddir}">
+			<arg line="-n ${distName}/disks/${diskName}.PO ${volName}" />
+		</java>
+		<java jar="${acJar}" fork="true" dir="${builddir}" input="${builddir}/STARTUP.SYSTEM">
+			<arg line="-p ${distName}/disks/${diskName}.DSK STARTUP.SYSTEM sys 8192" />
+		</java>
+-->
+	</target>
+
 	<target name="buildProDOSdsk" if="ProDOS-needed">
+
 		<!--
 		Start disk images containing the release number
 		-->
 		<copy file="${builddir}/ADTProBase.po" tofile="${builddir}/${distName}/disks/${diskName}.PO" />
 		<copy file="${builddir}/ADTBase.dsk" tofile="${builddir}/${distName}/disks/${dosDistName}.DSK" />
+
 		<!--
 		Put the assembled programs on the disk images
 		-->
-
 		<echo message="Adding startup files to 5.25 disk image..."/>
-		<java jar="${acJar}" fork="true" dir="${builddir}" input="${builddir}/STARTUP.SYSTEM">
-			<jvmarg line="-Dconsole.encoding=ISO-8859-15" />
-			<arg line="-p ${distName}/disks/${diskName}.DSK STARTUP.SYSTEM sys 8192" />
-		</java>
-		<java jar="${acJar}" fork="true" dir="${builddir}" input="${builddir}/ADTPRO">
-			<jvmarg line="-Dconsole.encoding=ISO-8859-15" />
-			<arg line="-p ${distName}/disks/${diskName}.DSK ADTPRO sys 8192" />
-		</java>
-		<java jar="${acJar}" fork="true" dir="${builddir}" input="${builddir}/ADTPRO">
-			<jvmarg line="-Dconsole.encoding=ISO-8859-15" />
-			<arg line="-p ${distName}/disks/${diskName}.DSK ADTPROAUD sys 8192" />
-		</java>
-		<java jar="${acJar}" fork="true" dir="${builddir}" input="${builddir}/ADTPRO">
-			<jvmarg line="-Dconsole.encoding=ISO-8859-15" />
-			<arg line="-p ${distName}/disks/${diskName}.DSK ADTPROETH sys 8192" />
-		</java>
-
+		<appleCommander command="p" input="${builddir}/STARTUP.SYSTEM" imagename="${distName}/disks/${diskName}.DSK" filename="STARTUP.SYSTEM" type="sys" address="8192"/>
+		<appleCommander command="p" input="${builddir}/ADTPRO" imagename="${distName}/disks/${diskName}.DSK" filename="ADTPRO" type="sys" address="8192"/>
+		<appleCommander command="p" input="${builddir}/ADTPRO" imagename="${distName}/disks/${diskName}.DSK" filename="ADTPROAUD" type="sys" address="8192"/>
+		<appleCommander command="p" input="${builddir}/ADTPRO" imagename="${distName}/disks/${diskName}.DSK" filename="ADTPROETH" type="sys" address="8192"/>
 		<echo message="Adding ADTPRO to 5.25 disk image..."/>
-		<java jar="${acJar}" fork="true" dir="${builddir}" input="${builddir}/ADTPRO.BIN">
-			<jvmarg line="-Dconsole.encoding=ISO-8859-15" />
-			<arg line="-p ${distName}/disks/${diskName}.DSK ADTPRO.BIN bin 2048" />
-		</java>
-
+		<appleCommander command="p" input="${builddir}/ADTPRO.BIN" imagename="${distName}/disks/${diskName}.DSK" filename="ADTPRO.BIN" type="bin" address="2048"/>
 		<echo message="Adding ADTPROAUD to 5.25 disk image..."/>
-		<java jar="${acJar}" fork="true" dir="${builddir}" input="${builddir}/ADTPROAUD.BIN">
-			<jvmarg line="-Dconsole.encoding=ISO-8859-15" />
-			<arg line="-p ${distName}/disks/${diskName}.DSK ADTPROAUD.BIN bin 2048" />
-		</java>
-
+		<appleCommander command="p" input="${builddir}/ADTPROAUD.BIN" imagename="${distName}/disks/${diskName}.DSK" filename="ADTPROAUD.BIN" type="bin" address="2048"/>
 		<echo message="Adding ADTPROETH to 5.25 disk image..."/>
-		<java jar="${acJar}" fork="true" dir="${builddir}" input="${builddir}/ADTPROETH.BIN">
-			<jvmarg line="-Dconsole.encoding=ISO-8859-15" />
-			<arg line="-p ${distName}/disks/${diskName}.DSK ADTPROETH.BIN bin 2048" />
-		</java>
+		<appleCommander command="p" input="${builddir}/ADTPROETH.BIN" imagename="${distName}/disks/${diskName}.DSK" filename="ADTPROETH.BIN" type="bin" address="2048"/>
+
 		<!--
 		And the .po version...
 		-->
 		<echo message="Adding startup files to 3.5 disk image..."/>
-		<java jar="${acJar}" fork="true" dir="${builddir}" input="${builddir}/STARTUP.SYSTEM">
-			<jvmarg line="-Dconsole.encoding=ISO-8859-15" />
-			<arg line="-p ${distName}/disks/${diskName}.PO STARTUP.SYSTEM sys 8192" />
-		</java>
-		<java jar="${acJar}" fork="true" dir="${builddir}" input="${builddir}/ADTPRO">
-			<jvmarg line="-Dconsole.encoding=ISO-8859-15" />
-			<arg line="-p ${distName}/disks/${diskName}.PO ADTPRO sys 8192" />
-		</java>
-		<java jar="${acJar}" fork="true" dir="${builddir}" input="${builddir}/ADTPRO">
-			<jvmarg line="-Dconsole.encoding=ISO-8859-15" />
-			<arg line="-p ${distName}/disks/${diskName}.PO ADTPROAUD sys 8192" />
-		</java>
-		<java jar="${acJar}" fork="true" dir="${builddir}" input="${builddir}/ADTPRO">
-			<jvmarg line="-Dconsole.encoding=ISO-8859-15" />
-			<arg line="-p ${distName}/disks/${diskName}.PO ADTPROETH sys 8192" />
-		</java>
+		<appleCommander command="p" input="${builddir}/STARTUP.SYSTEM" imagename="${distName}/disks/${diskName}.PO" filename="STARTUP.SYSTEM" type="sys" address="8192"/>
+		<appleCommander command="p" input="${builddir}/ADTPRO" imagename="${distName}/disks/${diskName}.PO" filename="ADTPRO" type="sys" address="8192"/>
+		<appleCommander command="p" input="${builddir}/ADTPRO" imagename="${distName}/disks/${diskName}.PO" filename="ADTPROAUD" type="sys" address="8192"/>
+		<appleCommander command="p" input="${builddir}/ADTPRO" imagename="${distName}/disks/${diskName}.PO" filename="ADTPROETH" type="sys" address="8192"/>
 
 		<echo message="Adding ADTPRO to 3.5 disk image..."/>
-		<java jar="${acJar}" fork="true" dir="${builddir}" input="${builddir}/ADTPRO.BIN">
-			<jvmarg line="-Dconsole.encoding=ISO-8859-15" />
-			<arg line="-p ${distName}/disks/${diskName}.PO ADTPRO.BIN bin 2048" />
-		</java>
+		<appleCommander command="p" input="${builddir}/ADTPRO.BIN" imagename="${distName}/disks/${diskName}.PO" filename="ADTPRO.BIN" type="sys" address="8192"/>
 
 		<echo message="Adding ADTPROAUD to 3.5 disk image..."/>
-		<java jar="${acJar}" fork="true" dir="${builddir}" input="${builddir}/ADTPROAUD.BIN">
-			<jvmarg line="-Dconsole.encoding=ISO-8859-15" />
-			<arg line="-p ${distName}/disks/${diskName}.PO ADTPROAUD.BIN bin 2048" />
-		</java>
+		<appleCommander command="p" input="${builddir}/ADTPROAUD.BIN" imagename="${distName}/disks/${diskName}.PO" filename="ADTPROAUD.BIN" type="sys" address="8192"/>
 
 		<echo message="Adding ADTPROETH to 3.5 disk image..."/>
-		<java jar="${acJar}" fork="true" dir="${builddir}" input="${builddir}/ADTPROETH.BIN">
-			<jvmarg line="-Dconsole.encoding=ISO-8859-15" />
-			<arg line="-p ${distName}/disks/${diskName}.PO ADTPROETH.BIN bin 2048" />
-		</java>
+		<appleCommander command="p" input="${builddir}/ADTPROETH.BIN" imagename="${distName}/disks/${diskName}.PO" filename="ADTPROETH.BIN" type="sys" address="8192"/>
+
 		<!--
 		Put the assembled DOS ADT program on the .dsk image
 		-->
 		<echo message="Adding ADT to 5.25 disk image..."/>
-		<java jar="${acJar}" fork="true" dir="${builddir}" input="${builddir}/ADT">
-			<jvmarg line="-Dconsole.encoding=ISO-8859-15" />
-			<arg line="-p ${distName}/disks/${dosDistName}.DSK ADT bin 2051" />
-		</java>
+		<appleCommander command="p" input="${builddir}/ADT" imagename="${distName}/disks/${dosDistName}.DSK" filename="ADT" type="bin" address="2051"/>
+
 		<echo message="Adding ADT.BACKUP to 5.25 disk image..."/>
-		<java jar="${acJar}" fork="true" dir="${builddir}" input="${builddir}/ADT">
-			<jvmarg line="-Dconsole.encoding=ISO-8859-15" />
-			<arg line="-p ${distName}/disks/${dosDistName}.DSK ADT.BACKUP bin 2051" />
-		</java>
+		<appleCommander command="p" input="${builddir}/ADT" imagename="${distName}/disks/${dosDistName}.DSK" filename="ADT.BACKUP" type="bin" address="2051"/>
+
 		<!--
 		Lock the backup ADT version
 		-->
 		<echo message="Locking ADT on 5.25 disk image..."/>
-		<java jar="${acJar}" fork="true" dir="${builddir}">
-			<arg line="-k ${distName}/disks/${dosDistName}.DSK ADT.BACKUP" />
-		</java>
+		<appleCommander command="k" imagename="${distName}/disks/${dosDistName}.DSK" filename="ADT.BACKUP"/>
+
 		<!--
 		Put a nice volume name on the disk images
 		-->
 		<echo message="Adding ADTPro volume name to 5.25 disk image..."/>
-		<java jar="${acJar}" fork="true" dir="${builddir}">
-			<arg line="-n ${distName}/disks/${diskName}.DSK ${volName}" />
-		</java>
+		<appleCommander command="n" imagename="${distName}/disks/${diskName}.DSK" volumename="${volName}"/>
+
 		<echo message="Adding ADTPro volume name to 3.5 disk image..."/>
-		<java jar="${acJar}" fork="true" dir="${builddir}">
-			<arg line="-n ${distName}/disks/${diskName}.PO ${volName}" />
-		</java>
+		<appleCommander command="n" imagename="${distName}/disks/${diskName}.PO" volumename="${volName}"/>
 		<delete file="${builddir}/ADT" />
 		<delete file="${builddir}/ADTPRO" />
 		<delete file="${builddir}/ADTPRO.SYSTEM" />
@@ -475,25 +438,19 @@ everywhere it is invoked:
 	</target>
 
 	<target name="buildSOSdsk" if="SOS-needed">
+
 		<!--
 		Put the assembled programs on the disk images
 		-->
 		<echo message="Adding ADTSOS to 5.25 disk image..."/>
-		<java jar="${acJar}" fork="true" dir="${builddir}" input="${builddir}/ADTSOS">
-			<jvmarg line="-Dconsole.encoding=ISO-8859-15" />
-			<arg line="-p ${distName}/disks/${diskName}.DSK SOS.INTERP sos 0000" />
-		</java>
+		<appleCommander command="p" input="${builddir}/ADTSOS" imagename="${distName}/disks/${diskName}.DSK" filename="SOS.INTERP" type="sos" address="0000"/>
 		<echo message="Adding ADTSOSETH to 5.25 disk image..."/>
-		<java jar="${acJar}" fork="true" dir="${builddir}" input="${builddir}/ADTSOSETH">
-			<jvmarg line="-Dconsole.encoding=ISO-8859-15" />
-			<arg line="-p ${distName}/disks/${diskName}.DSK SOS.INTERPETH sos 0000" />
-		</java>
+		<appleCommander command="p" input="${builddir}/ADTSOSETH" imagename="${distName}/disks/${diskName}.DSK" filename="SOS.INTERPETH" type="sos" address="0000"/>
+
 		<!--
 		Put a nice volume name on the disk images
 		-->
-		<java jar="${acJar}" fork="true" dir="${builddir}">
-			<arg line="-n ${distName}/disks/${diskName}.DSK ${volName}" />
-		</java>
+		<appleCommander command="n" imagename="${distName}/disks/${diskName}.DSK" volumename="${volName}"/>
 		<delete file="${builddir}/ADTSOS" />
 		<delete file="${builddir}/ADTSOSETH" />
 	</target>
