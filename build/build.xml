@@ -349,18 +349,6 @@ everywhere it is invoked:
 	<target name="builddsk" depends="buildProDOSdsk, buildSOSdsk">
 	</target>
 
-	<target name="actest">
-		<appleCommander command="p" input="${builddir}/STARTUP.SYSTEM" imagename="${distName}/disks/${diskName}.DSK" filename="STARTUP.SYSTEM" type="sys" address="8192"/>
-<!--
-		<java jar="${acJar}" fork="true" dir="${builddir}">
-			<arg line="-n ${distName}/disks/${diskName}.PO ${volName}" />
-		</java>
-		<java jar="${acJar}" fork="true" dir="${builddir}" input="${builddir}/STARTUP.SYSTEM">
-			<arg line="-p ${distName}/disks/${diskName}.DSK STARTUP.SYSTEM sys 8192" />
-		</java>
--->
-	</target>
-
 	<target name="buildProDOSdsk" if="ProDOS-needed">
 
 		<!--
