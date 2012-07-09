@@ -32,17 +32,20 @@ public class ACAntHelper extends Task
 	{
 		/*
 		 * Commands: p, cc65, n, k 
-		 * p: <imagename> <filename> <type> 
+		 * p: <imagename> <filename> <type> [<address>]
 		 * cc65: <imagename> <filename> <type> 
 		 * n: <imagename> <volname> 
 		 * k: <imagename> <filename>
 		 * 
 		 */
-		if (_command.equals("p"))
+		if (_command.equals("p") || (_command.equals("cc65")))
 		{
 			try
 			{
-				com.webcodepro.applecommander.ui.ac.putFile(_input, _imageName, _fileName, _type, _address);
+				if (_command.equals("p"))
+					com.webcodepro.applecommander.ui.ac.putFile(_input, _imageName, _fileName, _type, _address);
+				else
+					com.webcodepro.applecommander.ui.ac.putCC65(_input, _imageName, _fileName, _type);
 			}
 			catch (Exception ex)
 			{
@@ -77,21 +80,7 @@ public class ACAntHelper extends Task
 				}
 				else
 				{
-					if (_command.equals("cc65"))
-					{
-						try
-						{
-							com.webcodepro.applecommander.ui.ac.putCC65(_input, _imageName, _fileName, _type);
-						}
-						catch (Exception ex)
-						{
-							throw new BuildException(ex);
-						}
-					}
-					else
-					{
-						throw new BuildException("Command \""+_command+"\" not implemented.");
-					}
+					throw new BuildException("Command \""+_command+"\" not implemented.");
 				}
 			}
 		}
