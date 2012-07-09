@@ -31,8 +31,9 @@ public class ACAntHelper extends Task
 	public void execute() throws BuildException
 	{
 		/*
-		 * Need: p, n, k 
+		 * Commands: p, cc65, n, k 
 		 * p: <imagename> <filename> <type> 
+		 * cc65: <imagename> <filename> <type> 
 		 * n: <imagename> <volname> 
 		 * k: <imagename> <filename>
 		 * 
@@ -76,7 +77,21 @@ public class ACAntHelper extends Task
 				}
 				else
 				{
-					throw new BuildException("Command \""+_command+"\" not implemented.");
+					if (_command.equals("cc65"))
+					{
+						try
+						{
+							com.webcodepro.applecommander.ui.ac.putCC65(_input, _imageName, _fileName, _type);
+						}
+						catch (Exception ex)
+						{
+							throw new BuildException(ex);
+						}
+					}
+					else
+					{
+						throw new BuildException("Command \""+_command+"\" not implemented.");
+					}
 				}
 			}
 		}
