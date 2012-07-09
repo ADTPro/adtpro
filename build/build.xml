@@ -31,7 +31,8 @@ everywhere it is invoked:
 	<property file="${builddir}/ADTProBuild.properties"/>
 	<property file="${builddir}/ADTProBuild-default.properties"/>
 	<property name="acJarVersion" value="1.3.5.12-ac" />
-	<property name="acJar" value="${builddir}/lib/AppleCommander/AppleCommander-${acJarVersion}.jar" />
+	<property name="acJarPath" value="${builddir}/lib/AppleCommander" />
+	<property name="acJar" value="AppleCommander-${acJarVersion}.jar" />
 	<property name="jarBundlerJar" value="${builddir}/lib/jarbundler-2.1.0/jarbundler-2.1.0.jar" />
 	<property name="rxtxVersion" value="rxtx-2.2pre2-local" />
 	<property name="rxtxZip" value="${rxtxVersion}.zip" />
@@ -41,7 +42,7 @@ everywhere it is invoked:
 	<property name="rxtxZipCHWin64" value="${rxtxVersionCloudHopperWin64}.zip" />
 	<property name="dmgmegabytes" value="7" />
 	<taskdef name="appleDump" classname="org.adtpro.utilities.AppleDump" classpath="${projdir}"/>
-	<taskdef name="appleCommander" classname="org.adtpro.utilities.ACAntHelper" classpath="${projdir};${acJar}"/>
+	<taskdef name="appleCommander" classname="org.adtpro.utilities.ACAntHelper" classpath="${projdir};${acJarPath}/${acJar}"/>
 	<taskdef name="jarbundler" classname="net.sourceforge.jarbundler.JarBundler" classpath="${jarBundlerJar}"/>
 	<echo message="${distName} building on ${os.name}."/>
 	<condition property="isOSX">
@@ -463,7 +464,7 @@ everywhere it is invoked:
 			dest="${builddir}/${distName}/lib/rxtx"/>
 		<unzip src="${builddir}/lib/rxtx/${rxtxZipCHWin64}"
 			dest="${builddir}/${distName}/lib/rxtx"/>
-		<copy file="${acJar}" todir="${builddir}/${distName}/lib/AppleCommander" />
+		<copy file="${acJarPath}/${acJar}" todir="${builddir}/${distName}/lib/AppleCommander" />
 		<copy file="${builddir}/README" todir="${builddir}/${distName}" />
 		<copy file="${builddir}/LICENSE" todir="${builddir}/${distName}" />
 		<copy file="${builddir}/ADTPro.html" todir="${builddir}/${distName}" />
