@@ -35,7 +35,7 @@ compatible computer with at least 64k of memory.
 
     * Runs on Linux, Mac OSX, OS/2, Windows, and probably Solaris
 
-    * Understands many digital disk formats: .DSK, .PO, .NIB, 2IMG
+    * Understands many digital disk formats: .DSK, .SDK, .PO, .DO, .NIB, 2IMG
 
     * Understands many physical Apple disk formats: DOS, ProDOS, SOS, Pascal, CP/M, among others 
 

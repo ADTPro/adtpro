@@ -6,7 +6,7 @@
 
 ADTPro Release History
 
-* Unreleased - in CVS now
+* 1.2.2 - July 22, 2012
 
  New functionality:
 
@@ -17,11 +17,14 @@ ADTPro Release History
 
  Bug fixes:
 
+ * [Client] A bug was introduced in 1.2.1 due to an assembler upgrade
+   that made many DOS 3.3 image sends fail to send correctly  
+
  * [Client] SOS version volume display function regularly crashed
 
- * [Client] Speediboot pauses longer after serial reset to
-   give various machines enough time to recover before
-   sending out the first download request
+ * [Client] Speediboot pauses longer after serial reset to give
+   various machines enough time to recover before sending out the
+   first download request
 
  []
 

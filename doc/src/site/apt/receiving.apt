@@ -19,6 +19,8 @@ you want to copy from the host to a disk on your Apple:
 
  * .PO (ProDOS order images)
 
+ * .SDK (Shrink-it disk images)
+
  * .NIB (Nybble-ized images - though ADTPro only writes normal in-track data)
 
  * .2MG (2IMG images)
