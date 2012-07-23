@@ -18,7 +18,7 @@ ADTPro Release History
  Bug fixes:
 
  * [Client] A bug was introduced in 1.2.1 due to an assembler upgrade
-   that made many DOS 3.3 image sends fail to send correctly  
+   that made Disk II sends (Apple II -> host) corrupt at the host  
 
  * [Client] SOS version volume display function regularly crashed
 

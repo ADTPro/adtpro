@@ -180,7 +180,7 @@ have yellow warnings (depending on how tidy the repository happens to be right t
 
 * {Starting a Build}
 
- All that's left to do now is hit the shiny red build button.  (It's not actually red.)
+ All that's left to do now is hit the shiny build button.
 Right-click on the
 <<<build.xml>>> file in the Package Explorer, pick <<<Run As...->Ant Build,>>> and
 all the magic should happen:

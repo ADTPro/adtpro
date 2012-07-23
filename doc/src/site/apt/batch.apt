@@ -56,7 +56,7 @@ situations:
 |  \<I/O ERROR\> | Can't read the disk in the drive, or the drive is empty |
 *-------:-----+
 
- Once you pick the volume to repeatdly send, you are prompted to insert
+ Once you pick the volume to repeatedly send, you are prompted to insert
 the next disk to send and hit a key.  Once contact is made with the host, 
 the disk information starts reading and sending as with normal 
 {{{sending.html}send}}

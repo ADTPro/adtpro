@@ -35,9 +35,9 @@ ADT Compatibility
  Generally speaking, the client program (the part that runs on the Apple II)
  for any of these programs is compatible with the ADTPro server.
  Version 1.0.4 of ADTPro started shipping with a new offshoot of the original
- ADT client, based in part on the Berlios 1.33 version and in part on the 
+ ADT client, based in part on the 1.33 version and in part on the 
  A2V2-embedded version.  The result is a superset of all the function that
- came with the latest Berlios ADT client, plus the nascent nibble/halftrack
+ came with the latest historical ADT client, plus the nascent nibble/halftrack
  extensions from the A2V2 project.  The intent is to have a highly capable client
  that can operate on the Disk II at a very low level as well as provide higher
  level support for generic ProDOS devices.  That work is ongoing, so the landscape
