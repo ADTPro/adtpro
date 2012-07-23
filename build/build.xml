@@ -42,7 +42,7 @@ everywhere it is invoked:
 	<property name="rxtxZipCHWin64" value="${rxtxVersionCloudHopperWin64}.zip" />
 	<property name="dmgmegabytes" value="7" />
 	<taskdef name="appleDump" classname="org.adtpro.utilities.AppleDump" classpath="${projdir}"/>
-	<taskdef name="appleCommander" classname="org.adtpro.utilities.ACAntHelper" classpath="${projdir};${acJarPath}/${acJar}"/>
+	<taskdef name="appleCommander" classname="com.webcodepro.applecommander.ui.AntTask" classpath="${projdir};${acJarPath}/${acJar}"/>
 	<taskdef name="jarbundler" classname="net.sourceforge.jarbundler.JarBundler" classpath="${jarBundlerJar}"/>
 	<echo message="${distName} building on ${os.name}."/>
 	<condition property="isOSX">
