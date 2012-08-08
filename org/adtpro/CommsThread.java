@@ -2446,12 +2446,16 @@ public class CommsThread extends Thread
       if (reallySend)
       {
         // Run this on a thread...
-        Log.println(false, "CommsThread.requestSend() Reading " + resourceName);
-        _parent.setMainText(Messages.getString("CommsThread.4")); //$NON-NLS-1$
-        _parent.setSecondaryText(resourceName); //$NON-NLS-1$
-        _worker = new Worker(_parent, resource, is, pacing, speed, slowFirstLines,
-            slowLastLines, isBinary);
-        _worker.start();
+        if (_worker != null)
+        {
+          _worker.interrupt();
+        }
+          Log.println(false, "CommsThread.requestSend() Reading " + resourceName);
+          _parent.setMainText(Messages.getString("CommsThread.4")); //$NON-NLS-1$
+          _parent.setSecondaryText(resourceName); //$NON-NLS-1$
+          _worker = new Worker(_parent, resource, is, pacing, speed, slowFirstLines,
+              slowLastLines, isBinary);
+          _worker.start();
       }
       else
       {

@@ -18,6 +18,11 @@ ADTPro Release History
 
  []
 
+ Bug fixes:
+
+ * [Client] Speediboot pauses ever longer, and downloads are 
+   restartable with the escape key
+
 * 1.2.2 - July 22, 2012
 
  New functionality:

@@ -24,10 +24,10 @@ b_p		= $8
 
 ; Apple constants
 CHR_ESC		= $9b		; ESCAPE KEY
-
 home		= $fc58		; CLEAR WHOLE SCREEN
 cout		= $fded		; Output character
 delay		= $fca8		; Monitor delay: # cycles = (5*A*A + 27*A + 26)/2
+rdkey		= $fd0c		; CHARACTER INPUT
 
 ; Local constants
 slotnumloc	= $058b		; Location on screen of slot number
@@ -60,7 +60,7 @@ main:
 	jsr	PARMINT
 	jsr	RESETIO
 
-	ldx	#$04
+	ldx	#$08
 SitAround:			; Delay a little bit after resetting the I/O
 	lda	#$ff
 	jsr	delay
@@ -76,6 +76,8 @@ SitAround:			; Delay a little bit after resetting the I/O
 PullMLI:
 	jsr	msg
 	.byte	"MLI:",$00
+PullMLICmd:
+	bit	$c010		; Clear the keyboard strobe
 	lda	#$B2		; Ask for the ProDOS MLI
 	jsr	PUTC		; Send a "2" to trigger the PD download
 
@@ -87,7 +89,12 @@ PullMLI:
 Poll:
 	jsr	GETC
 	cmp	#$50		; First character will be "P" for ProDOS
-	bne	Poll
+	beq	PullMLIGo
+	lda	$c000		; Check for keypress
+	cmp	#CHR_ESC
+	beq	PullMLICmd
+	jmp	Poll
+PullMLIGo:
 	jsr	GETC		; LSB of length
 	sta	size
 	jsr	GETC		; MSB of length
@@ -117,6 +124,8 @@ ReadMLIDone:
 PullClient:
 	jsr	msg
 	.byte	"ADTPRO:",$00
+PullClientCmd:
+	bit	$c010		; Clear the keyboard strobe
 	lda	#$B6		; Ask for the Serial client
 	jsr	PUTC		; Send a "6" to trigger the ADTPro serial client download
 
@@ -128,7 +137,12 @@ PullClient:
 PollC:
 	jsr	GETC
 	cmp	#$41		; First character will be "A" for ADTPro
-	bne	PollC
+	beq	PollCGo
+	lda	$c000		; Check for keypress
+	cmp	#CHR_ESC
+	beq	PullClientCmd
+	jmp	PollC
+PollCGo:
 	jsr	GETC		; LSB of length
 	sta	size
 	jsr	GETC		; MSB of length
@@ -151,6 +165,8 @@ ReadClient:			; We got the magic signature; start reading data
 	jmp	ReadClient	; Go back for more
 
 ReadClientDone:
+	lda	#$00
+	sta	next_task	; In case we come back around... set up to re-pull MLI
 	jmp	$0800		; Fire up ADTPro
 
 
