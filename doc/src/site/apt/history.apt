@@ -6,6 +6,18 @@
 
 ADTPro Release History
 
+* Unreleased - in CVS now:
+
+ New functionality:
+
+ * [Server] ShrinkIt "SHK" files are converted to an appropriately
+   sized disk image and served
+
+ * [Server] DiskCopy 4.2 disk images are recognized and dealt with
+   as any other disk image
+
+ []
+
 * 1.2.2 - July 22, 2012
 
  New functionality:
