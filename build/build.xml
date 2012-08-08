@@ -30,7 +30,7 @@ everywhere it is invoked:
 	<property name="builddir" value="${basedir}/build" />
 	<property file="${builddir}/ADTProBuild.properties"/>
 	<property file="${builddir}/ADTProBuild-default.properties"/>
-	<property name="acJarVersion" value="1.3.5.12-ac" />
+	<property name="acJarVersion" value="1.3.5.13-ac" />
 	<property name="acJarPath" value="${builddir}/lib/AppleCommander" />
 	<property name="acJar" value="AppleCommander-${acJarVersion}.jar" />
 	<property name="jarBundlerJar" value="${builddir}/lib/jarbundler-2.1.0/jarbundler-2.1.0.jar" />
