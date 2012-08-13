@@ -10,8 +10,8 @@ ADTPro Release History
 
  New functionality:
 
- * [Server] ShrinkIt "SHK" files are converted to an appropriately
-   sized disk image and served
+ * [Server] ShrinkIt "SHK" and "BXY" files are converted to an
+   appropriately sized disk image and served
 
  * [Server] DiskCopy 4.2 disk images are recognized and dealt with
    as any other disk image
@@ -20,8 +20,8 @@ ADTPro Release History
 
  Bug fixes:
 
- * [Client] Speediboot pauses ever longer, and downloads are 
-   restartable with the escape key
+ * [Client] Speediboot pauses ever longer, and downloads may be 
+   restarted with the escape key
 
 * 1.2.2 - July 22, 2012
 

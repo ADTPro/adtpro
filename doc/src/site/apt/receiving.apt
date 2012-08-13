@@ -20,6 +20,8 @@ you want to copy from the host to a disk on your Apple:
  * .PO (ProDOS order images)
 
  * .SDK (Shrink-it disk images)
+ 
+ * .SHK, .BXY (Shrink-it file archives similar to today's .zip files)
 
  * .NIB (Nybble-ized images - though ADTPro only writes normal in-track data)
 
@@ -99,3 +101,31 @@ characters instead of solid blocks:
 
  If an image contains at least one "bad" block, an error message will appear both
 at the Apple and at the host end.
+
+{Compressed} Files
+
+ When transferring Shrinkit-compressed files (i.e. .shk and .bxy), a virtual disk is
+synthesized with enough space to hold the contents, which is then served to the
+ADTPro client.
+Typically, this results in a 280 block (140k), or 1600 block (800k) disk image.
+But it could result in a larger virtual disk as well, depending on how big the 
+compressed files end up being.
+
+ Sometimes, depending on several factors, it may happen that a compressed file will
+fail to uncompress correctly - for example, if the resulting disk image ends up being
+just slightly too small to contain the unpacked files.
+ADTPro will respond that it was unable to open the file in that case.
+If this ends up happening, you can use external tools like
+{{{http://applecommander.sourceforge.net}AppleCommander}} or
+{{{http://ciderpress.sourceforge.net}CiderPress}} to understand more about the
+compressed image you are trying to 
+transfer, and how it might be better converted to a disk size you expect.
+
+ Once a compressed file is successfully converted to a virtual disk image, it is
+served to the client, but there isn't really an indication of exactly what size image
+was created to hold the contents.
+But if you indicate the unit you want to write to on the client end, it will either work -
+or ADTPro will complain that there is an image size mismatch, indicating a different size
+virtual disk image was created to hold the contents.
+If that happens, it will also be a good time to consult the external tools mentioned
+above to make a closer inspection of the file you're trying to transfer. 

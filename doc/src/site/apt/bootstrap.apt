@@ -55,9 +55,9 @@ all the way to making a bootable ADTPro floppy:
     [[1]] Start up your Apple; hit Ctrl-Reset before it reads anything from the disk drive.
       It's important that it not load any OS, even DOS 3.3.
 
-    [[1]] On the ADTPro server, push the "Serial" button.  if this is the first time
-      you've connected via the serial port, you will be presented with the serial configuration
-      dialog box, where you'll need to choose which serial port to use.
+    [[1]] On the ADTPro server, push the "Serial" button.
+      If this is the first time you've connected via the serial port, you will be presented with 
+      the serial configuration dialog box, where you'll need to choose which serial port to use.
 
     [[1]] Click on the "Bootstrapping->ProDOS->Speediboot" menu item.  
       A dialog box will come up instructing you to type a set of commands
@@ -87,6 +87,10 @@ all the way to making a bootable ADTPro floppy:
       There are three phases to the bootstrapping operation, and all should 
       follow automatically.
       
+      If at any point the bootstrapping process seems to stop working, or
+      pauses for more than 10 seconds or so, press the "ESC" key on the Apple
+      to attempt a re-start. 
+
       The text that flows at first is a program that searches for compatible 
       serial hardware, which then uses that connection to complete the bootstrapping operation.
       Once the bootstrapper is running, the block should be flashing random characters,

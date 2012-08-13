@@ -33,8 +33,8 @@ It turns out that ip65's checksum algorithm is faulty, so not being smart enough
 to debug it myself, I simply transplanted the one from the Contiki project
 ({{http://www.sics.se/contiki/}}).
 
- The disk abstraction layer of ADTPro's server software, as well as the ShrinkIt
-decompression code was borrowed from the AppleCommander project:
+ The disk abstraction layer of ADTPro's server software as well as the ShrinkIt
+decompression code comes directly from the AppleCommander project:
 {{http://applecommander.sourceforge.net/}}
 
  I augmented AppleCommander's understanding of disk formats, byte ordering,
