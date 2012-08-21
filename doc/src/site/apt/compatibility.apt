@@ -23,7 +23,7 @@ ADT Compatibility
 *-----:-----:------:------+
  ADTPro | v.r.m | II,+,e,c,GS,Laser,/// | Linux, OS/2, OSX, Solaris, Windows (Java) | Serial, Uthernet, Audio | 
 *-----:-----:------:------+
- ADT (Shipped with ADTPro) | 2.4 | II,+,e,c,GS,Laser,/// | ADTPro or Virtual ][ A2V2 on OSX | Serial (115.2k) | Nibble/half-track capable with A2V2
+ ADT (Shipped with ADTPro) | 2.4 | II,+,e,c,GS,Laser,/// | ADTPro or Virtual ][ A2V2 on OSX | Serial (115.2k) | Nibble/half-track capable
 *-----:-----:------:------+
  ADT ({{{https://github.com/david-schmidt/adt/wiki}GitHub}}) | 1.33 | II,+,e,c,GS,Laser | PC DOS, Windows | Serial (115.2k) | 
 *-----:-----:------:------+
