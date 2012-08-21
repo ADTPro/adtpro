@@ -1,6 +1,6 @@
 ;
 ; ADTPro - Apple Disk Transfer ProDOS
-; Copyright (C) 2006 - 2011 by David Schmidt
+; Copyright (C) 2006 - 2012 by David Schmidt
 ; david__schmidt at users.sourceforge.net
 ;
 ; This program is free software; you can redistribute it and/or modify it 
@@ -18,10 +18,10 @@
 ; 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 ;
 
+xpos		= $14	; Starting column of dotted-decimal config numbers
+ypos		= $08	; Starting row of dotted-decimal config numbers
 raw_x:		.byte $00
 raw_y:		.byte $00
-xpos:		.byte $14
-ypos:		.byte $08
 current_value:	.byte $00
 new_digit:	.byte $09
 ip_parms_temp:
@@ -53,27 +53,27 @@ IPConfig:
 	lda #>ip_parms_temp
 	sta UTILPTR2+1
 
-	lda ypos
+	lda #ypos
 	tay
 	jsr TABV
 @Dots:	clc
-	lda xpos
+	lda #xpos
 	adc #$03
 	jsr HTAB
 	lda #CHR_DOT
 	jsr COUT1
-	lda xpos
+	lda #xpos
 	adc #$07
 	jsr HTAB
 	lda #CHR_DOT
 	jsr COUT1
-	lda xpos
+	lda #xpos
 	adc #$0b
 	jsr HTAB
 	lda #CHR_DOT
 	jsr COUT1
 	iny
-	cpy #$0b
+	cpy #ypos+4
 	beq :+
 	tya
 	jsr TABV
@@ -270,17 +270,17 @@ InputLoop:
 ;---------------------------------------------------------
 RenderNumber:
 	clc
-	lda ypos
+	lda #ypos
 	adc raw_y
 	jsr TABV
 	clc
-	lda xpos
+	lda #xpos
 	adc raw_x
 	jsr HTAB
 	lda current_value
 	jsr ToDecimal
 	clc
-	lda xpos
+	lda #xpos
 	adc raw_x
 	adc #$02
 	jsr HTAB
@@ -297,11 +297,11 @@ EvaluateScreen:
 	sta current_value
 	clc
 ; Keep running total of X,Y and read screen
-	lda ypos
+	lda #ypos
 	adc raw_y
 	jsr BASCALC
 	clc
-	lda xpos
+	lda #xpos
 	adc raw_x
 	adc BASL
 	sta BASL
