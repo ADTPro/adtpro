@@ -1,6 +1,6 @@
 ;
 ; ADTPro - Apple Disk Transfer ProDOS
-; Copyright (C) 2007 by David Schmidt
+; Copyright (C) 2007 - 2012 by David Schmidt
 ; david__schmidt at users.sourceforge.net
 ;
 ; This program is free software; you can redistribute it and/or modify it 
@@ -19,48 +19,6 @@
 ;
 
 ;---------------------------------------------------------
-; ReceiveNib - receive nibble image
-;---------------------------------------------------------
-ReceiveNib:
-	jsr nibtitle
-	jsr GETNIBREQUEST
-	jsr GETREPLY
-	beq ReceiveNibOK
-	jmp PCERROR
-
-ReceiveNibOK:
-	lda UNITNBR		; Fetch target drive SLOTNUM value
-	and #$70		; Mask off bit 7 and the lower 4 bits
-	sta SlotF		; Store result in FORMAT slot storage
-
-	lda #CHR_N
-	sta SendType	; Configure the nibble screen for output
-	; Here's where we set up a loop
-	; for all chunks to transfer.
-	lda #$00
-	sta ECOUNT	; Clear error flag
-	sta BLKHI
-	jsr calibrat	; Fire up the drive
-:	jsr rnibtrak	; Read a track from the comms device
-	LDA_BIGBUF_ADDR_LO	; Connect the Buffer pointer to the
-	sta Buffer	; beginning of the Big Buffer(TM)
-	LDA_BIGBUF_ADDR_HI
-	sta Buffer+1
-	ldy #$00	; Start at beginning of buffer
-	jsr Trans2	; Write track to disk
-	inc BLKHI
-	lda BLKHI
-	cmp #$23
-	beq ReceiveNibDone
-	sta iobtrk
-	jsr nibnextt	; Go to next track
-	jmp :-
-ReceiveNibDone:
-	jsr motoroff	; We're finished with the drive
-	jsr GETFINALACK	; Tell host we're done
-	jmp COMPLETE	; Finish using sr.asm's completion code
-
-;---------------------------------------------------------
 ; sendnib - send entire disk as nibbles
 ; 
 ; we don't want to depend on any disk formatting, not even
@@ -74,8 +32,6 @@ ReceiveNibDone:
 sendnib:
 	jsr nibtitle
 	jsr calibrat		; Calibrate the disk
-;	jsr INIT_DISKII
-;	jsr GO_TRACK0
 	jsr PUTINITIALACK
 	lda SendType
 	cmp #CHR_N		; Are we sending full nibble tracks?
@@ -302,51 +258,97 @@ nibnextt:
 ; starting a new sequence; the check takes so long we
 ; lose any byte sync we might have (> 32 cycles).
 ;---------------------------------------------------------
-;nibsync:
-;	tya
-;	pha			; save y on the stack
-;	lda #0
-;	tay			; y=0 (counter)
-;	sta synccnt
-;	sta synccnt+1		; init number of bytes
-;nibsync0:
-;	jsr chekscnt
-;	bcs nibsync5		; accept any byte
-;nibsync1:
-;	lda $c08c,x		; wait for complete byte
-;	bpl nibsync1
-;	iny			; count byte
-;	cmp #$ff		; is it a gap byte?
-;	bne nibsync0
-;nibsync2:
-;	lda $c08c,x		; next byte
-;	bpl nibsync2
-;	iny			; count byte
-;	cmp #$ff		; is it a gap byte?
-;	bne nibsync0		; only 1 gap byte
-;nibsync3:
-;	lda $c08c,x		; next byte
-;	bpl nibsync3
-;	iny			; count byte
-;	cmp #$ff		; is it a gap byte?
-;	bne nibsync0		; only 2 gap bytes
-;nibsync4:
-;	lda $c08c,x		; next byte
-;	bpl nibsync4
-;	iny			; count byte
-;	cmp #$ff		; is it a gap byte?
-;	bne nibsync0		; only 3 gap bytes
-; at this point, we encountered 4 consecutive gap bytes.
+nibsync:
+	tya
+	pha			; save y on the stack
+	lda #0
+	tay			; y=0 (counter)
+	sta synccnt
+	sta synccnt+1		; init number of bytes
+nibsync0:
+	jsr chekscnt
+	bcs nibsync5		; accept any byte
+nibsync1:
+	lda $c08c,x		; wait for complete byte
+	bpl nibsync1
+	iny			; count byte
+	cmp #$ff		; is it a gap byte?
+	bne nibsync0
+nibsync2:
+	lda $c08c,x		; next byte
+	bpl nibsync2
+	iny			; count byte
+	cmp #$ff		; is it a gap byte?
+	bne nibsync0		; only 1 gap byte
+nibsync3:
+	lda $c08c,x		; next byte
+	bpl nibsync3
+	iny			; count byte
+	cmp #$ff		; is it a gap byte?
+	bne nibsync0		; only 2 gap bytes
+nibsync4:
+	lda $c08c,x		; next byte
+	bpl nibsync4
+	iny			; count byte
+	cmp #$ff		; is it a gap byte?
+	bne nibsync0		; only 3 gap bytes
+; At this point, we encountered 4 consecutive gap bytes.
 ; so now wait for the first non-gap byte.
-;nibsync5:
-;	pla
-;	tay			; restore y
-;nibsync6:
-;	lda $c08c,x		; next byte
-;	bpl nibsync6
-;	cmp #$ff		; is it a gap byte?
-;	beq nibsync6		; go read next byte
-;	jmp rdnibtr8		; avoid rts; save some cycles
+nibsync5:
+	pla
+	tay			; restore y
+nibsync6:
+	lda $c08c,x		; next byte
+	bpl nibsync6
+	cmp #$ff		; is it a gap byte?
+	beq nibsync6		; go read next byte
+	jmp rdnibtr8		; avoid rts; save some cycles
+
+;---------------------------------------------------------
+; rdnibtr - read track as nibbles into tracks buffer.
+; This code must not cross a page boundary.
+;
+; total bytes read is NIBPAGES * 256, or about twice
+; the track length.
+; the drive has been calibrated, so we know we are in read
+; mode, the motor is running, and and the correct drive 
+; number is engaged.
+; we wait until we encounter a first nibble after a gap.
+; for this purpose, a gap is at least 4 ff nibbles in a 
+; row. note this is not 100% fool proof; the ff nibble
+; can occur as a regular nibble instead of autosync.
+; but this is conform beneath apple dos, so is
+; probably ok.
+;---------------------------------------------------------
+rdnibtr:
+	ldx pdsoftx		; Load drive index into X
+	lda #0			; a = 0
+	tay			; y = 0 (index)
+	sta BLKPTR		; set running ptr (lo) to 0
+	LDA_BIGBUF_ADDR_HI	; BIGBUF address high
+	sta BLKPTR+1		; set running ptr (hi)
+	lda #NIBPAGES
+	sta NIBPCNT		; page counter
+; use jmp, not jsr, to perform nibsync. that way we
+; have a bit more breathing room, cycle-wise. the
+; "function" returns with a jmp to rdnibtr8.
+	jmp	nibsync		; find first post-gap byte
+; the read loop must be fast enough to read 1 byte every
+; 32 cycles. it appears the interval is 17 cycles within
+; one data page, and 29 cycles when crossing a data page.
+; these numbers are based on code that does not cross
+; a page boundary.
+rdnibtr7:
+	lda $c08c,x		; read (4 cycles)
+	bpl rdnibtr7		; until byte complete (2c)
+rdnibtr8:
+	sta (BLKPTR),y		; store in buffer (6c)
+	iny			; (2c)
+	bne rdnibtr7		; 256 bytes done? (2 / 3c)
+	inc BLKPTR+1		; next page (5c)
+	dec NIBPCNT		; count (5c)
+	bne rdnibtr7		; and back (3c)
+	rts
 
 ;---------------------------------------------------------
 ; chekscnt - check if we have to continue syncing

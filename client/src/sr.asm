@@ -1,6 +1,6 @@
 ;
 ; ADTPro - Apple Disk Transfer ProDOS
-; Copyright (C) 2006 - 2011 by David Schmidt
+; Copyright (C) 2006 - 2012 by David Schmidt
 ; david__schmidt at users.sourceforge.net
 ;
 ; This program is free software; you can redistribute it and/or modify it 
@@ -239,8 +239,8 @@ SRSTART:
 SRREENTRY:
 	bmi SMDONE	; Branch backwards... we just need an RTS close by
 	sta SLOWA	; Hang on to the device table index
-	jsr CheckForNib	; See if this is a nibble image
-	bcs GoForNib	; It is - so receive it
+;	jsr CheckForNib	; See if this is a nibble image
+;	bcs GoForNib	; It is - so receive it
 	lda HOSTBLX
 	cmp NUMBLKS
 	bne SRMISMATCH
@@ -249,8 +249,8 @@ SRREENTRY:
 	bne SRMISMATCH
 	jmp SROK2
 
-GoForNib:
-	jmp ReceiveNib
+;GoForNib:
+;	jmp ReceiveNib
 
 SRMISMATCH:
 	jsr CLRMSGAREA
