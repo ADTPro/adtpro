@@ -1,6 +1,6 @@
 ;
 ; ADTPro - Apple Disk Transfer ProDOS
-; Copyright (C) 2006 - 2011 by David Schmidt
+; Copyright (C) 2006 - 2012 by David Schmidt
 ; david__schmidt at users.sourceforge.net
 ;
 ; This program is free software; you can redistribute it and/or modify it 
@@ -144,52 +144,4 @@ NUM:	.byte $00, $00
 CHROVER:
 	ldy CH
 	sta (BASL),Y
-	rts
-
-;---------------------------------------------------------
-; nibtitle - show title screen for nibble disk transfer
-;---------------------------------------------------------
-nibtitle:
-	jsr HOME
-	jsr SHOWLOGO
-	jsr CROUT
-	jsr CROUT
-	ldx #$27
-	jsr HLINEX
-	jsr CROUT
-	ldy #PMNIBTOP
-	jsr WRITEMSG
-	ldx #$38		; show one block left and right
-	ldy #$0e		; on line $0e at end of line
-	jsr GOTOXY 
-	lda #_I' '		; inverse space char
-	jsr COUT
-	lda #0			; at start of line
-	SET_HTAB
-	jsr COUT
-	lda #_I'>'		; inverse character!
-	iny			; next position in line
-	sta (BASL),y
-	lda #_I'<'		; inverse character!
-	ldy #37			; one-but-last position in line
-	sta (BASL),y
-	lda SendType		; check to see if we need to
-	cmp #CHR_H		; display halftrack line
-	bne nibtdone
-	lda #$0f		; move one line down
-	sta CV
-	jsr TABV
-	lda #_I'.'		; put an inverse . on screen
-	ldy #0			;  at horiz pos 0
-	sta (BASL),y
-	lda #'5'		; and now put a 5 so we see
-	ldy #1			;  .5 which means halftrk
-	sta (BASL),y
-	lda #_I' '		; put 2 inverse spaces at the end
-	ldy #37
-	sta (BASL),y
-	iny
-	sta (BASL),y
-
-nibtdone:
 	rts

@@ -21,13 +21,12 @@
 ;---------------------------------------------------------
 ; sendnib - send entire disk as nibbles
 ; 
-; we don't want to depend on any disk formatting, not even
-; on the track and sector numbers. so don't use rwts; just
-; calibrate the arm to track 0, and send all 35 tracks. we
-; do _not_ support half-tracks. each track is read about
-; twice its length, to give the other side enough data to
-; make the analysis. each track must be acknowledged 
-; before we proceed with the next track.
+; We don't want to depend on any disk formatting, not even
+; on the track and sector numbers.  Just calibrate the arm
+; to track 0, and send all 35 tracks.  Each track is read
+; about twice its length, to give the other side enough
+; data to make the analysis. each track must be 
+; acknowledged before we proceed with the next track.
 ;---------------------------------------------------------
 sendnib:
 	jsr nibtitle
@@ -42,26 +41,25 @@ sendnib:
 @snext:
 	sta maxtrk
 
-	lda #0			; Don't actually use rwts...
-	sta iobtrk		; ...so use this as just memory
+	lda #0
+	sta iobtrk		; Track counter
 	sta BLKHI
 
 snibloop:
 	lda #$00
 	sta BLKLO		; Reset "sector" number using BLKLO
-	lda #CHR_V
-	jsr nibshow		; Show and "V" at current track
+	lda #CHR_R
+	jsr nibshow		; Show an "R" at current track location
 	jsr rdnibtr		; Read track as nibbles
 	jsr snibtrak		; Send nibbles to other side
-	lda <ZP
-	bne snibloop		; Re-read same track if not zero
+	bcs snibloop		; Re-read same track if not zero
 	inc iobtrk		; Next trackno
 	lda iobtrk
 	cmp maxtrk		; Repeat while trackno < max
 	bcs snibfin		; Jump if ready
-	inc BLKHI		; Increment track number using BLKHI
+	inc BLKHI		; Increment "track" number using BLKHI
 	lda SendType
-	cmp #CHR_N		; Are we nibbles?
+	cmp #CHR_N		; Are we sending nibbles?
 	bne :+			; No, half tracks
 	jsr nibnextt		; Go to next track
 	jmp snibloop
@@ -128,7 +126,7 @@ rnib3:
 	jmp rnib2
 rnibdone:
 	lda #CHR_BLK		; Entire track transferred ok
-	jsr nibshow		; Show status of current track
+	jsr COUT		; Show status of current track
 	lda #$00
 	rts
 
@@ -180,12 +178,13 @@ snibtr3:
 	jmp ABORT		;  and abort
          
 snibtr5:
+	lda #CHR_S
+	jsr nibshow		; Show "S" at current track
 	inc BLKPTR+1		; Next page
 	inc BLKLO		; Increment "sector" counter using BLKLO
 	dec NIBPCNT		; Count
 	bne snibtr1		; and back if more pages
 snibtrdloop:
-	jsr PUTINITIALACK	; Ready to go again
 ; for test only: activate next and deactivate line after
 ;	lda #CHR_ACK		; Simulate response
 	jsr GETREPLY2		; Get response from host for whole track
@@ -199,8 +198,6 @@ snibtrdloop:
 	beq snibtrdloop		; Resend track done message
 	cmp #CHR_ENQ		; Need to re-send whole track?
 	bne snibtr2		; Host is confused; abort
-	lda #$01		; Reset counter and swing around again
-	sta <ZP
 	sec			; Let caller know what goes on
 	rts
 snibtr6:
@@ -208,23 +205,20 @@ snibtr6:
 	bpl snibtr3		; Branch always
 snibtr7:
 	lda #CHR_BLK		; Entire track transferred ok
-	jsr  nibshow		; Show status of current track
-	lda #$00
-	sta <ZP
+	lda #CHR_BLK		; Entire track transferred ok
+	jsr COUT		; Show status of current track
 	clc			; Indicate success to caller
 	rts
 snibtr8:
 	lda #_I'U'		; Entire track was unreadable
 	jsr nibshow		; Probably a half track
-	lda #$00
-	sta <ZP
 	clc			; Indicate success to caller
 	rts
 
 ;---------------------------------------------------------
 ; nibnextt - goto next track. we know there is still room
 ; to move further. next track is in iobtrk.
-; use copy of dos function seekabs.
+; use copy of DOS function seekabs.
 ;---------------------------------------------------------
 nibnextt:
 	ldx pdsoftx		; x = slot * 16
@@ -235,9 +229,107 @@ nibnextt:
 	sbc #2			; a now contains current track
 	sta $478		; seekabs expects this
 	pla 			; desired track in a
-	jsr seekabs		; let dos function do its thing
+	jsr seekabs		; let DOS function do its thing
 	rts
 
+;---------------------------------------------------------
+; chekscnt - check if we have to continue syncing
+; add y to synccnt (16 bit), and reset y to 0. when
+; synccnt reaches $3400, return carry set, else clear.
+; $3400 is twice the max number of bytes in one track.
+;---------------------------------------------------------
+chekscnt:
+	clc			; add y to 16-bit synccnt
+	tya
+	adc synccnt		; lo-order part
+	sta synccnt
+	lda #0
+	tay			; reset y to 0
+	adc synccnt+1		; high-order part
+	sta synccnt+1
+	cmp #$34		; sets carry when a >= data
+	rts
+
+;---------------------------------------------------------
+; nibblank - clear progress to all blanks
+;---------------------------------------------------------
+nibblank:
+	lda CV
+	pha			; Save current vertical pos
+	lda #$0e		; Fixed vertical position
+	jsr TABV		; Calculate BASL from a
+	lda #2			; Initial horizontal position
+	jsr HTAB
+	lda #CHR_SP		; The character to display
+nibblnk1:
+	jsr COUT		; Put on screen
+	iny			; Next horizontal position
+	cpy #37			; At the end?
+	bcc nibblnk1		; If not, jump back
+	pla
+	jsr TABV		; Restore cv
+	rts
+
+;---------------------------------------------------------
+; nibshow - show character in accumulator at current track
+; ...also supports haltracking
+;---------------------------------------------------------
+nibshow:
+	tay		; CHARACTER IN Y
+	LDA_CH		; Get horizontal position
+	pha
+	lda CV
+	pha		; SAVE CV ON STACK
+	tya		; A NOW CONTAINS CHAR
+	pha		; Save char on stack
+	lda #$0e	; Fixed vertical position
+	jsr TABV	; Calculate BASL from A
+	lda SendType	; Check to see if we're in half track
+	cmp #CHR_N	;   or Nibble mode
+	beq NIBNORM	; Nibble - branch there
+	lda iobtrk
+	cmp #0		; TRACK ZERO ALWAYS TREATED THE SAME
+	beq NIBNORM
+	lsr		; IS TRACK ODD OR EVEN?
+	bcc NIBEVEN	; TRACK IS EVEN, CONTINUE NORMALLY
+	lda #$0f	; INCREMENT VERTICAL POSITION
+	jsr TABV	; CALCULATE BASL FROM A
+NIBEVEN:
+	lda iobtrk	; CURRENT TRACK
+	lsr		; CALC HORIZ POS BY
+	clc		; DIVIDING BY TWO AND
+	adc #2		; ADDING 2
+	jmp NIBDISP
+NIBNORM:
+	lda iobtrk	; CURRENT TRACK
+	clc
+	adc #2		; CALCULATE HORIZONTAL POS
+NIBDISP:
+	tay		; INDEX VALUE IN Y
+	pla		; RESTORE CHARACTER TO SHOW
+	jsr COUT
+	pla
+	jsr TABV	; RESTORE CV
+	pla
+	SET_HTAB	; Restore horizontal position
+	rts
+
+
+;---------------------------------------------------------
+; hlfnextt - goto next halftrack. we know there is still room
+; to move further. next track is in iobtrk.
+; use copy of dos function seekabs.
+;---------------------------------------------------------
+hlfnextt:
+	ldx pdsoftx		; x = slot * 16
+	lda iobtrk		; a = desired halftrack
+	pha			; save on stack
+	sec			; prepare subtract
+	sbc #1			; a now contains current track
+	sta $478		; seekabs expects this
+	pla			; desired track in a
+	jsr seekabs		; let dos function do its thing
+	rts
 ;---------------------------------------------------------
 ; nibsync - Synchronize on first byte after gap
 ; this function is only used from rdnibtr, but I had to
@@ -292,7 +384,7 @@ nibsync4:
 	iny			; count byte
 	cmp #$ff		; is it a gap byte?
 	bne nibsync0		; only 3 gap bytes
-; At this point, we encountered 4 consecutive gap bytes.
+; at this point, we encountered 4 consecutive gap bytes.
 ; so now wait for the first non-gap byte.
 nibsync5:
 	pla
@@ -306,8 +398,6 @@ nibsync6:
 
 ;---------------------------------------------------------
 ; rdnibtr - read track as nibbles into tracks buffer.
-; This code must not cross a page boundary.
-;
 ; total bytes read is NIBPAGES * 256, or about twice
 ; the track length.
 ; the drive has been calibrated, so we know we are in read
@@ -351,96 +441,49 @@ rdnibtr8:
 	rts
 
 ;---------------------------------------------------------
-; chekscnt - check if we have to continue syncing
-; add y to synccnt (16 bit), and reset y to 0. when
-; synccnt reaches $3400, return carry set, else clear.
-; $3400 is twice the max number of bytes in one track.
+; nibtitle - show title screen for nibble disk transfer
 ;---------------------------------------------------------
-chekscnt:
-	clc			; add y to 16-bit synccnt
-	tya
-	adc synccnt		; lo-order part
-	sta synccnt
-	lda #0
-	tay			; reset y to 0
-	adc synccnt+1		; high-order part
-	sta synccnt+1
-	cmp #$34		; sets carry when a >= data
-	rts
-
-;---------------------------------------------------------
-; nibblank - clear progress to all blanks
-;---------------------------------------------------------
-nibblank:
-	lda CV
-	pha			; Save current vertical pos
-	lda #$0e		; Fixed vertical position
-	jsr TABV		; Calculate BASL from a
-	lda #2			; Initial horizontal position
-	jsr HTAB
-	lda #CHR_SP		; The character to display
-nibblnk1:
-	jsr COUT		; Put on screen
-	iny			; Next horizontal position
-	cpy #37			; At the end?
-	bcc nibblnk1		; If not, jump back
-	pla
-	jsr TABV		; Restore cv
-	rts
-
-;---------------------------------------------------------
-; nibshow - show character in a at current track
-; support for haltracking added
-;---------------------------------------------------------
-nibshow:
-	tay		; CHARACTER IN Y
-	lda CV
-	pha		; SAVE CV ON STACK
-	tya		; A NOW CONTAINS CHAR
-	pha		; Save char on stack
-	lda #$0e	; Fixed vertical position
-	jsr TABV	; Calculate BASL from A
-	lda SendType	; Check to see if we're in half track
-	cmp #CHR_N	;   or Nibble mode
-	beq NIBNORM	; Nibble - branch there
-	lda iobtrk
-	cmp #0		; TRACK ZERO ALWAYS TREATED THE SAME
-	beq NIBNORM
-	lsr		; IS TRACK ODD OR EVEN?
-	bcc NIBEVEN	; TRACK IS EVEN, CONTINUE NORMALLY
-	lda #$0f	; INCREMENT VERTICAL POSITION
-	jsr TABV	; CALCULATE BASL FROM A
-NIBEVEN:
-	lda iobtrk	; CURRENT TRACK
-	lsr		; CALC HORIZ POS BY
-	clc		; DIVIDING BY TWO AND
-	adc #2		; ADDING 2
-	jmp NIBDISP
-NIBNORM:
-	lda iobtrk	; CURRENT TRACK
-	clc
-	adc #2		; CALCULATE HORIZONTAL POS
-NIBDISP:
-	tay		; INDEX VALUE IN Y
-	pla		; RESTORE CHARACTER TO SHOW
+nibtitle:
+	jsr HOME
+	jsr SHOWLOGO
+	jsr CROUT
+	jsr CROUT
+	ldx #$27
+	jsr HLINEX
+	jsr CROUT
+	ldy #PMNIBTOP
+	jsr WRITEMSG
+	ldx #$38		; show one block left and right
+	ldy #$0e		; on line $0e at end of line
+	jsr GOTOXY 
+	lda #_I' '		; inverse space char
 	jsr COUT
-	pla
-	jsr TABV	; RESTORE CV
-	rts
+	lda #0			; at start of line
+	SET_HTAB
+	jsr COUT
+	lda #_I'>'		; inverse character!
+	iny			; next position in line
+	sta (BASL),y
+	lda #_I'<'		; inverse character!
+	ldy #37			; one-but-last position in line
+	sta (BASL),y
+	lda SendType		; check to see if we need to
+	cmp #CHR_H		; display halftrack line
+	bne nibtdone
+	lda #$0f		; move one line down
+	sta CV
+	jsr TABV
+	lda #_I'.'		; put an inverse . on screen
+	ldy #0			;  at horiz pos 0
+	sta (BASL),y
+	lda #'5'		; and now put a 5 so we see
+	ldy #1			;  .5 which means halftrk
+	sta (BASL),y
+	lda #_I' '		; put 2 inverse spaces at the end
+	ldy #37
+	sta (BASL),y
+	iny
+	sta (BASL),y
 
-
-;---------------------------------------------------------
-; hlfnextt - goto next halftrack. we know there is still room
-; to move further. next track is in iobtrk.
-; use copy of dos function seekabs.
-;---------------------------------------------------------
-hlfnextt:
-	ldx pdsoftx		; x = slot * 16
-	lda iobtrk		; a = desired halftrack
-	pha			; save on stack
-	sec			; prepare subtract
-	sbc #1			; a now contains current track
-	sta $478		; seekabs expects this
-	pla			; desired track in a
-	jsr seekabs		; let dos function do its thing
+nibtdone:
 	rts
