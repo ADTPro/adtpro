@@ -1,6 +1,6 @@
 ;
 ; ADTPro - Apple Disk Transfer ProDOS
-; Copyright (C) 2008 - 2011 by David Schmidt
+; Copyright (C) 2008 - 2012 by David Schmidt
 ; david__schmidt at users.sourceforge.net
 ;
 ; This program is free software; you can redistribute it and/or modify it 
@@ -21,12 +21,6 @@
 .include "messages.asm"
 .include "sos/sosmessages.asm"
 
-	MSG10: .byte	$20,$20,$20,$A0,$A0,$20,$20,$20,$A0,$A0,$20,$A0,$A0,$A0,$20,$8D
-	MSG10_END =*
-	MSG11: .byte	$20,$A0,$A0,$20,$A0,$20,$A0,$A0,$20,$A0,$A0,$20,$A0,$20,$8D
-	MSG11_END =*
-	MSG12: .byte	$20,$A0,$A0,$20,$A0,$20,$A0,$A0,$20,$A0,$A0,$A0,$20,$8D
-	MSG12_END =*
 	MSG26: asc	"ETHERNET SLOT"
 	MSG26_END =*
 	MSG27: asc	"CONFIGURE DHCP"
