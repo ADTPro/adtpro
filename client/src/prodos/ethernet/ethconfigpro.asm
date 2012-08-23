@@ -74,6 +74,7 @@ cfg_gateway:	.byte   0,   0,   0,   0 ; ip address of router on local network (w
 DEFAULT:	.byte 2,0,1,0	; Default parm indices
 CONFIGYET:	.byte 0		; Has the user configged yet? (YES)
 PARMSEND:
+PNIBBL:		.byte 1		; Enable nibbles? (NO - and not saved or exposed (yet))
 cfg_dns:	.byte   0,   0,   0,   0 ; ip address of dns server to use (will be overwritten if dhcp_init is called)
 dhcp_server:	.byte   0,   0,   0,   0 ; will be set address of dhcp server that configuration was obtained from
 cfg_tftp_server:

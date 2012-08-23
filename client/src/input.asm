@@ -1,6 +1,6 @@
 ;
 ; ADTPro - Apple Disk Transfer ProDOS
-; Copyright (C) 2006 - 2008 by David Schmidt
+; Copyright (C) 2006 - 2012 by David Schmidt
 ; david__schmidt at users.sourceforge.net
 ;
 ; This program is free software; you can redistribute it and/or modify it 
@@ -37,11 +37,11 @@ GETFN2:
 ; GetSendType - Get 5.25" disk send type
 ;---------------------------------------------------------
 GetSendType:
-	jmp GetSendFold	; Bypass all this until Nibbles are ready....
+	lda PNIBBL		; Enable Nibbles?  eq if yes, ne if no.
 	jsr CLRMSGAREA
 	ldy #PMSG04
 	jsr WRITEMSG
-	; (S)TANDARD (N)IBBLE (H)ALF TRACKS:
+	; (S)TANDARD (N)IBBLE:
 GetSendLoop:
 	jsr RDKEY
 	CONDITION_KEYPRESS	; Convert to upper case
@@ -49,7 +49,7 @@ GetSendLoop:
 	beq GetSendFold	; Fold to "P"
 	cmp #CHR_N
 	beq GetSendOk
-;	cmp #CHR_H	; Uncommend when half tracks are ready...
+;	cmp #CHR_H	; Uncomment when half tracks are ready...
 ;	beq GetSendOk
 	cmp #CHR_ESC	; ESCAPE = No
 	beq GetSendCancel
