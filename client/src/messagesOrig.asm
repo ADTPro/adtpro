@@ -258,7 +258,10 @@ PHMMAX	= $0a		; This must be two greater than the largest host message
 	MUnitNone_END =*
 
 	MNIBTOP:
-		asc "  00000000000000001111111111111111222  "
+		.byte CHR_RETURN
+		.byte CHR_RETURN
+		.byte CHR_RETURN
+		inv "  00000000000000001111111111111111222  "
 		.byte CHR_RETURN
 		inv "  0123456789ABCDEF0123456789ABCDEF012  "
 		.byte CHR_RETURN

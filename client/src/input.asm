@@ -38,6 +38,7 @@ GETFN2:
 ;---------------------------------------------------------
 GetSendType:
 	lda PNIBBL		; Enable Nibbles?  eq if yes, ne if no.
+	bne GetSendFold
 	jsr CLRMSGAREA
 	ldy #PMSG04
 	jsr WRITEMSG

@@ -18,6 +18,30 @@
 ; 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 ;
 
+; Protocol number. Note it must be assigned a higher value when the protocol is
+; modified, and must never be < $0101 or > $01FF
+protono		= $0101
+
+;---------------------------------------------------------
+; initprot - Negotiate the legacy ADT protocol. Return carry
+; clear if successful, carry set otherwise.
+;---------------------------------------------------------
+initprot:
+	lda	#>protono	; High order byte
+	jsr	PUTC		; Send to host
+	lda	#<protono	; Low order byte
+	jsr	PUTC		; Send to host
+	lda	#0
+	jsr	PUTC		; Delimiter
+	jsr	GETC		; Read response from host
+	cmp	#CHR_ACK
+	bne	:+		; Not ack, so invalid protocol or host
+	clc
+	rts			; Exit with OK status
+:	sec			; Error status
+	rts
+
+
 ;---------------------------------------------------------
 ; DIRREQUEST - Request current directory contents
 ;---------------------------------------------------------
@@ -65,6 +89,7 @@ DIRABORT:
 	jmp PUTC	; ESCAPE, SEND 00 AND RETURN
 	rts
 
+
 ;---------------------------------------------------------
 ; CDREQUEST - Request current directory change
 ;---------------------------------------------------------
@@ -88,13 +113,20 @@ PUTREQUEST:
 	jsr PARMINT	; Clean up the comms device
 	lda SendType
 	jsr PUTC
-
+	cmp #CHR_P	; Normal Put?
+	beq PUTNORM
+	jsr initprot	; Negotiate the protocol (legacy ADT)
+	bcc PUTNIB
+	lda #PHMGBG	; Until we dedicate a message about protocol error...
+	jmp PCERROR	
+PUTNORM:
 	jsr SENDFN	; Send file name
-
 	lda NUMBLKS	; Send the total block size
 	jsr PUTC
 	lda NUMBLKS+1
 	jsr PUTC
+	rts
+PUTNIB:	jsr SENDFN	; Send file name; skip the total block size for nibbles/halfs
 	rts
 
 
