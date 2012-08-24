@@ -18,17 +18,23 @@ ADTPro Protocol
 
  [{{{#Batch}"B" - Batch}}]  Inititate batch upload (unique suffix added to specified prefix)
 
+ [{{{#ProDOS}"2" - Send ProDOS}}]  Inititate Speediboot ProDOS bootstrapping download
+
  [{{{#SOS_Kernel}"3" - Send SOS Kernel}}]  Inititate SOS kernel bootstrapping download
 
  [{{{#SOS_Interpreter}"4" - Send SOS Interpreter}}]  Inititate SOS interpreter bootstrapping download
 
  [{{{#SOS_Driver}"5" - Send SOS Driver}}]  Inititate SOS driver bootstrapping download
 
+ [{{{#ADTPro}"6" - Send ADTPro}}]  Inititate Speediboot ADTPro client bootstrapping download
+
  [{{{#DIR}"D" - DIR}}]  DOS ADT compatible listing of the current directory
 
  [{{{#Receive}"R" - Receive}}] DOS ADT compatible download 140k disk
 
  [{{{#Send}"S" - Send}}] DOS ADT compatible upload 140k disk
+
+ [{{{#Nibble}"N" - Send Nibble Image}}] DOS ADT/A2V2 compatible upload of nibble image
 
 * {Change Directory}
 
@@ -141,6 +147,20 @@ Apple sends: One byte: number of errors encountered
 
 ------------
 
+* Speediboot {ProDOS} Download
+
+------------
+
+Apple sends:
+  One byte: "2" ($B2)
+
+Host sends:
+  One byte: "P" ($50)
+  Two bytes: image size in bytes (LSB, MSB)
+  Continuous byte stream of ProDOS image
+
+------------
+
 * {SOS Kernel} Download
 
 ------------
@@ -161,6 +181,7 @@ Apple sends:
   One byte: "4" ($B4)
 
 Host sends:
+  One byte: "S" ($53)
   Two bytes: image size in bytes (LSB, MSB)
   Continuous byte stream of serial ADTPro SOS program file image
 
@@ -176,6 +197,20 @@ Apple sends:
 Host sends:
   Two bytes: image size in bytes (LSB, MSB)
   Continuous byte stream of SOS driver file image
+
+------------
+
+* Speediboot {ADTPro} Download
+
+------------
+
+Apple sends:
+  One byte: "6" ($B6)
+
+Host sends:
+  One byte: "A" ($41)
+  Two bytes: image size in bytes (LSB, MSB)
+  Continuous byte stream of ADTPro client
 
 ------------
 
@@ -245,6 +280,60 @@ Host sends one byte return code:
 
 Apple sends:
   One byte: number of errors encountered
+
+------------
+
+* Send {Nibble} Disk (from Apple ][ to host)
+
+------------
+
+Apple sends: Byte stream: "N" (signifying Nibble send),
+  $01, $01, $02, $00 (protocol negotiation)
+
+Host sends one byte return code:
+  $06 = ACK (the host supports this protocol)
+  $15 = NAK (the host does not support this protocol)
+
+(Assuming ACK return code...)
+Apple sends:
+  Byte stream: file name (null terminated)
+
+Host sends one byte return code:
+  $00 = Ok
+  $1c = File exists
+  $1a = Can't open
+  $1e = Disk full
+
+(Assuming zero return code...)
+(loop, 35 tracks)
+  (loop, 52 blocks * 256 bytes)
+    Apple sends:
+      $06 = ACK (always ACK for the first block)
+      $15 = NAK
+      one byte: block number within the track (starting at 0)
+      one byte: track number
+      one byte: $02
+      Next block, RLE encoded
+      two bytes:
+        CRC (lo)
+        CRC (hi)
+
+    Host sends:
+      $06 = ACK
+      $15 = NAK
+
+  (end block loop)
+
+  Host sends:
+    $06 = ACK analysis was successful; please proceed with the next track
+    $15 = NAK analysis failed; abort the operation
+    $18 = CAN analysis failed, but please continue with next track
+    $05 = ENQ analysis was inconclusive; please re-read the same track and send the newly read data
+
+(end track loop)
+
+Apple sends:
+ $00
 
 ------------
 
