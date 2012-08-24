@@ -8,6 +8,10 @@ ADTPro Release History
 
 * Unreleased - in CVS now
 
+ New functionality:
+
+ * [Client] Serial client can extract and send nibble images
+
  Bug fixes:
 
  * [Client] IP configuration screen was missing some dots
