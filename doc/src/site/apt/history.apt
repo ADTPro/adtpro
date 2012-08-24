@@ -16,6 +16,9 @@ ADTPro Release History
 
  Bug fixes:
 
+ * [Server] Some serial adapters were exhibiting serious slowdown
+   problems in some situations (usually non-FTDI, usually non-Mac)
+
  * [Client] IP configuration screen was missing some dots
 
 * 1.2.3 - August 13, 2012
