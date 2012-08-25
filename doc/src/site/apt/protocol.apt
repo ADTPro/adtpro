@@ -6,7 +6,11 @@
 
 ADTPro Protocol
 
-* Functions
+ The ADTPro server can interpret and respond to commands from both the ADTPro client
+ and the older DOS ADT client (Including nibble sends from the A2V2 client - see the
+ {{{compatibility.html}ADT compatibility}} page for more details). 
+
+* ADTPro Functions
 
  [{{{#Change_Directory}"C" - CD}}]   Change working directory
 
@@ -27,6 +31,10 @@ ADTPro Protocol
  [{{{#SOS_Driver}"5" - Send SOS Driver}}]  Inititate SOS driver bootstrapping download
 
  [{{{#ADTPro}"6" - Send ADTPro}}]  Inititate Speediboot ADTPro client bootstrapping download
+
+ [{{{#Ping}"Y" - Ping}}]  One-way ping request (Client -> Server)
+
+* DOS ADT Compatible Functions
 
  [{{{#DIR}"D" - DIR}}]  DOS ADT compatible listing of the current directory
 
@@ -210,7 +218,7 @@ Apple sends:
 Host sends:
   One byte: "A" ($41)
   Two bytes: image size in bytes (LSB, MSB)
-  Continuous byte stream of ADTPro client
+  Continuous byte stream of ADTPro program file image
 
 ------------
 
@@ -356,3 +364,11 @@ If final byte is $01:
       $00 = abort
 
 ------------
+
+* {Ping}
+
+------------
+
+Apple sends: One byte: "Y" ($D9)
+
+Host displays the message: "Ping request received from client" (no protocol response sent)
