@@ -222,6 +222,16 @@ Host sends:
 
 ------------
 
+* {Ping}
+
+------------
+
+Apple sends: One byte: "Y" ($D9)
+
+Host displays the message: "Ping request received from client" (no protocol response sent)
+
+------------
+
 ADT Compatibility
 
 * {Receive} 140k disk (from host to Apple ][)
@@ -362,13 +372,3 @@ If final byte is $01:
   Apple sends one byte:
       "D" ($C4) = retrieve subsequent screen
       $00 = abort
-
-------------
-
-* {Ping}
-
-------------
-
-Apple sends: One byte: "Y" ($D9)
-
-Host displays the message: "Ping request received from client" (no protocol response sent)
