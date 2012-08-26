@@ -306,7 +306,7 @@ Apple sends:
 ------------
 
 Apple sends: Byte stream: "N" (signifying Nibble send),
-  $01, $01, $02, $00 (protocol negotiation)
+  $01, $01, $00 (protocol negotiation)
 
 Host sends one byte return code:
   $06 = ACK (the host supports this protocol)
