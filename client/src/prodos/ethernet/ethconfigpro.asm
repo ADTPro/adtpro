@@ -1,6 +1,6 @@
 ;
 ; ADTPro - Apple Disk Transfer ProDOS
-; Copyright (C) 2006 - 2011 by David Schmidt
+; Copyright (C) 2006 - 2012 by David Schmidt
 ; david__schmidt at users.sourceforge.net
 ;
 ; This program is free software; you can redistribute it and/or modify it 
@@ -30,13 +30,13 @@
 ; Configuration
 ;---------------------------------------------------------
 
-PARMNUM	= $04		; Number of configurable parms
+PARMNUM	= $05		; Number of configurable parms
 ;			; Note - add bytes to OLDPARM if this is expanded.
-PARMSIZ: .byte 7,2,2,2	; Number of options for each parm
+PARMSIZ: .byte 7,2,2,2,2	; Number of options for each parm
 LINECNT:	.byte 00		; CURRENT LINE NUMBER
 CURPARM:	.byte 00		; ACTIVE PARAMETER
 CURVAL:		.byte 00		; VALUE OF ACTIVE PARAMETER
-OLDPARM:	.byte $00,$00,$00,$00	; There must be PARMNUM bytes here...
+OLDPARM:	.byte $00,$00,$00,$00,$00	; There must be PARMNUM bytes here...
 
 PARMTXT:
 	ascz "1"
@@ -46,6 +46,8 @@ PARMTXT:
 	ascz "5"
 	ascz "6"
 	ascz "7"
+	ascz "YES"
+	ascz "NO"
 	ascz "YES"
 	ascz "NO"
 	ascz "YES"
@@ -62,6 +64,7 @@ PARMS:
 COMMSLOT:
 	.byte 2		; Zero-indexed comms slot (3)
 PSOUND:	.byte 0		; Sounds? (YES)
+PNIBBL:	.byte 1		; Enable nibbles? (NO)
 PSAVE:	.byte 1		; Save parms? (NO)
 PDHCP:	.byte 0		; DHCP Configuration? (YES)
 
@@ -71,10 +74,9 @@ cfg_ip:		.byte   0,   0,   0,   0 ; ip address of local machine (will be overwri
 cfg_netmask:	.byte   0,   0,   0,   0 ; netmask of local network (will be overwritten if dhcp_init is called)
 cfg_gateway:	.byte   0,   0,   0,   0 ; ip address of router on local network (will be overwritten if dhcp_init is called)
 
-DEFAULT:	.byte 2,0,1,0	; Default parm indices
+DEFAULT:	.byte 2,0,1,1,0	; Default parm indices
 CONFIGYET:	.byte 0		; Has the user configged yet? (YES)
 PARMSEND:
-PNIBBL:		.byte 1		; Enable nibbles? (NO - and not saved or exposed (yet))
 cfg_dns:	.byte   0,   0,   0,   0 ; ip address of dns server to use (will be overwritten if dhcp_init is called)
 dhcp_server:	.byte   0,   0,   0,   0 ; will be set address of dhcp server that configuration was obtained from
 cfg_tftp_server:

@@ -19,7 +19,7 @@
 ;
 
 xpos		= $14	; Starting column of dotted-decimal config numbers
-ypos		= $08	; Starting row of dotted-decimal config numbers
+ypos		= $09	; Starting row of dotted-decimal config numbers
 raw_x:		.byte $00
 raw_y:		.byte $00
 current_value:	.byte $00

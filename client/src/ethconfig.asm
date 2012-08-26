@@ -1,6 +1,6 @@
 ;
 ; ADTPro - Apple Disk Transfer ProDOS
-; Copyright (C) 2006 - 2011 by David Schmidt
+; Copyright (C) 2006 - 2012 by David Schmidt
 ; david__schmidt at users.sourceforge.net
 ;
 ; This program is free software; you can redistribute it and/or modify it 
@@ -62,38 +62,44 @@ SAVPARM:
 	ldx #$05	; Column
 	ldy #$05	; Row
 	jsr GOTOXY
-	ldy #PMSG28a	; 'SAVE CONFIGURATION'
+	ldy #PMEnableNibbles ; 'ENABLE NIBBLES'
 	jsr WRITEMSG
 
 	ldx #$05	; Column
 	ldy #$06	; Row
 	jsr GOTOXY
+	ldy #PMSG28a	; 'SAVE CONFIGURATION'
+	jsr WRITEMSG
+
+	ldx #$05	; Column
+	ldy #$07	; Row
+	jsr GOTOXY
 	ldy #PMSG27	; 'DHCP CONFIGURATION'
 	jsr WRITEMSG
 
 	ldx #$05
-	ldy #$08
+	ldy #$09
 	jsr GOTOXY
 	ldax #IPMsg01
 	ldy IP_MSG_LEN_TBL
 	jsr IPShowMsg	; 'SERVER IP ADDR'
 
 	ldx #$05
-	ldy #$09
+	ldy #$0a
 	jsr GOTOXY
 	ldax #IPMsg02
 	ldy IP_MSG_LEN_TBL+1
 	jsr IPShowMsg	; 'LOCAL IP ADDR'
 	
 	ldx #$05
-	ldy #$0a
+	ldy #$0b
 	jsr GOTOXY
 	ldax #IPMsg03
 	ldy IP_MSG_LEN_TBL+2
 	jsr IPShowMsg	; 'NETMASK'
 	
 	ldx #$05
-	ldy #$0b
+	ldy #$0c
 	jsr GOTOXY
 	ldax #IPMsg04
 	ldy IP_MSG_LEN_TBL+3

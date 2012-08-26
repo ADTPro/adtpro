@@ -1,6 +1,6 @@
 ;
 ; ADTPro - Apple Disk Transfer ProDOS
-; Copyright (C) 2006 - 2010 by David Schmidt
+; Copyright (C) 2006 - 2012 by David Schmidt
 ; david__schmidt at users.sourceforge.net
 ;
 ; This program is free software; you can redistribute it and/or modify it 
@@ -274,6 +274,8 @@ PUTREQUEST:
 	lda SendType
 	sta (Buffer),Y		; Accumulator still holds request type
 	iny
+	cmp #CHR_N		; Nibble send?
+	beq PUTNIBBLE		; Branch away if so
 	jsr COPYINPUT
 	lda NUMBLKS		; Send the total block size
 	sta (Buffer),Y
@@ -286,12 +288,51 @@ PUTREQUEST:
 	stax udp_send_len
 	lda #STATE_PUT
 	sta state
-	GO_SLOW				; Slow down for SOS
+	GO_SLOW			; Slow down for SOS
 	ldax Buffer
 	jsr udp_send
-	GO_FAST				; Speed back up for SOS
+	GO_FAST			; Speed back up for SOS
 	jsr RECEIVE_LOOP_FAST
 	rts
+
+PUTNIBBLE:
+	lda #$01		; Copy in the protocol initialization: $01, $01, $00
+	sta (Buffer),Y
+	iny
+	sta (Buffer),Y
+	iny
+	lda #$00
+	sta (Buffer),Y
+	iny
+	tya
+	ldx #$00
+	stax udp_send_len
+	lda #STATE_PUT		; Set up for one-byte response
+	sta state
+	GO_SLOW			; Slow down for SOS
+	ldax Buffer
+	jsr udp_send
+	GO_FAST			; Speed back up for SOS
+	jsr RECEIVE_LOOP_FAST
+	lda QUERYRC
+	cmp #CHR_ACK
+	beq :+
+	lda #PHMGBG		; Failed protocol negotiation
+	jmp PCERROR
+:	ldy #$00
+	jsr COPYINPUT
+	tya
+	ldx #$00
+	stax udp_send_len
+	lda #STATE_PUT
+	sta state
+	GO_SLOW			; Slow down for SOS
+	ldax Buffer
+	jsr udp_send
+	GO_FAST			; Speed back up for SOS
+	jsr RECEIVE_LOOP_FAST
+	rts
+
 
 ;---------------------------------------------------------
 ; PUTINITIALACK - Send initial ACK for a PUTREQUEST/PUTREPLY
