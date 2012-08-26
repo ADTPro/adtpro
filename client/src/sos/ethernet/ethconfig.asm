@@ -1,6 +1,6 @@
 ;
 ; ADTPro - Apple Disk Transfer ProDOS
-; Copyright (C) 2006 - 2012 by David Schmidt
+; Copyright (C) 2008 - 2012 by David Schmidt
 ; david__schmidt at users.sourceforge.net
 ;
 ; This program is free software; you can redistribute it and/or modify it 
@@ -17,6 +17,13 @@
 ; with this program; if not, write to the Free Software Foundation, Inc., 
 ; 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 ;
+
+	.export cfg_ip
+	.export cfg_netmask
+	.export cfg_gateway
+	.export cfg_dns
+	.export dhcp_server
+	.export cfg_tftp_server
 
 ;---------------------------------------------------------
 ; CONFIG - ADTPro Configuration
@@ -62,44 +69,38 @@ SAVPARM:
 	ldx #$05	; Column
 	ldy #$05	; Row
 	jsr GOTOXY
-	ldy #PMEnableNibbles ; 'ENABLE NIBBLES'
+	ldy #PMSG28a	; 'SAVE CONFIGURATION'
 	jsr WRITEMSG
 
 	ldx #$05	; Column
 	ldy #$06	; Row
 	jsr GOTOXY
-	ldy #PMSG28a	; 'SAVE CONFIGURATION'
-	jsr WRITEMSG
-
-	ldx #$05	; Column
-	ldy #$07	; Row
-	jsr GOTOXY
 	ldy #PMSG27	; 'DHCP CONFIGURATION'
 	jsr WRITEMSG
 
 	ldx #$05
-	ldy #$09
+	ldy #$08
 	jsr GOTOXY
 	ldax #IPMsg01
 	ldy IP_MSG_LEN_TBL
 	jsr IPShowMsg	; 'SERVER IP ADDR'
 
 	ldx #$05
-	ldy #$0a
+	ldy #$09
 	jsr GOTOXY
 	ldax #IPMsg02
 	ldy IP_MSG_LEN_TBL+1
 	jsr IPShowMsg	; 'LOCAL IP ADDR'
 	
 	ldx #$05
-	ldy #$0b
+	ldy #$0a
 	jsr GOTOXY
 	ldax #IPMsg03
 	ldy IP_MSG_LEN_TBL+2
 	jsr IPShowMsg	; 'NETMASK'
 	
 	ldx #$05
-	ldy #$0c
+	ldy #$0b
 	jsr GOTOXY
 	ldax #IPMsg04
 	ldy IP_MSG_LEN_TBL+3
@@ -358,3 +359,54 @@ FindSlotDone:
 	rts
 
 TempSlot:	.byte 0
+
+;---------------------------------------------------------
+; Configuration
+;---------------------------------------------------------
+
+PARMNUM	= $04		; Number of configurable parms
+;			; Note - add bytes to OLDPARM if this is expanded.
+PARMSIZ: .byte 4,2,2,2	; Number of options for each parm
+LINECNT:	.byte 00		; CURRENT LINE NUMBER
+CURPARM:	.byte 00		; ACTIVE PARAMETER
+CURVAL:		.byte 00		; VALUE OF ACTIVE PARAMETER
+OLDPARM:	.byte $00,$00,$00,$00	; There must be PARMNUM bytes here...
+
+PARMTXT:
+	ascz "1"
+	ascz "2"
+	ascz "3"
+	ascz "4"
+	ascz "YES"
+	ascz "NO"
+	ascz "YES"
+	ascz "NO"
+	ascz "YES"
+	ascz "NO"
+
+CONFIG_FILE_NAME:	.byte 14
+			asc "ADTSOSETH.CONF"
+
+YSAVE:	.byte $00
+
+PARMS:
+COMMSLOT:
+	.byte 2		; Zero-indexed comms slot (3)
+PSOUND:	.byte 0		; Sounds? (YES)
+PSAVE:	.byte 1		; Save parms? (NO)
+PDHCP:	.byte 0		; DHCP Configuration? (YES)
+
+ip_parms:
+serverip:	.byte 192, 168,   0,  12
+cfg_ip:		.byte   0,   0,   0,   0 ; ip address of local machine (will be overwritten if dhcp_init is called)
+cfg_netmask:	.byte   0,   0,   0,   0 ; netmask of local network (will be overwritten if dhcp_init is called)
+cfg_gateway:	.byte   0,   0,   0,   0 ; ip address of router on local network (will be overwritten if dhcp_init is called)
+
+DEFAULT:	.byte 2,0,1,0	; Default parm indices
+CONFIGYET:	.byte 0		; Has the user configged yet? (YES)
+PARMSEND:
+PNIBBL:		.byte 1		; Enable nibbles? (NO - and not saved or exposed)
+cfg_dns:	.byte   0,   0,   0,   0 ; ip address of dns server to use (will be overwritten if dhcp_init is called)
+dhcp_server:	.byte   0,   0,   0,   0 ; will be set address of dhcp server that configuration was obtained from
+cfg_tftp_server:
+		.byte   0,   0,   0,   0 ; ip address of server to send tftp requests to (can be a broadcast address)

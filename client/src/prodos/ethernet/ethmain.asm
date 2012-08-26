@@ -1,6 +1,6 @@
 ;
 ; ADTPro - Apple Disk Transfer ProDOS
-; Copyright (C) 2006 - 2011 by David Schmidt
+; Copyright (C) 2006 - 2012 by David Schmidt
 ; david__schmidt at users.sourceforge.net
 ;
 ; This program is free software; you can redistribute it and/or modify it 
@@ -39,7 +39,7 @@
 	.include "crc.asm"
 	.include "pickvol.asm"
 	.include "input.asm"
-	.include "prodos/ethernet/ethconfigpro.asm"
+	.include "prodos/ethernet/ethconfig.asm"
 	.include "hostfns.asm"
 	.include "nibble.asm"
 	.include "prodos/ethernet/ethproto.asm"
