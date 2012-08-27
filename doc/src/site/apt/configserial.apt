@@ -119,6 +119,18 @@ If you can't get 9600 to work reliably, something else is wrong.
 things finish or abort.  I personally think computers should be seen and not
 heard, but not everyone feels that way.  Express your own personal feelings here.
 
+* Enable {Nibbles}
+
+ ADTPro can make basic nibble copies of 5-1/4" disks.
+This might be useful for making a working copy of a very lightly copy-protected disk,
+or if you are working on de-protecting a disk.
+
+[images/configNibble.png]
+
+ Setting this option to "YES" will present you with the option to send either a normal or
+nibble image when sending a 5-1/4" disk.
+This option is not available on the SOS version of ADTPro.  
+
 * {Save Configuration}
 
  Hit the "Return" key to work with these parameters.  Once you get a 

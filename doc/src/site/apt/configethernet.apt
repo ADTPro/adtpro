@@ -73,6 +73,18 @@ number here.
 things finish or abort.  I personally think computers should be seen and not
 heard, but not everyone feels that way.  Express your own personal feelings here.
 
+* Enable Nibbles
+
+ ADTPro can make basic nibble copies of 5-1/4" disks.
+This might be useful for making a working copy of a very lightly copy-protected disk,
+or if you are working on de-protecting a disk.
+
+[images/ethconfigNibble.png]
+
+ Setting this option to "YES" will present you with the option to send either a normal or
+nibble image when sending a 5-1/4" disk.
+This option is not available on the SOS version of ADTPro.  
+
 * Save Configuration
 
  Hit the "Return" key any time to work with the parameters on-screen.  Once you get a 
@@ -109,7 +121,7 @@ Play with the screen for a minute and you'll get the hang of it.
 
  For <<<SERVER IP ADDR,>>> enter the IP address of the machine running the 
 ADTPro server software.  When you have the server connect with Ethernet, it
-will say what IP address it is currently serving:
+will display the IP address it is currently serving in the title bar of the window:
 
 [images/ethServerIp.png]
 
