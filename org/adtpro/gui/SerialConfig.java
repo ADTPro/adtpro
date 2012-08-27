@@ -1,6 +1,6 @@
 /*
  * ADTPro - Apple Disk Transfer ProDOS
- * Copyright (C) 2007 - 2010 by David Schmidt
+ * Copyright (C) 2007 - 2012 by David Schmidt
  * david__schmidt at users.sourceforge.net
  *
  * This program is free software; you can redistribute it and/or modify it 
@@ -375,7 +375,6 @@ public class SerialConfig extends JDialog implements ActionListener
   {
     public void keyPressed(KeyEvent evt)
     {
-      System.out.println("bleah!");
       /*
        * Check for escape key
        */
