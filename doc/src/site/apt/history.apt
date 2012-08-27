@@ -10,7 +10,8 @@ ADTPro Release History
 
  New functionality:
 
- * [Client] Serial client can extract and send nibble images
+ * [Client] ProDOS Serial and Ethernet clients can extract and send
+   nibble images
 
  []
 
