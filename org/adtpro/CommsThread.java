@@ -2449,33 +2449,32 @@ public class CommsThread extends Thread
 							bytesRead += _is.read(buffer, bytesRead, bytesAvailable - bytesRead);
 							Log.println(false, "CommsThread.Worker.run() read " + bytesRead + " more bytes from the stream.");
 						}
-						if (_resource.equals(Messages.getString("Gui.BS.SOSINTERP")) || _resource.equals(Messages.getString("Gui.BS.ProDOSRaw")) || _resource.equals(Messages.getString("Gui.BS.ADTProRaw")) || _resource.equals(Messages.getString("Gui.BS.SOSDRIVER")))
+						if (_resource.equals(Messages.getString("Gui.BS.SOSINTERP")) ||
+								_resource.equals(Messages.getString("Gui.BS.ProDOSRaw")) ||
+								_resource.equals(Messages.getString("Gui.BS.ADTProRaw")) ||
+								_resource.equals(Messages.getString("Gui.BS.SOSDRIVER")))
 						{
 							// If we're sending binary bootstrap stuff, we need
 							// to prepend the length and stuff
 							// Log.println(true,
 							// "DEBUG: CommsThread.Worker.run() writing length header.");
-							if (_resource.equals(Messages.getString("Gui.BS.SOSINTERP")) || _resource.equals(Messages.getString("Gui.BS.SOSDRIVER")))
+							int length = buffer.length;
+							if (_resource.equals(Messages.getString("Gui.BS.SOSINTERP")) ||
+									_resource.equals(Messages.getString("Gui.BS.SOSDRIVER")))
 							{
-								_transport.writeByte(0x53); // Send an "S" to
-															// trigger the start
+								_transport.writeByte(0x53); // Send an "S" to trigger the start
+								length = length - 1; // SOS seems to need this reduced by one...
 							}
 							else if (_resource.equals(Messages.getString("Gui.BS.ProDOSRaw")))
 							{
-								_transport.writeByte(0x50); // Send a "P" to
-															// trigger the start
+								_transport.writeByte(0x50); // Send a "P" to trigger the start
 							}
 							else if (_resource.equals(Messages.getString("Gui.BS.ADTProRaw")))
 							{
-								_transport.writeByte(0x41); // Send an "A" to
-															// trigger the start
+								_transport.writeByte(0x41); // Send an "A" to trigger the start
 							}
-							_transport.writeByte(UnsignedByte.loByte(buffer.length - 1)); // Send
-																							// buffer
-																							// LSB
-							_transport.writeByte(UnsignedByte.hiByte(buffer.length - 1)); // Send
-																							// buffer
-																							// MSB
+							_transport.writeByte(UnsignedByte.loByte(length)); // Send buffer LSB
+							_transport.writeByte(UnsignedByte.hiByte(length)); // Send buffer MSB
 						}
 						for (int i = 0; i < buffer.length; i++)
 						{
