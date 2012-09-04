@@ -57,10 +57,10 @@ everywhere it is invoked:
 		<property name="skipProDOS" value="true"/>		
 	</target>
 
-	<target name="all" depends="wipe, clean, setup, assemble, builddsk, scripts, jar, osx" description="Bulid everything after wiping the output directory.">
+	<target name="all" depends="wipe, clean, setup, assemble, drive, builddsk, scripts, jar, osx" description="Bulid everything after wiping the output directory.">
 	</target>
 
-	<target name="dev" depends="clean, setup, assemble, builddsk" description="Build everything but the Java GUI; don't wipe the output directory.">
+	<target name="dev" depends="clean, setup, assemble, drive, builddsk" description="Build everything but the Java GUI; don't wipe the output directory.">
 	</target>
 
 	<target name="setup">
@@ -75,6 +75,22 @@ everywhere it is invoked:
 				<isset property="skipProDOS" />
 			</not>
 		</condition>
+	</target>
+
+	<target name="drive">
+		<copy file="${builddir}/ADTProBase.dsk" tofile="${builddir}/${distName}/disks/Drive.DSK" />
+		<echo message="Assembling ProDOS serial Drive source..."/>
+		<exec dir="${projdir}/client/src/prodos/serial/drive" executable="${assemblerPath}/ca65">
+			<arg line="-t none -l drive.asm" />
+		</exec>
+		<echo message="Linking drive..."/>
+		<exec dir="${projdir}/client/src" executable="${assemblerPath}/ld65">
+			<arg line="-o DRIVE -m drive.map -C prodos/serial/drive/drive.cfg prodos/serial/drive/drive.o" />
+		</exec>
+		<move file="${projdir}/client/src/DRIVE" tofile="${builddir}/DRIVE" />
+		<echo message="Adding Drive to 5.25 disk image..."/>
+		<appleCommander command="d" imagename="${distName}/disks/Drive.DSK" filename="DRIVE"/>
+		<appleCommander command="p" input="${builddir}/DRIVE" imagename="${distName}/disks/Drive.DSK" filename="DRIVE" type="bin" address="6144"/>
 	</target>
 
 	<target name="wipe">
@@ -100,6 +116,7 @@ everywhere it is invoked:
 		<delete file="${builddir}/ADTPROETH.BIN" />
 		<delete file="${builddir}/ADTSOSETH.BIN" />
 		<delete file="${builddir}/GRUB2" />
+		<delete file="${builddir}/DRIVE" />
 		<delete file="${projdir}/client/src/messages.asm" />
 		<delete file="${projdir}/client/src/GRUB" />
 		<delete file="${projdir}/client/src/LOADER" />
