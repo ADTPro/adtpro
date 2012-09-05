@@ -79,6 +79,9 @@ everywhere it is invoked:
 
 	<target name="drive">
 		<copy file="${builddir}/ADTProBase.dsk" tofile="${builddir}/${distName}/disks/Drive.DSK" />
+		<copy file="${builddir}/ADTProBase.po" tofile="${builddir}/${distName}/disks/Serial.po" />
+		<appleCommander command="n" imagename="${distName}/disks/Drive.DSK" volname="DRIVE"/>
+		<appleCommander command="n" imagename="${distName}/disks/Serial.po" volname="SERIAL"/>
 		<echo message="Assembling ProDOS serial Drive source..."/>
 		<exec dir="${projdir}/client/src/prodos/serial/drive" executable="${assemblerPath}/ca65">
 			<arg line="-t none -l drive.asm" />
@@ -427,10 +430,10 @@ everywhere it is invoked:
 		Put a nice volume name on the disk images
 		-->
 		<echo message="Adding ADTPro volume name to 5.25 disk image..."/>
-		<appleCommander command="n" imagename="${distName}/disks/${diskName}.DSK" volumename="${volName}"/>
+		<appleCommander command="n" imagename="${distName}/disks/${diskName}.DSK" volname="${volName}"/>
 
 		<echo message="Adding ADTPro volume name to 3.5 disk image..."/>
-		<appleCommander command="n" imagename="${distName}/disks/${diskName}.PO" volumename="${volName}"/>
+		<appleCommander command="n" imagename="${distName}/disks/${diskName}.PO" volname="${volName}"/>
 		<delete file="${builddir}/ADT" />
 		<delete file="${builddir}/ADTPRO" />
 		<delete file="${builddir}/ADTPRO.SYSTEM" />
@@ -456,7 +459,7 @@ everywhere it is invoked:
 		<!--
 		Put a nice volume name on the disk images
 		-->
-		<appleCommander command="n" imagename="${distName}/disks/${diskName}.DSK" volumename="${volName}"/>
+		<appleCommander command="n" imagename="${distName}/disks/${diskName}.DSK" volname="${volName}"/>
 		<delete file="${builddir}/ADTSOS" />
 		<delete file="${builddir}/ADTSOSETH" />
 	</target>

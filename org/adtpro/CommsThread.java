@@ -152,6 +152,14 @@ public class CommsThread extends Thread
 				_parent.setProgressMaximum(0);
 				switch (oneByte)
 				{
+				case (byte) 193: // "A": Command Envelope
+					_busy = true;
+					_parent.setMainText(Messages.getString("Serial Drive Command Envelope"));
+					_parent.setSecondaryText(""); //$NON-NLS-1$
+					Log.println(false, "CommsThread.commandLoop() Received command."); //$NON-NLS-1$
+					pullEnvelope();
+					_busy = false;
+					break;
 				case (byte) 195: // "C": CD
 					_busy = true;
 					_parent.setMainText(Messages.getString("CommsThread.2")); //$NON-NLS-1$
@@ -445,6 +453,78 @@ public class CommsThread extends Thread
 		{
 			Log.println(false, "CommsThread.queryFileSize() aborting due to protocol version exception.");
 		}
+	}
+
+	public void pullEnvelope()
+	{
+		byte command, checkReceived, blocklo, blockhi, checkCalculated;
+		byte[] buffer = new byte[Disk.BLOCK_SIZE];
+		int block;
+		try
+		{
+			Log.println(false, "Waiting for command..."); //$NON-NLS-1$
+			command = waitForData(5);
+			Log.println(false, " received command: " + UnsignedByte.toString(command)); //$NON-NLS-1$
+			Log.println(false, "Waiting for blocklo..."); //$NON-NLS-1$
+			blocklo = waitForData(5);
+			Log.println(false, " received blocklo: " + UnsignedByte.toString(blocklo)); //$NON-NLS-1$
+			Log.println(false, "Waiting for blockhi..."); //$NON-NLS-1$
+			blockhi = waitForData(5);
+			Log.println(false, " received blockhi: " + UnsignedByte.toString(blockhi)); //$NON-NLS-1$
+			Log.println(false, "Waiting for checksum..."); //$NON-NLS-1$
+			checkReceived = waitForData(5);
+			checkCalculated = (byte) 193;  // Seed checksum with the 'A' character - that's how we got here
+			checkCalculated ^= command;
+			checkCalculated ^= blocklo;
+			checkCalculated ^= blockhi;
+			Log.println(false, " received checksum: " + UnsignedByte.toString(checkReceived) + " calculated checksum: "+UnsignedByte.toString(checkCalculated)); //$NON-NLS-1$
+			if (checkReceived == checkCalculated)
+			{
+				Log.println(false, "Checksums matched."); //$NON-NLS-1$
+				Disk disk = new Disk("serial.po"); //$NON-NLS-1$
+				if (command == 0x01) // Read a block
+				{
+					Log.println(false, "Reading block "+UnsignedByte.intValue(blocklo, blockhi)); //$NON-NLS-1$
+					_transport.writeByte(0xc1);	// Reflect the 'A'
+					_transport.writeByte(command);
+					_transport.writeByte(blocklo);
+					_transport.writeByte(blockhi);
+					_transport.writeByte(checkReceived);
+					block = UnsignedByte.intValue(blocklo, blockhi);
+					buffer = disk.readBlock(block);
+					_transport.writeBytes(buffer);
+					byte cs = checksum(buffer,Disk.BLOCK_SIZE);
+					Log.println(false, "Sending checksum byte "+UnsignedByte.toString(cs)); //$NON-NLS-1$
+					_transport.writeByte(cs);
+					_transport.pushBuffer();
+				}
+			}
+			else
+				Log.println(false, "Checksums did not match.");
+		}
+		catch (TransportTimeoutException e)
+		{
+			Log.println(false, "CommsThread.changeDirectory() aborting due to timeout.");
+			_parent.setSecondaryText(Messages.getString("CommsThread.21"));
+		}
+		catch (IOException e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
+	public byte checksum(byte buffer[], int length)
+	{
+		int i, minLength = length;
+		byte rc = 0;
+		if (buffer.length < length)
+			minLength = buffer.length;
+		for (i=0;i<minLength;i++)
+		{
+			rc ^= buffer[i];
+		}
+		return rc;
 	}
 
 	public void changeDirectory()

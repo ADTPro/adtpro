@@ -80,57 +80,69 @@ init:
 	jsr	COUT	; Tell 'em which one we're using
 
 ; ADD POINTER TO DRIVER
-	LDA	#<DRIVER
-	STA	DEV2S1
-	LDA	#>DRIVER
-	STA	DEV2S1+1
+	lda	#<DRIVER
+	sta	DEV2S1
+	lda	#>DRIVER
+	sta	DEV2S1+1
 ; ADD TO DEVICE LIST
-	INC	DEVCNT
-	LDY	DEVCNT
-	LDA	#$20 ; SLOT 2 DRIVE 1
-	STA	DEVLST,Y
-	RTS
+	inc	DEVCNT
+	ldy	DEVCNT
+	lda	#$20 ; SLOT 2 DRIVE 1
+	sta	DEVLST,Y
+	rts
 
 ; DRIVER CODE
 DRIVER:
 	cld
 ; CHECK THAT WE HAVE THE RIGHT DRIVE
-	LDA	UNIT
-	CMP	#$20 ; SLOT 2 DRIVE 1
-	BEQ	DOCMD ; YEP, DO COMMAND
-	SEC	; NOPE, FAIL
-	LDA	#NODEV
-	RTS
+	lda	UNIT
+	cmp	#$20 ; SLOT 2 DRIVE 1
+	beq	DOCMD ; YEP, DO COMMAND
+	sec	; NOPE, FAIL
+	lda	#NODEV
+	rts
 
 ; CHECK WHICH COMMAND IS REQUESTED
 DOCMD:
-	LDA	COMMAND
-	BNE	NOTSTAT ; 0 IS STATUS
-	JMP	GETSTAT
+	lda	COMMAND
+	pha
+	clc
+	adc	#$B0
+	sta	$0408	; DEBUG
+	pla
+	bne	NOTSTAT ; 0 IS STATUS
+	jmp	GETSTAT
 NOTSTAT:
-	CMP	#$01
-	BNE	NOREAD ; 1 IS READ
-	JMP	READBLK
+	cmp	#$01
+	bne	NOREAD ; 1 IS READ
+	jmp	READBLK
 NOREAD:
-	CMP	#$02
-	BNE	NOWRITE ; 2 IS WRITE
-	JMP	WRITEBLK
+	cmp	#$02
+	bne	NOWRITE ; 2 IS WRITE
+	jmp	WRITEBLK
 NOWRITE:
-	LDA	#$00 ; CLEAR ERROR
-	CLC
-	RTS
+	lda	#$00 ; CLEAR ERROR
+	clc
+	rts
 
 ; STATUS
 GETSTAT:
-	LDA	#$00
-	LDX	#$FF
-	LDY	#$FF
-	CLC
-	RTS
+	lda	#$00
+	ldx	#$FF
+	ldy	#$FF
+	clc
+	rts
 
 READFAIL:
 	; increment failure count
 	; retry if not too bad
+	jsr	RESETIO
+	jsr	CALC_CHECKSUM	; Waste some time
+	jsr	RESETIO
+	jsr	CALC_CHECKSUM	; Waste some more time
+	lda	#$00
+	sta	CHECKSUM
+	jsr	PARMINT		; Re-read comms parameters	
 	sec
 	rts
 
@@ -157,21 +169,23 @@ READBLK:
 	bne	READFAIL
 
 ; READ BLOCK AND VERIFY
-	LDX	#$00
+	ldx	#$00
 RDBKLOOP:
-	LDY	#$00
+	ldy	#$00
 RDLOOP:
 	jsr	GETC
-	STA	(BUFLO),Y
-	INY
-	BNE	RDLOOP
+	sta	(BUFLO),Y
+	sta	$0427	; DEBUG
+	iny
+	bne	RDLOOP
 
-	INC	BUFHI
-	INX
-	CPX	#$02
-	BNE	RDBKLOOP
+	inc	BUFHI
+	inx
+	cpx	#$02
+	bne	RDBKLOOP
 
-	DEC	BUFHI
+	dec	BUFHI
+	dec	BUFHI	; Bring BUFHI back down to where it belongs
 
 	jsr	GETC	; Checksum
 	pha		; Push checksum for now
@@ -179,9 +193,9 @@ RDLOOP:
 	pla	
 	cmp	CHECKSUM
 	bne	READFAIL
-	LDA	#$00
-	CLC
-	RTS
+	lda	#$00
+	clc
+	rts
 
 WRITEFAIL:
 	; increment failure count
@@ -196,26 +210,26 @@ WRITEBLK:
 	jsr	COMMAND_ENVELOPE
 
 ; WRITE BLOCK AND CHECKSUM
-	LDX	#$00
+	ldx	#$00
 	stx	CHECKSUM
 WRBKLOOP:
-	LDY	#$00
+	ldy	#$00
 WRLOOP:
-	LDA	(BUFLO),Y
+	lda	(BUFLO),Y
 	jsr	PUTC
 	eor	CHECKSUM
 	sta	CHECKSUM
-	INY
-	BNE	WRLOOP
+	iny
+	bne	WRLOOP
 
-	INC	BUFHI
-	INX
-	CPX	#$02
-	BNE	WRBKLOOP
+	inc	BUFHI
+	inx
+	cpx	#$02
+	bne	WRBKLOOP
 
-	DEC	BUFHI
+	dec	BUFHI
 
-	LDA	CHECKSUM	; Checksum
+	lda	CHECKSUM	; Checksum
 	jsr	PUTC
 
 ; READ ECHO'D COMMAND AND VERIFY
@@ -243,29 +257,21 @@ COMMAND_ENVELOPE:
 		; Send a command envelope (read/write) with the command in the accumulator
 	pha
 	lda	#CHR_A
+	jsr	PUTC		; Envelope
 	sta	CHECKSUM
 	pla
-	pha
+	jsr	PUTC		; Command
 	eor	CHECKSUM
 	sta	CHECKSUM
 	lda	BLKLO
+	jsr	PUTC		; LSB of requested block
 	eor	CHECKSUM
 	sta	CHECKSUM
 	lda	BLKHI
+	jsr	PUTC		; MSB of requested block
 	eor	CHECKSUM
 	sta	CHECKSUM
-
-	lda	#CHR_A	; Envelope
-	jsr	PUTC
-	pla		; Command
-	jsr	PUTC
-	lda	BLKLO
-	jsr	PUTC
-	lda	BLKHI
-	jsr	PUTC
-	lda	CHECKSUM
-	jsr	PUTC
-	
+	jsr	PUTC		; Send envelope checksum
 	rts
 
 CALC_CHECKSUM:	; Calculate the checksum of the block at BLKLO/BLKHI
@@ -284,6 +290,7 @@ CC_INNER_LOOP:
 	cpx	#$02
 	bne	CC_OUTER_LOOP
 
+	dec	BUFHI
 	dec	BUFHI
 	rts
 
@@ -330,7 +337,9 @@ RESETIO:
 ;---------------------------------------------------------
 ; abort - stop everything
 ;---------------------------------------------------------
-PABORT:	rts		; Not implemented
+PABORT:
+	sec
+	rts		; Not implemented
 
 ;---------------------------------------------------------
 ; Variables
