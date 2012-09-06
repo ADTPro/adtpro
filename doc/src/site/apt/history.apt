@@ -13,6 +13,9 @@ ADTPro Release History
  * [Client] ProDOS Serial and Ethernet clients can extract and send
    nibble images
 
+ * Virtual serial drive - ProDOS can use an image at the host as a
+   virtual serial drive   
+
  []
 
  Bug fixes:
