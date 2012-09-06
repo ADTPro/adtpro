@@ -64,10 +64,26 @@ CHR_RETURN	= $8d	; Carriage return
 ;---------------------------------------------------------
 PRODOS_MLI	= $BF00
 MLIADDR		= $BF10
-BITMAP		= $BF58 ; bitmap of low 48k of memory
+DEVADR01	= $BF10	; Slot 0 reserved
+DEVADR11	= $BF12	; Slot 1, drive 1
+DEVADR21	= $BF14	; Slot 2, drive 1
+DEVADR31	= $BF16	; Slot 3, drive 1
+DEVADR41	= $BF18	; Slot 4, drive 1
+DEVADR51	= $BF1A	; Slot 5, drive 1
+DEVADR61	= $BF1C	; Slot 6, drive 1
+DEVADR71	= $BF1E	; Slot 7, drive 1
+DEVADR02	= $BF20	; Slot 0 reserved
+DEVADR12	= $BF22	; Slot 1, drive 2
+DEVADR22	= $BF24	; Slot 2, drive 2
+DEVADR32	= $BF26	; Slot 3, drive 2
+DEVADR42	= $BF28	; Slot 4, drive 2
+DEVADR52	= $BF2A	; Slot 5, drive 2
+DEVADR62	= $BF2C	; Slot 6, drive 2
+DEVADR72	= $BF2E	; Slot 7, drive 2
 DEVICE		= $BF30 ; last drive+slot used, DSSS0000
 DEVCNT		= $BF31 ; Count (minus 1) of active devices
 DEVLST		= $BF32 ; List of active devices (Slot, drive, id =DSSSIIII)
+BITMAP		= $BF58 ; bitmap of low 48k of memory
 
 ;---------------------------------------------------------
 ; Monitor equates

@@ -17,8 +17,7 @@
 ; with this program; if not, write to the Free Software Foundation, Inc., 
 ; 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 ;
-; VIRTUAL HARD DRIVE VIA SERIAL PORT TO PC
-; (C)2001 TERENCE J. BOLDT
+; Based on ideas from TERENCE J. BOLDT
 
 ; Zero page variables (all unused by DOS, BASIC and Monitor)
 UTILPTR		= $6
@@ -28,9 +27,9 @@ CHR_ESC	= $9b	; ESCAPE KEY
 CHR_A	= $c1	; Character 'A' 
 
 ; PRODOS GLOBAL PAGE VALUES
-DEV2S1	= $BF14 ; POINTER FOR SLOT 2 DRIVE 1 DRIVER
-DEVCNT	= $BF31 ; DEVICE COUNT -1
-DEVLST	= $BF32 ; DEVICE LIST
+DEVADR21	= $BF14	; Slot 2, drive 1
+DEVCNT		= $BF31 ; DEVICE COUNT -1
+DEVLST		= $BF32 ; DEVICE LIST
 
 ; PRODOS ZERO PAGE VALUES
 COMMAND	= $42 ; PRODOS COMMAND
@@ -51,12 +50,18 @@ COUT	= $fded		; Output character
 ; Activity screen location
 SCRN_THROB	= $0427
 
-	.ORG	$1800
+.org	$1800		; Doesn't really org the code - but makes the listing more readable
 
 	jmp init
 
 CHECKSUM:
 	.byte	$00
+
+full:
+	jsr	msg
+	.byte	"SLOT 2 DRIVE 1 ALREADY RESIDENT.",$00
+	rts
+
 fail:
 INITPAS:
 	jsr	msg
@@ -65,9 +70,40 @@ INITPAS:
 
 ; INITIALIZE DRIVER
 init:
+; Find a likely place to install the driver in the device list.
+; Is there already a driver in slot 2, drive 1?
+	ldx	DEVCNT
+checkdev:
+	lda	DEVLST,X	; Grab an active device number
+	cmp	#$20		; Slot 2, drive 1?
+	beq	present		; Yes, check if it's our driver
+	dex
+	bpl	checkdev	; Swing around until no more in list
+instdev:
+; All ready to go - install away!
+	lda	#<DRIVER
+	sta	DEVADR21
+	lda	#>DRIVER
+	sta	DEVADR21+1
+; Add to device list
+	inc	DEVCNT
+	ldy	DEVCNT
+	lda	#$20 ; Slot 2, drive 1
+	sta	DEVLST,Y
+	jmp	findser
+
+present:
+	lda	DEVADR21
+	cmp	#<DRIVER
+	bne	full
+	lda	DEVADR21+1
+	cmp	#>DRIVER
+	bne	full
+
 ; Find a serial device
+findser:
 	jsr	msg
-	.byte	"VSDRIVE: ",$00
+	.byte	"VDRIVE: ",$00
 	jsr 	FindSlot	; Sniff out a likely comm slot
 	lda	COMMSLOT
 	bmi	fail
@@ -80,17 +116,6 @@ init:
 	clc
 	adc	#$B1	; Add '1' to the found comm slot number for reporting
 	jsr	COUT	; Tell 'em which one we're using
-
-; ADD POINTER TO DRIVER
-	lda	#<DRIVER
-	sta	DEV2S1
-	lda	#>DRIVER
-	sta	DEV2S1+1
-; ADD TO DEVICE LIST
-	inc	DEVCNT
-	ldy	DEVCNT
-	lda	#$20 ; SLOT 2 DRIVE 1
-	sta	DEVLST,Y
 	rts
 
 ; DRIVER CODE
@@ -134,12 +159,6 @@ READFAIL:
 	; increment failure count
 	; retry if not too bad
 	jsr	RESETIO
-	jsr	CALC_CHECKSUM	; Waste some time
-	jsr	RESETIO
-	jsr	CALC_CHECKSUM	; Waste some more time
-	lda	#$00
-	sta	CHECKSUM
-	jsr	PARMINT		; Re-interpret comms parameters	
 	sec
 	rts
 
