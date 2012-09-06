@@ -444,6 +444,7 @@ everywhere it is invoked:
 		<delete file="${builddir}/ADTPROETH.BIN" />
 		<delete file="${builddir}/ADTPROAUD.BIN" />
 		<delete file="${builddir}/GRUB2" />
+		<delete file="${builddir}/DRIVE" />
 	</target>
 
 	<target name="buildSOSdsk" if="SOS-needed">

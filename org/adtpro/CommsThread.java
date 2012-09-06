@@ -152,11 +152,11 @@ public class CommsThread extends Thread
 				_parent.setProgressMaximum(0);
 				switch (oneByte)
 				{
-				case (byte) 193: // "A": Command Envelope
+				case (byte) 193: // "E": Command Envelope
 					_busy = true;
-					_parent.setMainText(Messages.getString("Serial Drive Command Envelope"));
+					_parent.setMainText(Messages.getString("CommsThread.24"));
 					_parent.setSecondaryText(""); //$NON-NLS-1$
-					Log.println(false, "CommsThread.commandLoop() Received command."); //$NON-NLS-1$
+					Log.println(false, "CommsThread.commandLoop() Received serial drive command."); //$NON-NLS-1$
 					pullEnvelope();
 					_busy = false;
 					break;
@@ -480,23 +480,58 @@ public class CommsThread extends Thread
 			Log.println(false, " received checksum: " + UnsignedByte.toString(checkReceived) + " calculated checksum: "+UnsignedByte.toString(checkCalculated)); //$NON-NLS-1$
 			if (checkReceived == checkCalculated)
 			{
-				Log.println(false, "Checksums matched."); //$NON-NLS-1$
+				String message;
+				Log.println(false, "Envelope checksums matched."); //$NON-NLS-1$
 				Disk disk = new Disk("serial.po"); //$NON-NLS-1$
 				if (command == 0x01) // Read a block
 				{
-					Log.println(false, "Reading block "+UnsignedByte.intValue(blocklo, blockhi)); //$NON-NLS-1$
+					message = Messages.getString("CommsThread.25");
+					block = UnsignedByte.intValue(blocklo, blockhi);
+					message = StringUtilities.replaceSubstring(message, "%1", ""+block); //$NON-NLS-1$
+					_parent.setSecondaryText(message);
+					Log.println(false, "Reading block "+block); //$NON-NLS-1$
 					_transport.writeByte(0xc1);	// Reflect the 'A'
 					_transport.writeByte(command);
 					_transport.writeByte(blocklo);
 					_transport.writeByte(blockhi);
 					_transport.writeByte(checkReceived);
-					block = UnsignedByte.intValue(blocklo, blockhi);
 					buffer = disk.readBlock(block);
 					_transport.writeBytes(buffer);
 					byte cs = checksum(buffer,Disk.BLOCK_SIZE);
 					Log.println(false, "Sending checksum byte "+UnsignedByte.toString(cs)); //$NON-NLS-1$
 					_transport.writeByte(cs);
 					_transport.pushBuffer();
+				}
+				if (command == 0x02) // Write a block
+				{
+					Log.println(false, "Waiting for block data..."); //$NON-NLS-1$
+					for (int i = 0; i < Disk.BLOCK_SIZE;i++)
+					{
+						buffer[i] = waitForData(5);
+					}
+					checkReceived = waitForData(5);
+					if (checkReceived == checksum(buffer,Disk.BLOCK_SIZE))
+					{
+						message = Messages.getString("CommsThread.26");
+						block = UnsignedByte.intValue(blocklo, blockhi);
+						message = StringUtilities.replaceSubstring(message, "%1", ""+block); //$NON-NLS-1$
+						_parent.setSecondaryText(message);
+						Log.println(false, "Block checksums matched."); //$NON-NLS-1$
+						Log.println(false, "Writing block "+UnsignedByte.intValue(blocklo, blockhi)); //$NON-NLS-1$
+						block = UnsignedByte.intValue(blocklo, blockhi);
+						disk.writeBlock(block,buffer);
+						disk.save();
+						_transport.writeByte(0xc1);	// Reflect the 'A'
+						_transport.writeByte(command);
+						_transport.writeByte(blocklo);
+						_transport.writeByte(blockhi);
+						_transport.writeByte(checkReceived);
+						_transport.pushBuffer();
+					}
+					else
+					{
+						Log.println(false, "Block checksums did not match."); //$NON-NLS-1$
+					}
 				}
 			}
 			else

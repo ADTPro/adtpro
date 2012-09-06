@@ -46,8 +46,10 @@ NODEV	= $28
 WPERR	= $2B
 
 ; ROM Locations
-RESETC8	= $CFFF
 COUT	= $fded		; Output character
+
+; Activity screen location
+SCRN_THROB	= $0427
 
 	.ORG	$1800
 
@@ -105,11 +107,6 @@ DRIVER:
 ; CHECK WHICH COMMAND IS REQUESTED
 DOCMD:
 	lda	COMMAND
-	pha
-	clc
-	adc	#$B0
-	sta	$0408	; DEBUG
-	pla
 	bne	NOTSTAT ; 0 IS STATUS
 	jmp	GETSTAT
 NOTSTAT:
@@ -142,7 +139,7 @@ READFAIL:
 	jsr	CALC_CHECKSUM	; Waste some more time
 	lda	#$00
 	sta	CHECKSUM
-	jsr	PARMINT		; Re-read comms parameters	
+	jsr	PARMINT		; Re-interpret comms parameters	
 	sec
 	rts
 
@@ -168,24 +165,31 @@ READBLK:
 	cmp	CHECKSUM
 	bne	READFAIL
 
+; Grab the screen contents, remember it
+	lda	SCRN_THROB
+	sta	SCREEN_CONTENTS
+
 ; READ BLOCK AND VERIFY
 	ldx	#$00
-RDBKLOOP:
 	ldy	#$00
+	stx	SCRN_THROB
 RDLOOP:
 	jsr	GETC
 	sta	(BUFLO),Y
-	sta	$0427	; DEBUG
 	iny
 	bne	RDLOOP
 
 	inc	BUFHI
 	inx
+	stx	SCRN_THROB
 	cpx	#$02
-	bne	RDBKLOOP
+	bne	RDLOOP
 
 	dec	BUFHI
 	dec	BUFHI	; Bring BUFHI back down to where it belongs
+
+	lda	SCREEN_CONTENTS	; Restore screen contents
+	sta	SCRN_THROB
 
 	jsr	GETC	; Checksum
 	pha		; Push checksum for now
@@ -200,6 +204,13 @@ RDLOOP:
 WRITEFAIL:
 	; increment failure count
 	; retry if not too bad
+	jsr	RESETIO
+	jsr	CALC_CHECKSUM	; Waste some time
+	jsr	RESETIO
+	jsr	CALC_CHECKSUM	; Waste some more time
+	lda	#$00
+	sta	CHECKSUM
+	jsr	PARMINT		; Re-interpret comms parameters	
 	sec
 	rts
 
@@ -217,8 +228,6 @@ WRBKLOOP:
 WRLOOP:
 	lda	(BUFLO),Y
 	jsr	PUTC
-	eor	CHECKSUM
-	sta	CHECKSUM
 	iny
 	bne	WRLOOP
 
@@ -228,7 +237,9 @@ WRLOOP:
 	bne	WRBKLOOP
 
 	dec	BUFHI
+	dec	BUFHI
 
+	jsr	CALC_CHECKSUM
 	lda	CHECKSUM	; Checksum
 	jsr	PUTC
 
@@ -239,10 +250,10 @@ WRLOOP:
 	jsr	GETC
 	cmp	#$02		; S/B Write
 	bne	WRITEFAIL
-	jsr	GETC		; LSB of requested block
+	jsr	GETC		; Read LSB of requested block
 	cmp	BLKLO
 	bne	WRITEFAIL
-	jsr	GETC		; MSB of requested block
+	jsr	GETC		; Read MSB of requested block
 	cmp	BLKHI
 	bne	WRITEFAIL
 	jsr	GETC		; Checksum of block - not the command envelope
@@ -255,42 +266,40 @@ WRLOOP:
 
 COMMAND_ENVELOPE:
 		; Send a command envelope (read/write) with the command in the accumulator
-	pha
+	pha			; Hang on to the command for a sec...
 	lda	#CHR_A
 	jsr	PUTC		; Envelope
 	sta	CHECKSUM
-	pla
-	jsr	PUTC		; Command
+	pla			; Pull the command back off the stack
+	jsr	PUTC		; Send command
 	eor	CHECKSUM
 	sta	CHECKSUM
 	lda	BLKLO
-	jsr	PUTC		; LSB of requested block
+	jsr	PUTC		; Send LSB of requested block
 	eor	CHECKSUM
 	sta	CHECKSUM
 	lda	BLKHI
-	jsr	PUTC		; MSB of requested block
+	jsr	PUTC		; Send MSB of requested block
 	eor	CHECKSUM
 	sta	CHECKSUM
 	jsr	PUTC		; Send envelope checksum
 	rts
 
-CALC_CHECKSUM:	; Calculate the checksum of the block at BLKLO/BLKHI
-	ldx	#$00
-	stx	CHECKSUM
-CC_OUTER_LOOP:
-	ldy	#$00
-CC_INNER_LOOP:
-	lda	(BUFLO),Y
-	eor	CHECKSUM
-	sta	CHECKSUM
+CALC_CHECKSUM:			; Calculate the checksum of the block at BLKLO/BLKHI
+	lda	#$00		; Clean everyone out
+	tax
+	tay
+CC_LOOP:
+	eor	(BUFLO),Y	; Exclusive-or accumulator with what's at (BUFLO),Y
+	sta	CHECKSUM	; Save that tally in CHECKSUM as we go
 	iny
-	bne	CC_INNER_LOOP	
-	inc	BUFHI
-	inx
-	cpx	#$02
-	bne	CC_OUTER_LOOP
+	bne	CC_LOOP
+	inc	BUFHI		; Y just turned over to zero; bump MSB of buffer
+	inx			; Keep track of trips through the loop - we need two of them
+	cpx	#$02		; The second time X is incremented, this will signfiy twice through the loop
+	bne	CC_LOOP
 
-	dec	BUFHI
+	dec	BUFHI		; BUFHI got bumped twice, so back it back down
 	dec	BUFHI
 	rts
 
@@ -349,3 +358,5 @@ PSPEED:
 COMMSLOT:
 DEFAULT:
 	.byte	$ff	; Start with -1 for a slot number so we can tell when we find no slot
+SCREEN_CONTENTS:
+	.byte	$00	; Storage for the character on screen when throbbing
