@@ -60,10 +60,10 @@ everywhere it is invoked:
 		<property name="skipProDOS" value="true"/>		
 	</target>
 
-	<target name="all" depends="wipe, clean, setup, assemble, drive, builddsk, scripts, jar, osx" description="Bulid everything after wiping the output directory.">
+	<target name="all" depends="wipe, clean, setup, assemble, vsdrive, vedrive, builddsk, scripts, jar, osx" description="Bulid everything after wiping the output directory.">
 	</target>
 
-	<target name="dev" depends="clean, setup, assemble, drive, builddsk" description="Build everything but the Java GUI; don't wipe the output directory.">
+	<target name="dev" depends="clean, setup, assemble, vsdrive, vedrive, builddsk" description="Build everything but the Java GUI; don't wipe the output directory.">
 	</target>
 
 	<target name="setup">
@@ -80,14 +80,16 @@ everywhere it is invoked:
 		</condition>
 	</target>
 
-	<target name="drive">
+	<target name="vsetup">
 		<copy file="${builddir}/VDriveBase.dsk" tofile="${builddir}/${distName}/disks/${vdriveDiskName}.DSK" />
-		<copy file="${builddir}/ADTProBase.po" tofile="${builddir}/${distName}/disks/Virtual.po" />
+	</target>
+
+	<target name="vsdrive" depends="vsetup">
 		<appleCommander command="n" imagename="${distName}/disks/${vdriveDiskName}.DSK" volname="${vdriveVolName}"/>
 		<appleCommander command="pro800" imagename="${distName}/disks/Virtual.po" volname="${vdriveVolName}"/>
 		<echo message="Assembling ProDOS virtual serial drive source..."/>
-		<exec dir="${projdir}/client/src/prodos/serial/drive" executable="${assemblerPath}/ca65">
-			<arg line="-t none -l drive.asm" />
+		<exec dir="${projdir}/client/src" executable="${assemblerPath}/ca65">
+			<arg line="-t none -l prodos/serial/drive/drive.asm" />
 		</exec>
 		<echo message="Linking serial drive..."/>
 		<exec dir="${projdir}/client/src" executable="${assemblerPath}/ld65">
@@ -96,6 +98,22 @@ everywhere it is invoked:
 		<move file="${projdir}/client/src/DRIVE" tofile="${builddir}/VSDRIVE" />
 		<echo message="Adding VSDrive to 5.25 disk image..."/>
 		<appleCommander command="p" input="${builddir}/VSDRIVE" imagename="${distName}/disks/${vdriveDiskName}.DSK" filename="VSDRIVE" type="bin" address="6144"/>
+	</target>
+
+	<target name="vedrive" depends="vsetup">
+		<appleCommander command="n" imagename="${distName}/disks/${vdriveDiskName}.DSK" volname="${vdriveVolName}"/>
+		<appleCommander command="pro800" imagename="${distName}/disks/Virtual.po" volname="${vdriveVolName}"/>
+		<echo message="Assembling ProDOS virtual ethernet drive source..."/>
+		<exec dir="${projdir}/client/src" executable="${assemblerPath}/ca65">
+			<arg line="-t none -l prodos/ethernet/drive/drive.asm" />
+		</exec>
+		<echo message="Linking ethernet drive..."/>
+		<exec dir="${projdir}/client/src" executable="${assemblerPath}/ld65">
+			<arg line="-o DRIVE -m drive.map -C prodos/ethernet/drive/drive.cfg prodos/ethernet/drive/drive.o ip65/ip65.lib" />
+		</exec>
+		<move file="${projdir}/client/src/DRIVE" tofile="${builddir}/VEDRIVE" />
+		<echo message="Adding VEDrive to 5.25 disk image..."/>
+		<appleCommander command="p" input="${builddir}/VEDRIVE" imagename="${distName}/disks/${vdriveDiskName}.DSK" filename="VEDRIVE" type="bin" address="6144"/>
 	</target>
 
 	<target name="wipe">

@@ -18,9 +18,12 @@
 ; 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 ;
 
-; Virtual drive over the serial port based on ideas by Terence J. Boldt
+; Virtual drive over ethernet based on ideas by Terence J. Boldt
 
-	.include "prodos/serial/drive/drivemain.asm"
-	.include "prodos/serial/findslot.asm"
-	.include "prodos/serial/iigsscc.asm"
-	.include "prodos/serial/ssc.asm"
+	.include "prodos/prodosmacros.i"		; OS macros
+	.include "prodos/prodosconst.i"			; OS equates, characters, etc.
+	.include "ip65/inc/common.i"
+
+	.include "prodos/ethernet/drive/drivemain.asm"
+	.include "prodos/ethernet/drive/ethproto.asm"
+	.include "prodos/ethernet/uther.asm"
