@@ -24,6 +24,9 @@ everywhere it is invoked:
 	<property name="distName" value="ADTPro-${versionString}" />
 	<property name="diskName" value="ADTPRO-${versionString}" />
 	<property name="volName" value="ADTPro.${versionString}" />
+	<property name="vdriveDistName" value="VDrive-${versionString}" />
+	<property name="vdriveDiskName" value="VDRIVE-${versionString}" />
+	<property name="vdriveVolName" value="VDrive.${versionString}" />
 	<property name="dosVersionString" value="24" />
 	<property name="dosDistName" value="ADT${dosVersionString}" />
 	<property name="projdir" value="${basedir}" />
@@ -78,22 +81,21 @@ everywhere it is invoked:
 	</target>
 
 	<target name="drive">
-		<copy file="${builddir}/ADTProBase.dsk" tofile="${builddir}/${distName}/disks/Drive.DSK" />
-		<copy file="${builddir}/ADTProBase.po" tofile="${builddir}/${distName}/disks/Serial.po" />
-		<appleCommander command="n" imagename="${distName}/disks/Drive.DSK" volname="DRIVE"/>
-		<appleCommander command="n" imagename="${distName}/disks/Serial.po" volname="SERIAL"/>
-		<echo message="Assembling ProDOS serial Drive source..."/>
+		<copy file="${builddir}/VDriveBase.dsk" tofile="${builddir}/${distName}/disks/${vdriveDiskName}.DSK" />
+		<copy file="${builddir}/ADTProBase.po" tofile="${builddir}/${distName}/disks/Virtual.po" />
+		<appleCommander command="n" imagename="${distName}/disks/${vdriveDiskName}.DSK" volname="${vdriveVolName}"/>
+		<appleCommander command="pro800" imagename="${distName}/disks/Virtual.po" volname="${vdriveVolName}"/>
+		<echo message="Assembling ProDOS virtual serial drive source..."/>
 		<exec dir="${projdir}/client/src/prodos/serial/drive" executable="${assemblerPath}/ca65">
 			<arg line="-t none -l drive.asm" />
 		</exec>
-		<echo message="Linking drive..."/>
+		<echo message="Linking serial drive..."/>
 		<exec dir="${projdir}/client/src" executable="${assemblerPath}/ld65">
 			<arg line="-o DRIVE -m drive.map -C prodos/serial/drive/drive.cfg prodos/serial/drive/drive.o" />
 		</exec>
-		<move file="${projdir}/client/src/DRIVE" tofile="${builddir}/DRIVE" />
-		<echo message="Adding Drive to 5.25 disk image..."/>
-		<appleCommander command="d" imagename="${distName}/disks/Drive.DSK" filename="DRIVE"/>
-		<appleCommander command="p" input="${builddir}/DRIVE" imagename="${distName}/disks/Drive.DSK" filename="DRIVE" type="bin" address="6144"/>
+		<move file="${projdir}/client/src/DRIVE" tofile="${builddir}/VSDRIVE" />
+		<echo message="Adding VSDrive to 5.25 disk image..."/>
+		<appleCommander command="p" input="${builddir}/VSDRIVE" imagename="${distName}/disks/${vdriveDiskName}.DSK" filename="VSDRIVE" type="bin" address="6144"/>
 	</target>
 
 	<target name="wipe">
@@ -119,7 +121,7 @@ everywhere it is invoked:
 		<delete file="${builddir}/ADTPROETH.BIN" />
 		<delete file="${builddir}/ADTSOSETH.BIN" />
 		<delete file="${builddir}/GRUB2" />
-		<delete file="${builddir}/DRIVE" />
+		<delete file="${builddir}/VSDRIVE" />
 		<delete file="${projdir}/client/src/messages.asm" />
 		<delete file="${projdir}/client/src/GRUB" />
 		<delete file="${projdir}/client/src/LOADER" />
@@ -127,6 +129,7 @@ everywhere it is invoked:
 		<delete file="${builddir}/${distName}.zip" />
 		<delete file="${builddir}/${distName}.dmg" />
 		<delete file="${builddir}/${distName}/disks/${diskName}.DSK" />
+		<delete file="${builddir}/${distName}/disks/${vdriveDiskName}.DSK" />
 		<delete file="${builddir}/${distName}/disks/${diskName}.PO" />
 		<delete file="${builddir}/${distName}/disks/${dosDistName}.DSK" />
 		<delete file="${projdir}/org/adtpro/resources/adt.dmp" />
@@ -444,7 +447,7 @@ everywhere it is invoked:
 		<delete file="${builddir}/ADTPROETH.BIN" />
 		<delete file="${builddir}/ADTPROAUD.BIN" />
 		<delete file="${builddir}/GRUB2" />
-		<delete file="${builddir}/DRIVE" />
+		<delete file="${builddir}/VSDRIVE" />
 	</target>
 
 	<target name="buildSOSdsk" if="SOS-needed">

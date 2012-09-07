@@ -24,7 +24,7 @@ UTILPTR		= $6
 
 ; Apple constants
 CHR_ESC	= $9b	; ESCAPE KEY
-CHR_A	= $c1	; Character 'A' 
+CHR_E	= $c5	; Character 'E' for Envelope 
 
 ; PRODOS GLOBAL PAGE VALUES
 DEVADR21	= $BF14	; Slot 2, drive 1
@@ -103,7 +103,7 @@ present:
 ; Find a serial device
 findser:
 	jsr	msg
-	.byte	"VDRIVE: ",$00
+	.byte	"VSDRIVE: ",$00
 	jsr 	FindSlot	; Sniff out a likely comm slot
 	lda	COMMSLOT
 	bmi	fail
@@ -169,7 +169,7 @@ READBLK:
 	jsr	COMMAND_ENVELOPE
 ; READ ECHO'D COMMAND AND VERIFY
 	jsr	GETC		; Command envelope begin
-	cmp	#CHR_A
+	cmp	#CHR_E
 	bne	READFAIL
 	jsr	GETC		; Read command
 	cmp	#$01
@@ -264,7 +264,7 @@ WRLOOP:
 
 ; READ ECHO'D COMMAND AND VERIFY
 	jsr	GETC
-	cmp	#CHR_A		; S/B Command envelope
+	cmp	#CHR_E		; S/B Command envelope
 	bne	WRITEFAIL
 	jsr	GETC
 	cmp	#$02		; S/B Write
@@ -286,7 +286,7 @@ WRLOOP:
 COMMAND_ENVELOPE:
 		; Send a command envelope (read/write) with the command in the accumulator
 	pha			; Hang on to the command for a sec...
-	lda	#CHR_A
+	lda	#CHR_E
 	jsr	PUTC		; Envelope
 	sta	CHECKSUM
 	pla			; Pull the command back off the stack

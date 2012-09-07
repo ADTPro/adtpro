@@ -152,14 +152,6 @@ public class CommsThread extends Thread
 				_parent.setProgressMaximum(0);
 				switch (oneByte)
 				{
-				case (byte) 193: // "E": Command Envelope
-					_busy = true;
-					_parent.setMainText(Messages.getString("CommsThread.24"));
-					_parent.setSecondaryText(""); //$NON-NLS-1$
-					Log.println(false, "CommsThread.commandLoop() Received serial drive command."); //$NON-NLS-1$
-					pullEnvelope();
-					_busy = false;
-					break;
 				case (byte) 195: // "C": CD
 					_busy = true;
 					_parent.setMainText(Messages.getString("CommsThread.2")); //$NON-NLS-1$
@@ -176,6 +168,14 @@ public class CommsThread extends Thread
 					Log.println(false, "CommsThread.commandLoop() Received DIR command."); //$NON-NLS-1$
 					sendDirectory();
 					_parent.setSecondaryText(_parent.getWorkingDirectory()); //$NON-NLS-1$
+					_busy = false;
+					break;
+				case (byte) 197: // "E": Command Envelope
+					_busy = true;
+					_parent.setMainText(Messages.getString("CommsThread.24"));
+					_parent.setSecondaryText(""); //$NON-NLS-1$
+					Log.println(false, "CommsThread.commandLoop() Received serial drive command."); //$NON-NLS-1$
+					pullEnvelope();
 					_busy = false;
 					break;
 				case (byte) 208: // "P": Put (Send)
@@ -473,7 +473,7 @@ public class CommsThread extends Thread
 			Log.println(false, " received blockhi: " + UnsignedByte.toString(blockhi)); //$NON-NLS-1$
 			Log.println(false, "Waiting for checksum..."); //$NON-NLS-1$
 			checkReceived = waitForData(5);
-			checkCalculated = (byte) 193;  // Seed checksum with the 'A' character - that's how we got here
+			checkCalculated = (byte) 0xc5;  // Seed checksum with the 'E' character - that's how we got here
 			checkCalculated ^= command;
 			checkCalculated ^= blocklo;
 			checkCalculated ^= blockhi;
@@ -482,7 +482,7 @@ public class CommsThread extends Thread
 			{
 				String message;
 				Log.println(false, "Envelope checksums matched."); //$NON-NLS-1$
-				Disk disk = new Disk("serial.po"); //$NON-NLS-1$
+				Disk disk = new Disk("Virtual.po"); //$NON-NLS-1$
 				if (command == 0x01) // Read a block
 				{
 					message = Messages.getString("CommsThread.25");
@@ -490,7 +490,7 @@ public class CommsThread extends Thread
 					message = StringUtilities.replaceSubstring(message, "%1", ""+block); //$NON-NLS-1$
 					_parent.setSecondaryText(message);
 					Log.println(false, "Reading block "+block); //$NON-NLS-1$
-					_transport.writeByte(0xc1);	// Reflect the 'A'
+					_transport.writeByte(0xc5);	// Reflect the 'E'
 					_transport.writeByte(command);
 					_transport.writeByte(blocklo);
 					_transport.writeByte(blockhi);
@@ -516,12 +516,12 @@ public class CommsThread extends Thread
 						block = UnsignedByte.intValue(blocklo, blockhi);
 						message = StringUtilities.replaceSubstring(message, "%1", ""+block); //$NON-NLS-1$
 						_parent.setSecondaryText(message);
-						Log.println(false, "Block checksums matched."); //$NON-NLS-1$
+						Log.println(false, "Block checksums matched at "+UnsignedByte.toString(checkReceived)); //$NON-NLS-1$
 						Log.println(false, "Writing block "+UnsignedByte.intValue(blocklo, blockhi)); //$NON-NLS-1$
 						block = UnsignedByte.intValue(blocklo, blockhi);
 						disk.writeBlock(block,buffer);
 						disk.save();
-						_transport.writeByte(0xc1);	// Reflect the 'A'
+						_transport.writeByte(0xc5);	// Reflect the 'E'
 						_transport.writeByte(command);
 						_transport.writeByte(blocklo);
 						_transport.writeByte(blockhi);
@@ -535,7 +535,7 @@ public class CommsThread extends Thread
 				}
 			}
 			else
-				Log.println(false, "Checksums did not match.");
+				Log.println(false, "Envelope checksums did not match.");
 		}
 		catch (TransportTimeoutException e)
 		{
