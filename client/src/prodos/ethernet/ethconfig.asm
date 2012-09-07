@@ -247,7 +247,10 @@ PARMINT:
 	lda CONFIGYET
 	beq NOPE
 	jsr INITUTHER
-	lda #$a0
+	bcc :+
+	ldy #PMUTHBAD
+	jsr WRITEMSGAREA
+:	lda #$a0
 	jsr DELAY
 	jsr PINGREQUEST	; Do a couple of ping requests to prime the pump
 	lda #$10

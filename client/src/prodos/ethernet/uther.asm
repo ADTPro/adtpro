@@ -1,6 +1,6 @@
 ;
 ; ADTPro - Apple Disk Transfer ProDOS
-; Copyright (C) 2006 - 2011 by David Schmidt
+; Copyright (C) 2006 - 2012 by David Schmidt
 ; david__schmidt at users.sourceforge.net
 ;
 ; This program is free software; you can redistribute it and/or modify it 
@@ -44,26 +44,25 @@
 
 ;---------------------------------------------------------
 ; INITUTHER - Initialize Uther card
+; Returns with carry clear on success, carry set on failure 
 ;---------------------------------------------------------
 INITUTHER:
 	jsr PATCHUTHER
 	GO_SLOW				; Slow down for SOS
 	jsr ip65_init
 	bcc @UTHEROK
-	ldy #PMUTHBAD
-	jsr WRITEMSGAREA
 	jsr PATCHNULL
 	GO_FAST				; Speed back up for SOS
+	sec
 	rts
 @UTHEROK:
 	lda PDHCP
 	bne @UTHEROK2
 	jsr dhcp_init
 	bcc @UTHEROK2
-	ldy #PMUTHBAD
-	jsr WRITEMSGAREA
 	jsr PATCHNULL
 	GO_FAST				; Speed back up for SOS
+	sec
 	rts
 @UTHEROK2:
 	ldax #UDPDISPATCH
@@ -84,6 +83,7 @@ INITUTHER:
 	stax udp_send_dest_port
 
 	GO_FAST				; Speed back up for SOS
+	clc
 	rts
 
 ;---------------------------------------------------------
