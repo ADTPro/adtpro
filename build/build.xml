@@ -86,7 +86,7 @@ everywhere it is invoked:
 
 	<target name="vsdrive" depends="vsetup" description="Builds the virtual serial drive driver">
 		<appleCommander command="n" imagename="${builddir}/${distName}/disks/${vdriveDiskName}.DSK" volname="${vdriveVolName}"/>
-		<appleCommander command="pro800" imagename="${distName}/disks/Virtual.po" volname="${vdriveVolName}"/>
+		<appleCommander command="pro800" imagename="${builddir}/${distName}/disks/Virtual.po" volname="${vdriveVolName}"/>
 		<echo message="Assembling ProDOS virtual serial drive source..."/>
 		<exec dir="${projdir}/client/src" executable="${assemblerPath}/ca65">
 			<arg line="-t none -l prodos/serial/drive/drive.asm" />
@@ -102,7 +102,7 @@ everywhere it is invoked:
 
 	<target name="vedrive" depends="vsetup" description="Builds the virtual ethernet drive driver">
 		<appleCommander command="n" imagename="${builddir}/${distName}/disks/${vdriveDiskName}.DSK" volname="${vdriveVolName}"/>
-		<appleCommander command="pro800" imagename="${distName}/disks/Virtual.po" volname="${vdriveVolName}"/>
+		<appleCommander command="pro800" imagename="${builddir}/${distName}/disks/Virtual.po" volname="${vdriveVolName}"/>
 		<echo message="Assembling ProDOS virtual ethernet drive source..."/>
 		<exec dir="${projdir}/client/src" executable="${assemblerPath}/ca65">
 			<arg line="-t none -l prodos/ethernet/drive/drive.asm" />
@@ -418,19 +418,19 @@ everywhere it is invoked:
 		And the .po version...
 		-->
 		<echo message="Adding startup files to 3.5 disk image..."/>
-		<appleCommander command="p" input="${builddir}/STARTUP.SYSTEM" imagename="${distName}/disks/${diskName}.PO" filename="STARTUP.SYSTEM" type="sys" address="8192"/>
-		<appleCommander command="p" input="${builddir}/ADTPRO" imagename="${distName}/disks/${diskName}.PO" filename="ADTPRO" type="sys" address="8192"/>
-		<appleCommander command="p" input="${builddir}/ADTPRO" imagename="${distName}/disks/${diskName}.PO" filename="ADTPROAUD" type="sys" address="8192"/>
-		<appleCommander command="p" input="${builddir}/ADTPRO" imagename="${distName}/disks/${diskName}.PO" filename="ADTPROETH" type="sys" address="8192"/>
+		<appleCommander command="p" input="${builddir}/STARTUP.SYSTEM" imagename="${builddir}/${distName}/disks/${diskName}.PO" filename="STARTUP.SYSTEM" type="sys" address="8192"/>
+		<appleCommander command="p" input="${builddir}/ADTPRO" imagename="${builddir}/${distName}/disks/${diskName}.PO" filename="ADTPRO" type="sys" address="8192"/>
+		<appleCommander command="p" input="${builddir}/ADTPRO" imagename="${builddir}/${distName}/disks/${diskName}.PO" filename="ADTPROAUD" type="sys" address="8192"/>
+		<appleCommander command="p" input="${builddir}/ADTPRO" imagename="${builddir}/${distName}/disks/${diskName}.PO" filename="ADTPROETH" type="sys" address="8192"/>
 
 		<echo message="Adding ADTPRO to 3.5 disk image..."/>
-		<appleCommander command="p" input="${builddir}/ADTPRO.BIN" imagename="${distName}/disks/${diskName}.PO" filename="ADTPRO.BIN" type="bin" address="2048"/>
+		<appleCommander command="p" input="${builddir}/ADTPRO.BIN" imagename="${builddir}/${distName}/disks/${diskName}.PO" filename="ADTPRO.BIN" type="bin" address="2048"/>
 
 		<echo message="Adding ADTPROAUD to 3.5 disk image..."/>
-		<appleCommander command="p" input="${builddir}/ADTPROAUD.BIN" imagename="${distName}/disks/${diskName}.PO" filename="ADTPROAUD.BIN" type="bin" address="2048"/>
+		<appleCommander command="p" input="${builddir}/ADTPROAUD.BIN" imagename="${builddir}/${distName}/disks/${diskName}.PO" filename="ADTPROAUD.BIN" type="bin" address="2048"/>
 
 		<echo message="Adding ADTPROETH to 3.5 disk image..."/>
-		<appleCommander command="p" input="${builddir}/ADTPROETH.BIN" imagename="${distName}/disks/${diskName}.PO" filename="ADTPROETH.BIN" type="bin" address="2048"/>
+		<appleCommander command="p" input="${builddir}/ADTPROETH.BIN" imagename="${builddir}/${distName}/disks/${diskName}.PO" filename="ADTPROETH.BIN" type="bin" address="2048"/>
 
 		<!--
 		Put the assembled DOS ADT program on the .dsk image
@@ -454,7 +454,7 @@ everywhere it is invoked:
 		<appleCommander command="n" imagename="${builddir}/${distName}/disks/${diskName}.DSK" volname="${volName}"/>
 
 		<echo message="Adding ADTPro volume name to 3.5 disk image..."/>
-		<appleCommander command="n" imagename="${distName}/disks/${diskName}.PO" volname="${volName}"/>
+		<appleCommander command="n" imagename="${builddir}/${distName}/disks/${diskName}.PO" volname="${volName}"/>
 		<delete file="${builddir}/ADT" />
 		<delete file="${builddir}/ADTPRO" />
 		<delete file="${builddir}/ADTPRO.SYSTEM" />
