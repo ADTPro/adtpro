@@ -174,7 +174,7 @@ public class CommsThread extends Thread
 					_busy = true;
 					_parent.setMainText(Messages.getString("CommsThread.24"));
 					_parent.setSecondaryText(""); //$NON-NLS-1$
-					Log.println(false, "CommsThread.commandLoop() Received serial drive command."); //$NON-NLS-1$
+					Log.println(false, "CommsThread.commandLoop() Received virtual drive command."); //$NON-NLS-1$
 					pullEnvelope();
 					_busy = false;
 					break;
@@ -483,6 +483,7 @@ public class CommsThread extends Thread
 				String message;
 				Log.println(false, "Envelope checksums matched."); //$NON-NLS-1$
 				Disk disk = new Disk("Virtual.po"); //$NON-NLS-1$
+				Log.println(false, "Virtual disk retrieved."); //$NON-NLS-1$
 				if (command == 0x01) // Read a block
 				{
 					message = Messages.getString("CommsThread.25");
@@ -544,6 +545,7 @@ public class CommsThread extends Thread
 		}
 		catch (IOException e)
 		{
+			Log.println(false, "I/O exception occurred.  Can't find Virtual.po?"); //$NON-NLS-1$
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
