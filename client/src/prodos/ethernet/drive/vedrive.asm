@@ -24,6 +24,8 @@
 	.include "prodos/prodosconst.i"			; OS equates, characters, etc.
 	.include "ip65/inc/common.i"
 
-	.include "prodos/ethernet/drive/drivemain.asm"
+	.include "prodos/ethernet/drive/vedriveinstall.asm"
+	.include "prodos/vdrive.asm"
+	.include "prodos/ethernet/drive/vedrivemain.asm"
 	.include "prodos/ethernet/drive/ethproto.asm"
 	.include "prodos/ethernet/uther.asm"

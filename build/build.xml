@@ -82,10 +82,10 @@ everywhere it is invoked:
 
 	<target name="vsetup">
 		<copy file="${builddir}/VDriveBase.dsk" tofile="${builddir}/${distName}/disks/${vdriveDiskName}.DSK" />
+		<appleCommander command="n" imagename="${builddir}/${distName}/disks/${vdriveDiskName}.DSK" volname="${vdriveVolName}"/>
 	</target>
 
 	<target name="vsdrive" depends="vsetup" description="Builds the virtual serial drive driver">
-		<appleCommander command="n" imagename="${builddir}/${distName}/disks/${vdriveDiskName}.DSK" volname="${vdriveVolName}"/>
 		<appleCommander command="pro800" imagename="${builddir}/${distName}/disks/Virtual.po" volname="${vdriveVolName}"/>
 		<echo message="Assembling ProDOS virtual serial drive source..."/>
 		<exec dir="${projdir}/client/src" executable="${assemblerPath}/ca65">
@@ -97,23 +97,24 @@ everywhere it is invoked:
 		</exec>
 		<move file="${projdir}/client/src/DRIVE" tofile="${builddir}/VSDRIVE" />
 		<echo message="Adding VSDrive to 5.25 disk image..."/>
+		<appleCommander command="d" input="${builddir}/VSDRIVE" imagename="${builddir}/${distName}/disks/${vdriveDiskName}.DSK" filename="VSDRIVE" failonerror="false"/>
 		<appleCommander command="p" input="${builddir}/VSDRIVE" imagename="${builddir}/${distName}/disks/${vdriveDiskName}.DSK" filename="VSDRIVE" type="bin" address="6144"/>
 	</target>
 
 	<target name="vedrive" depends="vsetup" description="Builds the virtual ethernet drive driver">
-		<appleCommander command="n" imagename="${builddir}/${distName}/disks/${vdriveDiskName}.DSK" volname="${vdriveVolName}"/>
 		<appleCommander command="pro800" imagename="${builddir}/${distName}/disks/Virtual.po" volname="${vdriveVolName}"/>
 		<echo message="Assembling ProDOS virtual ethernet drive source..."/>
 		<exec dir="${projdir}/client/src" executable="${assemblerPath}/ca65">
-			<arg line="-t none -l prodos/ethernet/drive/drive.asm" />
+			<arg line="-t none -l prodos/ethernet/drive/vedrive.asm" />
 		</exec>
 		<echo message="Linking ethernet drive..."/>
 		<exec dir="${projdir}/client/src" executable="${assemblerPath}/ld65">
-			<arg line="-o DRIVE -m vedrive.map -C prodos/ethernet/drive/drive.cfg prodos/ethernet/drive/drive.o ip65/ip65.lib" />
+			<arg line="-o DRIVE -m vedrive.map -C prodos/ethernet/drive/vedrive.cfg prodos/ethernet/drive/vedrive.o ip65/ip65.lib" />
 		</exec>
 		<move file="${projdir}/client/src/DRIVE" tofile="${builddir}/VEDRIVE" />
 		<echo message="Adding VEDrive to 5.25 disk image..."/>
-		<appleCommander command="p" input="${builddir}/VEDRIVE" imagename="${builddir}/${distName}/disks/${vdriveDiskName}.DSK" filename="VEDRIVE" type="bin" address="6144"/>
+		<appleCommander command="d" input="${builddir}/VEDRIVE" imagename="${builddir}/${distName}/disks/${vdriveDiskName}.DSK" filename="VEDRIVE" failonerror="false"/>
+		<appleCommander command="p" input="${builddir}/VEDRIVE" imagename="${builddir}/${distName}/disks/${vdriveDiskName}.DSK" filename="VEDRIVE" type="bin" address="2048"/>
 	</target>
 
 	<target name="wipe">

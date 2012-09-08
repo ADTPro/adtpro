@@ -28,16 +28,16 @@
 	.export cfg_dns
 	.export dhcp_server
 	.export cfg_tftp_server
+	.export output_buffer
 
 	.global COMMSLOT
 
-	jsr ip65_init
-	rts
-
 RESETIO:
 	jsr $0000	; Pseudo-indirect JSR to reset the IO device
+	rts
+
 COMMSLOT:
-	.byte	$03
+	.byte $02	; Zero-indexed comms slot (3)
 PDHCP:	.byte 0		; DHCP Configuration? (YES)
 
 ip_parms:
@@ -50,3 +50,5 @@ cfg_dns:	.byte   0,   0,   0,   0 ; ip address of dns server to use (will be ove
 dhcp_server:	.byte   0,   0,   0,   0 ; will be set address of dhcp server that configuration was obtained from
 cfg_tftp_server:
 		.byte   0,   0,   0,   0 ; ip address of server to send tftp requests to (can be a broadcast address)
+output_buffer:
+	.res $0208,$00

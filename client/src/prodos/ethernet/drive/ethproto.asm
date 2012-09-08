@@ -30,8 +30,10 @@
 	.importzp udp_src_port
 	.importzp udp_data
 
+	.export READBLK
+	.export WRITEBLK
+
 ; Stuff that doesn't have a home yet
-	.export output_buffer
 BABORT:
 	rts
 
@@ -68,29 +70,24 @@ TIMEOUTENTRY:
 	ldx #STATE_IDLE	; Set state back to idle
 	stx state
 	plp
-			; Receiving a CD reply?
-	cmp #STATE_CD
+			; Receiving a block read reply?
+	cmp #STATE_BLKREAD
 	bne :+
-;	jmp UPDSKIP
-;			; Receiving a PUT reply?
-;:	cmp #STATE_PUT
-;	bne :+
-;	jmp PUTREPLY1
-;			; Receiving a GET return code reply?
-;:	cmp #STATE_GET
-;	bne :+
-;	jmp GETREPLY1
-;			; Receiving a QUERY FN reply?
-;:	cmp #STATE_QUERY
-;	bne :+
-;	jmp QUERYFNREPLY1
+	jmp BLKREAD_REPLY1
+			; Receiving a block write reply?
+:	cmp #STATE_BLKWRITE
+	bne :+
+	jmp BLKWRITE_REPLY1
+			; Receiving an envelope reply?
+:	cmp #STATE_ENVELOPE
+	bne :+
+	jmp ENVELOPE_REPLY
 :			; fallthrough	
 UDPSKIP:
 	rts
 
 ;---------------------------------------------------------
 ; RECEIVE_LOOP - Wait for an incoming packet to come along
-; 
 ;---------------------------------------------------------
 RECEIVE_LOOP_FAST:
 	lda #$1f
@@ -144,7 +141,7 @@ RECEIVE_LOOP_PAUSE:
 
 PauseValue:
 	lda #$7f
-	jsr DELAY	; Wait!
+	jsr MYDELAY	; Wait!
 
 	lda #$00
 	sta $c05b	; Enable ZipChip
@@ -159,6 +156,183 @@ PauseValue:
 
 TIMEOUT:	.res 1
 
+READFAIL:
+	; increment failure count
+	; retry if not too bad
+	sec
+	rts
+
+;---------------------------------------------------------
+; READBLK - Read a block
+;---------------------------------------------------------
+READBLK:
+; SEND COMMAND TO PC
+	lda	#$01		; Read command
+	jsr	COMMAND_ENVELOPE
+	;bcs	READFAIL
+; Grab the screen contents, remember it
+	lda	SCRN_THROB
+	sta	SCREEN_CONTENTS
+
+; READ BLOCK AND VERIFY
+	ldax	#udp_inp + udp_data + 6	; Point past the command envelope
+	stax	UTILPTR
+	ldx	#$00
+	ldy	#$00
+	stx	SCRN_THROB
+RDLOOP:
+	lda	(UTILPTR),Y
+	sta	(BUFLO),Y
+	iny
+	bne	RDLOOP
+
+	inc	BUFHI
+	inc	UTILPTR+1
+	inx
+	stx	SCRN_THROB
+	cpx	#$02
+	bne	RDLOOP
+
+	dec	BUFHI
+	dec	BUFHI	; Bring BUFHI back down to where it belongs
+
+	lda	SCREEN_CONTENTS	; Restore screen contents
+	sta	SCRN_THROB
+
+	lda	(UTILPTR),Y	; Checksum
+	pha		; Push checksum for now
+	jsr	CALC_CHECKSUM
+	pla	
+;	cmp	CHECKSUM
+;	bne	READFAIL
+	lda	#$00
+	clc
+	rts
+
+;---------------------------------------------------------
+; MYDELAY - a copy of the 1MHz delay timer; won't work for GS or accelerated machines
+;---------------------------------------------------------
+MYDELAY:
+	sec
+@fca9:	pha
+@fcaa:	sbc #$01
+	bne @fcaa
+	pla
+	sbc #$01
+	bne @fca9
+	rts
+ 
+;---------------------------------------------------------
+; WRITEBLK - Write a block
+;---------------------------------------------------------
+WRITEBLK:
+	rts
+
+;---------------------------------------------------------
+; COMMAND_ENVELOPE - Send a command envelope (read/write) with the command in the accumulator
+;---------------------------------------------------------
+COMMAND_ENVELOPE:
+	pha			; Hang on to the command for a sec...
+	sta	QUERYRC
+	ldy	#$00
+	sty	udp_send_len
+	sty	udp_send_len+1
+	ldax	#udp_outp + udp_data
+	stax	UTILPTR
+	lda	#CHR_E
+	jsr	BUFBYTE		; Envelope
+	sta	CHECKSUM
+	pla			; Pull the command back off the stack
+	jsr	BUFBYTE		; Send command
+	eor	CHECKSUM
+	sta	CHECKSUM
+	lda	BLKLO
+	jsr	BUFBYTE		; Send LSB of requested block
+	eor	CHECKSUM
+	sta	CHECKSUM
+	lda	BLKHI
+	jsr	BUFBYTE		; Send MSB of requested block
+	eor	CHECKSUM
+	sta	CHECKSUM
+	jsr	BUFBYTE		; Send envelope checksum
+	jsr	udp_send_nocopy
+	lda	#STATE_ENVELOPE	; Set up for an envelope reply
+	sta	state
+	jsr	RECEIVE_LOOP_FAST
+	rts
+
+;---------------------------------------------------------
+; ENVELOPE_REPLY - Reply to command envelope
+;---------------------------------------------------------
+ENVELOPE_REPLY:
+; READ ECHO'D COMMAND AND VERIFY
+	lda	TMOT
+	bne	@fail
+	lda	udp_inp + udp_data + 1	; Pick up the data byte
+	cmp	#CHR_E			; Envelope command
+	bne	@fail
+	lda	udp_inp + udp_data + 2	; Pick up the data byte
+	cmp	QUERYRC			; Local storage for command type
+	bne	@fail
+	lda	udp_inp + udp_data + 3	; Pick up the data byte
+	cmp	BLKLO
+	bne	@fail
+	lda	udp_inp + udp_data + 4	; Pick up the data byte
+	cmp	BLKHI
+	bne	@fail
+	lda	udp_inp + udp_data + 5	; Pick up the data byte
+	cmp	CHECKSUM
+	bne	@fail
+	lda	#$00
+	clc
+	rts	
+@fail:	
+	sec
+	rts
+
+;---------------------------------------------------------
+; BLKREAD_REPLY - Reply to block read request
+;---------------------------------------------------------
+BLKREAD_REPLY1:
+	brk
+	lda TMOT
+	bne @Repl1
+	lda udp_inp + udp_data + 1	; Pick up the data byte
+	jmp @Repl2
+@Repl1:	; Load up timeout indicator
+@Repl2:	sta QUERYRC
+BLKREAD_REPLY:
+	lda QUERYRC
+	rts
+
+BLKREAD_REPLY2:
+	lda #STATE_BLKREAD	; Set up for BLKREAD_REPLY1 callback
+	sta state
+	jsr RECEIVE_LOOP_FAST
+	lda QUERYRC
+	rts	
+
+;---------------------------------------------------------
+; BLKWRITE_REPLY - Reply to block write request
+;---------------------------------------------------------
+BLKWRITE_REPLY1:
+	lda TMOT
+	bne @Repl1
+	lda udp_inp + udp_data + 1	; Pick up the data byte
+	jmp @Repl2
+@Repl1:	; Load up timeout indicator
+@Repl2:	sta QUERYRC
+BLKWRITE_REPLY:
+	lda QUERYRC
+	rts
+
+BLKWRITE_REPLY2:
+	lda #STATE_BLKWRITE	; Set up for BLKWRITE_REPLY1 callback
+	sta state
+	jsr RECEIVE_LOOP_FAST
+	lda QUERYRC
+	rts	
+
 ;---------------------------------------------------------
 ; PINGREQUEST - Send out a ping
 ;---------------------------------------------------------
@@ -169,60 +343,6 @@ PINGREQUEST:
 	jsr PUTC
 	jsr RECEIVE_LOOP_FAST
 	rts
-
-;---------------------------------------------------------
-; CDREQUEST - Request current directory change
-;---------------------------------------------------------
-CDREQUEST:
-	ldax #udp_inp + udp_data + 1	; Point Buffer at the UDP data buffer
-	stax Buffer
-	ldy #$00
-	lda #CHR_C
-	sta (Buffer),Y
-	iny
-	jsr COPYINPUT
-	tya			; Max CD request will be 255 bytes
-	ldx #$00		; It's unlikely the $200 buffer is
-	stax udp_send_len	; much bigger than that anyway...
-	lda #STATE_CD
-	sta state
-	GO_SLOW				; Slow down for SOS
-	ldax Buffer
-	jsr udp_send
-	GO_FAST				; Speed back up for SOS
-	jsr RECEIVE_LOOP_FAST
-	rts
-
-;---------------------------------------------------------
-; CDREPLY - Reply to current directory change
-; PUTREPLY - Reply from send an image to the host
-; BATCHREPLY - Reply from send multiple images to the host
-; GETREPLY - Reply from requesting an image be sent from the host
-; One-byte replies
-;---------------------------------------------------------
-CDREPLY1:
-PUTREPLY1:
-BATCHREPLY1:
-GETREPLY1:
-	lda TMOT
-	bne @Repl1
-	lda udp_inp + udp_data + 1	; Pick up the data byte
-	jmp @Repl2
-@Repl1:	; Load up timeout indicator
-@Repl2:	sta QUERYRC
-CDREPLY:
-PUTREPLY:
-BATCHREPLY:
-GETREPLY:
-	lda QUERYRC
-	rts
-
-GETREPLY2:
-	lda #STATE_GET	; Set up for GETREPLY1 callback
-	sta state
-	jsr RECEIVE_LOOP_FAST
-	lda QUERYRC
-	rts	
 
 ;---------------------------------------------------------
 ; BUFBYTE
@@ -280,99 +400,12 @@ COPYINPUT:
 @Done:	rts
 
 ;---------------------------------------------------------
-; DEBUGMSG - Handy debug routine to print and scroll "you are here"
-; messages
-;---------------------------------------------------------
-;DEBUGMSG:
-;	sty SLOWY
-;	stx SLOWX
-;	pha		; Save the byte to print
-;	lda CH
-;	sta CH_SAV
-;	lda CV
-;	sta CV_SAV
-;
-;	ldy #$00
-; :
-;	; Scroll messages
-;	lda $0480,y	; Line 2
-;	sta $0400,y	; Line 1
-;	lda $0500,y	; Line 3
-;	sta $0480,y	; Line 2
-;	lda $0580,y	; Line 4
-;	sta $0500,y	; Line 3
-;	lda $0600,y	; Line 5
-;	sta $0580,y	; Line 4
-;	lda $0680,y	; Line 6
-;	sta $0600,y	; Line 5
-;	lda $0700,y	; Line 7
-;	sta $0680,y	; Line 6
-;	lda $0780,y	; Line 8
-;	sta $0700,y	; Line 7
-;	lda $0428,y	; Line 9
-;	sta $0780,y	; Line 8
-;	lda $04a8,y	; Line 10
-;	sta $0428,y	; Line 9
-;	lda $0528,y	; Line 11
-;	sta $04a8,y	; Line 10
-;	lda $05a8,y	; Line 12
-;	sta $0528,y	; Line 11
-;	lda $0628,y	; Line 13
-;	sta $05a8,y	; Line 12
-;	; break for progress bar here - five lines
-;	lda $0550,y	; Line 19
-;	sta $0628,y	; Line 13
-;	lda $05d0,y	; Line 20
-;	sta $0550,y	; Line 19
-;	lda $0650,y	; Line 21
-;	sta $05d0,y	; Line 20
-;	lda $06d0,y	; Line 22
-;	sta $0650,y	; Line 21
-;	lda $0750,y	; Line 23
-;	sta $06d0,y	; Line 22
-;	lda $07d0,y	; Line 24
-;	sta $0750,y	; Line 23
-;
-;	iny
-;	cpy #$06
-;	bne :-
-;
-;	lda #$00
-;	sta CH
-;	lda #$17
-;	jsr TABV
-;
-;	pla		; Retrieve the "you are here" byte to print
-;	jsr PRBYTE
-;	lda #CHR_SP
-;	jsr COUT1
-;	lda state	; Retrieve the state
-;	jsr PRBYTE
-;
-;	lda CH_SAV
-;	sta CH
-;	lda CV_SAV
-;	sta CV
-;	jsr TABV
-;	ldy SLOWY
-;	ldx SLOWX
-;	rts
-;
-;CH_SAV:	.byte $00
-;CV_SAV:	.byte $00
-
-;---------------------------------------------------------
 ; Constants
 ;---------------------------------------------------------
 STATE_IDLE	= 0
-STATE_DIR	= 1
-STATE_CD	= 2
-STATE_PUT	= 3
-STATE_GET	= 4
-STATE_QUERY	= 5
-STATE_RECVHBLK	= 6
-STATE_SENDHBLK	= 7
-STATE_BATCH	= 8
+STATE_BLKREAD	= 1
+STATE_BLKWRITE	= 2
+STATE_ENVELOPE	= 3
 
 ;---------------------------------------------------------
 ; Variables
@@ -384,5 +417,3 @@ PUTCMSG:
 PUTCMSGEND:
 PREVPACKET:
 	.byte $00
-output_buffer:
-	.res $0100
