@@ -82,20 +82,50 @@ report:	jsr	msg
 	rts
 
 INITIO:
-	jsr INITUTHER
-	bcc PINGS
+	jsr	FindSlot
+	jsr	INITUTHER
+	bcc	PINGS
 	rts
-PINGS:	ldx #$05
-	stx RESETIO
-:	lda #$ff
-	jsr DELAY
-	lda #$ff
-	jsr DELAY
-	jsr PINGREQUEST
-	dec RESETIO
-	bne :-
+PINGS:	ldx	#$05
+	stx	RESETIO	; Counter - number of times we go through this loop
+:	lda	#$ff
+	jsr	DELAY
+	lda	#$ff
+	jsr	DELAY
+	jsr	PINGREQUEST
+	dec	RESETIO
+	bne	:-
 	clc
 	rts
+
+;---------------------------------------------------------
+; FindSlot - Find an uther card
+;---------------------------------------------------------
+FindSlot:
+	lda COMMSLOT
+	sta TempSlot
+	ldx #$00	; Slot number - start at min and work up
+FindSlotLoop:
+	stx COMMSLOT	; ip65_init looks for COMMSLOT to be the index
+	clc
+	jsr ip65_init
+	bcc FoundSlot
+	ldx COMMSLOT
+	inx
+	stx COMMSLOT
+	cpx #MAXSLOT
+	bne FindSlotLoop
+	jmp FindSlotDone
+FoundSlot:
+	lda COMMSLOT
+	sta TempSlot
+FindSlotDone:
+; All done now, so clean up
+	ldx TempSlot
+	stx COMMSLOT
+	rts
+
+TempSlot:	.byte 0
 
 ;***********************************************
 ;

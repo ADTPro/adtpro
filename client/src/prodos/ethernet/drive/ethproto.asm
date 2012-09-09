@@ -30,9 +30,6 @@
 	.importzp udp_src_port
 	.importzp udp_data
 
-	.export READBLK
-	.export WRITEBLK
-
 ; Stuff that doesn't have a home yet
 BABORT:
 	rts
@@ -167,12 +164,14 @@ READFAIL:
 ;---------------------------------------------------------
 READBLK:
 ; SEND COMMAND TO PC
-	lda	#$01		; Read command
-	jsr	COMMAND_ENVELOPE
-	;bcs	READFAIL
 ; Grab the screen contents, remember it
 	lda	SCRN_THROB
 	sta	SCREEN_CONTENTS
+	lda	#$01		; Read command
+	jsr	COMMAND_ENVELOPE
+;FIXME: This check should work!
+;	bcs	READFAIL
+;
 
 ; READ BLOCK AND VERIFY
 	ldax	#udp_inp + udp_data + 6	; Point past the command envelope
@@ -203,29 +202,38 @@ RDLOOP:
 	pha		; Push checksum for now
 	jsr	CALC_CHECKSUM
 	pla	
-;	cmp	CHECKSUM
-;	bne	READFAIL
+	cmp	CHECKSUM
+	bne	READFAIL
 	lda	#$00
 	clc
 	rts
 
 ;---------------------------------------------------------
-; MYDELAY - a copy of the 1MHz delay timer; won't work for GS or accelerated machines
-;---------------------------------------------------------
-MYDELAY:
-	sec
-@fca9:	pha
-@fcaa:	sbc #$01
-	bne @fcaa
-	pla
-	sbc #$01
-	bne @fca9
-	rts
- 
-;---------------------------------------------------------
 ; WRITEBLK - Write a block
 ;---------------------------------------------------------
 WRITEBLK:
+; SEND COMMAND TO PC
+; Grab the screen contents, remember it
+	lda	SCRN_THROB
+	sta	SCREEN_CONTENTS
+
+	lda	#$02		; Write command
+
+	jsr	COMMAND_ENVELOPE
+;FIXME: This check should work!
+;	bcs	WRITEFAIL
+;
+
+	lda	SCREEN_CONTENTS	; Restore screen contents
+	sta	SCRN_THROB
+
+	clc
+	rts
+
+WRITEFAIL:
+	; increment failure count
+	; retry if not too bad
+	sec
 	rts
 
 ;---------------------------------------------------------
@@ -235,6 +243,7 @@ COMMAND_ENVELOPE:
 	pha			; Hang on to the command for a sec...
 	sta	QUERYRC
 	ldy	#$00
+	sty	SCRN_THROB
 	sty	udp_send_len
 	sty	udp_send_len+1
 	ldax	#udp_outp + udp_data
@@ -255,6 +264,36 @@ COMMAND_ENVELOPE:
 	eor	CHECKSUM
 	sta	CHECKSUM
 	jsr	BUFBYTE		; Send envelope checksum
+	lda	QUERYRC		; Depending on read or write...
+	cmp	#$01
+	beq	ENV_DONE	; We have a read request, so move past the write
+
+; Copy in the block to write
+	ldx	#$00
+	ldy	#$00
+WRLOOP:
+	lda	(BUFLO),Y
+	sta	(UTILPTR),Y
+	iny
+	bne	WRLOOP
+
+	inc	BUFHI
+	inc	UTILPTR+1
+	inx
+	stx	SCRN_THROB
+	cpx	#$02
+	bne	WRLOOP
+
+	inc	udp_send_len+1	; Since we're sending 512 more bytes,
+	inc	udp_send_len+1	; bump the send length MSB twice
+
+	dec	BUFHI
+	dec	BUFHI	; Bring BUFHI back down to where it belongs
+
+	jsr	CALC_CHECKSUM
+	jsr	BUFBYTE			; Send the checksum byte
+
+ENV_DONE:
 	jsr	udp_send_nocopy
 	lda	#STATE_ENVELOPE	; Set up for an envelope reply
 	sta	state
@@ -294,7 +333,6 @@ ENVELOPE_REPLY:
 ; BLKREAD_REPLY - Reply to block read request
 ;---------------------------------------------------------
 BLKREAD_REPLY1:
-	brk
 	lda TMOT
 	bne @Repl1
 	lda udp_inp + udp_data + 1	; Pick up the data byte
@@ -345,6 +383,19 @@ PINGREQUEST:
 	rts
 
 ;---------------------------------------------------------
+; MYDELAY - a copy of the 1MHz delay timer; won't work for GS or accelerated machines
+;---------------------------------------------------------
+MYDELAY:
+	sec
+@fca9:	pha
+@fcaa:	sbc #$01
+	bne @fcaa
+	pla
+	sbc #$01
+	bne @fca9
+	rts
+ 
+;---------------------------------------------------------
 ; BUFBYTE
 ; Add accumulator to the outgoing packet
 ; UTILPTR points to the data we're going to save
@@ -364,7 +415,6 @@ BUFBYTE:
 	plp
 	rts
 
-
 ;---------------------------------------------------------
 ; PUTC - Send a single byte as a packet
 ;---------------------------------------------------------
@@ -381,23 +431,6 @@ PUTC:
 	jsr udp_send
 	GO_FAST			; Speed back up for SOS
 	rts
-
-;---------------------------------------------------------
-; COPYINPUT - Copy data from input area to (Buffer);
-; Y is assumed to point to the next available byte
-; after (Buffer); Y will point to the next byte on exit
-;---------------------------------------------------------
-COPYINPUT:
-	ldx #$00
-@LOOP:	lda IN_BUF,X
-	sta (Buffer),Y
-	php
-	inx
-	iny
-	plp
-	beq @Done
-	bne @LOOP
-@Done:	rts
 
 ;---------------------------------------------------------
 ; Constants
