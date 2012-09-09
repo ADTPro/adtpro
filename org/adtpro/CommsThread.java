@@ -511,6 +511,13 @@ public class CommsThread extends Thread
 						buffer[i] = waitForData(5);
 					}
 					checkReceived = waitForData(5);
+					Log.println(false, "Received buffer:");
+					for (int i = 0; i < Disk.BLOCK_SIZE; i++)
+					{
+						if (((i % 32) == 0) && (i != 0)) Log.println(false, "");
+						Log.print(false, UnsignedByte.toString(buffer[i]) + " ");
+					}
+					Log.println(false, "");
 					if (checkReceived == checksum(buffer,Disk.BLOCK_SIZE))
 					{
 						message = Messages.getString("CommsThread.26");
@@ -531,7 +538,7 @@ public class CommsThread extends Thread
 					}
 					else
 					{
-						Log.println(false, "Block checksums did not match."); //$NON-NLS-1$
+						Log.println(false, "Block checksums did not match.  Received: "+UnsignedByte.toString(checkReceived)+" calculated: "+UnsignedByte.toString(checksum(buffer,Disk.BLOCK_SIZE))); //$NON-NLS-1$
 					}
 				}
 			}
