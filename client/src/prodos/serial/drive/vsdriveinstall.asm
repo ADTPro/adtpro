@@ -19,9 +19,10 @@
 ;
 ; Based on ideas from Terence J. Boldt
 
-	.org $0800
+	.org $1800
 
 	jmp init
+
 full:
 	jsr	msg
 	.byte	"SLOT 2 DRIVE 1 ALREADY RESIDENT.",$00
@@ -30,7 +31,7 @@ full:
 fail:
 INITPAS:
 	jsr	msg
-	.byte	"NO COMMS DEVICE FOUND.",$00
+	.byte	"NO SERIAL DEVICE FOUND.",$00
 	rts
 
 ; INITIALIZE DRIVER
@@ -55,9 +56,7 @@ instdev:
 	ldy	DEVCNT
 	lda	#$20 ; Slot 2, drive 1
 	sta	DEVLST,Y
-	jsr	INITIO
-	bcs	fail
-	jmp	report
+	jmp	findser
 
 present:
 	lda	DEVADR21
@@ -66,66 +65,24 @@ present:
 	lda	DEVADR21+1
 	cmp	#>DRIVER
 	bne	full
-	jsr	INITIO
-	bcs	fail
-report:	jsr	msg
-	.byte	"VEDRIVE: ",$00
+
+; Find a serial device
+findser:
+	jsr	msg
+	.byte	"VSDRIVE: ",$00
+	jsr 	FindSlot	; Sniff out a likely comm slot
 	lda	COMMSLOT
 	bmi	fail
 	pha
+	jsr	PARMINT
+	jsr	RESETIO
 	jsr	msg
-	.byte	"SERVING S2D1 WITH COMM SLOT ",$00
+	.byte	"USING COMM SLOT ",$00
 	pla
 	clc
 	adc	#$B1	; Add '1' to the found comm slot number for reporting
 	jsr	COUT	; Tell 'em which one we're using
 	rts
-
-INITIO:
-	jsr	FindSlot
-	jsr	INITUTHER
-	bcc	PINGS
-	rts
-PINGS:	ldx	#$05
-	stx	RESETIO	; Counter - number of times we go through this loop
-:	lda	#$ff
-	jsr	DELAY
-	lda	#$ff
-	jsr	DELAY
-	jsr	PINGREQUEST
-	dec	RESETIO
-	bne	:-
-	clc
-	rts
-
-;---------------------------------------------------------
-; FindSlot - Find an uther card
-;---------------------------------------------------------
-FindSlot:
-	lda COMMSLOT
-	sta TempSlot
-	ldx #$00	; Slot number - start at min and work up
-FindSlotLoop:
-	stx COMMSLOT	; ip65_init looks for COMMSLOT to be the index
-	clc
-	jsr ip65_init
-	bcc FoundSlot
-	ldx COMMSLOT
-	inx
-	stx COMMSLOT
-	cpx #MAXSLOT
-	bne FindSlotLoop
-	jmp FindSlotDone
-FoundSlot:
-	lda COMMSLOT
-	sta TempSlot
-FindSlotDone:
-; All done now, so clean up
-	ldx TempSlot
-	stx COMMSLOT
-	rts
-
-TempSlot:	.byte 0
 
 ;***********************************************
 ;
@@ -149,4 +106,3 @@ msgx:	lda	UTILPTR+1
 	lda	UTILPTR
 	pha
 	rts
-

@@ -89,11 +89,11 @@ everywhere it is invoked:
 		<appleCommander command="pro800" imagename="${builddir}/${distName}/disks/Virtual.po" volname="${vdriveVolName}"/>
 		<echo message="Assembling ProDOS virtual serial drive source..."/>
 		<exec dir="${projdir}/client/src" executable="${assemblerPath}/ca65">
-			<arg line="-t none -l prodos/serial/drive/drive.asm" />
+			<arg line="-t none -l prodos/serial/drive/vsdrive.asm" />
 		</exec>
 		<echo message="Linking serial drive..."/>
 		<exec dir="${projdir}/client/src" executable="${assemblerPath}/ld65">
-			<arg line="-o DRIVE -m vsdrive.map -C prodos/serial/drive/drive.cfg prodos/serial/drive/drive.o" />
+			<arg line="-o DRIVE -m vsdrive.map -C prodos/serial/drive/vsdrive.cfg prodos/serial/drive/vsdrive.o" />
 		</exec>
 		<move file="${projdir}/client/src/DRIVE" tofile="${builddir}/VSDRIVE" />
 		<echo message="Adding VSDrive to 5.25 disk image..."/>
@@ -141,6 +141,7 @@ everywhere it is invoked:
 		<delete file="${builddir}/ADTSOSETH.BIN" />
 		<delete file="${builddir}/GRUB2" />
 		<delete file="${builddir}/VSDRIVE" />
+		<delete file="${builddir}/VEDRIVE" />
 		<delete file="${projdir}/client/src/messages.asm" />
 		<delete file="${projdir}/client/src/GRUB" />
 		<delete file="${projdir}/client/src/LOADER" />
@@ -467,6 +468,7 @@ everywhere it is invoked:
 		<delete file="${builddir}/ADTPROAUD.BIN" />
 		<delete file="${builddir}/GRUB2" />
 		<delete file="${builddir}/VSDRIVE" />
+		<delete file="${builddir}/VEDRIVE" />
 	</target>
 
 	<target name="buildSOSdsk" if="SOS-needed">

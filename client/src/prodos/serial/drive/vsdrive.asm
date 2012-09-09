@@ -17,10 +17,14 @@
 ; with this program; if not, write to the Free Software Foundation, Inc., 
 ; 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 ;
-
 ; Virtual drive over the serial port based on ideas by Terence J. Boldt
 
-	.include "prodos/serial/drive/drivemain.asm"
+	.include "prodos/prodosmacros.i"		; OS macros
+	.include "prodos/prodosconst.i"			; OS equates, characters, etc.
+
+	.include "prodos/serial/drive/vsdriveinstall.asm"
+	.include "prodos/vdrive.asm"
+	.include "prodos/serial/drive/vsdrivemain.asm"
 	.include "prodos/serial/findslot.asm"
 	.include "prodos/serial/iigsscc.asm"
 	.include "prodos/serial/ssc.asm"

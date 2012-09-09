@@ -17,143 +17,7 @@
 ; with this program; if not, write to the Free Software Foundation, Inc., 
 ; 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 ;
-; Based on ideas from TERENCE J. BOLDT
-
-; Zero page variables (all unused by DOS, BASIC and Monitor)
-UTILPTR		= $6
-
-; Apple constants
-CHR_ESC	= $9b	; ESCAPE KEY
-CHR_E	= $c5	; Character 'E' for Envelope 
-
-; PRODOS GLOBAL PAGE VALUES
-DEVADR21	= $BF14	; Slot 2, drive 1
-DEVCNT		= $BF31 ; DEVICE COUNT -1
-DEVLST		= $BF32 ; DEVICE LIST
-
-; PRODOS ZERO PAGE VALUES
-COMMAND	= $42 ; PRODOS COMMAND
-UNIT	= $43 ; PRODOS SLOT/DRIVE
-BUFLO	= $44 ; LOW BUFFER
-BUFHI	= $45 ; HI BUFFER
-BLKLO	= $46 ; LOW BLOCK
-BLKHI	= $47 ; HI BLOCK
-
-; PRODOS ERROR CODES
-IOERR	= $27
-NODEV	= $28
-WPERR	= $2B
-
-; ROM Locations
-COUT	= $fded		; Output character
-
-; Activity screen location
-SCRN_THROB	= $0427
-
-.org	$1800		; Doesn't really org the code - but makes the listing more readable
-
-	jmp init
-
-CHECKSUM:
-	.byte	$00
-
-full:
-	jsr	msg
-	.byte	"SLOT 2 DRIVE 1 ALREADY RESIDENT.",$00
-	rts
-
-fail:
-INITPAS:
-	jsr	msg
-	.byte	"NO SERIAL DEVICE FOUND.",$00
-	rts
-
-; INITIALIZE DRIVER
-init:
-; Find a likely place to install the driver in the device list.
-; Is there already a driver in slot 2, drive 1?
-	ldx	DEVCNT
-checkdev:
-	lda	DEVLST,X	; Grab an active device number
-	cmp	#$20		; Slot 2, drive 1?
-	beq	present		; Yes, check if it's our driver
-	dex
-	bpl	checkdev	; Swing around until no more in list
-instdev:
-; All ready to go - install away!
-	lda	#<DRIVER
-	sta	DEVADR21
-	lda	#>DRIVER
-	sta	DEVADR21+1
-; Add to device list
-	inc	DEVCNT
-	ldy	DEVCNT
-	lda	#$20 ; Slot 2, drive 1
-	sta	DEVLST,Y
-	jmp	findser
-
-present:
-	lda	DEVADR21
-	cmp	#<DRIVER
-	bne	full
-	lda	DEVADR21+1
-	cmp	#>DRIVER
-	bne	full
-
-; Find a serial device
-findser:
-	jsr	msg
-	.byte	"VSDRIVE: ",$00
-	jsr 	FindSlot	; Sniff out a likely comm slot
-	lda	COMMSLOT
-	bmi	fail
-	pha
-	jsr	PARMINT
-	jsr	RESETIO
-	jsr	msg
-	.byte	"USING COMM SLOT ",$00
-	pla
-	clc
-	adc	#$B1	; Add '1' to the found comm slot number for reporting
-	jsr	COUT	; Tell 'em which one we're using
-	rts
-
-; DRIVER CODE
-DRIVER:
-	cld
-; CHECK THAT WE HAVE THE RIGHT DRIVE
-	lda	UNIT
-	cmp	#$20 ; SLOT 2 DRIVE 1
-	beq	DOCMD ; YEP, DO COMMAND
-	sec	; NOPE, FAIL
-	lda	#NODEV
-	rts
-
-; CHECK WHICH COMMAND IS REQUESTED
-DOCMD:
-	lda	COMMAND
-	bne	NOTSTAT ; 0 IS STATUS
-	jmp	GETSTAT
-NOTSTAT:
-	cmp	#$01
-	bne	NOREAD ; 1 IS READ
-	jmp	READBLK
-NOREAD:
-	cmp	#$02
-	bne	NOWRITE ; 2 IS WRITE
-	jmp	WRITEBLK
-NOWRITE:
-	lda	#$00 ; CLEAR ERROR
-	clc
-	rts
-
-; STATUS
-GETSTAT:
-	lda	#$00
-	ldx	#$FF
-	ldy	#$FF
-	clc
-	rts
+; Virtual drive over the serial port based on ideas by Terence J. Boldt
 
 READFAIL:
 	; increment failure count
@@ -304,47 +168,6 @@ COMMAND_ENVELOPE:
 	jsr	PUTC		; Send envelope checksum
 	rts
 
-CALC_CHECKSUM:			; Calculate the checksum of the block at BLKLO/BLKHI
-	lda	#$00		; Clean everyone out
-	tax
-	tay
-CC_LOOP:
-	eor	(BUFLO),Y	; Exclusive-or accumulator with what's at (BUFLO),Y
-	sta	CHECKSUM	; Save that tally in CHECKSUM as we go
-	iny
-	bne	CC_LOOP
-	inc	BUFHI		; Y just turned over to zero; bump MSB of buffer
-	inx			; Keep track of trips through the loop - we need two of them
-	cpx	#$02		; The second time X is incremented, this will signfiy twice through the loop
-	bne	CC_LOOP
-
-	dec	BUFHI		; BUFHI got bumped twice, so back it back down
-	dec	BUFHI
-	rts
-
-;***********************************************
-;
-; msg -- print an in-line message
-;
-msg:	pla
-	sta	UTILPTR
-	pla
-	sta	UTILPTR+1
-	ldy	#0
-msg1:	inc	UTILPTR
-	bne	:+
-	inc	UTILPTR+1
-:	lda	(UTILPTR),y
-	beq	msgx
-	ora	#%10000000
-	jsr	COUT
-	jmp	msg1
-msgx:	lda	UTILPTR+1
-	pha
-	lda	UTILPTR
-	pha
-	rts
-
 ;---------------------------------------------------------
 ; PUTC - SEND ACC OVER THE SERIAL LINE (AXY UNCHANGED)
 ;---------------------------------------------------------
@@ -363,13 +186,6 @@ RESETIO:
 	rts
 
 ;---------------------------------------------------------
-; abort - stop everything
-;---------------------------------------------------------
-PABORT:
-	sec
-	rts		; Not implemented
-
-;---------------------------------------------------------
 ; Variables
 ;---------------------------------------------------------
 PSPEED:
@@ -377,5 +193,3 @@ PSPEED:
 COMMSLOT:
 DEFAULT:
 	.byte	$ff	; Start with -1 for a slot number so we can tell when we find no slot
-SCREEN_CONTENTS:
-	.byte	$00	; Storage for the character on screen when throbbing

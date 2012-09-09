@@ -17,7 +17,7 @@
 ; with this program; if not, write to the Free Software Foundation, Inc., 
 ; 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 ;
-; Virtual disk drive based on ideas from TERENCE J. BOLDT
+; Virtual disk drive based on ideas from Terence J. Boldt
 
 ; PRODOS ZERO PAGE VALUES
 COMMAND	= $42 ; PRODOS COMMAND
