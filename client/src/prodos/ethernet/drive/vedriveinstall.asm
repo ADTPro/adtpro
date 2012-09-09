@@ -19,9 +19,41 @@
 ;
 ; Based on ideas from Terence J. Boldt
 
-	.org $0800
+	.org $1800
 
-	jmp init
+	lda	#$22
+	jsr	GETBUFR
+	bcs	nomem2
+	cmp	#$78
+	bne	nomem
+	sta	UTILPTR+1
+	sta	RSHIMEM		; Make sure nobody else's FREEBUFR removes us
+	lda	#$00
+	tay
+	sta	UTILPTR
+	lda	#>asm_begin
+	sta	BLKPTR+1
+	lda	#<asm_begin
+	sta	BLKPTR
+	ldx	#$22		; Copy $22 pages
+copydriver:
+	lda	(BLKPTR),Y
+	sta	(UTILPTR),Y
+	iny
+	bne	copydriver
+	inc	BLKPTR+1
+	inc	UTILPTR+1
+	dex
+	bne	copydriver
+
+	jmp	init
+nomem:
+	jsr	FREEBUFR
+nomem2:
+	jsr	msg
+	.byte	"MEMORY NOT AVAILABLE.",$00
+	rts
+
 full:
 	jsr	msg
 	.byte	"SLOT 2 DRIVE 1 ALREADY RESIDENT.",$00

@@ -62,6 +62,9 @@ CHR_RETURN	= $8d	; Carriage return
 ;---------------------------------------------------------
 ; Passive addresses (not written to)
 ;---------------------------------------------------------
+RSHIMEM		= $BEFB
+GETBUFR		= $BEF5
+FREEBUFR	= $BEF8
 PRODOS_MLI	= $BF00
 MLIADDR		= $BF10
 DEVADR01	= $BF10	; Slot 0 reserved

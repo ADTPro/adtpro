@@ -114,7 +114,7 @@ everywhere it is invoked:
 		<move file="${projdir}/client/src/DRIVE" tofile="${builddir}/VEDRIVE" />
 		<echo message="Adding VEDrive to 5.25 disk image..."/>
 		<appleCommander command="d" input="${builddir}/VEDRIVE" imagename="${builddir}/${distName}/disks/${vdriveDiskName}.DSK" filename="VEDRIVE" failonerror="false"/>
-		<appleCommander command="p" input="${builddir}/VEDRIVE" imagename="${builddir}/${distName}/disks/${vdriveDiskName}.DSK" filename="VEDRIVE" type="bin" address="2048"/>
+		<appleCommander command="p" input="${builddir}/VEDRIVE" imagename="${builddir}/${distName}/disks/${vdriveDiskName}.DSK" filename="VEDRIVE" type="bin" address="6144"/>
 	</target>
 
 	<target name="wipe">

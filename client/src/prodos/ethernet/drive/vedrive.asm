@@ -23,7 +23,12 @@
 	.include "prodos/prodosconst.i"			; OS equates, characters, etc.
 	.include "ip65/inc/common.i"
 
+.segment "INSTALL"
 	.include "prodos/ethernet/drive/vedriveinstall.asm"
+
+asm_begin:
+.segment "CODE"
+.org $7800
 	.include "prodos/vdrive.asm"
 	.include "prodos/ethernet/drive/vedrivemain.asm"
 	.include "prodos/ethernet/drive/ethproto.asm"
