@@ -108,7 +108,7 @@ findser:
 	jsr	PARMINT
 	jsr	RESETIO
 	jsr	msg
-	.byte	"USING COMM SLOT ",$00
+	.byte	"SERVING S2D1 ON COMM SLOT ",$00
 	pla
 	clc
 	adc	#$B1	; Add '1' to the found comm slot number for reporting
