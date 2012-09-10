@@ -485,12 +485,12 @@ public class CommsThread extends Thread
 				Log.println(false, "Envelope checksums matched."); //$NON-NLS-1$
 				try
 				{
-					disk = new Disk("Virtual.po"); //$NON-NLS-1$
+					disk = new Disk(_parent.getWorkingDirectory() + "Virtual.po"); //$NON-NLS-1$
 				}
 				catch (IOException e1)
 				{
 					com.webcodepro.applecommander.ui.ac.createProDisk("Virtual.po","VIRTUAL",Disk.APPLE_800KB_DISK);
-					disk = new Disk("Virtual.po"); //$NON-NLS-1$
+					disk = new Disk(_parent.getWorkingDirectory() + "Virtual.po"); //$NON-NLS-1$
 				}
 				Log.println(false, "Virtual disk retrieved."); //$NON-NLS-1$
 				if (command == 0x01) // Read a block
