@@ -12,8 +12,11 @@ Miscellaneous Functions
 
 * {Nibble}/Half Track Send
 
- The nibble/half track send function is still experimental, and so far
- has only been incorporated into the included DOS ADT client.
+ The nibble/half track send function is still experimental.  The ProDOS serial
+ and Ethernet clients have the capability to send nibble images (see
+ {{{configserial.html#Nibbles} nibble configuration}}.
+ The DOS ADT client has the ability to send nibble and half track images, but
+ only the A2V2 server (part of Virtual ][) reconstitutes them correctly.
  See the {{{compatibility.html#Nibble}ADT Compatibility page}} for more 
  information.
 

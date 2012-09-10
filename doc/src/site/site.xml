@@ -43,6 +43,7 @@
         <item name="Sending in Batch" href="batch.html" collapse="true"/>
       </item>
       <item name="Receiving" href="receiving.html"/>
+      <item name="Virtual Drive" href="vdrive.html"/>
       <item name="Misc. Functions" href="misc.html"/>
     </menu>
 

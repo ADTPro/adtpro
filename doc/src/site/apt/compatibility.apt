@@ -21,7 +21,7 @@ ADT Compatibility
 *-----:-----:------:------:------:------+
 || <<Program>> || <<Latest Client Version>> || <<Client Platforms>> || <<Server Platforms>> || <<Comms>> || <<Notes>>
 *-----:-----:------:------+
- ADTPro | v.r.m | II,+,e,c,GS,Laser,/// | Linux, OS/2, OSX, Solaris, Windows (Java) | Serial, Uthernet, Audio | 
+ ADTPro | v.r.m | II,+,e,c,GS,Laser,/// | Linux, OS/2, OSX, Solaris, Windows (Java) | Serial, Uthernet, Audio | Nibble capable 
 *-----:-----:------:------+
  ADT (Shipped with ADTPro) | 2.4 | II,+,e,c,GS,Laser,/// | ADTPro or Virtual ][ A2V2 on OSX | Serial (115.2k) | Nibble/half-track capable
 *-----:-----:------:------+
