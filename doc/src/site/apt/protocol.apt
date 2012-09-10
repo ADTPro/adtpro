@@ -44,6 +44,12 @@ ADTPro Protocol
 
  [{{{#Nibble}"N" - Send Nibble Image}}] DOS ADT/A2V2 compatible upload of nibble image
 
+* Virtual Drive Server Functions
+
+ [{{{#Read}"E"+$01 - Read Block}}] Stuff
+
+ [{{{#Write}"E"+$02 - Write Block}}] Stuff
+
 * {Change Directory}
 
 -------------
@@ -232,7 +238,7 @@ Host displays the message: "Ping request received from client" (no protocol resp
 
 ------------
 
-ADT Compatibility
+DOS ADT Compatible Functions
 
 * {Receive} 140k disk (from host to Apple ][)
 
@@ -372,3 +378,47 @@ If final byte is $01:
   Apple sends one byte:
       "D" ($C4) = retrieve subsequent screen
       $00 = abort
+
+------------
+
+Vitual Drive Server Functions
+
+* {Read} Block
+
+------------
+
+ The Apple sends: byte stream:
+   One byte: "E" ($C5)
+   One byte: $01
+   Two bytes: requested block number (LSB, MSB)
+   One byte: EOR of the first four bytes
+
+ Host sends: byte stream:
+   One byte: "E" ($C5)
+   One byte: $01
+   Two bytes: requested block number (LSB, MSB)
+   One byte: EOR of the first four bytes
+   Requested block data (512 bytes)
+   One byte: EOR of all bytes in block
+
+------------
+
+* {Write} Block
+
+------------
+
+ The Apple sends: byte stream:
+   One byte: "E" ($C5)
+   One byte: $02
+   Two bytes: requested block number (LSB, MSB)
+   One byte: EOR of the first four bytes
+   Requested block data (512 bytes)
+   One byte: EOR of all bytes in block
+
+ Host sends: byte stream:
+   One byte: "E" ($C5)
+   One byte: $02
+   Two bytes: requested block number (LSB, MSB)
+   One byte: EOR of the first four bytes
+
+------------
