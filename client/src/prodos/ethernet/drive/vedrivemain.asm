@@ -17,7 +17,6 @@
 ; with this program; if not, write to the Free Software Foundation, Inc., 
 ; 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 ;
-
 ; Virtual drive over ethernet based on ideas by Terence J. Boldt
 
 	.import ip65_init
@@ -41,7 +40,7 @@ COMMSLOT:
 PDHCP:	.byte 0		; DHCP Configuration? (YES)
 
 ip_parms:
-serverip:	.byte 192, 168,   0,  28
+serverip:	.byte 192, 168,   0,  12
 cfg_ip:		.byte   0,   0,   0,   0 ; ip address of local machine (will be overwritten if dhcp_init is called)
 cfg_netmask:	.byte   0,   0,   0,   0 ; netmask of local network (will be overwritten if dhcp_init is called)
 cfg_gateway:	.byte   0,   0,   0,   0 ; ip address of router on local network (will be overwritten if dhcp_init is called)
