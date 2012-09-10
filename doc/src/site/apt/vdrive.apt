@@ -28,7 +28,16 @@ ADTPro Virtual Drive
 [images/vdrive1.png]
 
  The serial VSDRIVE driver will automatically search for compatible hardware and use it.
- During normal operations on the virtual disk, activity will cause status messages to appear in the
+ The slot that the serial adapter is in is independent of the slot that will be made available
+ to the system as the virtual drive (S2D1).  
+ It is perfectly fine to have the serial adapter in physical slot 2 while
+ the driver makes S2D1 available to the system.
+ On a machine with a typical Super Serial card adapter in slot 2 (or IIc/IIc+ or compatibles)
+ this message will be displayed as it starts:
+ 
+[images/vdrive6.png]
+
+ During normal operations with the virtual disk, activity will cause status messages to appear in the
  server's message areas: 
 
 [images/vdrive2.png]
@@ -49,6 +58,15 @@ ADTPro Virtual Drive
  You only need to set the IP address with VDRIVE.CONFIG once, or whenever your ADTPro server's IP
  address changes.
  
+ The VEDRIVE driver will automatically search for compatible hardware and use it.
+ The slot that the Ethernet adapter is in is independent of the slot that will be made available
+ to the system as the virtual drive (S2D1).  
+ It is perfectly fine to have the adapter in physical slot 2 while
+ the driver makes S2D1 available to the system.
+ 
+ Here is a typical session configuring and starting the driver on a machine with an 
+ Uthernet adapter in slot 3:
+ 
 [images/vdrive5.png]
 
  When starting the VEDRIVE driver, you should notice a message "Ping request received from client" on the
@@ -56,7 +74,7 @@ ADTPro Virtual Drive
 
 [images/vdrive3.png]
 
- During normal operations on the virtual disk, activity will cause status messages to appear in the
+ During normal operations with the virtual disk, activity will cause status messages to appear in the
  server's message areas: 
 
 [images/vdrive4.png]

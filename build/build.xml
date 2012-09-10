@@ -60,7 +60,7 @@ everywhere it is invoked:
 		<property name="skipProDOS" value="true"/>		
 	</target>
 
-	<target name="all" depends="wipe, clean, setup, assemble, vsdrive, vedrive, builddsk, scripts, jar, osx" description="Bulid everything after wiping the output directory.">
+	<target name="all" depends="wipe, clean, setup, assemble, vedrive, vsdrive, builddsk, scripts, jar, osx" description="Bulid everything after wiping the output directory.">
 	</target>
 
 	<target name="dev" depends="clean, setup, assemble, vsdrive, vedrive, builddsk" description="Build everything but the Java GUI; don't wipe the output directory.">
