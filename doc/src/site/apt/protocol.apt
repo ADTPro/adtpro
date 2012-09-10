@@ -46,9 +46,9 @@ ADTPro Protocol
 
 * Virtual Drive Server Functions
 
- [{{{#Read}"E"+$01 - Read Block}}] Stuff
+ [{{{#Read}"E"+$01 - Read Block}}] ProDOS device driver compatible read block request
 
- [{{{#Write}"E"+$02 - Write Block}}] Stuff
+ [{{{#Write}"E"+$02 - Write Block}}] ProDOS device driver compatible write block request
 
 * {Change Directory}
 
