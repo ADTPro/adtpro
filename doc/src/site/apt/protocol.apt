@@ -18,19 +18,19 @@ ADTPro Protocol
 
  [{{{#Get}"G" - Get}}]  Initiate disk image download from host
 
- [{{{#Put}"P" - Put}}]  Inititate disk image upload to host(always overwrite)
+ [{{{#Put}"P" - Put}}]  Initiate disk image upload to host(always overwrite)
 
- [{{{#Batch}"B" - Batch}}]  Inititate batch upload (unique suffix added to specified prefix)
+ [{{{#Batch}"B" - Batch}}]  Initiate batch upload (unique suffix added to specified prefix)
 
- [{{{#ProDOS}"2" - Send ProDOS}}]  Inititate Speediboot ProDOS bootstrapping download
+ [{{{#ProDOS}"2" - Send ProDOS}}]  Initiate Speediboot ProDOS bootstrapping download
 
- [{{{#SOS_Kernel}"3" - Send SOS Kernel}}]  Inititate SOS kernel bootstrapping download
+ [{{{#SOS_Kernel}"3" - Send SOS Kernel}}]  Initiate SOS kernel bootstrapping download
 
- [{{{#SOS_Interpreter}"4" - Send SOS Interpreter}}]  Inititate SOS interpreter bootstrapping download
+ [{{{#SOS_Interpreter}"4" - Send SOS Interpreter}}]  Initiate SOS interpreter bootstrapping download
 
- [{{{#SOS_Driver}"5" - Send SOS Driver}}]  Inititate SOS driver bootstrapping download
+ [{{{#SOS_Driver}"5" - Send SOS Driver}}]  Initiate SOS driver bootstrapping download
 
- [{{{#ADTPro}"6" - Send ADTPro}}]  Inititate Speediboot ADTPro client bootstrapping download
+ [{{{#ADTPro}"6" - Send ADTPro}}]  Initiate Speediboot ADTPro client bootstrapping download
 
  [{{{#Ping}"Y" - Ping}}]  One-way ping request (Client -> Server)
 
@@ -87,8 +87,8 @@ ADTPro Protocol
      1 byte: half-block number (2 = bytes 0-255, 1 = bytes 256-511)
      Half-block, RLE encoded
      two bytes:
-       CRC (lo)
-       CRC (hi)
+       CRC (LSB)
+       CRC (MSB)
 
    Apple sends:
      One byte acknowledgement:
@@ -128,8 +128,8 @@ Apple sends:
   One byte: "P" ($D0)
   Byte stream: file name (null terminated)
   Two bytes:
-    Number of blocks to follow (lsb)
-    Number of blocks to follow (msb)
+    Number of blocks to follow (LSB)
+    Number of blocks to follow (MSB)
 
 Host sends: return code:
   $00 = Ok
@@ -262,8 +262,8 @@ Host sends one byte return code:
   Host sends:
     Next sector, RLE encoded
     two bytes:
-      CRC (lo)
-      CRC (hi)
+      CRC (LSB)
+      CRC (MSB)
 
 (loop end)
 
@@ -293,8 +293,8 @@ Host sends one byte return code:
   Apple sends:
     Next sector, RLE encoded
     two bytes:
-      CRC (lo)
-      CRC (hi)
+      CRC (LSB)
+      CRC (MSB)
 
   Host sends one byte acknowledgement:
     $06 = ACK
@@ -339,8 +339,8 @@ Host sends one byte return code:
       one byte: $02
       Next block, RLE encoded
       two bytes:
-        CRC (lo)
-        CRC (hi)
+        CRC (LSB)
+        CRC (MSB)
 
     Host sends:
       $06 = ACK
