@@ -49,6 +49,7 @@ copydriver:
 	jmp	init
 nomem:
 	jsr	FREEBUFR
+	jmp	init
 nomem2:
 	jsr	msg
 	.byte	"MEMORY NOT AVAILABLE.",$00
@@ -118,7 +119,7 @@ INITIO:
 	jsr	INITUTHER
 	bcc	PINGS
 	rts
-PINGS:	ldx	#$05
+PINGS:	ldx	#$08
 	stx	RESETIO	; Counter - number of times we go through this loop
 :	lda	#$ff
 	jsr	DELAY

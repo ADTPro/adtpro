@@ -49,6 +49,7 @@ copydriver:
 	jmp	init
 nomem:
 	jsr	FREEBUFR
+	jmp	init
 nomem2:
 	jsr	msg
 	.byte	"MEMORY NOT AVAILABLE.",$00
@@ -108,7 +109,7 @@ findser:
 	jsr	PARMINT
 	jsr	RESETIO
 	jsr	msg
-	.byte	"SERVING S2D1 ON COMM SLOT ",$00
+	.byte	"SERVING S2D1 WITH COMM SLOT ",$00
 	pla
 	clc
 	adc	#$B1	; Add '1' to the found comm slot number for reporting

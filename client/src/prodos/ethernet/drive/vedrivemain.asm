@@ -41,7 +41,7 @@ COMMSLOT:
 PDHCP:	.byte 0		; DHCP Configuration? (YES)
 
 ip_parms:
-serverip:	.byte 192, 168,   0,  25
+serverip:	.byte 192, 168,   0,  28
 cfg_ip:		.byte   0,   0,   0,   0 ; ip address of local machine (will be overwritten if dhcp_init is called)
 cfg_netmask:	.byte   0,   0,   0,   0 ; netmask of local network (will be overwritten if dhcp_init is called)
 cfg_gateway:	.byte   0,   0,   0,   0 ; ip address of router on local network (will be overwritten if dhcp_init is called)
