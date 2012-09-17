@@ -29,14 +29,14 @@ READFAIL:
 ; READ
 READBLK:
 ; SEND COMMAND TO PC
-	lda	#$01		; Read command
+	lda	#$03		; Read command w/time request
 	jsr	COMMAND_ENVELOPE
-; READ ECHO'D COMMAND AND VERIFY
+; Pull and verify command envelope from host
 	jsr	GETC		; Command envelope begin
 	cmp	#CHR_E
 	bne	READFAIL
 	jsr	GETC		; Read command
-	cmp	#$01
+	cmp	#$03
 	bne	READFAIL
 	jsr	GETC		; LSB of requested block
 	cmp	BLKLO
@@ -44,9 +44,33 @@ READBLK:
 	jsr	GETC		; MSB of requested block
 	cmp	BLKHI
 	bne	READFAIL
+	jsr	GETC		; LSB of time
+	sta	TEMPDT
+	eor	CHECKSUM
+	sta	CHECKSUM
+	jsr	GETC		; MSB of time
+	sta	TEMPDT+1
+	eor	CHECKSUM
+	sta	CHECKSUM
+	jsr	GETC		; LSB of date
+	sta	TEMPDT+2
+	eor	CHECKSUM
+	sta	CHECKSUM
+	jsr	GETC		; MSB of date
+	sta	TEMPDT+3
+	eor	CHECKSUM
+	sta	CHECKSUM
 	jsr	GETC		; Checksum of command envelope
 	cmp	CHECKSUM
 	bne	READFAIL
+	lda	TEMPDT
+	sta	TIME
+	lda	TEMPDT+1
+	sta	TIME+1
+	lda	TEMPDT+2
+	sta	DATE
+	lda	TEMPDT+3
+	sta	DATE+1
 
 ; Grab the screen contents, remember it
 	lda	SCRN_THROB
@@ -79,7 +103,7 @@ RDLOOP:
 	jsr	CALC_CHECKSUM
 	pla	
 	cmp	CHECKSUM
-	bne	READFAIL
+	bne	WRITEFAIL	; Just need a failure exit nearby
 	lda	#$00
 	clc
 	rts
@@ -88,12 +112,6 @@ WRITEFAIL:
 	; increment failure count
 	; retry if not too bad
 	jsr	RESETIO
-	jsr	CALC_CHECKSUM	; Waste some time
-	jsr	RESETIO
-	jsr	CALC_CHECKSUM	; Waste some more time
-	lda	#$00
-	sta	CHECKSUM
-	jsr	PARMINT		; Re-interpret comms parameters	
 	sec
 	rts
 
