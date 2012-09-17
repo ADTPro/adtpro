@@ -21,6 +21,7 @@
 package org.adtpro;
 
 import java.io.*;
+import java.util.Calendar;
 
 import org.adtpro.resources.Messages;
 import org.adtpro.transport.ATransport;
@@ -459,6 +460,7 @@ public class CommsThread extends Thread
 	{
 		byte command, checkReceived, blocklo, blockhi, checkCalculated;
 		byte[] buffer = new byte[Disk.BLOCK_SIZE];
+		byte cs;
 		int block;
 		try
 		{
@@ -493,7 +495,7 @@ public class CommsThread extends Thread
 					disk = new Disk(_parent.getWorkingDirectory() + "Virtual.po"); //$NON-NLS-1$
 				}
 				Log.println(false, "Virtual disk retrieved."); //$NON-NLS-1$
-				if (command == 0x01) // Read a block
+				if ((command == 0x01) || (command == 0x03)) // Read a block
 				{
 					message = Messages.getString("CommsThread.25");
 					block = UnsignedByte.intValue(blocklo, blockhi);
@@ -504,10 +506,32 @@ public class CommsThread extends Thread
 					_transport.writeByte(command);
 					_transport.writeByte(blocklo);
 					_transport.writeByte(blockhi);
-					_transport.writeByte(checkReceived);
+					if (command == 0x03)
+					{
+						// Calculate date/time and send it
+						byte dateTime[] = getProDOSDateTime();
+						_transport.writeByte(dateTime[0]);
+						_transport.writeByte(dateTime[1]);
+						_transport.writeByte(dateTime[2]);
+						_transport.writeByte(dateTime[3]);
+						// Calculate new checksum of the envelope
+						cs = (byte)0xc5;
+						cs ^= command;
+						cs ^= blocklo;
+						cs ^= blockhi;
+						cs ^= dateTime[0];
+						cs ^= dateTime[1];
+						cs ^= dateTime[2];
+						cs ^= dateTime[3];
+						_transport.writeByte(cs);
+					}
+					else
+					{
+						_transport.writeByte(checkReceived);
+					}
 					buffer = disk.readBlock(block);
 					_transport.writeBytes(buffer);
-					byte cs = checksum(buffer,Disk.BLOCK_SIZE);
+					cs = checksum(buffer,Disk.BLOCK_SIZE);
 					Log.println(false, "Sending checksum byte "+UnsignedByte.toString(cs)); //$NON-NLS-1$
 					_transport.writeByte(cs);
 					_transport.pushBuffer();
@@ -565,6 +589,24 @@ public class CommsThread extends Thread
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+	}
+
+	private byte[] getProDOSDateTime()
+	{
+		byte pddt[] = {0,0,0,0};
+		Calendar now = Calendar.getInstance();
+		int year = now.get(Calendar.YEAR) - 2000;
+		int month = now.get(Calendar.MONTH) + 1;	// Calendar month January starts at zero in Java
+		int day = now.get(Calendar.DAY_OF_MONTH);
+		int hour = now.get(Calendar.HOUR_OF_DAY);
+		int minute = now.get(Calendar.MINUTE);
+		int time = minute + hour*256;
+		int date = day + month*32 + year*512;
+		pddt[0]=UnsignedByte.loByte(time);
+		pddt[1]=UnsignedByte.hiByte(time);
+		pddt[2]=UnsignedByte.loByte(date);
+		pddt[3]=UnsignedByte.hiByte(date);
+		return pddt;
 	}
 
 	public byte checksum(byte buffer[], int length)
