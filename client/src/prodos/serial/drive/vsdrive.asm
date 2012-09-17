@@ -23,12 +23,12 @@
 	.include "prodos/prodosconst.i"			; OS equates, characters, etc.
 
 	.include "prodos/serial/drive/vsdriveinstall.asm"
+	.include "prodos/serial/findslot.asm"
 
 asm_begin:
 .segment "DRIVER"
 .org $9600
 	.include "prodos/vdrive.asm"
 	.include "prodos/serial/drive/vsdrivemain.asm"
-	.include "prodos/serial/findslot.asm"
 	.include "prodos/serial/iigsscc.asm"
 	.include "prodos/serial/ssc.asm"
