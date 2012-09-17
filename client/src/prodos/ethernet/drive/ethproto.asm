@@ -169,9 +169,7 @@ READBLK:
 	sta	SCREEN_CONTENTS
 	lda	#$03		; Read command
 	jsr	COMMAND_ENVELOPE
-;FIXME: This check should work!
-;	bcs	READFAIL
-;
+	bcs	READFAIL
 
 ; READ BLOCK AND VERIFY
 	ldax	#udp_inp + udp_data + 10	; Point past the command envelope
@@ -220,9 +218,7 @@ WRITEBLK:
 	lda	#$02		; Write command
 
 	jsr	COMMAND_ENVELOPE
-;FIXME: This check should work!
-;	bcs	WRITEFAIL
-;
+	bcs	WRITEFAIL
 
 	lda	SCREEN_CONTENTS	; Restore screen contents
 	sta	SCRN_THROB
@@ -298,6 +294,7 @@ ENV_DONE:
 	lda	#STATE_ENVELOPE	; Set up for an envelope reply
 	sta	state
 	jsr	RECEIVE_LOOP_FAST
+	clc
 	rts
 
 ;---------------------------------------------------------
