@@ -20,7 +20,7 @@
 ; Based on ideas from Terence J. Boldt
 
 	.org $1800
-
+	lda	serverip-$7800+asm_begin	; The config code uses this address to figure out where to patch the server IP address
 	lda	#$22
 	jsr	GETBUFR
 	bcs	nomem2
