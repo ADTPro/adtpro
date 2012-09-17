@@ -87,6 +87,8 @@ DEVICE		= $BF30 ; last drive+slot used, DSSS0000
 DEVCNT		= $BF31 ; Count (minus 1) of active devices
 DEVLST		= $BF32 ; List of active devices (Slot, drive, id =DSSSIIII)
 BITMAP		= $BF58 ; bitmap of low 48k of memory
+DATE		= $BF90 ; Date storage
+TIME		= $BF92 ; Time storage
 
 ;---------------------------------------------------------
 ; Monitor equates
