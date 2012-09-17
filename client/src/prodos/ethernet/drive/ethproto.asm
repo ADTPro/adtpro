@@ -167,14 +167,14 @@ READBLK:
 ; Grab the screen contents, remember it
 	lda	SCRN_THROB
 	sta	SCREEN_CONTENTS
-	lda	#$01		; Read command
+	lda	#$03		; Read command
 	jsr	COMMAND_ENVELOPE
 ;FIXME: This check should work!
 ;	bcs	READFAIL
 ;
 
 ; READ BLOCK AND VERIFY
-	ldax	#udp_inp + udp_data + 6	; Point past the command envelope
+	ldax	#udp_inp + udp_data + 10	; Point past the command envelope
 	stax	UTILPTR
 	ldx	#$00
 	ldy	#$00
@@ -265,7 +265,7 @@ COMMAND_ENVELOPE:
 	sta	CHECKSUM
 	jsr	BUFBYTE		; Send envelope checksum
 	lda	QUERYRC		; Depending on read or write...
-	cmp	#$01
+	cmp	#$03
 	beq	ENV_DONE	; We have a read request, so move past the write
 
 ; Copy in the block to write
@@ -306,28 +306,62 @@ ENV_DONE:
 ENVELOPE_REPLY:
 ; READ ECHO'D COMMAND AND VERIFY
 	lda	TMOT
-	bne	@fail
-	lda	udp_inp + udp_data + 1	; Pick up the data byte
+	bne	env_fail
+	lda	udp_inp + udp_data + 1	; Check the Envelope byte
 	cmp	#CHR_E			; Envelope command
-	bne	@fail
-	lda	udp_inp + udp_data + 2	; Pick up the data byte
+	bne	env_fail
+	lda	udp_inp + udp_data + 2	; Check the command byte
 	cmp	QUERYRC			; Local storage for command type
-	bne	@fail
-	lda	udp_inp + udp_data + 3	; Pick up the data byte
+	bne	env_fail
+	lda	udp_inp + udp_data + 3	; Pick up the LSB of the requested block
 	cmp	BLKLO
-	bne	@fail
-	lda	udp_inp + udp_data + 4	; Pick up the data byte
+	bne	env_fail
+	lda	udp_inp + udp_data + 4	; Pick up the MSB of the requested block
 	cmp	BLKHI
-	bne	@fail
-	lda	udp_inp + udp_data + 5	; Pick up the data byte
-	cmp	CHECKSUM
-	bne	@fail
+	bne	env_fail
+	lda	QUERYRC
+	cmp	#$03			; Is the command to read?
+	beq	pull_time		; Then pull the time out too
+	lda	udp_inp + udp_data + 5	; Pick up the checksum 
+	cmp	CHECKSUM		; Compare to what we calculated outgoing
+	bne	env_fail		; Not equal?  Fail!
+env_done:
 	lda	#$00
 	clc
 	rts	
-@fail:	
+env_fail:	
 	sec
 	rts
+
+pull_time:
+	lda	udp_inp + udp_data + 5	; LSB of time
+	sta	TEMPDT
+	eor	CHECKSUM
+	sta	CHECKSUM
+	lda	udp_inp + udp_data + 6	; MSB of time
+	sta	TEMPDT+1
+	eor	CHECKSUM
+	sta	CHECKSUM
+	lda	udp_inp + udp_data + 7	; LSB of date
+	sta	TEMPDT+2
+	eor	CHECKSUM
+	sta	CHECKSUM
+	lda	udp_inp + udp_data + 8	; MSB of date
+	sta	TEMPDT+3
+	eor	CHECKSUM
+	sta	CHECKSUM
+	lda	udp_inp + udp_data + 9	; Pick up the checksum 
+	cmp	CHECKSUM
+	bne	env_fail
+	lda	TEMPDT			; Copy in the date and time
+	sta	TIME			;   since it had the correct checksum
+	lda	TEMPDT+1
+	sta	TIME+1
+	lda	TEMPDT+2
+	sta	DATE
+	lda	TEMPDT+3
+	sta	DATE+1
+	jmp	env_done	
 
 ;---------------------------------------------------------
 ; BLKREAD_REPLY - Reply to block read request
