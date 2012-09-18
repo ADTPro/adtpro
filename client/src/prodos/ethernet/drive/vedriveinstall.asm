@@ -19,12 +19,19 @@
 ;
 ; Based on ideas from Terence J. Boldt
 
+DESTPAGE	= $78		; The destination page of the driver code
+COPYLEN		= $22		; The number of pages to copy - how big the driver is, including BSS not in image on disk
+
 	.org $1800
-	lda	serverip-$7800+asm_begin	; The config code uses this address to figure out where to patch the server IP address
-	lda	#$22
+	lda	serverip-(DESTPAGE*256)+asm_begin	; The config code uses this address to figure out where to patch the server IP address
+	lda	RSHIMEM
+	cmp	#DESTPAGE
+	bne	:+
+	jmp	checkdev
+:	lda	#COPYLEN
 	jsr	GETBUFR
 	bcs	nomem2
-	cmp	#$78
+	cmp	#DESTPAGE
 	bne	nomem
 	sta	UTILPTR+1
 	sta	RSHIMEM		; Make sure nobody else's FREEBUFR removes us
@@ -35,7 +42,7 @@
 	sta	BLKPTR+1
 	lda	#<asm_begin
 	sta	BLKPTR
-	ldx	#$22		; Copy $22 pages
+	ldx	#COPYLEN	; Copy pages of code
 copydriver:
 	lda	(BLKPTR),Y
 	sta	(UTILPTR),Y
@@ -99,7 +106,7 @@ present:
 	lda	DEVADR21+1
 	cmp	#>DRIVER
 	bne	full
-	jsr	INITIO
+	jsr	PINGS
 	bcs	fail
 report:	jsr	msg
 	.byte	"VEDRIVE: ",$00
