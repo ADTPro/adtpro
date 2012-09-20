@@ -130,6 +130,14 @@ BADCHGMODE		= $E6
 BADPGCNT		= $E7
 
 ;---------------------------------------------------------
+; Language card soft switches
+;---------------------------------------------------------
+LC2RD		= $C080
+LC2WR		= $C081	; Read twice to enable write
+ROMONLY2	= $C082
+LC2RW		= $C083	; Read twice to enable write
+
+;---------------------------------------------------------
 ; Disk II soft switches
 ;---------------------------------------------------------
 DRVSM0OFF	= $C080 ; Phase 0 off  Stepper motor
