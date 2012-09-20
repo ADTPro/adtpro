@@ -24,8 +24,8 @@ COMMAND	= $42 ; PRODOS COMMAND
 UNIT	= $43 ; PRODOS SLOT/DRIVE
 BUFLO	= $44 ; LOW BUFFER
 BUFHI	= $45 ; HI BUFFER
-BLKLO	= $46 ; LOW BLOCK
-BLKHI	= $47 ; HI BLOCK
+BLKLO	= $46 ; LOW REQUESTED BLOCK
+BLKHI	= $47 ; HI REQUESTED BLOCK
 
 ; PRODOS ERROR CODES
 IOERR	= $27
@@ -38,10 +38,12 @@ SCRN_THROB	= $0427
 ; DRIVER CODE
 DRIVER:
 	cld
+	tsx			; Hang on to the stack pointer
+	stx	STACKPTR	;   in case we need to beat a hasty retreat
 ; CHECK THAT WE HAVE THE RIGHT DRIVE
 	lda	UNIT
-	cmp	#$20 ; SLOT 2 DRIVE 1
-	beq	DOCMD ; YEP, DO COMMAND
+	cmp	#$20		; SLOT 2 DRIVE 1
+	beq	DOCMD		; YEP, DO COMMAND
 	sec	; NOPE, FAIL
 	lda	#NODEV
 	rts
@@ -49,18 +51,18 @@ DRIVER:
 ; CHECK WHICH COMMAND IS REQUESTED
 DOCMD:
 	lda	COMMAND
-	bne	NOTSTAT ; 0 IS STATUS
+	bne	NOTSTAT		; 0 IS STATUS
 	jmp	GETSTAT
 NOTSTAT:
 	cmp	#$01
-	bne	NOREAD ; 1 IS READ
+	bne	NOREAD		; 1 IS READ
 	jmp	READBLK
 NOREAD:
 	cmp	#$02
-	bne	@NOWRITE ; 2 IS WRITE
+	bne	@NOWRITE	; 2 IS WRITE
 	jmp	WRITEBLK
 @NOWRITE:
-	lda	#$00 ; CLEAR ERROR
+	lda	#$00		; CLEAR ERROR
 	clc
 	rts
 
@@ -72,7 +74,7 @@ GETSTAT:
 	clc
 	rts
 
-CALC_CHECKSUM:			; Calculate the checksum of the block at BLKLO/BLKHI
+CALC_CHECKSUM:			; Calculate the checksum of the block at BUFLO/BUFHI
 	lda	#$00		; Clean everyone out
 	tax
 	tay
@@ -94,8 +96,12 @@ CC_LOOP:
 ; abort - stop everything
 ;---------------------------------------------------------
 PABORT:
+	lda	SCREEN_CONTENTS	; Replace the throb contents
+	sta	SCRN_THROB
+	ldx	STACKPTR	; Pop! goes the stack pointer
+	txs
 	sec
-	rts		; Not implemented
+	rts
 
 ;---------------------------------------------------------
 ; Variables
@@ -105,3 +111,5 @@ SCREEN_CONTENTS:
 CHECKSUM:
 	.byte	$00
 TEMPDT:	.res	$04
+STACKPTR:		; Storage for the stack pointer to unwind call stack
+	.res	$01
