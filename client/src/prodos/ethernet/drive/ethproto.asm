@@ -30,10 +30,6 @@
 	.importzp udp_src_port
 	.importzp udp_data
 
-; Stuff that doesn't have a home yet
-BABORT:
-	rts
-
 ;---------------------------------------------------------
 ; UDPDISPATCH - Dispatch the UDP packet to the receiver
 ;---------------------------------------------------------
@@ -109,9 +105,9 @@ RECEIVE_LOOP_WARM:
 	GO_FAST		; Speed back up for SOS
 	lda $C000
 	cmp #CHR_ESC	; Escape = abort
-	bne :+
-	jmp BABORT
-:	bit $c010	; Strobe the keyboard
+	bne @keyb
+	jmp PABORT
+@keyb:	bit $c010	; Strobe the keyboard
 	inc TIMEOUT	; Increment our counter
 	bne :+
 	inc TMOT
@@ -153,9 +149,13 @@ PauseValue:
 
 TIMEOUT:	.res 1
 
+udp_fail:
 READFAIL:
-	; increment failure count
-	; retry if not too bad
+	GO_SLOW			; Slow down for SOS
+	jsr	ip65_process
+	jsr	ip65_process	; Get the hammer out... drain the UDP pipe
+	jsr	ip65_process
+	GO_FAST			; Speed back up for SOS
 	sec
 	rts
 
@@ -227,17 +227,14 @@ WRITEBLK:
 	rts
 
 WRITEFAIL:
-	; increment failure count
-	; retry if not too bad
-	sec
-	rts
+	jmp	udp_fail
 
 ;---------------------------------------------------------
 ; COMMAND_ENVELOPE - Send a command envelope (read/write) with the command in the accumulator
 ;---------------------------------------------------------
 COMMAND_ENVELOPE:
 	pha			; Hang on to the command for a sec...
-	sta	QUERYRC
+	sta	OS_COMMAND
 	ldy	#$00
 	sty	SCRN_THROB
 	sty	udp_send_len
@@ -260,7 +257,7 @@ COMMAND_ENVELOPE:
 	eor	CHECKSUM
 	sta	CHECKSUM
 	jsr	BUFBYTE		; Send envelope checksum
-	lda	QUERYRC		; Depending on read or write...
+	lda	OS_COMMAND	; Depending on read or write...
 	cmp	#$03
 	beq	ENV_DONE	; We have a read request, so move past the write
 
@@ -298,7 +295,7 @@ ENV_DONE:
 	rts
 
 ;---------------------------------------------------------
-; ENVELOPE_REPLY - Reply to command envelope
+; ENVELOPE_REPLY - Received a reply to command envelope
 ;---------------------------------------------------------
 ENVELOPE_REPLY:
 ; READ ECHO'D COMMAND AND VERIFY
@@ -308,7 +305,7 @@ ENVELOPE_REPLY:
 	cmp	#CHR_E			; Envelope command
 	bne	env_fail
 	lda	udp_inp + udp_data + 2	; Check the command byte
-	cmp	QUERYRC			; Local storage for command type
+	cmp	OS_COMMAND		; Local storage for command type
 	bne	env_fail
 	lda	udp_inp + udp_data + 3	; Pick up the LSB of the requested block
 	cmp	BLKLO
@@ -316,7 +313,7 @@ ENVELOPE_REPLY:
 	lda	udp_inp + udp_data + 4	; Pick up the MSB of the requested block
 	cmp	BLKHI
 	bne	env_fail
-	lda	QUERYRC
+	lda	OS_COMMAND
 	cmp	#$03			; Is the command to read?
 	beq	pull_time		; Then pull the time out too
 	lda	udp_inp + udp_data + 5	; Pick up the checksum 
@@ -326,9 +323,8 @@ env_done:
 	lda	#$00
 	clc
 	rts	
-env_fail:	
-	sec
-	rts
+env_fail:
+	jmp	udp_fail
 
 pull_time:
 	lda	udp_inp + udp_data + 5	; LSB of time
@@ -474,6 +470,8 @@ STATE_ENVELOPE	= 3
 ;---------------------------------------------------------
 ; Variables
 ;---------------------------------------------------------
+OS_COMMAND:
+	.byte $00
 QUERYRC:
 	.byte $00
 PUTCMSG:
