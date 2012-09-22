@@ -38,6 +38,7 @@ import org.adtpro.resources.Messages;
 import org.adtpro.transport.ATransport;
 import org.adtpro.transport.AudioTransport;
 import org.adtpro.transport.SerialTransport;
+import org.adtpro.transport.SerialIPTransport;
 import org.adtpro.transport.UDPTransport;
 import org.adtpro.utilities.BareBonesBrowserLaunch;
 import org.adtpro.utilities.Log;
@@ -310,10 +311,33 @@ public final class Gui extends JFrame implements ActionListener
         _serialButton.doClick();
       }
       else if ((arg0.equalsIgnoreCase(Messages.getString("Gui.AudioButton"))) ||
-               (arg0.equalsIgnoreCase("audio")))
-      {
-        _audioButton.doClick();
-      }
+              (arg0.equalsIgnoreCase("audio")))
+     {
+       _audioButton.doClick();
+     }
+      else if ((arg0.equalsIgnoreCase(Messages.getString("Gui.SerialIPButton"))) ||
+              (arg0.equalsIgnoreCase("localhost")))
+     {
+          Log.println(false, "Gui constructor starting the Serial-IP client.");
+          try
+          {
+            boolean success = startComms(new SerialIPTransport(_properties.getProperty("SerialIPPort", "1977")));
+            if (success)
+            {
+              String msg = Messages.getString("Gui.ServingSerialIPTitle");
+              msg = StringUtilities.replaceSubstring(msg, "%1", _properties.getProperty("SerialIPPort", "1977"));
+              msg = StringUtilities.replaceSubstring(msg, "%2", _properties.getProperty("SerialIPHost", "localhost"));
+              setTitle(msg);
+              Log.println(false, "Gui constructor started Serial-IP client.");
+            }
+          }
+          catch (Exception e1)
+          {
+            Log.printStackTrace(e1);
+            setTitle(Messages.getString("Gui.Title") + " " + Messages.getString("Version.Number")); //$NON-NLS-1$ //$NON-NLS-2$
+            Log.println(false, "Gui constructor can't start the localhost client.");
+          }
+     }
     }
     Log.println(false, "Gui Constructor exit.");
   }

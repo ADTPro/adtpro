@@ -1,6 +1,6 @@
 /*
  * ADTPro - Apple Disk Transfer ProDOS
- * Copyright (C) 2006, 2007 by David Schmidt
+ * Copyright (C) 2006 - 2012 by David Schmidt
  * david__schmidt at users.sourceforge.net
  *
  * Serial Transport notions derived from the jSyncManager project
@@ -49,4 +49,5 @@ public abstract class ATransport
   public static final int TRANSPORT_TYPE_SERIAL = 1;
   public static final int TRANSPORT_TYPE_UDP = 2;
   public static final int TRANSPORT_TYPE_AUDIO = 3;
+  public static final int TRANSPORT_TYPE_SERIALIP = 4;
 }

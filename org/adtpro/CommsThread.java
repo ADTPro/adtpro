@@ -2008,14 +2008,14 @@ public class CommsThread extends Thread
 		int rc = 0;
 		boolean restarting = false;
 
-		Log.println(false, "CommsThread.receivePacket() entry; offset " + offset + ", buffNum = " + buffNum + ".");
+		Log.println(false, "CommsThread.receivePacket() entry; offset " + offset + ", buffNum = " + buffNum + ", preamble style = "+preambleStyle+".");
 		do
 		{
 			Log.println(false, "CommsThread.receivePacket() top of receivePacket loop.");
 			rc = 0;
 			prev = 0;
 			restarting = false;
-			if ((preambleStyle == 2 || ((preambleStyle == 1) && (_client01xCompatibleProtocol == false)) || (_transport.getClass() == UDPTransport.class) || (_transport.getClass() == AudioTransport.class)))
+			if ((preambleStyle == 2 || ((preambleStyle == 1) && (_client01xCompatibleProtocol == false)) || (_transport.transportType() == ATransport.TRANSPORT_TYPE_UDP) || (_transport.transportType() == ATransport.TRANSPORT_TYPE_AUDIO)))
 			/*
 			 * Remember, UDP and Audio originally had a preamble from the
 			 * beginning.
