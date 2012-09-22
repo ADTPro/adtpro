@@ -29,7 +29,6 @@ import org.adtpro.transport.AudioTransport;
 import org.adtpro.transport.ProtocolVersionException;
 import org.adtpro.transport.SerialTransport;
 import org.adtpro.transport.TransportTimeoutException;
-import org.adtpro.transport.UDPTransport;
 
 import org.adtpro.gui.Gui;
 import org.adtpro.utilities.Log;

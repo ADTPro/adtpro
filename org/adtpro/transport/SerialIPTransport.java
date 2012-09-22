@@ -26,9 +26,11 @@ import java.io.IOException;
 import java.net.ConnectException;
 import java.net.InetAddress;
 import java.net.Socket;
+import java.net.SocketException;
 
 import org.adtpro.resources.Messages;
 import org.adtpro.utilities.Log;
+import org.adtpro.utilities.StringUtilities;
 import org.adtpro.utilities.UnsignedByte;
 
 public class SerialIPTransport extends ATransport
@@ -41,7 +43,8 @@ public class SerialIPTransport extends ATransport
 	InetAddress _address = null;
 	byte[] _receiveBuffer = null;
 	byte[] _sendBuffer = null;
-	//static byte _packetNum = 1;
+
+	// static byte _packetNum = 1;
 
 	public SerialIPTransport(String port) throws Exception
 	{
@@ -156,10 +159,10 @@ public class SerialIPTransport extends ATransport
 			// Log.println(false,"SerialIPTransport.writeBytes() writing "+data.length+" bytes into packet starting from "+_outPacketPtr+".");
 			if (_outPacketPtr == 0)
 			{
-				//_packetNum++;
+				// _packetNum++;
 				// Log.println(false,"Setting sequence number to: "+
 				// UnsignedByte.intValue(_packetNum));
-				//_sendBuffer[_outPacketPtr++] = _packetNum;
+				// _sendBuffer[_outPacketPtr++] = _packetNum;
 			}
 			for (int i = 0; i < data.length; i++)
 			{
@@ -177,8 +180,8 @@ public class SerialIPTransport extends ATransport
 		{
 			if (_outPacketPtr == 0)
 			{
-				//_packetNum++;
-				//_sendBuffer[_outPacketPtr++] = _packetNum;
+				// _packetNum++;
+				// _sendBuffer[_outPacketPtr++] = _packetNum;
 			}
 			for (int i = 0; i < data.length; i++)
 			{
@@ -222,16 +225,27 @@ public class SerialIPTransport extends ATransport
 		}
 		Log.println(false, "");
 
-		try
+		if (_socket != null)
 		{
-			DataOutputStream out = null;
-			out = new DataOutputStream(_socket.getOutputStream());
-			out.write(_sendBuffer, 0, _outPacketPtr);
-			out.flush();
+			try
+			{
+				DataOutputStream out = null;
+				out = new DataOutputStream(_socket.getOutputStream());
+				out.write(_sendBuffer, 0, _outPacketPtr);
+				out.flush();
+			}
+			catch (SocketException s)
+			{
+				_socket = null;
+			}
+			catch (Exception e)
+			{
+				Log.printStackTrace(e);
+			}
 		}
-		catch (Exception e)
+		else
 		{
-			Log.printStackTrace(e);
+			Log.println(false, "SerialIPTransport.pushBuffer() socket not connected.");
 		}
 		_outPacketPtr = 0;
 		Log.println(false, "SerialIPTransport.pushBuffer() exit.");
@@ -246,15 +260,15 @@ public class SerialIPTransport extends ATransport
 		if (_socket == null)
 			open();
 		DataInputStream in = new DataInputStream(_socket.getInputStream());
-		
+
 		try
 		{
 			numchars = in.read(_receiveBuffer, 0, 1500);
 		}
 		catch (IOException e)
 		{
-			Log.println(false,"SerialIPTransport.pullBuffer() got an ioexception from the socket read:");
-			Log.println(false,e.getMessage());
+			Log.println(false, "SerialIPTransport.pullBuffer() got an ioexception from the socket read:");
+			Log.println(false, e.getMessage());
 			throw new TransportTimeoutException("No data");
 		}
 		Log.println(false, "SerialIPTransport.pullBuffer() received a packet.");
@@ -273,7 +287,7 @@ public class SerialIPTransport extends ATransport
 		}
 		else
 		{
-			Log.println(false,"SerialIPTransport.pullBuffer() got 0 or -1 from our socket read.");
+			Log.println(false, "SerialIPTransport.pullBuffer() got 0 or -1 from our socket read.");
 			if (numchars == -1)
 				_socket = null;
 			throw new TransportTimeoutException("No data");
@@ -312,7 +326,7 @@ public class SerialIPTransport extends ATransport
 
 	public boolean supportsBootstrap()
 	{
-		return false;
+		return true;
 	}
 
 	public void pauseIncorrectCRC()
@@ -320,25 +334,96 @@ public class SerialIPTransport extends ATransport
 		// Only necessary for audio transport
 	}
 
-	public String getInstructions(String guiString, int fileSize, int serialSpeed)
+	public String getInstructionsDone(String guiString)
 	{
-		// Shouldn't be needed unless we eventually support bootstrapping over
-		// UDP.
-		String ret = "SerialIPTransport.getInstructions() - returned null!";
-		if (guiString.equals(Messages.getString("Gui.BS.DOS")))
-			Messages.getString("Gui.BS.DumpDOSInstructions");
-		else if (guiString.equals(Messages.getString("Gui.BS.ADT")))
-			Messages.getString("Gui.BS.DumpADTInstructions");
-		else if (guiString.equals(Messages.getString("Gui.BS.ADTPro")))
-			Messages.getString("Gui.BS.DumpProInstructions");
+		Log.println(false, "SerialTransport.getInstructionsDone() getting instructions for: " + guiString);
+		String ret = "";
+		if (guiString.equals(Messages.getString("Gui.BS.ProDOSFast")))
+		{
+			// ret =
+			// Messages.getString("Gui.BS.DumpProDOSFastInstructionsDone");
+		}
+		else if (guiString.equals(Messages.getString("Gui.BS.ProDOS")))
+		{
+			ret = Messages.getString("Gui.BS.DumpProDOSInstructionsDone");
+		}
+		else if (guiString.equals(Messages.getString("Gui.BS.ProDOS2")))
+		{
+			ret = Messages.getString("Gui.BS.DumpProDOSInstructions2Done");
+		}
+		else if (guiString.equals(Messages.getString("Gui.BS.DOS")))
+		{
+			ret = Messages.getString("Gui.BS.DumpDOSInstructionsDone");
+		}
+		else if (guiString.equals(Messages.getString("Gui.BS.SOS")))
+		{
+			/* ret = Messages.getString("Gui.BS.DumpSOSInstructionsDone"); */
+		}
+		Log.println(false, "SerialTransport.getInstructionsDone() returning: " + ret);
 		return ret;
 	}
 
-	public String getInstructionsDone(String guiString)
+	public String getInstructions(String guiString, int fileSize, int speed)
 	{
-		// Shouldn't be needed unless we eventually support bootstrapping over
-		// UDP.
-		return "";
+		String ret = "'SerialTransport.getInstructions() - returned null!'";
+		if (guiString.equals(Messages.getString("Gui.BS.ProDOSFast")))
+			ret = Messages.getString("Gui.BS.DumpProDOSFastInstructions");
+		else if (guiString.equals(Messages.getString("Gui.BS.ProDOS")))
+			ret = Messages.getString("Gui.BS.DumpProDOSInstructions");
+		else if (guiString.equals(Messages.getString("Gui.BS.ProDOS2")))
+			ret = Messages.getString("Gui.BS.DumpProDOSInstructions2");
+		else if (guiString.equals(Messages.getString("Gui.BS.DOS")))
+			ret = Messages.getString("Gui.BS.DumpDOSInstructions");
+		else if (guiString.equals(Messages.getString("Gui.BS.SOS")))
+			ret = Messages.getString("Gui.BS.DumpSOSInstructions");
+		else if (guiString.equals(Messages.getString("Gui.BS.ADT")))
+			ret = Messages.getString("Gui.BS.DumpADTInstructions");
+		else if (guiString.equals(Messages.getString("Gui.BS.ADTPro")))
+			ret = Messages.getString("Gui.BS.DumpProInstructions");
+		else if (guiString.equals(Messages.getString("Gui.BS.ADTProAudio")))
+			ret = Messages.getString("Gui.BS.DumpProAudioSerialInstructions");
+		else if (guiString.equals(Messages.getString("Gui.BS.ADTProEthernet")))
+			ret = Messages.getString("Gui.BS.DumpProEthernetInstructions");
+		String baudCommand;
+		switch (speed)
+		{
+		case 300:
+			baudCommand = "6";
+			break;
+		case 600:
+			baudCommand = "7";
+			break;
+		case 1200:
+			baudCommand = "8";
+			break;
+		case 1800:
+			baudCommand = "9";
+			break;
+		case 2400:
+			baudCommand = "10";
+			break;
+		case 3600:
+			baudCommand = "11";
+			break;
+		case 4800:
+			baudCommand = "12";
+			break;
+		case 7200:
+			baudCommand = "13";
+			break;
+		case 9600:
+			baudCommand = "14";
+			break;
+		case 19200:
+			baudCommand = "15";
+			break;
+		default:
+			baudCommand = "6";
+		}
+		ret = StringUtilities.replaceSubstring(ret, "%1%", baudCommand);
+
+		Log.println(false, "SerialTransport.getInstructionsDone() returning:\n" + ret);
+		return ret;
 	}
 
 }

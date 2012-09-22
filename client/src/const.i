@@ -136,7 +136,8 @@ LC2RD		= $C080
 LC2WR		= $C081	; Read twice to enable write
 ROMONLY2	= $C082
 LC2RW		= $C083	; Read twice to enable write
-
+LC1WR		= $C089
+LC1RW		= $C08B	; Read twice to enable write
 ;---------------------------------------------------------
 ; Disk II soft switches
 ;---------------------------------------------------------

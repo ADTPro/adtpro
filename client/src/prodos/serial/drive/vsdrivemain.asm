@@ -20,8 +20,6 @@
 ; Virtual drive over the serial port based on ideas by Terence J. Boldt
 
 READFAIL:
-	; increment failure count
-	; retry if not too bad
 	jsr	RESETIO
 	sec
 	rts
@@ -62,7 +60,7 @@ READBLK:
 	sta	CHECKSUM
 	jsr	GETC		; Checksum of command envelope
 	cmp	CHECKSUM
-	bne	READFAIL
+	bne	WRITEFAIL	; Just need a nearby failure
 	lda	TEMPDT
 	sta	TIME
 	lda	TEMPDT+1
@@ -71,11 +69,9 @@ READBLK:
 	sta	DATE
 	lda	TEMPDT+3
 	sta	DATE+1
-
 ; Grab the screen contents, remember it
 	lda	SCRN_THROB
 	sta	SCREEN_CONTENTS
-
 ; READ BLOCK AND VERIFY
 	ldx	#$00
 	ldy	#$00
@@ -100,10 +96,12 @@ RDLOOP:
 
 	jsr	GETC	; Checksum
 	pha		; Push checksum for now
+	ldx	#$00
 	jsr	CALC_CHECKSUM
 	pla	
 	cmp	CHECKSUM
 	bne	WRITEFAIL	; Just need a failure exit nearby
+
 	lda	#$00
 	clc
 	rts
@@ -160,7 +158,6 @@ WRLOOP:
 	jsr	GETC		; Checksum of block - not the command envelope
 	cmp	CHECKSUM
 	bne	WRITEFAIL
-
 	lda	#$00
 	clc
 	rts

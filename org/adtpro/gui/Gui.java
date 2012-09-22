@@ -328,6 +328,7 @@ public final class Gui extends JFrame implements ActionListener
               msg = StringUtilities.replaceSubstring(msg, "%1", _properties.getProperty("SerialIPPort", "1977"));
               msg = StringUtilities.replaceSubstring(msg, "%2", _properties.getProperty("SerialIPHost", "localhost"));
               setTitle(msg);
+              _properties.setProperty("SerialIPPort", _properties.getProperty("SerialIPPort", "1977"));
               Log.println(false, "Gui constructor started Serial-IP client.");
             }
           }

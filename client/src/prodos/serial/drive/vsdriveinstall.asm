@@ -19,7 +19,7 @@
 ;
 ; Based on ideas from Terence J. Boldt
 
-	.org $1800
+	.org $2000
 
 	lda	#$4
 	jsr	GETBUFR
