@@ -47,6 +47,8 @@ compatible computer with at least 64k of memory.
 
     * {{{misc.html#Format}Formats}} blank disks
 
+    * Serves a {{{vdrive.html}virtual}} drive as slot 2, drive 1 on the Apple II
+
  The latest ADTPro can always be 
 {{{download.html}downloaded}}
 from the SourceForge 
