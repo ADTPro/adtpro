@@ -32,6 +32,16 @@ ADTPro Virtual Drive
  to the system as the virtual drive (S2D1).  
  It is perfectly fine to have the serial adapter in physical slot 2 while
  the driver makes S2D1 available to the system.
+ 
+ There are two versions of the serial driver: VSDRIVE.LOW and VSDRIVE.
+ The VSDRIVE.LOW version will install itself in the main memory of the Apple II, reducing the amount of
+ memory available to BASIC and other programs.
+ The ProDOS Utilities Disk will not work with this version of the driver.
+ The VSDRIVE version will instead overwrite the Disk II driver, making Disk II floppies inaccessible
+ to ProDOS.
+ The ProDOS Utilities Disk is compatible with this version, and it will stay resident even when 
+ the ProDOS QUIT code is active.
+  
  On a machine with a typical Super Serial card adapter in slot 2 (or IIc/IIc+ or compatibles)
  this message will be displayed as it starts:
  
@@ -58,7 +68,6 @@ ADTPro Virtual Drive
  You only need to set the IP address with VDRIVE.CONFIG once, or whenever your ADTPro server's IP
  address changes.
  
- The VEDRIVE driver will automatically search for compatible hardware and use it.
  The slot that the Ethernet adapter is in is independent of the slot that will be made available
  to the system as the virtual drive (S2D1).  
  It is perfectly fine to have the adapter in physical slot 2 while
@@ -71,6 +80,9 @@ ADTPro Virtual Drive
 
  When starting the VEDRIVE driver, you should notice a message "Ping request received from client" on the
  server if a connection has successfully been made.
+ You can re-run the VEDRIVE command again if the ping message doesn't appear.
+ If it continues to be a problem, re-check the IP address in the title bar of the ADTPro server and
+ ensure you use that with VEDRIVE.CONFIG.  
 
 [images/vdrive3.png]
 
