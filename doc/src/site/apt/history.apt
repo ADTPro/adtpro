@@ -13,7 +13,20 @@ ADTPro Release History
  * [VDrive] ProDOS time and date is set when communicating with the
    ADTPro server
 
+ * [VDrive] Serial driver installs over the floppy driver by default
+
+ * [Server] Startup parameter 'localhost' makes ADTPro server 
+   serve virtual serial ports over IP (used by emulators)
+ 
  []
+
+ Bug fixes:
+
+ * [VDrive] Ethernet driver is now more "reentrant," allows for
+   restarting if the "ping" message doesn't show up right away
+
+ * [VDrive] Aborts via escape key are more reliable, Ethernet now
+   recovers correctly
 
 * 1.2.4 - September 10, 2012
 
