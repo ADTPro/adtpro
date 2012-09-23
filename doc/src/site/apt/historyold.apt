@@ -6,13 +6,23 @@
 
 ADTPro Release Ancient History
 
-* New Features
+* Significant New Features
+
+ 1.1.9 - May 1, 2011
+
+    * [Client] Enabled DHCP auto-configuration from Jonno Downes' latest 
+      ip65 code.  Note - Saved configuration files for Ethernet won't be 
+      compatible; so delete or re-save them with this release
+
+ 1.1.8 - January 17, 2011
+
+    * [Client] Added support for LANceGS Ethernet card 
 
  1.1.7 - December 21, 2010
 
-   * [Server] Italian translation provided by Mauro Rospocher
+    * [Server] Italian translation provided by Mauro Rospocher
 
-   * [Server] Brazilian Portuguese translation provided by Mario Sergio Almeida
+    * [Server] Brazilian Portuguese translation provided by Mario Sergio Almeida
 
  1.1.6 - August 2, 2010
 
