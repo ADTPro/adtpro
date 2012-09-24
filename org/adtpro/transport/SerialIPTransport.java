@@ -35,7 +35,7 @@ import org.adtpro.utilities.UnsignedByte;
 
 public class SerialIPTransport extends ATransport
 {
-	String _serverIP;
+	String _host;
 
 	int _port, _inPacketPtr = 0, _inPacketLen = 0, _outPacketPtr = 0;
 
@@ -46,8 +46,9 @@ public class SerialIPTransport extends ATransport
 
 	// static byte _packetNum = 1;
 
-	public SerialIPTransport(String port) throws Exception
+	public SerialIPTransport(String host, String port) throws Exception
 	{
+		_host = host;
 		try
 		{
 			_port = Integer.parseInt(port);
@@ -130,7 +131,7 @@ public class SerialIPTransport extends ATransport
 		}
 		else
 		{
-			_address = InetAddress.getByName(InetAddress.getLocalHost().getHostAddress());
+			_address = InetAddress.getByName(_host);
 			try
 			{
 				_socket = new Socket(_address, _port);
@@ -140,7 +141,7 @@ public class SerialIPTransport extends ATransport
 			{
 				_socket = null;
 			}
-			Log.println(true, "SerialIPTransport opened SerialIP port " + _port + " at address " + InetAddress.getLocalHost().getHostAddress()); //$NON-NLS-1$ //$NON-NLS-2$
+			Log.println(true, "SerialIPTransport opened SerialIP port " + _port + " on host " + _host); //$NON-NLS-1$ //$NON-NLS-2$
 			return;
 		}
 	}
