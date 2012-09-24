@@ -119,3 +119,32 @@ situations:
 |  \<I/O ERROR\> | Can't read the disk in the drive, or the drive is empty |
 *-------:-----+
 
+* {Virtual Serial} over IP
+
+ Some Apple II emulators have the ability to virtualize a serial port over IP.
+That means serial traffic in and out of the virtual Apple II actually flows over a socket,
+but the Apple still understands it and treats it as if it is serial.
+The ADTPro server can take advantage of this and communicate to the emulator this way.
+Starting the ADTPro server with the command line parameter 'localhost' triggers this behavior.
+
+[images/SIP1.png]
+
+ In socket communications terms, the role of "server" and "client" are reversed - the Apple II
+emulator is actually the entity serving the port, and the ADTPro server is the client in this case.
+When started with the 'localhost' parameter, the ADTPro server titlebar will reflect the port and host
+it will be trying to connect to.
+The ADTPro server will then contact an emulator that starts serving its serial port as socket port 1977
+on the local machine.
+
+ The first time ADTPro starts in this mode, it will write out two new properties in the ADTPro.properties file:
+
+-----------------
+SerialIPPort=1977
+SerialIPHost=localhost
+-----------------
+
+ These values may be changed in the properties file to accommodate different ports and hosts. 
+
+ The usual connect/disconnect buttons do not function when the ADTPro server is started in this mode,
+and pressing one of them will terminate the virtual serial communications and start whatever other mode
+was selected.

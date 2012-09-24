@@ -6,6 +6,12 @@
 
 ADTPro Release History
 
+* Unreleased - changes in CVS now:
+
+ Bug fixes:
+
+ * [Server] Serial over IP can specify both port and host, not just port
+
 * 1.2.5 - September 22, 2012
 
  New functionality:
