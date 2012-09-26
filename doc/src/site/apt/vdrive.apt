@@ -91,7 +91,7 @@ ADTPro Virtual Drive
 
 [images/vdrive4.png]
 
-* Starting the VSDRIVE on {{SOS}} - Serial on the Apple ///
+* Starting the VSDRIVE on {SOS} - Serial on the Apple ///
 
  Using the virtual serial drive on SOS requires you to add the VSDRIVE.DRIVER device driver to your
 boot disk.  
