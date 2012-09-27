@@ -8,11 +8,13 @@ ADTPro Virtual Drive
 
  The ADTPro server can host a virtual hard drive to a connected Apple II machine running a driver from 
  the distribution disk, VDRIVE-v.r.m.DSK.
+ A driver is also available for Apple /// machines - see the {{{vdrive.html#SOS}SOS}} section below.
  This is a different function from the usual disk transfer mechanics of the ADTPro client.
- With the VDrive driver running on an Apple II, you can access an image named "Virtual.po" 
+ With the VDrive driver running on an Apple, you can access an image named "Virtual.po" 
  in the "Disks" folder of the ADTPro server.
  This Virtual.po disk image can be of whatever size and contents you like; and the connected
- client will be able to access the contents of that image via slot 2, drive 1.
+ client will be able to access the contents of that image via slot 2, drive 1 on an Apple II,
+ and as the .VSDRIVE device on an Apple ///.
 
  There is an indication of disk activity in the upper-right corner of the screen as blocks
  are transferred to and from the host.
