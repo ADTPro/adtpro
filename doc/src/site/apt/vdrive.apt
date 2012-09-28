@@ -97,8 +97,8 @@ ADTPro Virtual Drive
 
  Using the virtual serial drive on SOS requires you to add the VSDRIVE.DRIVER device driver to your
 boot disk.  
-The distribution image SysUtilsA3-VSDrive-0.01A.dsk is available as a 
-{{{http://sourceforge.net/projects/adtpro/files/adtpro/ADTPro-1.2.5/SysUtilsA3-VSDrive-0.01A.dsk/download}download}}
+The distribution image SysUtilsA3-VSDrive-0.02B.dsk is available as a 
+{{{http://sourceforge.net/projects/adtpro/files/adtpro/ADTPro-1.2.5/SysUtilsA3-VSDrive-0.02B.dsk/download}download}}
 from ADTPro and contains the driver as well as a copy of the System Utilities to install it.
 
  Once installed, the device ".VSDRIVE" will be available to the system, and will reflect the Virtual.po image
