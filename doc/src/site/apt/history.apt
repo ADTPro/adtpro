@@ -12,6 +12,9 @@ ADTPro Release History
 
  * [Server] Serial over IP can specify both port and host, not just port
 
+ * [Server] Audio trims leading garbage from data stream - finally (I
+   hope this time for real) making audio reliable
+
 * 1.2.5 - September 22, 2012
 
  New functionality:
