@@ -40,8 +40,6 @@ public class CaptureThread extends Thread
 
   TargetDataLine targetDataLine;
 
-  SourceDataLine sourceDataLine;
-
   boolean stopCapture = false;
 
   int byteRegisterData = 0;
@@ -129,6 +127,7 @@ public class CaptureThread extends Thread
       Log.printStackTrace(e);
     }// end catch
     targetDataLine.stop();
+    targetDataLine.close();
     Log.println(true, "CaptureThread.run() exit.");
   }// end run
 
@@ -277,7 +276,8 @@ public class CaptureThread extends Thread
 
   public void flushReceiveBuffer()
   {
-    if (receiveBufferSize() > 128)
+    if (receiveBufferSize() > 0)
+    //if (receiveBufferSize() > 128)  I'm confused... why would we not just flush if > 0?
     {
       // System.out.println("flushReceiveBuffer");
       synchronized (outputStream)

@@ -773,19 +773,20 @@ public class CommsThread extends Thread
 						}
 					}
 					fos.close();
-					Log.println(false, "CommsThread.receiveDisk() length: " + (length * 512) + " Disk.APPLE_140KB_DISK: " + Disk.APPLE_140KB_DISK);
-					if ((length * 512) == Disk.APPLE_140KB_DISK)
+					if (packetResult == 0)
 					{
-						Disk disk = new Disk(name);
-						// as ProDOS - because it came
-						// from us for sure!
-						disk.makeDosOrder();
-						disk.save();
-						Log.println(false, "CommsThread.receiveDisk() found a 140k disk; saved as DOS order format.");
+						Log.println(false, "CommsThread.receiveDisk() length: " + (length * 512) + " Disk.APPLE_140KB_DISK: " + Disk.APPLE_140KB_DISK);
+						if ((length * 512) == Disk.APPLE_140KB_DISK)
+						{
+							Disk disk = new Disk(name);
+							// Force any 5-1/4" disk order to DOS
+							disk.makeDosOrder();
+							disk.save();
+							Log.println(false, "CommsThread.receiveDisk() found a 140k disk; saved as DOS order format.");
+						}
+						else
+							Log.println(false, "CommsThread.receiveDisk() found a disk of length " + (length * 512) + "; left it alone (didn't change to DOS order), because it expected length " + Disk.APPLE_140KB_DISK + " in order to change to DOS order.");
 					}
-					else
-						Log.println(false, "CommsThread.receiveDisk() found a disk of length " + (length * 512) + "; left it alone (didn't change to DOS order), because it expected length " + Disk.APPLE_140KB_DISK + " in order to change to DOS order.");
-
 				}
 				else
 				{
@@ -1208,9 +1209,7 @@ public class CommsThread extends Thread
 					{
 						byteCount++;
 					}
-					_transport.writeByte((byte) (byteCount & 0xFF)); // 256
-																		// becomes
-																		// 0
+					_transport.writeByte((byte) (byteCount & 0xFF)); // 256 becomes 0
 				}
 				if (!_shouldRun)
 				{
@@ -1227,17 +1226,17 @@ public class CommsThread extends Thread
 				Log.println(false, "CommsThread.sendPacket() calculated CRC: " + (crc & 0xffff));
 				try
 				{
-					ok = waitForData(15);
+					ok = waitForData(15,(byte)0x06,(byte)0x15);
 					if ((preambleStyle == 1) && (_client01xCompatibleProtocol == false))
 					{
 						int incomingBlock = 0;
-						incomingBlock = UnsignedByte.intValue(waitForData(15));
+						incomingBlock = UnsignedByte.intValue(waitForData(1));
 						// Log.println(false, "First byte (block lo) received: "
 						// + incomingBlock);
-						incomingBlock += (UnsignedByte.intValue(waitForData(15)) * 256);
+						incomingBlock += (UnsignedByte.intValue(waitForData(1)) * 256);
 						// Log.println(false, "Second byte (block hi) total: " +
 						// incomingBlock);
-						byte appleHalf = waitForData(15);
+						byte appleHalf = waitForData(1);
 						// Log.println(false, "Half block requested: " +
 						// appleHalf);
 						byte hostHalf = UnsignedByte.loByte(2 - (offset / 256));
@@ -1286,7 +1285,6 @@ public class CommsThread extends Thread
 				}
 				else
 				{
-					_transport.flushReceiveBuffer();
 					currentRetries++;
 					Log.println(false, "CommsThread.sendPacket() didn't work; will retry #" + currentRetries + ".");
 					// Pause for an increasing amount of time each time we
@@ -1307,6 +1305,7 @@ public class CommsThread extends Thread
 					{
 						Log.println(false, "CommsThread.sendPacket() backoff sleep was interrupted.");
 					}
+					_transport.flushReceiveBuffer();
 				}
 			}
 		} 
@@ -2022,14 +2021,14 @@ public class CommsThread extends Thread
 			{
 				try
 				{
-					// Wait for the block number...
-					incomingBlockNum = UnsignedByte.intValue(waitForData(15));
-					incomingBlockNum = incomingBlockNum + ((UnsignedByte.intValue(waitForData(1)) * 256));
-					data = waitForData(1);
-					incomingHalf = Math.abs(2 - data); // Get the half block
-
 					blockNum = buffNum / 2;
 					halfNum = buffNum % 2;
+
+					// Wait for the block number...
+					incomingBlockNum = UnsignedByte.intValue(waitForData(15,UnsignedByte.loByte(blockNum)));
+					incomingBlockNum = incomingBlockNum + ((UnsignedByte.intValue(waitForData(1,UnsignedByte.hiByte(blockNum))) * 256));
+					data = waitForData(1);
+					incomingHalf = Math.abs(2 - data); // Get the half block
 
 					if (preambleStyle == 1)
 					{
@@ -2218,6 +2217,47 @@ public class CommsThread extends Thread
 		Log.println(false, "CommsThread.receivePacket() exit.");
 
 		return rc;
+	}
+
+	public byte waitForData(int timeout, byte expectedByte1, byte expectedByte2) throws TransportTimeoutException
+	{
+		Log.println(false,"CommsThread.waitForData(two bytes) entry, expecting "+expectedByte1+" or "+expectedByte2);
+		byte currentByte;
+		if (_transport.transportType() == ATransport.TRANSPORT_TYPE_AUDIO)
+		{
+			int retryCount = 0;
+			// Skip over leading bytes when they don't match what we expect.
+			// Important for audio - which seems to be picking up random leader junk.
+			currentByte = waitForData(timeout);
+			Log.println(false,"CommsThread.waitForData(two bytes) received byte "+currentByte);
+			while ((currentByte != expectedByte1) && (currentByte != expectedByte2) && (retryCount < 6))
+			{
+				currentByte = waitForData(timeout);
+				retryCount++;
+			}
+		}
+		else currentByte = waitForData(timeout);
+		return currentByte;
+	}
+
+	public byte waitForData(int timeout, byte expectedByte) throws TransportTimeoutException
+	{
+		Log.println(false,"CommsThread.waitForData(one byte) entry, expecting "+expectedByte);
+		byte currentByte;
+		if (_transport.transportType() == ATransport.TRANSPORT_TYPE_AUDIO)
+		{
+			// Skip over leading bytes when they don't match what we expect.
+			// Important for audio - which seems to be picking up random leader junk.
+			int retryCount = 0;
+			currentByte = waitForData(timeout);
+			while ((currentByte != expectedByte) && (retryCount < 6))
+			{
+				currentByte = waitForData(timeout);
+				retryCount++;
+			}
+		}
+		else currentByte = waitForData(timeout);
+		return currentByte;
 	}
 
 	public byte waitForData(int timeout) throws TransportTimeoutException

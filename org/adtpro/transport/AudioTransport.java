@@ -254,6 +254,7 @@ public class AudioTransport extends ATransport
     _sendThread = new PlaybackThread(stuff);
     _sendThread.start();
     _outPacketPtr = 0;
+    flushReceiveBuffer();
     try
     {
       // We have to wait for the thread to finish; it was happening
@@ -265,10 +266,10 @@ public class AudioTransport extends ATransport
     {
       Log.printStackTrace(e);
     }
-    Log.println(false, "AudioTransport.pushBuffer() exit.");
     _inPacketLen = 0;
     _receiveBuffer = null;
     _inPacketPtr = 0;
+    Log.println(false, "AudioTransport.pushBuffer() exit.");
   }
 
   public void pushBigBuffer(Gui parent)
