@@ -1,6 +1,6 @@
 ;
 ; ADTPro - Apple Disk Transfer ProDOS
-; Copyright (C) 2007 - 2010 by David Schmidt
+; Copyright (C) 2007 - 2012 by David Schmidt
 ; david__schmidt at users.sourceforge.net
 ;
 ; This program is free software; you can redistribute it and/or modify it 
@@ -148,25 +148,40 @@ MODWRITE:
 GETCPAS:
 	stx SLOWX		; PHX
 	sty SLOWY		; PHY
-GPASLOOP:
-	lda $C000
-	cmp #CHR_ESC		; Escape = abort
-	bne :+
+	lda #$00
+	sta Timer
+	sta Timer+1
+	lda $C000	; Check for escape once in a while
+	cmp #CHR_ESC	; Escape = abort
+	bne GPASLOOP
 	jmp PABORT
-:
+GPASLOOP:
 	ldx #$C2		; $CN, N=SLOT
 	ldy #$20		; $N0
 	lda #1			; INPUT READY?
 MODSTAT2:
 	jsr $C200		; PASCAL STATUS ENTRY POINT
-	bcc GPASLOOP		; CC MEANS NO INPUT READY
-	ldx #$C2		; $CN
+	bcs @GetIt		; Carry means input is ready
+	lda $C000	; Check for escape once in a while
+	cmp #CHR_ESC	; Escape = abort
+	bne @TimerInc
+	jmp PABORT
+@TimerInc:
+	inc Timer
+	bne GPASLOOP	; Timer non-zero, loop
+	inc Timer+1
+	bne GPASLOOP	; Timer non-zero, loop
+	sec
+	rts	
+
+@GetIt:	ldx #$C2		; $CN
 	ldy #$20		; $N0
 MODREAD:
 	jsr $C200		; PASCAL READ ENTRY POINT
 	ldy SLOWY		; PLY
 	ldx SLOWX		; PLX
 	and #$FF
+	clc
 	rts
 
 ;---------------------------------------------------------

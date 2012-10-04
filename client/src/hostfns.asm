@@ -1,6 +1,6 @@
 ;
 ; ADTPro - Apple Disk Transfer ProDOS
-; Copyright (C) 2006 by David Schmidt
+; Copyright (C) 2006 - 2012 by David Schmidt
 ; david__schmidt at users.sourceforge.net
 ;
 ; This program is free software; you can redistribute it and/or modify it 
@@ -67,6 +67,7 @@ DIRPAGE:
 
 DIRTIMEOUT:
 	jsr DIRABORT
+HOSTTIMEOUT:
 	ldy #PHMTIMEOUT
 	jsr SHOWHM1
 	jsr PAUSE
@@ -96,7 +97,7 @@ CDSTART:
 	GO_SLOW			; Slow down for SOS
 	jsr CDREQUEST
 	jsr CDREPLY
-	
+	bcs CDTIMEOUT
 	bne CDERROR
 	ldy #PMSG14
 	jsr WRITEMSGAREA
@@ -106,6 +107,8 @@ CDDONE:
 	GO_FAST			; Speed back up for SOS
 	rts
 
+CDTIMEOUT:
+	lda #PHMTIMEOUT
 CDERROR:
 	tay
 	jsr SHOWHM1

@@ -59,36 +59,48 @@ TEMPX:	.byte	1
 ;---------------------------------------------------------
 
 ZCCG:
-	LDA GSCMDB	; DUMMY READ TO RESET 8530 POINTER TO 0
-
-pollSCC:
-	lda $C000
+	lda GSCMDB	; DUMMY READ TO RESET 8530 POINTER TO 0
+	lda #$00
+	sta Timer
+	sta Timer+1
+	lda $C000	; Check for escape at first
 	cmp #CHR_ESC	; Escape = abort
-	bne SCCNEXT
+	bne SCCGetLoop
 	jmp PABORT
-
-SCCNEXT:
-	LDA GSCMDB	; READ 8530 READ REGISTER 0
-	AND #$01        ; BIT 0 MEANS RX CHAR AVAILABLE
+SCCGetLoop:
+	bit $C0E8	; Attempt to slow accelerators down by referencing slot 6 ($C088 + $60)
+	lda GSCMDB	; READ 8530 READ REGISTER 0
+	and #$01        ; BIT 0 MEANS RX CHAR AVAILABLE
 	cmp #$01
-	bne pollSCC
+	beq pullIt	; THERE'S A CHAR IN THE 8530 RX BUFFER
+	lda $C000	; Check for escape once in a while
+	cmp #CHR_ESC	; Escape = abort
+	bne @TimerInc
+	jmp PABORT
+@TimerInc:
+	inc Timer	; No character; poke at a crude timer
+	bne SCCGetLoop	; Timer non-zero, loop
+	inc Timer+1
+	bne SCCGetLoop	; Timer non-zero, loop
+	sec		; Timeout; bail
+	rts	
 
-			;  THERE'S A CHAR IN THE 8530 RX BUFFER
 pullIt:
-	LDA #$01	;  SET 'POINTER' TO rr1
-	STA GSCMDB  
-	LDA GSCMDB	;  READ THE 8530 READ REGISTER 1
-	AND #$20	;  CHECK FOR bit 5=RX OVERRUN
-	BEQ itsOK
+	lda #$01	;  SET 'POINTER' TO rr1
+	sta GSCMDB  
+	lda GSCMDB	;  READ THE 8530 READ REGISTER 1
+	and #$20	;  CHECK FOR bit 5=RX OVERRUN
+	beq itsOK
 	ldx #$30	; Clear Receive overrun
 	stx GSCMDB
 	ldx #$00
 	stx GSCMDB
 
 itsOK:
-	LDA #$08	;  WE WANT TO READ rr8
-	STA GSCMDB	;  SET 'POINTER' TO rr8
-	LDA GSCMDB	;  READ rr8
+	lda #$08	;  WE WANT TO READ rr8
+	sta GSCMDB	;  SET 'POINTER' TO rr8
+	lda GSCMDB	;  READ rr8
+	clc
 	rts
 
 ;---------------------------------------------------------

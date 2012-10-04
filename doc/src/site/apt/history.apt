@@ -10,6 +10,9 @@ ADTPro Release History
 
  Bug fixes:
 
+ * [Client] Serial library is now non-blocking; allows for timeouts in
+   times of failure; fixes speediboot pauses
+
  * [Server] Serial over IP can specify both port and host, not just port
 
  * [Server] Audio trims leading garbage from data stream - finally (I

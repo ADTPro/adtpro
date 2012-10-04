@@ -53,6 +53,7 @@ BATCH:
 
 	jsr BATCHREQUEST
 	jsr PUTREPLY
+	bcs PCTIMEOUT
 	beq BATCHOK
 	jmp PCERROR
 BATCHOK:
@@ -87,6 +88,7 @@ SEND:
 	jsr QUERYFNREQUEST
 	jsr QUERYFNREPLY
 	GO_FAST			; Speed back up for SOS
+	bcs PCTIMEOUT
 	cmp #$02	; File doesn't exist - so everything's ok
 	beq SMSTART
 	lda #$00
@@ -101,6 +103,14 @@ SEND:
 	cmp #$01
 	beq SMSTART
 	rts
+
+PCTIMEOUT:
+	lda #PHMTIMEOUT
+PCERROR:
+	tay
+	jsr SHOWHM1
+	jsr PAUSE
+	jmp BABORT
 
 SMSTART:
 	ldy #PMSGSOU	; 'SELECT SOURCE VOLUME'
@@ -128,17 +138,12 @@ SMSTART:
 	jsr PUTREQUEST		; Note - SendType holds the type of request
 	jsr PUTREPLY
 	GO_FAST			; Speed back up for SOS
+	bcs PCTIMEOUT
 	beq PCOK
 	jmp PCERROR
 
 SMDONE1:
 	rts
-
-PCERROR:
-	tay
-	jsr SHOWHM1
-	jsr PAUSE
-	jmp BABORT
 
 PCOK:
 	; Here's where we set up a loop
@@ -228,6 +233,7 @@ SRSTART:
 	jsr QUERYFNREQUEST
 	jsr QUERYFNREPLY
 	GO_FAST			; Speed back up for SOS
+	bcs SRTIMEOUT
 	cmp #$00
 	beq @Ok
 	jmp PCERROR
@@ -249,8 +255,8 @@ SRREENTRY:
 	bne SRMISMATCH
 	jmp SROK2
 
-;GoForNib:
-;	jmp ReceiveNib
+SRTIMEOUT:
+	jmp PCTIMEOUT
 
 SRMISMATCH:
 	jsr CLRMSGAREA
@@ -274,6 +280,7 @@ SROK2:
 	jsr GETREQUEST
 	jsr GETREPLY
 	GO_FAST			; Speed back up for SOS
+	bcs SRTIMEOUT
 	beq SROK3
 	jmp PCERROR
 

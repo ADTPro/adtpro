@@ -64,16 +64,35 @@ MOD2:	sta $C088	; Put character
 
 ;---------------------------------------------------------
 ; SSCGET - Get a character from Super Serial Card (XY unchanged)
+;          Carry set on timeout, clear on data (returned in Accumulator)
 ;---------------------------------------------------------
 SSCGET:
-	lda $C000
+	lda #$00
+	sta Timer
+	sta Timer+1
+	lda $C000	; Check for escape at first
 	cmp #CHR_ESC	; Escape = abort
-	beq SABORT
+	bne SSCGetLoop
+	jmp PABORT
+SSCGetLoop:
+	bit $C0E8	; Attempt to slow accelerators down by referencing slot 6 ($C088 + $60)
 MOD3:	lda $C089	; Check status bits
 MOD6:	and #$68
 	cmp #$8
-	bne SSCGET	; Input register empty, loop
+	beq MOD4	; Byte exists; go get it
+	lda $C000	; Check for escape once in a while
+	cmp #CHR_ESC	; Escape = abort
+	bne @TimerInc
+	jmp PABORT
+@TimerInc:
+	inc Timer
+	bne SSCGetLoop	; Timer non-zero, loop
+	inc Timer+1
+	bne SSCGetLoop	; Timer non-zero, loop
+	sec
+	rts		; Timeout	
 MOD4:	lda $C088	; Get character
+	clc
 	rts
 
 SABORT:	jmp PABORT

@@ -1,6 +1,6 @@
 ;
 ; ADTPro - Apple Disk Transfer ProDOS
-; Copyright (C) 2008 by David Schmidt
+; Copyright (C) 2008 - 2012 by David Schmidt
 ; david__schmidt at users.sourceforge.net
 ;
 ; This program is free software; you can redistribute it and/or modify it 
@@ -54,16 +54,34 @@ IIIABORT:
 
 ;---------------------------------------------------------
 ; IIIGET - Get a character from the ACIA (XY unchanged)
+;          Carry set on timeout, clear on data (returned in Accumulator)
 ;---------------------------------------------------------
 IIIGET:
-	lda $C000
+	lda #$00
+	sta Timer
+	sta Timer+1
+	lda $C000	; Check for escape at first
 	cmp #CHR_ESC	; Escape = abort
-	beq IIIABORT
+	bne IIIGETLoop
+	jmp PABORT
+IIIGETLoop:
 	lda $C0F1	; Check status bits
 	and #$68
 	cmp #$8
-	bne IIIGET	; Input register empty, loop
-	lda $C0F0	; Get character
+	beq @GetIt	; Input register has data
+	lda $C000	; Check for escape once in a while
+	cmp #CHR_ESC	; Escape = abort
+	bne @TimerInc
+	jmp PABORT
+@TimerInc:
+	inc Timer
+	bne IIIGETLoop	; Timer non-zero, loop
+	inc Timer+1
+	bne IIIGETLoop	; Timer non-zero, loop
+	sec
+	rts		; Timeout	
+@GetIt:	lda $C0F0	; Get character
+	clc
 	rts
 
 ;---------------------------------------------------------

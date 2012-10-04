@@ -27,18 +27,19 @@ protono		= $0101
 ; clear if successful, carry set otherwise.
 ;---------------------------------------------------------
 initprot:
-	lda	#>protono	; High order byte
-	jsr	PUTC		; Send to host
-	lda	#<protono	; Low order byte
-	jsr	PUTC		; Send to host
-	lda	#0
-	jsr	PUTC		; Delimiter
-	jsr	GETC		; Read response from host
-	cmp	#CHR_ACK
-	bne	:+		; Not ack, so invalid protocol or host
+	lda #>protono	; High order byte
+	jsr PUTC	; Send to host
+	lda #<protono	; Low order byte
+	jsr PUTC	; Send to host
+	lda #0
+	jsr PUTC	; Delimiter
+	jsr GETC	; Read response from host
+	bcs :+
+	cmp #CHR_ACK
+	bne :+		; Not ack, so invalid protocol or host
 	clc
-	rts			; Exit with OK status
-:	sec			; Error status
+	rts		; Exit with OK status
+:	sec		; Error status
 	rts
 
 
@@ -63,6 +64,7 @@ DIRREPLY:
 	LDA_BIGBUF_ADDR_HI
 	sta Buffer+1
 :	jsr GETC	; Get character from serial port
+	bcs @DirTimeout	; Bail if we are timing out
 	php		; Save flags
 	sta (Buffer),Y	; Store byte
 	iny		; Bump counter
@@ -78,6 +80,11 @@ DIRREPLY:
 	sta Buffer	; beginning of the Big Buffer(TM)
 	LDA_BIGBUF_ADDR_HI
 	sta Buffer+1
+	rts
+
+@DirTimeout:
+	ldy #$01
+	sta TMOT
 	rts
 
 
@@ -201,6 +208,7 @@ GETFINALACK:
 	jsr PUTC	; Send error flag to host
 	rts
 
+
 ;---------------------------------------------------------
 ; BATCHREQUEST - Request to send multiple images to the host
 ;---------------------------------------------------------
@@ -230,12 +238,17 @@ QUERYFNREQUEST:
 
 QUERYFNREPLY:
 	jsr GETC	; Get response from host: file size
+	bcs @QFNTimeout
 	sta HOSTBLX
 	jsr GETC
+	bcs @QFNTimeout
 	sta HOSTBLX+1
 	jsr GETC	; Get response from host: return code/message
+	bcs @QFNTimeout
 	rts
-
+@QFNTimeout:
+	jsr HOSTTIMEOUT
+	jmp BABORT
 
 ;---------------------------------------------------------
 ; RECVBLK - Receive a block with RLE
@@ -292,6 +305,7 @@ RECVERR:
 	lda #CHR_NAK	; CRC error, ask for a resend
 	jmp RECVMORE
 
+
 ;---------------------------------------------------------
 ; RECVNIBCHUNK - Receive a nibble chunk with RLE
 ; Called with Acknowledgement in accumulator
@@ -307,8 +321,10 @@ RECVNIBCHUNK:
 	jsr RECVHBLK
 	bcs :+		; Do we have an error from block count?
 	jsr GETC	; Receive reply
+	bcs :+
 	sta PCCRC	; Receive the CRC of that block
 	jsr GETC
+	bcs :+
 	sta PCCRC+1
 	clc
 :
@@ -329,20 +345,24 @@ RECVHBLK:
 
 			; Pull the preamble
 	jsr GETC	; Get block number (lsb)
+	bcs HBLKERR	; Timeout - bail
 	sec
 	sbc BLKLO
 	bne HBLKERR
 	jsr GETC	; Get block number (msb)
+	bcs HBLKERR	; Timeout - bail
 	sec
 	sbc BLKHI
 	bne HBLKERR
 	jsr GETC	; Get half-block
+	bcs HBLKERR	; Timeout - bail
 	sec
 	sbc <ZP
 	bne HBLKERR
 
 RC1:
 	jsr GETC	; Get difference
+	bcs HBLKERR	; Timeout - bail
 	beq RC2		; If zero, get new index
 	sta (BLKPTR),Y	; else put char in buffer
 	iny		; ...and increment index
@@ -351,11 +371,13 @@ RC1:
 	rts		; ...else return
 RC2:
 	jsr GETC	; Get new index
+	bcs HBLKERR	; Timeout - bail
 	tay		; in the Y register
 	bne RC1		; Loop if index <> 0
 			; ...else return
 	clc
 	rts
+
 
 ;---------------------------------------------------------
 ; SENDNIBPAGE - Send a nibble page and its CRC
@@ -369,6 +391,7 @@ SENDNIBPAGE:
 	lda <CRC+1
 	jsr PUTC
 	rts
+
 
 ;---------------------------------------------------------
 ; SENDBLK - Send a block with RLE
@@ -388,12 +411,17 @@ SENDMORE:
 	jsr PUTC
 	jsr GETC	; Receive reply
 	GO_FAST		; Speed back up for SOS
+	bcs @SendTimeout
 	cmp #CHR_ACK	; Is it ACK?  Loop back if NAK.
 	bne SENDMORE
 	inc <BLKPTR+1	; Get next 256 bytes
 	dec <ZP
 	bne SENDMORE
 	rts
+@SendTimeout:
+	lda #$01	; Indicate failure
+	rts
+
 
 ;---------------------------------------------------------
 ; SENDHBLK - Send half a block with RLE
@@ -435,6 +463,7 @@ SS4:	tya		; DIFFERENCE NOT A ZERO
 	jsr PUTC	; SEND NEW ADDRESS
 	bne SS1		; AND GO BACK TO MAIN LOOP
 	rts		; OR RETURN IF NO MORE BYTES
+
 
 ;---------------------------------------------------------
 ; SENDFN - Send a file name

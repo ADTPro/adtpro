@@ -1,6 +1,6 @@
 ;
 ; ADTPro - Apple Disk Transfer ProDOS
-; Copyright (C) 2008 by David Schmidt
+; Copyright (C) 2008 - 2012 by David Schmidt
 ; david__schmidt at users.sourceforge.net
 ;
 ; This program is free software; you can redistribute it and/or modify it 
@@ -327,3 +327,4 @@ SVSPEED:	.byte 3		; Storage for speed setting
 CONFIGYET:	.byte 0		; Has the user configged yet?
 PARMSEND:
 PNIBBL:		.byte 1		; Enable nibbles? (NO - and not saved or exposed)
+Timer:		.addr $0000	; Used by serial drivers for timing

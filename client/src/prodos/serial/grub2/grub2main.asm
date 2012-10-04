@@ -60,13 +60,6 @@ main:
 	jsr	PARMINT
 	jsr	RESETIO
 
-	ldx	#$08
-SitAround:			; Delay a little bit after resetting the I/O
-	lda	#$ff
-	jsr	delay
-	dex
-	bne	SitAround
-
 	jsr	msg
 	.byte	"LOADING ",$00
 	lda	next_task
@@ -88,21 +81,22 @@ PullMLICmd:
 	sty	b_p
 Poll:
 	jsr	GETC
+	bcs	PullMLICmd
 	cmp	#$50		; First character will be "P" for ProDOS
 	beq	PullMLIGo
-	lda	$c000		; Check for keypress
-	cmp	#CHR_ESC
-	beq	PullMLICmd
 	jmp	Poll
 PullMLIGo:
 	jsr	GETC		; LSB of length
+	bcs	PullMLICmd
 	sta	size
 	jsr	GETC		; MSB of length
+	bcs	PullMLICmd
 	beq	Poll		; Better not be zero
 	sta	size+1		; We're ready to read everything else now
 
 ReadMLI:			; We got the magic signature; start reading data
 	jsr	GETC		; Pull a byte
+	bcs	PullMLICmd
 	sta	(b_p),y		; Save it
 	sta	mliupdateloc	; Print it in the status area
 	iny
@@ -136,21 +130,22 @@ PullClientCmd:
 	sty	b_p
 PollC:
 	jsr	GETC
+	bcs	PullClientCmd
 	cmp	#$41		; First character will be "A" for ADTPro
 	beq	PollCGo
-	lda	$c000		; Check for keypress
-	cmp	#CHR_ESC
-	beq	PullClientCmd
 	jmp	PollC
 PollCGo:
 	jsr	GETC		; LSB of length
+	bcs	PullClientCmd
 	sta	size
 	jsr	GETC		; MSB of length
+	bcs	PullClientCmd
 	beq	PollC		; MSB better not be zero
 	sta	size+1		; We're ready to read everything else now
 
 ReadClient:			; We got the magic signature; start reading data
 	jsr	GETC		; Pull a byte
+	bcs	PullClientCmd
 	sta	(b_p),y		; Save it
 	sta	adtproupdateloc	; Print it in the status area
 	iny
