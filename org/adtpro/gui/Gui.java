@@ -78,6 +78,8 @@ public final class Gui extends JFrame implements ActionListener
 
   JMenuItem _sosAction = null;
 
+  JMenuItem _speedibootAction = null;
+
   JCheckBoxMenuItem _protoCompatMenuItem = null;
 
   JCheckBoxMenuItem _traceMenuItem = null;
@@ -132,7 +134,8 @@ public final class Gui extends JFrame implements ActionListener
     JMenu menuBootstrapProDOS = new JMenu(Messages.getString("Gui.BootstrapProDOS")); //$NON-NLS-1$
     JMenu menuBootstrapDOS = new JMenu(Messages.getString("Gui.BootstrapDOS")); //$NON-NLS-1$
     MenuAction proDOSFastAction = new MenuAction(Messages.getString("Gui.BS.ProDOSFast")); //$NON-NLS-1$
-    menuBootstrapProDOS.add(proDOSFastAction);
+    _speedibootAction = menuBootstrapProDOS.add(proDOSFastAction);
+    _speedibootAction.setEnabled(true);
     MenuAction proDOSAction = new MenuAction(Messages.getString("Gui.BS.ProDOS")); //$NON-NLS-1$
     menuBootstrapProDOS.add(proDOSAction);
     MenuAction dosAction = new MenuAction(Messages.getString("Gui.BS.DOS")); //$NON-NLS-1$
@@ -841,6 +844,7 @@ public final class Gui extends JFrame implements ActionListener
         menuBootstrap.setEnabled(true);
         _dosAction2.setEnabled(_commsThread.transportType() == ATransport.TRANSPORT_TYPE_AUDIO);
         _sosAction.setEnabled(_commsThread.transportType() != ATransport.TRANSPORT_TYPE_AUDIO);
+        _speedibootAction.setEnabled(_commsThread.transportType() != ATransport.TRANSPORT_TYPE_AUDIO);
       }
     }
     Log.println(false, "Gui.startComms() exit; returning " + success + ".");
