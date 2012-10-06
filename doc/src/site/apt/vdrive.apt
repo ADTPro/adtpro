@@ -54,7 +54,7 @@ ADTPro Virtual Drive
 
 [images/vdrive2.png]
 
-* Starting the VEDRIVE client - Ethernet
+* Starting the VEDRIVE client - {Ethernet}
  
  Once you've established your {{{configethernet.html}Ethernet}}
  connection between your Apple II and the ADTPro host server, boot or otherwise access the
