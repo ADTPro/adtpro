@@ -490,6 +490,7 @@ public class CommsThread extends Thread
 				}
 				catch (IOException e1)
 				{
+					Log.println(false,"Unable to find Virtual.po in current working directory; creating a new one.");
 					com.webcodepro.applecommander.ui.ac.createProDisk("Virtual.po","VIRTUAL",Disk.APPLE_800KB_DISK);
 					disk = new Disk(_parent.getWorkingDirectory() + "Virtual.po"); //$NON-NLS-1$
 				}
