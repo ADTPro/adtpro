@@ -250,14 +250,22 @@ CDREPLY:
 PUTREPLY:
 BATCHREPLY:
 GETREPLY:
-	lda QUERYRC
+	clc
+	lda TMOT
+	beq @Ok
+	sec
+@Ok:	lda QUERYRC
 	rts
 
 GETREPLY2:
 	lda #STATE_GET	; Set up for GETREPLY1 callback
 	sta state
 	jsr RECEIVE_LOOP_FAST
-	lda QUERYRC
+	clc
+	lda TMOT
+	beq @Ok
+	sec
+@Ok:	lda QUERYRC
 	rts	
 
 ;---------------------------------------------------------
@@ -466,7 +474,12 @@ QUERYFNREPLY1:
 	lda #PHMTIMEOUT
 	sta QUERYRC
 QUERYFNREPLY:
-	lda QUERYRC
+	lda TMOT
+	beq @Ok
+	sec
+	jmp @Done
+@Ok:	clc
+@Done:	lda QUERYRC
 QUERYFNREPLYDONE:
 	rts
 
