@@ -578,7 +578,13 @@ everywhere it is invoked:
 		<move file="${builddir}/${distName}/ADTPro.sh" tofile="${builddir}/${distName}/ADTPro.command"/>
 		<delete file="${builddir}/${distName}/ADTPro.bat" />
 		<delete file="${builddir}/${distName}/ADTPro.cmd" />
-
+		
+		<!-- Un-sign Apple's JavaApplicationStub -->
+		<echo message="Un-signing Apple's Java Application Stub."/>
+		<exec dir="${builddir}" os="Mac OS X" executable="/bin/sh">
+			<arg value="-c"/>
+			<arg value="${builddir}/unsign.rb ${builddir}/${distName}/${distName}.app/Contents/MacOS/JavaApplicationStub"/>
+		</exec>
 		<!-- Push the "ADTPro-v.r.m" directory one level deeper.  I couldn't seem to get Ant to do what I wanted, so I just dumped in the simple shell commands I needed. -->
 		<tempfile property="tempFile"/>
 		<echo message="Pushing package contents one level deeper."/>

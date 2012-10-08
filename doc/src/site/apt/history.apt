@@ -13,6 +13,9 @@ ADTPro Release History
  * [Client] Serial library is now non-blocking; allows for timeouts in
    times of failure; fixes speediboot pauses
 
+ * [Server] Un-sign Apple's binary Java launcher so it doesn't confuse
+   Mountain Lion
+
  * [Server] Serial over IP can specify both port and host, not just port
 
  * [Server] Audio trims leading garbage from data stream - finally (I
