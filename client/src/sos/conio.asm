@@ -328,10 +328,33 @@ SOS_ERROR_MESSAGE_END	=*
 ; Read a line of input from the console
 ;---------------------------------------------------------
 READ_LINE:
+	; Attempt to get rid of leading/queued garbage by reading
+	; the console with no-wait, then waiting for the real thing.
+	; Calling SOS to clear the typeahead cache didn't help because
+	; data was already in the read buffer.  This still isn't perfect,
+	; but it's (much) better than before. 
+	lda #$80
+	sta D_CONTROL_DATA
+	lda #$0a
+	sta D_CONTROL_CODE
+	CALLOS OS_D_CONTROL, D_CONTROL_PARMS	; Turn no-wait to $80
+
+	jsr ECHO_OFF
+	lda #$ff
+	sta CONSREAD_COUNT
+	CALLOS OS_READFILE, CONSREAD_PARMS	; Consume all input so far
+
+	lda #$00
+	sta D_CONTROL_DATA
+	lda #$0a
+	sta D_CONTROL_CODE
+	CALLOS OS_D_CONTROL, D_CONTROL_PARMS	; Turn no-wait to $00
+
 	jsr ECHO_ON
 	lda #$ff
 	sta CONSREAD_COUNT
 	CALLOS OS_READFILE, CONSREAD_PARMS
+
 	ldx CONSREAD_XFERCT		; Output is available at CONSREAD_INPUT
 					; for CONSREAD_XFERCT bytes
 	dex				; Skip the trailing Ctrl-M
