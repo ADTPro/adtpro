@@ -16,10 +16,13 @@ ADTPro Release History
  * [Server] Un-sign Apple's binary Java launcher so it doesn't
    confuse Mountain Lion
 
+ * [Client] Apple /// tries harder to consume buffered keystrokes
+   before doing line-oriented input 
+ 
  * [Client] Serial library is now non-blocking; allows for timeouts
    in times of failure; fixes speediboot pauses
 
- * [Server] If a 140k disk image isn't a known format, take the 
+ * [Server] If a 140k disk image isn't of a known format, take the 
    filename extension into account before looking too much deeper
 
  * [Server] Serial over IP can specify both port and host, not just
@@ -155,7 +158,7 @@ ADTPro Release History
    it hinders things like the GS Desk Accessory bringup
 
  * [Client] Apple /// responds a little better to disk switched 
-   errors like those produced by the CFFA300 card
+   notifications like those produced by the CFFA3000 card
 
  * [Client] Apple /// Ethernet screen layout was missing DHCP
    configuration option
