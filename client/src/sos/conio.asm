@@ -346,9 +346,13 @@ READ_LINE:
 
 	lda #$00
 	sta D_CONTROL_DATA
+	lda #$0a
+	sta D_CONTROL_CODE
 	CALLOS OS_D_CONTROL, D_CONTROL_PARMS	; Turn no-wait to $00
 
 	jsr ECHO_ON
+	lda #$ff
+	sta CONSREAD_COUNT
 	CALLOS OS_READFILE, CONSREAD_PARMS
 
 	ldx CONSREAD_XFERCT		; Output is available at CONSREAD_INPUT
