@@ -35,24 +35,24 @@ the stuff that gets uploaded to sourceforge.
      it can go into documentation between releases.
    * client/src/dos/adt.s: DOS version number, if necessary: version_no	"v.r"
 
-4. Did the vedrive code change?  The BASIC vedrive.config code on the vdrive-v.r.m.dsk
-   image makes an absolute assumption about where to patch in the IP address.
-
-5. Make sure you've got the latest DOS ADT from the GitHub project;
+4. Make sure you've got the latest DOS ADT from the GitHub project;
    ensure the default baud rate is changed to 115k in adt.s:
    * Search for pspeed: and make it 6, not 5
    * Search for svspeed: and make it 6, not 5
    * Search for default: and make the '5' in position 4 be '6'
 
-6. Perform a build
+5. Perform a build
    * Ensure you are using the 'all' target, not 'dev'
    * Ensure your project properties for the Java Compiler are set to 1.4, not 5.0 or above
      to suit our OSX 10.3.x friends
 
-7. Tests:
+6. Tests:
    * Ensure all files have a current date on the virtual disks
    * Ensure each bootstrap text content works
    * Ensure that floppy formatting works
+
+7. Copy vsdrive.a3drvr and a SOS.DRIVER file with it configged from the
+   apple-iii-vdrive-driver git repository to the vdrive-v.r.m.dsk.   
 
 8. Commit all changes
 

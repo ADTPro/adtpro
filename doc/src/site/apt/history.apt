@@ -8,6 +8,13 @@ ADTPro Release History
 
 * Unreleased - changes in CVS now:
 
+ New functionality:
+
+ * [VDrive] virtual disk drivers on one disk that boots on both
+   Apple II and Apple /// computers
+
+ []
+
  Bug fixes:
 
  * [Server] Audio trims leading garbage from data stream - finally (I
