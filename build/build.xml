@@ -20,17 +20,18 @@ everywhere it is invoked:
 -->
 
 <project name="ADTPro" default="all" basedir="..">
+	<property name="projdir" value="${basedir}" />
+	<property name="builddir" value="${basedir}/build" />
 	<property name="versionString" value="v.r.m" />
 	<property name="distName" value="ADTPro-${versionString}" />
 	<property name="diskName" value="ADTPRO-${versionString}" />
+	<property name="a3sysutils-vs" value="${builddir}/SysUtilsA3-VSDrive-1.26.dsk" />
 	<property name="volName" value="ADTPro.${versionString}" />
 	<property name="vdriveDistName" value="VDrive-${versionString}" />
 	<property name="vdriveDiskName" value="VDRIVE-${versionString}" />
 	<property name="vdriveVolName" value="VDrive.${versionString}" />
 	<property name="dosVersionString" value="24" />
 	<property name="dosDistName" value="ADT${dosVersionString}" />
-	<property name="projdir" value="${basedir}" />
-	<property name="builddir" value="${basedir}/build" />
 	<property file="${builddir}/ADTProBuild.properties"/>
 	<property file="${builddir}/ADTProBuild-default.properties"/>
 	<property name="acJarVersion" value="1.3.5.13-ac" />
@@ -342,6 +343,11 @@ everywhere it is invoked:
 		-->
 		<echo message="Dumping Grub..."/>
 		<appleDump infilename="${projdir}/client/src/GRUB" outfilename="${basedir}/org/adtpro/resources/grub.dmp" applename="GRUB" startaddrhex="A000" numbyteswide="8" decoration="end"/>
+		<!--
+		Copy out the Apple /// virtual serial drive driver
+		-->
+		<appleCommander command="g" imagename="${a3sysutils-vs}" filename="VSDRIVE.A3DRVR" output="VSDRIVE.A3DRVR"/>
+		
 	</target>
 
 	<target name="assembleCommon">
@@ -493,11 +499,18 @@ everywhere it is invoked:
 		<appleCommander command="p" input="${builddir}/ADTSOSETH" imagename="${builddir}/${distName}/disks/${diskName}.DSK" filename="SOS.INTERPETH" type="sos" address="0000"/>
 
 		<!--
+		Put the Apple /// virtual serial drive driver on the vdrive disk
+		-->
+		<appleCommander command="p" input="${builddir}/VSDRIVE.A3DRVR" imagename="${builddir}/${distName}/disks/${vdriveDiskName}.DSK" filename="VSDRIVE.A3DRVR" type="pcd"/>
+
+		<!--
 		Put a nice volume name on the disk images
 		-->
 		<appleCommander command="n" imagename="${builddir}/${distName}/disks/${diskName}.DSK" volname="${volName}"/>
+		<appleCommander command="n" imagename="${builddir}/${distName}/disks/${vdriveDiskName}.DSK" volname="${vdriveVolName}"/>
 		<delete file="${builddir}/ADTSOS" />
 		<delete file="${builddir}/ADTSOSETH" />
+		<delete file="${builddir}/VSDRIVE.A3DRVR" />
 	</target>
 
 	<target name="jar">

@@ -112,6 +112,10 @@ Distribution contents
    of running with Super Serial hardware, the IIgs, the IIc and compatibles, and the Apple ///
    (an Apple 140K disk image)
 
+ [<<<disks/VDRIVE-v.r.m.DSK>>>] Virtual drive driver software (see the {{{vdrive.html}virtual drive}} section)
+
+ [<<<disks/Virtual.po>>>] A blank example virtual disk that is served to virtual drive requests
+
  [<<<lib/ADTPro-v.r.m.jar>>>] ADTPro server-side software (a Java .jar file)
  
  [<<<lib/rxtx/...>>>] Java serial library files

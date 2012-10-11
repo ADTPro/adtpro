@@ -12,7 +12,7 @@ Go into the doc directory and run the command "mvn site".
 The resulting directory rooted at doc/target/site is
 the stuff that gets uploaded to sourceforge.
 
-1. Did the boot sector of ADTProBase.dsk change?  If so, be sure to
+ * Did the boot sector of ADTProBase.dsk change?  If so, be sure to
    re-enable booting on Franklin 1x00 computers.  Bring it up in
    a hex editor and change:
    AD60:4D3B28690BD003
@@ -21,12 +21,16 @@ the stuff that gets uploaded to sourceforge.
    If PRODOS on the disk changes, it'll lose the Bird's Better Bye
    that's hacked into it.
 
-2. Check for the code that needs to lie within a page boundary.
+ * Did the Apple /// virtual drive driver change?  If so, copy over
+   the new disk image from the git repository and point to it in 
+   build.xml with the a3sysutils-vs property.
+
+ * Check for the code that needs to lie within a page boundary.
    Reading a listing, look for these routines:
    Trans:/Trans2:
    rdnibtr:   
 
-3. Make sure the version number is updated.  Places where 
+ * Make sure the version number is updated.  Places where 
    the version number is encoded:
    * build/build.xml: <property name="versionString" value="v.r.m" />
    * build/build.xml: DOS version number, if necessary: <property name="dosVersionString" value="vrm" />
@@ -35,53 +39,50 @@ the stuff that gets uploaded to sourceforge.
      it can go into documentation between releases.
    * client/src/dos/adt.s: DOS version number, if necessary: version_no	"v.r"
 
-4. Make sure you've got the latest DOS ADT from the GitHub project;
+ * Make sure you've got the latest DOS ADT from the GitHub project;
    ensure the default baud rate is changed to 115k in adt.s:
    * Search for pspeed: and make it 6, not 5
    * Search for svspeed: and make it 6, not 5
    * Search for default: and make the '5' in position 4 be '6'
 
-5. Perform a build
+ * Perform a build
    * Ensure you are using the 'all' target, not 'dev'
    * Ensure your project properties for the Java Compiler are set to 1.4, not 5.0 or above
      to suit our OSX 10.3.x friends
 
-6. Tests:
+ * Tests:
    * Ensure all files have a current date on the virtual disks
    * Ensure each bootstrap text content works
    * Ensure that floppy formatting works
 
-7. Copy vsdrive.a3drvr and a SOS.DRIVER file with it configged from the
-   apple-iii-vdrive-driver git repository to the vdrive-v.r.m.dsk.   
+ * Commit all changes
 
-8. Commit all changes
-
-9. Tag the adtpro project with the version number.
+ * Tag the adtpro project with the version number.
    The standard is:  v_[major]_[minor]_[service]
 
-10. Ungzip/untar the .tar.gz distro on a Mac; delete the non-Mac
-    stuff, build a ADTPro-v.r.m.dmg of the ADTPro-v.r.m directory
-    (This happens automatically if you just do a regular build on a Mac)  
+ * Ungzip/untar the .tar.gz distro on a Mac; delete the non-Mac
+   stuff, build a ADTPro-v.r.m.dmg of the ADTPro-v.r.m directory
+   (This happens automatically if you just do a regular build on a Mac)  
 
-11. Using the new SourceForge File Release System, navigate to
-    the ADTPro project:
-    https://sourceforge.net/project/admin/?group_id=170262
-    and use whatever system they have in place today to add the release.
-    Tag each file for the appropriate platform so it is automatically
-    presented to visitors looking to download.
+ * Using the new SourceForge File Release System, navigate to
+   the ADTPro project:
+   https://sourceforge.net/project/admin/?group_id=170262
+   and use whatever system they have in place today to add the release.
+   Tag each file for the appropriate platform so it is automatically
+   presented to visitors looking to download.
 
-12. Upload updated web contents. use SFTP to web.sourceforge.net
-    and User name: SFUSER,adtpro
-    Files go into /home/groups/a/ad/adtpro/htdocs; back up the 
-    old version first (name it the prior version number),
-    and move htdocsOLD/archive to htdocs/archive or the A3 library
-    will be inaccessible.  WinSCP is an easy Windows GUI to do the
-    uploading and movement with.  I haven't found a good GUI client
-    for OSX or Linux.
+ * Upload updated web contents. use SFTP to web.sourceforge.net
+   and User name: SFUSER,adtpro
+   Files go into /home/groups/a/ad/adtpro/htdocs; back up the 
+   old version first (name it the prior version number),
+   and move htdocsOLD/archive to htdocs/archive or the A3 library
+   will be inaccessible.  WinSCP is an easy Windows GUI to do the
+   uploading and movement with.  I haven't found a good GUI client
+   for OSX or Linux.
 
-13. After upload and announcements go out (comp.sys.apple2, Freecode,
-    Softpedia, cnet downloads, etc.) change build/build.xml back to
-    unreleased: <property name="versionString" value="v.r.m" />
+ * After upload and announcements go out (comp.sys.apple2, Freecode,
+   Softpedia, cnet downloads, etc.) change build/build.xml back to
+   unreleased: <property name="versionString" value="v.r.m" />
 
 Need to do a batch renumber of dump files?
 /* */

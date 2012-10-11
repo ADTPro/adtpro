@@ -20,7 +20,44 @@ ADTPro Virtual Drive
  are transferred to and from the host.
  The characters themselves don't have any particular meaning; they're just to indicate activity.
  
-* Starting the VSDRIVE client - Serial
+* VDRIVE Disk Contents
+
+ The VDRIVE-v.r.m.DSK distribution disk is bootable on both the Apple II and Apple /// computers.
+ The file contents of the VDRIVE-v.r.m.DSK disk specific to the Apple II are as follows:
+
+ [<<<PRODOS>>>] ProDOS
+ 
+ [<<<BASIC.SYSTEM>>>] BASIC Language Support
+
+ [<<<NUINPUT.BRUN>>>] {{{http://appleii.ivanx.com/nuinput/}Ivan Drucker's}} excellent NUINPUT program, needed for VEDRIVE.CONFIG
+
+ [<<<STARTUP>>>] Boot-time greeting program  
+
+ [<<<VSDRIVE>>>] Virtual serial drive driver; overwrites the Disk II driver in ProDOS  
+
+ [<<<VSDRIVE.LOW>>>] Virtual serial drive driver; leaves Disk II driver intact, but consumes main memory 
+
+ [<<<VEDRIVE.CONFIG>>>] Virtual ethernet configuration program; required to set parameters for the VEDRIVE driver
+
+ [<<<VEDRIVE>>>] Virtual ethernet drive driver; leaves Disk II driver intact, but consumes main memory
+
+ []
+
+ The file contents of the VDRIVE-v.r.m.DSK distribution disk specific to the Apple /// are as follows:
+
+ [<<<SOS.KERNEL>>>] The kernel of SOS
+
+ [<<<SOS.DRIVER>>>] A preconfigured device driver package containing only CONSOLE and VSDRIVE drivers
+
+ [<<<SOS.INTERP>>>] The Business BASIC environment
+
+ [<<<HELLO>>>] Boot-time greeting program
+
+ [<<<VSDRIVE.A3DRVR>>>] Virtual serial drive driver; can be installed on other boot disks using the Apple /// SOS System Utilities disk
+
+ []
+
+* Starting the VSDRIVE Client - Serial
  
  Once you've established your {{{connectionsserial.html}serial}} 
  connection between your Apple II and the ADTPro host server, boot or otherwise access the
