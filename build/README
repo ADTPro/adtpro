@@ -22,15 +22,19 @@ Your distribution should contain most of these, depending on platform:
                             shell script
  * LICENSE                - The GNU Public License file
  * README                 - The info you're looking at now
- * disks/ADTPro-v.r.m.dsk - ADTPro client-side software
+ * disks/ADTPRO-v.r.m.DSK - ADTPro client-side software
                             (an Apple 140K disk image)
- * disks/ADTPro-v.r.m.po  - ADTPro client-side software
+ * disks/ADTPRO-v.r.m.PO  - ADTPro client-side software
                             (an Apple 800K disk image)
- * disks/ADTvr.dsk        - An enhanced legacy Apple DOS ADT
+ * disks/ADTvr.DSK        - An enhanced legacy Apple DOS ADT
                             client, capable of running on the
                             Super Serial hardware, the IIgs
                             serial (modem) port, and the
                             IIc/Laser 128 modem port
+ * disks/VDRIVE-v.r.m.DSK - Virtual drive driver support
+                            (an Apple 140K disk image)
+ * disks/Virtual.po       - A blank example virtual disk
+                            (an Apple 800K disk image)
  * lib/ADTPro-v.r.m.jar   - ADTPro server-side software
                             (a Java .jar file)
  * lib/rxtx/...           - Java serial library files
