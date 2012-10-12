@@ -208,6 +208,7 @@ public class SerialTransport extends ATransport
     setHardwareHandshaking(hardware);
     port.enableReceiveTimeout(250);
     inputStream = new DataInputStream(port.getInputStream());
+    flushReceiveBuffer();
     outputStream = new DataOutputStream(port.getOutputStream());
     connected = true;
     Log.println(true,"SerialTransport opened port named " + portName + " at speed " + portSpeed + "."); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$

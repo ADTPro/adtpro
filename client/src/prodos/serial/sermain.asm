@@ -1,6 +1,6 @@
 ;
 ; ADTPro - Apple Disk Transfer ProDOS
-; Copyright (C) 2006 - 2008 by David Schmidt
+; Copyright (C) 2006 - 2012 by David Schmidt
 ; david__schmidt at users.sourceforge.net
 ;
 ; This program is free software; you can redistribute it and/or modify it 
@@ -39,6 +39,7 @@
 	.include "prodos/serial/findslot.asm"
 	.include "prodos/serial/ssc.asm"
 	.include "prodos/serial/iigsscc.asm"
+	.include "prodos/serial/timer.asm"
 	.include "crc.asm"
 	.include "pickvol.asm"
 	.include "input.asm"

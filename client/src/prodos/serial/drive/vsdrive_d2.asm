@@ -32,3 +32,4 @@ asm_begin:
 	.include "prodos/serial/drive/vsdrivemain.asm"
 	.include "prodos/serial/iigsscc.asm"
 	.include "prodos/serial/ssc.asm"
+	.include "prodos/serial/timer.asm"

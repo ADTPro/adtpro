@@ -27,3 +27,4 @@
 	.include "../findslot.asm"
 	.include "../iigsscc.asm"
 	.include "../ssc.asm"
+	.include "../timer.asm"

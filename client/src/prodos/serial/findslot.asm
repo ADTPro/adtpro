@@ -130,4 +130,3 @@ FindSlotDone:
 	rts
 TempSlot:	.byte 0
 TempIIgsSlot:	.byte 0
-Timer:		.addr $0000	; Used by serial drivers for timing

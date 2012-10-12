@@ -102,6 +102,11 @@ SABORT:	jmp PABORT
 ;---------------------------------------------------------
 RESETSSC:
 MOD0:	bit $C088	; CLEAR SSC INPUT REGISTER
+Drain:	lda #$f0
+	sta Timer
+	sta Timer+1
+	jsr SSCGetLoop
+	bcc Drain
 	rts
 
 ;---------------------------------------------------------
