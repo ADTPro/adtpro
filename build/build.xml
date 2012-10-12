@@ -346,7 +346,7 @@ everywhere it is invoked:
 		<!--
 		Copy out the Apple /// virtual serial drive driver
 		-->
-		<appleCommander command="g" imagename="${a3sysutils-vs}" filename="VSDRIVE.A3DRVR" output="VSDRIVE.A3DRVR"/>
+		<appleCommander command="g" imagename="${a3sysutils-vs}" filename="VSDRIVE.A3DRVR" output="${builddir}/VSDRIVE.A3DRVR"/>
 		
 	</target>
 
