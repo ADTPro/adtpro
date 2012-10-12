@@ -36,9 +36,9 @@
 	.include "sos/online.asm"
 	.include "sos/rw.asm"
 	.include "sr.asm"
-	.include "prodos/serial/ssc.asm"		;\
-	.include "sos/serial/iiiacia.asm"		; The three of these comprise the serial library
-	.include "prodos/serial/timer.asm"		;/
+	.include "prodos/serial/ssc.asm"
+	.include "sos/serial/iiiacia.asm"
+	.include "prodos/serial/timer.asm"
 	.include "crc.asm"
 	.include "pickvol.asm"
 	.include "input.asm"
