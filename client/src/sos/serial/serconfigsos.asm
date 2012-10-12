@@ -327,4 +327,3 @@ SVSPEED:	.byte 3		; Storage for speed setting
 CONFIGYET:	.byte 0		; Has the user configged yet?
 PARMSEND:
 PNIBBL:		.byte 1		; Enable nibbles? (NO - and not saved or exposed)
-Timer:		.addr $0000	; Used by serial drivers for timing
