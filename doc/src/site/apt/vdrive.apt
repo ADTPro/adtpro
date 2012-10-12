@@ -6,9 +6,8 @@
 
 ADTPro Virtual Drive
 
- The ADTPro server can host a virtual hard drive to a connected Apple II machine running a driver from 
+ The ADTPro server can host a virtual hard drive to a connected Apple II or /// machine running a driver from 
  the distribution disk, VDRIVE-v.r.m.DSK.
- A driver is also available for Apple /// machines - see the {{{vdrive.html#SOS}SOS}} section below.
  This is a different function from the usual disk transfer mechanics of the ADTPro client.
  With the VDrive driver running on an Apple, you can access an image named "Virtual.po" 
  in the "Disks" folder of the ADTPro server.
@@ -16,10 +15,6 @@ ADTPro Virtual Drive
  client will be able to access the contents of that image via slot 2, drive 1 on an Apple II,
  and as the .VSDRIVE device on an Apple ///.
 
- There is an indication of disk activity in the upper-right corner of the screen as blocks
- are transferred to and from the host.
- The characters themselves don't have any particular meaning; they're just to indicate activity.
- 
 * VDRIVE Disk Contents
 
  The VDRIVE-v.r.m.DSK distribution disk is bootable on both the Apple II and Apple /// computers.
@@ -132,17 +127,13 @@ ADTPro Virtual Drive
 
 * Starting the VSDRIVE on {SOS} - Serial on the Apple ///
 
- Using the virtual serial drive on SOS requires you to add the VSDRIVE.DRIVER device driver to your
-boot disk.  
-The distribution image SysUtilsA3-VSDrive-0.02B.dsk is available as a 
-{{{http://sourceforge.net/projects/adtpro/files/adtpro/ADTPro-1.2.5/SysUtilsA3-VSDrive-0.02B.dsk/download}download}}
-from ADTPro and contains the driver as well as a copy of the System Utilities to install it.
-
- Once installed, the device ".VSDRIVE" will be available to the system, and will reflect the Virtual.po image
-served by the ADTPro server.   
+ Using the virtual serial drive on SOS requires you to add the VSDRIVE.A3DRVR device driver to your boot disk.
+ The VDRIVE-v.r.m.DSK disk is bootable on the Apple ///, runs Business BASIC, and contains the required driver pre-installed for you. 
+ Once installed on any of your boot disks, the device ".VSDRIVE" will be available to the system, 
+and will reflect the Virtual.po image served by the ADTPro server.   
 
 [images/vdrivesos1.png]
 
  It is important to connect your {{{connectionsserial.html#Apple3}null modem}} to the Apple /// and start
 the ADTPro server (and click the Serial button) before booting and using the serial driver.
-If you don't, changing the connectedness of the cabling while running causes SOS to crash with $02 errors.   
+If you don't, changing the connectedness of the cabling while running causes SOS to crash with a $02 error.   
