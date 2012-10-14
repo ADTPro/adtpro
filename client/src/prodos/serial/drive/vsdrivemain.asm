@@ -21,6 +21,7 @@
 
 READFAIL:
 	jsr	RESETIO
+	bit	$c010
 	sec
 	rts
 
@@ -30,44 +31,37 @@ READBLK:
 	lda	#$03		; Read command w/time request
 	jsr	COMMAND_ENVELOPE
 ; Pull and verify command envelope from host
-	jsr	GETC		; Command envelope begin
+	ldx	#$00
+@Pull:	jsr	GETC
+	bcs	READFAIL
+	sta	Envelope,x
+	inx
+	cpx	#$09
+	bne	@Pull
+	jsr 	CALC_Envelope	; Calculate the checksum of the envelope
+
+	lda	Envelope	
 	cmp	#CHR_E
 	bne	READFAIL
-	jsr	GETC		; Read command
+	lda	Envelope+1
 	cmp	#$03
 	bne	READFAIL
-	jsr	GETC		; LSB of requested block
+	lda	Envelope+2
 	cmp	BLKLO
 	bne	READFAIL
-	jsr	GETC		; MSB of requested block
+	lda	Envelope+3
 	cmp	BLKHI
 	bne	READFAIL
-	jsr	GETC		; LSB of time
-	sta	TEMPDT
-	eor	CHECKSUM
-	sta	CHECKSUM
-	jsr	GETC		; MSB of time
-	sta	TEMPDT+1
-	eor	CHECKSUM
-	sta	CHECKSUM
-	jsr	GETC		; LSB of date
-	sta	TEMPDT+2
-	eor	CHECKSUM
-	sta	CHECKSUM
-	jsr	GETC		; MSB of date
-	sta	TEMPDT+3
-	eor	CHECKSUM
-	sta	CHECKSUM
-	jsr	GETC		; Checksum of command envelope
+	lda	Envelope+8	; Checksum of command envelope
 	cmp	CHECKSUM
 	bne	WRITEFAIL	; Just need a nearby failure
-	lda	TEMPDT
+	lda	Envelope+4	; LSB of time	
 	sta	TIME
-	lda	TEMPDT+1
+	lda	Envelope+5	; MSB of time
 	sta	TIME+1
-	lda	TEMPDT+2
+	lda	Envelope+6	; LSB of date
 	sta	DATE
-	lda	TEMPDT+3
+	lda	Envelope+7	; MSB of date
 	sta	DATE+1
 ; Grab the screen contents, remember it
 	lda	SCRN_THROB
@@ -78,6 +72,7 @@ READBLK:
 	stx	SCRN_THROB
 RDLOOP:
 	jsr	GETC
+	bcs	WRITEFAIL
 	sta	(BUFLO),Y
 	iny
 	bne	RDLOOP
@@ -95,6 +90,7 @@ RDLOOP:
 	sta	SCRN_THROB
 
 	jsr	GETC	; Checksum
+	bcs	WRITEFAIL
 	pha		; Push checksum for now
 	ldx	#$00
 	jsr	CALC_CHECKSUM
@@ -107,9 +103,8 @@ RDLOOP:
 	rts
 
 WRITEFAIL:
-	; increment failure count
-	; retry if not too bad
 	jsr	RESETIO
+	bit	$c010
 	sec
 	rts
 
@@ -144,18 +139,23 @@ WRLOOP:
 
 ; READ ECHO'D COMMAND AND VERIFY
 	jsr	GETC
+	bcs	WRITEFAIL
 	cmp	#CHR_E		; S/B Command envelope
 	bne	WRITEFAIL
 	jsr	GETC
+	bcs	WRITEFAIL
 	cmp	#$02		; S/B Write
 	bne	WRITEFAIL
 	jsr	GETC		; Read LSB of requested block
+	bcs	WRITEFAIL
 	cmp	BLKLO
 	bne	WRITEFAIL
 	jsr	GETC		; Read MSB of requested block
+	bcs	WRITEFAIL
 	cmp	BLKHI
 	bne	WRITEFAIL
 	jsr	GETC		; Checksum of block - not the command envelope
+	bcs	WRITEFAIL
 	cmp	CHECKSUM
 	bne	WRITEFAIL
 	lda	#$00
@@ -183,6 +183,18 @@ COMMAND_ENVELOPE:
 	jsr	PUTC		; Send envelope checksum
 	rts
 
+CALC_Envelope:			; Calculate the checksum of the envelope
+	lda	#$00		; Clean everyone out
+	tay
+	sta	CHECKSUM
+@CE_LOOP:
+	eor	Envelope,Y	; Exclusive-or accumulator with what's at Envelope,Y
+	sta	CHECKSUM	; Save that tally in CHECKSUM as we go
+	iny
+	cpy	#$08		; $8 bytes to eor (zero through seven)
+	bne	@CE_LOOP
+	rts
+
 ;---------------------------------------------------------
 ; PUTC - SEND ACC OVER THE SERIAL LINE (AXY UNCHANGED)
 ;---------------------------------------------------------
@@ -208,3 +220,5 @@ PSPEED:
 COMMSLOT:
 DEFAULT:
 	.byte	$ff	; Start with -1 for a slot number so we can tell when we find no slot
+Envelope:
+	.res	9

@@ -110,6 +110,5 @@ SCREEN_CONTENTS:
 	.byte	$00	; Storage for the character on screen when throbbing
 CHECKSUM:
 	.byte	$00
-TEMPDT:	.res	$04
 STACKPTR:		; Storage for the stack pointer to unwind call stack
 	.res	$01

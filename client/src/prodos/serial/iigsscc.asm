@@ -63,10 +63,6 @@ ZCCG:
 	lda #$00
 	sta Timer
 	sta Timer+1
-	lda $C000	; Check for escape at first
-	cmp #CHR_ESC	; Escape = abort
-	bne SCCGetLoop
-	jmp PABORT
 SCCGetLoop:
 	bit $C0E8	; Attempt to slow accelerators down by referencing slot 6 ($C088 + $60)
 	lda GSCMDB	; READ 8530 READ REGISTER 0
@@ -76,7 +72,8 @@ SCCGetLoop:
 	lda $C000	; Check for escape once in a while
 	cmp #CHR_ESC	; Escape = abort
 	bne @TimerInc
-	jmp PABORT
+	sec
+	rts
 @TimerInc:
 	inc Timer	; No character; poke at a crude timer
 	bne SCCGetLoop	; Timer non-zero, loop
@@ -102,6 +99,19 @@ itsOK:
 	lda GSCMDB	;  READ rr8
 	clc
 	rts
+
+SCCGetLoop2:
+	bit $C0E8	; Attempt to slow accelerators down by referencing slot 6 ($C088 + $60)
+	lda GSCMDB	; READ 8530 READ REGISTER 0
+	and #$01        ; BIT 0 MEANS RX CHAR AVAILABLE
+	cmp #$01
+	beq pullIt	; THERE'S A CHAR IN THE 8530 RX BUFFER
+	inc Timer	; No character; poke at a crude timer
+	bne SCCGetLoop2	; Timer non-zero, loop
+	inc Timer+1
+	bne SCCGetLoop2	; Timer non-zero, loop
+	sec		; Timeout; bail
+	rts	
 
 ;---------------------------------------------------------
 ; INITZSCC - initialize the Modem Port
@@ -274,10 +284,14 @@ BAUDH:	.byte	1	;300 bps
 ;	.byte	0	;57600 (8)
 
 ;---------------------------------------------------------
-; RESETZGS - Clean up SCC every time we hit the main loop
+; RESETZGS - Clean up SCC
 ;---------------------------------------------------------
 RESETZGS:
-	LDA GSCMDB	; READ TO RESET channelB POINTER TO 0
+@Drain:	lda #$f0
+	sta Timer+1	; Set a very small timeout - just about to tick over
+	jsr SCCGetLoop2 
+	bcc @Drain
+	lda GSCMDB	; READ TO RESET channelB POINTER TO 0
 	rts
 
 ;---------------------------------------------------------

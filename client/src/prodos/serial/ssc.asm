@@ -70,10 +70,6 @@ SSCGET:
 	lda #$00
 	sta Timer
 	sta Timer+1
-	lda $C000	; Check for escape at first
-	cmp #CHR_ESC	; Escape = abort
-	bne SSCGetLoop
-	jmp PABORT
 SSCGetLoop:
 	bit $C0E8	; Attempt to slow accelerators down by referencing slot 6 ($C088 + $60)
 MOD3:	lda $C089	; Check status bits
@@ -83,7 +79,8 @@ MOD6:	and #$68
 	lda $C000	; Check for escape once in a while
 	cmp #CHR_ESC	; Escape = abort
 	bne @TimerInc
-	jmp PABORT
+	sec
+	rts		; Escape hit
 @TimerInc:
 	inc Timer
 	bne SSCGetLoop	; Timer non-zero, loop
@@ -102,11 +99,10 @@ SABORT:	jmp PABORT
 ;---------------------------------------------------------
 RESETSSC:
 MOD0:	bit $C088	; CLEAR SSC INPUT REGISTER
-Drain:	lda #$f0
-	sta Timer
+@Drain:	lda #$f0
 	sta Timer+1
 	jsr SSCGetLoop
-	bcc Drain
+	bcc @Drain
 	rts
 
 ;---------------------------------------------------------
