@@ -56,7 +56,7 @@ public class CommsThread extends Thread
 
 	private int[] CRCTABLE = new int[256];
 
-	private int _maxRetries = 10;
+	private int _maxRetries = 3;
 
 	long _startTime, _endTime;
 
