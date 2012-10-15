@@ -332,7 +332,8 @@ READ_LINE:
 	; the console with no-wait, then waiting for the real thing.
 	; Calling SOS to clear the typeahead cache didn't help because
 	; data was already in the read buffer.  This still isn't perfect,
-	; but it's (much) better than before. 
+	; but it's (much) better than before.
+	bit $c010				; Strobe keyboard - may help with escape mode? 
 	lda #$80
 	sta D_CONTROL_DATA
 	lda #$0a
