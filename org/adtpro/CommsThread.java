@@ -36,7 +36,9 @@ import org.adtpro.utilities.StringUtilities;
 import org.adtpro.utilities.UnsignedByte;
 
 import com.webcodepro.applecommander.storage.Disk;
+import com.webcodepro.applecommander.storage.physical.ByteArrayImageLayout;
 import com.webcodepro.applecommander.storage.physical.NibbleOrder;
+import com.webcodepro.applecommander.storage.physical.ProdosOrder;
 
 public class CommsThread extends Thread
 {
@@ -779,7 +781,8 @@ public class CommsThread extends Thread
 						Log.println(false, "CommsThread.receiveDisk() length: " + (length * 512) + " Disk.APPLE_140KB_DISK: " + Disk.APPLE_140KB_DISK);
 						if ((length * 512) == Disk.APPLE_140KB_DISK)
 						{
-							Disk disk = new Disk(name);
+							// We know images will always be coming from the server in ProDOS order, so construct our disk that way
+							Disk disk = new Disk(name,new ProdosOrder(new ByteArrayImageLayout(Disk.APPLE_140KB_DISK)));
 							// Force any 5-1/4" disk order to DOS
 							disk.makeDosOrder();
 							disk.save();
