@@ -782,7 +782,7 @@ public class CommsThread extends Thread
 						if ((length * 512) == Disk.APPLE_140KB_DISK)
 						{
 							// We know images will always be coming from the server in ProDOS order, so construct our disk that way
-							Disk disk = new Disk(name,new ProdosOrder(new ByteArrayImageLayout(Disk.APPLE_140KB_DISK)));
+							Disk disk = new Disk(name,true);
 							// Force any 5-1/4" disk order to DOS
 							disk.makeDosOrder();
 							disk.save();
