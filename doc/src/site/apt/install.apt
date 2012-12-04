@@ -12,10 +12,10 @@ ADTPro Installation
  command line.  This means that if you type the command 
  <<<"java -version">>> from a terminal window it ought to produce 
  output other than complaints.
- One place to get a downloadable Java distribution is from Sun Microsystems:
- {{{http://java.sun.com/javase/downloads/index.jsp}Sun JRE download.}}
- When you get there, look for a "Java Runtime Environment (JRE)"
- download for your platform and install it.
+ One place to get a downloadable Java distribution is from Oracle:
+ {{{http://www.oracle.com/technetwork/java/javase/downloads/index.html}Java SE JRE download.}}
+ When you get there, look for a Java SE <<JRE>> download button.
+ Download for your platform and install it.
 
  The ADTPro distribution comes as a single file named something similar to
  <<<ADTPro-v.r.m>>> with an extension particular to the target platform:
