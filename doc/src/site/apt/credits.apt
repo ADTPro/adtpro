@@ -26,10 +26,11 @@ the FASTDSK package, and added config file creation as well.
  {{{http://a2retrosystems.com}Glenn Jones}} generously donated an Uthernet card
 to enable IP transport development for both II and /// machines. 
  
- The IP stack is taken from MagerValp's tight and fast ip65 project code at 
-{{http://ip65.sourceforge.net/}}
+ The IP stack is taken from MagerValp's tight and fast ip65 code (now integrated into
+the netboot65 project and maintained by Jonno Downes) at 
+{{http://netboot65.sourceforge.net/}}.
 It was ported to the Apple II by Glenn Jones.
-It turns out that ip65's checksum algorithm is faulty, so not being smart enough
+It turns out that ip65's checksum algorithm was faulty, so not being smart enough
 to debug it myself, I simply transplanted the one from the Contiki project
 ({{http://www.sics.se/contiki/}}).
 
@@ -45,7 +46,7 @@ etc. with concepts and code from the CiderPress project:
 from the jSyncManager project: {{http://jsyncmanager.sourceforge.net/}}
 
  Hardware-level serial communications in Java comes from
-the rxtx organization: {{http://www.rxtx.org/}}.
+the rxtx project: {{http://rxtx.qbang.org}}.
  The RXTX binaries for 64-bit Windows are provided as a courtesy of Cloudhopper:
 {{http://cloudhopper.com/opensource/rxtx}}.
 
@@ -66,7 +67,7 @@ using Pascal entry points in slot 2).
 
  The code to interface directly with the IIgs' Serial Communications Controller
 chip was borrowed partially from the "Warp Six BBS" code:
-{{http://www.apple2.org.za/gswv/a2zine/Utils/Z8530_SCCsamples_info.txt}}
+{{http://www.apple2.org.za/gswv/a2zine/Utils/Z8530_SCCsamples_info.txt}}.
 Note that the current code is not nearly as nice to the system as the BBS code is.
 It <<will>> break AppleTalk if it's running.
 
@@ -76,7 +77,7 @@ format large media and to get rid of a few bugs based on 140k diskette assumptio
 Hyper-FORMAT was originally written by Jerry Hewett and enhanced by Gary Desrochers.
 Their licensing terms dictated that they be credited for their work.
 Their original notice remains in the 
-{{{http://adtpro.cvs.sourceforge.net/viewvc/adtpro/adtpro/client/src/prodos/format.asm?view=markup}source code.}}
+{{{http://adtpro.cvs.sourceforge.net/viewvc/adtpro/adtpro/adtpro/client/src/prodos/format.asm?view=markup}source code.}}
 
  I learned a good deal about Java sound capture and playback from Gamelan in an
 introductory article here:
@@ -84,6 +85,7 @@ introductory article here:
 I found some very helpful audio code from the {{{http://www.jbother.org/}JBother}} project:
 {{http://www.jbother.org/api/src-html/com/valhalla/jbother/sound/SoundPlayer.html}}
 The audio code in ADTPro is a particularly undisciplined extension of these two sources.
+Marc Ressl came to my aid and cleaned up as much as he dared.
 
  ProDOS assembly programming particulars were divined from the Beneath ProDOS
 book by Don Worth and Pieter Lechner, published by Quality Software in 1984.
@@ -95,7 +97,7 @@ is {{{archive/AppleIIIBits.html}here.}}
 
  The Apple /// machine language monitor and ways of accessing it during program execution
 was critical to debugging operations.  Important information on how to accomplish that
-was published in the "/// Cheers!" magazine from A.P.P.L.E., available {{{http://www.callapple.org/magazines/cheers/summer_1985.html}here.}}
+was published in the "/// Cheers!" magazine from {{{http://www.callapple.org/magazines/cheers/}Call-A.P.P.L.E.}}
 
  The ProDOS loader concepts used to speed up booting (by eliminating the need for Applesoft)
 were from Oliver Schmidt's LOADER.SYSTEM contribution to cc65, available
