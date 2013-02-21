@@ -9,7 +9,7 @@ ADTPro Ethernet Connections
 [images/uthernet.jpg]
 
  Connecting your Apple to your home network is as easy as plugging the
- {{{http://a2retrosystems.com}Uthernet}} or the {{{http://www.wbwip.com/shh/}LANceGS}}
+ {{{http://a2retrosystems.com}Uthernet}} or the {{{http://www.reference.com/browse/lancegs+ethernet+card}LANceGS}}
  card into the Apple, and then
  plugging a Cat-5 Ethernet cable from the card into your home router or
  switch.  You just need to set ADTPro's IP parameters (details 
@@ -59,7 +59,7 @@ left arrow keys.  Your Apple has right and left arrow keys; trust me.
 it is for you.  But if you have multiple Ethernet cards in your system,
 you will need to choose which one to talk to.
 Pull off your Apple's lid to check if you need to.
-If you have an IIgs, ensure you select "Your Card" in the IIgs' control
+If you have a IIgs, ensure you select "Your Card" in the IIgs' control
 panel for the slot your Ethernet card is in, and select that same slot
 number here.
 
