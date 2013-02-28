@@ -393,17 +393,21 @@ everywhere it is invoked:
 		<copy file="${builddir}/adtprobase.bat" tofile="${builddir}/${distName}/adtpro.bat" />
 		<copy file="${builddir}/adtprobase.cmd" tofile="${builddir}/${distName}/adtpro.cmd" />
 		<copy file="${builddir}/adtprobase.sh" tofile="${builddir}/${distName}/adtpro.sh" />
+		<copy file="${builddir}/acbase.sh" tofile="${builddir}/${distName}/ac.sh" />
+		<copy file="${builddir}/acbase.bat" tofile="${builddir}/${distName}/ac.bat" />
 		<replace file="${builddir}/${distName}/adtpro.bat" token="%ADTPRO_VERSION%" value="${distName}.jar"/>
 		<replace file="${builddir}/${distName}/adtpro.bat" token="%RXTX_VERSION%" value="${rxtxVersion}"/>
 		<replace file="${builddir}/${distName}/adtpro.bat" token="%RXTX_VERSION_OLD%" value="${rxtxVersion2}"/>
 		<replace file="${builddir}/${distName}/adtpro.bat" token="%RXTX_VERSION_WIN64%" value="${rxtxVersionCloudHopperWin64}"/>
 		<replace file="${builddir}/${distName}/adtpro.bat" token="%AC_VERSION%" value="${acJarVersion}"/>
+		<replace file="${builddir}/${distName}/ac.bat" token="%AC_VERSION%" value="${acJarVersion}"/>
 		<replace file="${builddir}/${distName}/adtpro.cmd" token="%ADTPRO_VERSION%" value="${distName}.jar"/>
 		<replace file="${builddir}/${distName}/adtpro.cmd" token="%RXTX_VERSION%" value="${rxtxVersion}"/>
 		<replace file="${builddir}/${distName}/adtpro.sh" token="%ADTPRO_VERSION%" value="${distName}.jar"/>
 		<replace file="${builddir}/${distName}/adtpro.sh" token="%RXTX_VERSION%" value="${rxtxVersion}"/>
 		<replace file="${builddir}/${distName}/adtpro.sh" token="%RXTX_VERSION_OLD%" value="${rxtxVersion2}"/>
 		<replace file="${builddir}/${distName}/adtpro.sh" token="%AC_VERSION%" value="${acJarVersion}"/>
+		<replace file="${builddir}/${distName}/ac.sh" token="%AC_VERSION%" value="${acJarVersion}"/>
 	</target>
 
 	<target name="builddsk" depends="buildProDOSdsk, buildSOSdsk">
