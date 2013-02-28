@@ -12,6 +12,8 @@ ADTPro Release History
 
  * [Server] Added a command-line invoker for AppleCommander
 
+ []
+
  Bug fixes:
 
  * [Server] 5-1/4" disk images with unrecognized filesystems are

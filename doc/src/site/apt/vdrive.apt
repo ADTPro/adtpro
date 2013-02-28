@@ -15,6 +15,17 @@ ADTPro Virtual Drive
  client will be able to access the contents of that image via slot 2, drive 1 on an Apple II,
  and as the .VSDRIVE device on an Apple ///.
 
+ The ADTPro distribution comes with a 800k Virtual.po file pre-built for you. 
+ There's not much on it, as it's intended to give you a little extra storage space and to get used to how the virtual drive system works.
+ You can use that one as-is, or you can substitute your own instead.
+ If you would like to make your own blank one, CiderPress or AppleCommander can do that for you.
+ For example, from the command line where you normally run ADTPro from, you could enter one of these commands, based on your platform:
+
++------------
+   ac.bat -pro800 disks\Virtual.po VOLNAME
+   sh ac.sh -pro800 disks/Virtual.po VOLNAME
++------------
+
 * VDRIVE Disk Contents
 
  The VDRIVE-v.r.m.DSK distribution disk is bootable on both the Apple II and Apple /// computers.
