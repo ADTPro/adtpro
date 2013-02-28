@@ -595,6 +595,7 @@ everywhere it is invoked:
 		<move file="${builddir}/${distName}/ADTPro.sh" tofile="${builddir}/${distName}/ADTPro.command"/>
 		<delete file="${builddir}/${distName}/ADTPro.bat" />
 		<delete file="${builddir}/${distName}/ADTPro.cmd" />
+		<delete file="${builddir}/${distName}/ac.bat" />
 		
 		<!-- Un-sign Apple's JavaApplicationStub -->
 		<echo message="Un-signing Apple's Java Application Stub."/>
