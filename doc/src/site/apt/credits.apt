@@ -77,7 +77,7 @@ format large media and to get rid of a few bugs based on 140k diskette assumptio
 Hyper-FORMAT was originally written by Jerry Hewett and enhanced by Gary Desrochers.
 Their licensing terms dictated that they be credited for their work.
 Their original notice remains in the 
-{{{http://adtpro.cvs.sourceforge.net/viewvc/adtpro/adtpro/adtpro/client/src/prodos/format.asm?view=markup}source code.}}
+{{{http://adtpro.cvs.sourceforge.net/viewvc/adtpro/adtpro/client/src/prodos/format.asm?view=markup}source code.}}
 
  I learned a good deal about Java sound capture and playback from Gamelan in an
 introductory article here:
