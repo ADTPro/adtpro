@@ -19,6 +19,8 @@ ADTPro Release History
  * [Server] 5-1/4" disk images with unrecognized filesystems are
    always written with DOS-ordered physical interleaving 
 
+ * [Server] Start the numerical part of batch name at 1, not 0
+
 * 1.2.6 - October 11, 2012
 
  New functionality:

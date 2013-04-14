@@ -1,6 +1,6 @@
 /*
  * ADTPro - Apple Disk Transfer ProDOS
- * Copyright (C) 2007 - 2012 by David Schmidt
+ * Copyright (C) 2007 - 2013 by David Schmidt
  * david__schmidt at users.sourceforge.net
  *
  * This program is free software; you can redistribute it and/or modify it 
@@ -36,9 +36,7 @@ import org.adtpro.utilities.StringUtilities;
 import org.adtpro.utilities.UnsignedByte;
 
 import com.webcodepro.applecommander.storage.Disk;
-import com.webcodepro.applecommander.storage.physical.ByteArrayImageLayout;
 import com.webcodepro.applecommander.storage.physical.NibbleOrder;
-import com.webcodepro.applecommander.storage.physical.ProdosOrder;
 
 public class CommsThread extends Thread
 {
@@ -2926,7 +2924,7 @@ public class CommsThread extends Thread
 		return (_transport.getInstructions(guiString, size, speed));
 	}
 
-	public static int lastFileNumber = 0;
+	public static int lastFileNumber = 1;
 
-	public static int lastNibNumber = 0;
+	public static int lastNibNumber = 1;
 }
