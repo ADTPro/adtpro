@@ -658,6 +658,11 @@ public class CommsThread extends Thread
 			Log.print(false, "Waiting for name..."); //$NON-NLS-1$
 			String name = _parent.getWorkingDirectory() + receiveName();
 			Log.println(false, " received name: " + name); //$NON-NLS-1$
+			if (!name.equals(lastFileName))
+			{
+				lastFileNumber = 1;
+				lastFileName = name;
+			}
 			File f = null;
 			String nameGen, zeroPad;
 			FileOutputStream fos = null;
@@ -1600,6 +1605,11 @@ public class CommsThread extends Thread
 			Log.print(false, "Waiting for name..."); //$NON-NLS-1$
 			String name = _parent.getWorkingDirectory() + receiveName();
 			Log.println(false, " received name: " + name); //$NON-NLS-1$
+			if (!name.equals(lastNibName))
+			{
+				lastNibNumber = 1;
+				lastNibName = name;
+			}
 			File f = null;
 			String nameGen, zeroPad;
 			FileOutputStream fos = null;
@@ -2925,6 +2935,8 @@ public class CommsThread extends Thread
 	}
 
 	public static int lastFileNumber = 1;
+	public static String lastFileName = "";
 
 	public static int lastNibNumber = 1;
+	public static String lastNibName = "";
 }
