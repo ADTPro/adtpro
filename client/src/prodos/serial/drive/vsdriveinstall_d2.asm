@@ -45,6 +45,29 @@ copydriver:
 	lda	ROMONLY2	; Disable all Language Card RAM	
 	jmp	init
 
+;***********************************************
+;
+; msg -- print an in-line message
+;
+msg:	pla
+	sta	UTILPTR
+	pla
+	sta	UTILPTR+1
+	ldy	#0
+msg1:	inc	UTILPTR
+	bne	:+
+	inc	UTILPTR+1
+:	lda	(UTILPTR),y
+	beq	msgx
+	ora	#%10000000
+	jsr	COUT
+	jmp	msg1
+msgx:	lda	UTILPTR+1
+	pha
+	lda	UTILPTR
+	pha
+	rts
+
 full:
 	jsr	msg
 	.byte	"SLOT 2 DRIVE 1 ALREADY RESIDENT.",$00
@@ -112,27 +135,10 @@ findser:
 	clc
 	adc	#$B1	; Add '1' to the found comm slot number for reporting
 	jsr	COUT	; Tell 'em which one we're using
-	rts
 
-;***********************************************
-;
-; msg -- print an in-line message
-;
-msg:	pla
-	sta	UTILPTR
-	pla
-	sta	UTILPTR+1
-	ldy	#0
-msg1:	inc	UTILPTR
-	bne	:+
-	inc	UTILPTR+1
-:	lda	(UTILPTR),y
-	beq	msgx
-	ora	#%10000000
-	jsr	COUT
-	jmp	msg1
-msgx:	lda	UTILPTR+1
-	pha
-	lda	UTILPTR
-	pha
-	rts
+	;
+	; What to do next (rts vs. jmp) is set in the enveloping assembly.
+	; This allows us to use this same code to install and quit on 
+	; a boot disk, or install and continue to load BASIC as part of 
+	; serial bootstrapping operations.
+	;
