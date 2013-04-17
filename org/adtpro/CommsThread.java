@@ -313,7 +313,7 @@ public class CommsThread extends Thread
 					_parent.setMainText(Messages.getString("CommsThread.5")); //$NON-NLS-1$
 					_parent.setSecondaryText(""); //$NON-NLS-1$
 					Log.println(false, "CommsThread.commandLoop() Received BASIC dump command."); //$NON-NLS-1$
-					requestSend(Messages.getString("Gui.BS.BASIC"), true, 0, 115200);
+					requestSend(Messages.getString("Gui.BS.BSpeed"), true, 0, 115200);
 					_busy = false;
 					break;
 				default:
@@ -2479,7 +2479,7 @@ public class CommsThread extends Thread
 				slowLastLines = 0;
 				isBinary = true;
 			}
-			else if (resource.equals(Messages.getString("Gui.BS.BASIC")))
+			else if (resource.equals(Messages.getString("Gui.BS.BSpeed")))
 			{
 				resourceName = "org/adtpro/resources/BSpeed.raw";
 				slowFirstLines = 0;
@@ -2713,7 +2713,7 @@ public class CommsThread extends Thread
 						}
 						if (_resource.equals(Messages.getString("Gui.BS.SOSINTERP")) ||
 								_resource.equals(Messages.getString("Gui.BS.ProDOSRaw")) ||
-								_resource.equals(Messages.getString("Gui.BS.BASIC")) ||
+								_resource.equals(Messages.getString("Gui.BS.BSpeed")) ||
 								_resource.equals(Messages.getString("Gui.BS.ADTProRaw")) ||
 								_resource.equals(Messages.getString("Gui.BS.VSDriveRaw")) ||
 								_resource.equals(Messages.getString("Gui.BS.SOSDRIVER")))
@@ -2741,7 +2741,7 @@ public class CommsThread extends Thread
 							{
 								_transport.writeByte(0x56); // Send a "V" to trigger the start
 							}
-							else if (_resource.equals(Messages.getString("Gui.BS.BASIC")))
+							else if (_resource.equals(Messages.getString("Gui.BS.BSpeed")))
 							{
 								_transport.writeByte(0x42); // Send a "B" to trigger the start
 								length = length - 1; // BASIC seems to need this reduced by one...
