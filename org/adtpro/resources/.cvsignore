@@ -12,3 +12,5 @@ messages_es.properties
 messages_it.properties
 messages_pt_BR.properties
 grub2.dmp
+vsdrive*.raw
+vsdrive*.dmp

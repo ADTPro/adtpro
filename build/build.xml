@@ -95,6 +95,9 @@ everywhere it is invoked:
 		<exec dir="${projdir}/client/src" executable="${assemblerPath}/ca65">
 			<arg line="-t none -l prodos/serial/drive/vsdrive_d2.asm" />
 		</exec>
+		<exec dir="${projdir}/client/src" executable="${assemblerPath}/ca65">
+			<arg line="-t none -l prodos/serial/drive/vsdrive_speed.asm" />
+		</exec>
 		<echo message="Linking serial drive..."/>
 		<exec dir="${projdir}/client/src" executable="${assemblerPath}/ld65">
 			<arg line="-o DRIVE -m vsdrive.map -C prodos/serial/drive/vsdrive.cfg prodos/serial/drive/vsdrive.o" />
@@ -102,13 +105,22 @@ everywhere it is invoked:
 		<exec dir="${projdir}/client/src" executable="${assemblerPath}/ld65">
 			<arg line="-o DRIVE_D2 -m vsdrive_d2.map -C prodos/serial/drive/vsdrive_d2.cfg prodos/serial/drive/vsdrive_d2.o" />
 		</exec>
+		<exec dir="${projdir}/client/src" executable="${assemblerPath}/ld65">
+			<arg line="-o DRIVE_SPEED -m vsdrive_speed.map -C prodos/serial/drive/vsdrive_d2.cfg prodos/serial/drive/vsdrive_speed.o" />
+		</exec>
 		<move file="${projdir}/client/src/DRIVE" tofile="${builddir}/VSDRIVE" />
+		<copy file="${builddir}/VSDRIVE" tofile="${basedir}/org/adtpro/resources/vsdrive.raw" />
 		<move file="${projdir}/client/src/DRIVE_D2" tofile="${builddir}/VSDRIVE_D2" />
+		<copy file="${builddir}/VSDRIVE_D2" tofile="${basedir}/org/adtpro/resources/vsdrive_d2.raw" />
+		<move file="${projdir}/client/src/DRIVE_SPEED" tofile="${builddir}/VSDRIVE_SPEED" />
+		<copy file="${builddir}/VSDRIVE_SPEED" tofile="${basedir}/org/adtpro/resources/vsdrive_speed.raw" />
 		<echo message="Adding VSDrive to 5.25 disk image..."/>
 		<appleCommander command="d" input="${builddir}/VSDRIVE" imagename="${builddir}/${distName}/disks/${vdriveDiskName}.DSK" filename="VSDRIVE.LOW" failonerror="false"/>
 		<appleCommander command="p" input="${builddir}/VSDRIVE" imagename="${builddir}/${distName}/disks/${vdriveDiskName}.DSK" filename="VSDRIVE.LOW" type="sys" address="8192"/>
 		<appleCommander command="d" input="${builddir}/VSDRIVE_D2" imagename="${builddir}/${distName}/disks/${vdriveDiskName}.DSK" filename="VSDRIVE" failonerror="false"/>
 		<appleCommander command="p" input="${builddir}/VSDRIVE_D2" imagename="${builddir}/${distName}/disks/${vdriveDiskName}.DSK" filename="VSDRIVE" type="sys" address="8192"/>
+		<appleDump infilename="${builddir}/VSDRIVE" outfilename="${basedir}/org/adtpro/resources/vsdrive.dmp" applename="VD" startaddrhex="2000" numbyteswide="10" decoration="begin" finalline="2000G"/>
+		<appleDump infilename="${builddir}/VSDRIVE_D2" outfilename="${basedir}/org/adtpro/resources/vsdrive_d2.dmp" applename="VD2" startaddrhex="2000" numbyteswide="10" decoration="begin" finalline="2000G"/>
 	</target>
 
 	<target name="vedrive" depends="vsetup" description="Builds the virtual ethernet drive driver">
@@ -152,6 +164,7 @@ everywhere it is invoked:
 		<delete file="${builddir}/GRUB2" />
 		<delete file="${builddir}/VSDRIVE" />
 		<delete file="${builddir}/VSDRIVE_D2" />
+		<delete file="${builddir}/VSDRIVE_SPEED" />
 		<delete file="${builddir}/VEDRIVE" />
 		<delete file="${projdir}/client/src/messages.asm" />
 		<delete file="${projdir}/client/src/GRUB" />
@@ -169,6 +182,9 @@ everywhere it is invoked:
 		<delete file="${projdir}/org/adtpro/resources/adtproeth.dmp" />
 		<delete file="${projdir}/org/adtpro/resources/grub.dmp" />
 		<delete file="${projdir}/org/adtpro/resources/grub2.dmp" />
+		<delete file="${projdir}/org/adtpro/resources/vsdrive.raw" />
+		<delete file="${projdir}/org/adtpro/resources/vsdrive_d2.raw" />
+		<delete file="${projdir}/org/adtpro/resources/vsdrive_speed.raw" />
 		<delete file="${projdir}/org/adtpro/resources/adt.raw" />
 		<delete file="${projdir}/org/adtpro/resources/adtpro.raw" />
 		<delete file="${projdir}/org/adtpro/resources/adtproaud.raw" />
@@ -223,6 +239,10 @@ everywhere it is invoked:
 		<exec dir="${projdir}/client/src/prodos/serial/grub2" executable="${assemblerPath}/ca65">
 			<arg line="-t none -l grub2.asm" />
 		</exec>
+		<echo message="Assembling ProDOS serial Grub (vsdrive) source..."/>
+		<exec dir="${projdir}/client/src/prodos/serial/grub2" executable="${assemblerPath}/ca65">
+			<arg line="-t none -l grub_vsdrive.asm" />
+		</exec>
 		<!--
 		Assemble and link the ADT source
 		-->
@@ -256,6 +276,10 @@ everywhere it is invoked:
 		<exec dir="${projdir}/client/src" executable="${assemblerPath}/ld65">
 			<arg line="-o GRUB2 -m grub2.map -C prodos/serial/grub2/grub2.cfg prodos/serial/grub2/grub2.o" />
 		</exec>
+		<echo message="Linking vsdrive grub..."/>
+		<exec dir="${projdir}/client/src" executable="${assemblerPath}/ld65">
+			<arg line="-o GRUB_VSDRIVE -m grub_vsdrive.map -C prodos/serial/grub2/grub_vsdrive.cfg prodos/serial/grub2/grub_vsdrive.o" />
+		</exec>
 		<!--
 		Move the object code to the build directory
 		-->
@@ -272,6 +296,7 @@ everywhere it is invoked:
 		<move file="${projdir}/client/src/dos/ADT" tofile="${builddir}/ADT" />
 		<copy file="${builddir}/ADT" tofile="${basedir}/org/adtpro/resources/adt.raw" />
 		<move file="${projdir}/client/src/GRUB2" tofile="${builddir}/GRUB2" />
+		<move file="${projdir}/client/src/GRUB_VSDRIVE" tofile="${builddir}/GRUB_VSDRIVE" />
 		<!--
 		Make dumpable versions
 		-->
@@ -487,6 +512,7 @@ everywhere it is invoked:
 		<delete file="${builddir}/ADTPROETH.BIN" />
 		<delete file="${builddir}/ADTPROAUD.BIN" />
 		<delete file="${builddir}/GRUB2" />
+		<delete file="${builddir}/GRUB_VSDRIVE" />
 		<delete file="${builddir}/VSDRIVE" />
 		<delete file="${builddir}/VSDRIVE_D2" />
 		<delete file="${builddir}/VEDRIVE" />
