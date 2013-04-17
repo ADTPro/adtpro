@@ -32,6 +32,10 @@ ADTPro Protocol
 
  [{{{#ADTPro}"6" - Send ADTPro}}]  Initiate Speediboot ADTPro client bootstrapping download
 
+ [{{{#ADTPro}"7" - Send VSDrive}}]  Initiate Speediboot VSDrive driver bootstrapping download
+
+ [{{{#ADTPro}"8" - Send BASIC Interpreter}}]  Initiate Speediboot BASIC bootstrapping download
+
  [{{{#Ping}"Y" - Ping}}]  One-way ping request (Client -> Server)
 
 * DOS ADT Compatible Functions

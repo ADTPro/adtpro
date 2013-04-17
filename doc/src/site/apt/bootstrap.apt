@@ -20,6 +20,8 @@ more bootstrapping scenarios and configurations are detailed below.
 
  * {{{bootstrap.html#If_you_already_have_ProDOS}If you already have ProDOS}}
 
+ * {{{bootstrap.html#Starting_with_Virtual_Serial_Drive}If you have no Apple software at all, and you have no no disk drives either}}
+
  * {{{bootstrap.html#Bootstrapping_DOS}If you have no software now and only want to run DOS 3.3, not ADTPro}}
 
  []
@@ -89,7 +91,7 @@ all the way to making a bootable ADTPro floppy:
       
       If at any point the bootstrapping process seems to stop working, or
       pauses for more than 10 seconds or so, press the "ESC" key on the Apple
-      to attempt a re-start. 
+      to attempt to re-start. 
 
       The text that flows at first is a program that searches for compatible 
       serial hardware, which then uses that connection to complete the bootstrapping operation.
@@ -337,6 +339,74 @@ all the way to making a bootable ADTPro floppy:
       that comes as part of the ADTPro distribution
       to a new floppy, as it has a <<<HELLO>>> program already set up
       to autostart ADT upon booting.
+
+* {Starting with Virtual Serial Drive}
+
+ If you have no disk drives at all, the virtual serial drive is a way you can use
+ your Apple and have persistent storage back on your host computer.
+
+    [[1]] {{{connectionsserial.html}Connect}} the two computers through their serial ports.
+
+    [[1]] Start up your Apple; hit Ctrl-Reset to get to the AppleSoft prompt.
+
+    [[1]] On the ADTPro server, push the "Serial" button.
+      If this is the first time you've connected via the serial port, you will be presented with 
+      the serial configuration dialog box, where you'll need to choose which serial port to use.
+
+    [[1]] Click on the "Bootstrapping->ProDOS->VSDrive" menu item.  
+      A dialog box will come up instructing you to type a set of commands
+      on the Apple:
+
+    * <<<IN#2>>> (The number will depend on which slot
+      you have your Super Serial Card plugged into.  An IIgs' modem port is always in
+      "virtual" slot #2, and an IIc's serial port is always "virtual" slot #2 as well.)
+
+    * <<< <ctrl-A>14B>>> (The number will depend on the speed you have chosen from the bootstrapping 
+      tab on the serial configuration dialog box.  
+      When you hit <<< <ctrl-A>, >>> the Apple Super Serial card will respond with "<<<APPLE SSC:>>>" and the
+      IIgs and IIc will respond with a blinking "<<<?>>>".  At that prompt, 
+      enter the number in your dialog box and the <<<B>>>
+      key with no spaces.  The Super Serial card will require you to hit the <<<Return>>> key, but the IIgs 
+      and IIc will not.) 
+
+    If you get any syntax errors or anything at the Apple II end, hit Return a bunch of
+    times and start this step over again.
+
+    []
+
+    [[1]] Dismiss the ADTPro server dialog by clicking on the <<<Ok>>> button.
+      You should start to see text flowing across the Apple screen now.
+      The progress bar on the ADTPro server will show how far along the
+      transfers are.     
+      There are four phases to the virtual serial drive bootstrapping operation,
+      and all should follow automatically.
+     
+      If at any point the bootstrapping process seems to stop working, or
+      pauses for more than 10 seconds or so, press the "ESC" key on the Apple
+      to attempt to re-start. 
+
+      The text that flows at first is a program that searches for compatible 
+      serial hardware, which then uses that connection to complete the bootstrapping operation.
+      Once the bootstrapper is running, the block should be flashing random characters,
+      signifying that the rest of the necessary code is loading.
+      Some of the stages you will see the bootstrap operation go through:  
+
+     *
+
+[images/speedivsdrive.png]
+
+    [[1]] Once the transfers complete successfully, You will be left in the
+      BASIC AppleSoft envrionment with ADTPro's Virtual.po image being served
+      as slot 2, drive 1:
+
+     *
+        
+[images/speedivsbooted.png]   
+
+    [[1]] You are now ready to use your Apple, loading and saving programs
+      and files on slot 2, drive 1.  Note that the virtual serial driver 
+      booted this way takes the place of the Disk II driver, so Disk II drives
+      will be unusable in your system if you have them. 
 
 * {A Note About Speed}
 
