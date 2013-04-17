@@ -2481,14 +2481,14 @@ public class CommsThread extends Thread
 			}
 			else if (resource.equals(Messages.getString("Gui.BS.BASIC")))
 			{
-				resourceName = "org/adtpro/resources/BASIC.raw";
+				resourceName = "org/adtpro/resources/BSpeed.raw";
 				slowFirstLines = 0;
 				slowLastLines = 0;
 				isBinary = true;
 			}
 			else if (resource.equals(Messages.getString("Gui.BS.ProDOSFast")))
 			{
-				resourceName = "org/adtpro/resources/PD.dmp";
+				resourceName = "org/adtpro/resources/grub2.dmp";
 				slowFirstLines = 4;
 				slowLastLines = 0;
 			}
