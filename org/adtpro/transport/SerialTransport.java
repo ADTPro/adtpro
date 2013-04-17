@@ -497,10 +497,9 @@ public class SerialTransport extends ATransport
 
   public String getInstructionsDone(String guiString)
   {
-    Log.println(false,"SerialTransport.getInstructionsDone() getting instructions for: "
-            + guiString);
+    Log.println(false,"SerialTransport.getInstructionsDone() getting instructions for: " + guiString);
     String ret = "";
-    if (guiString.equals(Messages.getString("Gui.BS.ProDOSFast")))
+    if ((guiString.equals(Messages.getString("Gui.BS.ProDOSFast"))) || (guiString.equals(Messages.getString("Gui.BS.ProDOSVSDrive"))))
     {
       _parent.setSerialSpeed(115200);
       // ret = Messages.getString("Gui.BS.DumpProDOSFastInstructionsDone");
@@ -526,8 +525,7 @@ public class SerialTransport extends ATransport
             _parent.setSerialSpeed(9600);
             /* ret = Messages.getString("Gui.BS.DumpSOSInstructionsDone"); */
           }
-    Log.println(false, "SerialTransport.getInstructionsDone() returning: "
-        + ret);
+    Log.println(false, "SerialTransport.getInstructionsDone() returning: " + ret);
     return ret;
   }
 
@@ -536,6 +534,9 @@ public class SerialTransport extends ATransport
     String ret = "'SerialTransport.getInstructions() - returned null!'";
     if (guiString.equals(Messages.getString("Gui.BS.ProDOSFast"))) ret = Messages
     .getString("Gui.BS.DumpProDOSFastInstructions");
+    else
+    if (guiString.equals(Messages.getString("Gui.BS.ProDOSVSDrive"))) ret = Messages
+        .getString("Gui.BS.DumpProDOSVSDriveInstructions");
     else
     if (guiString.equals(Messages.getString("Gui.BS.ProDOS"))) ret = Messages
         .getString("Gui.BS.DumpProDOSInstructions");
@@ -599,8 +600,7 @@ public class SerialTransport extends ATransport
     }
     ret = StringUtilities.replaceSubstring(ret, "%1%", baudCommand);
 
-    Log.println(false, "SerialTransport.getInstructionsDone() returning:\n"
-        + ret);
+    Log.println(false, "SerialTransport.getInstructions() returning:\n" + ret);
     return ret;
   }
 }

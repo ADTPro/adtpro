@@ -341,8 +341,7 @@ public class SerialIPTransport extends ATransport
 		String ret = "";
 		if (guiString.equals(Messages.getString("Gui.BS.ProDOSFast")))
 		{
-			// ret =
-			// Messages.getString("Gui.BS.DumpProDOSFastInstructionsDone");
+			// ret = Messages.getString("Gui.BS.DumpProDOSFastInstructionsDone");
 		}
 		else if (guiString.equals(Messages.getString("Gui.BS.ProDOS")))
 		{
@@ -369,6 +368,8 @@ public class SerialIPTransport extends ATransport
 		String ret = "'SerialTransport.getInstructions() - returned null!'";
 		if (guiString.equals(Messages.getString("Gui.BS.ProDOSFast")))
 			ret = Messages.getString("Gui.BS.DumpProDOSFastInstructions");
+	    else if (guiString.equals(Messages.getString("Gui.BS.ProDOSVSDrive")))
+	    	ret = Messages.getString("Gui.BS.DumpProDOSVSDriveInstructions");
 		else if (guiString.equals(Messages.getString("Gui.BS.ProDOS")))
 			ret = Messages.getString("Gui.BS.DumpProDOSInstructions");
 		else if (guiString.equals(Messages.getString("Gui.BS.ProDOS2")))
@@ -423,7 +424,7 @@ public class SerialIPTransport extends ATransport
 		}
 		ret = StringUtilities.replaceSubstring(ret, "%1%", baudCommand);
 
-		Log.println(false, "SerialTransport.getInstructionsDone() returning:\n" + ret);
+		Log.println(false, "SerialTransport.getInstructions() returning:\n" + ret);
 		return ret;
 	}
 
