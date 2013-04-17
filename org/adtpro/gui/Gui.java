@@ -80,6 +80,8 @@ public final class Gui extends JFrame implements ActionListener
 
   JMenuItem _speedibootAction = null;
 
+  JMenuItem _vsdrivebootAction = null;
+
   JCheckBoxMenuItem _protoCompatMenuItem = null;
 
   JCheckBoxMenuItem _traceMenuItem = null;
@@ -136,6 +138,9 @@ public final class Gui extends JFrame implements ActionListener
     MenuAction proDOSFastAction = new MenuAction(Messages.getString("Gui.BS.ProDOSFast")); //$NON-NLS-1$
     _speedibootAction = menuBootstrapProDOS.add(proDOSFastAction);
     _speedibootAction.setEnabled(true);
+    MenuAction proDOSVSDriveAction = new MenuAction(Messages.getString("Gui.BS.ProDOSVSDrive")); //$NON-NLS-1$
+    _vsdrivebootAction = menuBootstrapProDOS.add(proDOSVSDriveAction);
+    _vsdrivebootAction.setEnabled(true);
     MenuAction proDOSAction = new MenuAction(Messages.getString("Gui.BS.ProDOS")); //$NON-NLS-1$
     menuBootstrapProDOS.add(proDOSAction);
     MenuAction dosAction = new MenuAction(Messages.getString("Gui.BS.DOS")); //$NON-NLS-1$
@@ -705,6 +710,7 @@ public final class Gui extends JFrame implements ActionListener
                   (e.getActionCommand().equals(Messages.getString("Gui.BS.SOS"))) || //$NON-NLS-1$
                   (e.getActionCommand().equals(Messages.getString("Gui.BS.ProDOS"))) || //$NON-NLS-1$
                   (e.getActionCommand().equals(Messages.getString("Gui.BS.ProDOSFast"))) || //$NON-NLS-1
+                  (e.getActionCommand().equals(Messages.getString("Gui.BS.ProDOSVSDrive"))) || //$NON-NLS-1
                   (e.getActionCommand().equals(Messages.getString("Gui.BS.ADT"))) || //$NON-NLS-1$
                   (e.getActionCommand().equals(Messages.getString("Gui.BS.ADTPro"))) || //$NON-NLS-1$
                   (e.getActionCommand().equals(Messages.getString("Gui.BS.ADTProAudio"))) || //$NON-NLS-1$

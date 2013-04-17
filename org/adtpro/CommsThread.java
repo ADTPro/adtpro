@@ -300,6 +300,22 @@ public class CommsThread extends Thread
 					requestSend(Messages.getString("Gui.BS.ADTProRaw"), true, 0, 115200);
 					_busy = false;
 					break;
+				case (byte) 183: // "7": Initiate VSDRIVE dump
+					_busy = true;
+					_parent.setMainText(Messages.getString("CommsThread.5")); //$NON-NLS-1$
+					_parent.setSecondaryText(""); //$NON-NLS-1$
+					Log.println(false, "CommsThread.commandLoop() Received VSDRIVE driver dump command."); //$NON-NLS-1$
+					requestSend(Messages.getString("Gui.BS.VSDriveRaw"), true, 0, 115200);
+					_busy = false;
+					break;
+				case (byte) 184: // "8": Initiate BASIC dump
+					_busy = true;
+					_parent.setMainText(Messages.getString("CommsThread.5")); //$NON-NLS-1$
+					_parent.setSecondaryText(""); //$NON-NLS-1$
+					Log.println(false, "CommsThread.commandLoop() Received BASIC dump command."); //$NON-NLS-1$
+					requestSend(Messages.getString("Gui.BS.BASIC"), true, 0, 115200);
+					_busy = false;
+					break;
 				default:
 					Log.println(false, "CommsThread.commandLoop() Received unknown command: " + UnsignedByte.toString(oneByte)); //$NON-NLS-1$
 					break;
@@ -2450,9 +2466,29 @@ public class CommsThread extends Thread
 		}
 		else
 		{
-			if (resource.equals(Messages.getString("Gui.BS.ProDOSFast")))
+			if (resource.equals(Messages.getString("Gui.BS.ProDOSVSDrive")))
 			{
-				resourceName = "org/adtpro/resources/grub2.dmp";
+				resourceName = "org/adtpro/resources/grub_vsdrive.dmp";
+				slowFirstLines = 4;
+				slowLastLines = 0;
+			}
+			else if (resource.equals(Messages.getString("Gui.BS.VSDriveRaw")))
+			{
+				resourceName = "org/adtpro/resources/vsdrive_speed.raw";
+				slowFirstLines = 0;
+				slowLastLines = 0;
+				isBinary = true;
+			}
+			else if (resource.equals(Messages.getString("Gui.BS.BASIC")))
+			{
+				resourceName = "org/adtpro/resources/BASIC.raw";
+				slowFirstLines = 0;
+				slowLastLines = 0;
+				isBinary = true;
+			}
+			else if (resource.equals(Messages.getString("Gui.BS.ProDOSFast")))
+			{
+				resourceName = "org/adtpro/resources/PD.dmp";
 				slowFirstLines = 4;
 				slowLastLines = 0;
 			}
@@ -2677,7 +2713,9 @@ public class CommsThread extends Thread
 						}
 						if (_resource.equals(Messages.getString("Gui.BS.SOSINTERP")) ||
 								_resource.equals(Messages.getString("Gui.BS.ProDOSRaw")) ||
+								_resource.equals(Messages.getString("Gui.BS.BASIC")) ||
 								_resource.equals(Messages.getString("Gui.BS.ADTProRaw")) ||
+								_resource.equals(Messages.getString("Gui.BS.VSDriveRaw")) ||
 								_resource.equals(Messages.getString("Gui.BS.SOSDRIVER")))
 						{
 							// If we're sending binary bootstrap stuff, we need
@@ -2698,6 +2736,15 @@ public class CommsThread extends Thread
 							else if (_resource.equals(Messages.getString("Gui.BS.ADTProRaw")))
 							{
 								_transport.writeByte(0x41); // Send an "A" to trigger the start
+							}
+							else if (_resource.equals(Messages.getString("Gui.BS.VSDriveRaw")))
+							{
+								_transport.writeByte(0x56); // Send a "V" to trigger the start
+							}
+							else if (_resource.equals(Messages.getString("Gui.BS.BASIC")))
+							{
+								_transport.writeByte(0x42); // Send a "B" to trigger the start
+								length = length - 1; // BASIC seems to need this reduced by one...
 							}
 							_transport.writeByte(UnsignedByte.loByte(length)); // Send buffer LSB
 							_transport.writeByte(UnsignedByte.hiByte(length)); // Send buffer MSB
