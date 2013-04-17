@@ -136,12 +136,13 @@ public class SerialIPTransport extends ATransport
 			{
 				_socket = new Socket(_address, _port);
 				_socket.setSoTimeout(1000);
+				Log.println(false, "SerialIPTransport opened SerialIP port " + _port + " on host " + _host); //$NON-NLS-1$ //$NON-NLS-2$
 			}
 			catch (ConnectException ex)
 			{
 				_socket = null;
+				Log.println(true, "SerialIPTransport failed to open SerialIP port " + _port + " on host " + _host); //$NON-NLS-1$ //$NON-NLS-2$
 			}
-			Log.println(true, "SerialIPTransport opened SerialIP port " + _port + " on host " + _host); //$NON-NLS-1$ //$NON-NLS-2$
 			return;
 		}
 	}
