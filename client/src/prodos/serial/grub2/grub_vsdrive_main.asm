@@ -86,7 +86,7 @@ GoMLI:
 GoDriver:
 	jsr	msg
 	.byte	"VSDRIVE:",$00
-	lda	#$10		; Update location for driver
+	lda	#$11		; Update location for driver
 	sta	UpdateLoc+1	
 	lda	#$B7		; Ask for Driver ("7")
 	sta	Desired+1	
