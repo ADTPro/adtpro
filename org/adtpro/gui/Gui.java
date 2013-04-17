@@ -82,6 +82,8 @@ public final class Gui extends JFrame implements ActionListener
 
   JMenuItem _vsdrivebootAction = null;
 
+  JMenuItem _serialConfigBootstrapAction = null;
+
   JCheckBoxMenuItem _protoCompatMenuItem = null;
 
   JCheckBoxMenuItem _traceMenuItem = null;
@@ -162,7 +164,9 @@ public final class Gui extends JFrame implements ActionListener
     MenuAction sosAction = new MenuAction(Messages.getString("Gui.BS.SOS")); //$NON-NLS-1$
     _sosAction = menuBootstrap.add(sosAction);
     MenuAction serialConfigBootstrapAction = new MenuAction(Messages.getString("Gui.SerialConfigBootstrap")); //$NON-NLS-1$
-    menuBootstrap.add(serialConfigBootstrapAction);
+    _serialConfigBootstrapAction = menuBootstrapProDOS.add(serialConfigBootstrapAction);
+    _serialConfigBootstrapAction.setEnabled(true);
+    menuBootstrap.add(_serialConfigBootstrapAction);
     menuBootstrap.setEnabled(false);
     JMenu menuHelp = new JMenu(Messages.getString("Gui.Help")); //$NON-NLS-1$
     MenuAction helpAction = new MenuAction(Messages.getString("Gui.Website")); //$NON-NLS-1$
@@ -847,10 +851,17 @@ public final class Gui extends JFrame implements ActionListener
       saveProperties();
       if (_commsThread.supportsBootstrap())
       {
+        /*
+         * The types of things that support bootstrapping are either Serial
+         * or Audio; and Audio supports only a subset of things Serial does.
+         * Except for dosAction2... that one is Audio-only.
+         */
         menuBootstrap.setEnabled(true);
         _dosAction2.setEnabled(_commsThread.transportType() == ATransport.TRANSPORT_TYPE_AUDIO);
         _sosAction.setEnabled(_commsThread.transportType() != ATransport.TRANSPORT_TYPE_AUDIO);
         _speedibootAction.setEnabled(_commsThread.transportType() != ATransport.TRANSPORT_TYPE_AUDIO);
+        _vsdrivebootAction.setEnabled(_commsThread.transportType() != ATransport.TRANSPORT_TYPE_AUDIO);
+        _serialConfigBootstrapAction.setEnabled(_commsThread.transportType() != ATransport.TRANSPORT_TYPE_AUDIO);
       }
     }
     Log.println(false, "Gui.startComms() exit; returning " + success + ".");
