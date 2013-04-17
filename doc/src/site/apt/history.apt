@@ -10,6 +10,8 @@ ADTPro Release History
 
  New functionality:
 
+ * [VDrive] Added the ability to bootstrap into ProDOS with 
+   VSDrive active (serial only)
  * [Server] Added a command-line invoker for AppleCommander
 
  []

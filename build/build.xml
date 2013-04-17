@@ -106,21 +106,19 @@ everywhere it is invoked:
 			<arg line="-o DRIVE_D2 -m vsdrive_d2.map -C prodos/serial/drive/vsdrive_d2.cfg prodos/serial/drive/vsdrive_d2.o" />
 		</exec>
 		<exec dir="${projdir}/client/src" executable="${assemblerPath}/ld65">
-			<arg line="-o DRIVE_SPEED -m vsdrive_speed.map -C prodos/serial/drive/vsdrive_d2.cfg prodos/serial/drive/vsdrive_speed.o" />
+			<arg line="-o VSDRIVE_SPEED -m vsdrive_speed.map -C prodos/serial/drive/vsdrive_d2.cfg prodos/serial/drive/vsdrive_speed.o" />
 		</exec>
 		<move file="${projdir}/client/src/DRIVE" tofile="${builddir}/VSDRIVE" />
 		<copy file="${builddir}/VSDRIVE" tofile="${basedir}/org/adtpro/resources/vsdrive.raw" />
 		<move file="${projdir}/client/src/DRIVE_D2" tofile="${builddir}/VSDRIVE_D2" />
 		<copy file="${builddir}/VSDRIVE_D2" tofile="${basedir}/org/adtpro/resources/vsdrive_d2.raw" />
-		<move file="${projdir}/client/src/DRIVE_SPEED" tofile="${builddir}/VSDRIVE_SPEED" />
+		<move file="${projdir}/client/src/VSDRIVE_SPEED" tofile="${builddir}/VSDRIVE_SPEED" />
 		<copy file="${builddir}/VSDRIVE_SPEED" tofile="${basedir}/org/adtpro/resources/vsdrive_speed.raw" />
 		<echo message="Adding VSDrive to 5.25 disk image..."/>
 		<appleCommander command="d" input="${builddir}/VSDRIVE" imagename="${builddir}/${distName}/disks/${vdriveDiskName}.DSK" filename="VSDRIVE.LOW" failonerror="false"/>
 		<appleCommander command="p" input="${builddir}/VSDRIVE" imagename="${builddir}/${distName}/disks/${vdriveDiskName}.DSK" filename="VSDRIVE.LOW" type="sys" address="8192"/>
 		<appleCommander command="d" input="${builddir}/VSDRIVE_D2" imagename="${builddir}/${distName}/disks/${vdriveDiskName}.DSK" filename="VSDRIVE" failonerror="false"/>
 		<appleCommander command="p" input="${builddir}/VSDRIVE_D2" imagename="${builddir}/${distName}/disks/${vdriveDiskName}.DSK" filename="VSDRIVE" type="sys" address="8192"/>
-		<appleDump infilename="${builddir}/VSDRIVE" outfilename="${basedir}/org/adtpro/resources/vsdrive.dmp" applename="VD" startaddrhex="2000" numbyteswide="10" decoration="begin" finalline="2000G"/>
-		<appleDump infilename="${builddir}/VSDRIVE_D2" outfilename="${basedir}/org/adtpro/resources/vsdrive_d2.dmp" applename="VD2" startaddrhex="2000" numbyteswide="10" decoration="begin" finalline="2000G"/>
 	</target>
 
 	<target name="vedrive" depends="vsetup" description="Builds the virtual ethernet drive driver">
@@ -515,6 +513,7 @@ everywhere it is invoked:
 		<delete file="${builddir}/GRUB_VSDRIVE" />
 		<delete file="${builddir}/VSDRIVE" />
 		<delete file="${builddir}/VSDRIVE_D2" />
+		<delete file="${builddir}/VSDRIVE_SPEED" />
 		<delete file="${builddir}/VEDRIVE" />
 	</target>
 
