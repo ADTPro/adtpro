@@ -98,11 +98,11 @@ SABORT:	jmp PABORT
 ; RESETSSC - Clean up SSC
 ;---------------------------------------------------------
 RESETSSC:
-MOD0:	bit $C088	; CLEAR SSC INPUT REGISTER
 @Drain:	lda #$f0
 	sta Timer+1
 	jsr SSCGetLoop
 	bcc @Drain
+MOD0:	bit $C088	; CLEAR SSC INPUT REGISTER
 	rts
 
 ;---------------------------------------------------------
