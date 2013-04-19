@@ -1,6 +1,6 @@
 ;
 ; ADTPro - Apple Disk Transfer ProDOS
-; Copyright (C) 2012 by David Schmidt
+; Copyright (C) 2012 - 2013 by David Schmidt
 ; david__schmidt at users.sourceforge.net
 ;
 ; This program is free software; you can redistribute it and/or modify it 
@@ -31,37 +31,44 @@ READBLK:
 	lda	#$03		; Read command w/time request
 	jsr	COMMAND_ENVELOPE
 ; Pull and verify command envelope from host
-	ldx	#$00
-@Pull:	jsr	GETC
-	bcs	READFAIL
-	sta	Envelope,x
-	inx
-	cpx	#$09
-	bne	@Pull
-	jsr 	CALC_Envelope	; Calculate the checksum of the envelope
-
-	lda	Envelope	
+	jsr	GETC		; Command envelope begin
 	cmp	#CHR_E
 	bne	READFAIL
-	lda	Envelope+1
+	jsr	GETC		; Read command
 	cmp	#$03
 	bne	READFAIL
-	lda	Envelope+2
+	jsr	GETC		; LSB of requested block
 	cmp	BLKLO
 	bne	READFAIL
-	lda	Envelope+3
+	jsr	GETC		; MSB of requested block
 	cmp	BLKHI
 	bne	READFAIL
-	lda	Envelope+8	; Checksum of command envelope
+	jsr	GETC		; LSB of time
+	sta	TEMPDT
+	eor	CHECKSUM
+	sta	CHECKSUM
+	jsr	GETC		; MSB of time
+	sta	TEMPDT+1
+	eor	CHECKSUM
+	sta	CHECKSUM
+	jsr	GETC		; LSB of date
+	sta	TEMPDT+2
+	eor	CHECKSUM
+	sta	CHECKSUM
+	jsr	GETC		; MSB of date
+	sta	TEMPDT+3
+	eor	CHECKSUM
+	sta	CHECKSUM
+	jsr	GETC		; Checksum of command envelope
 	cmp	CHECKSUM
 	bne	WRITEFAIL	; Just need a nearby failure
-	lda	Envelope+4	; LSB of time	
+	lda	TEMPDT
 	sta	TIME
-	lda	Envelope+5	; MSB of time
+	lda	TEMPDT+1
 	sta	TIME+1
-	lda	Envelope+6	; LSB of date
+	lda	TEMPDT+2
 	sta	DATE
-	lda	Envelope+7	; MSB of date
+	lda	TEMPDT+3
 	sta	DATE+1
 ; Grab the screen contents, remember it
 	lda	SCRN_THROB
@@ -183,18 +190,6 @@ COMMAND_ENVELOPE:
 	jsr	PUTC		; Send envelope checksum
 	rts
 
-CALC_Envelope:			; Calculate the checksum of the envelope
-	lda	#$00		; Clean everyone out
-	tay
-	sta	CHECKSUM
-@CE_LOOP:
-	eor	Envelope,Y	; Exclusive-or accumulator with what's at Envelope,Y
-	sta	CHECKSUM	; Save that tally in CHECKSUM as we go
-	iny
-	cpy	#$08		; $8 bytes to eor (zero through seven)
-	bne	@CE_LOOP
-	rts
-
 ;---------------------------------------------------------
 ; PUTC - SEND ACC OVER THE SERIAL LINE (AXY UNCHANGED)
 ;---------------------------------------------------------
@@ -220,5 +215,4 @@ PSPEED:
 COMMSLOT:
 DEFAULT:
 	.byte	$ff	; Start with -1 for a slot number so we can tell when we find no slot
-Envelope:
-	.res	9
+TEMPDT:	.res	4
