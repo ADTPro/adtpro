@@ -21,11 +21,11 @@ compatible computer with at least 64k of memory.
 
  ADTPro transfers disks using any of these communications devices:
 
-    * {{{connectionsserial.html}Serial}} ports
+    * {{{./connectionsserial.html}Serial}} ports
 
-    * {{{http://a2retrosystems.com/}Uthernet}} or {{{http://www.reference.com/browse/lancegs+ethernet+card}LANceGS}} {{{configethernet.html}Ethernet}} cards
+    * {{{http://a2retrosystems.com/}Uthernet}} or {{{http://www.reference.com/browse/lancegs+ethernet+card}LANceGS}} {{{./configethernet.html}Ethernet}} cards
 
-    * The Apple's {{{connectionsaudio.html}cassette ports}}
+    * The Apple's {{{./connectionsaudio.html}cassette ports}}
 
  ADTPro has these features:
 
@@ -39,18 +39,18 @@ compatible computer with at least 64k of memory.
 
     * Understands many physical Apple disk formats: DOS, ProDOS, SOS, Pascal, CP/M, among others 
 
-    * Serves the original {{{compatibility.html}ADT client}} as well as the ADTPro client
+    * Serves the original {{{./compatibility.html}ADT client}} as well as the ADTPro client
 
-    * {{{#Bootstrapping}Bootstraps}} Apple II and Apple /// computers from bare metal over {{{bootstrap.html}serial}} or {{{bootstrapaudio.html}cassette}} ports
+    * {{{#Bootstrapping}Bootstraps}} Apple II and Apple /// computers from bare metal over {{{./bootstrap.html}serial}} or {{{./bootstrapaudio.html}cassette}} ports
 
-    * Sends floppies in {{{batch.html}"batch"}} mode without having to name each one
+    * Sends floppies in {{{./batch.html}"batch"}} mode without having to name each one
 
-    * {{{misc.html#Format}Formats}} blank disks
+    * {{{./misc.html#Format}Formats}} blank disks
 
-    * Serves a {{{vdrive.html}virtual}} drive as slot 2, drive 1 on the Apple II and .VSDRIVE on the Apple ///
+    * Serves a {{{./vdrive.html}virtual}} drive as slot 2, drive 1 on the Apple II and .VSDRIVE on the Apple ///
 
  The latest ADTPro can always be 
-{{{download.html}downloaded}}
+{{{./download.html}downloaded}}
 from the SourceForge 
 {{{http://sourceforge.net/projects/adtpro/}project page.}}
 
@@ -65,18 +65,18 @@ you're ready to go.
 or don't have a serial card, more bootstrapping scenarios and configurations 
 are detailed below.
 
- * Click {{{bootstrap.html}II serial}} or {{{bootstrapaudio.html}II audio}} to get started with an Apple II.
+ * Click {{{./bootstrap.html}II serial}} or {{{./bootstrapaudio.html}II audio}} to get started with an Apple II.
 
- * Click  {{{bootstrap3.html}/// serial}} to get started with an Apple ///.
+ * Click  {{{./bootstrap3.html}/// serial}} to get started with an Apple ///.
 
  []
 
  If you still need to connect your host and Apple computers with physical cables,
  refer back to the "Connections" section for your connection type:
 
- * {{{connectionsserial.html}Serial cabling connections}}
+ * {{{./connectionsserial.html}Serial cabling connections}}
 
- * {{{connectionsaudio.html}Audio cabling connections}}
+ * {{{./connectionsaudio.html}Audio cabling connections}}
 
  []
 

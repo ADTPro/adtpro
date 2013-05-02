@@ -9,11 +9,11 @@ ADTPro Serial Configuration Overview
 *---------------:--------------+
 || <<Click:>> || <<To Learn:>>
 *---------------:--------------+
-| {{{connectionsserial.html}Connections}} | How to connect cables between your host and your Apple II |
+| {{{./connectionsserial.html}Connections}} | How to connect cables between your host and your Apple II |
 *---------------:--------------+
-| {{{bootstrap.html}Bootstrapping}} | How to get your Apple II started if you have little or no software yet |
+| {{{./bootstrap.html}Bootstrapping}} | How to get your Apple II started if you have little or no software yet |
 *---------------:--------------+
-| {{{configserial.html}Client}} | How to set up the ADTPro client once it's been transferred to your Apple II |
+| {{{./configserial.html}Client}} | How to set up the ADTPro client once it's been transferred to your Apple II |
 *---------------:--------------+
 
 [images/ss1.jpg]

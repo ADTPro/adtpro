@@ -41,7 +41,7 @@ left arrow keys.  Your Apple has right and left arrow keys; trust me.
 
  The Apple's slots will
  be scanned for a serial card or port automatically (until you explicitly
- {{{configserial.html#Save_Configuration}save}} a configuration).
+ {{{./configserial.html#Save_Configuration}save}} a configuration).
  The lowest-numbered slot with a card will be selected by default.
  The IIc+, IIc and compatible computers use the "SSC SLOT 2" setting for their
  modem ports.
@@ -54,7 +54,7 @@ and select that same slot number here.
 If you want to use a Super Serial card instead, you will need to select its slot here.
 
  Various serial cabling options are discussed in the
- {{{connectionsserial.html}serial connections}} section.
+ {{{./connectionsserial.html}serial connections}} section.
 
  <<IIgs Modem Port>>
 
@@ -65,7 +65,7 @@ If you want to use a Super Serial card instead, you will need to select its slot
 
  ADTPro on an IIgs will require a "null modem" cable or adapter when connecting 
 to the host computer.  See the 
-{{{connectionsserial.html#MiniDIN8}IIgs modem port}}
+{{{./connectionsserial.html#MiniDIN8}IIgs modem port}}
 connections section for details.
 
  Note that it's not particularly reliable to run ADTPro under GSOS.
@@ -95,7 +95,7 @@ BASIC interpreter, just like the old days.
 
  ADTPro on an Apple /// will require a "null modem" cable or adapter when connecting
  to the host computer.  See the
-{{{connectionsserial.html#Apple3}Apple /// RS-232-C port cabling}}
+{{{./connectionsserial.html#Apple3}Apple /// RS-232-C port cabling}}
 connections section for details.
   
 * Baud Rate

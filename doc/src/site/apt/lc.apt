@@ -12,8 +12,8 @@ Using The Mac LC - Apple IIe Card with ADTPro
  (Apple Computer part number 820-0444-A).  
  You will need a serial null-modem cable connected between the LC's modem port and your host computer.
 You can wire one up yourself using the pinout 
-{{{connectionsserial.html#MiniDIN8}here}}, or ready-made null modem cables are available
-{{{http://retrofloppy.com/products.html#DIN8DE9}here.}}  They look like this:
+{{{./connectionsserial.html#MiniDIN8}here}}, or ready-made null modem cables are available
+{{{./http://retrofloppy.com/products.html#DIN8DE9}here.}}  They look like this:
 
 [images/iigsNullModem3.jpg]
 

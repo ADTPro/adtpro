@@ -13,7 +13,7 @@ ADTPro Ethernet Connections
  card into the Apple, and then
  plugging a Cat-5 Ethernet cable from the card into your home router or
  switch.  You just need to set ADTPro's IP parameters (details 
- {{{configethernet.html#Client_IP_Configuration}below}}).
+ {{{./configethernet.html#Client_IP_Configuration}below}}).
  ADTPro will automatically detect which kind of ethernet card you have, as well
  as the slot it is in.  It will ask for network parameters from DHCP by default, or
  you can set them explicitly yourself.
@@ -28,13 +28,13 @@ ADTPro Ethernet {Client IP Configuration}
 
  The ProDOS ethernet version of the ADTPro client program is named <<<ADTPROETH>>>
  on the distribution diskette.  Ways of making <<<ADTPROETH>>> start automatically
- are discussed {{{starting.html#Starting_the_Client}here.}}
+ are discussed {{{./starting.html#Starting_the_Client}here.}}
  The SOS version of the ethernet ADTPro client
  program is named <<<SOS.INTERPETH>>> on the distribution diskette.  It will
  be necessary to rename <<<SOS.INTERPETH>>> to <<<SOS.INTERP>>> (also deleting
  or renaming the original serial <<<SOS.INTERP>>> program) in order to run it.  
  Additional details about starting the client on SOS are 
- {{{starting.html#Starting_the_Client_-_SOS}here.}}
+ {{{./starting.html#Starting_the_Client_-_SOS}here.}}
  
  Hitting the "G" key from ADTPro's main menu brings up the ethernet 
  configuration screen:

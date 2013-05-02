@@ -59,7 +59,7 @@ situations:
  Once you pick the volume to repeatedly send, you are prompted to insert
 the next disk to send and hit a key.  Once contact is made with the host, 
 the disk information starts reading and sending as with normal 
-{{{sending.html}send}}
+{{{./sending.html}send}}
 operations.
 
  When the image has finished sending to the host, you will see a "Complete" message,

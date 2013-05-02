@@ -32,7 +32,7 @@ Starting ADTPro
  
  [audio] Start in audio mode
  
- [localhost] Start in {{{misc.html#Virtual_Serial}virtual serial}} over IP mode
+ [localhost] Start in {{{./misc.html#Virtual_Serial}virtual serial}} over IP mode
 
  []
 
@@ -59,7 +59,7 @@ Starting ADTPro
 * {Starting the Client} - ProDOS
 
  (If you don't have the ADTPro client software on your Apple II yet, 
- take a look at the {{{bootstrap.html}serial}} or {{{bootstrapaudio.html}audio}}
+ take a look at the {{{./bootstrap.html}serial}} or {{{./bootstrapaudio.html}audio}}
  bootstrapping section to get that started.) 
 
  When you boot your Apple ][ from the ADTPro disk, it will start a simple
@@ -130,7 +130,7 @@ a response from the host, or if garbled data comes back, it will be necessary
 to check the physical connections, port names and speeds on both host and
 client ends.  The ethernet version of ADTPro (<<<ADTPROETH>>>) often needs 
 a couple of directory queries to find the server after setting up its 
-{{{configethernet.html}configuration.}}
+{{{./configethernet.html}configuration.}}
 If you're using the audio
 version of ADTPro (<<<ADTPROAUD>>>), ensure the volume setting for your sound
 card is set to halfway up the scale (i.e. much louder than you'd 

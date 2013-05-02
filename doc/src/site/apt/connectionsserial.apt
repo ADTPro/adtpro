@@ -9,23 +9,23 @@ ADTPro Serial Connections
  Connecting an Apple and your host computer through serial ports 
  can take several forms.  This section details:
  
- * {{{connectionsserial.html#Super_Serial_cabling}Super Serial card}}
+ * {{{./connectionsserial.html#Super_Serial_cabling}Super Serial card}}
 
- * {{{connectionsserial.html#MiniDIN8}IIgs and IIc+ modem ports}}
+ * {{{./connectionsserial.html#MiniDIN8}IIgs and IIc+ modem ports}}
 
- * {{{connectionsserial.html#DIN5}IIc, Laser 128, and Franklin Ace 500 modem ports}}
+ * {{{./connectionsserial.html#DIN5}IIc, Laser 128, and Franklin Ace 500 modem ports}}
 
- * {{{connectionsserial.html#Apple3}Apple /// RS-232-C port}}
+ * {{{./connectionsserial.html#Apple3}Apple /// RS-232-C port}}
 
- * {{{connectionsserial.html#USB_cabling}USB adapters}}
+ * {{{./connectionsserial.html#USB_cabling}USB adapters}}
 
  []
 
  In addition, using the modem port of a Mac LC, it is possible to run ADTPro on a
-{{{lc.html}Apple IIe card}}.
+{{{./lc.html}Apple IIe card}}.
 
  Once you have your computers connected, you may move on to 
-{{{bootstrap.html}bootstrapping.}}
+{{{./bootstrap.html}bootstrapping.}}
 
 * {Super Serial cabling}
 
@@ -73,7 +73,7 @@ cable would look like this:
 [images/superSerialCable.jpg]
 
  Once you have your computers connected, you may move on to 
-{{{bootstrap.html}bootstrapping.}}
+{{{./bootstrap.html}bootstrapping.}}
 
 * IIgs and IIc+ modem port ({MiniDIN8}) cabling
 
@@ -142,7 +142,7 @@ at the pins:
 ---
 
  Once you have your computers connected, you may move on to 
-{{{bootstrap.html}bootstrapping.}}
+{{{./bootstrap.html}bootstrapping.}}
 
 * IIc, Laser 128, and Franklin Ace 500 modem port ({DIN5}) cabling
 
@@ -239,7 +239,7 @@ checkbox in the serial config dialog box, brought up from the
  []
 
  Once you have your computers connected, you may move on to 
-{{{bootstrap.html}bootstrapping.}}
+{{{./bootstrap.html}bootstrapping.}}
 
 * {Apple3} /// RS-232-C port cabling
 
@@ -281,7 +281,7 @@ null-modem is below:
 ---
 
  Once you have your computers connected, you may move on to 
-{{{bootstrap3.html}bootstrapping.}}
+{{{./bootstrap3.html}bootstrapping.}}
 
 * {USB cabling}
 
@@ -330,7 +330,7 @@ items like "usbserial":
 [images/usbserial.png]
 
   Once connected, ADTPro will be able to operate normally over the USB connection,
-including {{{bootstrap.html#Starting_from_bare_metal}bare metal}} bootstrapping
+including {{{./bootstrap.html#Starting_from_bare_metal}bare metal}} bootstrapping
 operations.
 
 * {Other Serial Pinout References}

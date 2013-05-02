@@ -16,26 +16,26 @@ Note that while DOS ADT runs in 48k, ProDOS ADTPro requires your Apple to have a
   If you don't use ADT or ADTPro, or don't have any software for your Apple yet, 
 more bootstrapping scenarios and configurations are detailed below.
 
- * {{{bootstrap.html#Starting_from_bare_metal}If you have no Apple software at all - starting ADTPro from bare metal}}
+ * {{{./bootstrap.html#Starting_from_bare_metal}If you have no Apple software at all - starting ADTPro from bare metal}}
 
- * {{{bootstrap.html#If_you_already_have_ProDOS}If you already have ProDOS}}
+ * {{{./bootstrap.html#If_you_already_have_ProDOS}If you already have ProDOS}}
 
- * {{{bootstrap.html#Starting_with_Virtual_Serial_Drive}If you have no Apple software at all, and you have no no disk drives either}}
+ * {{{./bootstrap.html#Starting_with_Virtual_Serial_Drive}If you have no Apple software at all, and you have no no disk drives either}}
 
- * {{{bootstrap.html#Bootstrapping_DOS}If you have no software now and only want to run DOS 3.3, not ADTPro}}
+ * {{{./bootstrap.html#Bootstrapping_DOS}If you have no software now and only want to run DOS 3.3, not ADTPro}}
 
  []
 
  If you still need to connect your host and Apple II computers through their 
  serial ports, refer back to the "Connections" section:
 
- * {{{connectionsserial.html#Super_Serial_cabling}Super Serial card}}
+ * {{{./connectionsserial.html#Super_Serial_cabling}Super Serial card}}
 
- * {{{connectionsserial.html#MiniDIN8}IIgs and IIc+ modem ports}}
+ * {{{./connectionsserial.html#MiniDIN8}IIgs and IIc+ modem ports}}
 
- * {{{connectionsserial.html#DIN5}IIc, Laser 128, and Franklin Ace 500 modem ports}}
+ * {{{./connectionsserial.html#DIN5}IIc, Laser 128, and Franklin Ace 500 modem ports}}
 
- * {{{connectionsserial.html#USB_cabling}USB adapters}}
+ * {{{./connectionsserial.html#USB_cabling}USB adapters}}
 
  []
 
@@ -52,7 +52,7 @@ all the way to making a bootable ADTPro floppy:
 
 * {Starting from bare metal}
 
-    [[1]] {{{connectionsserial.html}Connect}} the two computers through their serial ports.
+    [[1]] {{{./connectionsserial.html}Connect}} the two computers through their serial ports.
 
     [[1]] Start up your Apple; hit Ctrl-Reset before it reads anything from the disk drive.
       It's important that it not load any OS, even DOS 3.3.
@@ -107,14 +107,14 @@ all the way to making a bootable ADTPro floppy:
 
     [[1]] Once the transfers complete successfully, ADTPro will start.
 
-    [[1]] Use the ADTPro client's {{{misc.html#Format}format}} function to
+    [[1]] Use the ADTPro client's {{{./misc.html#Format}format}} function to
       format a diskette or two.  Note that in the ProDOS world, formatting
       a diskette doesn't make it bootable - it just prepares the filesystem
       for writing.
       The next step of sending the ADTPro distribution diskette will create
       bootable diskette for you.
 
-    [[1]] You are now ready to {{{receiving.html}receive}} the ADTPRO-v.r.m.DSK (5.25" version)
+    [[1]] You are now ready to {{{./receiving.html}receive}} the ADTPRO-v.r.m.DSK (5.25" version)
       or ADTPro-v.r.m.PO (3.5" version) disk
       image from the host.  Once you've done that, you've got a bootable 
       ADTPro diskette.
@@ -143,7 +143,7 @@ all the way to making a bootable ADTPro floppy:
 
 * {If you already have ProDOS}
 
-    [[1]] {{{connectionsserial.html}Connect}} the two computers through their serial ports.
+    [[1]] {{{./connectionsserial.html}Connect}} the two computers through their serial ports.
 
     [[1]] Start your Apple with ProDOS booted from floppy (or any bootable partition).
 
@@ -193,9 +193,9 @@ all the way to making a bootable ADTPro floppy:
       client program.
 
     [[1]] Now that the client is running, you can use it to
-      {{{receiving.html}tansfer}} more disks (like the bootable ADTPro
+      {{{./receiving.html}tansfer}} more disks (like the bootable ADTPro
       distribution diskette - 5.25" or 3.5" versions are included), or
-      {{{misc.html#Format}format}} new diskettes.
+      {{{./misc.html#Format}format}} new diskettes.
 
     [[1]] Start transferring 5.25", 3.5", RAM drive, or hard drive images to your
       heart's content!
@@ -209,7 +209,7 @@ all the way to making a bootable ADTPro floppy:
   ADT program.  The ADTPro server is compatible with both the older DOS ADT and 
   the newer ADTPro client.
 
-    [[1]] {{{connectionsserial.html}Connect}} the two computers through their serial ports.
+    [[1]] {{{./connectionsserial.html}Connect}} the two computers through their serial ports.
 
     [[1]] Boot your Apple; hit Ctrl-Reset before it reads anything from the disk drive.
       It's important that it not load any OS, even DOS 3.3.
@@ -345,7 +345,7 @@ all the way to making a bootable ADTPro floppy:
  If you have no disk drives at all, the virtual serial drive is a way you can use
  your Apple and have persistent storage back on your host computer.
 
-    [[1]] {{{connectionsserial.html}Connect}} the two computers through their serial ports.
+    [[1]] {{{./connectionsserial.html}Connect}} the two computers through their serial ports.
 
     [[1]] Start up your Apple; hit Ctrl-Reset to get to the AppleSoft prompt.
 

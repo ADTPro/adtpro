@@ -65,7 +65,7 @@ ADTPro Virtual Drive
 
 * Starting the VSDRIVE Client - Serial
  
- Once you've established your {{{connectionsserial.html}serial}} 
+ Once you've established your {{{./connectionsserial.html}serial}} 
  connection between your Apple II and the ADTPro host server, boot or otherwise access the
  VDRIVE-v.r.m.DSK image on the Apple II side.
  It will start with some brief instructions:
@@ -99,7 +99,7 @@ ADTPro Virtual Drive
 
 * Starting the VEDRIVE client - {Ethernet}
  
- Once you've established your {{{configethernet.html}Ethernet}}
+ Once you've established your {{{./configethernet.html}Ethernet}}
  connection between your Apple II and the ADTPro host server, boot or otherwise access the
  VDRIVE-v.r.m.DSK image on the Apple II side.
  It will start with some brief instructions:
@@ -145,6 +145,6 @@ and will reflect the Virtual.po image served by the ADTPro server.
 
 [images/vdrivesos1.png]
 
- It is important to connect your {{{connectionsserial.html#Apple3}null modem}} to the Apple /// and start
+ It is important to connect your {{{./connectionsserial.html#Apple3}null modem}} to the Apple /// and start
 the ADTPro server (and click the Serial button) before booting and using the serial driver.
 If you don't, changing the connectedness of the cabling while running causes SOS to crash with a $02 error.   

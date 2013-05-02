@@ -8,7 +8,7 @@ ADTPro Protocol
 
  The ADTPro server can interpret and respond to commands from both the ADTPro client
  and the older DOS ADT client (Including nibble sends from the A2V2 client - see the
- {{{compatibility.html}ADT compatibility}} page for more details). 
+ {{{./compatibility.html}ADT compatibility}} page for more details). 
 
 * ADTPro Functions
 

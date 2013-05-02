@@ -175,9 +175,9 @@ ADTPro Release Ancient History
 
  * [Client] SOS version can use Ethernet UDP transport via the {{{http://a2retrosystems.com/}Uthernet}} card
  
- * [Client] SOS version can {{{misc.html#Format}format}} media
+ * [Client] SOS version can {{{./misc.html#Format}format}} media
 
- * [Server] Apple /// computers can be {{{bootstrap3.html}bootstrapped}} from bare metal over their built-in serial ports
+ * [Server] Apple /// computers can be {{{./bootstrap3.html}bootstrapped}} from bare metal over their built-in serial ports
 
  []
 
@@ -386,11 +386,11 @@ ADTPro Release Ancient History
  First official public release after one year of beta iterations.
  Communications methods include:
 
-  * {{{connectionsserial.html#Super_Serial_cabling}Super Serial}} card, {{{connectionsserial.html#MiniDIN8}IIgs modem port,}} or {{{connectionsserial.html#DIN5}IIc/Laser 128 serial port}}
+  * {{{./connectionsserial.html#Super_Serial_cabling}Super Serial}} card, {{{./connectionsserial.html#MiniDIN8}IIgs modem port,}} or {{{./connectionsserial.html#DIN5}IIc/Laser 128 serial port}}
 
   * {{{http://a2retrosystems.com/}Uthernet}} Ethernet card
 
-  * The Apple's {{{connectionsaudio.html}cassette ports}}
+  * The Apple's {{{./connectionsaudio.html}cassette ports}}
 
  []
 
@@ -404,13 +404,13 @@ ADTPro Release Ancient History
 
   * Understands many digital disk formats: .DSK, .PO, .NIB, 2IMG
 
-  * Serves the original {{{compatibility.html}ADT client}} as well as the updated ADTPro client
+  * Serves the original {{{./compatibility.html}ADT client}} as well as the updated ADTPro client
 
-  * Bootstraps Apple II computers from bare metal over {{{bootstrap.html}serial}} or {{{bootstrapaudio.html}cassette}} ports
+  * Bootstraps Apple II computers from bare metal over {{{./bootstrap.html}serial}} or {{{./bootstrapaudio.html}cassette}} ports
 
-  * Sends floppies in {{{batch.html}"batch"}} mode without having to name each one
+  * Sends floppies in {{{./batch.html}"batch"}} mode without having to name each one
 
-  * {{{misc.html#Format}Formats}} media on the Apple II end
+  * {{{./misc.html#Format}Formats}} media on the Apple II end
 
  []
 
@@ -559,7 +559,7 @@ ADTPro Release Ancient History
  * Protocol enhanced to always communicate block numbers: enables recovery
    from lost acknowledgements which can ultimately result in corrupt
    transfers even if all CRCs match.  New version retains 
-   {{{starting.html#change}compatibility}}
+   {{{./starting.html#change}compatibility}}
    with ADTPro v0.1.x clients with a checkbox in the File menu.
 
  * Added date/timestamps to trace log entries.
@@ -577,7 +577,7 @@ ADTPro Release Ancient History
 
  * Made build slightly friendlier for new developers
 
- * Filled out the {{{protocol.html}Protocol}} documentation (I'm not saying it's pretty, or
+ * Filled out the {{{./protocol.html}Protocol}} documentation (I'm not saying it's pretty, or
    necessarily understandable - but at least it matches reality)
 
  []
@@ -647,7 +647,7 @@ ADTPro Release Ancient History
 
  New functionality:
 
- * Added a "{{{batch.html}batch send}}" mode to repeatedly send the same volume (i.e. one floppy after another)
+ * Added a "{{{./batch.html}batch send}}" mode to repeatedly send the same volume (i.e. one floppy after another)
 
  * ADTPro server can send the ADTPro client as bootstrap text; the destination Apple would have to already be running ProDOS
 

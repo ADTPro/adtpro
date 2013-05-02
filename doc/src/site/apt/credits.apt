@@ -93,7 +93,7 @@ book by Don Worth and Pieter Lechner, published by Quality Software in 1984.
  Invaluable Apple /// hardware and programming information was written by John Jeppson
 in an article titled: "John Jeppson's Guided Tour of Highway III" from
 Softalk Magazine, May 1983, pages 100-112.  One place that it is available online
-is {{{archive/AppleIIIBits.html}here.}}
+is {{{./archive/AppleIIIBits.html}here.}}
 
  The Apple /// machine language monitor and ways of accessing it during program execution
 was critical to debugging operations.  Important information on how to accomplish that
@@ -103,7 +103,7 @@ was published in the "/// Cheers!" magazine from {{{http://www.callapple.org/mag
 were from Oliver Schmidt's LOADER.SYSTEM contribution to cc65, available
 {{{http://cc65.oldos.net/contrib/loader-1.4.txt}here}}.
 
- Thanks to ADTPro's {{{translations.html}translators}}.
+ Thanks to ADTPro's {{{./translations.html}translators}}.
  
  Thanks to {{{http://a2central.com/}Sean Fahey}} for lending me his LANceGS cards so I could add support for them. 
 

@@ -9,9 +9,9 @@ ADTPro Client Configuration Overview
 *---------------:--------------+
 || <<Click:>> || <<To Learn:>>
 *---------------:--------------+
-| {{{configserial.html}Serial}} | Configuration of the serial client |
+| {{{./configserial.html}Serial}} | Configuration of the serial client |
 *---------------:--------------+
-| {{{configaudio.html}Audio}} | Configuration of the audio client |
+| {{{./configaudio.html}Audio}} | Configuration of the audio client |
 *---------------:--------------+
-| {{{configethernet.html}Ethernet}} | Configuration of the Ethernet client |
+| {{{./configethernet.html}Ethernet}} | Configuration of the Ethernet client |
 *---------------:--------------+

@@ -14,7 +14,7 @@ disk, and you'll be ready to go.  If not... read on.
 
  If you still need to connect your host and Apple /// computers through 
  their serial ports, refer back to the
- {{{connectionsserial.html#Apple3}Connections}} section.
+ {{{./connectionsserial.html#Apple3}Connections}} section.
 
  If you'd rather have a pre-built ADTPro floppy disk arrive at your door than
 create one yourself, {{{http://retrofloppy.com/products.html#ADTPRO}click here.}}
@@ -53,7 +53,7 @@ for example.
 
 * {Detailed steps}
 
-    [[1]] {{{connectionsserial.html#Apple3}Connect}} your host and Apple /// computers 
+    [[1]] {{{./connectionsserial.html#Apple3}Connect}} your host and Apple /// computers 
     through their respective serial ports.
 
     [[1]] Turn on the Apple ///; hit the Ctrl-OpenApple-Reset key sequence to
@@ -88,7 +88,7 @@ A048:F7 AD F0 C0 60
     as they appear above, with no errors.
     It will be important to review and re-check the lines before actually running it.
     To ensure that you never have to type this in more than once, follow all the way
-    through to the end of this procedure to format a new floppy and {{{receiving.html}receive}}
+    through to the end of this procedure to format a new floppy and {{{./receiving.html}receive}}
     the full, bootable ADTPro disk that ships with this distribution.
 
     [[1]] To review the entire bootstrap loader program you typed in,
@@ -133,7 +133,7 @@ A000G
     intervention.  As data is sent from the ADTPro server down to the ///,
     a character will flash to the right of the status message to indicate progress.
     If the screen stays still, you will want to re-check your serial
-    {{{connectionsserial.html#Apple3}connections.}}
+    {{{./connectionsserial.html#Apple3}connections.}}
     Some of the stages bootstrapping will be going through:
 
     *
@@ -150,14 +150,14 @@ A000G
 
     []
 
-    [[1]] Use the ADTPro client's {{{misc.html#Format}format}} function to
+    [[1]] Use the ADTPro client's {{{./misc.html#Format}format}} function to
     format a diskette or two.  Note that in the SOS world, formatting
     a diskette doesn't make it bootable - it just prepares the filesystem
     for writing.
     The next step of sending the ADTPro distribution diskette will create
     bootable diskette for you.
 
-    [[1]] You are now ready to {{{receiving.html}receive}} the ADTPRO-v.r.m.DSK
+    [[1]] You are now ready to {{{./receiving.html}receive}} the ADTPRO-v.r.m.DSK
     disk image from the host.  Once you've done that, you've got a bootable SOS 
     diskette that contains the ADTPro client program.
 
