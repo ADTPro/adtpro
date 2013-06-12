@@ -20,7 +20,7 @@ more bootstrapping scenarios and configurations are detailed below.
 
  * {{{./bootstrap.html#If_you_already_have_ProDOS}If you already have ProDOS}}
 
- * {{{./bootstrap.html#Starting_with_Virtual_Serial_Drive}If you have no Apple software at all, and you have no no disk drives either}}
+ * {{{./bootstrap.html#Starting_with_Virtual_Serial_Drive}If you have no Apple software at all, and you have no disk drives either}}
 
  * {{{./bootstrap.html#Bootstrapping_DOS}If you have no software now and only want to run DOS 3.3, not ADTPro}}
 
