@@ -1,6 +1,6 @@
 ;
 ; ADTPro - Apple Disk Transfer ProDOS
-; Copyright (C) 2008 - 2012 by David Schmidt
+; Copyright (C) 2008 - 2013 by David Schmidt
 ; david__schmidt at users.sourceforge.net
 ;
 ; This program is free software; you can redistribute it and/or modify it 
@@ -80,23 +80,6 @@ SAVPARM:
 	jsr WRITEMSG
 
 REFRESH:
-	lda PARMS
-	cmp #$08	; Are we talking about the Laser/Pascal Entry Points?
-	bmi RESTORE		; No, go on ahead
-	lda PSPEED	; Yes - so check baudrate
-	cmp #$03	; Is it too fast?
-	bne REFNEXT		; No, go on ahead
-	sta SVSPEED
-	lda #$02	; Yes - so slow it down
-	sta PSPEED
-	jmp REFNEXT 
-RESTORE:
-	lda SVSPEED	; Did we have speed previously re-set by Laser?
-	beq REFNEXT	; No, go on ahead
-	sta PSPEED	; Yes - so restore it now
-	lda #$00
-	sta SVSPEED	; Forget about resetting speed until we roll through Laser again
-REFNEXT:
 	lda #3		; FIRST PARAMETER IS ON LINE 3
 	jsr TABV
 	ldx #0		; PARAMETER NUMBER
@@ -303,9 +286,6 @@ PARMTXT:
 	ascz "SSC SLOT 3"
 	ascz "SSC SLOT 4"
 	ascz "/// SERIAL"
-	ascz "300"
-	ascz "9600"
-	ascz "19200"
 	ascz "115200"
 	ascz "YES"
 	ascz "NO"
@@ -319,11 +299,10 @@ CONFIG_FILE_NAME:	.byte 11
 
 PARMS:
 COMMSLOT:	.byte 4		; Comms slot (5)
-PSPEED:	.byte 3		; Comms speed (115200)
+PSPEED:	.byte 0		; Comms speed (115200)
 PSOUND:	.byte 0		; Sounds? (YES)
 PSAVE:	.byte 1		; Save parms? (NO)
-DEFAULT:	.byte 4,3,0,1	; Default parm indices
-SVSPEED:	.byte 3		; Storage for speed setting
+DEFAULT:	.byte 4,0,0,1	; Default parm indices
 CONFIGYET:	.byte 0		; Has the user configged yet?
 PARMSEND:
 PNIBBL:		.byte 1		; Enable nibbles? (NO - and not saved or exposed)

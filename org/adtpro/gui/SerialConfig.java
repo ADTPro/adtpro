@@ -118,8 +118,6 @@ public class SerialConfig extends JDialog implements ActionListener
     comboComPort = new JComboBox();
     enumeratePorts();
     comboSpeed = new JComboBox();
-    comboSpeed.addItem("300"); //$NON-NLS-1$
-    comboSpeed.addItem("9600"); //$NON-NLS-1$
     comboSpeed.addItem("19200"); //$NON-NLS-1$
     comboSpeed.addItem("115200"); //$NON-NLS-1$
 
