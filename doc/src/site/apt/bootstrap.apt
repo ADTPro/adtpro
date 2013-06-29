@@ -410,27 +410,25 @@ all the way to making a bootable ADTPro floppy:
 
 * {A Note About Speed}
 
- ADTPro lets you control how fast bootstrapping data gets sent to the
- Apple, as well as how long to pause after finishing sending a line of
- text.
- Historically, this entire operation has happened at 300 baud because
- that's the fastest the Apple could handle without some measure of line
- pacing or flow control.
+ Historically, the entire bootstrapping operation has happened at 300 baud
+ because that's the fastest the Apple could handle without some measure of
+ line pacing or flow control.
  Having DOS or ProDOS booted substantially slows down the pace at which the
  Apple can respond to data, so it's important to leave the Apple un-booted
  (i.e. hit reset before any disk loads after turning the machine on).
 
- The defaults now are to send bootstrapping data at 9600 baud, with 
+ The defaults now are to send initial bootstrapping data at 9600 baud, with 
  a 150 millisecond delay after each line.  The first few
  lines slow down much more than that because they rely on the 
  BASIC interpreter, which takes extra time to process.
- The defaults should work for all Apples; those containing accelerators
- will be able to go even faster.
- But the net result is substantially faster bootstrapping than before.
+ After the Speediboot process takes over, everything else happens even
+ faster than that.
+
+ The net result is substantially faster bootstrapping than before.
  Using the serial configuration dialog box, bootstrapping tab
  (<<<Bootstrapping->Serial Pacing>>>)
- lets you control pacing and speed specifically for the bootstrapping
- operations:
+ lets you control line pacing specifically for the bootstrapping
+ operations, but you should not need to change it:
 
 [images/serialConfig2.png]
 

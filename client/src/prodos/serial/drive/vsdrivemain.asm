@@ -27,15 +27,18 @@ READFAIL:
 
 ; READ
 READBLK:
+	lda	#$03		; Read command w/time request - command will be either 3 or 5
+	clc
+	adc	UNIT2		; Command will be #$05 for unit 2
+	sta	CURCMD
 ; SEND COMMAND TO PC
-	lda	#$03		; Read command w/time request
 	jsr	COMMAND_ENVELOPE
 ; Pull and verify command envelope from host
 	jsr	GETC		; Command envelope begin
 	cmp	#CHR_E
 	bne	READFAIL
 	jsr	GETC		; Read command
-	cmp	#$03
+	cmp	CURCMD
 	bne	READFAIL
 	jsr	GETC		; LSB of requested block
 	cmp	BLKLO
@@ -118,7 +121,10 @@ WRITEFAIL:
 ; WRITE
 WRITEBLK:
 ; SEND COMMAND TO PC
-	lda	#$02		; Write command
+	lda	#$02		; Write command - command will be either 2 or 4
+	clc
+	adc	UNIT2		; Command will be #$05 for unit 2
+	sta	CURCMD
 	jsr	COMMAND_ENVELOPE
 
 ; WRITE BLOCK AND CHECKSUM
@@ -151,7 +157,7 @@ WRLOOP:
 	bne	WRITEFAIL
 	jsr	GETC
 	bcs	WRITEFAIL
-	cmp	#$02		; S/B Write
+	cmp	CURCMD		; S/B Write
 	bne	WRITEFAIL
 	jsr	GETC		; Read LSB of requested block
 	bcs	WRITEFAIL
@@ -216,3 +222,4 @@ COMMSLOT:
 DEFAULT:
 	.byte	$ff	; Start with -1 for a slot number so we can tell when we find no slot
 TEMPDT:	.res	4
+CURCMD: .res	1

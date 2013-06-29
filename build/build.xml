@@ -30,6 +30,7 @@ everywhere it is invoked:
 	<property name="vdriveDistName" value="VDrive-${versionString}" />
 	<property name="vdriveDiskName" value="VDRIVE-${versionString}" />
 	<property name="vdriveVolName" value="VDrive.${versionString}" />
+	<property name="vdriveVolName2" value="VDrive2.${versionString}" />
 	<property name="dosVersionString" value="24" />
 	<property name="dosDistName" value="ADT${dosVersionString}" />
 	<property file="${builddir}/ADTProBuild.properties"/>
@@ -88,6 +89,7 @@ everywhere it is invoked:
 
 	<target name="vsdrive" depends="vsetup" description="Builds the virtual serial drive driver">
 		<appleCommander command="pro800" imagename="${builddir}/${distName}/disks/Virtual.po" volname="${vdriveVolName}"/>
+		<appleCommander command="pro800" imagename="${builddir}/${distName}/disks/Virtual2.po" volname="${vdriveVolName2}"/>
 		<echo message="Assembling ProDOS virtual serial drive source..."/>
 		<exec dir="${projdir}/client/src" executable="${assemblerPath}/ca65">
 			<arg line="-t none -l prodos/serial/drive/vsdrive.asm" />
@@ -123,6 +125,7 @@ everywhere it is invoked:
 
 	<target name="vedrive" depends="vsetup" description="Builds the virtual ethernet drive driver">
 		<appleCommander command="pro800" imagename="${builddir}/${distName}/disks/Virtual.po" volname="${vdriveVolName}"/>
+		<appleCommander command="pro800" imagename="${builddir}/${distName}/disks/Virtual2.po" volname="${vdriveVolName2}"/>
 		<echo message="Assembling ProDOS virtual ethernet drive source..."/>
 		<exec dir="${projdir}/client/src" executable="${assemblerPath}/ca65">
 			<arg line="-t none -l prodos/ethernet/drive/vedrive.asm" />

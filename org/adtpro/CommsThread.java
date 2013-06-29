@@ -498,20 +498,30 @@ public class CommsThread extends Thread
 			if (checkReceived == checkCalculated)
 			{
 				String message;
-				Disk disk;
+				Disk disk1,disk2;
 				Log.println(false, "Envelope checksums matched."); //$NON-NLS-1$
 				try
 				{
-					disk = new Disk(_parent.getWorkingDirectory() + "Virtual.po"); //$NON-NLS-1$
+					disk1 = new Disk(_parent.getWorkingDirectory() + "Virtual.po"); //$NON-NLS-1$
 				}
 				catch (IOException e1)
 				{
 					Log.println(false,"Unable to find Virtual.po in current working directory; creating a new one.");
 					com.webcodepro.applecommander.ui.ac.createProDisk(_parent.getWorkingDirectory() + "Virtual.po","VIRTUAL",Disk.APPLE_800KB_DISK);
-					disk = new Disk(_parent.getWorkingDirectory() + "Virtual.po"); //$NON-NLS-1$
+					disk1 = new Disk(_parent.getWorkingDirectory() + "Virtual.po"); //$NON-NLS-1$
 				}
-				Log.println(false, "Virtual disk retrieved."); //$NON-NLS-1$
-				if ((command == 0x01) || (command == 0x03)) // Read a block
+				try
+				{
+					disk2 = new Disk(_parent.getWorkingDirectory() + "Virtual2.po"); //$NON-NLS-1$
+				}
+				catch (IOException e1)
+				{
+					Log.println(false,"Unable to find Virtual2.po in current working directory; creating a new one.");
+					com.webcodepro.applecommander.ui.ac.createProDisk(_parent.getWorkingDirectory() + "Virtual2.po","VIRTUAL",Disk.APPLE_800KB_DISK);
+					disk2 = new Disk(_parent.getWorkingDirectory() + "Virtual2.po"); //$NON-NLS-1$
+				}
+				Log.println(false, "Virtual disks retrieved."); //$NON-NLS-1$
+				if ((command == 0x01) || (command == 0x03) || (command == 0x05)) // Read a block
 				{
 					message = Messages.getString("CommsThread.25");
 					block = UnsignedByte.intValue(blocklo, blockhi);
@@ -522,7 +532,7 @@ public class CommsThread extends Thread
 					_transport.writeByte(command);
 					_transport.writeByte(blocklo);
 					_transport.writeByte(blockhi);
-					if (command == 0x03)
+					if ((command == 0x03) || (command == 0x05))
 					{
 						// Calculate date/time and send it
 						byte dateTime[] = getProDOSDateTime();
@@ -545,14 +555,21 @@ public class CommsThread extends Thread
 					{
 						_transport.writeByte(checkReceived);
 					}
-					buffer = disk.readBlock(block);
+					if (command == 0x05)
+					{
+						buffer = disk2.readBlock(block);
+					}
+					else
+					{
+						buffer = disk1.readBlock(block);
+					}
 					_transport.writeBytes(buffer);
 					cs = checksum(buffer,Disk.BLOCK_SIZE);
 					Log.println(false, "Sending checksum byte "+UnsignedByte.toString(cs)); //$NON-NLS-1$
 					_transport.writeByte(cs);
 					_transport.pushBuffer();
 				}
-				if (command == 0x02) // Write a block
+				if ((command == 0x02) || (command == 0x04)) // Write a block
 				{
 					Log.println(false, "Waiting for block data..."); //$NON-NLS-1$
 					for (int i = 0; i < Disk.BLOCK_SIZE;i++)
@@ -576,8 +593,16 @@ public class CommsThread extends Thread
 						Log.println(false, "Block checksums matched at "+UnsignedByte.toString(checkReceived)); //$NON-NLS-1$
 						Log.println(false, "Writing block "+UnsignedByte.intValue(blocklo, blockhi)); //$NON-NLS-1$
 						block = UnsignedByte.intValue(blocklo, blockhi);
-						disk.writeBlock(block,buffer);
-						disk.save();
+						if (command == 0x04)
+						{
+							disk2.writeBlock(block,buffer);
+							disk2.save();
+						}
+						else
+						{
+							disk1.writeBlock(block,buffer);
+							disk1.save();
+						}
 						_transport.writeByte(0xc5);	// Reflect the 'E'
 						_transport.writeByte(command);
 						_transport.writeByte(blocklo);

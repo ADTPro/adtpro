@@ -60,7 +60,7 @@ SW1: 1001111  SW2: 1101100
 <<<1>>> means <<<on,>>> <<<up,>>> or <<<closed.>>>
 Super Serial cards came with (at least) two different kinds of jumper blocks. 
 One had little rocker switches, and the other had little sliders.
-Here are two examples with switches in the correct position for 300 baud operation:
+Here are two examples with switches in the correct position:
 
 [images/switch1.jpg]
 
@@ -219,10 +219,8 @@ checkbox in the serial config dialog box, brought up from the
 
   The Laser 128 and Franklin Ace 500 will not work with the Imagewriter I cable.
 
- Note that the original IIc motherboard is not able to operate the serial 
- port accurately at speeds higher than 300 baud, so you may have to go really
- slowly if you have one of those.  I have used my ROM revision '255' machine
- flawlessly at 115kbps, but your mileage my vary.
+ Note that the original IIc motherboard was supposed to be able to operate the serial 
+ port accurately at speeds higher than 300 baud, but in practice they work fine. 
  You may check the revision of your IIc by checking
  memory location 64447:
 

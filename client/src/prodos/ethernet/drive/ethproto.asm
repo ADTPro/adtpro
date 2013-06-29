@@ -1,6 +1,6 @@
 ;
 ; ADTPro - Apple Disk Transfer ProDOS
-; Copyright (C) 2012 by David Schmidt
+; Copyright (C) 2012 - 2013 by David Schmidt
 ; david__schmidt at users.sourceforge.net
 ;
 ; This program is free software; you can redistribute it and/or modify it 
@@ -167,7 +167,10 @@ READBLK:
 ; Grab the screen contents, remember it
 	lda	SCRN_THROB
 	sta	SCREEN_CONTENTS
-	lda	#$03		; Read command
+	lda	#$03		; Read command w/time request - command will be either 3 or 5
+	clc
+	adc	UNIT2		; Command will be #$05 for unit 2
+	sta	OS_COMMAND
 	jsr	COMMAND_ENVELOPE
 	bcs	READFAIL
 
@@ -216,6 +219,9 @@ WRITEBLK:
 	sta	SCREEN_CONTENTS
 
 	lda	#$02		; Write command
+	clc
+	adc	UNIT2
+	sta	OS_COMMAND
 
 	jsr	COMMAND_ENVELOPE
 	bcs	WRITEFAIL
@@ -234,7 +240,6 @@ WRITEFAIL:
 ;---------------------------------------------------------
 COMMAND_ENVELOPE:
 	pha			; Hang on to the command for a sec...
-	sta	OS_COMMAND
 	ldy	#$00
 	sty	SCRN_THROB
 	sty	udp_send_len
@@ -259,6 +264,8 @@ COMMAND_ENVELOPE:
 	jsr	BUFBYTE		; Send envelope checksum
 	lda	OS_COMMAND	; Depending on read or write...
 	cmp	#$03
+	beq	ENV_DONE	; We have a read request, so move past the write
+	cmp	#$05
 	beq	ENV_DONE	; We have a read request, so move past the write
 
 ; Copy in the block to write
@@ -315,6 +322,8 @@ ENVELOPE_REPLY:
 	bne	env_fail
 	lda	OS_COMMAND
 	cmp	#$03			; Is the command to read?
+	beq	pull_time		; Then pull the time out too
+	cmp	#$05			; Is the command to read?
 	beq	pull_time		; Then pull the time out too
 	lda	udp_inp + udp_data + 5	; Pick up the checksum 
 	cmp	CHECKSUM		; Compare to what we calculated outgoing

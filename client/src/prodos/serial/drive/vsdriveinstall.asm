@@ -1,6 +1,6 @@
 ;
 ; ADTPro - Apple Disk Transfer ProDOS
-; Copyright (C) 2012 by David Schmidt
+; Copyright (C) 2012 - 2013 by David Schmidt
 ; david__schmidt at users.sourceforge.net
 ;
 ; This program is free software; you can redistribute it and/or modify it 
@@ -55,6 +55,36 @@ nomem2:
 	.byte	"MEMORY NOT AVAILABLE.",$00
 	rts
 
+; INITIALIZE DRIVER
+init:
+; Find a likely place to install the driver in the device list.
+; Is there already a driver in slot 2, drive 1?
+	ldx	DEVCNT
+checkdev:
+	lda	DEVLST,X	; Grab an active device number
+	cmp	#$a0		; Slot 2, drive 1?
+	beq	present		; Yes, check if it's our driver
+	dex
+	bpl	checkdev	; Swing around until no more in list
+instdev:
+; All ready to go - install away!
+	lda	#<DRIVER
+	sta	DEVADR21
+	sta	DEVADR22
+	lda	#>DRIVER
+	sta	DEVADR21+1
+	sta	DEVADR22+1
+; Add to device list
+	inc	DEVCNT
+	ldy	DEVCNT
+	lda	#$20 ; Slot 2, drive 1
+	sta	DEVLST,Y
+	inc	DEVCNT
+	iny
+	lda	#$A0 ; Slot 2, drive 2
+	sta	DEVLST,Y
+	jmp	findser
+
 full:
 	jsr	msg
 	.byte	"SLOT 2 DRIVE 1 ALREADY RESIDENT.",$00
@@ -65,30 +95,6 @@ INITPAS:
 	jsr	msg
 	.byte	"NO SERIAL DEVICE FOUND.",$00
 	rts
-
-; INITIALIZE DRIVER
-init:
-; Find a likely place to install the driver in the device list.
-; Is there already a driver in slot 2, drive 1?
-	ldx	DEVCNT
-checkdev:
-	lda	DEVLST,X	; Grab an active device number
-	cmp	#$20		; Slot 2, drive 1?
-	beq	present		; Yes, check if it's our driver
-	dex
-	bpl	checkdev	; Swing around until no more in list
-instdev:
-; All ready to go - install away!
-	lda	#<DRIVER
-	sta	DEVADR21
-	lda	#>DRIVER
-	sta	DEVADR21+1
-; Add to device list
-	inc	DEVCNT
-	ldy	DEVCNT
-	lda	#$20 ; Slot 2, drive 1
-	sta	DEVLST,Y
-	jmp	findser
 
 present:
 	lda	DEVADR21
@@ -109,7 +115,7 @@ findser:
 	jsr	PARMINT
 	jsr	RESETIO
 	jsr	msg
-	.byte	"SERVING S2D1 WITH COMM SLOT ",$00
+	.byte	"SERVING S2,D1/D2 WITH COMM SLOT ",$00
 	pla
 	clc
 	adc	#$B1	; Add '1' to the found comm slot number for reporting

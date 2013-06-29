@@ -6,18 +6,18 @@
 
 ADTPro Virtual Drive
 
- The ADTPro server can host a virtual hard drive to a connected Apple II or /// machine running a driver from 
+ The ADTPro server can host two virtual hard drives to a connected Apple II or /// machine running a driver from 
  the distribution disk, VDRIVE-v.r.m.DSK.
  This is a different function from the usual disk transfer mechanics of the ADTPro client.
- With the VDrive driver running on an Apple, you can access an image named "Virtual.po" 
+ With the VDrive driver running on an Apple, you can access an image named "Virtual.po" or "Virtual2.po"
  in the "Disks" folder of the ADTPro server.
- This Virtual.po disk image can be of whatever size and contents you like; and the connected
- client will be able to access the contents of that image via slot 2, drive 1 on an Apple II,
- and as the .VSDRIVE device on an Apple ///.
+ These disk images can be of whatever size and contents you like; and the connected
+ client will be able to access the contents of that image via slot 2, drives 1 and 2 on an Apple II,
+ and as .VSDRIVE and .VSDRIVE2 devices on an Apple ///.
 
- The ADTPro distribution comes with a 800k Virtual.po file pre-built for you. 
- There's not much on it, as it's intended to give you a little extra storage space and to get used to how the virtual drive system works.
- You can use that one as-is, or you can substitute your own instead.
+ The ADTPro distribution comes with two 800k virtual files pre-built for you. 
+ There's not much on them, as they're intended to give you a little extra storage space and to get used to how the virtual drive system works.
+ You can use them as-is, or you can substitute your own instead.
  If you would like to make your own blank one, CiderPress or AppleCommander can do that for you.
  For example, from the command line where you normally run ADTPro from, you could enter one of these commands, based on your platform:
 
@@ -74,9 +74,9 @@ ADTPro Virtual Drive
 
  The serial VSDRIVE driver will automatically search for compatible hardware and use it.
  The slot that the serial adapter is in is independent of the slot that will be made available
- to the system as the virtual drive (S2D1).  
+ to the system as the virtual drives (S2D1/S2D2).  
  It is perfectly fine to have the serial adapter in physical slot 2 while
- the driver makes S2D1 available to the system.
+ the driver makes virtual drives S2D1 and S2D2 available to the system.
  
  There are two versions of the serial driver: VSDRIVE.LOW and VSDRIVE.
  The VSDRIVE.LOW version will install itself in the main memory of the Apple II, reducing the amount of
@@ -86,10 +86,10 @@ ADTPro Virtual Drive
  to ProDOS.
  The ProDOS Utilities Disk is compatible with this version, and it will stay resident even when 
  the ProDOS QUIT code is active.
-  
+
  On a machine with a typical Super Serial card adapter in slot 2 (or IIc/IIc+ or compatibles)
  this message will be displayed as it starts:
- 
+
 [images/vdrive6.png]
 
  During normal operations with the virtual disk, activity will cause status messages to appear in the
@@ -114,9 +114,9 @@ ADTPro Virtual Drive
  address changes.
  
  The slot that the Ethernet adapter is in is independent of the slot that will be made available
- to the system as the virtual drive (S2D1).  
+ to the system as the virtual drive (S2D1/S2D2).  
  It is perfectly fine to have the adapter in physical slot 2 while
- the driver makes S2D1 available to the system.
+ the driver makes virtual drives S2D1 and S2D2 available to the system.
  
  Here is a typical session configuring and starting the driver on a machine with an 
  Uthernet adapter in slot 3:
@@ -138,10 +138,10 @@ ADTPro Virtual Drive
 
 * Starting the VSDRIVE on {SOS} - Serial on the Apple ///
 
- Using the virtual serial drive on SOS requires you to add the VSDRIVE.A3DRVR device driver to your boot disk.
+ Using the virtual serial drives on SOS requires you to add the VSDRIVE.A3DRVR device driver to your boot disk.
  The VDRIVE-v.r.m.DSK disk is bootable on the Apple ///, runs Business BASIC, and contains the required driver pre-installed for you. 
- Once installed on any of your boot disks, the device ".VSDRIVE" will be available to the system, 
-and will reflect the Virtual.po image served by the ADTPro server.   
+ Once installed on any of your boot disks, the devices ".VSDRIVE" and ".VSDRIVE2" will be available to the system, 
+and will reflect the Virtual.po and Virtual2.po images served by the ADTPro server.   
 
 [images/vdrivesos1.png]
 

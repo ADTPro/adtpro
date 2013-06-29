@@ -1,6 +1,6 @@
 ;
 ; ADTPro - Apple Disk Transfer ProDOS
-; Copyright (C) 2012 by David Schmidt
+; Copyright (C) 2012 - 2013 by David Schmidt
 ; david__schmidt at users.sourceforge.net
 ;
 ; This program is free software; you can redistribute it and/or modify it 
@@ -62,17 +62,6 @@ nomem2:
 	.byte	"MEMORY NOT AVAILABLE.",$00
 	rts
 
-full:
-	jsr	msg
-	.byte	"SLOT 2 DRIVE 1 ALREADY RESIDENT.",$00
-	rts
-
-fail:
-INITPAS:
-	jsr	msg
-	.byte	"NO COMMS DEVICE FOUND.",$00
-	rts
-
 ; INITIALIZE DRIVER
 init:
 ; Find a likely place to install the driver in the device list.
@@ -88,16 +77,33 @@ instdev:
 ; All ready to go - install away!
 	lda	#<DRIVER
 	sta	DEVADR21
+	sta	DEVADR22
 	lda	#>DRIVER
 	sta	DEVADR21+1
+	sta	DEVADR22+1
 ; Add to device list
 	inc	DEVCNT
 	ldy	DEVCNT
 	lda	#$20 ; Slot 2, drive 1
 	sta	DEVLST,Y
+	inc	DEVCNT
+	iny
+	lda	#$A0 ; Slot 2, drive 2
+	sta	DEVLST,Y
 	jsr	INITIO
 	bcs	fail
 	jmp	report
+
+full:
+	jsr	msg
+	.byte	"SLOT 2 DRIVE 1 ALREADY RESIDENT.",$00
+	rts
+
+fail:
+INITPAS:
+	jsr	msg
+	.byte	"NO COMMS DEVICE FOUND.",$00
+	rts
 
 present:
 	lda	DEVADR21

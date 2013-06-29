@@ -1,6 +1,6 @@
 ;
 ; ADTPro - Apple Disk Transfer ProDOS
-; Copyright (C) 2012 by David Schmidt
+; Copyright (C) 2012 - 2013 by David Schmidt
 ; david__schmidt at users.sourceforge.net
 ;
 ; This program is free software; you can redistribute it and/or modify it 
@@ -43,16 +43,24 @@ DRIVER:
 ; CHECK THAT WE HAVE THE RIGHT DRIVE
 	lda	UNIT
 	cmp	#$20		; SLOT 2 DRIVE 1
-	beq	DOCMD		; YEP, DO COMMAND
+	beq	DOCMD1		; YEP, DO COMMAND
+	cmp	#$A0		; SLOT 2 DRIVE 2
+	beq	DOCMD2		; YEP, DO COMMAND
 	sec	; NOPE, FAIL
 	lda	#NODEV
 	rts
 
 ; CHECK WHICH COMMAND IS REQUESTED
-DOCMD:
+DOCMD1:
+	lda	#$00
+	sta	UNIT2
+	beq	DOCOMMAND	; Branch always
+DOCMD2:
+	lda	#$02		; Add 2 for unit 2
+	sta	UNIT2
+DOCOMMAND:
 	lda	COMMAND
-	bne	NOTSTAT		; 0 IS STATUS
-	jmp	GETSTAT
+	beq	GETSTAT		; 0 IS STATUS
 NOTSTAT:
 	cmp	#$01
 	bne	NOREAD		; 1 IS READ
@@ -112,3 +120,4 @@ CHECKSUM:
 	.byte	$00
 STACKPTR:		; Storage for the stack pointer to unwind call stack
 	.res	$01
+UNIT2:	.res	1

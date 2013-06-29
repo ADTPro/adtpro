@@ -52,9 +52,9 @@ ADTPro Protocol
 
  [{{{#Read}"E"+$01 - Read Block}}] ProDOS device driver compatible read block request
 
- [{{{#Write}"E"+$02 - Write Block}}] ProDOS device driver compatible write block request
+ [{{{#Write}"E"+$02/$04 - Write Block}}] ProDOS device driver compatible write block request
 
- [{{{#Read3}"E"+$03 - Read Block with timestamp update}}] ProDOS device driver compatible read block request with timestamp update
+ [{{{#Read3}"E"+$03/$05 - Read Block with timestamp update}}] ProDOS device driver compatible read block request with timestamp update
 
 * {Change Directory}
 
@@ -443,13 +443,13 @@ Vitual Drive Server Functions
 
  The Apple sends: byte stream:
    One byte: "E" ($C5)
-   One byte: $03
+   One byte: $03 (for drive 1) or $05 (for drive 2)
    Two bytes: requested block number (LSB, MSB)
    One byte: EOR of the first four bytes
 
  Host sends: byte stream:
    One byte: "E" ($C5)
-   One byte: $03
+   One byte: $03 (for drive 1) or $05 (for drive 2)
    Two bytes: requested block number (LSB, MSB)
    Four bytes: ProDOS date and timestamp data (ultimately destined for $BF90 to $BF93)
    One byte: EOR of the first eight bytes
@@ -464,7 +464,7 @@ Vitual Drive Server Functions
 
  The Apple sends: byte stream:
    One byte: "E" ($C5)
-   One byte: $02
+   One byte: $02 (for drive 1) or $04 (for drive 2)
    Two bytes: requested block number (LSB, MSB)
    One byte: EOR of the first four bytes
    Requested block data (512 bytes)
@@ -472,7 +472,7 @@ Vitual Drive Server Functions
 
  Host sends: byte stream:
    One byte: "E" ($C5)
-   One byte: $02
+   One byte: $02 (for drive 1) or $04 (for drive 2)
    Two bytes: requested block number (LSB, MSB)
    One byte: EOR of the first four bytes
 
