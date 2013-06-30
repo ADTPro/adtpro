@@ -120,7 +120,7 @@ report:	jsr	msg
 	bmi	fail
 	pha
 	jsr	msg
-	.byte	"SERVING S2D1 WITH COMM SLOT ",$00
+	.byte	"DRIVES S2,D1/2 ON COMM SLOT ",$00
 	pla
 	clc
 	adc	#$B1	; Add '1' to the found comm slot number for reporting

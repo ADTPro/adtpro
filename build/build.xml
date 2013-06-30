@@ -25,7 +25,7 @@ everywhere it is invoked:
 	<property name="builddir" value="${basedir}/build" />
 	<property name="distName" value="ADTPro-${versionString}" />
 	<property name="diskName" value="ADTPRO-${versionString}" />
-	<property name="a3sysutils-vs" value="${builddir}/SysUtilsA3-VSDrive-1.26.dsk" />
+	<property name="a3sysutils-vs" value="${builddir}/SysUtilsA3-VSDrive-1.28.dsk" />
 	<property name="volName" value="ADTPro.${versionString}" />
 	<property name="vdriveDistName" value="VDrive-${versionString}" />
 	<property name="vdriveDiskName" value="VDRIVE-${versionString}" />
