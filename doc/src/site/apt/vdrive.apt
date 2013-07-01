@@ -9,7 +9,7 @@ ADTPro Virtual Drive
  The ADTPro server can host two virtual hard drives to a connected Apple II or /// machine running a driver from 
  the distribution disk, VDRIVE-v.r.m.DSK.
  This is a different function from the usual disk transfer mechanics of the ADTPro client.
- With the VDrive driver running on an Apple, you can access an image named "Virtual.po" or "Virtual2.po"
+ With the VDrive driver running on an Apple, you can access images named "Virtual.po" and "Virtual2.po"
  in the "Disks" folder of the ADTPro server.
  These disk images can be of whatever size and contents you like; and the connected
  client will be able to access the contents of that image via slot 2, drives 1 and 2 on an Apple II,
@@ -18,7 +18,7 @@ ADTPro Virtual Drive
  The ADTPro distribution comes with two 800k virtual files pre-built for you. 
  There's not much on them, as they're intended to give you a little extra storage space and to get used to how the virtual drive system works.
  You can use them as-is, or you can substitute your own instead.
- If you would like to make your own blank one, CiderPress or AppleCommander can do that for you.
+ If you would like to make your own blank ones, CiderPress or AppleCommander can do that for you.
  For example, from the command line where you normally run ADTPro from, you could enter one of these commands, based on your platform:
 
 +------------
@@ -26,9 +26,9 @@ ADTPro Virtual Drive
    sh ac.sh -pro800 disks/Virtual.po VOLNAME
 +------------
 
-* VDRIVE Disk Contents
+* VDRIVE Distribution Disk Contents
 
- The VDRIVE-v.r.m.DSK distribution disk is bootable on both the Apple II and Apple /// computers.
+ The VDRIVE-v.r.m.DSK distribution disk is bootable on both Apple II and Apple /// computers.
  The file contents of the VDRIVE-v.r.m.DSK disk specific to the Apple II are as follows:
 
  [<<<PRODOS>>>] ProDOS
