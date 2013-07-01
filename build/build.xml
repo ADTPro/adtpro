@@ -45,7 +45,7 @@ everywhere it is invoked:
 	<property name="rxtxZip2" value="${rxtxVersion2}.zip" />
 	<property name="rxtxVersionCloudHopperWin64" value="ch-rxtx-2.2-20081207-win-x64" />
 	<property name="rxtxZipCHWin64" value="${rxtxVersionCloudHopperWin64}.zip" />
-	<property name="dmgmegabytes" value="8" />
+	<property name="dmgmegabytes" value="9" />
 	<taskdef name="appleDump" classname="org.adtpro.utilities.AppleDump" classpath="${projdir}"/>
 	<taskdef name="appleCommander" classname="com.webcodepro.applecommander.ui.AntTask" classpath="${projdir};${acJarPath}/${acJar}"/>
 	<taskdef name="jarbundler" classname="net.sourceforge.jarbundler.JarBundler" classpath="${jarBundlerJar}"/>
