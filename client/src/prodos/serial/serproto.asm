@@ -1,6 +1,6 @@
 ;
 ; ADTPro - Apple Disk Transfer ProDOS
-; Copyright (C) 2006 - 2012 by David Schmidt
+; Copyright (C) 2006 - 2013 by David Schmidt
 ; david__schmidt at users.sourceforge.net
 ;
 ; This program is free software; you can redistribute it and/or modify it 
@@ -63,20 +63,21 @@ DIRREPLY:
 	sta Buffer	; beginning of the Big Buffer(TM)
 	LDA_BIGBUF_ADDR_HI
 	sta Buffer+1
-:	jsr GETC	; Get character from serial port
+@DirGetNext:
+	jsr GETC	; Get character from serial port
 	bcs @DirTimeout	; Bail if we are timing out
 	php		; Save flags
 	sta (Buffer),Y	; Store byte
 	iny		; Bump counter
 	bne @NEXT	; Skip
-	inc <Buffer+1	; Next 256 bytes
+	inc Buffer+1	; Next 256 bytes
 @NEXT:
 	plp		; Restore flags
-	bne :-		; Loop until zero
+	bne @DirGetNext	; Loop until a zero is found
 
 	jsr GETC	; Get continuation character
 	sta (Buffer),Y 	; Store continuation byte too
-	LDA_BIGBUF_ADDR_LO	; Connect the block pointer to the
+	LDA_BIGBUF_ADDR_LO	; Re-connect the block pointer to the
 	sta Buffer	; beginning of the Big Buffer(TM)
 	LDA_BIGBUF_ADDR_HI
 	sta Buffer+1
