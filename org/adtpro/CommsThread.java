@@ -2783,7 +2783,7 @@ public class CommsThread extends Thread
 							}
 							_transport.writeByte(buffer[i]);
 							_transport.pushBuffer();
-							sleep(1);
+							// sleep(1); Sleeping here seemed to really slow down Windows OSes
 							if (_shouldRun)
 							{
 								_parent.setProgressValue(i + 1);
