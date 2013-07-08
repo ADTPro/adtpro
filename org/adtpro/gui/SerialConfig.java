@@ -122,6 +122,7 @@ public class SerialConfig extends JDialog implements ActionListener
     comboSpeed.addItem("115200"); //$NON-NLS-1$
 
     comboBootstrapSpeed = new JComboBox();
+    comboBootstrapSpeed.addItem("2400"); //$NON-NLS-1$
     comboBootstrapSpeed.addItem("9600"); //$NON-NLS-1$
 
     comboBootstrapPacing = new JComboBox();
