@@ -16,6 +16,13 @@ ADTPro Release History
 
  []
 
+ Bug fixes:
+
+ * [Server] Severe slowdown on bootstrapping under Windows was cured
+   by removing what should have been a harmless yielding of the CPU
+
+ []
+
 * 1.2.7 - April 18, 2013
 
  New functionality:

@@ -1,6 +1,6 @@
 ;
 ; ADTPro - Apple Disk Transfer ProDOS
-; Copyright (C) 2012 by David Schmidt
+; Copyright (C) 2012 - 2013 by David Schmidt
 ; david__schmidt at users.sourceforge.net
 ;
 ; This program is free software; you can redistribute it and/or modify it 
@@ -217,7 +217,7 @@ PABORT:	ldx	#$ff		; POP GOES THE STACKPTR
 ;---------------------------------------------------------
 size:	.res	2	; Size of file to transfer (in bytes)
 PSPEED:
-	.byte	3	; 0 = 300, 1 = 9600, 2 = 19200, 3 = 115200
+	.byte	1	; 0 = 19200, 1 = 115200
 COMMSLOT:
 DEFAULT:
 	.byte	$ff	; Start with -1 for a slot number so we can tell when we find no slot

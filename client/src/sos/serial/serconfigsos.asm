@@ -278,7 +278,7 @@ FindSlot:
 
 PARMNUM	= $04		; Number of configurable parms
 ;			; Note - add bytes to OLDPARM if this is expanded.
-PARMSIZ: .byte 5,4,2,2	; Number of options for each parm
+PARMSIZ: .byte 5,2,2,2	; Number of options for each parm
 
 PARMTXT:
 	ascz "SSC SLOT 1"
@@ -286,6 +286,7 @@ PARMTXT:
 	ascz "SSC SLOT 3"
 	ascz "SSC SLOT 4"
 	ascz "/// SERIAL"
+	ascz "19200"
 	ascz "115200"
 	ascz "YES"
 	ascz "NO"
@@ -299,10 +300,10 @@ CONFIG_FILE_NAME:	.byte 11
 
 PARMS:
 COMMSLOT:	.byte 4		; Comms slot (5)
-PSPEED:	.byte 0		; Comms speed (115200)
+PSPEED:	.byte 1		; Comms speed (115200)
 PSOUND:	.byte 0		; Sounds? (YES)
 PSAVE:	.byte 1		; Save parms? (NO)
-DEFAULT:	.byte 4,0,0,1	; Default parm indices
+DEFAULT:	.byte 4,1,0,1	; Default parm indices
 CONFIGYET:	.byte 0		; Has the user configged yet?
 PARMSEND:
 PNIBBL:		.byte 1		; Enable nibbles? (NO - and not saved or exposed)

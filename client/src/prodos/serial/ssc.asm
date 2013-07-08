@@ -1,6 +1,6 @@
 ;
 ; ADTPro - Apple Disk Transfer ProDOS
-; Copyright (C) 2006 - 2012 by David Schmidt
+; Copyright (C) 2006 - 2013 by David Schmidt
 ; david__schmidt at users.sourceforge.net
 ;
 ; This program is free software; you can redistribute it and/or modify it 
@@ -126,4 +126,4 @@ PATCHSSC:
 
 	rts
 
-BPSCTRL:	.byte $16,$1E,$1F,$10	; 300, 9600, 19200, 115k
+BPSCTRL:	.byte $1F,$10	; 19200, 115k

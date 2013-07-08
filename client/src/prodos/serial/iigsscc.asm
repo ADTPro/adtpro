@@ -1,6 +1,6 @@
 ;
 ; ADTPro - Apple Disk Transfer ProDOS
-; Copyright (C) 2006 - 2012 by David Schmidt
+; Copyright (C) 2006 - 2013 by David Schmidt
 ; david__schmidt at users.sourceforge.net
 ;
 ; This program is free software; you can redistribute it and/or modify it 
@@ -146,7 +146,7 @@ INITZSCC:
 	STA GSCMDB	;BRG source is XTAL or RTxC
 
 	lda PSPEED
-	cmp #$03	; 115200 baud?
+	cmp #$01	; 115200 baud?
 	beq GOFAST	; Yes, go fast
 
 	LDX #4		;wr4
@@ -179,7 +179,7 @@ GOFAST:
 			;1.5 set bits 3,2 to 1,0
 			;2   set bits 3,2 to 1,1
 
-	LDX #11	;wr11
+	LDX #11		;wr11
 	LDA #WR11BXTAL	;load constant to write
 	STX GSCMDB
 	STA GSCMDB
@@ -241,28 +241,23 @@ INITCOMMON:
 ; (In other words, set the baud rate.)
 
 TIMECON:
-	ldy PSPEED
 	LDA #12
 	STA GSCMDB
-	LDA BAUDL,Y	;load time constant low
+	LDA BAUDL	;load time constant low
 	STA GSCMDB
 
 	LDA #13
 	STA GSCMDB
-	LDA BAUDH,Y	;load time constant high
+	LDA BAUDH	;load time constant high
 	STA GSCMDB
 	RTS
 
 ; Table of values for different baud rates. There is
 ; a low byte and a high byte table.
 
-BAUDL:	.byte	126	;300 bps
-	.byte	10	;9600
-	.byte	4	;19200
+BAUDL:	.byte	4	;19200
 
-BAUDH:	.byte	1	;300 bps
-	.byte	0	;9600
-	.byte	0	;19200
+BAUDH:	.byte	0	;19200
 
 ; For reference, all the possible values:
 ;BAUDL:	.byte	126	;300 bps (1)

@@ -1,6 +1,6 @@
 ;
 ; ADTPro - Apple Disk Transfer ProDOS
-; Copyright (C) 2007 - 2012 by David Schmidt
+; Copyright (C) 2007 - 2013 by David Schmidt
 ; david__schmidt at users.sourceforge.net
 ;
 ; This program is free software; you can redistribute it and/or modify it 
@@ -71,22 +71,10 @@ MODINIT:
 ; interpreting any of the binary data.
 ;
 INITSEND:
-	ldy CHR_4		; Start with ascii "4"
-	lda PSPEED
-	bne :+			; Is speed set to low (300)?
-	lda CHR_0		; Load up ascii "0"
-	sta BAUDR+1
-	lda CHR_6		; Load up ascii "6"
-	sta BAUDR+2
-	jmp INITFOUNDSPEED
-:
-	cmp #$02		; Is PSPEED set to 19200?
-	bne :+
-	iny			; Yes, bump "4" to "5"
-:	sty BAUDR+2
+	ldy CHR_5		; Start with ascii "4"
+	sty BAUDR+2
 	ldy CHR_1		; Load up ascii "1"
 	sty BAUDR+1		; We now have "Ctrl-A1[4|5]B"
-INITFOUNDSPEED:
 	ldy #0
 SILOOP:
 	lda INITSTRING,Y
