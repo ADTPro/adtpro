@@ -1,6 +1,6 @@
 ;
 ; ADTPro - Apple Disk Transfer ProDOS
-; Copyright (C) 2008, 2010 by David Schmidt
+; Copyright (C) 2008 - 2013 by David Schmidt
 ; david__schmidt at users.sourceforge.net
 ;
 ; This program is free software; you can redistribute it and/or modify it 
@@ -48,20 +48,6 @@
 
 .macro LDA_BIGBUF_ADDR_LO
 	lda #$00
-.endmacro
-
-.macro LDX_BIGBUF_ADDR_HI
-	ldx FIND_SEG_BASE+1
-.endmacro
-
-.macro STA_BIGBUF_ADDR_HI
-	clc
-	sbc #$20
-	sta BLKPTR+1
-.endmacro
-
-.macro STA_BIGBUF_ADDR_LO
-	sta BLKPTR
 .endmacro
 
 .macro LDA_CH
