@@ -274,10 +274,10 @@ all the way to making a bootable ADTPro floppy:
     [[1]] <<Reboot>> your newly formatted floppy with the <<<PR#6>>> command
       (where <<<6>>> is the slot number of the slot your Disk ][ card is in).
 
-    [[1]] Now that DOS is running, it will be necessary to slow down the transfer
-      speed for the next step.  
+    [[1]] Now that DOS is running, it will be necessary to slow down the serial
+      pacing and speed for the next step.  
       Click on the ADTPro menu item Bootstrapping->Serial Pacing and set
-      the speed down to 2400 to be safe:
+      the pacing to 250, and speed down to 2400 to be safe:
 
       *
 
