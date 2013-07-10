@@ -353,7 +353,7 @@ all the way to making a bootable ADTPro floppy:
       If this is the first time you've connected via the serial port, you will be presented with 
       the serial configuration dialog box, where you'll need to choose which serial port to use.
 
-    [[1]] Click on the "Bootstrapping->ProDOS->VSDrive" menu item.  
+    [[1]] Click on the "Bootstrapping->ProDOS->VSDrive + Speediboot" menu item.  
       A dialog box will come up instructing you to type a set of commands
       on the Apple:
 

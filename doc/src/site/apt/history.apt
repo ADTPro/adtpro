@@ -6,12 +6,12 @@
 
 ADTPro Release History
 
-* Unreleased - in CVS now
+* 1.2.8 - July 9, 2013
 
  New functionality:
- 
+
  * [VDrive] Added the ability to serve a second virtual drive
- 
+
  * Restricted most opportunities to change baud rates from defaults  
 
  []

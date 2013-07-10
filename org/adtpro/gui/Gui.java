@@ -143,6 +143,7 @@ public final class Gui extends JFrame implements ActionListener
     MenuAction proDOSVSDriveAction = new MenuAction(Messages.getString("Gui.BS.ProDOSVSDrive")); //$NON-NLS-1$
     _vsdrivebootAction = menuBootstrapProDOS.add(proDOSVSDriveAction);
     _vsdrivebootAction.setEnabled(true);
+    menuBootstrapProDOS.addSeparator();
     MenuAction proDOSAction = new MenuAction(Messages.getString("Gui.BS.ProDOS")); //$NON-NLS-1$
     menuBootstrapProDOS.add(proDOSAction);
     MenuAction dosAction = new MenuAction(Messages.getString("Gui.BS.DOS")); //$NON-NLS-1$
