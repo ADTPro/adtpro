@@ -146,7 +146,7 @@ INITZSCC:
 	STA GSCMDB	;BRG source is XTAL or RTxC
 
 	lda PSPEED
-	cmp #$01	; 115200 baud?
+	cmp BPS1152K	; 115200 baud?
 	beq GOFAST	; Yes, go fast
 
 	LDX #4		;wr4
@@ -162,7 +162,7 @@ INITZSCC:
 	STA GSCMDB
 
 	JSR TIMECON	;set up wr12 and wr13
-			;to set baud rate.
+			;to set baud rate to 19200/BPS192K, the only other option.
 
 ; Enables
 	ORA #%00000001	;enable baud rate gen

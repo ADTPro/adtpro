@@ -217,7 +217,7 @@ PABORT:	ldx	#$ff		; POP GOES THE STACKPTR
 ;---------------------------------------------------------
 size:	.res	2	; Size of file to transfer (in bytes)
 PSPEED:
-	.byte	1	; 0 = 19200, 1 = 115200
+	.byte	BPS1152K; 0 = 19200, 1 = 115200
 COMMSLOT:
 DEFAULT:
 	.byte	$ff	; Start with -1 for a slot number so we can tell when we find no slot

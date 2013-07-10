@@ -71,10 +71,11 @@ MODINIT:
 ; interpreting any of the binary data.
 ;
 INITSEND:
-	ldy CHR_5		; Start with ascii "4"
-	sty BAUDR+2
-	ldy CHR_1		; Load up ascii "1"
-	sty BAUDR+1		; We now have "Ctrl-A1[4|5]B"
+; Remove options - only setting up as 19200/BPS192K.
+;	ldy CHR_5		; Start with ascii "5"
+;	sty BAUDR+2
+;	ldy CHR_1		; Load up ascii "1"
+;	sty BAUDR+1		; We now have "Ctrl-A1[4|5]B"
 	ldy #0
 SILOOP:
 	lda INITSTRING,Y

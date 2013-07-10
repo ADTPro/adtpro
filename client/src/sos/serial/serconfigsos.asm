@@ -300,10 +300,10 @@ CONFIG_FILE_NAME:	.byte 11
 
 PARMS:
 COMMSLOT:	.byte 4		; Comms slot (5)
-PSPEED:	.byte 1		; Comms speed (115200)
+PSPEED:	.byte BPS1152K		; Comms speed (115200)
 PSOUND:	.byte 0		; Sounds? (YES)
 PSAVE:	.byte 1		; Save parms? (NO)
-DEFAULT:	.byte 4,1,0,1	; Default parm indices
+DEFAULT:	.byte 4,BPS1152K,0,1	; Default parm indices
 CONFIGYET:	.byte 0		; Has the user configged yet?
 PARMSEND:
 PNIBBL:		.byte 1		; Enable nibbles? (NO - and not saved or exposed)

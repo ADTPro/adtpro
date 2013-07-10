@@ -217,7 +217,7 @@ RESETIO:
 ; Variables
 ;---------------------------------------------------------
 PSPEED:
-	.byte	1	; 0 = 19200, 1 = 115200
+	.byte	BPS1152K	; Current speed offset
 COMMSLOT:
 DEFAULT:
 	.byte	$ff	; Start with -1 for a slot number so we can tell when we find no slot

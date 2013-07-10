@@ -126,4 +126,9 @@ PATCHSSC:
 
 	rts
 
-BPSCTRL:	.byte $1F,$10	; 19200, 115k
+; Constants for BPSCTRL offsets
+BPS192K		= $00	; 19200 BPS
+BPS1152K	= $01	; 115200 BPS
+
+BPSCTRL:	.byte $1F,$10	; 19200, 115200 - offsets must match constants BPS* above.
+
