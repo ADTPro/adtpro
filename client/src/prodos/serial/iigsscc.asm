@@ -146,7 +146,7 @@ INITZSCC:
 	STA GSCMDB	;BRG source is XTAL or RTxC
 
 	lda PSPEED
-	cmp BPS1152K	; 115200 baud?
+	cmp #BPS1152K	; 115200 baud?
 	beq GOFAST	; Yes, go fast
 
 	LDX #4		;wr4
