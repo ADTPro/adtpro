@@ -2855,7 +2855,7 @@ public class CommsThread extends Thread
 									}
 									else
 									{
-										sleep(Integer.parseInt(_parent._properties.getProperty("CommPortBootstrapPacing", "150")));
+										sleep(Integer.parseInt(_parent._properties.getProperty("CommPortBootstrapPacing", "250")));
 									}
 								}
 								catch (InterruptedException e)

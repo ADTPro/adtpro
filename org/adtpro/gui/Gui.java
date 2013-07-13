@@ -723,7 +723,7 @@ public final class Gui extends JFrame implements ActionListener
               {
                 int size = _commsThread.requestSend(e.getActionCommand());
                 int speed = 2400;
-                int pacing = 75;
+                int pacing = 250;
                 try
                 {
                   speed = Integer.parseInt(_properties.getProperty("CommPortBootstrapSpeed"));
@@ -738,7 +738,7 @@ public final class Gui extends JFrame implements ActionListener
                 }
                 catch (NumberFormatException e2)
                 {
-                  pacing = 75;
+                  pacing = 250;
                 }
                 Log.println(false, "Gui.actionPerformed getting instructions with speed = " + speed + " pacing = "
                     + pacing);
