@@ -29,13 +29,16 @@ OS_ARCH=`uname -p`
 
 # For Linux, use this:
 if [ "$OS" = "Linux" ]; then
-  if [ "$OS_ARCH" = "i686" ]; then
-    export RXTXLIB=lib/rxtx/rxtx-2.2pre2-local/i686-pc-linux-gnu
+  if [ -f /usr/bin/raspi-config ]; then
+    export RXTXLIB=lib/rxtx/%RXTX_VERSION%/arm
+    ADTPRO_EXTRA_JAVA_PARMS="-Dgnu.io.rxtx.SerialPorts=/dev/ttyUSB0:/dev/ttyAMA0"
+  elif [ "$OS_ARCH" = "i686" ]; then
+    export RXTXLIB=lib/rxtx/%RXTX_VERSION%/i686-pc-linux-gnu
   else
     if [ "$OS_ARCH" = "i386" ]; then
-      export RXTXLIB=lib/rxtx/rxtx-2.2pre2-local/i686-pc-linux-gnu
+      export RXTXLIB=lib/rxtx/%RXTX_VERSION%/i686-pc-linux-gnu
     else  
-      export RXTXLIB=lib/rxtx/rxtx-2.2pre2-local/x86_64-unknown-linux-gnu
+      export RXTXLIB=lib/rxtx/%RXTX_VERSION%/x86_64-unknown-linux-gnu
     fi
   fi
 fi
@@ -58,5 +61,19 @@ fi
 export TWEAK1="-Djava.library.path="
 export TWEAK=$TWEAK1$ADTPRO_HOME/$RXTXLIB
 
+if [ "$1x" = "headlessx" ]; then
+  shift
+  if [ "$1x" = "x" ] || [ ! -f /usr/bin/xvfb-run ]; then
+    if [ ! -f /usr/bin/xvfb-run ]; then
+      echo "Headless operation requires xvfb."
+    else
+      echo "usage: adtpro.sh [ headless ] [ serial | ethernet | audio | localhost ]"
+    fi
+    exit 1
+  else
+    HEADLESS="xvfb-run --auto-servernum "
+  fi
+fi
+
 cd "$ADTPRO_HOME"/disks
-"$MY_JAVA_HOME"java -Xms256m -Xmx512m "$TWEAK" $ADTPRO_EXTRA_JAVA_PARMS -cp ../lib/%ADTPRO_VERSION%:../"$RXTXLIB"/../RXTXcomm.jar:../lib/AppleCommander/AppleCommander-%AC_VERSION%.jar org.adtpro.ADTPro $*
+$HEADLESS"$MY_JAVA_HOME"java -Xms256m -Xmx512m "$TWEAK" $ADTPRO_EXTRA_JAVA_PARMS -cp ../lib/%ADTPRO_VERSION%:../"$RXTXLIB"/../RXTXcomm.jar:../lib/AppleCommander/AppleCommander-%AC_VERSION%.jar org.adtpro.ADTPro $*
