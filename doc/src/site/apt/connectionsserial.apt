@@ -219,9 +219,9 @@ checkbox in the serial config dialog box, brought up from the
 
   The Laser 128 and Franklin Ace 500 will not work with the Imagewriter I cable.
 
- Note that the original IIc motherboard was supposed to be able to operate the serial 
- port accurately at speeds higher than 300 baud, but in practice they work fine. 
- You may check the revision of your IIc by checking
+ Note that the original IIc motherboard was not supposed to be able to operate the serial 
+ port accurately at speeds higher than 300 baud, but in practice they work fine at all speeds. 
+ If you're curious, you may check the revision of your IIc by checking
  memory location 64447:
 
  * if <<<PRINT PEEK(64447)>>> returns 255, you have an original IIc (ROM revision '255').
