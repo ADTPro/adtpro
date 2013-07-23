@@ -6,6 +6,16 @@
 
 ADTPro Release History
 
+* Unreleased - in CVS now
+
+ Bug fixes:
+
+ * [VDrive] Serial driver installer quits to where it came from,
+   allowing a launch from the launcher to return there, this time
+   with the driver in place 
+
+ []
+
 * 1.2.8 - July 9, 2013
 
  New functionality:

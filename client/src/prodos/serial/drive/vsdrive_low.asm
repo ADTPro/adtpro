@@ -22,7 +22,7 @@
 	.include "prodos/prodosmacros.i"		; OS macros
 	.include "prodos/prodosconst.i"			; OS equates, characters, etc.
 
-	.include "prodos/serial/drive/vsdriveinstall.asm"
+	.include "prodos/serial/drive/vsdriveinstall_low.asm"
 	.include "prodos/serial/findslot.asm"
 
 asm_begin:

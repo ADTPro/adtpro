@@ -92,35 +92,35 @@ everywhere it is invoked:
 		<appleCommander command="pro800" imagename="${builddir}/${distName}/disks/Virtual2.po" volname="${vdriveVolName2}"/>
 		<echo message="Assembling ProDOS virtual serial drive source..."/>
 		<exec dir="${projdir}/client/src" executable="${assemblerPath}/ca65">
-			<arg line="-t none -l prodos/serial/drive/vsdrive.asm" />
+			<arg line="-t none -l prodos/serial/drive/vsdrive_low.asm" />
 		</exec>
 		<exec dir="${projdir}/client/src" executable="${assemblerPath}/ca65">
-			<arg line="-t none -l prodos/serial/drive/vsdrive_d2.asm" />
+			<arg line="-t none -l prodos/serial/drive/vsdrive_high.asm" />
 		</exec>
 		<exec dir="${projdir}/client/src" executable="${assemblerPath}/ca65">
 			<arg line="-t none -l prodos/serial/drive/vsdrive_speed.asm" />
 		</exec>
 		<echo message="Linking serial drive..."/>
 		<exec dir="${projdir}/client/src" executable="${assemblerPath}/ld65">
-			<arg line="-o DRIVE -m vsdrive.map -C prodos/serial/drive/vsdrive.cfg prodos/serial/drive/vsdrive.o" />
+			<arg line="-o VSDRIVE_LOW -m vsdrive_low.map -C prodos/serial/drive/vsdrive_low.cfg prodos/serial/drive/vsdrive_low.o" />
 		</exec>
 		<exec dir="${projdir}/client/src" executable="${assemblerPath}/ld65">
-			<arg line="-o DRIVE_D2 -m vsdrive_d2.map -C prodos/serial/drive/vsdrive_d2.cfg prodos/serial/drive/vsdrive_d2.o" />
+			<arg line="-o VSDRIVE_HIGH -m vsdrive_high.map -C prodos/serial/drive/vsdrive_high.cfg prodos/serial/drive/vsdrive_high.o" />
 		</exec>
 		<exec dir="${projdir}/client/src" executable="${assemblerPath}/ld65">
-			<arg line="-o VSDRIVE_SPEED -m vsdrive_speed.map -C prodos/serial/drive/vsdrive_d2.cfg prodos/serial/drive/vsdrive_speed.o" />
+			<arg line="-o VSDRIVE_SPEED -m vsdrive_speed.map -C prodos/serial/drive/vsdrive_high.cfg prodos/serial/drive/vsdrive_speed.o" />
 		</exec>
-		<move file="${projdir}/client/src/DRIVE" tofile="${builddir}/VSDRIVE" />
-		<copy file="${builddir}/VSDRIVE" tofile="${basedir}/org/adtpro/resources/vsdrive.raw" />
-		<move file="${projdir}/client/src/DRIVE_D2" tofile="${builddir}/VSDRIVE_D2" />
-		<copy file="${builddir}/VSDRIVE_D2" tofile="${basedir}/org/adtpro/resources/vsdrive_d2.raw" />
+		<move file="${projdir}/client/src/VSDRIVE_LOW" tofile="${builddir}/VSDRIVE_LOW" />
+		<copy file="${builddir}/VSDRIVE_LOW" tofile="${basedir}/org/adtpro/resources/vsdrive_low.raw" />
+		<move file="${projdir}/client/src/VSDRIVE_HIGH" tofile="${builddir}/VSDRIVE_HIGH" />
+		<copy file="${builddir}/VSDRIVE_HIGH" tofile="${basedir}/org/adtpro/resources/vsdrive_high.raw" />
 		<move file="${projdir}/client/src/VSDRIVE_SPEED" tofile="${builddir}/VSDRIVE_SPEED" />
 		<copy file="${builddir}/VSDRIVE_SPEED" tofile="${basedir}/org/adtpro/resources/vsdrive_speed.raw" />
 		<echo message="Adding VSDrive to 5.25 disk image..."/>
-		<appleCommander command="d" input="${builddir}/VSDRIVE" imagename="${builddir}/${distName}/disks/${vdriveDiskName}.DSK" filename="VSDRIVE.LOW" failonerror="false"/>
-		<appleCommander command="p" input="${builddir}/VSDRIVE" imagename="${builddir}/${distName}/disks/${vdriveDiskName}.DSK" filename="VSDRIVE.LOW" type="sys" address="8192"/>
-		<appleCommander command="d" input="${builddir}/VSDRIVE_D2" imagename="${builddir}/${distName}/disks/${vdriveDiskName}.DSK" filename="VSDRIVE" failonerror="false"/>
-		<appleCommander command="p" input="${builddir}/VSDRIVE_D2" imagename="${builddir}/${distName}/disks/${vdriveDiskName}.DSK" filename="VSDRIVE" type="sys" address="8192"/>
+		<appleCommander command="d" input="${builddir}/VSDRIVE_LOW" imagename="${builddir}/${distName}/disks/${vdriveDiskName}.DSK" filename="VSDRIVE.LOW" failonerror="false"/>
+		<appleCommander command="p" input="${builddir}/VSDRIVE_LOW" imagename="${builddir}/${distName}/disks/${vdriveDiskName}.DSK" filename="VSDRIVE.LOW" type="sys" address="8192"/>
+		<appleCommander command="d" input="${builddir}/VSDRIVE_HIGH" imagename="${builddir}/${distName}/disks/${vdriveDiskName}.DSK" filename="VSDRIVE" failonerror="false"/>
+		<appleCommander command="p" input="${builddir}/VSDRIVE_HIGH" imagename="${builddir}/${distName}/disks/${vdriveDiskName}.DSK" filename="VSDRIVE" type="sys" address="8192"/>
 	</target>
 
 	<target name="vedrive" depends="vsetup" description="Builds the virtual ethernet drive driver">
@@ -163,8 +163,8 @@ everywhere it is invoked:
 		<delete file="${builddir}/ADTPROETH.BIN" />
 		<delete file="${builddir}/ADTSOSETH.BIN" />
 		<delete file="${builddir}/GRUB2" />
-		<delete file="${builddir}/VSDRIVE" />
-		<delete file="${builddir}/VSDRIVE_D2" />
+		<delete file="${builddir}/VSDRIVE_LOW" />
+		<delete file="${builddir}/VSDRIVE_HIGH" />
 		<delete file="${builddir}/VSDRIVE_SPEED" />
 		<delete file="${builddir}/VEDRIVE" />
 		<delete file="${projdir}/client/src/messages.asm" />
@@ -183,8 +183,8 @@ everywhere it is invoked:
 		<delete file="${projdir}/org/adtpro/resources/adtproeth.dmp" />
 		<delete file="${projdir}/org/adtpro/resources/grub.dmp" />
 		<delete file="${projdir}/org/adtpro/resources/grub2.dmp" />
-		<delete file="${projdir}/org/adtpro/resources/vsdrive.raw" />
-		<delete file="${projdir}/org/adtpro/resources/vsdrive_d2.raw" />
+		<delete file="${projdir}/org/adtpro/resources/vsdrive_low.raw" />
+		<delete file="${projdir}/org/adtpro/resources/vsdrive_high.raw" />
 		<delete file="${projdir}/org/adtpro/resources/vsdrive_speed.raw" />
 		<delete file="${projdir}/org/adtpro/resources/adt.raw" />
 		<delete file="${projdir}/org/adtpro/resources/adtpro.raw" />
@@ -515,8 +515,8 @@ everywhere it is invoked:
 		<delete file="${builddir}/ADTPROAUD.BIN" />
 		<delete file="${builddir}/GRUB2" />
 		<delete file="${builddir}/GRUB_VSDRIVE" />
-		<delete file="${builddir}/VSDRIVE" />
-		<delete file="${builddir}/VSDRIVE_D2" />
+		<delete file="${builddir}/VSDRIVE_LOW" />
+		<delete file="${builddir}/VSDRIVE_HIGH" />
 		<delete file="${builddir}/VSDRIVE_SPEED" />
 		<delete file="${builddir}/VEDRIVE" />
 	</target>

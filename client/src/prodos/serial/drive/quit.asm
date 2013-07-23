@@ -1,6 +1,6 @@
 ;
 ; ADTPro - Apple Disk Transfer ProDOS
-; Copyright (C) 2012 - 2013 by David Schmidt
+; Copyright (C) 2013 by David Schmidt
 ; david__schmidt at users.sourceforge.net
 ;
 ; This program is free software; you can redistribute it and/or modify it 
@@ -17,20 +17,20 @@
 ; with this program; if not, write to the Free Software Foundation, Inc., 
 ; 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 ;
-; Virtual drive over the serial port based on ideas by Terence J. Boldt
+	lda $3f2	; Where does our reset vector point?
+	bne @Quit	; Not BASIC
+	lda $3f3
+	cmp #$be
+	bne @Quit	; Not BASIC
+	rts		; Yay - BASIC!
 
-	.include "prodos/prodosmacros.i"		; OS macros
-	.include "prodos/prodosconst.i"			; OS equates, characters, etc.
+@Quit:			; Return to ProDOS
+	CALLOS OS_QUIT, QUIT_PARMS
 
-	.include "prodos/serial/drive/vsdriveinstall_d2.asm"
-	rts						; When done, just rts
-	.include "prodos/serial/findslot.asm"
+; Parameters for quit
 
-asm_begin:
-.segment "DRIVER"
-.org $d000
-	.include "prodos/vdrive.asm"
-	.include "prodos/serial/drive/vsdrivemain.asm"
-	.include "prodos/serial/iigsscc.asm"
-	.include "prodos/serial/ssc.asm"
-	.include "prodos/serial/timer.asm"
+QUIT_PARMS:	.byte 4
+		.addr 0		; six bytes of zeroes follow
+		.addr 0
+		.addr 0
+

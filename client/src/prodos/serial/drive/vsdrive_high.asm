@@ -1,6 +1,6 @@
 ;
 ; ADTPro - Apple Disk Transfer ProDOS
-; Copyright (C) 2013 by David Schmidt
+; Copyright (C) 2012 - 2013 by David Schmidt
 ; david__schmidt at users.sourceforge.net
 ;
 ; This program is free software; you can redistribute it and/or modify it 
@@ -23,7 +23,7 @@
 	.include "prodos/prodosconst.i"			; OS equates, characters, etc.
 
 	.include "prodos/serial/drive/vsdriveinstall_high.asm"
-	jmp $7000					; When done, head back to the bootstrapper
+	.include "prodos/serial/drive/quit.asm"
 	.include "prodos/serial/findslot.asm"
 
 asm_begin:
