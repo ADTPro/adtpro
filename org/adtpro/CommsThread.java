@@ -202,6 +202,14 @@ public class CommsThread extends Thread
 					receiveDisk(true);
 					_busy = false;
 					break;
+				case (byte) 205: // "M": Multiple Nibble send
+					_busy = true;
+					_parent.setMainText(Messages.getString("CommsThread.3")); //$NON-NLS-1$
+					_parent.setSecondaryText(""); //$NON-NLS-1$
+					Log.println(false, "CommsThread.commandLoop() Received Multiple nibble command."); //$NON-NLS-1$
+					receiveNibbleDisk(true, 35); /* Assume 35 tracks */
+					_busy = false;
+					break;
 				case (byte) 217: // "Y": Ping
 					_busy = true;
 					_parent.setMainText(Messages.getString("CommsThread.23")); //$NON-NLS-1$
@@ -1700,7 +1708,14 @@ public class CommsThread extends Thread
 				_transport.writeByte(0x00);
 				_transport.pushBuffer();
 				Log.println(false, "CommsThread.receiveNibbleDisk() about to wait for ACK from apple...");
-				if (waitForData(15) == CHR_ACK)
+				byte ackbyte;
+				if (generateName)
+				{
+					ackbyte = waitForData(1);
+					ackbyte = waitForData(1); // Consume the file size - we don't need it
+				}
+				ackbyte = waitForData(15);
+				if (ackbyte == CHR_ACK)
 				{
 					Log.println(false, "receiveNibbleDisk() received ACK from apple.");
 					_parent.setProgressMaximum(requestedTracks * 52); // Tracks
@@ -1801,6 +1816,7 @@ public class CommsThread extends Thread
 				}
 				else
 				{
+					Log.println(false, "CommsThread.receiveNibbleDisk() received "+ackbyte+" when expecting "+CHR_ACK+".");
 					packetResult = -1;
 				}
 				if (packetResult == 0)

@@ -1,6 +1,6 @@
 ;
 ; ADTPro - Apple Disk Transfer ProDOS
-; Copyright (C) 2006 - 2012 by David Schmidt
+; Copyright (C) 2006 - 2013 by David Schmidt
 ; david__schmidt at users.sourceforge.net
 ;
 ; This program is free software; you can redistribute it and/or modify it 
@@ -412,8 +412,13 @@ BATCHREQUEST:
 	ldax #udp_inp + udp_data + 1	; Point Buffer at the UDP data buffer
 	stax Buffer
 	ldy #$00
-	lda #CHR_B		; Tell host we are Putting/Sending
-	sta (Buffer),Y
+	lda SendType	; Check if we're sending nibbles in batch
+	cmp #CHR_N
+	bne BPLAIN
+	lda #CHR_M	; Tell host we are sending nibbles in batch
+	bne :+
+BPLAIN:	lda #CHR_B		; Tell host we are Putting/Sending
+:	sta (Buffer),Y
 	iny
 	jsr COPYINPUT
 	lda NUMBLKS		; Send the total block size

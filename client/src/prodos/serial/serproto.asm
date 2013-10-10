@@ -215,11 +215,14 @@ GETFINALACK:
 ;---------------------------------------------------------
 BATCHREQUEST:
 	jsr PARMINT	; Clean up the comms device
-	lda #CHR_B	; Tell host we are Putting/Sending
-	jsr PUTC
-
+	lda SendType	; Check if we're sending nibbles in batch
+	cmp #CHR_N
+	bne BPLAIN
+	lda #CHR_M	; Tell host we are sending nibbles in batch
+	bne :+
+BPLAIN:	lda #CHR_B	; Tell host we are Putting/Sending in batch
+:	jsr PUTC
 	jsr SENDFN	; Send file (prefix) name
-
 	lda NUMBLKS	; Send the total block size
 	jsr PUTC
 	lda NUMBLKS+1

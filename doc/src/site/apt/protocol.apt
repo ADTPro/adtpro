@@ -22,6 +22,8 @@ ADTPro Protocol
 
  [{{{#Batch}"B" - Batch}}]  Initiate batch upload (unique suffix added to specified prefix)
 
+ [{{{#Multiple}"M" - Multiple}}]  Initiate multiple nibble batch upload (unique suffix added to specified prefix)
+
  [{{{#ProDOS}"2" - Send ProDOS}}]  Initiate Speediboot ProDOS bootstrapping download
 
  [{{{#SOS_Kernel}"3" - Send SOS Kernel}}]  Initiate SOS kernel bootstrapping download
@@ -164,6 +166,100 @@ Apple sends:
 (end loop)
 
 Apple sends: One byte: number of errors encountered
+
+------------
+
+* {Batch} send (unique suffix added to specified prefix)
+
+------------
+
+Apple sends:
+  One byte: "B" ($C2)
+  Byte stream: file name prefix (null terminated)
+  Two bytes:
+    Number of blocks to follow (LSB)
+    Number of blocks to follow (MSB)
+
+Host sends:
+  One byte: return code:
+  $00 = Ok
+  $02 = Unable to write (Apple aborts)
+
+Apple sends:
+  $06 = ACK
+
+(parts = filesize /(40 * 512), remainder = filesize % (40 * 512))
+(loop: parts * 40 blocks + remainder * blocks)
+
+  Apple sends:
+    Two bytes: current block number (LSB, MSB)
+    One byte: half-block number (2 = bytes 0-255, 1 = bytes 256-511)
+    Half-block, RLE encoded
+    two bytes:
+      CRC (LSB)
+      CRC (MSB)
+
+  Host sends one byte acknowledgement:
+    $06 = ACK (Host understood the packet, CRC is correct; send next one)
+              (Also: this is a duplicate packet, already received; acknowledge
+              so the Apple sends the next one)
+    $15 = NAK (Resend the same packet again)
+
+(end loop)
+
+Apple sends: One byte: number of errors encountered
+
+------------
+
+* {Multiple} nibble send (unique suffix added to specified prefix)
+
+------------
+
+Apple sends:
+  One byte: "M" ($CC)
+  Byte stream: file name prefix (null terminated)
+  Two bytes:
+    Number of blocks to follow (LSB - ignored at host)
+    Number of blocks to follow (MSB - ignored at host)
+
+Host sends:
+  One byte: return code:
+  $00 = Ok
+  $02 = Unable to write (Apple aborts)
+
+Apple sends:
+  $06 = ACK
+
+(Assuming zero return code...)
+(loop, 35 tracks)
+  (loop, 52 blocks * 256 bytes)
+    Apple sends:
+      $06 = ACK (always ACK for the first block)
+      $15 = NAK
+      one byte: block number within the track (starting at 0)
+      one byte: track number
+      one byte: $02
+      Next block, RLE encoded
+      two bytes:
+        CRC (LSB)
+        CRC (MSB)
+
+    Host sends:
+      $06 = ACK
+      $15 = NAK
+
+  (end block loop)
+
+  Host sends:
+    $06 = ACK analysis was successful; please proceed with the next track
+    $15 = NAK analysis failed; abort the operation
+    $18 = CAN analysis failed, but please continue with next track
+    $05 = ENQ analysis was inconclusive; please re-read the same track and send the newly read data
+
+(end track loop)
+
+Apple sends:
+ $00
 
 ------------
 
@@ -345,7 +441,7 @@ Apple sends:
 
 ------------
 
-Apple sends: Byte stream: "N" (signifying Nibble send),
+Apple sends: Byte stream: "N" ($CE),
   $01, $01, $00 (protocol negotiation)
 
 Host sends one byte return code:

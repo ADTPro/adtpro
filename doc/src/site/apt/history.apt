@@ -10,6 +10,8 @@ ADTPro Release History
 
  Bug fixes:
 
+ * Nibble sends work correctly in batch mode
+ 
  * [VDrive] Serial driver installer quits to where it came from,
    allowing a launch from the launcher to return there, this time
    with the driver in place 
