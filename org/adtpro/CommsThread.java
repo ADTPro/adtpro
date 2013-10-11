@@ -34,6 +34,7 @@ import org.adtpro.gui.Gui;
 import org.adtpro.utilities.Log;
 import org.adtpro.utilities.StringUtilities;
 import org.adtpro.utilities.UnsignedByte;
+import org.adtpro.utilities.VDiskPersister;
 
 import com.webcodepro.applecommander.storage.Disk;
 import com.webcodepro.applecommander.storage.physical.NibbleOrder;
@@ -65,12 +66,15 @@ public class CommsThread extends Thread
 	private Worker _worker = null;
 
 	private boolean _isBinary = false;
+	
+	VDiskPersister _vdisks;
 
 	public CommsThread(Gui parent, ATransport transport)
 	{
 		_transport = transport;
 		Log.getSingleton();
 		Log.println(false, "CommsThread constructor entry.");
+		_vdisks = VDiskPersister.getSingleton(parent);
 		_parent = parent;
 		try
 		{
@@ -506,29 +510,6 @@ public class CommsThread extends Thread
 			if (checkReceived == checkCalculated)
 			{
 				String message;
-				Disk disk1,disk2;
-				Log.println(false, "Envelope checksums matched."); //$NON-NLS-1$
-				try
-				{
-					disk1 = new Disk(_parent.getWorkingDirectory() + "Virtual.po"); //$NON-NLS-1$
-				}
-				catch (IOException e1)
-				{
-					Log.println(false,"Unable to find Virtual.po in current working directory; creating a new one.");
-					com.webcodepro.applecommander.ui.ac.createProDisk(_parent.getWorkingDirectory() + "Virtual.po","VIRTUAL",Disk.APPLE_800KB_DISK);
-					disk1 = new Disk(_parent.getWorkingDirectory() + "Virtual.po"); //$NON-NLS-1$
-				}
-				try
-				{
-					disk2 = new Disk(_parent.getWorkingDirectory() + "Virtual2.po"); //$NON-NLS-1$
-				}
-				catch (IOException e1)
-				{
-					Log.println(false,"Unable to find Virtual2.po in current working directory; creating a new one.");
-					com.webcodepro.applecommander.ui.ac.createProDisk(_parent.getWorkingDirectory() + "Virtual2.po","VIRTUAL",Disk.APPLE_800KB_DISK);
-					disk2 = new Disk(_parent.getWorkingDirectory() + "Virtual2.po"); //$NON-NLS-1$
-				}
-				Log.println(false, "Virtual disks retrieved."); //$NON-NLS-1$
 				if ((command == 0x01) || (command == 0x03) || (command == 0x05)) // Read a block
 				{
 					message = Messages.getString("CommsThread.25");
@@ -565,11 +546,12 @@ public class CommsThread extends Thread
 					}
 					if (command == 0x05)
 					{
-						buffer = disk2.readBlock(block);
+						buffer = _vdisks.readBlock(2,block);
+						// buffer = disk2.readBlock(block);
 					}
 					else
 					{
-						buffer = disk1.readBlock(block);
+						buffer = _vdisks.readBlock(1,block);
 					}
 					_transport.writeBytes(buffer);
 					cs = checksum(buffer,Disk.BLOCK_SIZE);
@@ -603,13 +585,11 @@ public class CommsThread extends Thread
 						block = UnsignedByte.intValue(blocklo, blockhi);
 						if (command == 0x04)
 						{
-							disk2.writeBlock(block,buffer);
-							disk2.save();
+							_vdisks.writeBlock(2,block,buffer);
 						}
 						else
 						{
-							disk1.writeBlock(block,buffer);
-							disk1.save();
+							_vdisks.writeBlock(1,block,buffer);
 						}
 						_transport.writeByte(0xc5);	// Reflect the 'E'
 						_transport.writeByte(command);
