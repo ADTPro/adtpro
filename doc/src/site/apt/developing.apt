@@ -9,7 +9,7 @@ Developing ADTPro
  The build system for ADTPro actually uses several components
 that are not readily visible.  The full list looks like this:
 
- * {{{http://ant.apache.org/}Ant}} - orchestrates the build process
+ * {{{http://ant.apache.org/}Apache Ant}} - orchestrates the build process
 
  * {{{http://java.sun.com/javase/downloads/index.jsp}Java SDK}} - compiles Java-based server
 
@@ -17,7 +17,7 @@ that are not readily visible.  The full list looks like this:
 
  * {{{http://www.rxtx.org/}rxtx}} - multiplatform Java serial library
 
- * {{{http://maven.apache.org/}Maven}} - builds the web pages
+ * {{{http://maven.apache.org/}Maven}} - optional; builds these web pages
 
  []
 
@@ -46,6 +46,8 @@ Mac OSX, and SuSE Linux.
  * {{{./developing.html#Configuring_the_Build_Script}Configuring the Build Script}}
  
  * {{{./developing.html#Starting_a_Build}Starting a Build}}
+
+ * {{{./developing.html#Building_Without_an_IDE}Building Without an IDE}}
 
  []
 
@@ -199,3 +201,40 @@ picture above, you can see the path listed in the <<<[zip]>>> line.  The build
 output will consist of the server .jar file, the ADTPro client contained on a .dsk
 file, the DOS ADT client contained on another .dsk file, and a .zip file of
 the complete distribution package.
+
+* {Building Without an IDE}
+
+ If you would like to build ADTPro without the aid of an IDE at all, there are a few
+environmental things you will need to do by hand that they typically do for you automatically.
+You will still need the toolsets listed at the top of the page (except of course Maven). 
+
+ Ant will marshal the tools and produce the build for you.  In order to just type <<<ant>>>
+in the <<<build>>> directory, though, there are a couple of things it needs to know.  
+
+ First, your CLASSPATH environment variable must be configured to point to an <<<ant.jar>>>
+library; that would typically be something like this: <<<apache-ant-v.r.m\lib\ant.jar>>>.
+Just look around at where your Ant installation is, and you'll be able to find your local <<<ant.jar>>>
+file.
+
+ Second, CLASSPATH must be configured to know where ADTPro itself will reside; the 
+build actually relies on the <<<AppleDump>>> utility that must first be compiled with <<<javac>>>
+before Ant can take over the rest of the build.  That location would typically look something
+like this; however it will be based on exactly where you checked out the ADTPro project:
+<<<\src\checkout\adtpro-by-hand>>>
+
+ Third, the <<<AppleDump>>> utility must be built.  If the CLASSPATH is set up correctly, all that
+will be required is this command, as run from the directory where the project is checked out:
+<<<javac org\adtpro\utilities\AppleDump.java>>>
+ 
+ So, an example of how this sequence of events might look in practice:
+
++-------
+cd \src\checkout\adtpro-by-hand
+set CLASSPATH=%CLASSPATH%;\dev\ant\apache-ant-1.8.2\lib\ant.jar;\src\checkout\adtpro-by-hand
+javac org\adtpro\utilities\AppleDump.java
+cd build
+ant
++--------
+
+ Once your CLASSPATH environment variable knows where to find <<<ant.jar>>> and <<<AppleDump.class>>>,
+you can just run <<<ant>>> from within the build directory from then on. 
