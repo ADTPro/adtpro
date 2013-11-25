@@ -18,7 +18,7 @@ everywhere it is invoked:
      <jvmarg line="-Dconsole.encoding=ISO-8859-15" />
 
 -->
-
+  
 <project name="ADTPro" default="all" basedir="..">
 	<property name="versionString" value="v.r.m" />
 	<property name="projdir" value="${basedir}" />
@@ -92,13 +92,13 @@ everywhere it is invoked:
 		<appleCommander command="pro800" imagename="${builddir}/${distName}/disks/Virtual2.po" volname="${vdriveVolName2}"/>
 		<echo message="Assembling ProDOS virtual serial drive source..."/>
 		<exec dir="${projdir}/client/src" executable="${assemblerPath}/ca65">
-			<arg line="-t none -l prodos/serial/drive/vsdrive_low.asm" />
+			<arg line="-t none -I . prodos/serial/drive/vsdrive_low.asm" />
 		</exec>
 		<exec dir="${projdir}/client/src" executable="${assemblerPath}/ca65">
-			<arg line="-t none -l prodos/serial/drive/vsdrive_high.asm" />
+			<arg line="-t none -I . prodos/serial/drive/vsdrive_high.asm" />
 		</exec>
 		<exec dir="${projdir}/client/src" executable="${assemblerPath}/ca65">
-			<arg line="-t none -l prodos/serial/drive/vsdrive_speed.asm" />
+			<arg line="-t none -I . prodos/serial/drive/vsdrive_speed.asm" />
 		</exec>
 		<echo message="Linking serial drive..."/>
 		<exec dir="${projdir}/client/src" executable="${assemblerPath}/ld65">
@@ -128,7 +128,7 @@ everywhere it is invoked:
 		<appleCommander command="pro800" imagename="${builddir}/${distName}/disks/Virtual2.po" volname="${vdriveVolName2}"/>
 		<echo message="Assembling ProDOS virtual ethernet drive source..."/>
 		<exec dir="${projdir}/client/src" executable="${assemblerPath}/ca65">
-			<arg line="-t none -l prodos/ethernet/drive/vedrive.asm" />
+			<arg line="-t none -I . prodos/ethernet/drive/vedrive.asm" />
 		</exec>
 		<echo message="Linking ethernet drive..."/>
 		<exec dir="${projdir}/client/src" executable="${assemblerPath}/ld65">
@@ -219,37 +219,37 @@ everywhere it is invoked:
 		-->
 		<echo message="Assembling ADTPROAUD source..."/>
 		<exec dir="${projdir}/client/src" executable="${assemblerPath}/ca65">
-			<arg line="-t none -l prodos/audio/audmain.asm" />
+			<arg line="-t none -I . prodos/audio/audmain.asm" />
 		</exec>
 		<echo message="Assembling ADTPROETH source..."/>
 		<exec dir="${projdir}/client/src" executable="${assemblerPath}/ca65">
-			<arg line="-t none -l prodos/ethernet/ethmain.asm" />
+			<arg line="-t none -I . prodos/ethernet/ethmain.asm" />
 		</exec>
 		<echo message="Assembling ADTPRO source..."/>
 		<exec dir="${projdir}/client/src" executable="${assemblerPath}/ca65">
-			<arg line="-t none -l prodos/serial/sermain.asm" />
+			<arg line="-t none -I . prodos/serial/sermain.asm" />
 		</exec>
 		<echo message="Assembling ADTPRO Launcher source..."/>
 		<exec dir="${projdir}/client/src" executable="${assemblerPath}/ca65">
-			<arg line="-t none -l prodos/launch.asm" />
+			<arg line="-t none -I . prodos/launch.asm" />
 		</exec>
 		<exec dir="${projdir}/client/src" executable="${assemblerPath}/ca65">
-			<arg line="-t none -l prodos/startup.asm" />
+			<arg line="-t none -I . prodos/startup.asm" />
 		</exec>
 		<echo message="Assembling ProDOS serial Grub source..."/>
 		<exec dir="${projdir}/client/src/prodos/serial/grub2" executable="${assemblerPath}/ca65">
-			<arg line="-t none -l grub2.asm" />
+			<arg line="-t none grub2.asm" />
 		</exec>
 		<echo message="Assembling ProDOS serial Grub (vsdrive) source..."/>
 		<exec dir="${projdir}/client/src/prodos/serial/grub2" executable="${assemblerPath}/ca65">
-			<arg line="-t none -l grub_vsdrive.asm" />
+			<arg line="-t none grub_vsdrive.asm" />
 		</exec>
 		<!--
 		Assemble and link the ADT source
 		-->
 		<echo message="Assembling ADT source..."/>
 		<exec dir="${projdir}/client/src/dos" executable="${assemblerPath}/cl65">
-			<arg line="-t none -l adt.s -o ADT" />
+			<arg line="-t none adt.s -o ADT" />
 		</exec>
 		<!--
 		Link the bits
@@ -316,23 +316,23 @@ everywhere it is invoked:
 		-->
 		<echo message="Assembling ADTSOSSER source..."/>
 		<exec dir="${projdir}/client/src" executable="${assemblerPath}/ca65">
-			<arg line="-t none -l sos/serial/sermain.asm" />
+			<arg line="-t none -I . sos/serial/sermain.asm" />
 		</exec>
 		<echo message="Assembling ADTSOSETH source..."/>
 		<exec dir="${projdir}/client/src" executable="${assemblerPath}/ca65">
-			<arg line="-t none -l sos/ethernet/ethmain.asm" />
+			<arg line="-t none -I . sos/ethernet/ethmain.asm" />
 		</exec>
 		<echo message="Assembling SOS serial Grub source..."/>
 		<exec dir="${projdir}/client/src" executable="${assemblerPath}/ca65">
-			<arg line="-t none -l sos/serial/grub.asm" />
+			<arg line="-t none sos/serial/grub.asm" />
 		</exec>
 		<echo message="Assembling SOS serial Loader source..."/>
 		<exec dir="${projdir}/client/src" executable="${assemblerPath}/ca65">
-			<arg line="-t none -l sos/serial/loader.asm" />
+			<arg line="-t none sos/serial/loader.asm" />
 		</exec>
 		<echo message="Assembling SOS Kernel..."/>
 		<exec dir="${projdir}/client/src" executable="${assemblerPath}/ca65">
-			<arg line="-t none -l sos/serial/kernel.asm" />
+			<arg line="-t none sos/serial/kernel.asm" />
 		</exec>
 		<!--
 		Link the bits
@@ -393,7 +393,6 @@ everywhere it is invoked:
 			<fileset dir="${projdir}/client/src/ip65/ip65" includes="**/*.s"/>
 			<arg value="-t"/>
 			<arg value="c64"/>
-			<arg value="-l"/>
 			<srcfile/>
 		</apply>
 		<echo message="Assembling IP65 drivers..."/>
@@ -401,7 +400,6 @@ everywhere it is invoked:
 			<fileset dir="${projdir}/client/src/ip65/drivers" includes="**/*.s"/>
 			<arg value="-t"/>
 			<arg value="c64"/>
-			<arg value="-l"/>
 			<srcfile/>
 		</apply>
 		<!--
