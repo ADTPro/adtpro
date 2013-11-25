@@ -209,23 +209,35 @@ environmental things you will need to do by hand that they typically do for you 
 You will still need the toolsets listed at the top of the page (except of course Maven). 
 
  Ant will marshal the tools and produce the build for you.  In order to just type <<<ant>>>
-in the <<<build>>> directory, though, there are a couple of things it needs to know.  
+in the <<<build>>> directory, though, there are a few things it needs to know:  
 
- First, your CLASSPATH environment variable must be configured to point to an <<<ant.jar>>>
+ * Copy the file named <<<ADTProBuild-default.properties>>> to <<<ADTProBuild.properties>>> and customize it for your location.
+You will need to point the <<<assemblerPath>>> variable to where you have the cc65 toolchain <<<bin>>>
+directory installed. The full line should look something like this, assuming you unzipped cc65 into a directory named cc65:
+
+ <<<\<property name="assemblerPath" value="/usr/local/cc65/bin" /> >>>
+
+ The value you specify in <<<ADTProBuild.properties>>> will override all others,
+and is not checked in to CVS; so you can keep this local file to tailor your local build and
+not affect other developers.
+
+ * Your CLASSPATH environment variable must be configured to point to an <<<ant.jar>>>
 library; that would typically be something like this: <<<apache-ant-v.r.m\lib\ant.jar>>>.
 Just look around at where your Ant installation is, and you'll be able to find your local <<<ant.jar>>>
 file.
 
- Second, CLASSPATH must be configured to know where ADTPro itself will reside; the 
+ * CLASSPATH must be configured to know where ADTPro itself will reside; the 
 build actually relies on the <<<AppleDump>>> utility that must first be compiled with <<<javac>>>
 before Ant can take over the rest of the build.  That location would typically look something
 like this; however it will be based on exactly where you checked out the ADTPro project:
 <<<\src\checkout\adtpro-by-hand>>>
 
- Third, the <<<AppleDump>>> utility must be built.  If the CLASSPATH is set up correctly, all that
+ * The <<<AppleDump>>> utility must be built.  If the CLASSPATH is set up correctly, all that
 will be required is this command, as run from the directory where the project is checked out:
 <<<javac org\adtpro\utilities\AppleDump.java>>>
- 
+
+ []
+
  So, an example of how this sequence of events might look in practice:
 
 +-------
