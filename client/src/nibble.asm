@@ -1,6 +1,6 @@
 ;
 ; ADTPro - Apple Disk Transfer ProDOS
-; Copyright (C) 2007 - 2012 by David Schmidt
+; Copyright (C) 2007 - 2013 by David Schmidt
 ; david__schmidt at users.sourceforge.net
 ;
 ; This program is free software; you can redistribute it and/or modify it 
@@ -165,8 +165,8 @@ snibtr1:
 	lda #_I'!'		; Error during send
 	jsr nibshow		; Show status of current track
 	pla			; Restore response
-	cmp #CHR_NAK		; Is it nak?
-	beq snibtr1		; Yes, send again
+	cmp #CHR_ENQ		; Is it enq?
+	beq snibtr8		; Yes, send again
 	cmp #PHMTIMEOUT		; Is it host timeout?
 	beq snibtr1		; Yes, send again
 snibtr2:
@@ -204,7 +204,6 @@ snibtr6:
 	ldy #PMANALYSIS		; Host could not analyze the track
 	bpl snibtr3		; Branch always
 snibtr7:
-	lda #CHR_BLK		; Entire track transferred ok
 	lda #CHR_BLK		; Entire track transferred ok
 	jsr COUT		; Show status of current track
 	clc			; Indicate success to caller
