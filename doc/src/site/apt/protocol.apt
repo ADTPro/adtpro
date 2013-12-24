@@ -231,11 +231,10 @@ Apple sends:
   $06 = ACK
 
 (Assuming zero return code...)
+Apple sends: $06 = ACK
 (loop, 35 tracks)
   (loop, 52 blocks * 256 bytes)
     Apple sends:
-      $06 = ACK (always ACK for the first block)
-      $15 = NAK
       one byte: block number within the track (starting at 0)
       one byte: track number
       one byte: $02
@@ -259,7 +258,7 @@ Apple sends:
 (end track loop)
 
 Apple sends:
- $00
+ $00 = error count
 
 ------------
 
@@ -459,10 +458,10 @@ Host sends one byte return code:
   $1e = Disk full
 
 (Assuming zero return code...)
+Apple sends: $06 = ACK
 (loop, 35 tracks)
   (loop, 52 blocks * 256 bytes)
     Apple sends:
-      $06 = ACK (always ACK for the first block)
       $15 = NAK
       one byte: block number within the track (starting at 0)
       one byte: track number
@@ -487,7 +486,7 @@ Host sends one byte return code:
 (end track loop)
 
 Apple sends:
- $00
+ $00 = error count
 
 ------------
 

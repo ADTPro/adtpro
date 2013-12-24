@@ -55,6 +55,8 @@ the stuff that gets uploaded to sourceforge.
    * Ensure each bootstrap text content works
    * Ensure that floppy formatting works
 
+ * Update history.apt in doc to have the date and release number, with included content
+
  * Commit all changes
 
  * Tag the adtpro project with the version number.
