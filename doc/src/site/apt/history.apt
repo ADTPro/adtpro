@@ -8,6 +8,12 @@ ADTPro Release History
 
 * 1.2.9 - December 24, 2013
 
+ New functionality:
+
+ * Disk II drive turns on a little early to reduce spin-up delay
+
+ []
+
  Bug fixes:
 
  * Nibble sends work correctly in batch mode
