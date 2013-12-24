@@ -6,7 +6,7 @@
 
 ADTPro Release History
 
-* Unreleased - in CVS now
+* 1.2.9 - December 24, 2013
 
  Bug fixes:
 
@@ -18,8 +18,8 @@ ADTPro Release History
    making it much faster for huge drives (but much less dynamic) 
  
  * [VDrive] Serial driver installer quits to where it came from,
-   allowing a launch from the launcher to return there, this time
-   with the driver in place 
+   allowing an invocation from the launcher to return there, this
+   time with the driver in place 
 
  []
 

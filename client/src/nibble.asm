@@ -333,6 +333,51 @@ hlfnextt:
 	pla			; desired track in a
 	jsr seekabs		; let dos function do its thing
 	rts
+
+;---------------------------------------------------------
+; rdnibtr - read track as nibbles into tracks buffer.
+; total bytes read is NIBPAGES * 256, or about twice
+; the track length.
+; the drive has been calibrated, so we know we are in read
+; mode, the motor is running, and and the correct drive 
+; number is engaged.
+; we wait until we encounter a first nibble after a gap.
+; for this purpose, a gap is at least 4 ff nibbles in a 
+; row. note this is not 100% fool proof; the ff nibble
+; can occur as a regular nibble instead of autosync.
+; but this is conform beneath apple dos, so is
+; probably ok.
+;---------------------------------------------------------
+rdnibtr:
+	ldx pdsoftx		; Load drive index into X
+	lda #0			; a = 0
+	tay			; y = 0 (index)
+	sta BLKPTR		; set running ptr (lo) to 0
+	LDA_BIGBUF_ADDR_HI	; BIGBUF address high
+	sta BLKPTR+1		; set running ptr (hi)
+	lda #NIBPAGES
+	sta NIBPCNT		; page counter
+; use jmp, not jsr, to perform nibsync. that way we
+; have a bit more breathing room, cycle-wise. the
+; "function" returns with a jmp to rdnibtr8.
+	jmp	nibsync		; find first post-gap byte
+; the read loop must be fast enough to read 1 byte every
+; 32 cycles. it appears the interval is 17 cycles within
+; one data page, and 29 cycles when crossing a data page.
+; these numbers are based on code that does not cross
+; a page boundary.
+rdnibtr7:
+	lda $c08c,x		; read (4 cycles)
+	bpl rdnibtr7		; until byte complete (2c)
+rdnibtr8:
+	sta (BLKPTR),y		; store in buffer (6c)
+	iny			; (2c)
+	bne rdnibtr7		; 256 bytes done? (2 / 3c)
+	inc BLKPTR+1		; next page (5c)
+	dec NIBPCNT		; count (5c)
+	bne rdnibtr7		; and back (3c)
+	rts
+
 ;---------------------------------------------------------
 ; nibsync - Synchronize on first byte after gap
 ; this function is only used from rdnibtr, but I had to
@@ -398,50 +443,6 @@ nibsync6:
 	cmp #$ff		; is it a gap byte?
 	beq nibsync6		; go read next byte
 	jmp rdnibtr8		; avoid rts; save some cycles
-
-;---------------------------------------------------------
-; rdnibtr - read track as nibbles into tracks buffer.
-; total bytes read is NIBPAGES * 256, or about twice
-; the track length.
-; the drive has been calibrated, so we know we are in read
-; mode, the motor is running, and and the correct drive 
-; number is engaged.
-; we wait until we encounter a first nibble after a gap.
-; for this purpose, a gap is at least 4 ff nibbles in a 
-; row. note this is not 100% fool proof; the ff nibble
-; can occur as a regular nibble instead of autosync.
-; but this is conform beneath apple dos, so is
-; probably ok.
-;---------------------------------------------------------
-rdnibtr:
-	ldx pdsoftx		; Load drive index into X
-	lda #0			; a = 0
-	tay			; y = 0 (index)
-	sta BLKPTR		; set running ptr (lo) to 0
-	LDA_BIGBUF_ADDR_HI	; BIGBUF address high
-	sta BLKPTR+1		; set running ptr (hi)
-	lda #NIBPAGES
-	sta NIBPCNT		; page counter
-; use jmp, not jsr, to perform nibsync. that way we
-; have a bit more breathing room, cycle-wise. the
-; "function" returns with a jmp to rdnibtr8.
-	jmp	nibsync		; find first post-gap byte
-; the read loop must be fast enough to read 1 byte every
-; 32 cycles. it appears the interval is 17 cycles within
-; one data page, and 29 cycles when crossing a data page.
-; these numbers are based on code that does not cross
-; a page boundary.
-rdnibtr7:
-	lda $c08c,x		; read (4 cycles)
-	bpl rdnibtr7		; until byte complete (2c)
-rdnibtr8:
-	sta (BLKPTR),y		; store in buffer (6c)
-	iny			; (2c)
-	bne rdnibtr7		; 256 bytes done? (2 / 3c)
-	inc BLKPTR+1		; next page (5c)
-	dec NIBPCNT		; count (5c)
-	bne rdnibtr7		; and back (3c)
-	rts
 
 ;---------------------------------------------------------
 ; nibtitle - show title screen for nibble disk transfer
