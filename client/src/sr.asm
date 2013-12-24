@@ -407,7 +407,6 @@ SR_COMN:
 	lda #V_BUF
 	jsr TABV
 	jsr SRBLOX
-
 	rts
 
 ;---------------------------------------------------------
@@ -423,14 +422,30 @@ SR_COMN:
 ;---------------------------------------------------------
 SRBLOX:
 	lda DIFF
-	sta SRBCNT	; Get a local copy of block count to mess with
+	sta SRBCNT		; Get a local copy of block count to mess with
 	
 	LDA_BIGBUF_ADDR_LO	; Connect the block pointer to the
-	sta BLKPTR	; beginning of the Big Buffer(TM)
+	sta BLKPTR		; beginning of the Big Buffer(TM)
 	LDA_BIGBUF_ADDR_HI
 	sta BLKPTR+1
 SRCALL:
-	LDA_CH
+	lda NonDiskII		; Is this a Disk II?
+	beq SRGO
+	lda BLKLO		; Yes, so check for almost-doneness within a buffer
+	cmp #$1e
+	beq SRON
+	cmp #$46
+	beq SRON
+	cmp #$6e
+	beq SRON
+	cmp #$96
+	beq SRON
+	cmp #$be
+	beq SRON
+	cmp #$e6
+	bne SRGO
+SRON:	jsr motoron	
+SRGO:	LDA_CH
 	sta COL_SAV
 	lda SRCHR
 	COUT_MAYBE_INVERSE_SOS

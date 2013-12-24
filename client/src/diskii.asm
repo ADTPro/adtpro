@@ -296,6 +296,19 @@ motoroff:
 	lda	$c088,x		; turn motor off
 :	rts
 
+;---------------------------------------------------------
+; motoron - Turn disk drive motor off
+; Destroys x, a
+;---------------------------------------------------------
+motoron:
+	ldx	pdsoftx		; x = slot * 16
+	lda	pdrive		; select drive (1 or 2)
+	beq	:+
+	inx
+:	lda	DRVSEL,x
+	lda	DRVON,x		; drive on
+	rts
+
 ;==============================*
 ;                              *
 ;  PUT READ HEAD ON TRACK $00  *

@@ -64,7 +64,7 @@ ZCCG:
 	sta Timer
 	sta Timer+1
 SCCGetLoop:
-	bit $C0E8	; Attempt to slow accelerators down by referencing slot 6 ($C088 + $60)
+	bit $C0E0	; Attempt to slow accelerators down by referencing slot 6 ($C080 + $60)
 	lda GSCMDB	; READ 8530 READ REGISTER 0
 	and #$01        ; BIT 0 MEANS RX CHAR AVAILABLE
 	cmp #$01
@@ -101,7 +101,7 @@ itsOK:
 	rts
 
 SCCGetLoop2:
-	bit $C0E8	; Attempt to slow accelerators down by referencing slot 6 ($C088 + $60)
+	bit $C0E0	; Attempt to slow accelerators down by referencing slot 6 ($C080 + $60)
 	lda GSCMDB	; READ 8530 READ REGISTER 0
 	and #$01        ; BIT 0 MEANS RX CHAR AVAILABLE
 	cmp #$01

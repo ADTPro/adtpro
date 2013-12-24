@@ -71,7 +71,7 @@ SSCGET:
 	sta Timer
 	sta Timer+1
 SSCGetLoop:
-	bit $C0E8	; Attempt to slow accelerators down by referencing slot 6 ($C088 + $60)
+	bit $C0E0	; Attempt to slow accelerators down by referencing slot 6 ($C080 + $60)
 MOD3:	lda $C089	; Check status bits
 MOD6:	and #$68
 	cmp #$8
