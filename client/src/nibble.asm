@@ -43,7 +43,7 @@ sendnib:
 
 	lda #0
 	sta iobtrk		; Track counter
-	sta BLKHI
+	sta BLKHI		; Not sure why we're using this as well...
 
 snibloop:
 	lda #$00
@@ -56,7 +56,7 @@ snibloop:
 	inc iobtrk		; Next trackno
 	lda iobtrk
 	cmp maxtrk		; Repeat while trackno < max
-	bcs snibfin		; Jump if ready
+	bcs snibfin		; Jump if done
 	inc BLKHI		; Increment "track" number using BLKHI
 	lda SendType
 	cmp #CHR_N		; Are we sending nibbles?
@@ -142,9 +142,9 @@ rnib4:
 ; and wait for acknowledgement. each 256 byte page is
 ; followed by a 16-bit crc.
 ; we know the buffer is set up at "BIGBUF", and is
-; NIBPAGES * 256 bytes long. BIGBUF is at page boundary.
-; when the host answers ack, clear carry. when it answers
-; enq, set carry. when it answers anything else, abort
+; NIBPAGES * 256 bytes long. BIGBUF is at a page boundary.
+; when the host answers ACK, clear carry. when it answers
+; ENQ, set carry. when it answers anything else, abort
 ; the operation with the appropriate error message.
 ;---------------------------------------------------------
 snibtrak:
@@ -165,8 +165,12 @@ snibtr1:
 	lda #_I'!'		; Error during send
 	jsr nibshow		; Show status of current track
 	pla			; Restore response
+	cmp #CHR_NAK		; Is it nak?
+	beq snibtr1		; Yes, send this page again
 	cmp #CHR_ENQ		; Is it enq?
-	beq snibtr8		; Yes, send again
+	beq snibtr8		; Yes, and we lost sync - start this track over again
+	cmp #CHR_CAN		; Is it can?
+	beq snibtr8		; Yes, and we lost sync - start this track over again
 	cmp #PHMTIMEOUT		; Is it host timeout?
 	beq snibtr1		; Yes, send again
 snibtr2:
@@ -179,7 +183,7 @@ snibtr3:
          
 snibtr5:
 	lda #CHR_S
-	jsr nibshow		; Show "S" at current track
+	jsr nibshow		; Re-show "S" at current track
 	inc BLKPTR+1		; Next page
 	inc BLKLO		; Increment "sector" counter using BLKLO
 	dec NIBPCNT		; Count
