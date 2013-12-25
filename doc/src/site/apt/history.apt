@@ -18,7 +18,7 @@ ADTPro Release History
 
  * Nibble sends work correctly in batch mode
  
- * [Client] Nibble sends retry correctly
+ * [Client] Nibble sends retry (more) correctly
  
  * [VDrive] Virtual disks are loaded at once at initialization time,
    making it much faster for huge drives (but much less dynamic) 
