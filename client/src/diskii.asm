@@ -108,7 +108,7 @@ delaytb2:
 ; The code is essentially like in the Disk ][ card
 ;---------------------------------------------------------
 calibrat:
-	ldx pdsoftx		; Get soft switch offset
+	ldx	pdsoftx		; Get soft switch offset
 	lda	$c08e,x		; prepare latch for input
 	lda	$c08c,x		; strobe data latch for i/o
 	lda	pdrive		; is 0 for drive 1
@@ -116,7 +116,7 @@ calibrat:
 	inx
 caldriv1:
 	lda	$c08a,x		; engage drive 1 or 2
-	ldx pdsoftx
+	ldx	pdsoftx
 	lda	$c089,x		; motor on
 	ldy	#$50		; number of half-tracks
 caldriv3:
@@ -305,7 +305,8 @@ motoron:
 	lda	pdrive		; select drive (1 or 2)
 	beq	:+
 	inx
-:	lda	DRVSEL,x
+:	lda	DRVSEL,x	; engage drive 1 or 2
+	ldx	pdsoftx		; x = slot * 16
 	lda	DRVON,x		; drive on
 	rts
 

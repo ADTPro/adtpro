@@ -271,19 +271,6 @@ DUMP_CALL:
 
 	rts
 
-;---------------------------------------------------------
-; motoron - Turn disk drive motor on
-; Destroys x, a
-;---------------------------------------------------------
-motoron:
-	ldx	pdsoftx		; x = slot * 16
-	lda	pdrive		; select drive (1 or 2)
-	beq	:+
-	inx
-:	lda	DRVSEL,x
-	lda	DRVON,x		; drive on
-	rts
-
 RWCHR:	.byte CHR_R	; Character to notify what we're doing
 RWCHROK:	.byte CHR_BLK	; Character to write when things are OK
 RWRESULT:	.byte CHR_BLK	; Result of reading/writing

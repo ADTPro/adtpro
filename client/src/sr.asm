@@ -431,19 +431,14 @@ SRBLOX:
 SRCALL:
 	lda NonDiskII		; Is this a Disk II?
 	beq SRGO
-	lda BLKLO		; Yes, so check for almost-doneness within a buffer
-	cmp #$1e
-	beq SRON
-	cmp #$46
-	beq SRON
-	cmp #$6e
-	beq SRON
-	cmp #$96
-	beq SRON
-	cmp #$be
-	beq SRON
-	cmp #$e6
-	bne SRGO
+	lda SRBCNT		; Yes, so check for almost-doneness within a buffer
+	cmp #$0a		; Buffer 3/4 done (10 blocks remain)?
+	bne SRGO		; No - skip the motor, don't need it
+	lda SRCHR
+	cmp #CHR_V		; Are we receiving?
+	beq SRON		; Yes - turn the motor on whenver the buffer almost fills so we can be ready to use the drive
+	lda BLKHI		; Is this the last pass when sending?
+	bne SRGO		; No - skip the motor, don't need it
 SRON:	jsr motoron	
 SRGO:	LDA_CH
 	sta COL_SAV
