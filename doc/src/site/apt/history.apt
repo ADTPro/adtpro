@@ -10,7 +10,7 @@ ADTPro Release History
 
  New functionality:
 
- * Disk II drive turns on a little early to reduce spin-up delay
+ * Disk II drives turn on a little early to reduce spin-up delay
 
  []
 
@@ -20,7 +20,7 @@ ADTPro Release History
  
  * [Client] Nibble sends retry (more) correctly
  
- * [VDrive] Virtual disks are loaded at once at initialization time,
+ * [VDrive] Virtual disks are loaded once at initialization time,
    making it much faster for huge drives (but much less dynamic) 
  
  * [VDrive] Serial driver installer quits to where it came from,
