@@ -10,7 +10,8 @@ ADTPro Release History
 
  New functionality:
 
- * Disk II drives turn on a little early to reduce spin-up delay
+ * [Client] Disk II drives turn on a little early to reduce spin-up
+   delay
 
  []
 
