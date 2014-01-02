@@ -48,11 +48,12 @@
     </menu>
 
     <menu name="Resources">
-      <item name="Help Forum" href="forum.html"/>
+      <item name="ADTPro Help Forum" href="forum.html"/>
+      <item name="Non-English Resources" href="translations.html"/>
       <item name="Cleaning a Disk Drive" href="http://www.youtube.com/watch?v=CMF3PL17kqg"/>
       <item name="Apple as a Terminal" href="http://web.archive.org/web/20100817014158/http://dataswamp.net/apple2eserialterm/index.php"/>
-      <item name="Non-English Language" href="translations.html"/>
       <item name="Apple /// Resources" href="http://apple3.org"/>
+      <item name="Juiced.GS Journal" href="https://juiced.gs"/>
       <item name="Apple II WebRing" href="webring.html"/>
     </menu>
 
