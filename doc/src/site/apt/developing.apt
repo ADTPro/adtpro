@@ -19,7 +19,7 @@ that are not readily visible.  The full list looks like this:
 
  * {{{http://maven.apache.org/}Maven}} - optional; builds these web pages
 
- * {{{https://code.google.com/p/apple-iii-vdrive-driver/}Apple Pascal}} - project to build the Apple /// VSDRIVE driver  
+ * {{{https://code.google.com/p/apple-iii-vdrive-driver/}Apple Pascal}} - optional project to build the Apple /// VSDRIVE driver  
 
  []
 
