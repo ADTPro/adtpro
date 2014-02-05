@@ -19,6 +19,8 @@ that are not readily visible.  The full list looks like this:
 
  * {{{http://maven.apache.org/}Maven}} - optional; builds these web pages
 
+ * {{{https://code.google.com/p/apple-iii-vdrive-driver/}Apple Pascal}} - project to build the Apple /// VSDRIVE driver  
+
  []
 
  The main Ant build.xml script in ADTPro's CVS repository calls upon these
@@ -206,7 +208,7 @@ the complete distribution package.
 
  If you would like to build ADTPro without the aid of an IDE at all, there are a few
 environmental things you will need to do by hand that they typically do for you automatically.
-You will still need the toolsets listed at the top of the page (except of course Maven). 
+You will still need the toolsets listed at the top of the page (except Maven and the Apple /// build). 
 
  Ant will marshal the tools and produce the build for you.  In order to just type <<<ant>>>
 in the <<<build>>> directory, though, there are a few things it needs to know:  
@@ -249,4 +251,4 @@ ant
 +--------
 
  Once your CLASSPATH environment variable knows where to find <<<ant.jar>>> and <<<AppleDump.class>>>,
-you can just run <<<ant>>> from within the build directory from then on. 
+you can just run <<<ant>>> from within the build directory from then on.
