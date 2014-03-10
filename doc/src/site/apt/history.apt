@@ -6,6 +6,15 @@
 
 ADTPro Release History
 
+* Unreleased - in CVS now
+
+ Bug fixes:
+
+ * Re-enable 19200 baud rate for serial client - the {{{./lc.html}Mac LC/Apple IIe card}} 
+   requires this speed 
+
+ []
+
 * 1.2.9 - December 25, 2013
 
  New functionality:
