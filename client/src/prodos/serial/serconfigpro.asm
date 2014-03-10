@@ -91,13 +91,20 @@ SAVPARM:
 REFRESH:
 	lda PARMS
 	cmp #$08	; Are we talking about the Laser/Pascal Entry Points?
-	bmi NOTPAS	; No, go on ahead
-	lda #$00	; Yes - so slow it down
+	bmi RESTORE		; No, go on ahead
+	lda PSPEED	; Yes - so check baudrate
+	cmp #BPS1152K	; Is it too fast?
+	bne REFNEXT		; No, go on ahead
+	sta SVSPEED
+	lda #BPS192K	; Yes - so slow it down
 	sta PSPEED
-	jmp REFNEXT
-NOTPAS:
-	lda #$01
-	sta PSPEED
+	jmp REFNEXT 
+RESTORE:
+	lda SVSPEED	; Did we have speed previously re-set by Laser?
+	beq REFNEXT	; No, go on ahead
+	sta PSPEED	; Yes - so restore it now
+	lda #$00
+	sta SVSPEED	; Forget about resetting speed until we roll through Laser again
 REFNEXT:
 	lda #3		; FIRST PARAMETER IS ON LINE 3
 	jsr TABV
@@ -313,5 +320,6 @@ PSOUND:		.byte 0		; Sounds? (YES)
 PNIBBL:		.byte 1		; Enable nibbles: (NO)
 PSAVE:		.byte 1		; Save parms? (NO)
 DEFAULT:	.byte 1,BPS1152K,0,1,1	; Default parm indices
+SVSPEED:	.byte BPS1152K	; Storage for speed setting
 CONFIGYET:	.byte 0		; Has the user configged yet?
 PARMSEND:
