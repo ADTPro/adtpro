@@ -6,7 +6,7 @@
 
 ADTPro Release Full History
 
-* 1.2.6 - October 11, 2012
+* {1.2.6} - October 11, 2012
 
  New functionality:
 
@@ -35,7 +35,7 @@ ADTPro Release Full History
  * [Server] Serial over IP can specify both port and host, not just
    port
 
-* 1.2.5 - September 22, 2012
+* {1.2.5} - September 22, 2012
 
  New functionality:
 
@@ -57,7 +57,7 @@ ADTPro Release Full History
 
  * [VDrive] Device driver installer filetypes changed to SYS
 
-* 1.2.4 - September 10, 2012
+* {1.2.4} - September 10, 2012
 
  New functionality:
 
@@ -77,7 +77,7 @@ ADTPro Release Full History
 
  * [Client] IP configuration screen was missing some dots
 
-* 1.2.3 - August 13, 2012
+* {1.2.3} - August 13, 2012
 
  New functionality:
 
@@ -94,7 +94,7 @@ ADTPro Release Full History
  * [Client] Speediboot pauses ever longer, and downloads may be 
    restarted with the escape key
 
-* 1.2.2 - July 22, 2012
+* {1.2.2} - July 22, 2012
 
  New functionality:
 
@@ -116,7 +116,7 @@ ADTPro Release Full History
 
  []
 
-* 1.2.1 - April 12, 2012
+* {1.2.1} - April 12, 2012
 
  New functionality:
 
@@ -137,7 +137,7 @@ ADTPro Release Full History
 
  []
 
-* 1.2.0 - January 14, 2012
+* {1.2.0} - January 14, 2012
 
  New functionality:
 
@@ -170,7 +170,7 @@ ADTPro Release Full History
 
  []
 
-* 1.1.9 - May 1, 2011
+* {1.1.9} - May 1, 2011
 
  New functionality:
 
@@ -190,7 +190,7 @@ ADTPro Release Full History
 
  []
 
-* 1.1.8 - January 17, 2011
+* {1.1.8} - January 17, 2011
 
  New functionality:
 
@@ -199,7 +199,7 @@ ADTPro Release Full History
  []
 
 
-* 1.1.7 - December 21, 2010
+* {1.1.7} - December 21, 2010
 
  New functionality:
 
@@ -219,7 +219,7 @@ ADTPro Release Full History
 
  []
 
-* 1.1.6 - August 2, 2010
+* {1.1.6} - August 2, 2010
 
  New functionality:
 
@@ -241,7 +241,7 @@ ADTPro Release Full History
 
  []
 
-* 1.1.5 - March 17, 2010
+* {1.1.5} - March 17, 2010
 
  New functionality:
 
@@ -263,7 +263,7 @@ ADTPro Release Full History
 
  []
 
-* 1.1.4 - January 24, 2010
+* {1.1.4} - January 24, 2010
 
  New functionality:
 
@@ -281,7 +281,7 @@ ADTPro Release Full History
 
  []
 
-* 1.1.3 - September 20, 2009
+* {1.1.3} - September 20, 2009
 
  New functionality:
 
@@ -303,7 +303,7 @@ ADTPro Release Full History
 
  []
 
-* 1.1.2 - February 18, 2009
+* {1.1.2} - February 18, 2009
 
  New functionality:
 
@@ -323,7 +323,7 @@ ADTPro Release Full History
 
  []
 
-* 1.1.1 - September 18, 2008
+* {1.1.1} - September 18, 2008
 
  New functionality:
 
@@ -349,7 +349,7 @@ ADTPro Release Full History
 
  []
 
-* 1.1.0 - August 30, 2008
+* {1.1.0} - August 30, 2008
 
  New functionality:
 
@@ -383,7 +383,7 @@ ADTPro Release Full History
 
  []
 
-* 1.0.6 - February 10, 2008
+* {1.0.6} - February 10, 2008
 
  New functionality:
 
@@ -406,7 +406,7 @@ ADTPro Release Full History
 
  []
 
-* 1.0.5 - February 3, 2008
+* {1.0.5} - February 3, 2008
 
  Bug fixes:
 
@@ -418,7 +418,7 @@ ADTPro Release Full History
 
  []
 
-* 1.0.4 - January 21, 2008
+* {1.0.4} - January 21, 2008
 
  New functionality:
 
@@ -451,7 +451,7 @@ ADTPro Release Full History
 
  []
 
-* 1.0.3 - October 7, 2007
+* {1.0.3} - October 7, 2007
 
  New functionality:
 
@@ -480,7 +480,7 @@ ADTPro Release Full History
 
  []
 
-* 1.0.2 - August 11, 2007
+* {1.0.2} - August 11, 2007
 
  New functionality:
 
@@ -512,7 +512,7 @@ ADTPro Release Full History
 
  []
 
-* 1.0.1 - July 8, 2007
+* {1.0.1} - July 8, 2007
 
  New functionality:
 
@@ -535,7 +535,7 @@ ADTPro Release Full History
 
  []
 
-* 1.0.0 - June 21, 2007
+* {1.0.0} - June 21, 2007
 
  First official public release after one year of beta iterations.
  Communications methods include:
@@ -599,7 +599,7 @@ ADTPro Release Full History
 
  []
 
-* 0.2.6 - June 3, 2007
+* {0.2.6} - June 3, 2007
 
  New functionality:
 
@@ -633,7 +633,7 @@ ADTPro Release Full History
 
  []
 
-* 0.2.5 - May 18, 2007
+* {0.2.5} - May 18, 2007
 
  New functionality:
 
@@ -655,7 +655,7 @@ ADTPro Release Full History
 
  []
 
-* 0.2.4 - May 12, 2007
+* {0.2.4} - May 12, 2007
 
  New functionality:
 
@@ -683,7 +683,7 @@ ADTPro Release Full History
 
  []
 
-* 0.2.3 - April 26, 2007
+* {0.2.3} - April 26, 2007
 
  Bug fixes:
 
@@ -694,7 +694,7 @@ ADTPro Release Full History
 
  []
 
-* 0.2.2 - April 24, 2007
+* {0.2.2} - April 24, 2007
 
  New functionality:
 
@@ -706,7 +706,7 @@ ADTPro Release Full History
 
  []
 
-* 0.2.1 - April 2, 2007
+* {0.2.1} - April 2, 2007
 
  New functionality:
 
@@ -736,7 +736,7 @@ ADTPro Release Full History
 
  []
 
-* 0.1.5 - March 18, 2007
+* {0.1.5} - March 18, 2007
 
  New functionality:
 
@@ -765,7 +765,7 @@ ADTPro Release Full History
 
  []
 
-* 0.1.4 - December 30, 2006
+* {0.1.4} - December 30, 2006
 
  New functionality:
 
@@ -781,7 +781,7 @@ ADTPro Release Full History
 
  []
 
-* 0.1.3 - December 15, 2006
+* {0.1.3} - December 15, 2006
 
  New functionality:
 
@@ -797,7 +797,7 @@ ADTPro Release Full History
 
  []
 
-* 0.1.2 - November 27, 2006
+* {0.1.2} - November 27, 2006
 
  New functionality:
 
@@ -813,7 +813,7 @@ ADTPro Release Full History
 
  []
 
-* 0.1.1 - November 16, 2006
+* {0.1.1} - November 16, 2006
 
  New functionality:
 
@@ -825,7 +825,7 @@ ADTPro Release Full History
 
  []
 
-* 0.0.9 - September 23, 2006
+* {0.0.9} - September 23, 2006
 
  Bug fix:
 
@@ -833,7 +833,7 @@ ADTPro Release Full History
 
  []
 
-* 0.0.8 - September 20, 2006
+* {0.0.8} - September 20, 2006
 
  New functionality:
 
@@ -864,7 +864,7 @@ ADTPro Release Full History
 
  []
 
-* 0.0.7 - August 27, 2006
+* {0.0.7} - August 27, 2006
 
  New functionality:
 
@@ -878,7 +878,7 @@ ADTPro Release Full History
 
  []
 
-* 0.0.6 - August 10, 2006
+* {0.0.6} - August 10, 2006
 
  Bug fix:
 
@@ -886,7 +886,7 @@ ADTPro Release Full History
 
  []
 
-* 0.0.5 - July 30, 2006
+* {0.0.5} - July 30, 2006
 
  New functionality:
 
@@ -900,7 +900,7 @@ ADTPro Release Full History
 
  * A few usability tweaks along the way
 
-* 0.0.4 - July 9, 2006
+* {0.0.4} - July 9, 2006
 
  New functionality:
 
@@ -919,7 +919,7 @@ ADTPro Release Full History
  * Cosmetic changes for buffer send/receive/read/write screen
 
 
-* 0.0.3 - July 2, 2006
+* {0.0.3} - July 2, 2006
 
  New functionality:
 
@@ -936,7 +936,7 @@ ADTPro Release Full History
  * Misc. updates to build process - have AppleCommander build a custom volume name, etc.
 
 
-* 0.0.2 - June 28, 2006
+* {0.0.2} - June 28, 2006
 
  Bug fixes:
 
@@ -947,7 +947,7 @@ ADTPro Release Full History
  * Made some minor message improvements at the client end
 
 
-* 0.01 - June 21, 2006
+* {0.01} - June 21, 2006
 
  First prototypical release on SourceForge.  Main functionality:
 
