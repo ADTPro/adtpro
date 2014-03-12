@@ -19,7 +19,9 @@
     </menu>
 
     <menu name="Connections">
-      <item name="Serial" href="connectionsserial.html"/>
+      <item name="Serial" href="connectionsserial.html" collapse="true">
+        <item name="Purchase Cables" href="http://retrofloppy.com/products.html" collapse="true"/>
+      </item>
       <item name="Audio" href="connectionsaudio.html"/>
       <item name="Ethernet" href="configethernet.html"/>
       <item name="Mac LC/Apple IIe Card" href="lc.html"/>
