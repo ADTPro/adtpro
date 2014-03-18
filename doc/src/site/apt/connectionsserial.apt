@@ -34,7 +34,7 @@ or USB port can either be straight-through or of the null modem variety.
 There is a jumper block on the Super Serial card that will take
 care of signal switching for you if you have one or the other and need to switch.
 
-  If you would like to purchase ready-made serial cables, a range of ADTPro-compatible
+  If you would like to purchase a ready-made serial cable, ADTPro-compatible
 cables are available
 {{{http://retrofloppy.com/products.html}here.}}
 
