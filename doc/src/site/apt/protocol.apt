@@ -76,7 +76,18 @@ ADTPro Protocol
 
 ------------
 
- Apple sends: 
+ Apple sends:
+   One byte: "Z" ($DA)
+   Byte stream: file name (null terminated)
+
+ Host sends:
+   Two bytes: file size in blocks (LSB, MSB)
+   One byte: return code:
+     $00 = File exists (and file size is valid)
+     $02 = File does not exist
+     $04 = File exists, not recognized as a valid disk image
+
+ Apple sends:
    One byte: "G" ($C7)
    Byte stream: file name (null terminated)
 
