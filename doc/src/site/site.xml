@@ -65,6 +65,7 @@
       </item>
       <item name="Credits" href="credits.html"/>
       <item name="Protocol" href="protocol.html"/>
+      <item name="Protocol-Wide" href="protocolwide.html"/>
       <item name="ADT Compatibility" href="compatibility.html"/>
       <item name="Development" href="developing.html"/>
     </menu>
