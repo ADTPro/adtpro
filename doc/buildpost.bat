@@ -23,6 +23,7 @@ perl -i.orig -p ..\..\removeMaven.re install.html
 perl -i.orig -p ..\..\removeMaven.re lc.html
 perl -i.orig -p ..\..\removeMaven.re misc.html
 perl -i.orig -p ..\..\removeMaven.re protocol.html
+perl -i.orig -p ..\..\removeMaven.re protocolwide.html
 perl -i.orig -p ..\..\removeMaven.re receiving.html
 perl -i.orig -p ..\..\removeMaven.re sending.html
 perl -i.orig -p ..\..\removeMaven.re starting.html
