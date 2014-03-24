@@ -48,11 +48,7 @@ ADTPro-Wide Protocol - Proposal Under Revision
  
  [{{{#Send_Image_Data_Packet}Send Image Data - 'A'+'S'}}]  RLE compressed data for image transfer (page-aligned)
 
- [{{{#ACK_Packet}ACK - 'A'+$06}}]  Positive acknowledgement
- 
- [{{{#NAK_Packet}NAK - 'A'+$15}}]  Negative acknowledgement
- 
- [{{{#CAN_Packet}CAN - 'A'+$18}}]  Cancel transaction
+ [{{{#Acknowledgement_Packet}Acknowledgement - 'A'+'K'}}] Acknowledgement - one of ACK, NAK, CAN
 
 Virtual Drive Server Functions
 
@@ -98,9 +94,20 @@ Host sends: return code:
 
 * {Get} (Receive) disk (Host -> Client)
 
- Client sends:
-   One byte: 'G' ($C7)
-   Byte stream: file name (null terminated)
+ Client sends {{{#Query_File_Size_Packet}Query File Size Packet}}
+
+ Host sends:
+ 
+------------
+
+Two bytes: file size in blocks (LSB, MSB)
+One byte: return code:
+  $00 = File exists (and file size is valid)
+  $02 = File does not exist
+  $04 = File exists, not recognized as a valid disk image
+------------
+
+ Client sends {{{#Image_Get_Packet}Image Get Packet}}
 
 ------------
 
@@ -112,36 +119,25 @@ Host sends: return code:
    $06 = ACK
 ------------
 
- (parts = filesize /(40 * 512), remainder = filesize % (40 * 512))
- (loop: parts * 40 blocks + remainder * blocks)
+ (loop for as much data is required)
+
+ Host sends {{{#Send_Image_Data_Packet}Send Image Data Packet}} 
+
+
+ Client sends {{{#Acknowledgement_Packet}Acknowledgement}} packet with payload according to results:
 
 ------------
 
-Host sends:
-  2 bytes: current block number (LSB, MSB)
-  1 byte: half-block number (2 = bytes 0-255, 1 = bytes 256-511)
-  Half-block, RLE encoded
-  two bytes:
-    CRC (LSB)
-    CRC (MSB)
+One byte:
+  $06 = ACK (Client understood the packet, CRC is correct; send next one) -or-
+  $15 = NAK (Resend this same packet again: block number tells what client 
+             is still waiting to get a good packet for)
+Two bytes: current block number (LSB, MSB)
 
-Client sends:
-  One byte acknowledgement:
-    $06 = ACK (Client understood the packet, CRC is correct; send next one)
-    $15 = NAK (Resend this same packet again: block number tells what client
-              is still waiting to get a good packet for)
-  Two bytes: current block number (LSB, MSB)
-  One byte: half-block number (2 = bytes 0-255, 1 = bytes 256-511)
-
-Note: if the host receives a NAK, and the client is expecting a packet 
-      that is one greater than what's just been sent, then an ACK got 
-      lost.  Recovery is for the host to go ahead and advance to the next
-      block and send that.
+Final acknowledgement may contain an extra payload byte, a count of errors.
 ------------
 
  (loop end)
-
- Client sends: One byte: number of errors encountered
 
 * {Put} (Send) disk  (from client to host)
 
@@ -151,7 +147,7 @@ Note: if the host receives a NAK, and the client is expecting a packet
  
 ------------
 
-Two bytes: file size in blocks (lsb, msb)
+Two bytes: file size in blocks (LSB, MSB)
 One byte: return code:
   $00 = File exists (and file size is valid)
   $02 = File does not exist
@@ -284,7 +280,6 @@ Client sends: $06 = ACK
 
 Apple sends:
  $00 = error count
-
 ------------
 
 * Speediboot {ProDOS} Download
@@ -298,7 +293,6 @@ Host sends:
   One byte: 'P' ($50)
   Two bytes: image size in bytes (LSB, MSB)
   Continuous byte stream of ProDOS image - grub starts execution at $2000, returns to grub at $7000
-
 ------------
 
 * {SOS Kernel} Download
@@ -310,7 +304,6 @@ Apple sends:
 
 Host sends:
   Continuous byte stream of $56 pages ($5600 bytes) of SOS kernel file image
-
 ------------
 
 * {SOS Interpreter} Download
@@ -324,7 +317,6 @@ Host sends:
   One byte: 'S' ($53)
   Two bytes: image size in bytes (LSB, MSB)
   Continuous byte stream of serial ADTPro SOS program file image
-
 ------------
 
 * {SOS Driver} Download
@@ -337,7 +329,6 @@ Apple sends:
 Host sends:
   Two bytes: image size in bytes (LSB, MSB)
   Continuous byte stream of SOS driver file image
-
 ------------
 
 * Speediboot {ADTPro} Download
@@ -351,7 +342,6 @@ Host sends:
   One byte: 'A' ($41)
   Two bytes: image size in bytes (LSB, MSB)
   Continuous byte stream of ADTPro program file image - grub starts execution at $2000
-
 ------------
 
 * Speediboot {VSDrive} Download
@@ -365,7 +355,6 @@ Host sends:
   One byte: 'V' ($56)
   Two bytes: image size in bytes (LSB, MSB)
   Continuous byte stream of VSDrive program file image - grub starts execution at $2000, returns to grub at $7000
-
 ------------
 
 * Speediboot {BASIC} Download
@@ -379,17 +368,6 @@ Host sends:
   One byte: 'B' ($42)
   Two bytes: image size in bytes (LSB, MSB)
   Continuous byte stream of BASIC file image - grub starts execution at $2000
-
-------------
-
-* {Ping}
-
-------------
-
-Apple sends: One byte: 'Y' ($D9)
-
-Host displays the message: "Ping request received from client" (no protocol response sent)
-
 ------------
 
 
@@ -411,7 +389,6 @@ Screen-formatted data of directory contents; null-terminated
     Apple sends one byte:
         'D' ($C4) = retrieve subsequent screen
         $00 = abort
-
 ------------
 
 ADTPro-Wide Protocol Packet Formats
@@ -420,16 +397,15 @@ ADTPro-Wide Protocol Packet Formats
 
 -------------
 
-  Envelope:
-    One byte: 'A' ($C1)
-    Two bytes: payload length (file name + null, not including check byte)
-    One byte: 'C' ($C3)
-    One byte: EOR of prior four bytes
-  Payload:
-    Byte stream: file name, null terminated
-  Check byte:
-    One byte: EOR of the payload
-
+Envelope:
+  One byte: 'A' ($C1)
+  Two bytes: payload length (file name + null, not including check byte)
+  One byte: 'C' ($C3)
+  One byte: EOR of prior four bytes
+Payload:
+  Byte stream: file name, null terminated
+Check byte:
+  One byte: EOR of the payload
 -------------
 
 * {Directory Packet} - Command
@@ -441,108 +417,84 @@ Envelope:
   Two bytes: payload length ($0000)
   One byte: 'D' ($C4)
   One byte: EOR of the first four bytes ($15)
-
 -------------
 
 * {Query File Size Packet} - Command
 
 -------------
 
-  Envelope:
-    One byte: 'A' ($C1)
-    Two bytes: payload length (file name + null, not including check byte)
-    One byte: 'Z' ($DA)
-    One byte: EOR of prior four bytes
-  Payload:
-    Byte stream: file name, null terminated
-  Check byte:
-    One byte: EOR of the payload
-
+Envelope:
+  One byte: 'A' ($C1)
+  Two bytes: payload length (file name + null, not including check byte)
+  One byte: 'Z' ($DA)
+  One byte: EOR of prior four bytes
+Payload:
+  Byte stream: file name, null terminated
+Check byte:
+  One byte: EOR of the payload
 -------------
 
 * {Image Put Packet} - Command
 
 -------------
 
-  Envelope:
-    One byte: 'A' ($C1)
-    Two bytes: payload length (file name + null + 2-byte block size, not including check byte)
-    One byte: 'P' ($D0)
-    One byte: EOR of prior four bytes
-  Payload:
-    Byte stream: file name (null terminated)
-    Two bytes: file size in blocks (lsb, msb)
-  Check byte:
-    One byte: EOR of the payload
-
+Envelope:
+  One byte: 'A' ($C1)
+  Two bytes: payload length (file name + null + 2-byte block size, not including check byte)
+  One byte: 'P' ($D0)
+  One byte: EOR of prior four bytes
+Payload:
+  Byte stream: file name (null terminated)
+  Two bytes: file size in blocks (LSB, MSB)
+Check byte:
+  One byte: EOR of the payload
 -------------
 
 * {Image Get Packet} - Command
 
 -------------
 
-  Envelope:
-    One byte: 'A' ($C1)
-    Two bytes: payload length (file name + null, not including check byte)
-    One byte: 'G' ($D0)
-    One byte: EOR of prior four bytes
-  Payload:
-    Byte stream: file name (null terminated)
-  Check byte:
-    One byte: EOR of the payload
-
+Envelope:
+  One byte: 'A' ($C1)
+  Two bytes: payload length (file name + null, not including check byte)
+  One byte: 'G' ($C7)
+  One byte: EOR of prior four bytes
+Payload:
+  Byte stream: file name (null terminated)
+Check byte:
+  One byte: EOR of the payload
 -------------
 
 * {Send Image Data Packet} - Response
 
 -------------
 
-    Envelope:
-      One byte: 'A' ($C1)
-      Two bytes: payload length in bytes after RLE decompression, not including block number or CRC (lsb, msb)
-      One byte: 'S' ($D3)
-      One byte: EOR of prior four bytes
-    Payload: 
-      Two bytes: starting block number (lsb, msb)
-      Page-based data, RLE encoded
-    Two bytes: CRC of all page-based data (lsb, msb)
+Envelope:
+  One byte: 'A' ($C1)
+  Two bytes: payload length in bytes after RLE decompression, not including block number or CRC (LSB, MSB)
+  One byte: 'S' ($D3)
+  One byte: EOR of prior four bytes
+Payload: 
+  Two bytes: starting block number (LSB, MSB)
+  Page-based data, RLE encoded
+Checksum:
+  Two bytes: CRC of all page-based data (LSB, MSB)
+-------------
+
+* {Acknowledgement Packet} - Response
 
 -------------
 
-* {ACK Packet} - Response
-
--------------
-
-  Envelope:
-    One byte: 'A' ($C1)
-    Two bytes: payload length lsb, msb ($0000)
-    One byte: ACK ($06)
-    One byte: EOR of prior four bytes ($C7)
-
--------------
-
-* {NAK Packet} - Response
-
--------------
-
-  Envelope:
-    One byte: 'A' ($C1)
-    Two bytes: payload length lsb, msb ($0000)
-    One byte: NAK ($15)
-    One byte: EOR of prior four bytes ($D4)
-
--------------
-
-* {CAN Packet} - Response
-
--------------
-
-  Envelope:
-    One byte: 'A' ($C1)
-    Two bytes: payload length lsb, msb ($0000)
-    One byte: CAN ($18)
-    One byte: EOR of prior four bytes ($D9)
-
+Envelope:
+  One byte: 'A' ($C1)
+  Two bytes: payload length (LSB, MSB)
+  One byte: 'K' ($CB)
+  One byte: EOR of prior four bytes
+Payload:
+  One byte: acknowledgement - ACK ($06), NAK ($15), or CAN ($18)
+  Optional additional payload of length (minus one) of bytes
+Check byte:
+  One byte: EOR of the payload, including acknowledgement byte
 -------------
 
 Vitual Drive Server Functions
@@ -551,59 +503,56 @@ Vitual Drive Server Functions
 
 ------------
 
- The Apple sends: byte stream:
-   One byte: 'E' ($C5)
-   One byte: $01
-   Two bytes: requested block number (LSB, MSB)
-   One byte: EOR of the first four bytes
+The Apple sends: byte stream:
+  One byte: 'E' ($C5)
+  One byte: $01
+  Two bytes: requested block number (LSB, MSB)
+  One byte: EOR of the first four bytes
 
- Host sends: byte stream:
-   One byte: 'E' ($C5)
-   One byte: $01
-   Two bytes: requested block number (LSB, MSB)
-   One byte: EOR of the first four bytes
-   Requested block data (512 bytes)
-   One byte: EOR of all bytes in block
-
+Host sends: byte stream:
+  One byte: 'E' ($C5)
+  One byte: $01
+  Two bytes: requested block number (LSB, MSB)
+  One byte: EOR of the first four bytes
+  Requested block data (512 bytes)
+  One byte: EOR of all bytes in block
 ------------
 
 * {Read3} - Block read with date/time update 
 
 ------------
 
- The Apple sends: byte stream:
-   One byte: 'E' ($C5)
-   One byte: $03 (for drive 1) or $05 (for drive 2)
-   Two bytes: requested block number (LSB, MSB)
-   One byte: EOR of the first four bytes
+The Apple sends: byte stream:
+  One byte: 'E' ($C5)
+  One byte: $03 (for drive 1) or $05 (for drive 2)
+  Two bytes: requested block number (LSB, MSB)
+  One byte: EOR of the first four bytes
 
- Host sends: byte stream:
-   One byte: 'E' ($C5)
-   One byte: $03 (for drive 1) or $05 (for drive 2)
-   Two bytes: requested block number (LSB, MSB)
-   Four bytes: ProDOS date and timestamp data (ultimately destined for $BF90 to $BF93)
-   One byte: EOR of the first eight bytes
-   Requested block data (512 bytes)
-   One byte: EOR of all bytes in block
-
+Host sends: byte stream:
+  One byte: 'E' ($C5)
+  One byte: $03 (for drive 1) or $05 (for drive 2)
+  Two bytes: requested block number (LSB, MSB)
+  Four bytes: ProDOS date and timestamp data (ultimately destined for $BF90 to $BF93)
+  One byte: EOR of the first eight bytes
+  512 bytes: requested block data
+  One byte: EOR of all bytes in block
 ------------
 
 * {Write} Block
 
 ------------
 
- The Apple sends: byte stream:
-   One byte: 'E' ($C5)
-   One byte: $02 (for drive 1) or $04 (for drive 2)
-   Two bytes: requested block number (LSB, MSB)
-   One byte: EOR of the first four bytes
-   Requested block data (512 bytes)
-   One byte: EOR of all bytes in block
+The Apple sends: byte stream:
+  One byte: 'E' ($C5)
+  One byte: $02 (for drive 1) or $04 (for drive 2)
+  Two bytes: requested block number (LSB, MSB)
+  One byte: EOR of the first four bytes
+  512 bytes: requested block data
+  One byte: EOR of all bytes in block
 
- Host sends: byte stream:
-   One byte: 'E' ($C5)
-   One byte: $02 (for drive 1) or $04 (for drive 2)
-   Two bytes: requested block number (LSB, MSB)
-   One byte: EOR of the first four bytes
-
+Host sends: byte stream:
+  One byte: 'E' ($C5)
+  One byte: $02 (for drive 1) or $04 (for drive 2)
+  Two bytes: requested block number (LSB, MSB)
+  One byte: EOR of the first four bytes
 ------------
