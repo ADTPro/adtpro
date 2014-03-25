@@ -36,27 +36,27 @@ ADTPro-Wide Protocol - Proposal Under Revision
 
 * Packet Formats
 
- [{{{#Change_Directory_Packet}CD - 'A'+'C'}}]  Change working directory
+ [{{{#Change_Directory_Packet}CD  ('A'+'C' / $C1+$C3)}}]  Change working directory
 
- [{{{#Directory_Packet}Directory - 'A'+'D'}}]  View contents of current working directory
+ [{{{#Directory_Packet}Directory ('A'+'D' / $C1+$C4)}}]  View contents of current working directory
 
- [{{{#Query_File_Size_Packet}Size - 'A'+'Z'}}]  Query file size
+ [{{{#Query_File_Size_Packet}Size ('A'+'Z' / $C1+$DA)}}]  Query file size
 
- [{{{#Image_Get_Packet}Get - 'A'+'G'}}]  Initiate disk image download from host
+ [{{{#Image_Get_Packet}Get ('A'+'G' / $C1+$C7)}}]  Initiate disk image download from host
  
- [{{{#Image_Put_Packet}Put - 'A'+'P'}}]  Initiate disk image upload to host (always overwrite)
+ [{{{#Image_Put_Packet}Put ('A'+'P' / $C1+$D0)}}]  Initiate disk image upload to host (always overwrite)
  
- [{{{#Send_Image_Data_Packet}Send Image Data - 'A'+'S'}}]  RLE compressed data for image transfer (page-aligned)
+ [{{{#Send_Image_Data_Packet}Send Image Data ('A'+'S' / $C1+$D3)}}]  RLE compressed data for image transfer (page-aligned)
 
- [{{{#Acknowledgement_Packet}Acknowledgement - 'A'+'K'}}] Acknowledgement - one of ACK, NAK, CAN
+ [{{{#Acknowledgement_Packet}Acknowledgement ('A'+'K' / $C1+$CB)}}] Acknowledgement - one of ACK, NAK, CAN
 
 Virtual Drive Server Functions
 
- [{{{#Read}'E'+$01 - Read Block}}] ProDOS device driver compatible read block request
+ [{{{#Read}Read Block ('E'+$01)}}] ProDOS device driver compatible read block request
 
- [{{{#Write}'E'+$02/$04 - Write Block}}] ProDOS device driver compatible write block request
+ [{{{#Write}Write Block ('E'+$02/$04)}}] ProDOS device driver compatible write block request
 
- [{{{#Read3}'E'+$03/$05 - Read Block with timestamp update}}] ProDOS device driver compatible read block request with timestamp update
+ [{{{#Read3}Read Block with timestamp update ('E'+$03/$05)}}] ProDOS device driver compatible read block request with timestamp update
 
 Bootstrapping Commands
 
@@ -83,7 +83,7 @@ ADTPro Functions
 
 * {Change Directory}
 
- Client sends {{{#Change_Directory_Packet}Change Working Directory Packet}}
+ Client sends {{{#Change_Directory_Packet}Change Working Directory Packet}} ('A'+'C' / $C1+$C3)
 
 -------------
 
@@ -94,7 +94,7 @@ Host sends: return code:
 
 * {Get} (Receive) disk (Host -> Client)
 
- Client sends {{{#Query_File_Size_Packet}Query File Size Packet}}
+ Client sends {{{#Query_File_Size_Packet}Query File Size Packet}} ('A'+'Z' / $C1+$DA)
 
  Host sends:
  
@@ -107,7 +107,7 @@ One byte: return code:
   $04 = File exists, not recognized as a valid disk image
 ------------
 
- Client sends {{{#Image_Get_Packet}Image Get Packet}}
+ Client sends {{{#Image_Get_Packet}Image Get Packet}} ('A'+'G' / $C1+$C7)
 
 ------------
 
@@ -121,10 +121,10 @@ Host sends: return code:
 
  (loop for as much data is required)
 
- Host sends {{{#Send_Image_Data_Packet}Send Image Data Packet}} 
+ Host sends {{{#Send_Image_Data_Packet}Send Image Data Packet}} ('A'+'S' / $C1+$D3) 
 
 
- Client sends {{{#Acknowledgement_Packet}Acknowledgement}} packet with payload according to results:
+ Client sends {{{#Acknowledgement_Packet}Acknowledgement}} ('A'+'K' / $C1+$CB) packet with payload according to results:
 
 ------------
 
@@ -141,7 +141,7 @@ Final acknowledgement may contain an extra payload byte, a count of errors.
 
 * {Put} (Send) disk  (from client to host)
 
- Client sends {{{#Query_File_Size_Packet}Query File Size Packet}}
+ Client sends {{{#Query_File_Size_Packet}Query File Size Packet}} ('A'+'Z' / $C1+$DA)
 
  Host sends:
  
@@ -154,7 +154,7 @@ One byte: return code:
   $04 = File exists, not recognized as a valid disk image
 ------------
 
- Client sends {{{#Image_Put_Packet}Image Put Packet}}
+ Client sends {{{#Image_Put_Packet}Image Put Packet}} ('A'+'P' / $C1+$D0)
 
  Host sends:
 
@@ -167,7 +167,7 @@ Return code:
 
  (loop for as much data is required)
 
-  Client sends {{{#Send_Image_Data_Packet}Send Image Data Packet}} 
+  Client sends {{{#Send_Image_Data_Packet}Send Image Data Packet}} ('A'+'S' / $C1+$D3) 
 
   Host sends:
  
@@ -434,6 +434,21 @@ Check byte:
   One byte: EOR of the payload
 -------------
 
+* {Image Get Packet} - Command
+
+-------------
+
+Envelope:
+  One byte: 'A' ($C1)
+  Two bytes: payload length (file name + null, not including check byte)
+  One byte: 'G' ($C7)
+  One byte: EOR of prior four bytes
+Payload:
+  Byte stream: file name (null terminated)
+Check byte:
+  One byte: EOR of the payload
+-------------
+
 * {Image Put Packet} - Command
 
 -------------
@@ -446,21 +461,6 @@ Envelope:
 Payload:
   Byte stream: file name (null terminated)
   Two bytes: file size in blocks (LSB, MSB)
-Check byte:
-  One byte: EOR of the payload
--------------
-
-* {Image Get Packet} - Command
-
--------------
-
-Envelope:
-  One byte: 'A' ($C1)
-  Two bytes: payload length (file name + null, not including check byte)
-  One byte: 'G' ($C7)
-  One byte: EOR of prior four bytes
-Payload:
-  Byte stream: file name (null terminated)
 Check byte:
   One byte: EOR of the payload
 -------------
@@ -491,7 +491,7 @@ Envelope:
   One byte: 'K' ($CB)
   One byte: EOR of prior four bytes
 Payload:
-  One byte: acknowledgement - ACK ($06), NAK ($15), or CAN ($18)
+  One byte: acknowledgement type - ACK ($06), NAK ($15), or CAN ($18)
   Optional additional payload of length (minus one) of bytes
 Check byte:
   One byte: EOR of the payload, including acknowledgement byte
