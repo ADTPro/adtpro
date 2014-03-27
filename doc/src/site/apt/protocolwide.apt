@@ -114,10 +114,9 @@ One byte: return code:
 Host sends: return code:
   $00 = Ok
   $02 = File not found (client aborts)
-
- Client sends:
-   $06 = ACK
 ------------
+
+ Client sends {{{#Acknowledgement_Packet}Acknowledgement packet}} with ACK ($06)
 
  (loop for as much data is required)
 
@@ -445,6 +444,7 @@ Envelope:
   One byte: EOR of prior four bytes
 Payload:
   Byte stream: file name (null terminated)
+  One byte: number of blocks to send per packet
 Check byte:
   One byte: EOR of the payload
 -------------
