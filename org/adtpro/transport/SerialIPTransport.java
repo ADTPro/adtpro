@@ -156,7 +156,9 @@ public class SerialIPTransport extends ATransport
 	public void writeBytes(byte data[])
 	{
 		// Log.println(false,"SerialIPTransport.writeBytes() entry.");
-		if ((1499 - _outPacketPtr) >= data.length)
+		if ((1499 - _outPacketPtr) < data.length)
+			pushBuffer();
+		if ((1499 - _outPacketPtr) >= data.length) // Should always be true now...
 		{
 			// Log.println(false,"SerialIPTransport.writeBytes() writing "+data.length+" bytes into packet starting from "+_outPacketPtr+".");
 			if (_outPacketPtr == 0)
@@ -172,8 +174,8 @@ public class SerialIPTransport extends ATransport
 				// Log.println(false,"  data to buffer: "+data[i]);
 			}
 		}
-		// else
-		// Log.println(false,"DEBUG: SerialIPTransport.writeBytes() didn't have room!");
+		//else
+			//Log.println(false,"DEBUG: SerialIPTransport.writeBytes() didn't have room!");
 	}
 
 	public void writeBytes(char[] data)
