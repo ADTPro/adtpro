@@ -6,12 +6,15 @@
 
 ADTPro Release History
 
-* Unreleased - in CVS now
+* 1.3.0 - April 6, 2014
 
  Bug fixes:
 
  * Re-enable 19200 baud rate for serial client - the {{{./lc.html}Mac LC/Apple IIe card}} 
    requires this speed 
+
+ * [Client] Don't bother turning the drive motor on early (introduced in 1.2.9) with 
+   Audio protocol
 
  []
 

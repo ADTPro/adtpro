@@ -1,6 +1,6 @@
 ;
 ; ADTPro - Apple Disk Transfer ProDOS
-; Copyright (C) 2007 - 2013 by David Schmidt
+; Copyright (C) 2007 - 2014 by David Schmidt
 ; david__schmidt at users.sourceforge.net
 ;
 ; This program is free software; you can redistribute it and/or modify it 
@@ -319,22 +319,6 @@ NIBDISP:
 
 
 ;---------------------------------------------------------
-; hlfnextt - goto next halftrack. we know there is still room
-; to move further. next track is in iobtrk.
-; use copy of dos function seekabs.
-;---------------------------------------------------------
-hlfnextt:
-	ldx pdsoftx		; x = slot * 16
-	lda iobtrk		; a = desired halftrack
-	pha			; save on stack
-	sec			; prepare subtract
-	sbc #1			; a now contains current track
-	sta $478		; seekabs expects this
-	pla			; desired track in a
-	jsr seekabs		; let dos function do its thing
-	rts
-
-;---------------------------------------------------------
 ; rdnibtr - read track as nibbles into tracks buffer.
 ; total bytes read is NIBPAGES * 256, or about twice
 ; the track length.
@@ -376,6 +360,22 @@ rdnibtr8:
 	inc BLKPTR+1		; next page (5c)
 	dec NIBPCNT		; count (5c)
 	bne rdnibtr7		; and back (3c)
+	rts
+
+;---------------------------------------------------------
+; hlfnextt - goto next halftrack. we know there is still room
+; to move further. next track is in iobtrk.
+; use copy of dos function seekabs.
+;---------------------------------------------------------
+hlfnextt:
+	ldx pdsoftx		; x = slot * 16
+	lda iobtrk		; a = desired halftrack
+	pha			; save on stack
+	sec			; prepare subtract
+	sbc #1			; a now contains current track
+	sta $478		; seekabs expects this
+	pla			; desired track in a
+	jsr seekabs		; let dos function do its thing
 	rts
 
 ;---------------------------------------------------------
