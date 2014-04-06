@@ -1,6 +1,6 @@
 ;
 ; ADTPro - Apple Disk Transfer ProDOS
-; Copyright (C) 2006 - 2012 by David Schmidt
+; Copyright (C) 2006 - 2014 by David Schmidt
 ; david__schmidt at users.sourceforge.net
 ;
 ; This program is free software; you can redistribute it and/or modify it 
@@ -431,6 +431,8 @@ SRBLOX:
 SRCALL:
 	lda NonDiskII		; Is this a Disk II?
 	beq SRGO
+	lda PPROTO		; Check protocol
+	beq SRGO		; ... if audio - skip the motor on
 	lda SRBCNT		; Yes, so check for almost-doneness within a buffer
 	cmp #$0a		; Buffer 3/4 done (10 blocks remain)?
 	bne SRGO		; No - skip the motor, don't need it

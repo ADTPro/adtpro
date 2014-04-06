@@ -1,6 +1,6 @@
 ;
 ; ADTPro - Apple Disk Transfer ProDOS
-; Copyright (C) 2006 - 2013 by David Schmidt
+; Copyright (C) 2006 - 2014 by David Schmidt
 ; david__schmidt at users.sourceforge.net
 ;
 ; This program is free software; you can redistribute it and/or modify it 
@@ -484,5 +484,6 @@ FNLOOP:	lda IN_BUF,X
 @Done:
 	rts
 
+PPROTO:	.byte $01	; Serial protocol = $01
 PUTC:	jmp $0000	; Pseudo-indirect JSR - self-modified
 GETC:	jmp $0000	; Pseudo-indirect JSR - self-modified

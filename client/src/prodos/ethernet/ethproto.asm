@@ -1,6 +1,6 @@
 ;
 ; ADTPro - Apple Disk Transfer ProDOS
-; Copyright (C) 2006 - 2013 by David Schmidt
+; Copyright (C) 2006 - 2014 by David Schmidt
 ; david__schmidt at users.sourceforge.net
 ;
 ; This program is free software; you can redistribute it and/or modify it 
@@ -890,6 +890,7 @@ STATE_BATCH	= 8
 ;---------------------------------------------------------
 ; Variables
 ;---------------------------------------------------------
+PPROTO:	.byte $03	; Ethernet protocol = $03
 QUERYRC:
 	.byte $00
 PUTCMSG:
