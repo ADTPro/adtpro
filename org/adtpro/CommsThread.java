@@ -1,6 +1,6 @@
 /*
  * ADTPro - Apple Disk Transfer ProDOS
- * Copyright (C) 2007 - 2013 by David Schmidt
+ * Copyright (C) 2007 - 2014 by David Schmidt
  * david__schmidt at users.sourceforge.net
  *
  * This program is free software; you can redistribute it and/or modify it 
@@ -29,7 +29,6 @@ import org.adtpro.transport.AudioTransport;
 import org.adtpro.transport.ProtocolVersionException;
 import org.adtpro.transport.SerialTransport;
 import org.adtpro.transport.TransportTimeoutException;
-
 import org.adtpro.gui.Gui;
 import org.adtpro.utilities.Log;
 import org.adtpro.utilities.StringUtilities;
@@ -66,7 +65,7 @@ public class CommsThread extends Thread
 	private Worker _worker = null;
 
 	private boolean _isBinary = false;
-	
+
 	VDiskPersister _vdisks;
 
 	public CommsThread(Gui parent, ATransport transport)
@@ -174,7 +173,14 @@ public class CommsThread extends Thread
 					_parent.setSecondaryText(_parent.getWorkingDirectory()); //$NON-NLS-1$
 					_busy = false;
 					break;
-				case (byte) 197: // "E": Command Envelope
+				case (byte) 193: // "A": Basic Transport Envelope
+					_busy = true;
+					_parent.setSecondaryText(""); //$NON-NLS-1$
+					Log.println(false, "CommsThread.commandLoop() Received wide protocol request."); //$NON-NLS-1$
+					dispatchCommand(pullEnvelopeWide(false));
+					_busy = false;
+					break;
+				case (byte) 197: // "E": Virtual Drive Command Envelope
 					_busy = true;
 					_parent.setMainText(Messages.getString("CommsThread.24"));
 					_parent.setSecondaryText(""); //$NON-NLS-1$
@@ -337,6 +343,84 @@ public class CommsThread extends Thread
 		Log.println(false, "CommsThread.commandLoop() ending."); //$NON-NLS-1$
 	}
 
+	public void dispatchCommand(byte[] envelope)
+	{
+		Log.println(false, "CommsThread.dispatchCommand() entry.");
+		switch (envelope[2])
+		{
+		case (byte) 194: // "B": Batch send
+			_busy = true;
+			_parent.setMainText(Messages.getString("CommsThread.3")); //$NON-NLS-1$
+			_parent.setSecondaryText(""); //$NON-NLS-1$
+			Log.println(false, "CommsThread.dispatchCommand() Received Batch command."); //$NON-NLS-1$
+			receiveDiskWide(true, envelope);
+			_busy = false;
+			break;
+		case (byte) 195: // "C": CD
+			_busy = true;
+			_parent.setMainText(Messages.getString("CommsThread.2")); //$NON-NLS-1$
+			_parent.setSecondaryText(""); //$NON-NLS-1$
+			Log.println(false, "CommsThread.dispatchCommand() Received CD command."); //$NON-NLS-1$
+			changeDirectoryWide(envelope);
+			_parent.setSecondaryText(_parent.getWorkingDirectory()); //$NON-NLS-1$
+			_busy = false;
+			break;
+		case (byte) 196: // "D": DIR
+			_busy = true;
+			_parent.setMainText(Messages.getString("CommsThread.1")); //$NON-NLS-1$
+			_parent.setSecondaryText(_parent.getWorkingDirectory()); //$NON-NLS-1$
+			Log.println(false, "CommsThread.dispatchCommand() Received DIR command."); //$NON-NLS-1$
+			sendDirectory();
+			_parent.setSecondaryText(_parent.getWorkingDirectory()); //$NON-NLS-1$
+			_busy = false;
+			break;
+		case (byte) 208: // "P": Put (Send)
+			_busy = true;
+			_parent.setMainText(Messages.getString("CommsThread.16")); //$NON-NLS-1$
+			_parent.setSecondaryText(""); //$NON-NLS-1$
+			Log.println(false, "CommsThread.dispatchCommand() Received Put/Send command."); //$NON-NLS-1$
+			receiveDiskWide(false, envelope);
+			_busy = false;
+			break;
+		case (byte) 205: // "M": Multiple Nibble send
+			_busy = true;
+			_parent.setMainText(Messages.getString("CommsThread.3")); //$NON-NLS-1$
+			_parent.setSecondaryText(""); //$NON-NLS-1$
+			Log.println(false, "CommsThread.dispatchCommand() Received Multiple nibble command."); //$NON-NLS-1$
+			receiveNibbleDiskWide(true, envelope); /* Assume 35 tracks */
+			_busy = false;
+			break;
+		case (byte) 206: // "N": Put Nibble Disk
+			_busy = true;
+			_parent.setMainText(Messages.getString("CommsThread.12")); //$NON-NLS-1$
+			_parent.setSecondaryText(""); //$NON-NLS-1$
+			Log.println(false, "CommsThread.dispatchCommand() Received Nibble Put command."); //$NON-NLS-1$
+			receiveNibbleDiskWide(false, envelope);
+			_busy = false;
+			break;
+		case (byte) 199: // "G": Get (Receive)
+			_busy = true;
+			_parent.setMainText(Messages.getString("CommsThread.3")); //$NON-NLS-1$
+			_parent.setSecondaryText(""); //$NON-NLS-1$
+			Log.println(false, "CommsThread.dispatchCommand() Received Get/Receive command."); //$NON-NLS-1$
+			sendDiskWide(envelope);
+			_busy = false;
+			break;
+		case (byte) 218: // "Z": Size
+			_busy = true;
+			_parent.setMainText(Messages.getString("CommsThread.14")); //$NON-NLS-1$
+			_parent.setSecondaryText(""); //$NON-NLS-1$
+			Log.println(false, "CommsThread.dispatchCommand() Received Query File Size command."); //$NON-NLS-1$
+			queryFileSizeWide(envelope);
+			_busy = false;
+			break;
+		default:
+			Log.println(false, "CommsThread.dispatchCommand() Received unknown command: " + UnsignedByte.toString(envelope[0])); //$NON-NLS-1$
+			break;
+		}
+		Log.println(false, "CommsThread.dispatchCommand() exit.");
+	}
+
 	public void sendDirectory()
 	{
 		int i, j, line;
@@ -483,6 +567,86 @@ public class CommsThread extends Thread
 		}
 	}
 
+	public void queryFileSizeWide(byte[] envelope)
+	{
+		long length = 0;
+		byte sizeLo = 0, sizeHi = 0, rc = (byte) 0xff;
+		StringBuffer dest = new StringBuffer();
+		Log.println(false, "CommsThread.queryFileSizeWide() entry.");
+		byte[] payload = pullPayloadWide(envelope);
+		if (payload != null)
+		{
+			Log.println(false, "CommsThread.queryFileSizeWide() payload length: " + payload.length);
+			for (int i = 0; i < payload.length; i++)
+			{
+				// Log.println(false, "CommsThread.queryFileSizeWide() payload[" + i + "] " + UnsignedByte.toString(payload[i]));
+				if (payload[i] == 0x00)
+					break;
+				dest.append((char) (UnsignedByte.intValue(payload[i]) & 0x7f));
+			}
+			Log.println(false, "CommsThread.queryFileSizeWide() value: " + dest.toString().trim());
+
+			String requestedFileName = dest.toString().trim();
+			Disk disk = null;
+			try
+			{
+				Log.println(false, "CommsThread.queryFileSizeWide() seeking file " + _parent.getWorkingDirectory() + requestedFileName);
+				disk = new Disk(_parent.getWorkingDirectory() + requestedFileName);
+			}
+			catch (IOException e)
+			{
+				try
+				{
+					Log.println(false, "CommsThread.queryFileSizeWide() failed to find that file.");
+					Log.println(false, "CommsThread.queryFileSizeWide() seeking file [" + requestedFileName + "]"); //$NON-NLS-1$
+					disk = new Disk(requestedFileName);
+					Log.println(false, "CommsThread.queryFileSizeWide() found file " + requestedFileName); //$NON-NLS-1$
+				}
+				catch (IOException e2)
+				{
+					Log.println(false, "CommsThread.queryFileSizeWide() can't read file: " + requestedFileName + "."); //$NON-NLS-1$ //$NON-NLS-2$
+					rc = 0x02; // Unable to open file
+				}
+			}
+			catch (ArrayIndexOutOfBoundsException ix)
+			{
+				rc = 0x04; // Unrecognized file format
+			}
+			if (disk == null)
+			{
+				if (rc == (byte) 0xff)
+					rc = 0x02; // Unable to open file
+				// else let rc be whatever it was before
+			}
+			else if (disk.getImageOrder() == null)
+				rc = 0x04; // Unrecognized file format
+			else
+			{
+				if (disk.getImageOrder().getClass() == NibbleOrder.class)
+					length = 455;
+				else
+					length = disk.getImageOrder().getBlocksOnDevice();
+				sizeLo = UnsignedByte.loByte(length);
+				sizeHi = UnsignedByte.hiByte(length);
+				rc = 0;
+			}
+			if (disk != null)
+				_parent.setSecondaryText(disk.getFilename());
+			else
+				_parent.setSecondaryText(requestedFileName);
+			Log.println(false, "CommsThread.queryFileSize() lo:" + UnsignedByte.toString(sizeLo) + " hi:" + UnsignedByte.toString(sizeHi)); //$NON-NLS-1$ //$NON-NLS-2$
+			_transport.writeByte(sizeLo);
+			_transport.writeByte(sizeHi);
+			_transport.writeByte(rc);
+			_transport.pushBuffer();
+		}
+		else
+		{
+			// TODO: push a NAK
+		}
+		Log.println(false, "CommsThread.queryFileSizeWide() exit.");
+	}
+
 	public void pullEnvelope()
 	{
 		byte command, checkReceived, blocklo, blockhi, checkCalculated;
@@ -609,7 +773,7 @@ public class CommsThread extends Thread
 		}
 		catch (TransportTimeoutException e)
 		{
-			Log.println(false, "CommsThread.changeDirectory() aborting due to timeout.");
+			Log.println(false, "CommsThread.pullEnvelope() aborting due to timeout.");
 			_parent.setSecondaryText(Messages.getString("CommsThread.21"));
 		}
 		catch (IOException e)
@@ -651,6 +815,101 @@ public class CommsThread extends Thread
 		return rc;
 	}
 
+	public byte[] pullEnvelopeWide(boolean needWrapper)
+	{
+		return pullEnvelopeWide(needWrapper, 15);
+	}
+
+	public byte[] pullEnvelopeWide(boolean needWrapper, int initialTimeout)
+	{
+		byte wrapper = 0, command, bytesLsb, bytesMsb, check;
+		byte calculatedCheck = (byte) 0xc1; // We may arrive here having started with an 'A'
+		byte[] envelope = new byte[] { 0, 0, 0 };
+		Log.println(false, "CommsThread.pullEnvelopeWide() entry.");
+		try
+		{
+			if (needWrapper)
+			{
+				do
+				{
+					// Either find an 'A' or timeout trying.
+					wrapper = waitForData(initialTimeout); // In case we need to consume the initial 'A'
+					if (wrapper == (byte) 0xc1)
+						break;
+				} while (true);
+			}
+			Log.println(false, "Waiting for byteslo..."); //$NON-NLS-1$
+			bytesLsb = waitForData(5);
+			calculatedCheck ^= bytesLsb;
+			Log.println(false, " received byteslo: " + UnsignedByte.toString(bytesLsb)); //$NON-NLS-1$
+			Log.println(false, "Waiting for byteshi..."); //$NON-NLS-1$
+			bytesMsb = waitForData(5);
+			calculatedCheck ^= bytesMsb;
+			Log.println(false, " received byteshi: " + UnsignedByte.toString(bytesMsb)); //$NON-NLS-1$
+			Log.println(false, "Waiting for command..."); //$NON-NLS-1$
+			command = waitForData(5);
+			calculatedCheck ^= command;
+			Log.println(false, " received envelope command: " + UnsignedByte.toString(command)); //$NON-NLS-1$
+			Log.println(false, "Waiting for check byte..."); //$NON-NLS-1$
+			check = waitForData(5);
+			Log.println(false, " received checkbyte: " + UnsignedByte.toString(check)); //$NON-NLS-1$
+			Log.println(false, " calculated checkbyte: " + UnsignedByte.toString(calculatedCheck)); //$NON-NLS-1$
+			if (check == calculatedCheck)
+			{
+				envelope[0] = bytesLsb;
+				envelope[1] = bytesMsb;
+				envelope[2] = command;
+			}
+			else
+			{
+				Log.println(false, "CommsThread.pullEnvelopeWide() received ill-formed envelope.");
+				_transport.flushReceiveBuffer();
+			}
+		}
+		catch (TransportTimeoutException e)
+		{
+			Log.println(false, "CommsThread.pullEnvelopeWide() aborting due to timeout.");
+			_parent.setSecondaryText(Messages.getString("CommsThread.21"));
+		}
+		Log.println(false, "CommsThread.pullEnvelopeWide() exit.");
+		return envelope;
+	}
+
+	public byte[] pullPayloadWide(byte[] envelope)
+	{
+		byte[] payload = null;
+		byte checkByte = 0x00, oneByte;
+		int length = envelope[0] + (envelope[1] * 256);
+		Log.println(false, "CommsThread.pullPayloadWide() entry.");
+		payload = new byte[length];
+		try
+		{
+			for (int i = 0; i < length; i++)
+			{
+				oneByte = waitForData(1);
+				payload[i] = oneByte;
+				Log.println(false, "CommsThread.pullPayloadWide() payload byte [" + i + "]: " + UnsignedByte.toString(oneByte)); //$NON-NLS-1$
+				checkByte ^= oneByte;
+			}
+			oneByte = waitForData(1);
+			Log.println(false, "CommsThread.pullPayloadWide() received   checkbyte: " + UnsignedByte.toString(oneByte)); //$NON-NLS-1$
+			Log.println(false, "CommsThread.pullPayloadWide() calculated checkbyte: " + UnsignedByte.toString(checkByte)); //$NON-NLS-1$
+			if (checkByte != oneByte)
+			{
+				Log.println(false, "CommsThread.pullPayloadWide() Got erroneous checkbyte on length."); //$NON-NLS-1$
+				payload = null;
+			}
+			else
+				Log.println(false, "CommsThread.pullPayloadWide() checkbyte on payload matched."); //$NON-NLS-1$
+		}
+		catch (TransportTimeoutException e)
+		{
+			Log.println(false, "CommsThread.pullPayloadWide() Timeout waiting for payload."); //$NON-NLS-1$
+			payload = null;
+		}
+		return payload;
+	}
+
 	public void changeDirectory()
 	{
 		byte rc = 0x06;
@@ -675,6 +934,34 @@ public class CommsThread extends Thread
 			Log.println(false, "CommsThread.changeDirectory() aborting due to protocol mismatch.");
 			_parent.setSecondaryText(Messages.getString("CommsThread.21"));
 		}
+	}
+
+	public void changeDirectoryWide(byte[] envelope)
+	{
+		int rc;
+		StringBuffer dest = new StringBuffer();
+		Log.println(false, "CommsThread.changeDirectoryWide() entry.");
+		byte[] payload = pullPayloadWide(envelope);
+		if (payload != null)
+		{
+			Log.println(false, "CommsThread.changeDirectoryWide() payload length: " + payload.length);
+			for (int i = 0; i < payload.length; i++)
+			{
+				Log.println(false, "CommsThread.changeDirectoryWide() payload[" + i + "] " + UnsignedByte.toString(payload[i]));
+				// if (payload[i] == 0x00)
+				// break;
+				dest.append((char) (UnsignedByte.intValue(payload[i]) & 0x7f));
+			}
+			Log.println(false, "CommsThread.changeDirectoryWide() value: " + dest.toString().trim());
+			rc = _parent.setWorkingDirectory(dest.toString().trim());
+			_transport.writeByte(rc);
+			_transport.pushBuffer();
+		}
+		else
+		{
+			// TODO: push a NAK
+		}
+		Log.println(false, "CommsThread.changeDirectoryWide() exit.");
 	}
 
 	public void receiveDisk(boolean generateName)
@@ -900,6 +1187,202 @@ public class CommsThread extends Thread
 		Log.println(false, "CommsThread.receiveDisk() exit.");
 	}
 
+	public void receiveDiskWide(boolean generateName, byte[] envelope)
+	/* Main receive routine - Host <- Apple (Apple sends) */
+	{
+		Log.println(false, "CommsThread.receiveDiskWide() entry.");
+		_startTime = System.currentTimeMillis();
+		StringBuffer dest = new StringBuffer();
+		byte[] payload = pullPayloadWide(envelope);
+		if (payload != null)
+		{
+			Log.println(false, "CommsThread.receiveDiskWide() payload length: " + payload.length);
+			for (int i = 0; i < payload.length; i++)
+			{
+				Log.println(false, "CommsThread.receiveDiskWide() payload[" + i + "] " + UnsignedByte.toString(payload[i]));
+				if (payload[i] == 0x00)
+					break;
+				dest.append((char) (UnsignedByte.intValue(payload[i]) & 0x7f));
+			}
+			Log.println(false, "CommsThread.receiveDiskWide() name: " + dest.toString().trim());
+			String requestedFileName = dest.toString().trim();
+			String name = _parent.getWorkingDirectory() + requestedFileName;
+			Log.println(false, " received name: " + name); //$NON-NLS-1$
+			if (!name.equals(lastFileName))
+			{
+				lastFileNumber = 1;
+				lastFileName = name;
+			}
+			File f = null;
+			String nameGen, zeroPad;
+			FileOutputStream fos = null;
+			byte[] tempBuffer = new byte[65536];
+			int packetResult = 0;
+			byte report, sizelo = 0, sizehi = 0;
+			int blocksLength = 0, blocksDone = 0;
+			sizelo = payload[payload.length - 2];
+			sizehi = payload[payload.length - 1];
+			blocksLength = UnsignedByte.intValue(sizelo, sizehi);
+			Log.println(false, " blocks to receive: " + blocksLength); //$NON-NLS-1$
+			_parent.setProgressMaximum(blocksLength);
+
+			if (generateName)
+			{
+				do
+				{
+					if (lastFileNumber < 10)
+						zeroPad = "000";
+					else if (lastFileNumber < 100)
+						zeroPad = "00";
+					else if (lastFileNumber < 1000)
+						zeroPad = "0";
+					else
+						zeroPad = "";
+					nameGen = zeroPad + lastFileNumber;
+					if ((blocksLength * 512) == Disk.APPLE_140KB_DISK)
+						f = new File(name + nameGen + ".dsk");
+					else
+						f = new File(name + nameGen + ".po");
+					lastFileNumber++;
+				} while (f.exists());
+				if ((blocksLength * 512) == Disk.APPLE_140KB_DISK)
+					name = name + nameGen + ".dsk";
+				else
+					name = name + nameGen + ".po";
+			}
+			else
+			{
+				String tempName = name.toUpperCase();
+				if ((blocksLength * 512) == Disk.APPLE_140KB_DISK)
+				{
+					/*
+					 * If we're a 140k disk, append ".dsk" to the name if it
+					 * didn't already have it
+					 */
+					if ((!tempName.endsWith(".DSK")) && (!tempName.endsWith(".DO")))
+						name = name + ".dsk";
+				}
+				else
+				{
+					/*
+					 * If we're a ProDOS disk, append ".po" to the name if it
+					 * didn't already have that or ".hdv"
+					 */
+					if ((!tempName.endsWith(".PO")) && (!tempName.endsWith(".HDV")))
+						name = name + ".po";
+				}
+				f = new File(name);
+			}
+			try
+			{
+				fos = new FileOutputStream(f);
+				// ready for transfer
+				_transport.writeByte(0x00);
+				_transport.pushBuffer();
+				_parent.setProgressMaximum((int) blocksLength); // Blocks
+				_parent.setSecondaryText(f.getName()); // name);
+				int bytesReceived = 0;
+				do
+				{
+					Log.println(false, "receiveDiskWide() about to wait for a packet."); //$NON-NLS-1$
+					bytesReceived = receivePacketWide(tempBuffer, 0);
+					if (bytesReceived == 0) // We didn't get any bump in data
+						break;
+					blocksDone += bytesReceived / 512;
+					_parent.setProgressValue(blocksDone);
+					Log.println(false, "Writing up to block " + blocksDone + "."); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+					byte[] buffer = new byte[bytesReceived];
+					java.lang.System.arraycopy(tempBuffer, 0, buffer, 0, bytesReceived);
+					fos.write(buffer);
+					buffer = null;
+				} while (blocksDone < blocksLength);
+				Log.println(false, "CommsThread.receiveDiskWide() finished writing file.");
+				fos.close();
+				if (packetResult == 0)
+				{
+					Log.println(false, "CommsThread.receiveDiskWide() length: " + (blocksLength * 512) + " Disk.APPLE_140KB_DISK: " + Disk.APPLE_140KB_DISK);
+					if ((blocksLength * 512) == Disk.APPLE_140KB_DISK)
+					{
+						// We know images will always be coming from the
+						// server in ProDOS order, so construct our disk
+						// that way
+						Disk disk = new Disk(name, true);
+						// Force any 5-1/4" disk order to DOS
+						disk.makeDosOrder();
+						disk.save();
+						Log.println(false, "CommsThread.receiveDiskWide() found a 140k disk; saved as DOS order format.");
+					}
+					else
+						Log.println(false, "CommsThread.receiveDiskWide() found a disk of length " + (blocksLength * 512) + "; left it alone (didn't change to DOS order), because it expected length " + Disk.APPLE_140KB_DISK + " in order to change to DOS order.");
+				}
+				if (packetResult == 0)
+				{
+					String msg;
+					byte[] newPayload = pullPayloadWide(pullEnvelopeWide(true));
+					if ((newPayload != null) && (newPayload.length == 1))
+					{
+						report = newPayload[0];
+					}
+					else
+						report = 0x15; // NAK
+					_endTime = System.currentTimeMillis();
+					_diffMillis = (_endTime - _startTime) / 1000;
+					if (report == 0x00)
+					{
+						msg = Messages.getString("CommsThread.19");
+						msg = StringUtilities.replaceSubstring(msg, "%1", f.getName());
+						msg = StringUtilities.replaceSubstring(msg, "%2", "" + _diffMillis);
+						_parent.setSecondaryText(msg);
+						Log.println(true, "Apple sent disk image " + name + " successfully in " + (_endTime - _startTime) / 1000 + " seconds.");
+					}
+					else
+					{
+						msg = Messages.getString("CommsThread.20");
+						msg = StringUtilities.replaceSubstring(msg, "%1", f.getName());
+						msg = StringUtilities.replaceSubstring(msg, "%2", "" + _diffMillis);
+						_parent.setSecondaryText(msg);
+						Log.println(true, "Apple sent disk image " + name + " with errors."); //$NON-NLS-1$ //$NON-NLS-2$
+					}
+				}
+				else
+				{
+					Log.println(true, Messages.getString("CommsThread.21"));
+					_parent.setSecondaryText(Messages.getString("CommsThread.21"));
+					_parent.clearProgress();
+					_transport.flushReceiveBuffer();
+					_transport.flushSendBuffer();
+					f.delete();
+					if (generateName)
+						lastFileNumber--;
+				}
+			}
+			catch (FileNotFoundException ex)
+			{
+				_transport.writeByte(0x02); // New ADT protocol: HMFIL - unable
+											// to write file
+				_transport.pushBuffer();
+			}
+			catch (IOException ex2)
+			{
+				_transport.writeByte(0x02); // New ADT protocol: HMFIL - unable
+											// to write file
+				_transport.pushBuffer();
+			}
+			finally
+			{
+				if (fos != null)
+					try
+					{
+						fos.close();
+					}
+					catch (IOException io)
+					{
+					}
+			}
+		}
+		Log.println(false, "CommsThread.receiveDiskWide() exit.");
+	}
+
 	public void sendDisk()
 	/* Main send routine - Host -> Apple (Host sends) */
 	{
@@ -1043,6 +1526,163 @@ public class CommsThread extends Thread
 		}
 
 		Log.println(false, "CommsThread.sendDisk() exit.");
+	}
+
+	public void sendDiskWide(byte[] envelope)
+	/* Main send routine - Host -> Apple (Host sends) */
+	{
+		Log.println(false, "CommsThread.sendDiskWide() entry.");
+		Log.println(false, "Current working directory: " + _parent.getWorkingDirectory());
+		byte[] payload = pullPayloadWide(envelope);
+		//		int blocksDone = 0;
+		byte ack;
+		int length;
+		boolean sendSuccess = false;
+		_startTime = System.currentTimeMillis();
+		if (payload != null)
+		{
+			StringBuffer dest = new StringBuffer();
+			Log.println(false, "CommsThread.sendDiskWide() payload length: " + payload.length);
+			int i;
+			for (i = 0; i < payload.length - 1; i++)
+			{
+				// Log.println(false, "CommsThread.sendDiskWide() payload[" + i + "] " + UnsignedByte.toString(payload[i]));
+				if (payload[i] == 0x00)
+					break;
+				dest.append((char) (UnsignedByte.intValue(payload[i]) & 0x7f));
+			}
+			Log.println(false, "CommsThread.sendDiskWide() name: " + dest.toString().trim());
+			String name = dest.toString().trim();
+			int blocksAtOnce = payload[i + 1]; // Apple sends preferred BAOCNT to send
+			Log.println(false, "CommsThread.sendDiskWide() number of blocks to send at once (BAOCNT): " + blocksAtOnce);
+
+			Disk disk = null;
+			try
+			{
+				Log.println(false, "CommsThread.sendDiskWide() looking for file: " + _parent.getWorkingDirectory() + name);
+				disk = new Disk(_parent.getWorkingDirectory() + name);
+			}
+			catch (IOException io)
+			{
+				try
+				{
+					Log.println(false, "CommsThread.sendDiskWide() Failed to find that file.  Now looking for: " + name);
+					disk = new Disk(name);
+				}
+				catch (IOException io2)
+				{
+				}
+			}
+			if (disk != null)
+			{
+				if (disk.getImageOrder() != null)
+				{
+					// If the file exists, then...
+					_transport.writeByte(0x00); // Tell the client we're ready to go
+					_transport.pushBuffer();
+					Log.println(false, "CommsThread.sendDiskWide() about to wait for initial ack.");
+					byte[] ackEnvelope = pullEnvelopeWide(true); // Will always return an envelope size + command
+					byte[] ackPayload = null;
+					if (UnsignedByte.intValue(ackEnvelope[2]) == 0xcb)
+					{
+						ackPayload = pullPayloadWide(ackEnvelope);
+						if (ackPayload != null)
+						{
+							ack = ackPayload[0];
+						}
+						else
+							ack = 0x18; // CANcel
+					}
+					else
+					{
+						Log.println(false, "CommsThread.sendDiskWide() Well, adding up the envelope bytes got us zero: " + UnsignedByte.toString(ackEnvelope[2])); //$NON-NLS-1$
+						ack = 0x18; // CANcel
+					}
+					Log.println(false, "CommsThread.sendDiskWide() received initial reply from client: " + UnsignedByte.toString(ack)); //$NON-NLS-1$
+					if (ack == 0x06)
+					{
+						length = disk.getImageOrder().getBlocksOnDevice();
+						_parent.setProgressMaximum(length);
+						_parent.setSecondaryText(disk.getFilename());
+						Log.println(false, "CommsThread.sendDiskWide() disk length is " + length + " blocks."); //$NON-NLS-1$ //$NON-NLS-2$
+						byte[] buffer = new byte[blocksAtOnce * Disk.BLOCK_SIZE], blockBuffer = new byte[Disk.BLOCK_SIZE];
+						int tempBlockCnt = 0, fortyCount = 0;
+						for (int block = 0; block < length;)
+						{
+							if (block + blocksAtOnce > length)
+								tempBlockCnt = length - block;
+							else
+								tempBlockCnt = blocksAtOnce;
+							if (fortyCount + blocksAtOnce > 40)
+							{
+								// Don't overrun the client buffer with more than 40 blocks at a time
+								tempBlockCnt = 40 - fortyCount;
+							}
+							for (int j = 0; j < tempBlockCnt; j++)
+							{
+								blockBuffer = disk.readBlock(block + j);
+								java.lang.System.arraycopy(blockBuffer, 0, buffer, j * Disk.BLOCK_SIZE, Disk.BLOCK_SIZE);
+							}
+							Log.println(false, "CommsThread.sendDiskWide() sending packet starting at block: " + block + " with a block count (BAOCNT) of: " + tempBlockCnt);
+							sendSuccess = sendPacketWide(buffer, block, tempBlockCnt);
+							if (sendSuccess)
+							{
+								fortyCount += tempBlockCnt;
+								if (fortyCount == 40)
+									fortyCount = 0;
+								block += tempBlockCnt;
+								//blocksDone+=tempBlockCnt;
+								_parent.setProgressValue(block);
+							}
+							else
+								break;
+						}
+						if (sendSuccess)
+						{
+							String msg;
+							_endTime = System.currentTimeMillis();
+							_diffMillis = (_endTime - _startTime) / 1000;
+							msg = Messages.getString("CommsThread.17");
+							msg = StringUtilities.replaceSubstring(msg, "%1", name);
+							msg = StringUtilities.replaceSubstring(msg, "%2", "" + _diffMillis);
+							_parent.setSecondaryText(msg);
+							Log.println(true, "Apple received disk image " + name + " successfully in " + (float) (_endTime - _startTime) / 1000 + " seconds."); //$NON-NLS-1$ //$NON-NLS-2$
+						}
+						else
+						{
+							Log.println(true, Messages.getString("CommsThread.21"));
+							_parent.setSecondaryText(Messages.getString("CommsThread.21"));
+							_parent.clearProgress();
+							_transport.flushReceiveBuffer();
+							_transport.flushSendBuffer();
+						}
+					}
+					else
+					{
+						// Log.print(false,"No ACK received from the Apple...");
+						// //$NON-NLS-1$
+						_parent.setSecondaryText(Messages.getString("CommsThread.21"));
+						_parent.clearProgress();
+						_transport.flushReceiveBuffer();
+						_transport.flushSendBuffer();
+					}
+				}
+				else
+				{
+					// New ADT protocol: HMFIL - can't open the file
+					_transport.writeByte(0x02);
+					_transport.pushBuffer();
+				}
+			}
+			else
+			{
+				// New ADT protocol: HMFIL - can't open the file
+				_transport.writeByte(0x02);
+				_transport.pushBuffer();
+			}
+		}
+
+		Log.println(false, "CommsThread.sendDiskWide() exit.");
 	}
 
 	/**
@@ -1348,6 +1988,126 @@ public class CommsThread extends Thread
 		while ((ok != CHR_ACK) && (_shouldRun == true) && (currentRetries < _maxRetries));
 
 		Log.println(false, "CommsThread.sendPacket() exit, rc = " + rc);
+		return rc;
+	}
+
+	public boolean sendPacketWide(byte[] buffer, int block, int blocksAtOnce)
+	// Send a packet with RLE compression
+	{
+		boolean rc = false;
+
+		int byteCount = 0, crc, ok = CHR_NAK, currentRetries = 0;
+		byte data, prev, newprev, check = 0x00;
+
+		Log.println(false, "CommsThread.sendPacketWide() entry; block to send: " + UnsignedByte.toString(UnsignedByte.hiByte(block)) + "" + UnsignedByte.toString(UnsignedByte.loByte(block)));
+		do
+		{
+			Log.println(false, "CommsThread.sendPacketWide() looping until successful to send block: " + UnsignedByte.toString(UnsignedByte.hiByte(block)) + "" + UnsignedByte.toString(UnsignedByte.loByte(block)));
+			prev = 0;
+			_transport.writeByte(UnsignedByte.loByte(0xc1)); // 'A'
+			check = UnsignedByte.loByte(0xc1);
+			_transport.writeByte(UnsignedByte.loByte(blocksAtOnce * 512)); // Bytes after RLE decompression lsb
+			check ^= UnsignedByte.loByte(blocksAtOnce * 512);
+			_transport.writeByte(UnsignedByte.hiByte(blocksAtOnce * 512)); // Bytes after RLE decompression msb
+			check ^= UnsignedByte.hiByte(blocksAtOnce * 512);
+			_transport.writeByte(UnsignedByte.loByte(0xd3)); // 'S'
+			check ^= UnsignedByte.loByte(0xd3);
+			_transport.writeByte(UnsignedByte.loByte(check)); // Envelope check byte
+			_transport.writeByte(UnsignedByte.loByte(block)); // Starting block number lsb
+			_transport.writeByte(UnsignedByte.hiByte(block)); // Starting block number msb
+			int bcOffset = 0;
+			for (int pageCount = 0; pageCount < blocksAtOnce * 2; pageCount++)
+			{
+				// Log.println(false, "CommsThread.sendPacketWide() top of pageCount loop, sending page "+(pageCount+1)+" of "+(blocksAtOnce*2)+".");
+				for (byteCount = 0; byteCount < 256;)
+				{
+					newprev = buffer[bcOffset + byteCount];
+					data = (byte) (UnsignedByte.intValue(newprev) - UnsignedByte.intValue(prev));
+					prev = newprev;
+					_transport.writeByte(data);
+					if (UnsignedByte.intValue(data) > 0)
+						byteCount++;
+					else
+					{
+						while ((_shouldRun == true) && byteCount < 256 && buffer[bcOffset + byteCount] == newprev)
+						{
+							byteCount++;
+						}
+						_transport.writeByte((byte) (byteCount & 0xFF)); // 256 becomes 0
+					}
+					if (!_shouldRun)
+					{
+						rc = false;
+						break;
+					}
+				}
+				bcOffset += byteCount;
+			}
+			if (_shouldRun)
+			{
+				crc = doCrc(buffer, 0, (blocksAtOnce * 512));
+				_transport.writeByte((byte) (crc & 0xff));
+				_transport.writeByte((byte) (((crc & 0xff00) >> 8) & 0xff));
+				_transport.pushBuffer();
+				Log.println(false, "CommsThread.sendPacketWide() calculated CRC: " + (crc & 0xffff));
+				// Pull a real ack packet
+				byte[] ackEnvelope = pullEnvelopeWide(true); // Will always return an envelope size + command
+				byte[] ackPayload = null;
+				if (UnsignedByte.intValue(ackEnvelope[2]) == 0xcb)
+				{
+					ackPayload = pullPayloadWide(ackEnvelope);
+					if (ackPayload != null)
+					{
+						ok = ackPayload[0];
+						if (block + blocksAtOnce != UnsignedByte.intValue(ackPayload[1], ackPayload[2]))
+						{
+							Log.println(false, "CommsThread.sendPacketWide() Ack received for block " + UnsignedByte.intValue(ackPayload[1], ackPayload[2]) + ", but we were expecting an ack for block " + (block + blocksAtOnce) + "."); //$NON-NLS-1$
+							ok = 0x15;
+						}
+						else
+							Log.println(false, "CommsThread.sendPacketWide() Ack received; next block should be " + (block + blocksAtOnce) + "."); //$NON-NLS-1$
+					}
+					else
+						ok = 0x18; // CANcel
+				}
+				else
+				{
+					Log.println(false, "CommsThread.sendPacketWide() Well, ack envelope was unexpected: " + UnsignedByte.toString(ackEnvelope[2])); //$NON-NLS-1$
+					ok = 0x15; // NAK
+				}
+			}
+			Log.println(false, "CommsThread.sendPacketWide() ACK from client: " + UnsignedByte.toString(UnsignedByte.loByte(ok)));
+			if (ok == CHR_ACK)
+			{
+				rc = true;
+			}
+			else
+			{
+				currentRetries++;
+				Log.println(false, "CommsThread.sendPacketWide() didn't work; will retry #" + currentRetries + ".");
+				// Pause for an increasing amount of time each time we
+				// retry.
+				// What's that called - progressive backoff/fallback?
+				int pauseMS = 250;
+				// Slow down a little faster for Audio...
+				if (_transport.transportType() == ATransport.TRANSPORT_TYPE_AUDIO)
+					pauseMS = 2000;
+				try
+				{
+					Log.println(true, "CommsThread.sendPacketWide() block: " + block + ".");
+					Log.println(true, "CommsThread.sendPacketWide() backoff sleeping for " + ((currentRetries * pauseMS) / 1000) + " seconds (or 1 second, whichever is shorter).");
+					// Sleep each time we have to retry
+					sleep(java.lang.Math.min(1000, currentRetries * pauseMS));
+				}
+				catch (InterruptedException e)
+				{
+					Log.println(false, "CommsThread.sendPacketWide() backoff sleep was interrupted.");
+				}
+				_transport.flushReceiveBuffer();
+			}
+		} while ((ok != CHR_ACK) && (_shouldRun == true) && (currentRetries < _maxRetries));
+
+		Log.println(false, "CommsThread.sendPacketWide() exit, rc = " + rc);
 		return rc;
 	}
 
@@ -1903,6 +2663,213 @@ public class CommsThread extends Thread
 		return rc;
 	}
 
+	public void receiveNibbleDiskWide(boolean generateName, byte[] envelope)
+	/* Nibble receive routine - Host <- Apple (Apple sends) */
+	{
+		boolean shouldContinue = true;
+		Log.println(false, "CommsThread.receiveNibbleDiskWide() entry.");
+		_startTime = System.currentTimeMillis();
+		StringBuffer dest = new StringBuffer();
+		byte[] payload = pullPayloadWide(envelope);
+		if (payload != null)
+		{
+			Log.println(false, "CommsThread.receiveNibbleDiskWide() payload length: " + payload.length);
+			for (int i = 0; i < payload.length; i++)
+			{
+				Log.println(false, "CommsThread.receiveNibbleDiskWide() payload[" + i + "] " + UnsignedByte.toString(payload[i]));
+				if (payload[i] == 0x00)
+					break;
+				dest.append((char) (UnsignedByte.intValue(payload[i]) & 0x7f));
+			}
+			Log.println(false, "CommsThread.receiveNibbleDiskWide() name: " + dest.toString().trim());
+			String requestedFileName = dest.toString().trim();
+			String name = _parent.getWorkingDirectory() + requestedFileName;
+			Log.println(false, " received name: " + name); //$NON-NLS-1$
+			if (!name.equals(lastFileName))
+			{
+				lastFileNumber = 1;
+				lastFileName = name;
+			}
+			File f = null;
+			String nameGen, zeroPad;
+			FileOutputStream fos = null;
+			byte[] trackBuffer = new byte[13312];
+			byte report, sizelo = 0, sizehi = 0;
+			int blocksLength = 0;
+			sizelo = payload[payload.length - 2];
+			sizehi = payload[payload.length - 1];
+			blocksLength = UnsignedByte.intValue(sizelo, sizehi);
+			Log.println(false, " blocks to receive: " + blocksLength); //$NON-NLS-1$
+			_parent.setProgressMaximum(35); // Hard-coded to nibbles
+
+			NibbleTrack realTrack[] = new NibbleTrack[2];
+
+			if (generateName)
+			{
+				do
+				{
+					if (lastNibNumber < 10)
+						zeroPad = "000";
+					else if (lastNibNumber < 100)
+						zeroPad = "00";
+					else if (lastNibNumber < 1000)
+						zeroPad = "0";
+					else
+						zeroPad = "";
+					nameGen = zeroPad + lastNibNumber;
+					f = new File(name + nameGen + ".nib");
+					lastNibNumber++;
+				} while (f.exists());
+			}
+			else
+			{
+				String tempName = name.toUpperCase();
+				if (!tempName.endsWith(".NIB"))
+					name = name + ".nib";
+				f = new File(name);
+			}
+			_parent.setSecondaryText(f.getName());
+			try
+			{
+				fos = new FileOutputStream(f);
+				// ready for transfer
+				_transport.writeByte(0x00);
+				_transport.pushBuffer();
+				for (int numTracks = 0; numTracks < 35; numTracks++)
+				{
+					int trackRetry = 0;
+					double accuracy = 0;
+					boolean rc = receiveNibbleTrackWide(trackBuffer);
+					if (rc == true)
+					{
+						realTrack[trackRetry] = NibbleAnalysis.analyzeNibbleBuffer(trackBuffer);
+						accuracy = realTrack[trackRetry].accuracy;
+						trackRetry++;
+						if (accuracy < 0.9)
+						{
+							_transport.writeByte(CHR_ENQ);
+							_transport.pushBuffer();
+							rc = receiveNibbleTrackWide(trackBuffer);
+							if (rc == true)
+							{
+								realTrack[trackRetry] = NibbleAnalysis.analyzeNibbleBuffer(trackBuffer);
+								accuracy = realTrack[trackRetry].accuracy;
+								trackRetry++;
+								_transport.writeByte(CHR_ACK);
+								_transport.pushBuffer();
+							}
+						}
+						else
+						{
+							_transport.writeByte(CHR_ACK);
+							_transport.pushBuffer();
+						}
+					}
+					else
+						shouldContinue = false;
+					if (shouldContinue == false)
+						break;
+					if (realTrack[1] != null)
+					{
+						if (realTrack[1].accuracy > realTrack[0].accuracy)
+						{
+							fos.write(realTrack[1].trackBuffer);
+						}
+						else
+							fos.write(realTrack[0].trackBuffer);
+					}
+					else
+						fos.write(realTrack[0].trackBuffer);
+					_parent.setProgressValue(numTracks+1);
+				}
+				fos.flush();
+				fos.close();
+				Log.println(false, "CommsThread.receiveNibbleDiskWide() closing.");
+				Log.println(false, "CommsThread.receiveNibbleDiskWide() saved as NIB order format.");
+				if (shouldContinue)
+				{
+					// Pull the final error count
+					pullPayloadWide(pullEnvelopeWide(true));
+					report = 0x00;
+					_endTime = System.currentTimeMillis();
+					_diffMillis = (_endTime - _startTime) / 1000;
+					if (report == 0x00)
+					{
+						String msg = Messages.getString("CommsThread.19");
+						msg = StringUtilities.replaceSubstring(msg, "%1", f.getName());
+						msg = StringUtilities.replaceSubstring(msg, "%2", "" + _diffMillis);
+						_parent.setSecondaryText(msg);
+						Log.println(true, "Apple sent disk image " + name + " successfully in " + (_endTime - _startTime) / 1000 + " seconds.");
+					}
+					else
+					{
+						_parent.setSecondaryText(Messages.getString("CommsThread.20") + " in " + _diffMillis + " seconds.");
+						Log.println(true, "Apple sent disk image " + name + " with errors."); //$NON-NLS-1$ //$NON-NLS-2$
+					}
+				}
+				else
+				{
+					Log.println(true, Messages.getString("CommsThread.21"));
+					_parent.setSecondaryText(Messages.getString("CommsThread.21"));
+					_parent.clearProgress();
+					_transport.flushReceiveBuffer();
+					_transport.flushSendBuffer();
+				}
+			}
+			catch (FileNotFoundException ex)
+			{
+				_transport.writeByte(0x02); // New ADT protocol: HMFIL - unable
+				// to write
+				// file
+				_transport.pushBuffer();
+			}
+			catch (IOException ex2)
+			{
+				_transport.writeByte(0x02); // New ADT protocol: HMFIL - unable
+				// to write
+				// file
+				_transport.pushBuffer();
+			}
+			finally
+			{
+				if (fos != null)
+					try
+					{
+						fos.close();
+					}
+					catch (IOException io)
+					{
+					}
+			}
+		}
+		Log.println(false, "CommsThread.receiveNibbleDiskWide() exit.");
+	}
+
+	public boolean receiveNibbleTrackWide(byte[] trackBuffer)
+	{
+		boolean rc = true;
+		byte[] tempBuffer = new byte[65536];
+		int offset = 0;
+		int bytesReceived = 0;
+		Log.println(false, "receiveNibbleTrackWide() entry."); //$NON-NLS-1$
+		do
+		{
+			bytesReceived = receivePacketWide(tempBuffer, 0);
+			if (bytesReceived == 0) // We didn't get any bump in data
+			{
+				rc = false;
+			}
+			else
+			{
+				Log.println(false, "receiveNibbleTrackWide() adding " + bytesReceived + " bytes to the track buffer, now at length " + (bytesReceived + offset) + " bytes."); //$NON-NLS-1$
+				java.lang.System.arraycopy(tempBuffer, 0, trackBuffer, offset, bytesReceived);
+				offset += bytesReceived;
+			}
+		} while ((rc == true) && (offset < 13312));
+		Log.println(false, "receiveNibbleTrackWide() exit; rc=" + rc); //$NON-NLS-1$
+		return rc;
+	}
+
 	public void receive140kDisk()
 	{
 		_startTime = System.currentTimeMillis();
@@ -2266,6 +3233,136 @@ public class CommsThread extends Thread
 		Log.println(false, "CommsThread.receivePacket() exit.");
 
 		return rc;
+	}
+
+	public int receivePacketWide(byte[] buffer, int offset)
+	// Receive an enveloped wide packet with RLE compression
+	// Returns:
+	// number of bytes successfully read - CRC matched
+	// 0 on inability to read a packet successfully
+	{
+		int byteCount, localCount = 0, retries = 0;
+		int received_crc = -1, computed_crc = 0;
+		byte data = 0x00, prev, crc1 = 0, crc2 = 0;
+		byte[] envelope;
+		int bytesReceived = 0;
+
+		Log.println(false, "CommsThread.receivePacketWide() entry; offset: " + offset + ".");
+		do // Loop to retry if necessary
+		{
+			Log.println(false, "CommsThread.receivePacketWide() top of receivePacketWide loop.");
+			bytesReceived = 0;
+			prev = 0;
+			envelope = pullEnvelopeWide(true);
+			if ((envelope[0] | envelope[1] | envelope[2]) != (byte) 0)
+			{
+				int expectedBytes = envelope[0] + (envelope[1] * 256);
+				Log.println(false, "CommsThread.receivePacketWide() expecting to read " + expectedBytes + " bytes after RLE decompression.");
+				try
+				{
+					int incomingBlock = 0;
+					incomingBlock += waitForData(1);
+					incomingBlock += waitForData(1) * 256;
+					Log.println(false, "CommsThread.receivePacketWide() incoming block is " + incomingBlock + ".");
+					for (localCount = 0; localCount < envelope[1]; localCount++)
+					{
+						//Log.println(false, "CommsThread.receivePacketWide() top of localBlockCount loop. localCount="+localCount);
+						for (byteCount = 0; byteCount < 256;)
+						{
+							// Log.println(false, "CommsThread.receivePacketWide() byteCount: " + byteCount);
+							// Wait for a byte...
+							data = waitForData(1);
+							//Log.println(false, "Received: " + UnsignedByte.toString(data));
+							if (UnsignedByte.intValue(data) > 0)
+							{
+								prev += UnsignedByte.intValue(data);
+								//if ((byteCount+1) % 32 == 0)
+								//	Log.println(false, "");
+								buffer[offset + (localCount * 256) + byteCount++] = prev;
+								//Log.println(false, "CommsThread.receivePacketWide() buffer["+(offset + (localCount * 256) + byteCount)+"] = 0x"+UnsignedByte.toString(prev));
+							}
+							else
+							{
+								data = waitForData(1); // We have a run - get the length!
+								//Log.println(false, "CommsThread.receivePacketWide() Received run length: 0x" + UnsignedByte.toString(data));
+								do
+								{
+									//Log.println(false, "Byte[" + UnsignedByte.toString(UnsignedByte.loByte(byteCount)) + "]=0x" + UnsignedByte.toString(prev) + " (rle)");
+									//if ((byteCount+1) % 32 == 0)
+									//	Log.println(false, "");
+									buffer[offset + (localCount * 256) + byteCount++] = prev;
+									//Log.println(false, "CommsThread.receivePacketWide() buffer["+(offset + (localCount * 256) + byteCount)+"] = 0x"+UnsignedByte.toString(prev));
+									//Log.print(false, UnsignedByte.toString(buffer[offset + (localCount * 256) + byteCount - 1]) + " ");
+								} while (_shouldRun && byteCount < 256 && byteCount != UnsignedByte.intValue(data));
+							}
+							if (!_shouldRun)
+							{
+								bytesReceived = 0;
+								break;
+							}
+						}
+					}
+					crc1 = waitForData(1);
+					crc2 = waitForData(1);
+					received_crc = UnsignedByte.intValue(crc1, crc2);
+					computed_crc = doCrc(buffer, offset, expectedBytes);
+					if (received_crc != computed_crc)
+					{
+						bytesReceived = 0;
+						Log.println(true, "Incorrect CRC. Computed: " + computed_crc + " Received: " + received_crc); //$NON-NLS-1$ //$NON-NLS-2$
+						_transport.pauseIncorrectCRC();
+					}
+					else
+					{
+						Log.println(false, "Correct CRC. Computed: " + computed_crc + " Received: " + received_crc); //$NON-NLS-1$ //$NON-NLS-2$
+						bytesReceived = expectedBytes;
+					}
+				}
+				catch (TransportTimeoutException tte)
+				{
+					bytesReceived = 0;
+					Log.println(true, "CommsThread.receivePacket() TransportTimeoutException! (location 2)");
+					break;
+				}
+			}
+			if (bytesReceived == 0)
+			{
+				retries++;
+				Log.println(false, "CommsThread.receivePacketWide() didn't work; will retry #" + retries + ".");
+				// For audio transport, pause for an increasing amount of time
+				// each time we retry.
+				// What's that called - progressive backoff/fallback?
+				int pauseMS = 500;
+				// Slow down a little faster for Audio...
+				if (_transport.transportType() == ATransport.TRANSPORT_TYPE_AUDIO)
+					pauseMS = 2000;
+				try
+				{
+					Log.println(true, "CommsThread.receivePacketWide() offset: " + offset + ".");
+					Log.println(true, "CommsThread.receivePacketWide() backoff sleeping for " + ((retries * pauseMS) / 1000) + " seconds.");
+					sleep(retries * pauseMS); // Sleep each time we have to
+												// retry
+				}
+				catch (InterruptedException e)
+				{
+					Log.println(false, "CommsThread.receivePacketWide() audio backoff sleep was interrupted.");
+				}
+				_transport.flushReceiveBuffer();
+				_transport.writeByte(CHR_NAK);
+				_transport.pushBuffer();
+				_transport.flushSendBuffer();
+			}
+			else
+			{
+				_transport.flushReceiveBuffer();
+				_transport.writeByte(CHR_ACK);
+				_transport.pushBuffer();
+				_transport.flushSendBuffer();
+			}
+		} while ((bytesReceived == 0) && (_shouldRun == true) && (retries < _maxRetries));
+		Log.println(false, "CommsThread.receivePacketWide() exit, bytesReceived = " + bytesReceived);
+
+		return bytesReceived;
 	}
 
 	public byte waitForData(int timeout, byte expectedByte1, byte expectedByte2) throws TransportTimeoutException
