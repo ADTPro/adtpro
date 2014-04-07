@@ -1,6 +1,6 @@
 ;
 ; ADTPro - Apple Disk Transfer ProDOS
-; Copyright (C) 2010 - 2011 by David Schmidt
+; Copyright (C) 2010 - 2014 by David Schmidt
 ; david__schmidt at users.sourceforge.net
 ;
 ; This program is free software; you can redistribute it and/or modify it 
@@ -20,6 +20,12 @@
 
 	.include "prodos/prodosmacros.i"	; OS macros
 	.include "prodos/prodosconst.i"	; OS equates, characters, etc.
+
+ROW1 = $0b
+ROW2 = ROW1+1
+ROW3 = ROW1+2
+ROW4 = ROW1+3
+ROW5 = ROW1+5
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;                                                                               ;
@@ -55,22 +61,41 @@ OPEN_PARAM:
 OPEN_REF:	.byte	$00	;REF_NUM
 
 NAME_SERIAL:
-	.asciiz	"ADTPRO.BIN"
+	asc	"ADTPRO.BIN"
+	.byte	$00
 NAME_ETHERNET:
-	.asciiz	"ADTPROETH.BIN"
+	asc	"ADTPROETH.BIN"
+	.byte	$00
 NAME_AUDIO:
-	.asciiz	"ADTPROAUD.BIN"
+	asc	"ADTPROAUD.BIN"
+	.byte	$00
 NAME_QUIT:
-	.asciiz	"BASIC"
+	asc	"BASIC"
+	.byte 	$00
 
 NEWLINE:
-	.byte $04
+	.byte	ROW1
 
-MSG1:
-	asc		"WELCOME TO THE ADTPRO DISTRIBUTION!"
+MSG1:	asc "WELCOME TO..."
 	.byte $8d, $8d
-	asc	"PLEASE SELECT WHICH PROGRAM TO START:"
+
+SPACE1:	asc "          "
+MLOGO1:	.byte NRM_BLOCK,NRM_BLOCK,INV_CHR_L,INV_CHR_L,INV_CHR_L,NRM_BLOCK,NRM_BLOCK,NRM_BLOCK,INV_CHR_L,INV_CHR_L,INV_CHR_L,INV_CHR_L,NRM_BLOCK,NRM_BLOCK,NRM_BLOCK,INV_CHR_L,INV_CHR_L,INV_CHR_L,INV_CHR_L,INV_CHR_L,INV_CHR_L,CHR_RETURN
+SPACE2:	asc "          "
+MLOGO2:	.byte NRM_BLOCK,INV_CHR_L,INV_CHR_L,NRM_BLOCK,INV_CHR_L,INV_CHR_L,NRM_BLOCK,NRM_BLOCK,INV_CHR_L,INV_CHR_L,NRM_BLOCK,NRM_BLOCK,INV_CHR_L,INV_CHR_L,NRM_BLOCK,NRM_BLOCK,NRM_BLOCK,INV_CHR_L,INV_CHR_L,CHR_RETURN
+SPACE3:	asc "          "
+MLOGO3:	.byte INV_CHR_L,INV_CHR_L,NRM_BLOCK,NRM_BLOCK,NRM_BLOCK,INV_CHR_L,INV_CHR_L,NRM_BLOCK,INV_CHR_L,INV_CHR_L,NRM_BLOCK,NRM_BLOCK,INV_CHR_L,INV_CHR_L,NRM_BLOCK,NRM_BLOCK,NRM_BLOCK,INV_CHR_L,INV_CHR_L,CHR_RETURN
+SPACE4:	asc "          "
+MLOGO4:	.byte INV_CHR_L,INV_CHR_L,INV_CHR_L,INV_CHR_L,INV_CHR_L,INV_CHR_L,INV_CHR_L,NRM_BLOCK,INV_CHR_L,INV_CHR_L,NRM_BLOCK,NRM_BLOCK,INV_CHR_L,INV_CHR_L,NRM_BLOCK,NRM_BLOCK,NRM_BLOCK,INV_CHR_L,INV_CHR_L,CHR_RETURN
+SPACE5:	asc "          "
+MLOGO5:	.byte INV_CHR_L,INV_CHR_L,NRM_BLOCK,NRM_BLOCK,NRM_BLOCK,INV_CHR_L,INV_CHR_L,NRM_BLOCK,INV_CHR_L,INV_CHR_L,NRM_BLOCK,NRM_BLOCK,INV_CHR_L,INV_CHR_L,NRM_BLOCK,NRM_BLOCK,NRM_BLOCK,INV_CHR_L,INV_CHR_L,CHR_RETURN
+SPACE6:	asc "          "
+MLOGO6:	.byte INV_CHR_L,INV_CHR_L,NRM_BLOCK,NRM_BLOCK,NRM_BLOCK,INV_CHR_L,INV_CHR_L,NRM_BLOCK,INV_CHR_L,INV_CHR_L,INV_CHR_L,INV_CHR_L,NRM_BLOCK,NRM_BLOCK,NRM_BLOCK,NRM_BLOCK,NRM_BLOCK,INV_CHR_L,INV_CHR_L
+	asc	" PRO"
+	.byte	CHR_RETURN, CHR_RETURN
+	asc	"PLEASE SELECT YOUR CONNECTION TYPE:"
 	.byte $8d, $8d
+	.byte $00
 SerialLine:
 	asc	"(S)ERIAL   : SSC OR IIGS/IIC MODEM PORT"
 SerialLineEnd:
@@ -94,7 +119,8 @@ LOADING:
 	.byte $00
 
 ELLIPSES:
-	.byte	"...", $8d, $8d, $00
+	asc	"..."
+	.byte	$8d, $8d, $00
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -158,9 +184,13 @@ PRESS_ANY_KEY:
 	ldx	#>MSG1
 	jsr	PRINT
 
+	lda #<SerialLine
+	ldx #>SerialLine
+	jsr PRINT
+
 	lda #$00
 	sta CH
-	lda #$04
+	lda #ROW1
 	sta CV
 	jsr ToggleLine
 
@@ -172,25 +202,25 @@ KbdLoop:
 
 	cmp #CHR_S	; S = Serial?
 	bne :+
-	lda #$04
+	lda #ROW1
 	sta NEWLINE
 	jmp KbdDone	
 
 :	cmp #CHR_A	; A = Audio?
 	bne :+
-	lda #$05
+	lda #ROW2
 	sta NEWLINE
 	jmp KbdDone	
 	
 :	cmp #CHR_E	; E = Ethernet?
  	bne :+
-	lda #$06
+	lda #ROW3
 	sta NEWLINE
 	jmp KbdDone	
 
 :	cmp #CHR_Q	; Q = Quit?
  	bne :+
-	lda #$07
+	lda #ROW4
 	sta NEWLINE
 	jmp KbdDone	
 
@@ -204,7 +234,7 @@ KbdLoop:
 	bne NotLeft
 IsLeft:
 	lda CV
-	cmp #$04
+	cmp #ROW1
 	beq LeftWrap
 	sec
 	sbc #$01
@@ -213,7 +243,7 @@ LeftGo:
 	jsr HighlightLine
 	jmp KbdLoop
 LeftWrap:
-	lda #$07
+	lda #ROW4
 	sta NEWLINE
 	jmp LeftGo
 
@@ -224,7 +254,7 @@ NotLeft:
 	bne NotRight
 IsRight:
 	lda CV
-	cmp #$07
+	cmp #ROW4
 	beq RightWrap
 	clc
 	adc #$01
@@ -233,7 +263,7 @@ RightGo:
 	jsr HighlightLine
 	jmp KbdLoop
 RightWrap:
-	lda #$04
+	lda #ROW1
 	sta NEWLINE
 	jmp RightGo
 
@@ -242,7 +272,7 @@ NotRight:
 
 KbdDone:
 	jsr HighlightLine
-	lda #$08
+	lda #ROW5
 	sta CV
 	jsr TABV
 
@@ -293,7 +323,7 @@ HighlightLine:
 ToggleLine:
 	lda CV
 Line4:
-	cmp #$04
+	cmp #ROW1
 	bne Line5
 	tay
 	lda #SerialLineEnd-SerialLine
@@ -306,7 +336,7 @@ Line4:
 	stx KEYBUFF
 	rts
 Line5:
-	cmp #$05
+	cmp #ROW2
 	bne Line6
 	tay
 	lda #AudioLineEnd-AudioLine
@@ -319,7 +349,7 @@ Line5:
 	stx KEYBUFF
 	rts
 Line6:
-	cmp #$06
+	cmp #ROW3
 	bne Line7
 	tay
 	lda #EthernetLineEnd-EthernetLine
@@ -398,7 +428,7 @@ PRINT:
 PrintNext:
 	lda	(A1L),y
 	beq	PrintDone
-	ora #$80
+	;ora #$80
 	jsr	COUT
 	iny
 	bne	PrintNext	; bra
