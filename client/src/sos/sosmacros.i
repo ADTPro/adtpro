@@ -1,6 +1,6 @@
 ;
 ; ADTPro - Apple Disk Transfer ProDOS
-; Copyright (C) 2008 - 2013 by David Schmidt
+; Copyright (C) 2008 - 2014 by David Schmidt
 ; david__schmidt at users.sourceforge.net
 ;
 ; This program is free software; you can redistribute it and/or modify it 
@@ -100,4 +100,5 @@
 .endmacro
 
 .define	NRM_BLOCK $11,$20
+.define	INV_CHR_L $12,$0c,$11
 .define	INV_BLOCK $12,$20,$11

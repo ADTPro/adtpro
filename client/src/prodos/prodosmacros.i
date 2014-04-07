@@ -1,6 +1,6 @@
 ;
 ; ADTPro - Apple Disk Transfer ProDOS
-; Copyright (C) 2008 by David Schmidt
+; Copyright (C) 2008 - 2014 by David Schmidt
 ; david__schmidt at users.sourceforge.net
 ;
 ; This program is free software; you can redistribute it and/or modify it 
@@ -80,5 +80,6 @@
 .endmacro
 
 .define	INV_BLOCK $20	; ASCII for an inverse space - is differernt on SOS
+.define	INV_CHR_L $0C	; ASCII for an inverse "L" character
 .define	NRM_BLOCK $A0	; ASCII for a normal space - is different on SOS
 .define INV_OFF   	; Nothing to do for ProDOS

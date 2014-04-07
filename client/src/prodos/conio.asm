@@ -1,6 +1,6 @@
 ;
 ; ADTPro - Apple Disk Transfer ProDOS
-; Copyright (C) 2008 - 2010 by David Schmidt
+; Copyright (C) 2008 - 2014 by David Schmidt
 ; david__schmidt at users.sourceforge.net
 ;
 ; This program is free software; you can redistribute it and/or modify it 
@@ -59,20 +59,20 @@ INIT_SCREEN:
 ; Prints the logo on the screen
 ;---------------------------------------------------------
 SHOWLOGO:
-	ldx #$0d
-	ldy #$03
+	ldx #$0a
+	ldy #$02
 	jsr GOTOXY
 	lda #PMLOGO1	; Start with MLOGO1 message
 	sta ZP
 	tay
 LogoLoop:
-    	lda #$0d	; Get ready to HTAB $0d chars over
+    	lda #$0a	; Get ready to HTAB $0a chars over
 	SET_HTAB	; Tab over to starting position
 	jsr WRITEMSG
 	inc ZP
 	inc ZP		; Get next logo message
 	ldy ZP
-	cpy #PMLOGO5+2	; Stop at MLOGO5 message
+	cpy #PMLOGO6+2	; Stop at MLOGO6 message
 	bne LogoLoop
 
 	jsr CROUT
