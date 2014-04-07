@@ -81,7 +81,7 @@ SEND:
 	bne @SendValid
 	jmp SMDONE
 @SendValid:
-	; Validate the filename won't overwite
+	; Validate the filename won't overwrite
 	ldy #PMWAIT
 	jsr WRITEMSGAREA	; Tell user to have patience
 	GO_SLOW			; Slow down for SOS
@@ -163,9 +163,6 @@ SendStandard:
 	jsr GO_TRACK0
 SendPrep:		; Send standard 5.25"
 	jsr PREPPRG	; Prepare the progress screen
-	GO_SLOW			; Slow down for SOS
-	jsr PUTINITIALACK
-	GO_FAST			; Speed back up for SOS
 SMMORE:
 	lda NUMBLKS
 	sec
@@ -220,8 +217,11 @@ SMDONE:	rts
 ; RECEIVE
 ;---------------------------------------------------------
 RECEIVE:
+	ldx PBAO		; Default blocks-at-once to move
+	lda BAOTbl,X
+	sta BAOCNT
 	lda #$00
-	sta ECOUNT	; Clear error flag
+	sta ECOUNT		; Clear error flag
 	jsr GETFN
 	bne SRSTART
 	jmp SRDONE
@@ -338,8 +338,9 @@ SRPARTIAL:
 	cmp NUMBLKS	; Compare low-order num blocks byte
 	bcc SRMORE
 
+	ldx #CHR_ACK
 	GO_SLOW			; Slow down for SOS
-	jsr GETFINALACK
+	jsr PUTACKBLK		; Put final acknowledgement
 	GO_FAST			; Speed back up for SOS
 
 	jsr COMPLETE
@@ -421,21 +422,41 @@ SR_COMN:
 ;   BLKHI: starting block (hi)
 ;---------------------------------------------------------
 SRBLOX:
+	ldx PBAO		; Default blocks-at-once to move
+	lda BAOTbl,X
+	sta BAOCNT
 	lda DIFF
 	sta SRBCNT		; Get a local copy of block count to mess with
-	
-	LDA_BIGBUF_ADDR_LO	; Connect the block pointer to the
+	cmp BAOCNT		; Check that the number of blocks to copy isn't less than BAOCNT
+	bpl :+
+	sta BAOCNT		; If it is... then that becomes our new BAOCNT
+:	LDA_BIGBUF_ADDR_LO	; Connect the block pointer to the
 	sta BLKPTR		; beginning of the Big Buffer(TM)
+	sta UTILPTR
 	LDA_BIGBUF_ADDR_HI
 	sta BLKPTR+1
+	sta UTILPTR+1
+	lda SRCHR
+	cmp #CHR_V		; Are we receiving?
+	bne SRCALL		; No - skip buffer clear-out
+	ldy #$00		; Clean out the whole buffer
+:	lda #$00
+	sta (UTILPTR),y
+	iny
+	bne :-
+	inc UTILPTR+1
+	lda UTILPTR+1
+	cmp #$b6
+	bne :-
+
 SRCALL:
-	lda NonDiskII		; Is this a Disk II?
-	beq SRGO
+	lda NonDiskII		; Is this (not) a Disk II?
+	beq SRGO		; It is not... so skip drive on
 	lda PPROTO		; Check protocol
 	beq SRGO		; ... if audio - skip the motor on
 	lda SRBCNT		; Yes, so check for almost-doneness within a buffer
-	cmp #$0a		; Buffer 3/4 done (10 blocks remain)?
-	bne SRGO		; No - skip the motor, don't need it
+	cmp #$0b		; Buffer 3/4 done (10 blocks remain)?
+	bpl SRGO		; No - skip the motor, don't need it
 	lda SRCHR
 	cmp #CHR_V		; Are we receiving?
 	beq SRON		; Yes - turn the motor on whenver the buffer almost fills so we can be ready to use the drive
@@ -456,7 +477,7 @@ SRGO:	LDA_CH
 
 	clc
 	lda BLKLO	; Increment the 16-bit block number
-	adc #$01
+	adc BAOCNT
 	sta NUM
 	lda BLKHI
 	adc #$00
@@ -474,14 +495,14 @@ SRGO:	LDA_CH
 	cmp #CHR_V	; Are we receiving?
 	beq SR1		;   If so, branch around the sending code
 
-	jsr SENDBLK	; Send the current block
+	jsr SENDBLKS	; Send the current blocks
 	jmp SRCOMN	; Back to sending/receiving common
 
 SR1:
-	jsr RECVBLK	; Receive a block
+	jsr RECVBLKS	; Receive current blocks
 
 SRCOMN:
-	bne SRBAD
+	bcs SRBAD
 	lda COL_SAV	; Position cursor to next buffer row - 
 	SET_HTAB	;   have to reassert this, as IIgs messes it up
 	lda SRCHROK
@@ -493,18 +514,33 @@ SRBAD:
 	lda COL_SAV	; Position cursor to next
 	SET_HTAB	;   buffer row
 	lda #CHR_X
-SROK:	COUT_MAYBE_INVERSE_SOS
-	inc BLKLO
-	bne SRNOB
+SROK:
+	ldx BAOCNT
+:	COUT_MAYBE_INVERSE_SOS
+	dex
+	bne :-
+	clc
+	lda BLKLO
+	adc BAOCNT
+	sta BLKLO
+	bcc SRNOB
 	inc BLKHI
-SRNOB:	dec SRBCNT
-	beq SRBDONE
-	jmp SRCALL
+SRNOB:
+	sec
+	lda SRBCNT
+	sbc BAOCNT	; Subtract the Blocks-at-once count from the block count
+	sta SRBCNT
+	beq SRBDONE	; None left?  Done!
+	cmp BAOCNT	; Now, do we still have enough to do our normal count at once?
+	bpl :+		; Yes - go ahead as normal
+	sta BAOCNT	; No - new blocks-at-once is how ever many we have left
+:	jmp SRCALL
 
 SRBDONE:
 	rts
 
 SRBCNT:	.byte $00
+BAOCNT:	.byte $00	; Blocks-at-once (to send/receive) count
 
 ;---------------------------------------------------------
 ; CheckForNib - Check if the user has picked a .nib, and 
@@ -529,7 +565,19 @@ NotNib:
 ;---------------------------------------------------------
 ; UNDIFF -  Finish RLE decompression and update CRC
 ;---------------------------------------------------------
-UNDIFF:	ldy #0
+UNDIFF:	ldx #0
+	stx SLOWX
+	jmp UNDIFFWide2
+
+;---------------------------------------------------------
+; UNDIFFWide -  Finish RLE decompression and update CRC
+; BLKPTR points at data to uncompress
+; PAGECNT+1 is the number of pages to uncompress
+;---------------------------------------------------------
+UNDIFFWide:
+	lda PAGECNT+1	; Count of pages @1
+UNDIFFWide2:
+	ldy #0
 	sty <CRC	; Clear CRC
 	sty <CRC+1
 	sty <RLEPREV	; Initial base is zero
@@ -541,6 +589,9 @@ UDLOOP:	lda (BLKPTR),Y	; Get new difference
 	sta (BLKPTR),Y 	; Store real byte
 	iny
 	bne UDLOOP 	; Repeat 256 times
+	inc BLKPTR+1
+	dec PAGECNT+1	; @1
+	bne UDLOOP	; Repeat for the number of pages
 	rts
 
 PABORT:	jmp BABORT
@@ -549,3 +600,5 @@ SRCHR:		.byte CHR_V
 SRCHROK:	.byte CHR_SP
 SCOUNT:	.byte $00
 ECOUNT:	.byte $00
+PAGECNT:		; @1
+	.addr $0000	; @1

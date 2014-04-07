@@ -24,7 +24,7 @@
 CDREQUEST:
 	lda #CHR_C	; Ask host to Change Directory
 	jsr FNREQUEST
-	lda CHECKSUM
+	lda CHECKBYTE
 	jsr PUTC
 	rts
 
@@ -108,7 +108,7 @@ QUERYFNREQUEST:
 	jsr PARMINT	; Clean up the comms device
 	lda #CHR_Z	; Ask host for file size
 	jsr FNREQUEST
-	lda CHECKSUM
+	lda CHECKBYTE
 	jsr PUTC
 	rts
 
@@ -134,7 +134,7 @@ FNREQUEST:
 	pha
 	jsr PARMINT	; Clean up the comms device
 	lda #CHR_A	; Envelope
-	sta CHECKSUM
+	sta CHECKBYTE
 	jsr PUTC
 	ldx #$00	; Count the length of the filename
 @loop:	lda IN_BUF,x
@@ -161,15 +161,15 @@ FNREQUEST:
 @noadd:	pha
 	txa
 	jsr PUTC	; Payload length - lsb
-	eor CHECKSUM
-	sta CHECKSUM
+	eor CHECKBYTE
+	sta CHECKBYTE
 	lda #$00
 	jsr PUTC	; Payload length - msb
 			; No need to update checksum... eor with 0 makes no change
 	pla		; Pull the request byte
 	jsr PUTC
-	eor CHECKSUM
-	sta CHECKSUM
+	eor CHECKBYTE
+	sta CHECKBYTE
 	jsr PUTC	; Send the check byte for envelope
 	jsr SENDFN	; Send requested name
 	rts
@@ -188,11 +188,11 @@ PUTREQUEST:
 	jsr FNREQUEST
 	lda NUMBLKS	; Send the total block size
 	jsr PUTC
-	eor CHECKSUM
-	sta CHECKSUM
+	eor CHECKBYTE
+	sta CHECKBYTE
 	lda NUMBLKS+1
 	jsr PUTC
-	eor CHECKSUM
+	eor CHECKBYTE
 	jsr PUTC	; Send check byte
 	rts
 
@@ -217,14 +217,14 @@ PUTACKBLK:
 	jsr PUTC	; Send check byte
 	lda SLOWX	; Grab the ack type 
 	jsr PUTC
-	sta CHECKSUM
+	sta CHECKBYTE
 	lda BLKLO	; Send the current block number LSB
 	jsr PUTC
-	eor CHECKSUM
-	sta CHECKSUM
+	eor CHECKBYTE
+	sta CHECKBYTE
 	lda BLKHI	; Send the current block number MSB
 	jsr PUTC
-	eor CHECKSUM
+	eor CHECKBYTE
 	jsr PUTC	; Send check byte
 	GO_FAST		; Speed back up for SOS
 	rts
@@ -259,7 +259,7 @@ GETREQUEST:
 	jsr FNREQUEST
 	lda BAOCNT
 	jsr PUTC	; Express number of blocks at once (BAOCNT)
-	eor CHECKSUM
+	eor CHECKBYTE
 	jsr PUTC	; Send check byte
 	rts
 
@@ -466,19 +466,19 @@ SENDWIDE:
 	sty <RLEPREV
 	lda #CHR_A
 	jsr PUTC	; Wide protocol - 'A'
-	sta CHECKSUM
+	sta CHECKBYTE
 	lda PAGECNT
 	jsr PUTC	; Wide protocol - lsb of bytes to expect
-	eor CHECKSUM
-	sta CHECKSUM
+	eor CHECKBYTE
+	sta CHECKBYTE
 	lda PAGECNT+1
 	jsr PUTC	; Wide protocol - msb of bytes to expect
-	eor CHECKSUM
-	sta CHECKSUM
+	eor CHECKBYTE
+	sta CHECKBYTE
 ;	inc PAGECNT+1	; Bump the high byte - round up to next full page length
 	lda #CHR_S	; Wide protocol - 'S'
 	jsr PUTC
-	eor CHECKSUM
+	eor CHECKBYTE
 	jsr PUTC	; Send check byte of envelope
 	lda BLKLO
 	jsr PUTC	; Send the block number (LSB)
@@ -531,22 +531,24 @@ SW4:	tya		; DIFFERENCE NOT A ZERO
 ; Assumes input is at IN_BUF
 ; Returns:
 ;   length of name in X
-;   accumulated check byte in CHECKSUM
+;   accumulated check byte in CHECKBYTE
 ;---------------------------------------------------------
 SENDFN:
 	ldx #$00
-	stx CHECKSUM	
+	stx CHECKBYTE	
 FNLOOP:	lda IN_BUF,X
 	jsr PUTC
 	php
 	inx
-	eor CHECKSUM
-	sta CHECKSUM
+	eor CHECKBYTE
+	sta CHECKBYTE
 	plp
 	bne FNLOOP
 	rts
 
 PPROTO:	.byte $01	; Serial protocol = $01
+CHECKBYTE:
+	.byte 0
 BUFPTR:	.addr 0
 XFERLEN:
 	.addr 0

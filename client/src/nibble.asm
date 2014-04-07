@@ -31,7 +31,6 @@
 sendnib:
 	jsr nibtitle
 	jsr calibrat		; Calibrate the disk
-	jsr PUTINITIALACK
 	lda SendType
 	cmp #CHR_N		; Are we sending full nibble tracks?
 	beq :+
@@ -40,14 +39,10 @@ sendnib:
 :	lda #$23		; Yes - so do 35
 @snext:
 	sta maxtrk
-
 	lda #0
 	sta iobtrk		; Track counter
-	sta BLKHI		; Not sure why we're using this as well...
 
 snibloop:
-	lda #$00
-	sta BLKLO		; Reset "sector" number using BLKLO
 	lda #CHR_R
 	jsr nibshow		; Show an "R" at current track location
 	jsr rdnibtr		; Read track as nibbles
@@ -57,7 +52,6 @@ snibloop:
 	lda iobtrk
 	cmp maxtrk		; Repeat while trackno < max
 	bcs snibfin		; Jump if done
-	inc BLKHI		; Increment "track" number using BLKHI
 	lda SendType
 	cmp #CHR_N		; Are we sending nibbles?
 	bne :+			; No, half tracks
@@ -68,100 +62,65 @@ snibloop:
 	jmp snibloop
 
 snibfin:
+	jsr motoroff		; We're finished with the drive
 	lda #0			; No errors encountered
 	sta ECOUNT
 	jsr PUTFINALACK		; Send (no) error flag to pc
 
-	jsr motoroff		; We're finished with the drive
 	jmp COMPLETE		; Finish using sr.asm's completion code
 
 
 ;---------------------------------------------------------
-; rnibtrak - receive a nibble track
-; Track number is set in BLKHI
-; Each 256 byte page is followed by a 16-bit crc.
-; we know the buffer is set up at "BIGBUF", and is
-; NIBPAGES * 256 bytes long. BIGBUF is at page boundary.
-;---------------------------------------------------------
-rnibtrak:
-	lda #0			; a = 0
-	sta BLKPTR		; Init running ptr
-	sta BLKLO
-	LDA_BIGBUF_ADDR_HI	; BIGBUF address high
-	sta BLKPTR+1		; We will be storing stuff at BIGBUF
-	lda #$1A		; Only run for 26 (decimal) pages
-	sta NIBPCNT		; Page counter
-	lda #CHR_R
-	jsr nibshow		; Show "R" at current track
-rnibtr1:
-	lda #$02
-	sta <ZP
-	lda #CHR_ACK
-rnib2:
-	tax
-	ldy #$00	; Clear out the new chunk
-	tya
-rnib3:
-	sta (BLKPTR),Y
-	iny
-	bne rnib3
-	txa
-	jsr RECVNIBCHUNK
-	bcs rnib4	; Error during receive?
-	jsr UNDIFF
-
-	lda <CRC
-	cmp PCCRC
-	bne rnib4
-	lda <CRC+1
-	cmp PCCRC+1
-	bne rnib4
-
-	inc <BLKPTR+1	; Get next 256 bytes
-	inc BLKLO	; Increment chunk number
-	lda BLKLO
-	cmp NIBPCNT	; Have we done all nibble pages?
-	beq rnibdone
-	lda #CHR_ACK
-	jmp rnib2
-rnibdone:
-	lda #CHR_BLK		; Entire track transferred ok
-	jsr COUT		; Show status of current track
-	lda #$00
-	rts
-
-rnib4:
-	lda #_I'!'		; Error during receive
-	jsr nibshow		; Show status of current track
-	lda #CHR_NAK	; CRC error, ask for a resend
-	jmp rnib2
-
-
-;---------------------------------------------------------
 ; snibtrak - send nibble track to the other side
-; and wait for acknowledgement. each 256 byte page is
-; followed by a 16-bit crc.
-; we know the buffer is set up at "BIGBUF", and is
-; NIBPAGES * 256 bytes long. BIGBUF is at a page boundary.
+; and wait for acknowledgement.
+; We know the buffer is set up at "BIGBUF", and is
+; NIBPAGES (52) * 256 bytes long. BIGBUF is at a page boundary.
 ; when the host answers ACK, clear carry. when it answers
 ; ENQ, set carry. when it answers anything else, abort
 ; the operation with the appropriate error message.
 ;---------------------------------------------------------
 snibtrak:
-	lda #0			; a = 0
-	sta BLKPTR		; Init running ptr
-	LDA_BIGBUF_ADDR_HI	; BIGBUF address high
+	lda #$1a		; Total number of "blocks" = 52*256 ($1a*$200) / 512
+	sta DIFF		; Total count of "blocks" to send
+	lda #$00
+	sta BLKLO
+	sta BLKHI		; Starting block
+	ldx PBAO		; Default blocks-at-once to move
+	lda BAOTbl,X
+	sta BAOCNT		; Number of blocks (512-bytes) to send before requesting an ACK
+	cmp DIFF		; What if BAOCNT is larger than the number of blocks?
+	bmi :+
+	lda DIFF
+	sta BAOCNT
+:	LDA_BIGBUF_ADDR_LO	; Connect the block pointer to the
+	sta BLKPTR		; beginning of the Big Buffer(TM)
+	LDA_BIGBUF_ADDR_HI
 	sta BLKPTR+1
-	lda #NIBPAGES
-	sta NIBPCNT		; Page counter
 	lda #CHR_S
 	jsr nibshow		; Show "S" at current track
 snibtr1:
-	jsr SENDNIBPAGE
-	jsr GETREPLY		; Get ack for this page
-	cmp #CHR_ACK		; Is it ack?
-	beq snibtr5		; Yes, all right
-	pha			; Save on stack
+	jsr SENDBLKS
+	bcs snibfail0
+	lda BLKLO
+	clc
+	adc BAOCNT
+	sta BLKLO
+	bcc :+
+	inc BLKHI		; Update our block number
+:	lda DIFF		; How many blocks remain
+	sec
+	sbc BAOCNT
+	sta DIFF
+	cmp BAOCNT		; Fewer than BAOCNT blocks remain?
+	bpl :+
+	sta BAOCNT		; That becomes our new BAOCNT 
+:	lda DIFF
+	bne snibtr1
+	jmp snibtrdloop
+snibfail0:
+	lda #CHR_CAN
+snibfail:
+	pha
 	lda #_I'!'		; Error during send
 	jsr nibshow		; Show status of current track
 	pla			; Restore response
@@ -184,10 +143,13 @@ snibtr3:
 snibtr5:
 	lda #CHR_S
 	jsr nibshow		; Re-show "S" at current track
-	inc BLKPTR+1		; Next page
-	inc BLKLO		; Increment "sector" counter using BLKLO
-	dec NIBPCNT		; Count
-	bne snibtr1		; and back if more pages
+	beq snibtrdloop		; Done? branch to snibtrdloop
+	cmp BAOCNT		; Fewer than BAOCNT blocks remain?
+	bpl :+
+	sta BAOCNT		; That becomes our new BAOCNT 
+:
+	jmp snibtr1		; Go back for more
+
 snibtrdloop:
 ; for test only: activate next and deactivate line after
 ;	lda #CHR_ACK		; Simulate response
@@ -319,6 +281,22 @@ NIBDISP:
 
 
 ;---------------------------------------------------------
+; hlfnextt - goto next halftrack. we know there is still room
+; to move further. next track is in iobtrk.
+; use copy of dos function seekabs.
+;---------------------------------------------------------
+hlfnextt:
+	ldx pdsoftx		; x = slot * 16
+	lda iobtrk		; a = desired halftrack
+	pha			; save on stack
+	sec			; prepare subtract
+	sbc #1			; a now contains current track
+	sta $478		; seekabs expects this
+	pla			; desired track in a
+	jsr seekabs		; let dos function do its thing
+	rts
+
+;---------------------------------------------------------
 ; rdnibtr - read track as nibbles into tracks buffer.
 ; total bytes read is NIBPAGES * 256, or about twice
 ; the track length.
@@ -360,22 +338,6 @@ rdnibtr8:
 	inc BLKPTR+1		; next page (5c)
 	dec NIBPCNT		; count (5c)
 	bne rdnibtr7		; and back (3c)
-	rts
-
-;---------------------------------------------------------
-; hlfnextt - goto next halftrack. we know there is still room
-; to move further. next track is in iobtrk.
-; use copy of dos function seekabs.
-;---------------------------------------------------------
-hlfnextt:
-	ldx pdsoftx		; x = slot * 16
-	lda iobtrk		; a = desired halftrack
-	pha			; save on stack
-	sec			; prepare subtract
-	sbc #1			; a now contains current track
-	sta $478		; seekabs expects this
-	pla			; desired track in a
-	jsr seekabs		; let dos function do its thing
 	rts
 
 ;---------------------------------------------------------

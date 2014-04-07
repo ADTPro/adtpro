@@ -1,6 +1,6 @@
 ;
 ; ADTPro - Apple Disk Transfer ProDOS
-; Copyright (C) 2008 - 2013 by David Schmidt
+; Copyright (C) 2008 - 2014 by David Schmidt
 ; david__schmidt at users.sourceforge.net
 ;
 ; This program is free software; you can redistribute it and/or modify it 
@@ -228,7 +228,7 @@ NOSAVE:
 LINECNT:	.byte 00		; CURRENT LINE NUMBER
 CURPARM:	.byte 00		; ACTIVE PARAMETER
 CURVAL:		.byte 00		; VALUE OF ACTIVE PARAMETER
-OLDPARM:	.byte $00,$00,$00,$00	; There must be PARMNUM bytes here...
+OLDPARM:	.res $05,$00		; There must be PARMNUM bytes here...
 
 ;---------------------------------------------------------
 ; PARMDFT - Set parameters to last saved values (uses A,X)
@@ -276,9 +276,9 @@ FindSlot:
 ; Configuration
 ;---------------------------------------------------------
 
-PARMNUM	= $04		; Number of configurable parms
-;			; Note - add bytes to OLDPARM if this is expanded.
-PARMSIZ: .byte 5,2,2,2	; Number of options for each parm
+PARMNUM	= $05			; Number of configurable parms
+;				; Note - add bytes to OLDPARM if this is expanded.
+PARMSIZ: .byte 5,2,6,2,2	; Number of options for each parm
 
 PARMTXT:
 	ascz "SSC SLOT 1"
@@ -288,6 +288,12 @@ PARMTXT:
 	ascz "/// SERIAL"
 	ascz "19200"
 	ascz "115200"
+	ascz "1"
+	ascz "2"
+	ascz "5"
+	ascz "10"
+	ascz "20"
+	ascz "40"
 	ascz "YES"
 	ascz "NO"
 	ascz "YES"
@@ -300,10 +306,13 @@ CONFIG_FILE_NAME:	.byte 11
 
 PARMS:
 COMMSLOT:	.byte 4		; Comms slot (5)
-PSPEED:	.byte BPS1152K		; Comms speed (115200)
-PSOUND:	.byte 0		; Sounds? (YES)
-PSAVE:	.byte 1		; Save parms? (NO)
-DEFAULT:	.byte 4,BPS1152K,0,1	; Default parm indices
+PSPEED:		.byte BPS1152K	; Comms speed (115200)
+PBAO:		.byte 1		; Blocks at once (2)
+PSOUND:		.byte 0		; Sounds? (YES)
+PSAVE:		.byte 1		; Save parms? (NO)
+DEFAULT:	.byte 4,BPS1152K,1,0,1	; Default parm indices
 CONFIGYET:	.byte 0		; Has the user configged yet?
 PARMSEND:
 PNIBBL:		.byte 1		; Enable nibbles? (NO - and not saved or exposed)
+
+BAOTbl:		.byte 1,2,5,10,20,40

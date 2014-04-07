@@ -1,6 +1,6 @@
 ;
 ; ADTPro - Apple Disk Transfer ProDOS
-; Copyright (C) 2006 - 2012 by David Schmidt
+; Copyright (C) 2006 - 2014 by David Schmidt
 ; david__schmidt at users.sourceforge.net
 ;
 ; This program is free software; you can redistribute it and/or modify it 
@@ -19,7 +19,7 @@
 ;
 
 xpos		= $14	; Starting column of dotted-decimal config numbers
-ypos		= $08	; Starting row of dotted-decimal config numbers
+ypos		= $09	; Starting row of dotted-decimal config numbers
 raw_x:		.byte $00
 raw_y:		.byte $00
 current_value:	.byte $00
