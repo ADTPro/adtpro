@@ -1,6 +1,6 @@
 ;
 ; ADTPro - Apple Disk Transfer ProDOS
-; Copyright (C) 2007 - 2012 by David Schmidt
+; Copyright (C) 2007 - 2014 by David Schmidt
 ; david__schmidt at users.sourceforge.net
 ;
 ; This program is free software; you can redistribute it and/or modify it 
@@ -45,16 +45,23 @@ SAVPARM:
 	ldy #PMSG24	; 'CONFIGURE ADTPRO PARAMETERS'
 	jsr WRITEMSG
 
-	lda #$0B	; Column
+	lda #$0A	; Column
 	sta <CH
 	lda #$03	; Row
 	jsr TABV
 	ldy #PMSG28	; 'ENABLE SOUND'
 	jsr WRITEMSG
 
-	lda #$0B	; Column
+	lda #$0A	; Column
 	sta <CH
 	lda #$04	; Row
+	jsr TABV
+	ldy #PMBlocksAtonce ; 'BLOCKS AT ONCE'
+	jsr WRITEMSG
+
+	lda #$0A	; Column
+	sta <CH
+	lda #$05	; Row
 	jsr TABV
 	ldy #PMSG28a	; 'SAVE CONFIGURATION'
 	jsr WRITEMSG
@@ -81,7 +88,7 @@ REFRESH:
 
 NXTLINE:
 	stx LINECNT	; SAVE CURRENT LINE
-	lda #$18	; Start printing config parms in this column
+	lda #$19	; Start printing config parms in this column
 	sta <CH
 	clc
 	lda PARMSIZ,X	; GET CURRENT VALUE (NEGATIVE:
@@ -222,7 +229,7 @@ NOSAVE:
 LINECNT:	.byte 00		; CURRENT LINE NUMBER
 CURPARM:	.byte 00		; ACTIVE PARAMETER
 CURVAL:		.byte 00		; VALUE OF ACTIVE PARAMETER
-OLDPARM:	.byte $00,$00		; There must be PARMNUM bytes here...
+OLDPARM:	.byte $00,$00,$00	; There must be PARMNUM bytes here...
 
 
 ;---------------------------------------------------------
@@ -253,25 +260,32 @@ PARMDFTNEXT:
 ; Configuration
 ;---------------------------------------------------------
 
-PARMNUM	= $02		; Number of configurable parms
+PARMNUM	= $03		; Number of configurable parms
 ;			; Note - add bytes to OLDPARM if this is expanded.
-PARMSIZ: .byte 2,2	; Number of options for each parm
+PARMSIZ: .byte 2,5,2	; Number of options for each parm
 
 PARMTXT:
 	ascz "YES"
 	ascz "NO"
+	ascz "1"
+	ascz "2"
+	ascz "3"
+	ascz "4"
+	ascz "5"
 	ascz "YES"
 	ascz "NO"
 
-YSAVE:		.byte $00
+YSAVE:			.byte $00
 CONFIG_FILE_NAME:	.byte 14
 			asc "ADTPROAUD.CONF"
 
 PARMS:
-COMMSLOT:			; Need a reference; not really used in audio version
+COMMSLOT:		; Need a reference; not really used in audio version
+PBAO:	.byte 3		; Blocks at once (4)
 PSOUND:	.byte 0		; Sounds? (YES)
 PSAVE:	.byte 1		; Save parms? (NO)
 
-DEFAULT:	.byte 0,1	; Default parm indices
+DEFAULT:	.byte 0,3,1	; Default parm indices
 PARMSEND:
-PNIBBL:	.byte 1		; Enable nibbles (NO - and not exposed to the user or saved)
+PNIBBL:	.byte 1			; Enable nibbles (NO - and not exposed to the user or saved)
+BAOTbl:		.byte 1,2,3,4,5

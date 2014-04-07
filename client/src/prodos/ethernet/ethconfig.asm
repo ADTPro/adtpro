@@ -406,6 +406,7 @@ YSAVE:	.byte $00
 PARMS:
 COMMSLOT:
 	.byte 2		; Zero-indexed comms slot (3)
+PBAO:	.byte 1		; Blocks at once (2)
 PSOUND:	.byte 0		; Sounds? (YES)
 PNIBBL:	.byte 1		; Enable nibbles? (NO)
 PSAVE:	.byte 1		; Save parms? (NO)
@@ -424,3 +425,5 @@ cfg_dns:	.byte   0,   0,   0,   0 ; ip address of dns server to use (will be ove
 dhcp_server:	.byte   0,   0,   0,   0 ; will be set address of dhcp server that configuration was obtained from
 cfg_tftp_server:
 		.byte   0,   0,   0,   0 ; ip address of server to send tftp requests to (can be a broadcast address)
+
+BAOTbl:		.byte 1,2

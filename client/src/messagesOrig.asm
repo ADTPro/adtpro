@@ -274,6 +274,10 @@ PHMMAX	= $0a		; This must be two greater than the largest host message
 		asc "ENABLE NIBBLES"
 	MEnableNibbles_END =*
 
+	MBlocksAtOnce:
+		asc "BLOCKS AT ONCE"
+	MBlocksAtOnce_END =*
+
 	MNULL:	.byte $00
 	MNULL_END =*
 
@@ -291,7 +295,7 @@ MSGTBL:
 	.addr MLOGO1,MLOGO2,MLOGO3,MLOGO4,MLOGO5,MLOGO6,MWAIT,MCDIR,MFORC,MFEX
 	.addr MUTHBAD, MPREFIX, MINSERTDISK, MFORMAT, MANALYSIS, MNOCREATE
 	.addr MVolName, MTheOld, MUnRecog, MDead
-	.addr MProtect, MNoDisk, MNuther, MUnitNone, MNIBTOP, MEnableNibbles
+	.addr MProtect, MNoDisk, MNuther, MUnitNone, MNIBTOP, MEnableNibbles,MBlocksAtOnce
 	.addr MNULL
 
 ;---------------------------------------------------------
@@ -359,6 +363,7 @@ MSGLENTBL:
 	.byte MUnitNone_END-MUnitNone
 	.byte MNIBTOP_END-MNIBTOP
 	.byte MEnableNibbles_END-MEnableNibbles
+	.byte MBlocksAtOnce_END-MBlocksAtOnce
 	.byte $00	; MNULL - null message has no length.
 
 ;---------------------------------------------------------
@@ -425,4 +430,5 @@ PMNuther	= $02+PMNoDisk
 PMUnitNone	= $02+PMNuther
 PMNIBTOP	= $02+PMUnitNone
 PMEnableNibbles	= $02+PMNIBTOP
-PMNULL		= $02+PMEnableNibbles
+PMBlocksAtonce	= $02+PMEnableNibbles
+PMNULL		= $02+PMBlocksAtonce

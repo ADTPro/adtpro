@@ -1,6 +1,6 @@
 ;
 ; ADTPro - Apple Disk Transfer ProDOS
-; Copyright (C) 2006 - 2013 by David Schmidt
+; Copyright (C) 2006 - 2014 by David Schmidt
 ; david__schmidt at users.sourceforge.net
 ;
 ; This program is free software; you can redistribute it and/or modify it 
@@ -61,17 +61,23 @@ SAVPARM:
 	ldx #$08	; Column
 	ldy #$05	; Row
 	jsr GOTOXY
-	ldy #PMSG28	; 'ENABLE SOUND'
+	ldy #PMBlocksAtonce ; 'BLOCKS AT ONCE'
 	jsr WRITEMSG
 
 	ldx #$08	; Column
 	ldy #$06	; Row
 	jsr GOTOXY
-	ldy #PMEnableNibbles ; 'ENABLE NIBBLES'
+	ldy #PMSG28	; 'ENABLE SOUND'
 	jsr WRITEMSG
 
 	ldx #$08	; Column
 	ldy #$07	; Row
+	jsr GOTOXY
+	ldy #PMEnableNibbles ; 'ENABLE NIBBLES'
+	jsr WRITEMSG
+
+	ldx #$08	; Column
+	ldy #$08	; Row
 	jsr GOTOXY
 	ldy #PMSG28a	; 'SAVE CONFIGURATION'
 	jsr WRITEMSG
@@ -255,7 +261,7 @@ LINECNT:	.byte 00		; CURRENT LINE NUMBER
 CURPARM:	.byte 00		; ACTIVE PARAMETER
 CURVAL:		.byte 00		; VALUE OF ACTIVE PARAMETER
 					; There must be PARMNUM bytes here...
-OLDPARM:	.byte $00, $00, $00, $00, $00
+OLDPARM:	.byte $00, $00, $00, $00, $00, $00
 
 ;---------------------------------------------------------
 ; PARMDFT - Set parameters to last saved values (uses A,X)
@@ -284,9 +290,9 @@ PARMDFTNEXT:
 ; Configuration
 ;---------------------------------------------------------
 
-PARMNUM	= $05		; Number of configurable parms
+PARMNUM	= $06		; Number of configurable parms
 ;			; Note - add bytes to OLDPARM if this is expanded.
-PARMSIZ: .byte 9,2,2,2,2	; Number of options for each parm
+PARMSIZ: .byte 9,2,6,2,2,2	; Number of options for each parm
 
 PARMTXT:
 	ascz "SSC SLOT 1"
@@ -300,6 +306,12 @@ PARMTXT:
 	ascz "GENERIC SLOT 2"
 	ascz "19200"
 	ascz "115200"
+	ascz "1"
+	ascz "2"
+	ascz "5"
+	ascz "10"
+	ascz "20"
+	ascz "40"
 	ascz "YES"
 	ascz "NO"
 	ascz "YES"
@@ -316,10 +328,13 @@ CONFIG_FILE_NAME:
 PARMS:
 COMMSLOT:	.byte 1		; Comms slot (2)
 PSPEED:		.byte BPS1152K	; Comms speed (115200)
+PBAO:		.byte 1		; Blocks at once (2)
 PSOUND:		.byte 0		; Sounds? (YES)
 PNIBBL:		.byte 1		; Enable nibbles: (NO)
 PSAVE:		.byte 1		; Save parms? (NO)
-DEFAULT:	.byte 1,BPS1152K,0,1,1	; Default parm indices
+DEFAULT:	.byte 1,BPS1152K,1,0,1,1	; Default parm indices
 SVSPEED:	.byte BPS1152K	; Storage for speed setting
 CONFIGYET:	.byte 0		; Has the user configged yet?
 PARMSEND:
+
+BAOTbl:		.byte 1,2,5,10,20,40
