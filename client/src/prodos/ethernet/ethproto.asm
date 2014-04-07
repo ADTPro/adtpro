@@ -30,152 +30,37 @@
 	.importzp udp_src_port
 	.importzp udp_data
 
-;---------------------------------------------------------
-; UDPDISPATCH - Dispatch the UDP packet to the receiver
-;---------------------------------------------------------
-UDPDISPATCH:
-	lda state
-	cmp #STATE_IDLE		; Do we care at all?
-	beq UDPSKIP
-
-	lda TMOT
-	bne TIMEOUTENTRY	; Skip packet processing if timeout occurred
-
-	lda udp_inp + udp_data	; Grab the packet number
-	cmp PREVPACKET
-	beq UDPSKIP		; We received a duplicate packet.  Bail.
-	sta PREVPACKET
-
-	lda udp_inp + udp_src_port + 1
-	sta replyport
-	lda udp_inp + udp_src_port
-	sta replyport + 1
-
-	ldx #3
-:	lda ip_inp + ip_src,x
-	sta replyaddr,x
-	dex
-	bpl :-
-
-TIMEOUTENTRY:
-	lda state
-	php
-	ldx #STATE_IDLE	; Set state back to idle
-	stx state
-	plp
-
-			; Receiving a DIR reply?
-	cmp #STATE_DIR
-	bne :+
-	jmp DIRREPLY1
-			; Receiving a CD reply?
-:	cmp #STATE_CD
-	bne :+
-	jmp CDREPLY1
-			; Receiving a PUT reply?
-:	cmp #STATE_PUT
-	bne :+
-	jmp PUTREPLY1
-			; Receiving a GET return code reply?
-:	cmp #STATE_GET
-	bne :+
-	jmp GETREPLY1
-			; Receiving a QUERY FN reply?
-:	cmp #STATE_QUERY
-	bne :+
-	jmp QUERYFNREPLY1
-			; Receiving HBLK data?
-:	cmp #STATE_RECVHBLK
-	bne :+
-	jmp RECVHBLK
-			; Receiving BATCH data?
-:	cmp #STATE_BATCH
-	bne :+
-	jmp BATCHREPLY1
-:			; fallthrough	
-UDPSKIP:
-	rts
 
 ;---------------------------------------------------------
-; RECEIVE_LOOP - Wait for an incoming packet to come along
-; 
+; CDREQUEST - Request current directory change
 ;---------------------------------------------------------
-RECEIVE_LOOP_FAST:
-	lda #$1f
-	sta PauseValue+1	; Short pause
-	lda #$00
-	jmp RECEIVE_LOOP_ENTRY2
-
-RECEIVE_LOOP:
-				; Note: the first byte of
-				; this routine needs to be
-				; kept in sync with the
-				; byte kept in uther.asm,
-	lda #$00		; PATCHUTHER.
-	sta PauseValue+1	; Long pause
-RECEIVE_LOOP_ENTRY2:
-	sta TIMEOUT
-	sta TMOT
-
-RECEIVE_LOOP_WARM:
-	GO_SLOW		; Slow down for SOS
-	jsr ip65_process
-	GO_FAST		; Speed back up for SOS
-	lda $C000
-	cmp #CHR_ESC	; Escape = abort
-	bne :+
-	jmp BABORT
-:	bit $c010	; Strobe the keyboard
-	inc TIMEOUT	; Increment our counter
-	bne :+
-	inc TMOT
-	jsr UDPDISPATCH
-	rts
-
-:	lda state
-	cmp #STATE_IDLE		; Are we done/idle now?
-	bne RECEIVE_LOOP_PAUSE	; No, so pause a bit then retry
-	rts
-
-RECEIVE_LOOP_PAUSE:
-	lda #$5a
-	sta $c05a
-	sta $c05a
-	sta $c05a
-	sta $c05a	; Unlock ZipChip
-
-	lda #$00
-	sta $c05a	; Disable ZipChip	
-
-	lda #$01
-	sta $C074	; Disable TransWarp
-
-PauseValue:
-	lda #$7f
-	jsr DELAY	; Wait!
-
-	lda #$00
-	sta $c05b	; Enable ZipChip
-
-	lda #$a5
-	sta $c05a	; Lock ZipChip
-
-	lda #$00	; Enable TransWarp
-	sta $C074
-
-	jmp RECEIVE_LOOP_WARM
-
-TIMEOUT:	.res 1
-
-;---------------------------------------------------------
-; PINGREQUEST - Send out a ping
-;---------------------------------------------------------
-PINGREQUEST:
-	lda #STATE_IDLE	; Don't want any reply
+CDREQUEST:
+	ldax #udp_inp + udp_data + 1	; Point Buffer at the UDP data buffer
+	stax Buffer
+	lda #CHR_C	; Ask host to Change Directory
+	jsr FNREQUEST
+	lda CHECKSUM
+	jsr BUFBYTE
+	lda #STATE_CD
 	sta state
-	lda #CHR_Y
-	jsr PUTC
+	GO_SLOW				; Slow down for SOS
+	ldax Buffer
+	jsr udp_send
+	GO_FAST				; Speed back up for SOS
 	jsr RECEIVE_LOOP_FAST
+	rts
+
+
+;---------------------------------------------------------
+; SENDWIDE - Send a chunk of data
+;---------------------------------------------------------
+SENDWIDE:
+	rts
+
+;---------------------------------------------------------
+; RECEIVEWIDE - Receive a chunk of data
+;---------------------------------------------------------
+RECEIVEWIDE:
 	rts
 
 ;---------------------------------------------------------
@@ -204,29 +89,6 @@ DIRREPLY:
 DIRABORT:
 	lda #$00
 	jsr PUTC
-	rts
-
-;---------------------------------------------------------
-; CDREQUEST - Request current directory change
-;---------------------------------------------------------
-CDREQUEST:
-	ldax #udp_inp + udp_data + 1	; Point Buffer at the UDP data buffer
-	stax Buffer
-	ldy #$00
-	lda #CHR_C
-	sta (Buffer),Y
-	iny
-	jsr COPYINPUT
-	tya			; Max CD request will be 255 bytes
-	ldx #$00		; It's unlikely the $200 buffer is
-	stax udp_send_len	; much bigger than that anyway...
-	lda #STATE_CD
-	sta state
-	GO_SLOW				; Slow down for SOS
-	ldax Buffer
-	jsr udp_send
-	GO_FAST				; Speed back up for SOS
-	jsr RECEIVE_LOOP_FAST
 	rts
 
 ;---------------------------------------------------------
@@ -267,6 +129,55 @@ GETREPLY2:
 	sec
 @Ok:	lda QUERYRC
 	rts	
+
+
+;---------------------------------------------------------
+; FNREQUEST - Request something with a file name
+; Assumes ready to load buffer with BUFBYTE
+;---------------------------------------------------------
+FNREQUEST:
+	pha
+	lda #CHR_A	; Envelope
+	sta CHECKSUM
+	jsr BUFBYTE
+	ldx #$00	; Count the length of the filename
+@loop:	lda IN_BUF,x
+	php
+	inx
+	plp
+	bne @loop
+	pla		; Which command was it?
+	cmp #CHR_P	; Was it a Put?
+	beq @addtwo
+	cmp #CHR_N	; Was it a Nibble?
+	beq @addtwo	
+	cmp #CHR_B	; Was it a Batch?
+	beq @addtwo
+	cmp #CHR_M	; Was it a Multiple nibble?
+	beq @addtwo
+	cmp #CHR_G	; Was it a Get?
+	beq @addone	
+	jmp @noadd	; Everyone else - no add
+@addtwo:
+	inx		; Increment x twice if so... need room for 2 more bytes
+@addone:
+	inx		; Increment x once if so... need room for 1 more byte
+@noadd:	pha
+	txa
+	jsr BUFBYTE	; Payload length - lsb
+	eor CHECKSUM
+	sta CHECKSUM
+	lda #$00
+	jsr BUFBYTE	; Payload length - msb
+			; No need to update checksum... eor with 0 makes no change
+	pla		; Pull the request byte
+	jsr BUFBYTE
+	eor CHECKSUM
+	sta CHECKSUM
+	jsr BUFBYTE	; Send the check byte for envelope
+	jsr SENDFN	; Send requested name
+	rts
+
 
 ;---------------------------------------------------------
 ; PUTREQUEST - Request to send an image to the host
@@ -346,6 +257,11 @@ PUTNIBBLE:
 ; PUTINITIALACK - Send initial ACK for a PUTREQUEST/PUTREPLY
 ;---------------------------------------------------------
 PUTINITIALACK:
+	lda #CHR_ACK
+	jsr PUTC
+	rts
+
+PUTACK:
 	lda #CHR_ACK
 	jsr PUTC
 	rts
@@ -507,11 +423,11 @@ SENDNIBPAGE:
 	rts
 
 ;---------------------------------------------------------
-; SENDBLK - Send a block with RLE
+; SENDBLKS - Send a block with RLE
 ; CRC is sent to host
 ; BLKPTR points to full block to send - updated here
 ;---------------------------------------------------------
-SENDBLK:
+SENDBLKS:
 	lda #$02
 	sta <ZP
 SENDMORE:
@@ -583,10 +499,11 @@ SENDHEND:
 	jsr udp_send_nocopy
 	rts
 
+
 ;---------------------------------------------------------
 ; BUFBYTE
 ; Add accumulator to the outgoing packet
-; UTILPTR points to the data we're going to save
+; UTILPTR points to the next byte we're going to save - and keeps a running total
 ;---------------------------------------------------------
 BUFBYTE:
 	php
@@ -603,12 +520,13 @@ BUFBYTE:
 	plp
 	rts
 
+
 ;---------------------------------------------------------
-; RECVBLK - Receive a block with RLE
+; RECVBLKS - Receive a block with RLE
 ;
 ; BLKPTR points to full block to receive - updated here
 ;---------------------------------------------------------
-RECVBLK:
+RECVBLKS:
 	lda #$02
 	sta <ZP
 	lda #CHR_ACK
@@ -759,6 +677,28 @@ RCVEND:
 	rts
 
 ;---------------------------------------------------------
+; SENDFN - Send a file name
+;
+; Assumes input is at IN_BUF
+; Returns:
+;   length of name in X
+;   accumulated check byte in CHECKSUM
+;---------------------------------------------------------
+SENDFN:
+	ldx #$00
+	stx CHECKSUM	
+FNLOOP:	lda IN_BUF,X
+	jsr BUFBYTE
+	php
+	inx
+	eor CHECKSUM
+	sta CHECKSUM
+	plp
+	bne FNLOOP
+	rts
+
+
+;---------------------------------------------------------
 ; PUTC - Send a single byte as a packet
 ;---------------------------------------------------------
 PUTC:
@@ -774,6 +714,14 @@ PUTC:
 	jsr udp_send
 	GO_FAST			; Speed back up for SOS
 	rts
+
+
+;---------------------------------------------------------
+; PINGREQUEST
+;---------------------------------------------------------
+PINGREQUEST:
+	rts
+
 
 ;---------------------------------------------------------
 ; COPYINPUT - Copy data from input area to (Buffer);
@@ -791,6 +739,144 @@ COPYINPUT:
 	beq @Done
 	bne @LOOP
 @Done:	rts
+
+
+;---------------------------------------------------------
+; UDPDISPATCH - Dispatch the UDP packet to the receiver
+;---------------------------------------------------------
+UDPDISPATCH:
+	lda state
+	cmp #STATE_IDLE		; Do we care at all?
+	beq UDPSKIP
+
+	lda TMOT
+	bne TIMEOUTENTRY	; Skip packet processing if timeout occurred
+
+	lda udp_inp + udp_data	; Grab the packet number
+	cmp PREVPACKET
+	beq UDPSKIP		; We received a duplicate packet.  Bail.
+	sta PREVPACKET
+
+	lda udp_inp + udp_src_port + 1
+	sta replyport
+	lda udp_inp + udp_src_port
+	sta replyport + 1
+
+	ldx #3
+:	lda ip_inp + ip_src,x
+	sta replyaddr,x
+	dex
+	bpl :-
+
+TIMEOUTENTRY:
+	lda state
+	php
+	ldx #STATE_IDLE	; Set state back to idle
+	stx state
+	plp
+
+			; Receiving a DIR reply?
+	cmp #STATE_DIR
+	bne :+
+	jmp DIRREPLY1
+			; Receiving a CD reply?
+:	cmp #STATE_CD
+	bne :+
+	jmp CDREPLY1
+			; Receiving a PUT reply?
+:	cmp #STATE_PUT
+	bne :+
+	jmp PUTREPLY1
+			; Receiving a GET return code reply?
+:	cmp #STATE_GET
+	bne :+
+	jmp GETREPLY1
+			; Receiving a QUERY FN reply?
+:	cmp #STATE_QUERY
+	bne :+
+	jmp QUERYFNREPLY1
+			; Receiving HBLK data?
+:	cmp #STATE_RECVHBLK
+	bne :+
+	jmp RECVHBLK
+			; Receiving BATCH data?
+:	cmp #STATE_BATCH
+	bne :+
+	jmp BATCHREPLY1
+:			; fallthrough	
+UDPSKIP:
+	rts
+
+
+;---------------------------------------------------------
+; RECEIVE_LOOP - Wait for an incoming packet to come along
+; 
+;---------------------------------------------------------
+RECEIVE_LOOP_FAST:
+	lda #$1f
+	sta PauseValue+1	; Short pause
+	lda #$00
+	jmp RECEIVE_LOOP_ENTRY2
+
+RECEIVE_LOOP:
+				; Note: the first byte of
+				; this routine needs to be
+				; kept in sync with the
+				; byte kept in uther.asm,
+	lda #$00		; PATCHUTHER.
+	sta PauseValue+1	; Long pause
+RECEIVE_LOOP_ENTRY2:
+	sta TIMEOUT
+	sta TMOT
+
+RECEIVE_LOOP_WARM:
+	GO_SLOW		; Slow down for SOS
+	jsr ip65_process
+	GO_FAST		; Speed back up for SOS
+	lda $C000
+	cmp #CHR_ESC	; Escape = abort
+	bne :+
+	jmp BABORT
+:	bit $c010	; Strobe the keyboard
+	inc TIMEOUT	; Increment our counter
+	bne :+
+	inc TMOT
+	jsr UDPDISPATCH
+	rts
+
+:	lda state
+	cmp #STATE_IDLE		; Are we done/idle now?
+	bne RECEIVE_LOOP_PAUSE	; No, so pause a bit then retry
+	rts
+
+RECEIVE_LOOP_PAUSE:
+	lda #$5a
+	sta $c05a
+	sta $c05a
+	sta $c05a
+	sta $c05a	; Unlock ZipChip
+
+	lda #$00
+	sta $c05a	; Disable ZipChip	
+
+	lda #$01
+	sta $C074	; Disable TransWarp
+
+PauseValue:
+	lda #$7f
+	jsr DELAY	; Wait!
+
+	lda #$00
+	sta $c05b	; Enable ZipChip
+
+	lda #$a5
+	sta $c05a	; Lock ZipChip
+
+	lda #$00	; Enable TransWarp
+	sta $C074
+
+	jmp RECEIVE_LOOP_WARM
+
 
 ;---------------------------------------------------------
 ; DEBUGMSG - Handy debug routine to print and scroll "you are here"
@@ -898,3 +984,6 @@ PUTCMSG:
 PUTCMSGEND:
 PREVPACKET:
 	.byte $00
+TIMEOUT:	.res 1
+PUTACKBLK:
+	rts

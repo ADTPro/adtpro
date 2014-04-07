@@ -18,28 +18,14 @@
 ; 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 ;
 
-; Protocol number. Note it must be assigned a higher value when the protocol is
-; modified, and must never be < $0101 or > $01FF
-protono		= $0101
-
 ;---------------------------------------------------------
-; initprot - Negotiate the legacy ADT protocol. Return carry
-; clear if successful, carry set otherwise.
+; CDREQUEST - Request current directory change
 ;---------------------------------------------------------
-initprot:
-	lda #>protono	; High order byte
-	jsr PUTC	; Send to host
-	lda #<protono	; Low order byte
-	jsr PUTC	; Send to host
-	lda #0
-	jsr PUTC	; Delimiter
-	jsr GETC	; Read response from host
-	bcs :+
-	cmp #CHR_ACK
-	bne :+		; Not ack, so invalid protocol or host
-	clc
-	rts		; Exit with OK status
-:	sec		; Error status
+CDREQUEST:
+	lda #CHR_C	; Ask host to Change Directory
+	jsr FNREQUEST
+	lda CHECKSUM
+	jsr PUTC
 	rts
 
 
@@ -49,9 +35,26 @@ initprot:
 DIRREQUEST:
 	jsr PARMINT	; Clean up the comms device
 	lda #CHR_D	; Send "DIR" command to PC
-	jsr PUTC
-	rts
+	jmp ENVELOP_COMMAND
 
+
+;---------------------------------------------------------
+; ENVELOP_COMMAND - Send the single-byte command in the accumulator
+;---------------------------------------------------------
+ENVELOP_COMMAND:
+
+	pha			; Hang on to the command for a sec...
+	lda #CHR_A		; Envelope
+	jsr PUTC
+	lda #$00
+	jsr PUTC		; Payload length - lsb
+	lda #$00
+	jsr PUTC		; Payload length - msb
+	pla			; Pull the command back off the stack
+	jsr PUTC		; Send command
+	eor #$c1
+	jsr PUTC		; Send check byte
+	rts
 
 ;---------------------------------------------------------
 ; DIRREPLY - Reply to current directory contents
@@ -99,14 +102,76 @@ DIRABORT:
 
 
 ;---------------------------------------------------------
-; CDREQUEST - Request current directory change
+; QUERYFNREQUEST/REPLY
 ;---------------------------------------------------------
-CDREQUEST:
+QUERYFNREQUEST:
 	jsr PARMINT	; Clean up the comms device
-	lda #CHR_C	; Ask host to Change Directory
+	lda #CHR_Z	; Ask host for file size
+	jsr FNREQUEST
+	lda CHECKSUM
 	jsr PUTC
-	jsr SENDFN	; Send directory name
-			; Implicit rts from SENDFN
+	rts
+
+QUERYFNREPLY:
+	jsr GETC	; Get response from host: file size
+	bcs @QFNTimeout
+	sta HOSTBLX
+	jsr GETC
+	bcs @QFNTimeout
+	sta HOSTBLX+1
+	jsr GETC	; Get response from host: return code/message
+	bcs @QFNTimeout
+	rts
+@QFNTimeout:
+	jsr HOSTTIMEOUT
+	jmp BABORT
+
+
+;---------------------------------------------------------
+; FNREQUEST - Request something with a file name
+;---------------------------------------------------------
+FNREQUEST:
+	pha
+	jsr PARMINT	; Clean up the comms device
+	lda #CHR_A	; Envelope
+	sta CHECKSUM
+	jsr PUTC
+	ldx #$00	; Count the length of the filename
+@loop:	lda IN_BUF,x
+	php
+	inx
+	plp
+	bne @loop
+	pla		; Which command was it?
+	cmp #CHR_P	; Was it a Put?
+	beq @addtwo
+	cmp #CHR_N	; Was it a Nibble?
+	beq @addtwo	
+	cmp #CHR_B	; Was it a Batch?
+	beq @addtwo
+	cmp #CHR_M	; Was it a Multiple nibble?
+	beq @addtwo
+	cmp #CHR_G	; Was it a Get?
+	beq @addone	
+	jmp @noadd	; Everyone else - no add
+@addtwo:
+	inx		; Increment x twice if so... need room for 2 more bytes
+@addone:
+	inx		; Increment x once if so... need room for 1 more byte
+@noadd:	pha
+	txa
+	jsr PUTC	; Payload length - lsb
+	eor CHECKSUM
+	sta CHECKSUM
+	lda #$00
+	jsr PUTC	; Payload length - msb
+			; No need to update checksum... eor with 0 makes no change
+	pla		; Pull the request byte
+	jsr PUTC
+	eor CHECKSUM
+	sta CHECKSUM
+	jsr PUTC	; Send the check byte for envelope
+	jsr SENDFN	; Send requested name
 	rts
 
 
@@ -120,50 +185,68 @@ CDREQUEST:
 PUTREQUEST:
 	jsr PARMINT	; Clean up the comms device
 	lda SendType
-	jsr PUTC
-	cmp #CHR_P	; Normal Put?
-	beq PUTNORM
-	jsr initprot	; Negotiate the protocol (legacy ADT)
-	bcc PUTNIB
-	lda #PHMGBG	; Until we dedicate a message about protocol error...
-	jmp PCERROR	
-PUTNORM:
-	jsr SENDFN	; Send file name
+	jsr FNREQUEST
 	lda NUMBLKS	; Send the total block size
 	jsr PUTC
+	eor CHECKSUM
+	sta CHECKSUM
 	lda NUMBLKS+1
 	jsr PUTC
-	rts
-PUTNIB:	jsr SENDFN	; Send file name; skip the total block size for nibbles/halfs
+	eor CHECKSUM
+	jsr PUTC	; Send check byte
 	rts
 
 
 ;---------------------------------------------------------
-; PUTINITIALACK - Send initial ACK for a PUTREQUEST/PUTREPLY
+; PUTACKBLK - Send acknowlegedment packet
+; X contains the acknowledgement type
 ;---------------------------------------------------------
-PUTINITIALACK:
-	lda #CHR_ACK
+PUTACKBLK:
+	stx SLOWX
+	jsr PARMINT	; Clean up the comms device
+	lda #CHR_A	; Envelope
+	GO_SLOW		; Slow down for SOS
 	jsr PUTC
+	lda #$03	; Three byte payload
+	jsr PUTC
+	lda #$00
+	jsr PUTC
+	lda #CHR_K	; Acknowledgement packet
+	jsr PUTC	; Send ack type
+	lda #$09	; Pre-calculted check byte
+	jsr PUTC	; Send check byte
+	lda SLOWX	; Grab the ack type 
+	jsr PUTC
+	sta CHECKSUM
+	lda BLKLO	; Send the current block number LSB
+	jsr PUTC
+	eor CHECKSUM
+	sta CHECKSUM
+	lda BLKHI	; Send the current block number MSB
+	jsr PUTC
+	eor CHECKSUM
+	jsr PUTC	; Send check byte
+	GO_FAST		; Speed back up for SOS
 	rts
 
 
 ;---------------------------------------------------------
-; PUTFINALACK - Send error count for PUT request
+; PUTFINALACK - Send error count for requests
 ;---------------------------------------------------------
 PUTFINALACK:
-	lda ECOUNT	; Errors during send?
-	jsr PUTC	; Send error flag to host
-	rts
-
-
-;---------------------------------------------------------
-; GETNIBREQUEST - Request a nibble image be sent from the host
-;---------------------------------------------------------
-GETNIBREQUEST:
-	jsr PARMINT	; Clean up the comms device
-	lda #CHR_O	; Tell host we are Getting/Receiving a nibble
+	lda #CHR_A
+	jsr PUTC	; Wide protocol - 'A'
+	lda #$01
+	jsr PUTC	; Wide protocol - lsb of bytes to expect
+	lda #$00
+	jsr PUTC	; Wide protocol - msb of bytes to expect
+	lda #CHR_Y	; Wide protocol - 'Y'
 	jsr PUTC
-	jsr SENDFN	; Send file name
+	lda #$19
+	jsr PUTC
+	lda ECOUNT	; Errors during send?
+	jsr PUTC
+	jsr PUTC	; Check byte will be the same thing
 	rts
 
 
@@ -173,8 +256,11 @@ GETNIBREQUEST:
 GETREQUEST:
 	jsr PARMINT	; Clean up the comms device
 	lda #CHR_G	; Tell host we are Getting/Receiving
-	jsr PUTC
-	jsr SENDFN	; Send file name
+	jsr FNREQUEST
+	lda BAOCNT
+	jsr PUTC	; Express number of blocks at once (BAOCNT)
+	eor CHECKSUM
+	jsr PUTC	; Send check byte
 	rts
 
 
@@ -194,278 +280,248 @@ BATCHREPLY:
 
 
 ;---------------------------------------------------------
-; GETFINALACK - Send final ACK after a GETREQUEST/GETREPLY
-;---------------------------------------------------------
-GETFINALACK:
-	lda #CHR_ACK	; Send last ACK
-	jsr PUTC
-	lda BLKLO
-	jsr PUTC	; Send the block number (LSB)
-	lda BLKHI
-	jsr PUTC	; Send the block number (MSB)
-	lda <ZP
-	jsr PUTC	; Send the half-block number
-	lda ECOUNT	; Errors during send?
-	jsr PUTC	; Send error flag to host
-	rts
-
-
-;---------------------------------------------------------
 ; BATCHREQUEST - Request to send multiple images to the host
 ;---------------------------------------------------------
 BATCHREQUEST:
-	jsr PARMINT	; Clean up the comms device
-	lda SendType	; Check if we're sending nibbles in batch
-	cmp #CHR_N
-	bne BPLAIN
-	lda #CHR_M	; Tell host we are sending nibbles in batch
+	lda SendType
+	sta SLOWX	; Stash the SendType as we'll be modifying it briefly
+	; CHR_P - typical put -> CHR_B (batch)
+	; CHR_N - nibble send -> CHR_M (multiple nibble)
+	cmp #CHR_P
 	bne :+
-BPLAIN:	lda #CHR_B	; Tell host we are Putting/Sending in batch
-:	jsr PUTC
-	jsr SENDFN	; Send file (prefix) name
-	lda NUMBLKS	; Send the total block size
-	jsr PUTC
-	lda NUMBLKS+1
-	jsr PUTC
+	lda #CHR_B
+	sta SendType
+	jmp BGo
+:	cmp #CHR_N
+	bne BGo
+	lda #CHR_M
+	sta SendType
+BGo:	jsr PUTREQUEST
+	lda SLOWX
+	sta SendType
 	rts
 
 
 ;---------------------------------------------------------
-; QUERYFNREQUEST/REPLY
-;---------------------------------------------------------
-QUERYFNREQUEST:
-	jsr PARMINT	; Clean up the comms device
-	lda #CHR_Z	; Ask host for file size
-	jsr PUTC
-	jsr SENDFN	; Send file name
-	rts
-
-QUERYFNREPLY:
-	jsr GETC	; Get response from host: file size
-	bcs @QFNTimeout
-	sta HOSTBLX
-	jsr GETC
-	bcs @QFNTimeout
-	sta HOSTBLX+1
-	jsr GETC	; Get response from host: return code/message
-	bcs @QFNTimeout
-	rts
-@QFNTimeout:
-	jsr HOSTTIMEOUT
-	jmp BABORT
-
-;---------------------------------------------------------
-; RECVBLK - Receive a block with RLE
+; RECVBLKS - Receive blocks with RLE
 ;
-; BLKPTR points to full block to receive - updated here
+; BLKPTR points to starting block to receive - updated here
 ;---------------------------------------------------------
-RECVBLK:
-	lda #$02
-	sta <ZP
-	lda #CHR_ACK
+RECVBLKS:
+	lda BLKPTR
+	sta PAGECNT
+	lda BLKPTR+1
+	sta PAGECNT+1
+	
+	ldx #CHR_ACK	; Initial ack
 
 RECVMORE:
-	tax
-	ldy #$00	; Clear out the new half-block
-	tya
-CLRLOOP:
-	sta (BLKPTR),Y
-	iny
-	bne CLRLOOP
-	txa
+	lda BLKPTR+1
+	sta SCOUNT	; Stash the msb of BLKPTR, which RECVWIDE trashes
+	lda #$00
+	sta PAGECNT
+	sta PAGECNT+1
+	lda SCOUNT
+	sta BLKPTR+1	; Restore BLKPTR msb when looping
+
 	GO_SLOW		; Slow down for SOS
-	jsr PUTC	; Send ack/nak
-	lda BLKLO
-	jsr PUTC	; Send the block number (LSB)
-	lda BLKHI
-	jsr PUTC	; Send the block number (MSB)
-	lda <ZP
-	jsr PUTC	; Send the half-block number
-
-	jsr RECVHBLK
-	bcs RECVERR	; Do we have an error from block count?
-	jsr GETC	; Receive reply
-	sta PCCRC	; Receive the CRC of that block
-	jsr GETC
+	jsr PUTACKBLK	; Send ack/nak packet for blocks
+	jsr RECVWIDE
 	GO_FAST		; Speed back up for SOS
-	sta PCCRC+1
-	jsr UNDIFF
-
+	bcs RECVERR
 	lda <CRC
 	cmp PCCRC
 	bne RECVERR
 	lda <CRC+1
 	cmp PCCRC+1
 	bne RECVERR
-
-	lda #CHR_ACK
-	inc <BLKPTR+1	; Get next 256 bytes
-	dec <ZP
-RECOK:	bne RECVMORE
-	lda #$00
+	clc		; Indicate success
 	rts
 
 RECVERR:
-	lda #CHR_NAK	; CRC error, ask for a resend
+	ldx #CHR_NAK	; CRC error, ask for a resend
 	jmp RECVMORE
 
 
 ;---------------------------------------------------------
-; RECVNIBCHUNK - Receive a nibble chunk with RLE
-; Called with Acknowledgement in accumulator
-;---------------------------------------------------------
-RECVNIBCHUNK:
-	jsr PUTC	; Send ack/nak
-	lda BLKLO
-	jsr PUTC	; Send the track number (LSB)
-	lda BLKHI
-	jsr PUTC	; Send the chunk number (MSB)
-	lda <ZP
-	jsr PUTC	; Send protocol filler
-	jsr RECVHBLK
-	bcs :+		; Do we have an error from block count?
-	jsr GETC	; Receive reply
-	bcs :+
-	sta PCCRC	; Receive the CRC of that block
-	jsr GETC
-	bcs :+
-	sta PCCRC+1
-	clc
-:
-	rts
-
-
-;---------------------------------------------------------
-; RECVHBLK - Receive half a block with RLE
-;
-; CRC is computed and stored
-;---------------------------------------------------------
-HBLKERR:
-	sec
-	rts
-
-RECVHBLK:
-	ldy #00		; Start at beginning of buffer
-
-			; Pull the preamble
-	jsr GETC	; Get block number (lsb)
-	bcs HBLKERR	; Timeout - bail
-	sec
-	sbc BLKLO
-	bne HBLKERR
-	jsr GETC	; Get block number (msb)
-	bcs HBLKERR	; Timeout - bail
-	sec
-	sbc BLKHI
-	bne HBLKERR
-	jsr GETC	; Get half-block
-	bcs HBLKERR	; Timeout - bail
-	sec
-	sbc <ZP
-	bne HBLKERR
-
-RC1:
-	jsr GETC	; Get difference
-	bcs HBLKERR	; Timeout - bail
-	beq RC2		; If zero, get new index
-	sta (BLKPTR),Y	; else put char in buffer
-	iny		; ...and increment index
-	bne RC1		; Loop if not at end of buffer
-	clc
-	rts		; ...else return
-RC2:
-	jsr GETC	; Get new index
-	bcs HBLKERR	; Timeout - bail
-	tay		; in the Y register
-	bne RC1		; Loop if index <> 0
-			; ...else return
-	clc
-	rts
-
-
-;---------------------------------------------------------
-; SENDNIBPAGE - Send a nibble page and its CRC
-;---------------------------------------------------------
-SENDNIBPAGE:
-	lda #$02
-	sta ZP
-	jsr SENDHBLK
-	lda <CRC	; Send the CRC of that page
-	jsr PUTC
-	lda <CRC+1
-	jsr PUTC
-	rts
-
-
-;---------------------------------------------------------
-; SENDBLK - Send a block with RLE
+; SENDBLKS - Send blocks with RLE
 ; CRC is sent to host
 ; BLKPTR points to full block to send - updated here
+; BAOCNT is the number of blocks to send
+; BLKLO/BLKHI - in - passed to SENDWIDE as the starting block
+; Returns:
+;   ACK character in accumulator, carry clear
+;   carry set in case of timeout
 ;---------------------------------------------------------
-SENDBLK:
-	lda #$02
-	sta <ZP
-
-SENDMORE:
+SENDBLKS:
+	lda BLKPTR+1
+	sta SCOUNT	; Stash the msb of BLKPTR, which SENDWIDE trashes
+	lda #$00
+	sta PAGECNT
+	lda BAOCNT
+	asl		; Convert blocks to pages
+	sta PAGECNT+1
+:	lda SCOUNT
+	sta BLKPTR+1	; Restore BLKPTR msb when looping
 	GO_SLOW		; Slow down for SOS
-	jsr SENDHBLK
-	lda <CRC	; Send the CRC of that block
-	jsr PUTC
-	lda <CRC+1
-	jsr PUTC
+	jsr SENDWIDE
 	jsr GETC	; Receive reply
 	GO_FAST		; Speed back up for SOS
 	bcs @SendTimeout
 	cmp #CHR_ACK	; Is it ACK?  Loop back if NAK.
-	bne SENDMORE
-	inc <BLKPTR+1	; Get next 256 bytes
-	dec <ZP
-	bne SENDMORE
+	bne :-
+	clc
 	rts
 @SendTimeout:
-	lda #$01	; Indicate failure
+	sec		; Indicate failure
 	rts
 
 
 ;---------------------------------------------------------
-; SENDHBLK - Send half a block with RLE
+; RECVWIDE - Receive a chunk of data
+; BLKPTR - in - points at buffer to save to
+; PAGECNT is used as 2-byte value of length to ultimately receive
 ; CRC is computed and stored
-; BLKPTR points to half block to send
 ;---------------------------------------------------------
-SENDHBLK:
+RWERR:
+	sec
+	rts
+
+RECVWIDE:
+	lda BLKPTR
+	sta BUFPTR
+	lda BLKPTR+1
+	sta BUFPTR+1
+	ldy #00		; Start at beginning of buffer
+
+	jsr GETC	; Get protocol - must be an 'A'
+	bcs RWERR	; Timeout - bail
+	cmp #CHR_A	;
+	bne RWERR
+	jsr GETC	; Get payload length, LSB
+	bcs RWERR	; Timeout - bail
+	sta PAGECNT	; Store length
+	sta XFERLEN
+	jsr GETC	; Get payload length, MSB
+	bcs RWERR	; Timeout - bail
+	sta PAGECNT+1	; Store length
+	sta XFERLEN+1
+	jsr GETC	; Get protocol - must be an 'S'
+	bcs RWERR	; Timeout - bail
+	cmp #CHR_S	;
+	bne RWERR
+	jsr GETC	; Get protocol - check byte (discarded for the moment)
+	bcs RWERR	; Timeout - bail
+	jsr GETC	; Get block number, LSB
+	bcs RWERR	; Timeout - bail
+	jsr GETC	; Get block number, MSB
+	bcs RWERR	; Timeout - bail
+			; TODO - probably should save/check the block number is the one we need...
+RW1:
+	jsr GETC	; Get difference
+	bcs RWERR	; Timeout - bail
+	beq RW2		; If zero, get new index
+	sta (BLKPTR),Y	; else put char in buffer
+	iny		; ...and increment index
+	bne RW1		; Loop if not at end of buffer
+	beq RWNext	; Branch always
+
+RW2:
+	jsr GETC	; Get new index ...
+	bcs RWERR	; Timeout - bail
+	tay		; ... in the Y register
+	bne RW1		; Loop if index <> 0
+			; ...else check for more or return
+
+RWNext:	dec PAGECNT+1
+	beq @Done	; Done?
+	inc BLKPTR+1	; Get ready for another page
+	jmp RW1
+@Done:	jsr GETC	; Done - get CRC
+	sta PCCRC
+	jsr GETC
+	GO_FAST		; Speed back up for SOS
+	sta PCCRC+1
+	lda XFERLEN+1
+	sta PAGECNT+1
+	lda BUFPTR
+	sta BLKPTR
+	lda BUFPTR+1
+	sta BLKPTR+1
+	jsr UNDIFFWide
+	clc
+	rts
+
+
+;---------------------------------------------------------
+; SENDWIDE - Send a chunk of data
+;   BLKLO/BLKHI - in - block number to start with
+;   BLKPTR points to data to send
+;   PAGECNT holds the number of bytes to send
+;---------------------------------------------------------
+SENDWIDE:
 	ldy #$00	; Start at first byte
 	sty <CRC	; Clean out CRC
 	sty <CRC+1
 	sty <RLEPREV
-
+	lda #CHR_A
+	jsr PUTC	; Wide protocol - 'A'
+	sta CHECKSUM
+	lda PAGECNT
+	jsr PUTC	; Wide protocol - lsb of bytes to expect
+	eor CHECKSUM
+	sta CHECKSUM
+	lda PAGECNT+1
+	jsr PUTC	; Wide protocol - msb of bytes to expect
+	eor CHECKSUM
+	sta CHECKSUM
+;	inc PAGECNT+1	; Bump the high byte - round up to next full page length
+	lda #CHR_S	; Wide protocol - 'S'
+	jsr PUTC
+	eor CHECKSUM
+	jsr PUTC	; Send check byte of envelope
 	lda BLKLO
 	jsr PUTC	; Send the block number (LSB)
 	lda BLKHI
 	jsr PUTC	; Send the block number (MSB)
-	lda <ZP
-	jsr PUTC	; Send the half-block number
+	dec BLKPTR+1	; Pre-decrement since the top of the loop increments the block pointer
 
-SS1:	lda (BLKPTR),Y	; GET BYTE TO SEND
+SW0:	inc BLKPTR+1
+SW1:	lda (BLKPTR),Y	; GET BYTE TO SEND
 	jsr UPDCRC	; UPDATE CRC
 	tax		; KEEP A COPY IN X
 	sec		; SUBTRACT FROM PREVIOUS
 	sbc <RLEPREV
 	stx <RLEPREV	; SAVE PREVIOUS BYTE
 	jsr PUTC	; SEND DIFFERENCE
-	beq SS3		; WAS IT A ZERO?
+	beq SW3		; WAS IT A ZERO?
 	iny		; NO, DO NEXT BYTE
-	bne SS1		; LOOP IF MORE TO DO
-	rts		; ELSE RETURN
+	bne SW1		; LOOP IF MORE TO DO
+	dec PAGECNT+1	; Decrement the page counter
+	bne SW0		; Loop if more to do
+	lda <CRC	; Send the overall CRC
+	jsr PUTC
+	lda <CRC+1
+	jsr PUTC
+	inc BLKPTR+1	; Final update of BLKPTR
+	rts
 
-SS2:	jsr UPDCRC
-SS3:	iny		; ANY MORE BYTES?
-	beq SS4		; NO, IT WAS 00 UP TO END
+SW2:	jsr UPDCRC
+SW3:	iny		; ANY MORE BYTES?
+	beq SW4		; NO, IT WAS 00 UP TO END
 	lda (BLKPTR),Y	; LOOK AT NEXT BYTE
 	cmp <RLEPREV
-	beq SS2		; SAME AS BEFORE, CONTINUE
-SS4:	tya		; DIFFERENCE NOT A ZERO
+	beq SW2		; SAME AS BEFORE, CONTINUE
+SW4:	tya		; DIFFERENCE NOT A ZERO
 	jsr PUTC	; SEND NEW ADDRESS
-	bne SS1		; AND GO BACK TO MAIN LOOP
+	bne SW1		; AND GO BACK TO MAIN LOOP
+	dec PAGECNT+1	; Decrement the page counter
+	bne SW0		; Loop if more to do
+	lda <CRC	; Send the overall CRC
+	jsr PUTC
+	lda <CRC+1
+	jsr PUTC
+	inc BLKPTR+1	; Final update of BLKPTR
 	rts		; OR RETURN IF NO MORE BYTES
 
 
@@ -473,17 +529,27 @@ SS4:	tya		; DIFFERENCE NOT A ZERO
 ; SENDFN - Send a file name
 ;
 ; Assumes input is at IN_BUF
+; Returns:
+;   length of name in X
+;   accumulated check byte in CHECKSUM
 ;---------------------------------------------------------
 SENDFN:
-	ldx #$00	
+	ldx #$00
+	stx CHECKSUM	
 FNLOOP:	lda IN_BUF,X
 	jsr PUTC
-	beq @Done
+	php
 	inx
+	eor CHECKSUM
+	sta CHECKSUM
+	plp
 	bne FNLOOP
-@Done:
 	rts
 
 PPROTO:	.byte $01	; Serial protocol = $01
+BUFPTR:	.addr 0
+XFERLEN:
+	.addr 0
+
 PUTC:	jmp $0000	; Pseudo-indirect JSR - self-modified
 GETC:	jmp $0000	; Pseudo-indirect JSR - self-modified

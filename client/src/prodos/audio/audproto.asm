@@ -1,6 +1,6 @@
 ;
 ; ADTPro - Apple Disk Transfer ProDOS
-; Copyright (C) 2007 - 2013 by David Schmidt
+; Copyright (C) 2007 - 2014 by David Schmidt
 ; david__schmidt at users.sourceforge.net
 ;
 ; This program is free software; you can redistribute it and/or modify it 
@@ -29,18 +29,56 @@ LASTIN	= $2f
 TAPEIN	= $C060
 TAPEOUT	= $C020
 
-RECVNIBCHUNK:
-	brk;
 
-GETNIBREQUEST:
-	brk;
+;---------------------------------------------------------
+; CDREQUEST - Request current directory change
+;---------------------------------------------------------
+CDREQUEST:
+	ldax #AUD_BUFFER
+	stax UTILPTR
+	stax A1L
+	stax A2L	; Set everyone up to talk to the AUD_BUFFER
+	lda #CHR_C	; Ask host to Change Directory
+	jsr FNREQUEST
+	lda CHECKSUM
+	jsr BUFBYTE
+	ldax UTILPTR
+	stax A2L
+	jsr aud_send
+	rts
+
 
 ;---------------------------------------------------------
 ; DIRREQUEST - Request current directory contents
 ;---------------------------------------------------------
 DIRREQUEST:
+	ldax #AUD_BUFFER
+	stax UTILPTR
+	stax A1L
+	stax A2L	; Set everyone up to talk to the AUD_BUFFER
 	lda #CHR_D
-	jsr PUTC
+	jmp ENVELOP_COMMAND
+
+
+;---------------------------------------------------------
+; ENVELOP_COMMAND - Send the single-byte command in the accumulator
+;---------------------------------------------------------
+ENVELOP_COMMAND:
+
+	pha			; Hang on to the command for a sec...
+	lda #CHR_A		; Envelope
+	jsr BUFBYTE
+	lda #$00
+	jsr BUFBYTE		; Payload length - lsb
+	lda #$00
+	jsr BUFBYTE		; Payload length - msb
+	pla			; Pull the command back off the stack
+	jsr BUFBYTE		; Send command
+	eor #$c1
+	jsr BUFBYTE		; Send check byte
+	ldax UTILPTR
+	stax A2L
+	jsr aud_send
 	rts
 
 ;---------------------------------------------------------
@@ -55,6 +93,7 @@ DIRREPLY:
 	jsr aud_receive
 	rts
 
+
 ;---------------------------------------------------------
 ; DIRABORT - Abort current directory contents
 ;---------------------------------------------------------
@@ -64,192 +103,21 @@ DIRABORT:
 	rts
 
 ;---------------------------------------------------------
-; CDREQUEST - Request current directory change
+; QUERYFNREQUEST
 ;---------------------------------------------------------
-CDREQUEST:
-	ldax #AUD_BUFFER
-	stax BLKPTR
-	stax A1L
-	stax A2L	; Set everyone up to talk to the AUD_BUFFER
-	ldy #$00
-	lda #CHR_C	; First byte: 'C', for CD
-	sta (BLKPTR),Y
-	iny
-	jsr COPYINPUT	; Copy over user input area
-	dey
-	tya
-	clc
-	adc A1L		; Find the end
-	sta A2L		; Tell A2 how long the data is
-	bcc :+
-	inc A2H
-				; Max CD request will be 255 bytes
-				; It's unlikely the $200 buffer is
-				; much bigger than that anyway...
-:	jsr aud_send
-	rts
-
-;---------------------------------------------------------
-; CDREPLY - Reply to current directory change
-; PUTREPLY - Reply from send an image to the host
-; BATCHREPLY - Reply from send multiple images to the host
-; GETREPLY - Reply from requesting an image be sent from the host
-; One-byte replies
-;---------------------------------------------------------
-CDREPLY:
-PUTREPLY:
-BATCHREPLY:
-GETREPLY:
-GETREPLY2:
-	jsr GETC
-	rts
-
-;---------------------------------------------------------
-; PUTREQUEST - Request to send an image to the host
-; SendType holds request type:
-; CHR_P - typical put
-; CHR_N - nibble send
-; CHR_H - half track send
-;---------------------------------------------------------
-PUTREQUEST:
-	ldax #AUD_BUFFER
-	stax BLKPTR
-	stax A1L		; Set everyone up to talk to the AUD_BUFFER
-	stx A2H
-	ldy #$00
-	lda SendType		; Grab the send type
-	sta (BLKPTR),Y		; Tell host what we are sending
-	iny
-	jsr COPYINPUT
-	lda NUMBLKS		; Send the total block size
-	sta (BLKPTR),Y
-	iny
-	lda NUMBLKS+1
-	sta (BLKPTR),Y
-	tya
-	clc
-	adc A1L
-	sta A2L
-	bcc :+
-	inc A2H
-:	jsr aud_send
-	rts
-
-;---------------------------------------------------------
-; PUTINITIALACK - Send initial ACK for a PUTREQUEST/PUTREPLY
-;---------------------------------------------------------
-PUTINITIALACK:
-	lda #CHR_ACK
-	jsr PUTC
-	rts
-
-;---------------------------------------------------------
-; PUTFINALACK - Send error count for PUT request
-;---------------------------------------------------------
-PUTFINALACK:
-	lda ECOUNT	; Errors during send?
-	jsr PUTC	; Send error flag to host
-	rts
-
-;---------------------------------------------------------
-; GETFINALACK -
-;---------------------------------------------------------
-GETFINALACK:
+QUERYFNREQUEST:
 	ldax #AUD_BUFFER
 	stax UTILPTR
 	stax A1L
-	lda #CHR_ACK
-	jsr BUFBYTE	; Send last ACK
-	lda BLKLO
-	jsr BUFBYTE	; Send the block number (LSB)
-	lda BLKHI
-	jsr BUFBYTE	; Send the block number (MSB)
-	lda <ZP
-	jsr BUFBYTE	; Send the half-block number
-	lda ECOUNT
-	jsr BUFBYTE	; Send number of errors encountered
+	lda #CHR_Z	; Ask host for file size
+	jsr FNREQUEST
+	lda CHECKSUM
+	jsr BUFBYTE
 	ldax UTILPTR
 	stax A2L
 	jsr aud_send
 	rts
 
-;---------------------------------------------------------
-; GETREQUEST -
-;---------------------------------------------------------
-GETREQUEST:
-	ldax #AUD_BUFFER
-	stax BLKPTR
-	stax A1L
-	stx A2H
-	ldy #$00
-	lda #CHR_G	; Ask host to send the file
-	sta (BLKPTR),Y
-	iny
-	jsr COPYINPUT
-	dey
-	tya
-	clc
-	adc A1L
-	sta A2L
-	bcc :+
-	inc A2H
-:	jsr aud_send
-	rts
-
-;---------------------------------------------------------
-; BATCHREQUEST - Request to send multiple images to the host
-;---------------------------------------------------------
-BATCHREQUEST:
-	ldax #AUD_BUFFER
-	stax BLKPTR
-	stax A1L
-	stx A2H
-	ldy #$00
-	lda SendType	; Check if we're sending nibbles in batch
-	cmp #CHR_N
-	bne BPLAIN
-	lda #CHR_M	; Tell host we are sending nibbles in batch
-	bne :+
-BPLAIN:	lda #CHR_B		; Tell host we are Putting/Sending
-:	sta (BLKPTR),Y
-	iny
-	jsr COPYINPUT
-	lda NUMBLKS		; Send the total block size
-	sta (BLKPTR),Y
-	iny
-	lda NUMBLKS+1
-	sta (BLKPTR),Y
-	iny
-	tya
-	clc
-	adc A1L
-	sta A2L
-	bcc :+
-	inc A2H
-:	jsr aud_send
-	rts
-
-;---------------------------------------------------------
-; QUERYFNREQUEST
-;---------------------------------------------------------
-QUERYFNREQUEST:
-	ldax #AUD_BUFFER
-	stax BLKPTR
-	stax A1L
-	stx A2H
-	ldy #$00
-	lda #CHR_Z	; Ask host for file size
-	sta (BLKPTR),Y
-	iny
-	jsr COPYINPUT
-	tya
-	clc
-	adc A1L
-	sta A2L
-	bcc :+
-	inc A2H
-:	jsr aud_send
-	rts
 
 ;---------------------------------------------------------
 ; QUERYFNREPLY -
@@ -268,164 +136,237 @@ QUERYFNREPLY:
 	sta QUERYRC	; Just some temp storage
 	rts
 
-;---------------------------------------------------------
-; SENDNIBPAGE - Send a nibble page and its CRC
-;---------------------------------------------------------
-SENDNIBPAGE:
-	ldax #AUD_BUFFER
-	stax UTILPTR
-	stax A1L
 
-	lda #$02
-	sta ZP
-	jsr SENDHBLK
+;---------------------------------------------------------
+; FNREQUEST - Request something with a file name
+; Assumes ready to load buffer with BUFBYTE
+;---------------------------------------------------------
+FNREQUEST:
+	pha
+	lda #CHR_A	; Envelope
+	sta CHECKSUM
+	jsr BUFBYTE
+	ldx #$00	; Count the length of the filename
+@loop:	lda IN_BUF,x
+	php
+	inx
+	plp
+	bne @loop
+	pla		; Which command was it?
+	cmp #CHR_P	; Was it a Put?
+	beq @addtwo
+	cmp #CHR_N	; Was it a Nibble?
+	beq @addtwo	
+	cmp #CHR_B	; Was it a Batch?
+	beq @addtwo
+	cmp #CHR_M	; Was it a Multiple nibble?
+	beq @addtwo
+	cmp #CHR_G	; Was it a Get?
+	beq @addone	
+	jmp @noadd	; Everyone else - no add
+@addtwo:
+	inx		; Increment x twice if so... need room for 2 more bytes
+@addone:
+	inx		; Increment x once if so... need room for 1 more byte
+@noadd:	pha
+	txa
+	jsr BUFBYTE	; Payload length - lsb
+	eor CHECKSUM
+	sta CHECKSUM
+	lda #$00
+	jsr BUFBYTE	; Payload length - msb
+			; No need to update checksum... eor with 0 makes no change
+	pla		; Pull the request byte
+	jsr BUFBYTE
+	eor CHECKSUM
+	sta CHECKSUM
+	jsr BUFBYTE	; Send the check byte for envelope
+	jsr SENDFN	; Send requested name
 	rts
 
-;---------------------------------------------------------
-; SENDBLK - Send a block with RLE
-; CRC is sent to host
-; BLKPTR points to full block to send - updated here
-;---------------------------------------------------------
-SENDBLK:
-	lda #$02
-	sta <ZP
-
-SENDMORE:
-	jsr SENDHBLK
-	jsr PUTREPLY
-	cmp #CHR_ACK	; Is it ACK?  Loop back if NAK ($17) or timeout ($08).
-	bne SENDMORE
-	inc <BLKPTR+1	; Get next 256 bytes
-	dec <ZP
-	bne SENDMORE
-	rts
 
 ;---------------------------------------------------------
-; SENDHBLK - Send half a block with RLE
-; CRC is computed and stored
-; BLKPTR points to half block to send
+; PUTREQUEST - Request to send an image to the host
+; SendType holds request type:
+; CHR_P - typical put
+; CHR_N - nibble send
+; CHR_H - half track send
 ;---------------------------------------------------------
-SENDHBLK:
-	ldy #$00	; Start at first byte
-	sty <CRC	; Clean out CRC
-	sty <CRC+1
-	sty <RLEPREV
+PUTREQUEST:
 	ldax #AUD_BUFFER
 	stax UTILPTR
-	stax A1L
-
-	lda BLKLO
-	jsr BUFBYTE	; Send the block number (LSB)
-	lda BLKHI
-	jsr BUFBYTE	; Send the block number (MSB)
-	lda <ZP
-	jsr BUFBYTE	; Send the half-block number
-
-SS1:	lda (BLKPTR),Y	; GET BYTE TO SEND
-	jsr UPDCRC	; UPDATE CRC
-	tax		; KEEP A COPY IN X
-	sec		; SUBTRACT FROM PREVIOUS
-	sbc <RLEPREV
-	stx <RLEPREV	; SAVE PREVIOUS BYTE
-	jsr BUFBYTE	; SEND DIFFERENCE
-	beq SS3		; WAS IT A ZERO?
-	iny		; NO, DO NEXT BYTE
-	bne SS1		; LOOP IF MORE TO DO
-	jmp SENDHEND	; ELSE finish packet
-
-SS2:	jsr UPDCRC
-SS3:	iny		; ANY MORE BYTES?
-	beq SS4		; NO, IT WAS 00 UP TO END
-	lda (BLKPTR),Y	; LOOK AT NEXT BYTE
-	cmp <RLEPREV
-	beq SS2		; SAME AS BEFORE, CONTINUE
-SS4:	tya		; DIFFERENCE NOT A ZERO
-	jsr BUFBYTE	; SEND NEW ADDRESS
-	bne SS1		; AND GO BACK TO MAIN LOOP
-
-SENDHEND:
-	lda <CRC	; Send the CRC of that block
+	stax A1L	; Set everyone up to talk to the AUD_BUFFER
+	lda SendType
+	jsr FNREQUEST
+	lda NUMBLKS	; Send the total block size
 	jsr BUFBYTE
-	lda <CRC+1
+	eor CHECKSUM
+	sta CHECKSUM
+	lda NUMBLKS+1
 	jsr BUFBYTE
+	eor CHECKSUM
+	jsr BUFBYTE	; Send check byte
 	ldax UTILPTR
 	stax A2L
 	jsr aud_send
 	rts
 
-;---------------------------------------------------------
-; BUFBYTE
-; Add accumulator to the outgoing packet
-; UTILPTR points to the data we're going to save
-;---------------------------------------------------------
-BUFBYTE:
-	php
-	sty UDPI	; Store Y for safe keeping
-	ldy #$00
-	sta (UTILPTR),Y
-	inc UTILPTR
-	bne :+
-	inc UTILPTR+1
-:	ldy UDPI	; Restore Y
-	plp
-	rts
 
 ;---------------------------------------------------------
-; RECVBLK - Receive a block with RLE
-;
-; BLKPTR points to full block to receive - updated here
+; PUTACKBLK - Send acknowlegedment packet
+; X contains the acknowledgement type
 ;---------------------------------------------------------
-RECVBLK:
-	lda #$02
-	sta <ZP
-	lda #CHR_ACK
-	sta ACK_CHAR
-
-RECVMORE:
-;	jsr PRINTBLOCK	; DEBUG
-	lda #$00	; Clear out the new half-block
-	tay
-CLRLOOP:
-	clc
-	sta (BLKPTR),Y
-	iny
-	bne CLRLOOP
-
+PUTACKBLK:
+	stx SLOWX
 	ldax #AUD_BUFFER
 	stax UTILPTR
 	stax A1L
-
-	lda ACK_CHAR
-	jsr BUFBYTE	; Send ack/nak
-
-	lda BLKLO
-	jsr BUFBYTE	; Send the block number (LSB)
-	lda BLKHI
-	jsr BUFBYTE	; Send the block number (MSB)
-	lda <ZP
-	jsr BUFBYTE	; Send the half-block number
-
+	lda #CHR_A	; Envelope
+	jsr BUFBYTE
+	lda #$03	; Three byte payload
+	jsr BUFBYTE
+	lda #$00
+	jsr BUFBYTE
+	lda #CHR_K	; Acknowledgement packet
+	jsr BUFBYTE	; Send ack type
+	lda #$09	; Pre-calculted check byte
+	jsr BUFBYTE	; Send check byte
+	lda SLOWX	; Grab the ack type 
+	jsr BUFBYTE
+	sta CHECKSUM
+	lda BLKLO	; Send the current block number LSB
+	jsr BUFBYTE
+	eor CHECKSUM
+	sta CHECKSUM
+	lda BLKHI	; Send the current block number MSB
+	jsr BUFBYTE
+	eor CHECKSUM
+	jsr BUFBYTE	; Send check byte
 	ldax UTILPTR
 	stax A2L
-	jsr aud_send	; Send our ack package
+	jsr aud_send
+	rts
 
-	jsr RECVHBLK
+
+;---------------------------------------------------------
+; PUTFINALACK - Send error count for requests
+;---------------------------------------------------------
+PUTFINALACK:
+	ldax #AUD_BUFFER
+	stax UTILPTR
+	stax A1L
+	lda #CHR_A
+	jsr BUFBYTE	; Wide protocol - 'A'
+	lda #$01
+	jsr BUFBYTE	; Wide protocol - lsb of bytes to expect
+	lda #$00
+	jsr BUFBYTE	; Wide protocol - msb of bytes to expect
+	lda #CHR_Y	; Wide protocol - 'Y'
+	jsr BUFBYTE
+	lda #$19
+	jsr BUFBYTE
+	lda ECOUNT	; Errors during send?
+	jsr BUFBYTE
+	jsr BUFBYTE	; Check byte will be the same thing
+	ldax UTILPTR
+	stax A2L
+	jsr aud_send
+	rts
+
+
+;---------------------------------------------------------
+; GETREQUEST - Request an image be sent from the host
+;---------------------------------------------------------
+GETREQUEST:
+	ldax #AUD_BUFFER
+	stax UTILPTR
+	stax A1L
+	lda #CHR_G	; Tell host we are Getting/Receiving
+	jsr FNREQUEST
+	lda BAOCNT
+	jsr BUFBYTE	; Express number of blocks at once (BAOCNT)
+	eor CHECKSUM
+	jsr BUFBYTE	; Send check byte
+	ldax UTILPTR
+	stax A2L
+	jsr aud_send
+	rts
+
+
+;---------------------------------------------------------
+; CDREPLY - Reply to current directory change
+; PUTREPLY - Reply from send an image to the host
+; BATCHREPLY - Reply from send multiple images to the host
+; GETREPLY - Reply from requesting an image be sent from the host
+; One-byte replies
+;---------------------------------------------------------
+CDREPLY:
+PUTREPLY:
+BATCHREPLY:
+GETREPLY:
+GETREPLY2:
+	jsr GETC
+	rts
+
+
+;---------------------------------------------------------
+; BATCHREQUEST - Request to send multiple images to the host
+;---------------------------------------------------------
+BATCHREQUEST:
+	ldax #AUD_BUFFER
+	stax BLKPTR
+	stax A1L
+	lda SendType
+	sta SLOWX	; Stash the SendType as we'll be modifying it briefly
+	; CHR_P - typical put -> CHR_B (batch)
+	; CHR_N - nibble send -> CHR_M (multiple nibble)
+	cmp #CHR_P
+	bne :+
+	lda #CHR_B
+	sta SendType
+	jmp BGo
+:	cmp #CHR_N
+	bne BGo
+	lda #CHR_M
+	sta SendType
+BGo:	jsr PUTREQUEST
+	lda SLOWX
+	sta SendType
+	rts
+
+
+;---------------------------------------------------------
+; RECVBLKS - Receive blocks with RLE
+;
+; BLKPTR points to starting block to receive - updated here
+;---------------------------------------------------------
+RECVBLKS:
+	lda BLKPTR
+	sta PAGECNT
+	lda BLKPTR+1
+	sta PAGECNT+1
+	
+	ldx #CHR_ACK	; Initial ack
+
+RECVMORE:
+	lda BLKPTR+1
+	sta SCOUNT	; Stash the msb of BLKPTR, which RECVWIDE trashes
+	lda #$00
+	sta PAGECNT
+	sta PAGECNT+1
+	lda SCOUNT
+	sta BLKPTR+1	; Restore BLKPTR msb when looping
+
+	jsr PUTACKBLK	; Send ack/nak packet for blocks
+	jsr RECVWIDE
 	bcs RECVERR
-	jsr UNDIFF
 	lda <CRC
 	cmp PCCRC
 	bne RECVERR
 	lda <CRC+1
 	cmp PCCRC+1
 	bne RECVERR
-
-	lda #CHR_ACK
-	sta ACK_CHAR
-
-	inc <BLKPTR+1	; Get next 256 bytes
-	dec <ZP
-RECOK:	bne RECVMORE
-	lda #$00
+	clc		; Indicate success
 	rts
 
 RECVERR:
@@ -435,86 +376,229 @@ RECVERR:
 
 ACK_CHAR: .byte CHR_ACK
 
+
 ;---------------------------------------------------------
-; RECVHBLK - Receive half a block with RLE
-; Carry set on error, cleared on success
+; SENDBLKS - Send blocks with RLE
+; CRC is sent to host
+; BLKPTR points to full block to send - updated here
+; BAOCNT is the number of blocks to send
+; BLKLO/BLKHI - in - passed to SENDWIDE as the starting block
+; Returns:
+;   ACK character in accumulator, carry clear
+;   carry set in case of timeout
+;---------------------------------------------------------
+SENDBLKS:
+	lda BLKPTR+1
+	sta SCOUNT	; Stash the msb of BLKPTR, which SENDWIDE trashes
+	lda #$00
+	sta PAGECNT
+	lda BAOCNT
+	asl		; Convert blocks to pages
+	sta PAGECNT+1
+:	lda SCOUNT
+	sta BLKPTR+1	; Restore BLKPTR msb when looping
+	jsr SENDWIDE
+	jsr GETC	; Receive reply
+	bcs @SendTimeout
+	cmp #CHR_ACK	; Is it ACK?  Loop back if NAK.
+	bne :-
+	clc
+	rts
+@SendTimeout:
+	sec		; Indicate failure
+	rts
+
+
+;---------------------------------------------------------
+; RECVWIDE - Receive a chunk of data
+; BLKPTR - in - points at buffer to save to
+; PAGECNT is used as 2-byte value of length to ultimately receive
 ; CRC is computed and stored
 ;---------------------------------------------------------
-HBLKERR:
+RWERR:
 	sec
 	rts
 
-RECVHBLK:
+RECVWIDE:
+	ldy #$00
+	sty TMOT	; Clear timeout processing
 	ldax #AUD_BUFFER
-	stax UTILPTR	; Connect UTILPTR to audio buffer
 	stax A1L
-	lda #$00
-	sta RLEPREV	; Used as Y-index to BLKPTR buffer (output)
-	sta UDPI	; Used as Y-index to UTILPTR buffer (input)
+	stax UTILPTR
 
 	jsr aud_receive
 
+	ldax #AUD_BUFFER
+	stax A1L
+	ldx #$00
+	lda (A1L,X)
+	cmp #CHR_A	; Get protocol - must be an 'A'
+	bne RWERR
+	jsr NXTA1
+	lda (A1L,X)	; Get payload length, LSB
+	sta PAGECNT
+	sta XFERLEN
+	jsr NXTA1
+	lda (A1L,X)	; Get payload length, MSB
+	sta PAGECNT+1
+	sta XFERLEN+1
+	jsr NXTA1
+	lda (A1L,X)	; Get protocol - must be an 'S'
+	cmp #CHR_S
+	bne RWERR
+	jsr NXTA1
+	lda (A1L,X)	; Get protocol - check byte (discarded for the moment)
+	jsr NXTA1	; Block number, LSB
+	jsr NXTA1	; Block number, MSB
+			; TODO - probably should save/check the block number is the one we need...
+	lda BLKPTR
+	sta BUFPTR
+	lda BLKPTR+1
+	sta BUFPTR+1
 	ldy #$00
-	lda (UTILPTR),Y	; Get block number (lsb)
-	sec
-	sbc BLKLO
-	bne HBLKERR
-	iny
-	lda (UTILPTR),Y	; Get block number (msb)
-	sec
-	sbc BLKHI
-	bne HBLKERR
-	iny
-	lda (UTILPTR),Y	; Get half-block
-	sec
-	sbc ZP
-	bne HBLKERR
-	iny
-	sty UDPI
-RC1:
-	ldy UDPI
-	lda (UTILPTR),Y	; Get next byte out of audio buffer
-	beq RC2		; If it's zero, get new index
-	iny
-	cpy #$00
-	bne :+
-	inc UTILPTR+1
-:	sty UDPI
-	ldy RLEPREV
+
+RW1:
+	jsr NXTA1	; Increment the pointer to data we're reading
+	lda (A1L,X)	; Get difference
+	beq RW2		; If zero, get new index
 	sta (BLKPTR),Y	; else put char in buffer
-	iny		; ...and increment BLKPTR's index
-	sty RLEPREV
-	bne RC1		; Loop if not at end of buffer
-	jmp RCVEND	; ...else done
-RC2:
-	iny		; Increment the UTILPTR index
-	sty UDPI
-	cpy #$00
-	bne :+
-	inc UTILPTR+1
-:	lda (UTILPTR),Y	; Get next byte out of audio buffer - the next index
-	sta RLEPREV	; Save the new BLKPTR index
-	php
-	iny		; Increment the UTILPTR index
-	sty UDPI
-	cpy #$00
-	bne :+
-	inc UTILPTR+1
-:	plp
-	bne RC1		; Loop if index <> 0
-			; ...else done
-RCVEND:
-	ldy UDPI
-	lda (UTILPTR),Y	; Get next byte out of audio buffer
-	sta PCCRC	; Receive the CRC of that block
-	iny
-	cpy #$00
-	bne :+
-	inc UTILPTR+1	; Point at next 256 bytes
-:	lda (UTILPTR),Y	; Get next byte out of audio buffer
+	iny		; ...and increment index to data we're writing
+	bne RW1		; Loop if not at end of buffer
+	beq RWNext	; Branch always
+
+RW2:
+	jsr NXTA1	; Increment the pointer to data we're reading
+	lda (A1L,X)	; Get new index ...
+	tay		; ... in the Y register
+	bne RW1		; Loop if index <> 0
+			; ...else check for more or return
+
+RWNext:	dec PAGECNT+1
+	beq @Done	; Done?
+	inc BLKPTR+1	; Get ready for another page
+	lda BLKPTR+1
+	cmp #$c0
+	beq RWERR	; Protect ourselves from buffer overrun
+	jmp RW1
+@Done:
+	jsr NXTA1	; Increment the pointer to data we're reading
+	lda (A1L,X)	; Done - get CRC
+	sta PCCRC
+	jsr NXTA1	; Increment the pointer to data we're reading
+	lda (A1L,X)	; Done - get CRC
 	sta PCCRC+1
+	lda XFERLEN+1
+	sta PAGECNT+1
+	lda BUFPTR
+	sta BLKPTR
+	lda BUFPTR+1
+	sta BLKPTR+1
+	jsr UNDIFFWide
 	clc
 	rts
+
+
+;---------------------------------------------------------
+; SENDWIDE - Send a chunk of data
+;   BLKLO/BLKHI - in - block number to start with
+;   BLKPTR points to data to send
+;   PAGECNT holds the number of bytes to send
+;---------------------------------------------------------
+SENDWIDE:
+	ldax #AUD_BUFFER
+	stax UTILPTR
+	stax A1L
+	ldy #$00	; Start at first byte
+	sty <CRC	; Clean out CRC
+	sty <CRC+1
+	sty <RLEPREV
+	lda #CHR_A
+	jsr BUFBYTE	; Wide protocol - 'A'
+	sta CHECKSUM
+	lda PAGECNT
+	jsr BUFBYTE	; Wide protocol - lsb of bytes to expect
+	eor CHECKSUM
+	sta CHECKSUM
+	lda PAGECNT+1
+	jsr BUFBYTE	; Wide protocol - msb of bytes to expect
+	eor CHECKSUM
+	sta CHECKSUM
+	lda #CHR_S	; Wide protocol - 'S'
+	jsr BUFBYTE
+	eor CHECKSUM
+	jsr BUFBYTE	; Send check byte of envelope
+	lda BLKLO
+	jsr BUFBYTE	; Send the block number (LSB)
+	lda BLKHI
+	jsr BUFBYTE	; Send the block number (MSB)
+	dec BLKPTR+1	; Pre-decrement since the top of the loop increments the block pointer
+
+SW0:	inc BLKPTR+1
+SW1:	lda (BLKPTR),Y	; GET BYTE TO SEND
+	jsr UPDCRC	; UPDATE CRC
+	tax		; KEEP A COPY IN X
+	sec		; SUBTRACT FROM PREVIOUS
+	sbc <RLEPREV
+	stx <RLEPREV	; SAVE PREVIOUS BYTE
+	jsr BUFBYTE	; SEND DIFFERENCE
+	beq SW3		; WAS IT A ZERO?
+	iny		; NO, DO NEXT BYTE
+	bne SW1		; LOOP IF MORE TO DO
+	dec PAGECNT+1	; Decrement the page counter
+	bne SW0		; Loop if more to do
+	lda <CRC	; Send the overall CRC
+	jsr BUFBYTE
+	lda <CRC+1
+	jsr BUFBYTE
+	inc BLKPTR+1	; Final update of BLKPTR
+	ldax UTILPTR
+	stax A2L
+	jsr aud_send
+	rts
+
+SW2:	jsr UPDCRC
+SW3:	iny		; ANY MORE BYTES?
+	beq SW4		; NO, IT WAS 00 UP TO END
+	lda (BLKPTR),Y	; LOOK AT NEXT BYTE
+	cmp <RLEPREV
+	beq SW2		; SAME AS BEFORE, CONTINUE
+SW4:	tya		; DIFFERENCE NOT A ZERO
+	jsr BUFBYTE	; SEND NEW ADDRESS
+	bne SW1		; AND GO BACK TO MAIN LOOP
+	dec PAGECNT+1	; Decrement the page counter
+	bne SW0		; Loop if more to do
+	lda <CRC	; Send the overall CRC
+	jsr BUFBYTE
+	lda <CRC+1
+	jsr BUFBYTE
+	inc BLKPTR+1	; Final update of BLKPTR
+	ldax UTILPTR
+	stax A2L
+	jsr aud_send
+	rts		; OR RETURN IF NO MORE BYTES
+
+
+;---------------------------------------------------------
+; SENDFN - Send a file name
+;
+; Assumes input is at IN_BUF
+; Returns:
+;   length of name in X
+;   accumulated check byte in CHECKSUM
+;---------------------------------------------------------
+SENDFN:
+	ldx #$00
+	stx CHECKSUM	
+FNLOOP:	lda IN_BUF,X
+	jsr BUFBYTE
+	php
+	inx
+	eor CHECKSUM
+	sta CHECKSUM
+	plp
+	bne FNLOOP
+	rts
+
 
 ;---------------------------------------------------------
 ; PUTC - Send the accumulator alone in a packet
@@ -531,12 +615,27 @@ PUTC:
 ; GETC - Receive a packet and get the first byte from it
 ;---------------------------------------------------------
 GETC:
-	lda #$ff	; Stuff some non-zero garbage
-	sta AUD_BUFFER	;   in the audio buffer
 	ldax #AUD_BUFFER
 	stax A1L
 	jsr aud_receive
 	lda AUD_BUFFER	; Send back whatever we received
+	rts
+
+;---------------------------------------------------------
+; BUFBYTE
+; Add accumulator to the outgoing packet
+; UTILPTR points to the next byte we're going to save - and keeps a running total
+;---------------------------------------------------------
+BUFBYTE:
+	php
+	sty UDPI	; Store Y for safe keeping
+	ldy #$00
+	sta (UTILPTR),Y
+	inc UTILPTR
+	bne :+
+	inc UTILPTR+1
+:	ldy UDPI	; Restore Y
+	plp
 	rts
 
 ;---------------------------------------------------------
@@ -684,108 +783,17 @@ TAPTMOT:
 TAPABORT:
 	jmp ABORT
 
-;---------------------------------------------------------
-; COPYINPUT - Copy data from input area to (BLKPTR);
-; Y is assumed to point to the next available byte
-; after (BLKPTR); Y will point to the next byte on exit
-;---------------------------------------------------------
-COPYINPUT:
-	ldx #$00
-@LOOP:	lda $0200,X
-	sta (BLKPTR),Y
-	php
-	inx
-	iny
-	plp
-	beq @Done
-	bne @LOOP
-@Done:	rts
 
 ;---------------------------------------------------------
 ; Variables
 ;---------------------------------------------------------
 PPROTO:	.byte $00	; Audio protocol = $00
 AUD_BUFFER:
-	.res  1500
+	.res  3000,0	; Enough for up to 5 blocks at once
 QUERYRC:
 	.byte $00
 PUTCMSG:
 	.byte $00
-
-;PRINTBLOCK:		; Handy debug routine to print the block number & ack/nak status
-;	lda CH
-;	sta CH_SAV
-;	lda CV
-;	sta CV_SAV
-;
-;	ldy #$00
-;:
-;	lda $0480,y	; Scroll messages
-;	sta $0400,y
-;	lda $0500,y
-;	sta $0480,y
-;	lda $0580,y
-;	sta $0500,y
-;	lda $0600,y
-;	sta $0580,y
-;	lda $0680,y
-;	sta $0600,y
-;	lda $0700,y
-;	sta $0680,y
-;	lda $0780,y
-;	sta $0700,y
-;	lda $0428,y
-;	sta $0780,y
-;	lda $04a8,y
-;	sta $0428,y
-;	lda $0528,y
-;	sta $04a8,y
-;	iny
-;	cpy #$28
-;	bne :-
-;
-;	lda #$00
-;	sta CH
-;	lda #$0a
-;	jsr TABV
-;
-;	jsr CLREOL
-;	ldy #$00
-;DEBUG_MSG_1_PRINT:
-;	lda DEBUG_MSG_1,Y	; Print our message header
-;	beq DEBUG_MSG_DONE
-;	jsr COUT1
-;	iny
-;	jmp DEBUG_MSG_1_PRINT
-;DEBUG_MSG_DONE:
-;
-;	lda BLKHI	; Print block number in hex
-;	jsr PRBYTE
-;	lda BLKLO
-;	jsr PRBYTE
-;	lda #CHR_SP
-;	jsr COUT1
-;	
-;	lda ZP			; Print half-block number (1 or 2)
-;	jsr PRBYTE
-;	lda #CHR_SP
-;	jsr COUT1
-;
-;	lda BLKPTR+1	; Print MSB of block pointer in hex
-;	jsr PRBYTE
-;	lda #CHR_SP
-;	jsr COUT1
-;
-;	lda ACK_CHAR	; Print acknowledgement character from host
-;	jsr COUT1
-;
-;	lda CH_SAV
-;	sta CH
-;	lda CV_SAV
-;	sta CV
-;	jsr TABV
-;	rts
-;
-;CH_SAV:	.byte $00
-;CV_SAV:	.byte $00
-;DEBUG_MSG_1: ascz "BLK: "
+BUFPTR:	.addr 0
+XFERLEN:
+	.addr 0
