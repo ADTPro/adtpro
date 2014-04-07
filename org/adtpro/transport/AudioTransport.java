@@ -1,6 +1,6 @@
 /*
  * ADTPro - Apple Disk Transfer ProDOS
- * Copyright (C) 2007 - 2010 by David Schmidt
+ * Copyright (C) 2007 - 2014 by David Schmidt
  * david__schmidt at users.sourceforge.net
  *
  * Serial Transport notions derived from the jSyncManager project
@@ -109,7 +109,7 @@ public class AudioTransport extends ATransport
   public void writeBytes(byte data[])
   {
     // Log.println(false, "AudioTransport.writeBytes() entry.");
-    if ((1499 - _outPacketPtr) >= data.length)
+    if ((2600 - _outPacketPtr) >= data.length)
     {
       // Log.println(false, "AudioTransport.writeBytes() writing " + data.length
       // + " bytes into packet starting from " + _outPacketPtr + ".");
