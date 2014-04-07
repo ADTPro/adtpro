@@ -24,15 +24,15 @@ ADTPro-Wide Protocol - Proposal Under Revision
 
  [{{{#Directory}Directory}}]  View contents of current working directory
 
- [{{{#Put}Size}}]  Query file size/existence test
-
  [{{{#Get}Get}}]  Initiate disk image download from host
 
  [{{{#Put}Put}}]  Initiate disk image upload to host (always overwrite)
 
- [{{{#Batch}Batch}}]  Initiate batch upload (unique suffix added to specified prefix)
+ [{{{#Batch}Batch}}]  Initiate batch upload (unique suffix added to specified filename prefix)
 
- [{{{#Multiple}Multiple}}]  Initiate multiple nibble batch upload (unique suffix added to specified prefix)
+ [{{{#Nibble}Nibble}}]  Initiate nibble disk upload to host (always overwrite)
+
+ [{{{#Multiple}Multiple}}]  Initiate multiple nibble batch upload (unique suffix added to specified filename prefix)
 
 * Packet Formats
 
@@ -46,9 +46,17 @@ ADTPro-Wide Protocol - Proposal Under Revision
  
  [{{{#Image_Put_Packet}Put ('A'+'P' / $C1+$D0)}}]  Initiate disk image upload to host (always overwrite)
  
+ [{{{#Batch_Put_Packet}Batch ('A'+'B' / $C1+$C2)}}]  Initiate batch disk image upload to host (unique suffix added to specified filename prefix)
+ 
+ [{{{#Nibble_Put_Packet}Nibble ('A'+'N' / $C1+$CD)}}]  Initiate nibble disk image upload to host
+ 
+ [{{{#Multiple_Nibble_Put_Packet}Multiple ('A'+'M' / $C1+$CC)}}]  Initiate batch nibble disk image upload to host (unique suffix added to specified filename prefix)
+ 
  [{{{#Send_Image_Data_Packet}Send Image Data ('A'+'S' / $C1+$D3)}}]  RLE compressed data for image transfer (page-aligned)
 
  [{{{#Acknowledgement_Packet}Acknowledgement ('A'+'K' / $C1+$CB)}}] Acknowledgement - one of ACK, NAK, CAN
+
+ [{{{#Summary_Packet}Summary ('A'+'Y' / $C1+$D9)}}] Final acknowledgement/summary of results
 
 Virtual Drive Server Functions
 
@@ -85,9 +93,10 @@ ADTPro Functions
 
  Client sends {{{#Change_Directory_Packet}Change Working Directory Packet}} ('A'+'C' / $C1+$C3)
 
--------------
+ Host sends:
 
-Host sends: return code:
+-------------
+One byte:
   $00 = ok
   $06 = Unable to change directory
 -------------
@@ -101,7 +110,7 @@ Host sends: return code:
 ------------
 
 Two bytes: file size in blocks (LSB, MSB)
-One byte: return code:
+One byte:
   $00 = File exists (and file size is valid)
   $02 = File does not exist
   $04 = File exists, not recognized as a valid disk image
@@ -109,9 +118,11 @@ One byte: return code:
 
  Client sends {{{#Image_Get_Packet}Image Get Packet}} ('A'+'G' / $C1+$C7)
 
+ Host sends:
+
 ------------
 
-Host sends: return code:
+One byte:
   $00 = Ok
   $02 = File not found (client aborts)
 ------------
@@ -132,11 +143,11 @@ One byte:
   $15 = NAK (Resend this same packet again: block number tells what client 
              is still waiting to get a good packet for)
 Two bytes: current block number (LSB, MSB)
-
-Final acknowledgement may contain an extra payload byte, a count of errors.
 ------------
 
  (loop end)
+
+ Client sends {{{#Summary_Packet}Summary}} ('A'+'Y' / $C1+$D9) packet
 
 * {Put} (Send) disk  (from client to host)
 
@@ -147,7 +158,7 @@ Final acknowledgement may contain an extra payload byte, a count of errors.
 ------------
 
 Two bytes: file size in blocks (LSB, MSB)
-One byte: return code:
+One byte:
   $00 = File exists (and file size is valid)
   $02 = File does not exist
   $04 = File exists, not recognized as a valid disk image
@@ -159,7 +170,7 @@ One byte: return code:
 
 ------------
 
-Return code:
+One byte:
   $00 = Ok
   $02 = Unable to write (client aborts)
 ------------
@@ -172,7 +183,7 @@ Return code:
  
 ------------
 
-One-byte acknowledgement:
+One byte:
   $06 = ACK (Host understood the packet, CRC is correct; send next one)
             (Also: this is a duplicate packet, already received; acknowledge
             so the client sends the next one)
@@ -181,105 +192,146 @@ One-byte acknowledgement:
 
  (end loop)
 
- Client sends:
+ Client sends {{{#Summary_Packet}Summary}} ('A'+'Y' / $C1+$D9) packet
 
-------------
+* {Batch} send (unique suffix added to specified filename prefix)
 
-One byte: number of errors encountered
-------------
+ Client sends {{{#Batch_Put_Packet}Batch Send Packet}} ('A'+'B' / $C1+$C2)
 
+ Host sends:
 
-* {Batch} send (unique suffix added to specified prefix)
+-----------
 
-------------
-
-Client sends:
-  One byte: 'B' ($C2)
-  Byte stream: file name prefix (null terminated)
-  Two bytes:
-    Number of blocks to follow (LSB)
-    Number of blocks to follow (MSB)
-
-Host sends:
-  One byte: return code:
+  One byte:
   $00 = Ok
   $02 = Unable to write (client aborts)
-
-Client sends:
-  $06 = ACK
-
-(parts = filesize /(40 * 512), remainder = filesize % (40 * 512))
-(loop: parts * 40 blocks + remainder * blocks)
-
-  Client sends:
-    Two bytes: current block number (LSB, MSB)
-    One byte: half-block number (2 = bytes 0-255, 1 = bytes 256-511)
-    Half-block, RLE encoded
-    two bytes:
-      CRC (LSB)
-      CRC (MSB)
-
-  Host sends one byte acknowledgement:
-    $06 = ACK (Host understood the packet, CRC is correct; send next one)
-              (Also: this is a duplicate packet, already received; acknowledge
-              so the client sends the next one)
-    $15 = NAK (Resend the same packet again)
-
-(end loop)
-
-Client sends: One byte: number of errors encountered
-
 ------------
 
-* {Multiple} nibble send (unique suffix added to specified prefix)
+ (loop for as much data is required)
 
-------------
-
-Client sends:
-  One byte: 'M' ($CC)
-  Byte stream: file name prefix (null terminated)
-  Two bytes:
-    Number of blocks to follow (LSB - ignored at host)
-    Number of blocks to follow (MSB - ignored at host)
-
-Host sends:
-  One byte: return code:
-  $00 = Ok
-  $02 = Unable to write (client aborts)
-
-Client sends:
-  $06 = ACK
-
-(Assuming zero return code...)
-Client sends: $06 = ACK
-(loop, 35 tracks)
-  (loop, 52 blocks * 256 bytes)
-    Apple sends:
-      one byte: block number within the track (starting at 0)
-      one byte: track number
-      one byte: $02
-      Next block, RLE encoded
-      two bytes:
-        CRC (LSB)
-        CRC (MSB)
-
-    Host sends:
-      $06 = ACK
-      $15 = NAK
-
-  (end block loop)
+ Client sends {{{#Send_Image_Data_Packet}Send Image Data Packet}} ('A'+'S' / $C1+$D3) 
 
   Host sends:
+ 
+------------
+
+One byte:
+  $06 = ACK (Host understood the packet, CRC is correct; send next one)
+            (Also: this is a duplicate packet, already received; acknowledge
+            so the client sends the next one)
+  $15 = NAK (Resend the same packet again)
+------------
+
+ (end loop)
+
+ Client sends {{{#Summary_Packet}Summary}} ('A'+'Y' / $C1+$D9) packet
+
+* Send {Nibble} Disk
+
+ Client sends {{{#Query_File_Size_Packet}Query File Size Packet}} ('A'+'Z' / $C1+$DA)
+
+ Host sends:
+ 
+------------
+
+Two bytes: file size in blocks (LSB, MSB)
+One byte:
+  $00 = File exists (and file size is valid)
+  $02 = File does not exist
+  $04 = File exists, not recognized as a valid disk image
+------------
+
+ Client sends {{{#Nibble_Put_Packet} Nibble Send Packet}} ('A'+'N' / $C1+$CD)
+
+ Host sends:
+
+------------
+
+One byte:
+  $00 = Ok
+  $02 = Unable to write (client aborts)
+------------
+
+ (loop for 35 tracks)
+
+ (loop for as much data is required within a track)
+
+ Client sends {{{#Send_Image_Data_Packet}Send Image Data Packet}} ('A'+'S' / $C1+$D3) 
+
+ Host sends:
+ 
+------------
+
+One byte:
+  $06 = ACK (Host understood the packet, CRC is correct; send next one)
+            (Also: this is a duplicate packet, already received; acknowledge
+            so the client sends the next one)
+  $15 = NAK (Resend the same packet again)
+------------
+
+ (end data loop)
+
+  Host sends:
+
+------------
+
+One byte:
     $06 = ACK analysis was successful; please proceed with the next track
     $15 = NAK analysis failed; abort the operation
     $18 = CAN analysis failed, but please continue with next track
     $05 = ENQ analysis was inconclusive; please re-read the same track and send the newly read data
-
-(end track loop)
-
-Apple sends:
- $00 = error count
 ------------
+
+ (end track loop)
+
+ Client sends {{{#Summary_Packet}Summary}} ('A'+'Y' / $C1+$D9) packet
+
+* {Multiple} nibble send (unique suffix added to specified filename prefix)
+
+ Client sends {{{#Multiple_Nibble_Put_Packet}Multiple Nibble Send Packet}} ('A'+'M' / $C1+$CC)
+
+ Host sends:
+
+-----------
+
+  One byte:
+  $00 = Ok
+  $02 = Unable to write (client aborts)
+------------
+
+ (loop for 35 tracks)
+
+ (loop for as much data is required within a track)
+
+ Client sends {{{#Send_Image_Data_Packet}Send Image Data Packet}} ('A'+'S' / $C1+$D3) 
+
+ Host sends:
+ 
+------------
+
+One byte:
+  $06 = ACK (Host understood the packet, CRC is correct; send next one)
+            (Also: this is a duplicate packet, already received; acknowledge
+            so the client sends the next one)
+  $15 = NAK (Resend the same packet again)
+------------
+
+ (end data loop)
+
+  Host sends:
+
+------------
+
+One byte:
+    $06 = ACK analysis was successful; please proceed with the next track
+    $15 = NAK analysis failed; abort the operation
+    $18 = CAN analysis failed, but please continue with next track
+    $05 = ENQ analysis was inconclusive; please re-read the same track and send the newly read data
+------------
+
+ (end track loop)
+
+ Client sends {{{#Summary_Packet}Summary}} ('A'+'Y' / $C1+$D9) packet
 
 * Speediboot {ProDOS} Download
 
@@ -465,6 +517,38 @@ Check byte:
   One byte: EOR of the payload
 -------------
 
+* {Batch Put Packet} - Command
+
+-------------
+
+Envelope:
+  One byte: 'A' ($C1)
+  Two bytes: payload length (file name + null + 2-byte block size, not including check byte)
+  One byte: 'B' ($C2)
+  One byte: EOR of prior four bytes
+Payload:
+  Byte stream: file name (null terminated)
+  Two bytes: file size in blocks (LSB, MSB)
+Check byte:
+  One byte: EOR of the payload
+-------------
+
+* {Multiple Nibble Put Packet} - Command
+
+-------------
+
+Envelope:
+  One byte: 'A' ($C1)
+  Two bytes: payload length (file name + null + 2-byte block size, not including check byte)
+  One byte: 'M' ($CC)
+  One byte: EOR of prior four bytes
+Payload:
+  Byte stream: file name (null terminated)
+  Two bytes: file size in blocks (LSB, MSB)
+Check byte:
+  One byte: EOR of the payload
+-------------
+
 * {Send Image Data Packet} - Response
 
 -------------
@@ -495,6 +579,21 @@ Payload:
   Optional additional payload of length (minus one) of bytes
 Check byte:
   One byte: EOR of the payload, including acknowledgement byte
+-------------
+
+* {Summary Packet} - Response
+
+-------------
+
+Envelope:
+  One byte: 'A' ($C1)
+  Two bytes: payload length ($0001)
+  One byte: 'Y' ($D9)
+  One byte: EOR of prior four bytes ($19)
+Payload:
+  One byte: number of errors encountered
+Check byte:
+  One byte: EOR of the payload (will be same as the payload byte)
 -------------
 
 Vitual Drive Server Functions
