@@ -21,7 +21,6 @@
 	.import udp_send_nocopy
 	.import udp_send
 	.import udp_send_len
-	.import udp_send_len
 	.import ip_inp
 	.import udp_inp
 	.import udp_outp
@@ -32,56 +31,71 @@
 
 
 ;---------------------------------------------------------
+; Constants
+;---------------------------------------------------------
+STATE_IDLE	= 0
+STATE_DIR	= 1
+STATE_QUERY	= 5
+STATE_RECVBLKS	= 6
+STATE_WAITING_ONE_BYTE_REPLY = 8
+NXTA1		= $FCBA
+
+
+;---------------------------------------------------------
 ; CDREQUEST - Request current directory change
 ;---------------------------------------------------------
 CDREQUEST:
-	ldax #udp_inp + udp_data + 1	; Point Buffer at the UDP data buffer
-	stax Buffer
-	lda #CHR_C	; Ask host to Change Directory
+	ldax #udp_outp + udp_data	; Point UTILPTR at the UDP data buffer
+	stax UTILPTR
+	lda #$00
+	sta udp_send_len
+	sta udp_send_len+1
+	lda #CHR_C			; Ask host to Change Directory
 	jsr FNREQUEST
-	lda CHECKSUM
+	lda CHECKBYTE
 	jsr BUFBYTE
-	lda #STATE_CD
+	lda #STATE_WAITING_ONE_BYTE_REPLY
 	sta state
-	GO_SLOW				; Slow down for SOS
-	ldax Buffer
-	jsr udp_send
-	GO_FAST				; Speed back up for SOS
+	jsr udp_send_nocopy
 	jsr RECEIVE_LOOP_FAST
 	rts
 
-
-;---------------------------------------------------------
-; SENDWIDE - Send a chunk of data
-;---------------------------------------------------------
-SENDWIDE:
-	rts
-
-;---------------------------------------------------------
-; RECEIVEWIDE - Receive a chunk of data
-;---------------------------------------------------------
-RECEIVEWIDE:
-	rts
 
 ;---------------------------------------------------------
 ; DIRREQUEST - Request current directory contents
 ;---------------------------------------------------------
 DIRREQUEST:
+	ldax #udp_outp + udp_data	; Point UTILPTR at the UDP outgoing buffer
+	stax UTILPTR
+	lda #$00
+	sta udp_send_len
+	sta udp_send_len+1
 	lda #STATE_DIR	; Set up for DIRREPLY1 callback
 	sta state
+	lda #CHR_A		; Envelope
+	jsr BUFBYTE
+	lda #$00
+	jsr BUFBYTE		; Payload length - lsb
+	lda #$00
+	jsr BUFBYTE		; Payload length - msb
 	lda #CHR_D
-	jsr PUTC
+	jsr BUFBYTE		; Send command
+	eor #$c1		; Check byte is simply A^|D
+	jsr BUFBYTE		; Send check byte
+	jsr udp_send_nocopy
 	jsr RECEIVE_LOOP_FAST
 	rts
+
 
 ;---------------------------------------------------------
 ; DIRREPLY - serial compatibility and UDP callback entry points
 ;---------------------------------------------------------
 DIRREPLY1:
-	ldax #udp_inp + udp_data + 1	; Point Buffer at the UDP data buffer
+	ldax #udp_inp + udp_data + 1	; Point Buffer at the UDP incoming buffer
 	stax Buffer
 DIRREPLY:
 	rts
+
 
 ;---------------------------------------------------------
 ; DIRABORT - Abort current directory contents
@@ -98,13 +112,13 @@ DIRABORT:
 ; GETREPLY - Reply from requesting an image be sent from the host
 ; One-byte replies
 ;---------------------------------------------------------
-CDREPLY1:
+ONE_BYTE_REPLY:
 PUTREPLY1:
 BATCHREPLY1:
-GETREPLY1:
+GETREPLY2:
 	lda TMOT
 	bne @Repl1
-	lda udp_inp + udp_data + 1	; Pick up the data byte
+	lda udp_inp + udp_data + 1	; Pick up the data byte from incoming buffer
 	jmp @Repl2
 @Repl1:	lda #PHMTIMEOUT			; Load up timeout indicator
 @Repl2:	sta QUERYRC
@@ -119,17 +133,6 @@ GETREPLY:
 @Ok:	lda QUERYRC
 	rts
 
-GETREPLY2:
-	lda #STATE_GET	; Set up for GETREPLY1 callback
-	sta state
-	jsr RECEIVE_LOOP_FAST
-	clc
-	lda TMOT
-	beq @Ok
-	sec
-@Ok:	lda QUERYRC
-	rts	
-
 
 ;---------------------------------------------------------
 ; FNREQUEST - Request something with a file name
@@ -138,7 +141,7 @@ GETREPLY2:
 FNREQUEST:
 	pha
 	lda #CHR_A	; Envelope
-	sta CHECKSUM
+	sta CHECKBYTE
 	jsr BUFBYTE
 	ldx #$00	; Count the length of the filename
 @loop:	lda IN_BUF,x
@@ -165,15 +168,15 @@ FNREQUEST:
 @noadd:	pha
 	txa
 	jsr BUFBYTE	; Payload length - lsb
-	eor CHECKSUM
-	sta CHECKSUM
+	eor CHECKBYTE
+	sta CHECKBYTE
 	lda #$00
 	jsr BUFBYTE	; Payload length - msb
 			; No need to update checksum... eor with 0 makes no change
 	pla		; Pull the request byte
 	jsr BUFBYTE
-	eor CHECKSUM
-	sta CHECKSUM
+	eor CHECKBYTE
+	sta CHECKBYTE
 	jsr BUFBYTE	; Send the check byte for envelope
 	jsr SENDFN	; Send requested name
 	rts
@@ -187,196 +190,162 @@ FNREQUEST:
 ; CHR_H - half track send
 ;---------------------------------------------------------
 PUTREQUEST:
-	ldax #udp_inp + udp_data + 1	; Point Buffer at the UDP data buffer
-	stax Buffer
-	ldy #$00
-	lda SendType
-	sta (Buffer),Y		; Accumulator still holds request type
-	iny
-	cmp #CHR_N		; Nibble send?
-	beq PUTNIBBLE		; Branch away if so
-	jsr COPYINPUT
-	lda NUMBLKS		; Send the total block size
-	sta (Buffer),Y
-	iny
-	lda NUMBLKS+1
-	sta (Buffer),Y
-	iny
-	tya
-	ldx #$00
-	stax udp_send_len
-	lda #STATE_PUT
-	sta state
-	GO_SLOW			; Slow down for SOS
-	ldax Buffer
-	jsr udp_send
-	GO_FAST			; Speed back up for SOS
-	jsr RECEIVE_LOOP_FAST
-	rts
-
-PUTNIBBLE:
-	lda #$01		; Copy in the protocol initialization: $01, $01, $00
-	sta (Buffer),Y
-	iny
-	sta (Buffer),Y
-	iny
+	ldax #udp_outp + udp_data	; Point UTILPTR at the UDP data buffer
+	stax UTILPTR
 	lda #$00
-	sta (Buffer),Y
-	iny
-	tya
-	ldx #$00
-	stax udp_send_len
-	lda #STATE_PUT		; Set up for one-byte response
+	sta udp_send_len
+	sta udp_send_len+1
+	lda SendType
+	jsr FNREQUEST
+	lda NUMBLKS	; Send the total block size
+	jsr BUFBYTE
+	eor CHECKBYTE
+	sta CHECKBYTE
+	lda NUMBLKS+1
+	jsr BUFBYTE
+	eor CHECKBYTE
+	jsr BUFBYTE	; Send check byte
+	lda #STATE_WAITING_ONE_BYTE_REPLY
 	sta state
-	GO_SLOW			; Slow down for SOS
-	ldax Buffer
-	jsr udp_send
-	GO_FAST			; Speed back up for SOS
-	jsr RECEIVE_LOOP_FAST
-	lda QUERYRC
-	cmp #CHR_ACK
-	beq :+
-	lda #PHMGBG		; Failed protocol negotiation
-	jmp PCERROR
-:	ldy #$00
-	jsr COPYINPUT
-	tya
-	ldx #$00
-	stax udp_send_len
-	lda #STATE_PUT
-	sta state
-	GO_SLOW			; Slow down for SOS
-	ldax Buffer
-	jsr udp_send
-	GO_FAST			; Speed back up for SOS
+	jsr udp_send_nocopy
 	jsr RECEIVE_LOOP_FAST
 	rts
 
 
 ;---------------------------------------------------------
-; PUTINITIALACK - Send initial ACK for a PUTREQUEST/PUTREPLY
+; PUTACKBLK - Send acknowlegedment packet
+; X contains the acknowledgement type
 ;---------------------------------------------------------
-PUTINITIALACK:
-	lda #CHR_ACK
-	jsr PUTC
+PUTACKBLK:
+	stx SLOWX
+	ldax #udp_outp + udp_data	; Point UTILPTR at the UDP data buffer
+	stax UTILPTR
+	lda #$00
+	sta udp_send_len
+	sta udp_send_len+1
+	lda #CHR_A	; Envelope
+	jsr BUFBYTE
+	lda #$03	; Three byte payload
+	jsr BUFBYTE
+	lda #$00
+	jsr BUFBYTE
+	lda #CHR_K	; Acknowledgement packet
+	jsr BUFBYTE	; Send ack type
+	lda #$09	; Pre-calculted check byte
+	jsr BUFBYTE	; Send check byte
+	lda SLOWX	; Grab the ack type 
+	jsr BUFBYTE
+	sta CHECKBYTE
+	lda BLKLO	; Send the current block number LSB
+	jsr BUFBYTE
+	eor CHECKBYTE
+	sta CHECKBYTE
+	lda BLKHI	; Send the current block number MSB
+	jsr BUFBYTE
+	eor CHECKBYTE
+	jsr BUFBYTE	; Send check byte
+	lda #STATE_IDLE	; Not requiring a reply
+	sta state
+	jsr udp_send_nocopy
+	jsr RECEIVE_LOOP_FAST
 	rts
 
-PUTACK:
-	lda #CHR_ACK
-	jsr PUTC
-	rts
 
 ;---------------------------------------------------------
-; PUTFINALACK - Send error count for PUT request
+; PUTFINALACK - Send error count for requests
 ;---------------------------------------------------------
 PUTFINALACK:
-	lda ECOUNT	; Errors during send?
-	jsr PUTC	; Send error flag to host
-	rts
-
-;---------------------------------------------------------
-; GETFINALACK -
-;---------------------------------------------------------
-GETFINALACK:
-	ldy #$00
-        sty udp_send_len
-        sty udp_send_len+1
-	ldax #udp_outp + udp_data
+	ldax #udp_outp + udp_data	; Point UTILPTR at the UDP data buffer
 	stax UTILPTR
-	lda #CHR_ACK
-	jsr BUFBYTE	; Send last ACK
-	lda BLKLO	
-	jsr BUFBYTE	; Send the block number (LSB)
-	lda BLKHI
-	jsr BUFBYTE	; Send the block number (MSB)
-	lda <ZP
-	jsr BUFBYTE	; Send the half-block number
-	lda ECOUNT
-	jsr BUFBYTE	; Send number of errors encountered
+	lda #$00
+	sta udp_send_len
+	sta udp_send_len+1
+	lda #CHR_A
+	jsr BUFBYTE	; Wide protocol - 'A'
+	lda #$01
+	jsr BUFBYTE	; Wide protocol - lsb of bytes to expect
+	lda #$00
+	jsr BUFBYTE	; Wide protocol - msb of bytes to expect
+	lda #CHR_Y	; Wide protocol - 'Y'
+	jsr BUFBYTE
+	lda #$19
+	jsr BUFBYTE
+	lda ECOUNT	; Errors during send?
+	jsr BUFBYTE
+	jsr BUFBYTE	; Check byte will be the same thing
+	lda #STATE_IDLE	; Not requiring a reply
+	sta state
 	GO_SLOW				; Slow down for SOS
 	jsr udp_send_nocopy
 	GO_FAST				; Speed back up for SOS
+	jsr RECEIVE_LOOP_FAST
 	rts
+
 
 ;---------------------------------------------------------
 ; GETREQUEST -
 ;---------------------------------------------------------
 GETREQUEST:
-	ldax #udp_inp + udp_data + 1	; Point Buffer at the UDP data buffer
-	stax Buffer
-	ldy #$00
-	lda #CHR_G	; Ask host to send the file
-	sta (Buffer),Y
-	iny
-	jsr COPYINPUT
-	tya
-	ldx #$00
-	stax udp_send_len
-	lda #STATE_GET	; Set up for GETREPLY1 callback
+	ldax #udp_outp + udp_data	; Point UTILPTR at the UDP data buffer
+	stax UTILPTR
+	lda #$00
+	sta udp_send_len
+	sta udp_send_len+1
+	lda #CHR_G	; Tell host we are Getting/Receiving
+	jsr FNREQUEST
+	lda BAOCNT
+	jsr BUFBYTE	; Express number of blocks at once (BAOCNT)
+	eor CHECKBYTE
+	jsr BUFBYTE	; Send check byte
+	lda #STATE_WAITING_ONE_BYTE_REPLY
 	sta state
-	GO_SLOW				; Slow down for SOS
-	ldax Buffer
-	jsr udp_send
-	GO_FAST				; Speed back up for SOS
+	jsr udp_send_nocopy
 	jsr RECEIVE_LOOP_FAST
 	rts
+
 
 ;---------------------------------------------------------
 ; BATCHREQUEST - Request to send multiple images to the host
 ;---------------------------------------------------------
 BATCHREQUEST:
-	ldax #udp_inp + udp_data + 1	; Point Buffer at the UDP data buffer
-	stax Buffer
-	ldy #$00
-	lda SendType	; Check if we're sending nibbles in batch
-	cmp #CHR_N
-	bne BPLAIN
-	lda #CHR_M	; Tell host we are sending nibbles in batch
+	lda SendType
+	sta SLOWX	; Stash the SendType as we'll be modifying it briefly
+	; CHR_P - typical put -> CHR_B (batch)
+	; CHR_N - nibble send -> CHR_M (multiple nibble)
+	cmp #CHR_P
 	bne :+
-BPLAIN:	lda #CHR_B		; Tell host we are Putting/Sending
-:	sta (Buffer),Y
-	iny
-	jsr COPYINPUT
-	lda NUMBLKS		; Send the total block size
-	sta (Buffer),Y
-	iny
-	lda NUMBLKS+1
-	sta (Buffer),Y
-	iny
-	tya
-	ldx #$00
-	stax udp_send_len
-	lda #STATE_PUT
-	sta state
-	GO_SLOW				; Slow down for SOS
-	ldax Buffer
-	jsr udp_send
-	GO_FAST				; Speed back up for SOS
-	jsr RECEIVE_LOOP_FAST
+	lda #CHR_B
+	sta SendType
+	jmp BGo
+:	cmp #CHR_N
+	bne BGo
+	lda #CHR_M
+	sta SendType
+BGo:	jsr PUTREQUEST
+	lda SLOWX
+	sta SendType
 	rts
+
 
 ;---------------------------------------------------------
 ; QUERYFNREQUEST
 ;---------------------------------------------------------
 QUERYFNREQUEST:
-	ldax #udp_inp + udp_data + 1	; Point Buffer at the UDP data buffer
-	stax Buffer
-	ldy #$00
-	lda #CHR_Z	; Ask host for file size
-	sta (Buffer),Y
-	iny
-	jsr COPYINPUT
-	tya
-	ldx #$00
-	stax udp_send_len
+	ldax #udp_outp + udp_data	; Point UTILPTR at the UDP outgoing data buffer
+	stax UTILPTR
+	lda #$00
+	sta udp_send_len
+	sta udp_send_len+1
+	lda #CHR_Z		; Ask host for file size
+	jsr FNREQUEST
+	lda CHECKBYTE
+	jsr BUFBYTE
 	lda #STATE_QUERY	; Set up for the QUERYFNREPLY callback
 	sta state
-	GO_SLOW				; Slow down for SOS
-	ldax Buffer
-	jsr udp_send
-	GO_FAST				; Speed back up for SOS
+	jsr udp_send_nocopy
 	jsr RECEIVE_LOOP_FAST
 	rts
+
 
 ;---------------------------------------------------------
 ; QUERYFNREPLY -
@@ -390,7 +359,7 @@ QUERYFNREPLY1:
 	sta HOSTBLX+1
 	lda udp_inp + udp_data + 3	; Return code/message
 	sta QUERYRC			; Just some temp storage
-	jmp QUERYFNREPLY
+	jmp QUERYFNREPLYDONE
 :
 	lda #PHMTIMEOUT
 	sta QUERYRC
@@ -404,99 +373,268 @@ QUERYFNREPLY:
 QUERYFNREPLYDONE:
 	rts
 
-;---------------------------------------------------------
-; SENDNIBPAGE - Send a nibble page with RLE
-; CRC is computed and stored
-; BLKPTR points to page to send
-;---------------------------------------------------------
-SENDNIBPAGE:
-	ldax #udp_outp + udp_data
-	stax UTILPTR
-	lda #$02
-	sta ZP
-	GO_SLOW				; Slow down for SOS
-	jsr SENDHBLK
-	GO_FAST				; Speed back up for SOS
-	lda #STATE_PUT	; Set up callback to PUTREPLY1
-	sta state
-	jsr RECEIVE_LOOP_FAST
-	rts
 
 ;---------------------------------------------------------
-; SENDBLKS - Send a block with RLE
+; RECVBLKS - Receive blocks with RLE
+;
+; BLKPTR points to starting block to receive - updated here
+;---------------------------------------------------------
+RECVBLKS:
+	lda BLKPTR
+	sta PAGECNT
+	lda BLKPTR+1
+	sta PAGECNT+1
+	
+	ldx #CHR_ACK	; Initial ack
+
+RECVMORE:
+	lda BLKPTR+1
+	sta SCOUNT	; Stash the msb of BLKPTR, which RECVWIDE trashes
+	lda #$00
+	sta PAGECNT
+	sta PAGECNT+1
+	lda SCOUNT
+	sta BLKPTR+1	; Restore BLKPTR msb when looping
+
+	jsr PUTACKBLK	; Send ack/nak packet for blocks
+	jsr RECVWIDE
+	bcs RECVERR 
+	lda <CRC
+	cmp PCCRC
+	bne RECVERR
+	lda <CRC+1
+	cmp PCCRC+1
+	bne RECVERR
+	clc		; Indicate success
+	rts
+
+RECVERR:
+	ldx #CHR_NAK	; CRC error, ask for a resend
+	jmp RECVMORE
+
+
+;---------------------------------------------------------
+; SENDBLKS - Send blocks with RLE
 ; CRC is sent to host
 ; BLKPTR points to full block to send - updated here
+; BAOCNT is the number of blocks to send
+; BLKLO/BLKHI - in - passed to SENDWIDE as the starting block
+; Returns:
+;   ACK character in accumulator, carry clear
+;   carry set in case of timeout
 ;---------------------------------------------------------
 SENDBLKS:
-	lda #$02
-	sta <ZP
-SENDMORE:
-	GO_SLOW				; Slow down for SOS
-	jsr SENDHBLK
-	GO_FAST				; Speed back up for SOS
-	lda #STATE_PUT	; Set up callback to PUTREPLY1
-	sta state
-	jsr RECEIVE_LOOP_FAST
-SENDMORE2:
-	lda QUERYRC
-	cmp #CHR_ACK	; Is it ACK?  Loop back if NAK ($17) or timeout ($08).
-	bne SENDMORE
-	inc <BLKPTR+1	; Get next 256 bytes
-	dec <ZP
-	bne SENDMORE
+	lda BLKPTR+1
+	sta SCOUNT	; Stash the msb of BLKPTR, which SENDWIDE trashes
+	lda #$00
+	sta PAGECNT
+	lda BAOCNT
+	asl		; Convert blocks to pages
+	sta PAGECNT+1
+:	lda SCOUNT	; Restore BLKPTR msb when looping
+	sta BLKPTR+1
+	jsr SENDWIDE	; Pushes blocks out and runs callback ONE_BYTE_REPLY
+	jsr PUTREPLY	; Retrieve results from ONE_BYTE_REPLY
+	bcs @SendTimeout
+	cmp #CHR_ACK	; Is it ACK?  Loop back if NAK.
+	bne :-
+	clc
+	rts
+@SendTimeout:
+	sec		; Indicate failure
 	rts
 
+
 ;---------------------------------------------------------
-; SENDHBLK - Send half a block with RLE
+; RECVWIDE - Receive a chunk of data
+; BLKPTR - in - points at buffer to save to
+; PAGECNT is used as 2-byte value of length to ultimately receive
 ; CRC is computed and stored
-; BLKPTR points to half block to send
 ;---------------------------------------------------------
-SENDHBLK:
+RECVWIDE:
+	ldy #$00
+	sty TMOT	; Clear timeout processing
+	lda #STATE_RECVBLKS	; Set up to be called back at RECVWIDE_REPLY
+	sta state
+	jsr RECEIVE_LOOP_FAST
+	rts
+
+RWERR:
+	php
+	pha
+	inc $400
+	pla
+	sta $0427
+	plp
+	sec
+	rts
+
+RWERR1:
+	php
+	pha
+	inc $401
+	pla
+	plp
+	sec
+	rts
+
+RECVWIDE_REPLY:
+	ldax #udp_inp + udp_data + 1	; Point Buffer at the incoming UDP data buffer
+	stax A1L
+	ldx #$00
+	lda (A1L,X)
+	cmp #CHR_A	; Get protocol - must be an 'A'
+	bne RWERR
+	jsr NXTA1
+	lda (A1L,X)	; Get payload length, LSB
+	sta PAGECNT
+	sta XFERLEN
+	jsr NXTA1
+	lda (A1L,X)	; Get payload length, MSB
+	sta PAGECNT+1
+	sta XFERLEN+1
+	jsr NXTA1
+	lda (A1L,X)	; Get protocol - must be an 'S'
+	cmp #CHR_S
+	bne RWERR1
+	jsr NXTA1
+	lda (A1L,X)	; Get protocol - check byte (discarded for the moment)
+	jsr NXTA1	; Block number, LSB
+	jsr NXTA1	; Block number, MSB
+			; TODO - probably should save/check the block number is the one we need...
+	lda BLKPTR
+	sta BUFPTR
+	lda BLKPTR+1
+	sta BUFPTR+1
+	ldy #$00
+
+RW1:
+	jsr NXTA1	; Increment the pointer to data we're reading
+	lda (A1L,X)	; Get difference
+	beq RW2		; If zero, get new index
+	sta (BLKPTR),Y	; else put char in buffer
+	iny		; ...and increment index to data we're writing
+	bne RW1		; Loop if not at end of buffer
+	beq RWNext	; Branch always
+
+RW2:
+	jsr NXTA1	; Increment the pointer to data we're reading
+	lda (A1L,X)	; Get new index ...
+	tay		; ... in the Y register
+	bne RW1		; Loop if index <> 0
+			; ...else check for more or return
+
+RWNext:	dec PAGECNT+1
+	beq @Done	; Done?
+	inc BLKPTR+1	; Get ready for another page
+	lda BLKPTR+1
+	cmp #$c0
+	beq RWERR2	; Protect ourselves from buffer overrun
+	jmp RW1
+@Done:
+	jsr NXTA1	; Increment the pointer to data we're reading
+	lda (A1L,X)	; Done - get CRC lsb
+	sta PCCRC
+	jsr NXTA1	; Increment the pointer to data we're reading
+	lda (A1L,X)	; Done - get CRC msb
+	sta PCCRC+1
+	lda XFERLEN+1
+	sta PAGECNT+1
+	lda BUFPTR
+	sta BLKPTR
+	lda BUFPTR+1
+	sta BLKPTR+1
+	jsr UNDIFFWide
+	clc
+	rts
+
+RWERR2:
+	php
+	pha
+	inc $402
+	pla
+	plp
+	sec
+	rts
+
+
+;---------------------------------------------------------
+; SENDWIDE - Send a chunk of data
+;   BLKLO/BLKHI - in - block number to start with
+;   BLKPTR points to data to send
+;   PAGECNT holds the number of bytes to send
+;---------------------------------------------------------
+SENDWIDE:
+	ldax #udp_outp + udp_data	; Point UTILPTR at the UDP data buffer
+	stax UTILPTR
 	ldy #$00	; Start at first byte
 	sty <CRC	; Clean out CRC
 	sty <CRC+1
 	sty <RLEPREV
-        sty udp_send_len
-        sty udp_send_len+1
-	ldax #udp_outp + udp_data
-	stax UTILPTR
-
+	sty udp_send_len
+	sty udp_send_len+1
+	lda #CHR_A
+	jsr BUFBYTE	; Wide protocol - 'A'
+	sta CHECKBYTE
+	lda PAGECNT
+	jsr BUFBYTE	; Wide protocol - lsb of bytes to expect
+	eor CHECKBYTE
+	sta CHECKBYTE
+	lda PAGECNT+1
+	jsr BUFBYTE	; Wide protocol - msb of bytes to expect
+	eor CHECKBYTE
+	sta CHECKBYTE
+	lda #CHR_S	; Wide protocol - 'S'
+	jsr BUFBYTE
+	eor CHECKBYTE
+	jsr BUFBYTE	; Send check byte of envelope
 	lda BLKLO
 	jsr BUFBYTE	; Send the block number (LSB)
 	lda BLKHI
 	jsr BUFBYTE	; Send the block number (MSB)
-	lda <ZP
-	jsr BUFBYTE	; Send the half-block number
+	dec BLKPTR+1	; Pre-decrement since the top of the loop increments the block pointer
 
-SS1:	lda (BLKPTR),Y	; GET BYTE TO SEND
+SW0:	inc BLKPTR+1
+SW1:	lda (BLKPTR),Y	; GET BYTE TO SEND
 	jsr UPDCRC	; UPDATE CRC
 	tax		; KEEP A COPY IN X
 	sec		; SUBTRACT FROM PREVIOUS
 	sbc <RLEPREV
 	stx <RLEPREV	; SAVE PREVIOUS BYTE
 	jsr BUFBYTE	; SEND DIFFERENCE
-	beq SS3		; WAS IT A ZERO?
+	beq SW3		; WAS IT A ZERO?
 	iny		; NO, DO NEXT BYTE
-	bne SS1		; LOOP IF MORE TO DO
-	jmp SENDHEND	; ELSE finish packet
-
-SS2:	jsr UPDCRC
-SS3:	iny		; ANY MORE BYTES?
-	beq SS4		; NO, IT WAS 00 UP TO END
-	lda (BLKPTR),Y	; LOOK AT NEXT BYTE
-	cmp <RLEPREV
-	beq SS2		; SAME AS BEFORE, CONTINUE
-SS4:	tya		; DIFFERENCE NOT A ZERO
-	jsr BUFBYTE	; SEND NEW ADDRESS
-	bne SS1		; AND GO BACK TO MAIN LOOP
-
-SENDHEND:
-	lda <CRC	; Send the CRC of that block
+	bne SW1		; LOOP IF MORE TO DO
+	dec PAGECNT+1	; Decrement the page counter
+	bne SW0		; Loop if more to do
+	lda <CRC	; Send the overall CRC
 	jsr BUFBYTE
 	lda <CRC+1
 	jsr BUFBYTE
+	inc BLKPTR+1	; Final update of BLKPTR
+	jmp SWGo
 
+SW2:	jsr UPDCRC
+SW3:	iny		; ANY MORE BYTES?
+	beq SW4		; NO, IT WAS 00 UP TO END
+	lda (BLKPTR),Y	; LOOK AT NEXT BYTE
+	cmp <RLEPREV
+	beq SW2		; SAME AS BEFORE, CONTINUE
+SW4:	tya		; DIFFERENCE NOT A ZERO
+	jsr BUFBYTE	; SEND NEW ADDRESS
+	bne SW1		; AND GO BACK TO MAIN LOOP
+	dec PAGECNT+1	; Decrement the page counter
+	bne SW0		; Loop if more to do
+	lda <CRC	; Send the overall CRC
+	jsr BUFBYTE
+	lda <CRC+1
+	jsr BUFBYTE
+	inc BLKPTR+1	; Final update of BLKPTR
+
+SWGo:	lda #STATE_WAITING_ONE_BYTE_REPLY ; Set up to be called back with a single byte reply
+	sta state
 	jsr udp_send_nocopy
+	jsr RECEIVE_LOOP_FAST
 	rts
 
 
@@ -521,160 +659,6 @@ BUFBYTE:
 	rts
 
 
-;---------------------------------------------------------
-; RECVBLKS - Receive a block with RLE
-;
-; BLKPTR points to full block to receive - updated here
-;---------------------------------------------------------
-RECVBLKS:
-	lda #$02
-	sta <ZP
-	lda #CHR_ACK
-	sta ACK_CHAR
-
-RECVMORE:
-	lda #$00	; Clear out the new half-block
-	tay
-CLRLOOP:
-	clc
-	sta (BLKPTR),Y
-	iny
-	bne CLRLOOP
-        sty udp_send_len
-        sty udp_send_len+1
-	ldax #udp_outp + udp_data
-	stax UTILPTR	; Set up UTILPTR to be our BUFBYTE area
-	lda ACK_CHAR
-	jsr BUFBYTE	; Send ack/nak
-	lda BLKLO
-	jsr BUFBYTE	; Send the block number (LSB)
-	lda BLKHI
-	jsr BUFBYTE	; Send the block number (MSB)
-	lda <ZP
-	jsr BUFBYTE	; Send the half-block number
-	GO_SLOW			; Slow down for SOS
-	jsr udp_send_nocopy	; Send our ack package
-	GO_FAST			; Speed back up for SOS
-	lda #STATE_RECVHBLK	; Set up callback to RECVHBLK
-	sta state
-	jsr RECEIVE_LOOP_FAST
-
-RECVBLK2:
-	lda <CRCY
-	bne RECVERR
-	jsr UNDIFF
-	lda <CRC
-	cmp PCCRC
-	bne RECVERR
-	lda <CRC+1
-	cmp PCCRC+1
-	bne RECVERR
-
-RECBRANCH:
-	lda #CHR_ACK
-	sta ACK_CHAR
-	inc <BLKPTR+1	; Get next 256 bytes
-	dec <ZP
-RECOK:	bne RECVMORE
-	lda #$00
-	rts
-
-RECVERR:
-	lda #CHR_NAK	; CRC error, ask for a resend
-	sta ACK_CHAR
-	jmp RECVMORE
-
-ACK_CHAR: .byte CHR_ACK
-
-RECVNIBCHUNK:
-	brk
-
-GETNIBREQUEST:
-	brk
-
-;---------------------------------------------------------
-; RECVHBLK - Receive half a block with RLE
-; CRCY is set to $01 on error, $00 on success
-; CRC is computed and stored
-;---------------------------------------------------------
-HBLKERR:
-	lda #$01
-	sta <CRCY
-	rts
-
-RECVHBLK:
-	ldax #udp_inp + udp_data + 1
-	stax UTILPTR	; Connect UTILPTR to UDP packet buffer
-	lda #$00
-	sta RLEPREV	; Used as Y-index to BLKPTR buffer (output)
-	sta UDPI	; Used as Y-index to UTILPTR buffer (input)
-
-	ldy #$00
-	lda (UTILPTR),Y	; Get block number (lsb)
-	sec
-	sbc BLKLO
-	bne HBLKERR
-	iny
-	lda (UTILPTR),Y	; Get block number (msb)
-	sec
-	sbc BLKHI
-	bne HBLKERR
-	iny
-	lda (UTILPTR),Y	; Get half-block
-	sec
-	sbc ZP
-	bne HBLKERR
-	clc
-	lda <UTILPTR
-	adc #$03
-	sta <UTILPTR
-	bcc RC1
-	inc <UTILPTR+1
-RC1:
-	ldy UDPI
-	lda (UTILPTR),Y	; Get next byte out of UDP packet buffer
-	beq RC2		; If it's zero, get new index
-	iny
-	cpy #$00
-	bne :+
-	inc UTILPTR+1
-:	sty UDPI
-	ldy RLEPREV
-	sta (BLKPTR),Y	; else put char in buffer
-	iny		; ...and increment BLKPTR's index
-	sty RLEPREV
-	bne RC1		; Loop if not at end of buffer
-	jmp RCVEND	; ...else done
-RC2:
-	iny		; Increment the UTILPTR index
-	sty UDPI
-	cpy #$00
-	bne :+
-	inc UTILPTR+1
-:	lda (UTILPTR),Y	; Get next byte out of UDP packet buffer - the next index
-	sta RLEPREV	; Save the new BLKPTR index
-	php
-	iny		; Increment the UTILPTR index
-	sty UDPI
-	cpy #$00
-	bne :+
-	inc UTILPTR+1
-:	plp
-	bne RC1		; Loop if index <> 0
-			; ...else done
-RCVEND:
-	ldy UDPI
-	lda (UTILPTR),Y	; Get next byte out of UDP packet buffer
-	sta PCCRC	; Receive the CRC of that block
-	iny
-	cpy #$00
-	bne :+
-	inc UTILPTR+1	; Point at next 256 bytes
-:	lda (UTILPTR),Y	; Get next byte out of UDP packet buffer
-	sta PCCRC+1
-	lda #$00
-	sta <CRCY
-	rts
 
 ;---------------------------------------------------------
 ; SENDFN - Send a file name
@@ -682,17 +666,17 @@ RCVEND:
 ; Assumes input is at IN_BUF
 ; Returns:
 ;   length of name in X
-;   accumulated check byte in CHECKSUM
+;   accumulated check byte in CHECKBYTE
 ;---------------------------------------------------------
 SENDFN:
 	ldx #$00
-	stx CHECKSUM	
+	stx CHECKBYTE	
 FNLOOP:	lda IN_BUF,X
 	jsr BUFBYTE
 	php
 	inx
-	eor CHECKSUM
-	sta CHECKSUM
+	eor CHECKBYTE
+	sta CHECKBYTE
 	plp
 	bne FNLOOP
 	rts
@@ -709,10 +693,8 @@ PUTC:
 	sta PUTCMSG		; PATCHUTHER.
 	ldax #PUTCMSGEND-PUTCMSG
 	stax udp_send_len
-	GO_SLOW			; Slow down for SOS
 	ldax #PUTCMSG
 	jsr udp_send
-	GO_FAST			; Speed back up for SOS
 	rts
 
 
@@ -724,14 +706,14 @@ PINGREQUEST:
 
 
 ;---------------------------------------------------------
-; COPYINPUT - Copy data from input area to (Buffer);
+; COPYINPUT - Copy data from input area to (UTILPTR);
 ; Y is assumed to point to the next available byte
-; after (Buffer); Y will point to the next byte on exit
+; after (UTILPTR); Y will point to the next byte on exit
 ;---------------------------------------------------------
 COPYINPUT:
 	ldx #$00
 @LOOP:	lda IN_BUF,X
-	sta (Buffer),Y
+	sta (UTILPTR),Y
 	php
 	inx
 	iny
@@ -779,30 +761,18 @@ TIMEOUTENTRY:
 	cmp #STATE_DIR
 	bne :+
 	jmp DIRREPLY1
-			; Receiving a CD reply?
-:	cmp #STATE_CD
+			; Receiving a one-byte reply?
+:	cmp #STATE_WAITING_ONE_BYTE_REPLY
 	bne :+
-	jmp CDREPLY1
-			; Receiving a PUT reply?
-:	cmp #STATE_PUT
-	bne :+
-	jmp PUTREPLY1
-			; Receiving a GET return code reply?
-:	cmp #STATE_GET
-	bne :+
-	jmp GETREPLY1
-			; Receiving a QUERY FN reply?
+	jmp ONE_BYTE_REPLY
+			; Receiving a QUERY FN reply - multiple bytes?
 :	cmp #STATE_QUERY
 	bne :+
 	jmp QUERYFNREPLY1
-			; Receiving HBLK data?
-:	cmp #STATE_RECVHBLK
+			; Receiving block data - tons of bytes?
+:	cmp #STATE_RECVBLKS
 	bne :+
-	jmp RECVHBLK
-			; Receiving BATCH data?
-:	cmp #STATE_BATCH
-	bne :+
-	jmp BATCHREPLY1
+	jmp RECVWIDE_REPLY
 :			; fallthrough	
 UDPSKIP:
 	rts
@@ -961,22 +931,11 @@ PauseValue:
 ;CV_SAV:	.byte $00
 
 ;---------------------------------------------------------
-; Constants
-;---------------------------------------------------------
-STATE_IDLE	= 0
-STATE_DIR	= 1
-STATE_CD	= 2
-STATE_PUT	= 3
-STATE_GET	= 4
-STATE_QUERY	= 5
-STATE_RECVHBLK	= 6
-STATE_SENDHBLK	= 7
-STATE_BATCH	= 8
-
-;---------------------------------------------------------
 ; Variables
 ;---------------------------------------------------------
 PPROTO:	.byte $03	; Ethernet protocol = $03
+CHECKBYTE:
+	.byte $00
 QUERYRC:
 	.byte $00
 PUTCMSG:
@@ -984,6 +943,7 @@ PUTCMSG:
 PUTCMSGEND:
 PREVPACKET:
 	.byte $00
+BUFPTR:	.addr 0
+XFERLEN:
+	.addr 0
 TIMEOUT:	.res 1
-PUTACKBLK:
-	rts

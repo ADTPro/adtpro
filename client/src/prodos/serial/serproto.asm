@@ -34,25 +34,15 @@ CDREQUEST:
 ;---------------------------------------------------------
 DIRREQUEST:
 	jsr PARMINT	; Clean up the comms device
-	lda #CHR_D	; Send "DIR" command to PC
-	jmp ENVELOP_COMMAND
-
-
-;---------------------------------------------------------
-; ENVELOP_COMMAND - Send the single-byte command in the accumulator
-;---------------------------------------------------------
-ENVELOP_COMMAND:
-
-	pha			; Hang on to the command for a sec...
 	lda #CHR_A		; Envelope
 	jsr PUTC
 	lda #$00
 	jsr PUTC		; Payload length - lsb
 	lda #$00
 	jsr PUTC		; Payload length - msb
-	pla			; Pull the command back off the stack
+	lda #CHR_D		; Send "DIR" command to PC
 	jsr PUTC		; Send command
-	eor #$c1
+	eor #$c1		; Check byte is simply A^|D
 	jsr PUTC		; Send check byte
 	rts
 

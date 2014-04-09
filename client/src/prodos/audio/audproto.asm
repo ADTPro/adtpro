@@ -56,30 +56,21 @@ DIRREQUEST:
 	stax UTILPTR
 	stax A1L
 	stax A2L	; Set everyone up to talk to the AUD_BUFFER
-	lda #CHR_D
-	jmp ENVELOP_COMMAND
-
-
-;---------------------------------------------------------
-; ENVELOP_COMMAND - Send the single-byte command in the accumulator
-;---------------------------------------------------------
-ENVELOP_COMMAND:
-
-	pha			; Hang on to the command for a sec...
 	lda #CHR_A		; Envelope
 	jsr BUFBYTE
 	lda #$00
 	jsr BUFBYTE		; Payload length - lsb
 	lda #$00
 	jsr BUFBYTE		; Payload length - msb
-	pla			; Pull the command back off the stack
+	lda #CHR_D
 	jsr BUFBYTE		; Send command
-	eor #$c1
+	eor #$c1		; Check byte is simply A^|D
 	jsr BUFBYTE		; Send check byte
 	ldax UTILPTR
 	stax A2L
 	jsr aud_send
 	rts
+
 
 ;---------------------------------------------------------
 ; DIRREPLY - Reply to current directory contents
@@ -370,11 +361,8 @@ RECVMORE:
 	rts
 
 RECVERR:
-	lda #CHR_NAK	; CRC error, ask for a resend
-	sta ACK_CHAR
+	ldx #CHR_NAK	; CRC error, ask for a resend
 	jmp RECVMORE
-
-ACK_CHAR: .byte CHR_ACK
 
 
 ;---------------------------------------------------------

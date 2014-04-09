@@ -1,6 +1,6 @@
 ;
 ; ADTPro - Apple Disk Transfer ProDOS
-; Copyright (C) 2008 - 2011 by David Schmidt
+; Copyright (C) 2008 - 2014 by David Schmidt
 ; david__schmidt at users.sourceforge.net
 ;
 ; This program is free software; you can redistribute it and/or modify it 
@@ -50,6 +50,7 @@ CRCY	= $30		; ($01 byte) Used by UDP SEND
 TMOT    = $31		; ($01 byte) Timeout indicator
 NIBPCNT	= $32		; ($01 byte) Counts nibble pages
 UTILPTR2	= $33		; ($02 bytes) Used for printing messages too
+A1L	= $35		; ($02 bytes) Used in ethernet transport buffer movement
 CRCTBLL:	.res $100	; CRC LOW TABLE  ($100 Bytes)
 CRCTBLH:	.res $100	; CRC HIGH TABLE ($100 Bytes)
 BLKHI:		.byte $01
