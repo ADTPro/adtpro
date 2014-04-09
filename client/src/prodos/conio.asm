@@ -59,14 +59,14 @@ INIT_SCREEN:
 ; Prints the logo on the screen
 ;---------------------------------------------------------
 SHOWLOGO:
-	ldx #$0a
+	ldx #$02
 	ldy #$02
 	jsr GOTOXY
 	lda #PMLOGO1	; Start with MLOGO1 message
 	sta ZP
 	tay
 LogoLoop:
-    	lda #$0a	; Get ready to HTAB $0a chars over
+    	lda #$02	; Get ready to HTAB $0a chars over
 	SET_HTAB	; Tab over to starting position
 	jsr WRITEMSG
 	inc ZP
