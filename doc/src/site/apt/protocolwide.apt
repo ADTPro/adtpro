@@ -127,14 +127,14 @@ One byte:
   $02 = File not found (client aborts)
 ------------
 
- Client sends {{{#Acknowledgement_Packet}Acknowledgement packet}} with ACK ($06)
+ Client sends {{{#Acknowledgement_Packet}Acknowledgement Packet}} ('A'+'K' / $C1+$CB) with ACK ($06)
 
  (loop for as much data is required)
 
  Host sends {{{#Send_Image_Data_Packet}Send Image Data Packet}} ('A'+'S' / $C1+$D3) 
 
 
- Client sends {{{#Acknowledgement_Packet}Acknowledgement}} ('A'+'K' / $C1+$CB) packet with payload according to results:
+ Client sends {{{#Acknowledgement_Packet}Acknowledgement Packet}} ('A'+'K' / $C1+$CB) with payload according to results:
 
 ------------
 
