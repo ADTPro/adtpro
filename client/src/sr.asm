@@ -84,10 +84,8 @@ SEND:
 	; Validate the filename won't overwrite
 	ldy #PMWAIT
 	jsr WRITEMSGAREA	; Tell user to have patience
-	GO_SLOW			; Slow down for SOS
 	jsr QUERYFNREQUEST
 	jsr QUERYFNREPLY
-	GO_FAST			; Speed back up for SOS
 	bcs PCTIMEOUT
 	cmp #$02	; File doesn't exist - so everything's ok
 	beq SMSTART
@@ -134,10 +132,8 @@ SMSTART:
 	ldy #PMWAIT
 	jsr WRITEMSGAREA	; Tell user to have patience
 
-	GO_SLOW			; Slow down for SOS
 	jsr PUTREQUEST		; Note - SendType holds the type of request
 	jsr PUTREPLY
-	GO_FAST			; Speed back up for SOS
 	bcs PCTIMEOUT
 	beq PCOK
 	jmp PCERROR
@@ -206,9 +202,7 @@ SMPARTIAL:
 	cmp NUMBLKS	; Compare low-order num blocks byte
 	bcc SMMORE
 
-	GO_SLOW			; Slow down for SOS
 	jsr PUTFINALACK
-	GO_FAST			; Speed back up for SOS
 
 	jsr COMPLETE
 SMDONE:	rts
@@ -229,10 +223,8 @@ RECEIVE:
 SRSTART:
 	ldy #PMWAIT
 	jsr WRITEMSGAREA	; Tell user to have patience
-	GO_SLOW			; Slow down for SOS
 	jsr QUERYFNREQUEST
 	jsr QUERYFNREPLY
-	GO_FAST			; Speed back up for SOS
 	bcs SRTIMEOUT
 	cmp #$00
 	beq @Ok
@@ -276,10 +268,8 @@ SROK2:
 	lda UNITNBR
 	sta PARMBUF+1
 
-	GO_SLOW			; Slow down for SOS
 	jsr GETREQUEST
 	jsr GETREPLY
-	GO_FAST			; Speed back up for SOS
 	bcs SRTIMEOUT
 	beq SROK3
 	jmp PCERROR
@@ -339,9 +329,7 @@ SRPARTIAL:
 	bcc SRMORE
 
 	ldx #CHR_ACK
-	GO_SLOW			; Slow down for SOS
 	jsr PUTACKBLK		; Put final acknowledgement
-	GO_FAST			; Speed back up for SOS
 
 	jsr COMPLETE
 SRDONE:
@@ -407,8 +395,6 @@ SR_COMN:
 	SET_HTAB	;   buffer row
 	lda #V_BUF
 	jsr TABV
-	jsr SRBLOX
-	rts
 
 ;---------------------------------------------------------
 ; SRBLOX
@@ -421,7 +407,7 @@ SR_COMN:
 ;   BLKLO: starting block (lo)
 ;   BLKHI: starting block (hi)
 ;---------------------------------------------------------
-SRBLOX:
+
 	ldx PBAO		; Default blocks-at-once to move
 	lda BAOTbl,X
 	sta BAOCNT
