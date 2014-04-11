@@ -1,6 +1,6 @@
 ;
 ; ADTPro - Apple Disk Transfer ProDOS
-; Copyright (C) 2012 - 2013 by David Schmidt
+; Copyright (C) 2012 - 2014 by David Schmidt
 ; david__schmidt at users.sourceforge.net
 ;
 ; This program is free software; you can redistribute it and/or modify it 
@@ -19,7 +19,7 @@
 ;
 ; Based on ideas from Terence J. Boldt
 
-DESTPAGE	= $78		; The destination page of the driver code
+DESTPAGE	= $78		; The destination page of the driver code; must match .org $xx00 in vedrive.asm
 COPYLEN		= $22		; The number of pages to copy - how big the driver is, including BSS not in image on disk
 
 	.org $2000
