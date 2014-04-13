@@ -56,7 +56,9 @@ CDREQUEST:
 	jsr BUFBYTE
 	lda #STATE_WAITING_ONE_BYTE_REPLY
 	sta state
+	GO_SLOW				; Slow down for SOS
 	jsr udp_send_nocopy
+	GO_FAST				; Speed back up for SOS
 	jsr RECEIVE_LOOP_FAST
 	rts
 
@@ -82,7 +84,9 @@ DIRREQUEST:
 	jsr BUFBYTE		; Send command
 	eor #$c1		; Check byte is simply A^|D
 	jsr BUFBYTE		; Send check byte
+	GO_SLOW				; Slow down for SOS
 	jsr udp_send_nocopy
+	GO_FAST				; Speed back up for SOS
 	jsr RECEIVE_LOOP_FAST
 	rts
 
@@ -207,7 +211,9 @@ PUTREQUEST:
 	jsr BUFBYTE	; Send check byte
 	lda #STATE_WAITING_ONE_BYTE_REPLY
 	sta state
+	GO_SLOW				; Slow down for SOS
 	jsr udp_send_nocopy
+	GO_FAST				; Speed back up for SOS
 	jsr RECEIVE_LOOP_FAST
 	rts
 
@@ -244,10 +250,9 @@ PUTACKBLK:
 	jsr BUFBYTE
 	eor CHECKBYTE
 	jsr BUFBYTE	; Send check byte
-	lda #STATE_IDLE	; Not requiring a reply
-	sta state
+	GO_SLOW				; Slow down for SOS
 	jsr udp_send_nocopy
-	jsr RECEIVE_LOOP_FAST
+	GO_FAST				; Speed back up for SOS
 	rts
 
 
@@ -299,7 +304,9 @@ GETREQUEST:
 	jsr BUFBYTE	; Send check byte
 	lda #STATE_WAITING_ONE_BYTE_REPLY
 	sta state
+	GO_SLOW				; Slow down for SOS
 	jsr udp_send_nocopy
+	GO_FAST				; Speed back up for SOS
 	jsr RECEIVE_LOOP_FAST
 	rts
 
@@ -342,7 +349,9 @@ QUERYFNREQUEST:
 	jsr BUFBYTE
 	lda #STATE_QUERY	; Set up for the QUERYFNREPLY callback
 	sta state
+	GO_SLOW				; Slow down for SOS
 	jsr udp_send_nocopy
+	GO_FAST				; Speed back up for SOS
 	jsr RECEIVE_LOOP_FAST
 	rts
 
@@ -633,7 +642,9 @@ SW4:	tya		; DIFFERENCE NOT A ZERO
 
 SWGo:	lda #STATE_WAITING_ONE_BYTE_REPLY ; Set up to be called back with a single byte reply
 	sta state
+	GO_SLOW				; Slow down for SOS
 	jsr udp_send_nocopy
+	GO_FAST				; Speed back up for SOS
 	jsr RECEIVE_LOOP_FAST
 	rts
 
