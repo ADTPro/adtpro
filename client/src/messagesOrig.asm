@@ -77,7 +77,7 @@ PHMMAX	= $0a		; This must be two greater than the largest host message
 		.byte CHR_RETURN,CHR_RETURN
 	MSG02_END =*
 
-	MSG03:	asc "(V)OLUMES CONFI(G) (F)ORMAT (?) (Q)UIT:"
+	MSG03:	asc "(V)OLUMES CONFI(G) (F)ORMAT (?) (Q)UIT"
 	MSG03_END =*
 
 	MSG04:	asc "(S)TANDARD OR (N)IBBLE?"

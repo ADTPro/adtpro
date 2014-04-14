@@ -18,6 +18,18 @@
 ; 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 ;
 
+; Indices into menu highlighting coordinate table
+MENU_SEND	= $00
+MENU_RECEIVE	= $03
+MENU_DIR	= $06
+MENU_BATCH	= $09
+MENU_CD		= $0c
+MENU_VOLUMES	= $0f
+MENU_CONFIG	= $12
+MENU_FORMAT	= $15
+MENU_ABOUT	= $18
+MENU_QUIT	= $1b
+
 entrypoint:
 
 ;---------------------------------------------------------
@@ -48,6 +60,8 @@ MAINL:
 RESETIO:
 	jsr $0000	; Pseudo-indirect JSR to reset the IO device
 	jsr MainScreen
+	lda CUR_MENU
+	jsr HILIGHT_ABSOLUTE	; Start menu highlighting
 
 ;---------------------------------------------------------
 ; KBDLUP
@@ -55,98 +69,190 @@ RESETIO:
 ; Keyboard handler, dispatcher
 ;---------------------------------------------------------
 KBDLUP:
-	jsr RDKEY	; GET ANSWER
+	jsr READ_CHAR	; GET ANSWER
 	CONDITION_KEYPRESS	; Convert to upper case, etc.  OS dependent.
 
 KSEND:	cmp #CHR_S	; SEND?
-	bne :+		; Nope
-	lda #$06
-        ldx #$02
-	ldy #$0e
-	jsr INVERSE
+	bne KRECV	; Nope
+KSENDENTRY:
+	lda #MENU_SEND
+	jsr HILIGHT_MENU
 	jsr SEND	; YES, DO SEND ROUTINE
 	jmp MAINLUP
-:
+
 KRECV:	cmp #CHR_R	; RECEIVE?
-	bne :+		; Nope
-	lda #$09
-	ldx #$09
-	ldy #$0e
-	jsr INVERSE
+	bne KDIR	; Nope
+KRECVENTRY:
+	lda #MENU_RECEIVE
+	jsr HILIGHT_MENU
 	jsr RECEIVE
 	jmp MAINLUP
-:
+
 KDIR:	cmp #CHR_D	; DIR?
-	bne :+		; Nope, try CD
-	lda #$05
-	ldx #$13
-	ldy #$0e
-	jsr INVERSE
+	bne KBATCH		; Nope, try CD
+KDIRENTRY:
+	lda #MENU_DIR
+	jsr HILIGHT_MENU
 	jsr DIR	  	; Yes, do DIR routine
 	jmp MAINLUP
-:
+
 KBATCH:
 	cmp #CHR_B	; Batch processing?
-	bne :+		; Nope
+	bne KCD		; Nope
+KBATCHENTRY:
 	ldy #PMNULL	; No title line
-	lda #$07
-        ldx #$19
-	ldy #$0e
-	jsr INVERSE
+	lda #MENU_BATCH
+	jsr HILIGHT_MENU
 	jsr BATCH	; Set up batch processing
 	jmp MAINLUP
-:
+
 KCD:	cmp #CHR_C	; CD?
-	bne :+		; Nope
-	lda #$04
-        ldx #$21
-	ldy #$0e
-	jsr INVERSE
+	bne KCONF	; Nope
+KCDENTRY:
+	lda #MENU_CD
+	jsr HILIGHT_MENU
 	jsr CD	  	; Yes, do CD routine
 	jmp MAINLUP
-:
+
 KCONF:	cmp #CHR_G	; Configure?
-	bne :+		; Nope
+	bne KABOUT	; Nope
+KCONFENTRY:
+	lda #MENU_CONFIG
+	jsr HILIGHT_MENU
 	jsr CONFIG      ; YES, DO CONFIGURE ROUTINE
 	jsr HOME	; Clear screen; PARMINT may leave a complaint
 	jsr PARMINT     ; AND INTERPRET PARAMETERS
 	jmp MAINL
 
-:
+
 KABOUT:	cmp #$9F	; ABOUT MESSAGE? ("?" KEY)
-	bne :+		; Nope
-	lda #$03
-        ldx #$1C
-	ldy #$10
-	jsr INVERSE
+	bne KVOLUMS	; Nope
+KABOUTENTRY:
+	lda #MENU_ABOUT
+	jsr HILIGHT_MENU
 	lda #$15
 	jsr TABV
 	ldy #PMSG17	; "About" message
 	jsr WRITEMSGLEFT
-	jsr RDKEY
+	jsr READ_CHAR
 	jmp MAINLUP	; Clear and start over
-:
+
 KVOLUMS:
 	cmp #CHR_V	; Volumes online?
-	bne :+		; Nope
+	bne KFORMAT	; Nope
+KVOLUMSENTRY:
+	lda #MENU_VOLUMES
+	jsr HILIGHT_MENU
 	ldy #PMNULL	; No title line
 	jsr PICKVOL	; Pick a volume - A has index into DEVICES table
 	jmp MAINLUP
-:
+
 KFORMAT:
 	cmp #CHR_F	; Format?
-	bne :+		; Nope
+	bne KQUIT	; Nope
+KFORMATENTRY:
+	lda #MENU_FORMAT
+	jsr HILIGHT_MENU
 	jsr FormatEntry	; Run formatter
 	jmp MAINLUP
-:
+
 KQUIT:
 	cmp #CHR_Q	; Quit?
-	bne FORWARD	; No, it was an unknown key
-	;cli
+	bne KLEFT	; Nope
+KQUITENTRY:
+	lda #MENU_QUIT
+	jsr HILIGHT_MENU
 	jmp QUIT	; Head into OS oblivion
 
+KLEFT:
+	cmp #$88	; Left?
+	bne KRIGHT
+	ldx CUR_MENU
+	dex
+	dex
+	dex
+	txa
+	bpl :+
+	lda #MENU_QUIT
+:	jsr HILIGHT_MENU
+	jmp KBDLUP
+
+KRIGHT:
+	cmp #$95	; Right?
+	bne KUP
+	ldx CUR_MENU
+	inx
+	inx
+	inx
+	cpx #MENU_QUIT+3
+	bne :+
+	ldx #MENU_SEND
+:	txa
+	jsr HILIGHT_MENU
+	jmp KBDLUP
+
+KUP:	cmp #$8b	; Up?
+	bne KDOWN
+	lda CUR_MENU
+	cmp #$0d	; Are we on the top row?
+	bpl :+
+	clc
+	adc #$0f
+	jmp @UpGo
+:	sec
+	sbc #$0f
+@UpGo:	jsr HILIGHT_MENU
+	jmp KBDLUP
+
+KDOWN:	cmp #$8a	; Down?
+	bne KRETURN
+	lda CUR_MENU
+	cmp #$0f	; Are we on the bottom row?
+	bmi :+
+	sec
+	sbc #$0f
+	jmp @DnGo
+:	clc
+	adc #$0f
+@DnGo:	jsr HILIGHT_MENU
+	jmp KBDLUP
+
+KRETURN:
+	cmp #$8d	; Return?
+	bne FORWARD
+	lda CUR_MENU	; Execute the function that is currently highlit
+	cmp #MENU_SEND
+	bne :+
+	jmp KSENDENTRY
+:	cmp #MENU_RECEIVE
+	bne :+
+	jmp KRECVENTRY
+:	cmp #MENU_DIR
+	bne :+
+	jmp KDIRENTRY
+:	cmp #MENU_BATCH
+	bne :+
+	jmp KBATCHENTRY
+:	cmp #MENU_CD
+	bne :+
+	jmp KCDENTRY
+:	cmp #MENU_VOLUMES
+	bne :+
+	jmp KVOLUMSENTRY
+:	cmp #MENU_CONFIG
+	bne :+
+	jmp KCONFENTRY
+:	cmp #MENU_FORMAT
+	bne :+
+	jmp KFORMATENTRY
+:	cmp #MENU_ABOUT
+	bne :+
+	jmp KABOUTENTRY
+:	cmp #MENU_QUIT
+	bne FORWARD	; Should not occur
+	jmp KQUITENTRY
 FORWARD:
-	jmp MAINL
+	jmp KBDLUP
 
 
 ;---------------------------------------------------------
@@ -191,3 +297,63 @@ BEEP3:	jsr DELAY
 	bne BEEP2
 	GO_FAST		; Speed SOS back up
 NOBEEP:	rts
+
+;---------------------------------------------------------
+; HILIGHT_MENU - highlights the current menu item, erases previous menu item
+; Called with new menu in accumulator
+;---------------------------------------------------------
+HILIGHT_ABSOLUTE:
+	tay
+	jmp HI_GO
+HILIGHT_MENU:
+	cmp CUR_MENU	; If the new menu selection didn't change... don't do anything
+	beq HI_DONE
+	ldy CUR_MENU
+	sty PREV_MENU
+	sta CUR_MENU
+	lda PREV_MENU
+	cmp #$ff	; Skip if prev menu was undefined
+	beq :+
+	jsr HI_2
+:	ldy CUR_MENU
+HI_GO:	jsr HI_2
+HI_DONE:
+	rts
+
+HI_2:	ldx #$03
+:	lda MENUHITBL,y
+	pha
+	iny
+	dex
+	bne :-
+	pla		; Pull Y, X, A for INVERSE operations
+	tay
+	pla
+	tax
+	pla
+	jsr INVERSE
+	rts
+
+MOVE_MENU:
+	rts
+
+;---------------------------------------------------------
+; Table of menu highlighting coordinates
+; Length, Column, Row
+;---------------------------------------------------------
+MENUHITBL:
+	.byte $06, $02, $0e ; Send
+	.byte $09, $09, $0e ; Receive
+	.byte $05, $13, $0e ; Dir
+	.byte $07, $19, $0e ; Batch
+	.byte $04, $21, $0e ; CD
+	.byte $09, $00, $10 ; Volumes
+	.byte $08, $0a, $10 ; Config
+	.byte $08, $13, $10 ; Format
+	.byte $03, $1c, $10 ; About
+	.byte $06, $20, $10 ; Quit
+
+CUR_MENU:
+	.byte MENU_CONFIG
+PREV_MENU:
+	.byte $ff
