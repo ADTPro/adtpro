@@ -209,11 +209,12 @@ everywhere it is invoked:
 		<mkdir dir="${builddir}/${distName}"/>
 		<copy file="${projdir}/client/src/messagesOrig.asm" tofile="${projdir}/client/src/messages.asm" overwrite="true" />
 		<replace file="${projdir}/client/src/messages.asm" token="%ADTPRO_VERSION%" value="${versionString}"/>
-		<antcall target="assembleProDOS"/>
-		<antcall target="assembleSOS"/>
+		<antcall target="assembleCommon" />
+		<antcall target="assembleProDOS" />
+		<antcall target="assembleSOS" />
 	</target>
 
-	<target name="assembleProDOS" depends="assembleCommon" if="ProDOS-needed">
+	<target name="assembleProDOS" if="ProDOS-needed" >
 		<!--
 		Assemble the ADTPro source
 		-->
@@ -310,7 +311,7 @@ everywhere it is invoked:
 		<appleDump infilename="${builddir}/GRUB_VSDRIVE" outfilename="${basedir}/org/adtpro/resources/grub_vsdrive.dmp" applename="GRUB_VSDRIVE" startaddrhex="7000" numbyteswide="10" decoration="yes" />
 	</target>
 
-	<target name="assembleSOS" depends="assembleCommon" if="SOS-needed">
+	<target name="assembleSOS" if="SOS-needed">
 		<!--
 		Assemble the ADTSOS source
 		-->
@@ -386,9 +387,9 @@ everywhere it is invoked:
 			<arg line="-t none -l tail.asm" />
 		</exec>
 		<!--
-		Assemble the IP65 stack source
+		Assemble the ip65 stack source
 		-->
-		<echo message="Assembling IP65 source..."/>
+		<echo message="Assembling ip65 source..."/>
 		<apply executable="${assemblerPath}/ca65" dir="${projdir}/client/src/ip65/ip65" relative="true">
 			<fileset dir="${projdir}/client/src/ip65/ip65" includes="**/*.s"/>
 			<arg value="-t"/>
@@ -396,7 +397,7 @@ everywhere it is invoked:
 			<arg value="-l"/>
 			<srcfile/>
 		</apply>
-		<echo message="Assembling IP65 drivers..."/>
+		<echo message="Assembling ip65 drivers..."/>
 		<apply executable="${assemblerPath}/ca65" dir="${projdir}/client/src/ip65/drivers" relative="true">
 			<fileset dir="${projdir}/client/src/ip65/drivers" includes="**/*.s"/>
 			<arg value="-t"/>
@@ -405,9 +406,9 @@ everywhere it is invoked:
 			<srcfile/>
 		</apply>
 		<!--
-		Package the IP65 stack library
+		Package the ip65 stack library
 		-->
-		<echo message="Packaging IP65 library..."/>
+		<echo message="Packaging ip65 library..."/>
 		<apply executable="${assemblerPath}/ar65" dir="${projdir}/client/src/ip65" output="ar65garbageoutputdeleteme">
 			<arg line="a ip65.lib "/>
 			<fileset dir="${projdir}/client/src/ip65/ip65" includes="**/*.o"/>
