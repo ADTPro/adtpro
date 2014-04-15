@@ -18,21 +18,20 @@ everywhere it is invoked:
      <jvmarg line="-Dconsole.encoding=ISO-8859-15" />
 
 -->
-  
+
 <project name="ADTPro" default="all" basedir="..">
 	<property name="versionString" value="v.r.m" />
 	<property name="projdir" value="${basedir}" />
 	<property name="builddir" value="${basedir}/build" />
 	<property name="distName" value="ADTPro-${versionString}" />
 	<property name="diskName" value="ADTPRO-${versionString}" />
+	<property name="disk3Name" value="ADTPROSOS-${versionString}" />
 	<property name="a3sysutils-vs" value="${builddir}/SysUtilsA3-VSDrive-1.28.dsk" />
 	<property name="volName" value="ADTPro.${versionString}" />
 	<property name="vdriveDistName" value="VDrive-${versionString}" />
 	<property name="vdriveDiskName" value="VDRIVE-${versionString}" />
 	<property name="vdriveVolName" value="VDrive.${versionString}" />
 	<property name="vdriveVolName2" value="VDrive2.${versionString}" />
-	<property name="dosVersionString" value="24" />
-	<property name="dosDistName" value="ADT${dosVersionString}" />
 	<property file="${builddir}/ADTProBuild.properties"/>
 	<property file="${builddir}/ADTProBuild-default.properties"/>
 	<property name="acJarVersion" value="1.3.5.13-ac" />
@@ -70,6 +69,7 @@ everywhere it is invoked:
 
 	<target name="setup">
 		<copy file="${builddir}/ADTProBase.dsk" tofile="${builddir}/${distName}/disks/${diskName}.DSK" />
+		<copy file="${builddir}/ADTProSOSBase.dsk" tofile="${builddir}/${distName}/disks/${disk3Name}.DSK" />
 		<condition property="SOS-needed">
 			<not>
 				<isset property="skipSOS" />
@@ -151,8 +151,6 @@ everywhere it is invoked:
 		<!--
 		Clean up everything
 		-->
-		<!-- <delete file="${projdir}/client/src/dos/ADT" /> -->
-		<delete file="${builddir}/ADT" />
 		<delete file="${builddir}/ADTPRO" />
 		<delete file="${builddir}/ADTPRO.SYSTEM" />
 		<delete file="${builddir}/ADTSOS" />
@@ -176,7 +174,6 @@ everywhere it is invoked:
 		<delete file="${builddir}/${distName}/disks/${diskName}.DSK" />
 		<delete file="${builddir}/${distName}/disks/${vdriveDiskName}.DSK" />
 		<delete file="${builddir}/${distName}/disks/${diskName}.PO" />
-		<delete file="${builddir}/${distName}/disks/${dosDistName}.DSK" />
 		<delete file="${projdir}/org/adtpro/resources/adt.dmp" />
 		<delete file="${projdir}/org/adtpro/resources/adtpro.dmp" />
 		<delete file="${projdir}/org/adtpro/resources/adtproaud.dmp" />
@@ -246,13 +243,6 @@ everywhere it is invoked:
 			<arg line="-t none -l grub_vsdrive.asm" />
 		</exec>
 		<!--
-		Assemble and link the ADT source
-		-->
-		<echo message="Assembling ADT source..."/>
-		<exec dir="${projdir}/client/src/dos" executable="${assemblerPath}/cl65">
-			<arg line="-t none -l adt.s -o ADT" />
-		</exec>
-		<!--
 		Link the bits
 		-->
 		<echo message="Linking Startup/Launcher..."/>
@@ -295,8 +285,6 @@ everywhere it is invoked:
 		<copy file="${builddir}/ADTPROAUD.BIN" tofile="${basedir}/org/adtpro/resources/adtproaud.raw" />
 		<move file="${projdir}/client/src/ADTPROETH.BIN" tofile="${builddir}/ADTPROETH.BIN" />
 		<copy file="${builddir}/ADTPROETH.BIN" tofile="${basedir}/org/adtpro/resources/adtproeth.raw" />
-		<move file="${projdir}/client/src/dos/ADT" tofile="${builddir}/ADT" />
-		<copy file="${builddir}/ADT" tofile="${basedir}/org/adtpro/resources/adt.raw" />
 		<move file="${projdir}/client/src/GRUB2" tofile="${builddir}/GRUB2" />
 		<move file="${projdir}/client/src/GRUB_VSDRIVE" tofile="${builddir}/GRUB_VSDRIVE" />
 		<!--
@@ -306,7 +294,6 @@ everywhere it is invoked:
 		<appleDump infilename="${builddir}/ADTPROETH.BIN" outfilename="${basedir}/org/adtpro/resources/adtproeth.dmp" applename="ADTPROETH.BIN" startaddrhex="800" numbyteswide="10" decoration="begin" finalline="800G"/>
 		<appleDump infilename="${builddir}/ADTPROAUD.BIN" outfilename="${basedir}/org/adtpro/resources/adtproaud.dmp" applename="ADTPROAUD.BIN" startaddrhex="800" numbyteswide="10" decoration="begin" finalline="800G"/>
 		<appleDump infilename="${builddir}/ADTPRO.BIN" outfilename="${basedir}/org/adtpro/resources/adtpro.dmp" applename="ADTPRO.BIN" startaddrhex="800" numbyteswide="10"  decoration="begin" finalline="800G"/>
-		<appleDump infilename="${builddir}/ADT" outfilename="${basedir}/org/adtpro/resources/adt.dmp" applename="ADT" startaddrhex="803" numbyteswide="10" decoration="yes" />
 		<appleDump infilename="${builddir}/GRUB2" outfilename="${basedir}/org/adtpro/resources/grub2.dmp" applename="GRUB2" startaddrhex="7000" numbyteswide="10" decoration="yes" />
 		<appleDump infilename="${builddir}/GRUB_VSDRIVE" outfilename="${basedir}/org/adtpro/resources/grub_vsdrive.dmp" applename="GRUB_VSDRIVE" startaddrhex="7000" numbyteswide="10" decoration="yes" />
 	</target>
@@ -375,7 +362,6 @@ everywhere it is invoked:
 		Copy out the Apple /// virtual serial drive driver
 		-->
 		<appleCommander command="g" imagename="${a3sysutils-vs}" filename="VSDRIVE.A3DRVR" output="${builddir}/VSDRIVE.A3DRVR"/>
-		
 	</target>
 
 	<target name="assembleCommon">
@@ -447,7 +433,6 @@ everywhere it is invoked:
 		Start disk images containing the release number
 		-->
 		<copy file="${builddir}/ADTProBase.po" tofile="${builddir}/${distName}/disks/${diskName}.PO" />
-		<copy file="${builddir}/ADTBase.dsk" tofile="${builddir}/${distName}/disks/${dosDistName}.DSK" />
 
 		<!--
 		Put the assembled programs on the disk images
@@ -483,21 +468,6 @@ everywhere it is invoked:
 		<appleCommander command="p" input="${builddir}/ADTPROETH.BIN" imagename="${builddir}/${distName}/disks/${diskName}.PO" filename="ADTPROETH.BIN" type="bin" address="2048"/>
 
 		<!--
-		Put the assembled DOS ADT program on the .dsk image
-		-->
-		<echo message="Adding ADT to 5.25 disk image..."/>
-		<appleCommander command="p" input="${builddir}/ADT" imagename="${builddir}/${distName}/disks/${dosDistName}.DSK" filename="ADT" type="bin" address="2051"/>
-
-		<echo message="Adding ADT.BACKUP to 5.25 disk image..."/>
-		<appleCommander command="p" input="${builddir}/ADT" imagename="${builddir}/${distName}/disks/${dosDistName}.DSK" filename="ADT.BACKUP" type="bin" address="2051"/>
-
-		<!--
-		Lock the backup ADT version
-		-->
-		<echo message="Locking ADT on 5.25 disk image..."/>
-		<appleCommander command="k" imagename="${builddir}/${distName}/disks/${dosDistName}.DSK" filename="ADT.BACKUP"/>
-
-		<!--
 		Put a nice volume name on the disk images
 		-->
 		<echo message="Adding ADTPro volume name to 5.25 disk image..."/>
@@ -505,7 +475,6 @@ everywhere it is invoked:
 
 		<echo message="Adding ADTPro volume name to 3.5 disk image..."/>
 		<appleCommander command="n" imagename="${builddir}/${distName}/disks/${diskName}.PO" volname="${volName}"/>
-		<delete file="${builddir}/ADT" />
 		<delete file="${builddir}/ADTPRO" />
 		<delete file="${builddir}/ADTPRO.SYSTEM" />
 		<delete file="${builddir}/STARTUP.SYSTEM" />
@@ -528,9 +497,9 @@ everywhere it is invoked:
 		Put the assembled programs on the disk images
 		-->
 		<echo message="Adding ADTSOS to 5.25 disk image..."/>
-		<appleCommander command="p" input="${builddir}/ADTSOS" imagename="${builddir}/${distName}/disks/${diskName}.DSK" filename="SOS.INTERP" type="sos" address="0000"/>
+		<appleCommander command="p" input="${builddir}/ADTSOS" imagename="${builddir}/${distName}/disks/${disk3Name}.DSK" filename="SOS.INTERP" type="sos" address="0000"/>
 		<echo message="Adding ADTSOSETH to 5.25 disk image..."/>
-		<appleCommander command="p" input="${builddir}/ADTSOSETH" imagename="${builddir}/${distName}/disks/${diskName}.DSK" filename="SOS.INTERPETH" type="sos" address="0000"/>
+		<appleCommander command="p" input="${builddir}/ADTSOSETH" imagename="${builddir}/${distName}/disks/${disk3Name}.DSK" filename="SOS.INTERPETH" type="sos" address="0000"/>
 
 		<!--
 		Put the Apple /// virtual serial drive driver on the vdrive disk
@@ -541,6 +510,7 @@ everywhere it is invoked:
 		Put a nice volume name on the disk images
 		-->
 		<appleCommander command="n" imagename="${builddir}/${distName}/disks/${diskName}.DSK" volname="${volName}"/>
+		<appleCommander command="n" imagename="${builddir}/${distName}/disks/${disk3Name}.DSK" volname="${volName}"/>
 		<appleCommander command="n" imagename="${builddir}/${distName}/disks/${vdriveDiskName}.DSK" volname="${vdriveVolName}"/>
 		<delete file="${builddir}/ADTSOS" />
 		<delete file="${builddir}/ADTSOSETH" />
@@ -674,5 +644,4 @@ everywhere it is invoked:
 			<fileset dir="${projdir}/doc/target/site" includes="*.orig"/>
 		</delete>
 	</target>
-
 </project>
