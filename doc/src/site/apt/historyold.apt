@@ -8,6 +8,18 @@ ADTPro Release Ancient History
 
 * Significant New Features
 
+ 1.2.9 - December 25, 2013
+ 
+    * [Client] Disk II drives turn on early to reduce spin-up delay
+
+ 1.2.8 - July 9, 2013
+ 
+    * [VDrive] Second virtual drive for II and /// clients
+
+ 1.2.7 - April 17, 2013
+
+    * [VDrive] Bootstraps into ProDOS with VSDrive active
+
  1.2.6 - October 11, 2012
 
     * [Server] Audio transport finally reliable
@@ -166,5 +178,3 @@ ADTPro Release Ancient History
     * Ability to change working directory on the fly
     
     * Server written in Java, compatible with DOS-based ADT and ADTPro
-
-* Click for {{{./historyolddetail.html}Detailed Older History}}

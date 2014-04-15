@@ -23,7 +23,7 @@ compatible computer with at least 64k of memory.
 
     * {{{./connectionsserial.html}Serial}} ports
 
-    * {{{http://a2retrosystems.com/}Uthernet}} or {{{http://www.reference.com/browse/lancegs+ethernet+card}LANceGS}} {{{./configethernet.html}Ethernet}} cards
+    * {{{http://a2retrosystems.com/}Uthernet/Uthernet II}} or {{{http://www.reference.com/browse/lancegs+ethernet+card}LANceGS}} {{{./configethernet.html}Ethernet}} cards
 
     * The Apple's {{{./connectionsaudio.html}cassette ports}}
 
@@ -47,7 +47,7 @@ compatible computer with at least 64k of memory.
 
     * {{{./misc.html#Format}Formats}} blank disks
 
-    * Serves a {{{./vdrive.html}virtual}} drive as slot 2, drive 1 on the Apple II and .VSDRIVE on the Apple ///
+    * Serves {{{./vdrive.html}virtual}} drives via serial or Ethernet on the Apple II and Apple ///
 
  The latest ADTPro can always be 
 {{{./download.html}downloaded}}

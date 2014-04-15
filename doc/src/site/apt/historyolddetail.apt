@@ -4,7 +4,79 @@
  David Schmidt (david__schmidt at users dot souceforge dot net)
  -----
 
-ADTPro Release Full History
+ADTPro Version 1 Release Full History
+
+* {1.3.0} - April 6, 2014
+
+ Bug fixes:
+
+ * Re-enable 19200 baud rate for serial client - the {{{./lc.html}Mac LC/Apple IIe card}} 
+   requires this speed 
+
+ * [Client] Don't bother turning the drive motor on early (introduced in {{{#a1.2.9}1.2.9}}) with 
+   Audio protocol
+
+ []
+
+* {1.2.9} - December 25, 2013
+
+ New functionality:
+
+ * [Client] Disk II drives turn on a little early to reduce spin-up
+   delay
+
+ []
+
+ Bug fixes:
+
+ * Nibble sends work correctly in batch mode
+ 
+ * [Client] Nibble sends retry (more) correctly
+ 
+ * [VDrive] Virtual disks are loaded once at initialization time,
+   making it much faster for huge drives (but much less dynamic) 
+ 
+ * [VDrive] Serial driver installer quits to where it came from,
+   allowing an invocation from the launcher to return there, this
+   time with the driver in place 
+
+ []
+
+* {1.2.8} - July 9, 2013
+
+ New functionality:
+
+ * [VDrive] Added the ability to serve a second virtual drive
+
+ * Restricted most opportunities to change baud rates from defaults  
+
+ []
+
+ Bug fixes:
+
+ * [Server] Severe slowdown on bootstrapping under Windows was cured
+   by removing what should have been a harmless yielding of the CPU
+
+ []
+
+* {1.2.7} - April 18, 2013
+
+ New functionality:
+
+ * [VDrive] Added the ability to bootstrap into ProDOS with 
+   VSDrive active
+
+ * [Server] Added a command-line invoker for AppleCommander
+
+ []
+
+ Bug fixes:
+
+ * [Server] 5-1/4" disk images with unrecognized filesystems are
+   always written with DOS-ordered physical interleaving 
+
+ * [Server] Start the numerical part of batch name at 1, not 0;
+   reset the counter when a batch name changes
 
 * {1.2.6} - October 11, 2012
 
@@ -105,7 +177,7 @@ ADTPro Release Full History
 
  Bug fixes:
 
- * [Client] A bug was introduced in 1.2.1 due to an assembler upgrade
+ * [Client] A bug was introduced in {{{#a1.2.1}1.2.1}} due to an assembler upgrade
    that made Disk II sends (Apple II -> host) corrupt at the host  
 
  * [Client] SOS version volume display function regularly crashed
@@ -414,7 +486,7 @@ ADTPro Release Full History
    java.lang.ArrayIndexOutOfBoundsException in AudioConfig.java
 
  * [Client] IIgs serial port initialization was not working for speeds
-   below 115.2kbps as a result of the 300 baud integration in v1.0.3
+   below 115.2kbps as a result of the 300 baud integration in {{{#a1.0.3}1.0.3}}
 
  []
 
@@ -679,7 +751,7 @@ ADTPro Release Full History
    the default slot
 
  * Cosmetic right-justification issue with online
-   volume block number display (extant since 0.1.1)
+   volume block number display (extant since {{{#a0.1.1}0.1.1}})
 
  []
 
@@ -962,3 +1034,5 @@ ADTPro Release Full History
  * Ability to change working directory on the fly
 
  * Server written in Java, compatible with DOS-based ADT and ADTPro
+
+* Click for {{{./historyold.html}Significant Feature Timeline}}

@@ -4,10 +4,9 @@
  David Schmidt (david__schmidt at users dot souceforge dot net)
  -----
 
-ADT Compatibility
+DOS-ADT Compatibility
 
- The compatibility of ADTPro and related programs is starting to
- get a little tricky.  A goal of ADTPro is for the server to remain
+ A goal of ADTPro is for the server to remain
  compatible with the vast majority of ADT and ADT-derived clients
  currently in use, while providing a superset of functionality in
  its own client.
@@ -17,13 +16,15 @@ ADT Compatibility
 
  First of all, there are several pieces of software that are related in
  various ways.  A quick survey of the major players:
- 
+
 *-----:-----:------:------:------:------+
 || <<Program>> || <<Latest Client Version>> || <<Client Platforms>> || <<Server Platforms>> || <<Comms>> || <<Notes>>
 *-----:-----:------:------+
- ADTPro | v.r.m | II,+,e,c,GS,Laser,/// | Linux, OS/2, OSX, Solaris, Windows (Java) | Serial, Uthernet, Audio | Nibble capable 
+ ADTPro | wide | II,+,e,c,GS,Laser,/// | Linux, OS/2, OSX, Solaris, Windows (Java) | Serial, Uthernet/Uthernet II, Audio | Nibble capable 
 *-----:-----:------:------+
- ADT (Shipped with ADTPro) | 2.4 | II,+,e,c,GS,Laser,/// | ADTPro or Virtual ][ A2V2 on OSX | Serial (115.2k) | Nibble/half-track capable
+ ADTPro | v1 | II,+,e,c,GS,Laser,/// | Linux, OS/2, OSX, Solaris, Windows (Java) | Serial, Uthernet, Audio | Nibble capable 
+*-----:-----:------:------+
+ ADT (Shipped with ADTPro v1) | 2.4 | II,+,e,c,GS,Laser,/// | ADTPro or Virtual ][ A2V2 on OSX | Serial (115.2k) | Nibble/half-track capable
 *-----:-----:------:------+
  ADT ({{{https://github.com/david-schmidt/adt/wiki}GitHub}}) | 1.33 | II,+,e,c,GS,Laser | PC DOS, Windows | Serial (115.2k) | 
 *-----:-----:------:------+
@@ -38,17 +39,16 @@ ADT Compatibility
  ADT client, based in part on the 1.33 version and in part on the 
  A2V2-embedded version.  The result is a superset of all the function that
  came with the latest historical ADT client, plus the nascent nibble/halftrack
- extensions from the A2V2 project.  The intent is to have a highly capable client
- that can operate on the Disk II at a very low level as well as provide higher
- level support for generic ProDOS devices.  That work is ongoing, so the landscape
- remains a little "busy" for the time being.
+ extensions from the A2V2 project.  The Nibble extensions have since been incorporated
+ into ADTPro, and the versions of ADTPro after the v1 line will no longer include 
+ the DOS-based ADT client.
 
 ADT {Nibble}/Halftrack Usage
 
- ADT versions 2.3 and later included in the ADTPro package introduce
- nibble and halftrack disk extraction.  Those capabilities are only present in
- the ADT client (i.e. the capability is not in the ADTPro client yet).  
- The Virtual ][ A2V2 server is the only server that can actually build disk
+ ADT versions 2.3 and later introduce
+ nibble and halftrack disk extraction.  Halftrack capability is only present in
+ the ADT client (i.e. only nibble capability is not in the ADTPro client).  
+ The Virtual ][ A2V2 server is the only server that can actually reconstitute disk
  images based on these technologies so far.
 
 * Starting ADT
@@ -78,7 +78,3 @@ ADT {Nibble}/Halftrack Usage
  extension <<<.v2d:>>>
 
 [images/adtsendhlf.png]
-
- The ADTPro server currently writes incorrect <<<.v2d>>> images - if
- you are going to be working with half-track images, you are best off sticking
- with the A2V2 server for the time being.
