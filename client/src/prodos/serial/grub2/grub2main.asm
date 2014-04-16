@@ -1,6 +1,6 @@
 ;
 ; ADTPro - Apple Disk Transfer ProDOS
-; Copyright (C) 2012 - 2013 by David Schmidt
+; Copyright (C) 2012 - 2014 by David Schmidt
 ; david__schmidt at users.sourceforge.net
 ;
 ; This program is free software; you can redistribute it and/or modify it 
@@ -62,7 +62,7 @@ main:
 
 	jsr	msg
 	.byte	"LOADING ",$00
-	lda	next_task
+	lda	NextTask
 	beq	PullMLI
 	jmp	PullClient
 
@@ -72,7 +72,14 @@ PullMLI:
 PullMLICmd:
 	bit	$c010		; Clear the keyboard strobe
 	lda	#$B2		; Ask for the ProDOS MLI
-	jsr	PUTC		; Send a "2" to trigger the PD download
+	sta	Payload
+	ldx	#$00
+:	lda	Envelope,x
+	jsr	PUTC
+	inx
+	cpx	#$06
+	bne	:-
+	jsr	PUTC		; The final byte of payload is repeated
 
 ; Poll the port until we get a magic incantation
 	ldy	#$20		; Prepare to store MLI at $2000
@@ -112,7 +119,7 @@ ReadMLI:			; We got the magic signature; start reading data
 
 ReadMLIDone:
 	lda	#$01
-	sta	next_task	; Once MLI is done, re-entry should pull the client
+	sta	NextTask	; Once MLI is done, re-entry should pull the client
 	jmp	$2000		; Fire up the MLI
 
 PullClient:
@@ -121,7 +128,14 @@ PullClient:
 PullClientCmd:
 	bit	$c010		; Clear the keyboard strobe
 	lda	#$B6		; Ask for the Serial client
-	jsr	PUTC		; Send a "6" to trigger the ADTPro serial client download
+	sta	Payload
+	ldx	#$00
+:	lda	Envelope,x
+	jsr	PUTC
+	inx
+	cpx	#$06
+	bne	:-
+	jsr	PUTC		; The final byte of payload is repeated
 
 ; Poll the port until we get a magic incantation
 	ldy	#$08		; Store ADTPro at $0800
@@ -161,7 +175,7 @@ ReadClient:			; We got the magic signature; start reading data
 
 ReadClientDone:
 	lda	#$00
-	sta	next_task	; In case we come back around... set up to re-pull MLI
+	sta	NextTask	; In case we come back around... set up to re-pull MLI
 	jmp	$0800		; Fire up ADTPro
 
 
@@ -210,7 +224,7 @@ RESETIO:
 ;---------------------------------------------------------
 PABORT:	ldx	#$ff		; POP GOES THE STACKPTR
 	txs
-	jmp	main		; Let next_task sort 'em out
+	jmp	main		; Let NextTask sort 'em out
 
 ;---------------------------------------------------------
 ; Variables
@@ -221,7 +235,11 @@ PSPEED:
 COMMSLOT:
 DEFAULT:
 	.byte	$ff	; Start with -1 for a slot number so we can tell when we find no slot
-next_task:
+NextTask:
 	.byte	$00	; Tasks:
 			; 00 = Initial startup, need to seek the serial hardware and wait for ProDOS
 			; 01 = Load ADTPro client
+Envelope:
+	.byte $c1, $01, $00, $c6, $06
+Payload:
+	.byte $00

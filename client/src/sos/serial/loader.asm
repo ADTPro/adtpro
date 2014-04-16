@@ -1,6 +1,6 @@
 ;
 ; ADTPro - Apple Disk Transfer ProDOS
-; Copyright (C) 2008, 2009 by David Schmidt
+; Copyright (C) 2008 - 2014 by David Schmidt
 ; david__schmidt at users.sourceforge.net
 ;
 ; This program is free software; you can redistribute it and/or modify it 
@@ -20,7 +20,7 @@
 
 ; Serial bootstrap loader
 ;
-; This code is sent by the ADTPro GUI a the user's request to a (hopefully)
+; This code is sent by the ADTPro GUI at the user's request to a (hopefully)
 ; waiting Apple /// that has typed in the Grub loader.  The Grub loads this
 ; into $a100 and executes it, pulling in the (serial modified) SOS kernel,
 ; driver, then interp (ADTPro itself).
@@ -39,7 +39,7 @@ GrubIIIGet	:= $a040	; Borrow the Grub's IIIGet routine
 
 Signature:
 	.byte	$47		; The first byte that grub will see: a "G" character
-	.org $a100
+	.org	$a100
 Entry:
 	ldx	#$fb
 	txs			; Some nonsense about .CONSOLE mucking with the stack
@@ -68,11 +68,11 @@ BankTest:			; Find and use the highest writable bank
 	jsr	Message
 
 ; Ask for the kernel
-	lda #179
-	jsr IIIPut	; Send a "3" to trigger the SOS.KERNEL download
+	lda	#$b3		; Send "3", kernel request
+	jsr	SendEnvelope
 
 ; Poll the port until we get a magic incantation
-	ldy #$00
+	ldy	#$00
 Poll:
 	jsr	GrubIIIGet
 	cmp	#$53		; First character will be "S" from "SOS" in SOS.KERNEL
@@ -116,6 +116,18 @@ ACIAInit:
 	sta	ACIACR		; Store via ACIA control register.
 	rts
 
+; Send an enveloped byte
+SendEnvelope:
+	sta	Payload		; Send accumulator as a bootstrap file request
+	ldx	#$00
+:	lda	Envelope,x
+	jsr	IIIPut		; Send the command envelope & payload
+	inx
+	cpx	#$06
+	bne	:-
+	jsr	IIIPut		; The final byte of payload is repeated
+	rts
+
 IIIPut:
 	pha			; Push 'character to send' onto the stack
 IIIPutC1:
@@ -154,6 +166,11 @@ message_3:
 message_4:
 	.byte	$cf, $cb, $a1, $a0, $a0, $a0, $a0, $a0	; "OK!"
 	.byte	$a0, $a0, $a0, $a0, $a0, $a0, $a0
+
+Envelope:
+	.byte $c1, $01, $00, $c6, $06
+Payload:	; This will be a bootstrap file request - this last byte is sent twice (x eor x = x)
+	.byte $00
 
 .align	256
 	.byte	$00

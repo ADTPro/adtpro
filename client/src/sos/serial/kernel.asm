@@ -3,13 +3,20 @@
 
 b_p		:= $32
 size		:= $30
+
+; If the code for grub is modified, this address must be changed to match
 GRUBIIIGET	:= $a040	; Borrow Grub's IIIGET
+
+; If the code for the loader is modified, these addresses must be changed to match
 ACIAINIT	:= $A161	; Borrow the Loader's ACIAINIT
-LOADERIIIPUT	:= $A174	; Borrow the Loader's IIIPUT
-LOADERRESTORE	:= $A192	; Borrow the Loader's RESTORE
-LOADERMessage	:= $A183	; Borrow the Loader's Message routine
-LOADERmessage_2	:= $A1A7	; Borrow the Loader's message_2
-LOADERmessage_3	:= $A1B6	; Borrow the Loader's message_3
+LDRSendEnvelope	:= $A174	; Borrow the Loader's SendEnvelope routine
+LDRRESTORE	:= $A1A6	; Borrow the Loader's RESTORE
+LDRMessage	:= $A197	; Borrow the Loader's Message routine
+LDRMessage_2	:= $A1BB	; Borrow the Loader's message_2
+LDRMessage_3	:= $A1CA	; Borrow the Loader's message_3
+LDREnvelope	:= $A1E8	; Borrow the Loader's Wide protocol envelope space
+LDRPayload	:= $A1ED	; Borrow the Loader's Wide protocol payload space
+
 ACIADR		:= $c0f0	; Data register. $c0f0 for ///, $c088+S0 for SSC
 ACIASR		:= $c0f1	; Status register. $c0f1 for ///, $c089+S0 for SSC
 ACIAMR		:= $c0f2	; Command mode register. $c0f2 for ///, $c08a+S0 for SSC
@@ -608,9 +615,9 @@ LDR020: lda     E_REG
         and     #$F6
         sta     E_REG
 ReceiveInterp:
-	jsr ACIAINIT		; Slow down to 1MHz, set up ACIA parms
-	lda #180
-	jsr LOADERIIIPUT	; Send a "4" to trigger the SOS.INTERP download
+	jsr	ACIAINIT	; Slow down to 1MHz, set up ACIA parms
+	lda	#180		; Send a "4" file request
+	jsr	LDRSendEnvelope
 
 ; Poll the port until we get a magic incantation
 PollInterp:
@@ -632,8 +639,8 @@ PollInterpNext:
 	jsr GRUBIIIGET		; MSB of length
 	sta size+1		; We're ready to read everything else now
 
-	ldx #<LOADERmessage_2	; Tell 'em we're reading
-	jsr LOADERMessage
+	ldx #<LDRMessage_2	; Tell 'em we're reading
+	jsr LDRMessage
 	ldy #$00
 ReadInterp:			; We got the magic signature; start reading data
 	jsr GRUBIIIGET		; Pull a byte
@@ -651,7 +658,7 @@ ReadInterp:			; We got the magic signature; start reading data
 	jmp ReadInterp		; Go back for more
 
 ReadInterpDone:
-	jsr	LOADERRESTORE
+	jsr	LDRRESTORE
 
 ReceiveInterpPadBegin:
 	.res	$20c0-ReceiveInterpPadBegin, $ea
@@ -686,10 +693,9 @@ ReceiveInterpDone:
 LDR070:	lda     $1901
 	jsr     MOVE
 
-ReceiveDriver:
-	jsr ACIAINIT		; Slow down to 1MHz, etc.
-	lda #181
-	jsr LOADERIIIPUT	; Send a "5" to trigger the SOS.DRIVER download
+	jsr	ACIAINIT
+	lda	$b5		; Request driver #180/$b5/"5"
+	jsr	LDRSendEnvelope
 
 ; Poll the port until we get a magic incantation
 Poll:
@@ -709,8 +715,8 @@ PollNext:
 	jsr GRUBIIIGET		; MSB of length
 	sta size+1		; We're ready to read everything else now
 
-	ldx #<LOADERmessage_3	; Tell 'em we're reading
-	jsr LOADERMessage
+	ldx #<LDRMessage_3	; Tell 'em we're reading
+	jsr LDRMessage
 	ldy #$00
 Read:				; We got the magic signature; start reading data
 	jsr GRUBIIIGET		; Pull a byte
@@ -727,7 +733,7 @@ Read:				; We got the magic signature; start reading data
 	dec size+1
 	jmp Read		; Go back for more
 ReadDone:
-	jsr	LOADERRESTORE
+	jsr	LDRRESTORE
 ReceiveDriverPad:
 	.res	$2144-ReceiveDriverPad, $ea
 

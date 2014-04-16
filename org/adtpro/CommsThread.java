@@ -277,63 +277,6 @@ public class CommsThread extends Thread
 					receiveNibbleDisk(false, 70);
 					_busy = false;
 					break;
-				case (byte) 178: // "2": Initiate PD dump
-					_busy = true;
-					_parent.setMainText(Messages.getString("CommsThread.5")); //$NON-NLS-1$
-					_parent.setSecondaryText(""); //$NON-NLS-1$
-					Log.println(false, "CommsThread.commandLoop() Received Apple II PD dump command."); //$NON-NLS-1$
-					requestSend(Messages.getString("Gui.BS.ProDOSRaw"), true, 0, 115200);
-					_busy = false;
-					break;
-				case (byte) 179: // "3": Initiate SOS.KERNEL dump
-					_busy = true;
-					_parent.setMainText(Messages.getString("CommsThread.5")); //$NON-NLS-1$
-					_parent.setSecondaryText(""); //$NON-NLS-1$
-					Log.println(false, "CommsThread.commandLoop() Received Apple /// SOS.KERNEL dump command."); //$NON-NLS-1$
-					requestSend(Messages.getString("Gui.BS.SOSKERNEL"), true, 0, 9600);
-					_busy = false;
-					break;
-				case (byte) 180: // "4": Initiate SOS.INTERP dump
-					_busy = true;
-					_parent.setMainText(Messages.getString("CommsThread.5")); //$NON-NLS-1$
-					_parent.setSecondaryText(""); //$NON-NLS-1$
-					Log.println(false, "CommsThread.commandLoop() Received Apple /// SOS.INTERP dump command."); //$NON-NLS-1$
-					requestSend(Messages.getString("Gui.BS.SOSINTERP"), true, 0, 9600);
-					_busy = false;
-					break;
-				case (byte) 181: // "5": Initiate SOS.DRIVER dump
-					_busy = true;
-					_parent.setMainText(Messages.getString("CommsThread.5")); //$NON-NLS-1$
-					_parent.setSecondaryText(""); //$NON-NLS-1$
-					Log.println(false, "CommsThread.commandLoop() Received Apple /// SOS.DRIVER dump command."); //$NON-NLS-1$
-					requestSend(Messages.getString("Gui.BS.SOSDRIVER"), true, 0, 9600);
-					_busy = false;
-					_parent.setSerialSpeed(0);
-					break;
-				case (byte) 182: // "6": Initiate ADTPro dump
-					_busy = true;
-					_parent.setMainText(Messages.getString("CommsThread.5")); //$NON-NLS-1$
-					_parent.setSecondaryText(""); //$NON-NLS-1$
-					Log.println(false, "CommsThread.commandLoop() Received ADTPro serial dump command."); //$NON-NLS-1$
-					requestSend(Messages.getString("Gui.BS.ADTProRaw"), true, 0, 115200);
-					_busy = false;
-					break;
-				case (byte) 183: // "7": Initiate VSDRIVE dump
-					_busy = true;
-					_parent.setMainText(Messages.getString("CommsThread.5")); //$NON-NLS-1$
-					_parent.setSecondaryText(""); //$NON-NLS-1$
-					Log.println(false, "CommsThread.commandLoop() Received VSDRIVE driver dump command."); //$NON-NLS-1$
-					requestSend(Messages.getString("Gui.BS.VSDriveRaw"), true, 0, 115200);
-					_busy = false;
-					break;
-				case (byte) 184: // "8": Initiate BASIC dump
-					_busy = true;
-					_parent.setMainText(Messages.getString("CommsThread.5")); //$NON-NLS-1$
-					_parent.setSecondaryText(""); //$NON-NLS-1$
-					Log.println(false, "CommsThread.commandLoop() Received BASIC dump command."); //$NON-NLS-1$
-					requestSend(Messages.getString("Gui.BS.BSpeed"), true, 0, 115200);
-					_busy = false;
-					break;
 				default:
 					Log.println(false, "CommsThread.commandLoop() Received unknown command: " + UnsignedByte.toString(oneByte)); //$NON-NLS-1$
 					break;
@@ -414,11 +357,75 @@ public class CommsThread extends Thread
 			queryFileSizeWide(envelope);
 			_busy = false;
 			break;
+		case (byte) 198: // "F": File dump
+			_busy = true;
+			Log.println(false, "CommsThread.dispatchCommand() Received Send Bootstrap File."); //$NON-NLS-1$
+			sendBootstrapFileWide(envelope);
+			_busy = false;
+			break;
 		default:
-			Log.println(false, "CommsThread.dispatchCommand() Received unknown command: " + UnsignedByte.toString(envelope[0])); //$NON-NLS-1$
+			Log.println(false, "CommsThread.dispatchCommand() Received unknown command: " + UnsignedByte.toString(envelope[2])); //$NON-NLS-1$
 			break;
 		}
 		Log.println(false, "CommsThread.dispatchCommand() exit.");
+	}
+
+	public void sendBootstrapFileWide(byte[] envelope)
+	{
+		byte[] payload = pullPayloadWide(envelope);
+		if (payload != null)
+		{
+			Log.println(false, "CommsThread.sendBootstrapFileWide() payload length: " + payload.length);
+			switch (payload[0])
+			{
+			case (byte) 178: // "2": Initiate PD dump
+				_parent.setMainText(Messages.getString("CommsThread.5")); //$NON-NLS-1$
+				_parent.setSecondaryText(""); //$NON-NLS-1$
+				Log.println(false, "CommsThread.dispatchCommand() Received Apple II PD dump command."); //$NON-NLS-1$
+				requestSend(Messages.getString("Gui.BS.ProDOSRaw"), true, 0, 115200);
+				break;
+			case (byte) 179: // "3": Initiate SOS.KERNEL dump
+				_parent.setMainText(Messages.getString("CommsThread.5")); //$NON-NLS-1$
+				_parent.setSecondaryText(""); //$NON-NLS-1$
+				Log.println(false, "CommsThread.sendBootstrapFileWide() Received Apple /// SOS.KERNEL dump command."); //$NON-NLS-1$
+				requestSend(Messages.getString("Gui.BS.SOSKERNEL"), true, 0, 9600);
+				break;
+			case (byte) 180: // "4": Initiate SOS.INTERP dump
+				_parent.setMainText(Messages.getString("CommsThread.5")); //$NON-NLS-1$
+				_parent.setSecondaryText(""); //$NON-NLS-1$
+				Log.println(false, "CommsThread.sendBootstrapFileWide() Received Apple /// SOS.INTERP dump command."); //$NON-NLS-1$
+				requestSend(Messages.getString("Gui.BS.SOSINTERP"), true, 0, 9600);
+				break;
+			case (byte) 181: // "5": Initiate SOS.DRIVER dump
+				_parent.setMainText(Messages.getString("CommsThread.5")); //$NON-NLS-1$
+				_parent.setSecondaryText(""); //$NON-NLS-1$
+				Log.println(false, "CommsThread.sendBootstrapFileWide() Received Apple /// SOS.DRIVER dump command."); //$NON-NLS-1$
+				requestSend(Messages.getString("Gui.BS.SOSDRIVER"), true, 0, 9600);
+				_parent.setSerialSpeed(0);
+				break;
+			case (byte) 182: // "6": Initiate ADTPro dump
+				_parent.setMainText(Messages.getString("CommsThread.5")); //$NON-NLS-1$
+				_parent.setSecondaryText(""); //$NON-NLS-1$
+				Log.println(false, "CommsThread.sendBootstrapFileWide() Received ADTPro serial dump command."); //$NON-NLS-1$
+				requestSend(Messages.getString("Gui.BS.ADTProRaw"), true, 0, 115200);
+				break;
+			case (byte) 183: // "7": Initiate VSDRIVE dump
+				_parent.setMainText(Messages.getString("CommsThread.5")); //$NON-NLS-1$
+				_parent.setSecondaryText(""); //$NON-NLS-1$
+				Log.println(false, "CommsThread.sendBootstrapFileWide() Received VSDRIVE driver dump command."); //$NON-NLS-1$
+				requestSend(Messages.getString("Gui.BS.VSDriveRaw"), true, 0, 115200);
+				break;
+			case (byte) 184: // "8": Initiate BASIC dump
+				_parent.setMainText(Messages.getString("CommsThread.5")); //$NON-NLS-1$
+				_parent.setSecondaryText(""); //$NON-NLS-1$
+				Log.println(false, "CommsThread.sendBootstrapFileWide() Received BASIC dump command."); //$NON-NLS-1$
+				requestSend(Messages.getString("Gui.BS.BSpeed"), true, 0, 115200);
+				break;
+			default:
+				Log.println(false, "CommsThread.sendBootstrapFileWide() Received an unknown bootstrap file request."); //$NON-NLS-1$
+				break;
+			}
+		}
 	}
 
 	public void sendDirectory()
@@ -666,11 +673,11 @@ public class CommsThread extends Thread
 			Log.println(false, " received blockhi: " + UnsignedByte.toString(blockhi)); //$NON-NLS-1$
 			Log.println(false, "Waiting for checksum..."); //$NON-NLS-1$
 			checkReceived = waitForData(5);
-			checkCalculated = (byte) 0xc5;  // Seed checksum with the 'E' character - that's how we got here
+			checkCalculated = (byte) 0xc5; // Seed checksum with the 'E' character - that's how we got here
 			checkCalculated ^= command;
 			checkCalculated ^= blocklo;
 			checkCalculated ^= blockhi;
-			Log.println(false, " received checksum: " + UnsignedByte.toString(checkReceived) + " calculated checksum: "+UnsignedByte.toString(checkCalculated)); //$NON-NLS-1$
+			Log.println(false, " received checksum: " + UnsignedByte.toString(checkReceived) + " calculated checksum: " + UnsignedByte.toString(checkCalculated)); //$NON-NLS-1$
 			if (checkReceived == checkCalculated)
 			{
 				String message;
@@ -678,10 +685,10 @@ public class CommsThread extends Thread
 				{
 					message = Messages.getString("CommsThread.25");
 					block = UnsignedByte.intValue(blocklo, blockhi);
-					message = StringUtilities.replaceSubstring(message, "%1", ""+block); //$NON-NLS-1$
+					message = StringUtilities.replaceSubstring(message, "%1", "" + block); //$NON-NLS-1$
 					_parent.setSecondaryText(message);
-					Log.println(false, "Reading block "+block); //$NON-NLS-1$
-					_transport.writeByte(0xc5);	// Reflect the 'E'
+					Log.println(false, "Reading block " + block); //$NON-NLS-1$
+					_transport.writeByte(0xc5); // Reflect the 'E'
 					_transport.writeByte(command);
 					_transport.writeByte(blocklo);
 					_transport.writeByte(blockhi);
@@ -694,7 +701,7 @@ public class CommsThread extends Thread
 						_transport.writeByte(dateTime[2]);
 						_transport.writeByte(dateTime[3]);
 						// Calculate new checksum of the envelope
-						cs = (byte)0xc5;
+						cs = (byte) 0xc5;
 						cs ^= command;
 						cs ^= blocklo;
 						cs ^= blockhi;
@@ -710,23 +717,23 @@ public class CommsThread extends Thread
 					}
 					if (command == 0x05)
 					{
-						buffer = _vdisks.readBlock(2,block);
+						buffer = _vdisks.readBlock(2, block);
 						// buffer = disk2.readBlock(block);
 					}
 					else
 					{
-						buffer = _vdisks.readBlock(1,block);
+						buffer = _vdisks.readBlock(1, block);
 					}
 					_transport.writeBytes(buffer);
-					cs = checksum(buffer,Disk.BLOCK_SIZE);
-					Log.println(false, "Sending checksum byte "+UnsignedByte.toString(cs)); //$NON-NLS-1$
+					cs = checksum(buffer, Disk.BLOCK_SIZE);
+					Log.println(false, "Sending checksum byte " + UnsignedByte.toString(cs)); //$NON-NLS-1$
 					_transport.writeByte(cs);
 					_transport.pushBuffer();
 				}
 				if ((command == 0x02) || (command == 0x04)) // Write a block
 				{
 					Log.println(false, "Waiting for block data..."); //$NON-NLS-1$
-					for (int i = 0; i < Disk.BLOCK_SIZE;i++)
+					for (int i = 0; i < Disk.BLOCK_SIZE; i++)
 					{
 						buffer[i] = waitForData(5);
 					}
@@ -734,28 +741,29 @@ public class CommsThread extends Thread
 					Log.println(false, "Received buffer:");
 					for (int i = 0; i < Disk.BLOCK_SIZE; i++)
 					{
-						if (((i % 32) == 0) && (i != 0)) Log.println(false, "");
+						if (((i % 32) == 0) && (i != 0))
+							Log.println(false, "");
 						Log.print(false, UnsignedByte.toString(buffer[i]) + " ");
 					}
 					Log.println(false, "");
-					if (checkReceived == checksum(buffer,Disk.BLOCK_SIZE))
+					if (checkReceived == checksum(buffer, Disk.BLOCK_SIZE))
 					{
 						message = Messages.getString("CommsThread.26");
 						block = UnsignedByte.intValue(blocklo, blockhi);
-						message = StringUtilities.replaceSubstring(message, "%1", ""+block); //$NON-NLS-1$
+						message = StringUtilities.replaceSubstring(message, "%1", "" + block); //$NON-NLS-1$
 						_parent.setSecondaryText(message);
-						Log.println(false, "Block checksums matched at "+UnsignedByte.toString(checkReceived)); //$NON-NLS-1$
-						Log.println(false, "Writing block "+UnsignedByte.intValue(blocklo, blockhi)); //$NON-NLS-1$
+						Log.println(false, "Block checksums matched at " + UnsignedByte.toString(checkReceived)); //$NON-NLS-1$
+						Log.println(false, "Writing block " + UnsignedByte.intValue(blocklo, blockhi)); //$NON-NLS-1$
 						block = UnsignedByte.intValue(blocklo, blockhi);
 						if (command == 0x04)
 						{
-							_vdisks.writeBlock(2,block,buffer);
+							_vdisks.writeBlock(2, block, buffer);
 						}
 						else
 						{
-							_vdisks.writeBlock(1,block,buffer);
+							_vdisks.writeBlock(1, block, buffer);
 						}
-						_transport.writeByte(0xc5);	// Reflect the 'E'
+						_transport.writeByte(0xc5); // Reflect the 'E'
 						_transport.writeByte(command);
 						_transport.writeByte(blocklo);
 						_transport.writeByte(blockhi);
@@ -764,7 +772,7 @@ public class CommsThread extends Thread
 					}
 					else
 					{
-						Log.println(false, "Block checksums did not match.  Received: "+UnsignedByte.toString(checkReceived)+" calculated: "+UnsignedByte.toString(checksum(buffer,Disk.BLOCK_SIZE))); //$NON-NLS-1$
+						Log.println(false, "Block checksums did not match.  Received: " + UnsignedByte.toString(checkReceived) + " calculated: " + UnsignedByte.toString(checksum(buffer, Disk.BLOCK_SIZE))); //$NON-NLS-1$
 					}
 				}
 			}
@@ -786,19 +794,19 @@ public class CommsThread extends Thread
 
 	private byte[] getProDOSDateTime()
 	{
-		byte pddt[] = {0,0,0,0};
+		byte pddt[] = { 0, 0, 0, 0 };
 		Calendar now = Calendar.getInstance();
 		int year = now.get(Calendar.YEAR) - 2000;
-		int month = now.get(Calendar.MONTH) + 1;	// Calendar month January starts at zero in Java
+		int month = now.get(Calendar.MONTH) + 1; // Calendar month January starts at zero in Java
 		int day = now.get(Calendar.DAY_OF_MONTH);
 		int hour = now.get(Calendar.HOUR_OF_DAY);
 		int minute = now.get(Calendar.MINUTE);
-		int time = minute + hour*256;
-		int date = day + month*32 + year*512;
-		pddt[0]=UnsignedByte.loByte(time);
-		pddt[1]=UnsignedByte.hiByte(time);
-		pddt[2]=UnsignedByte.loByte(date);
-		pddt[3]=UnsignedByte.hiByte(date);
+		int time = minute + hour * 256;
+		int date = day + month * 32 + year * 512;
+		pddt[0] = UnsignedByte.loByte(time);
+		pddt[1] = UnsignedByte.hiByte(time);
+		pddt[2] = UnsignedByte.loByte(date);
+		pddt[3] = UnsignedByte.hiByte(date);
 		return pddt;
 	}
 
@@ -808,7 +816,7 @@ public class CommsThread extends Thread
 		byte rc = 0;
 		if (buffer.length < length)
 			minLength = buffer.length;
-		for (i=0;i<minLength;i++)
+		for (i = 0; i < minLength; i++)
 		{
 			rc ^= buffer[i];
 		}
@@ -1101,7 +1109,7 @@ public class CommsThread extends Thread
 						if ((length * 512) == Disk.APPLE_140KB_DISK)
 						{
 							// We know images will always be coming from the server in ProDOS order, so construct our disk that way
-							Disk disk = new Disk(name,true);
+							Disk disk = new Disk(name, true);
 							// Force any 5-1/4" disk order to DOS
 							disk.makeDosOrder();
 							disk.save();
@@ -1902,7 +1910,7 @@ public class CommsThread extends Thread
 				Log.println(false, "CommsThread.sendPacket() calculated CRC: " + (crc & 0xffff));
 				try
 				{
-					ok = waitForData(15,(byte)0x06,(byte)0x15);
+					ok = waitForData(15, (byte) 0x06, (byte) 0x15);
 					if ((preambleStyle == 1) && (_client01xCompatibleProtocol == false))
 					{
 						int incomingBlock = 0;
@@ -1984,8 +1992,7 @@ public class CommsThread extends Thread
 					_transport.flushReceiveBuffer();
 				}
 			}
-		} 
-		while ((ok != CHR_ACK) && (_shouldRun == true) && (currentRetries < _maxRetries));
+		} while ((ok != CHR_ACK) && (_shouldRun == true) && (currentRetries < _maxRetries));
 
 		Log.println(false, "CommsThread.sendPacket() exit, rc = " + rc);
 		return rc;
@@ -2556,7 +2563,7 @@ public class CommsThread extends Thread
 				}
 				else
 				{
-					Log.println(false, "CommsThread.receiveNibbleDisk() received "+ackbyte+" when expecting "+CHR_ACK+".");
+					Log.println(false, "CommsThread.receiveNibbleDisk() received " + ackbyte + " when expecting " + CHR_ACK + ".");
 					packetResult = -1;
 				}
 				if (packetResult == 0)
@@ -2780,7 +2787,7 @@ public class CommsThread extends Thread
 					}
 					else
 						fos.write(realTrack[0].trackBuffer);
-					_parent.setProgressValue(numTracks+1);
+					_parent.setProgressValue(numTracks + 1);
 				}
 				fos.flush();
 				fos.close();
@@ -3022,7 +3029,7 @@ public class CommsThread extends Thread
 		int rc = 0;
 		boolean restarting = false;
 
-		Log.println(false, "CommsThread.receivePacket() entry; offset " + offset + ", buffNum = " + buffNum + ", preamble style = "+preambleStyle+".");
+		Log.println(false, "CommsThread.receivePacket() entry; offset " + offset + ", buffNum = " + buffNum + ", preamble style = " + preambleStyle + ".");
 		do
 		{
 			Log.println(false, "CommsThread.receivePacket() top of receivePacket loop.");
@@ -3041,8 +3048,8 @@ public class CommsThread extends Thread
 					halfNum = buffNum % 2;
 
 					// Wait for the block number...
-					incomingBlockNum = UnsignedByte.intValue(waitForData(15,UnsignedByte.loByte(blockNum)));
-					incomingBlockNum = incomingBlockNum + ((UnsignedByte.intValue(waitForData(1,UnsignedByte.hiByte(blockNum))) * 256));
+					incomingBlockNum = UnsignedByte.intValue(waitForData(15, UnsignedByte.loByte(blockNum)));
+					incomingBlockNum = incomingBlockNum + ((UnsignedByte.intValue(waitForData(1, UnsignedByte.hiByte(blockNum))) * 256));
 					data = waitForData(1);
 					incomingHalf = Math.abs(2 - data); // Get the half block
 
@@ -3081,10 +3088,7 @@ public class CommsThread extends Thread
 					{
 						// Nibble preamble checking
 						Log.println(false, "Nibble-style preamble checking in force.");
-						Log.println(false, "CommsThread.receivePacket()" + " Track: "
-								+ UnsignedByte.toString(UnsignedByte.hiByte(incomingBlockNum)) + " Sector: "
-								+ UnsignedByte.toString(UnsignedByte.loByte(incomingBlockNum)) + " Check: "
-								+ UnsignedByte.toString(UnsignedByte.loByte(data)));
+						Log.println(false, "CommsThread.receivePacket()" + " Track: " + UnsignedByte.toString(UnsignedByte.hiByte(incomingBlockNum)) + " Sector: " + UnsignedByte.toString(UnsignedByte.loByte(incomingBlockNum)) + " Check: " + UnsignedByte.toString(UnsignedByte.loByte(data)));
 						if (data != 2)
 						{
 							rc = -1;
@@ -3138,8 +3142,7 @@ public class CommsThread extends Thread
 								// Log.println(false,"");
 								buffer[offset + byteCount++] = prev;
 								// Log.print(false,UnsignedByte.toString(buffer[offset + byteCount - 1]) + " ");
-							}
-							while (_shouldRun && byteCount < 256 && byteCount != UnsignedByte.intValue(data));
+							} while (_shouldRun && byteCount < 256 && byteCount != UnsignedByte.intValue(data));
 						}
 						if (!_shouldRun)
 						{
@@ -3367,7 +3370,7 @@ public class CommsThread extends Thread
 
 	public byte waitForData(int timeout, byte expectedByte1, byte expectedByte2) throws TransportTimeoutException
 	{
-		Log.println(false,"CommsThread.waitForData(two bytes) entry, expecting "+expectedByte1+" or "+expectedByte2);
+		Log.println(false, "CommsThread.waitForData(two bytes) entry, expecting " + expectedByte1 + " or " + expectedByte2);
 		byte currentByte;
 		if (_transport.transportType() == ATransport.TRANSPORT_TYPE_AUDIO)
 		{
@@ -3375,20 +3378,21 @@ public class CommsThread extends Thread
 			// Skip over leading bytes when they don't match what we expect.
 			// Important for audio - which seems to be picking up random leader junk.
 			currentByte = waitForData(timeout);
-			Log.println(false,"CommsThread.waitForData(two bytes) received byte "+currentByte);
+			Log.println(false, "CommsThread.waitForData(two bytes) received byte " + currentByte);
 			while ((currentByte != expectedByte1) && (currentByte != expectedByte2) && (retryCount < 6))
 			{
 				currentByte = waitForData(timeout);
 				retryCount++;
 			}
 		}
-		else currentByte = waitForData(timeout);
+		else
+			currentByte = waitForData(timeout);
 		return currentByte;
 	}
 
 	public byte waitForData(int timeout, byte expectedByte) throws TransportTimeoutException
 	{
-		Log.println(false,"CommsThread.waitForData(one byte) entry, expecting "+expectedByte);
+		Log.println(false, "CommsThread.waitForData(one byte) entry, expecting " + expectedByte);
 		byte currentByte;
 		if (_transport.transportType() == ATransport.TRANSPORT_TYPE_AUDIO)
 		{
@@ -3402,7 +3406,8 @@ public class CommsThread extends Thread
 				retryCount++;
 			}
 		}
-		else currentByte = waitForData(timeout);
+		else
+			currentByte = waitForData(timeout);
 		return currentByte;
 	}
 
@@ -3829,20 +3834,14 @@ public class CommsThread extends Thread
 							bytesRead += _is.read(buffer, bytesRead, bytesAvailable - bytesRead);
 							Log.println(false, "CommsThread.Worker.run() read " + bytesRead + " more bytes from the stream.");
 						}
-						if (_resource.equals(Messages.getString("Gui.BS.SOSINTERP")) ||
-								_resource.equals(Messages.getString("Gui.BS.ProDOSRaw")) ||
-								_resource.equals(Messages.getString("Gui.BS.BSpeed")) ||
-								_resource.equals(Messages.getString("Gui.BS.ADTProRaw")) ||
-								_resource.equals(Messages.getString("Gui.BS.VSDriveRaw")) ||
-								_resource.equals(Messages.getString("Gui.BS.SOSDRIVER")))
+						if (_resource.equals(Messages.getString("Gui.BS.SOSINTERP")) || _resource.equals(Messages.getString("Gui.BS.ProDOSRaw")) || _resource.equals(Messages.getString("Gui.BS.BSpeed")) || _resource.equals(Messages.getString("Gui.BS.ADTProRaw")) || _resource.equals(Messages.getString("Gui.BS.VSDriveRaw")) || _resource.equals(Messages.getString("Gui.BS.SOSDRIVER")))
 						{
 							// If we're sending binary bootstrap stuff, we need
 							// to prepend the length and stuff
 							// Log.println(true,
 							// "DEBUG: CommsThread.Worker.run() writing length header.");
 							int length = buffer.length;
-							if (_resource.equals(Messages.getString("Gui.BS.SOSINTERP")) ||
-									_resource.equals(Messages.getString("Gui.BS.SOSDRIVER")))
+							if (_resource.equals(Messages.getString("Gui.BS.SOSINTERP")) || _resource.equals(Messages.getString("Gui.BS.SOSDRIVER")))
 							{
 								_transport.writeByte(0x53); // Send an "S" to trigger the start
 								length = length - 1; // SOS seems to need this reduced by one...

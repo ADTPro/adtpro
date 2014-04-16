@@ -1,6 +1,6 @@
 ;
 ; ADTPro - Apple Disk Transfer ProDOS
-; Copyright (C) 2013 by David Schmidt
+; Copyright (C) 2013 - 2014 by David Schmidt
 ; david__schmidt at users.sourceforge.net
 ;
 ; This program is free software; you can redistribute it and/or modify it 
@@ -79,7 +79,7 @@ GoMLI:
 	lda	#$0d		; Update location for MLI
 	sta	UpdateLoc+1
 	lda	#$B2		; Ask for MLI ("2")
-	sta	Desired+1
+	sta	Payload
 	lda	#$50		; First character will be "P"	
 	sta	FirstChar+1
 	jmp	PullFile
@@ -89,7 +89,7 @@ GoDriver:
 	lda	#$11		; Update location for driver
 	sta	UpdateLoc+1	
 	lda	#$B7		; Ask for Driver ("7")
-	sta	Desired+1	
+	sta	Payload	
 	lda	#$56		; First character will be "V" for VSDRIVE
 	sta	FirstChar+1	
 	jmp	PullFile
@@ -99,16 +99,20 @@ GoBASIC:
 	lda	#$0f		; Update location for BASIC
 	sta	UpdateLoc+1	
 	lda	#$B8		; Ask for BASIC ("8")
-	sta	Desired+1
+	sta	Payload
 	lda	#$42		; First character will be "B" for BASIC
 	sta	FirstChar+1	
 	jmp	PullFile
 
 PullFile:
 	bit	$c010		; Clear the keyboard strobe
-Desired:
-	lda	#$00		; Ask for the file
-	jsr	PUTC		; Trigger the download
+	ldx	#$00
+:	lda	Envelope,x
+	jsr	PUTC
+	inx
+	cpx	#$06
+	bne	:-
+	jsr	PUTC		; The final byte of payload is repeated
 
 ; Poll the port until we get a magic incantation
 	ldy	#$20		; Prepare to store file at $2000
@@ -214,3 +218,7 @@ NextTask:
 			; 00 = Initial startup, need to seek the serial hardware and wait for ProDOS
 			; 01 = Load VSDrive client
 			; 02 = Load BASIC interpreter
+Envelope:
+	.byte $c1, $01, $00, $c6, $06
+Payload:
+	.byte $00
