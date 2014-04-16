@@ -1,0 +1,585 @@
+ -----
+ ADTPro Protocol - Version 1
+ -----
+ David Schmidt (david__schmidt at users dot souceforge dot net)
+ -----
+
+ADTPro Protocol - Version 1
+
+ Version 1 ADTPro servers can interpret and respond to commands from both the Version 1 ADTPro client
+ and the DOS ADT client (Including nibble sends from the A2V2 client - see the
+ {{{./compatibility.html}ADT compatibility}} page for more details). 
+
+* ADTPro Functions
+
+ [{{{#Change_Directory}"C" - CD}}]   Change working directory
+
+ [{{{#Put}"Z" - Size}}]  Ask for file size (implies existence test; used as part of Put protocol)
+
+ [{{{#Get}"G" - Get}}]  Initiate disk image download from host
+
+ [{{{#Put}"P" - Put}}]  Initiate disk image upload to host(always overwrite)
+
+ [{{{#Batch}"B" - Batch}}]  Initiate batch upload (unique suffix added to specified prefix)
+
+ [{{{#Multiple}"M" - Multiple}}]  Initiate multiple nibble batch upload (unique suffix added to specified prefix)
+
+ [{{{#ProDOS}"2" - Send ProDOS}}]  Initiate Speediboot ProDOS bootstrapping download
+
+ [{{{#SOS_Kernel}"3" - Send SOS Kernel}}]  Initiate SOS kernel bootstrapping download
+
+ [{{{#SOS_Interpreter}"4" - Send SOS Interpreter}}]  Initiate SOS interpreter bootstrapping download
+
+ [{{{#SOS_Driver}"5" - Send SOS Driver}}]  Initiate SOS driver bootstrapping download
+
+ [{{{#ADTPro}"6" - Send ADTPro}}]  Initiate Speediboot ADTPro client bootstrapping download
+
+ [{{{#VSDrive}"7" - Send VSDrive}}]  Initiate Speediboot VSDrive driver bootstrapping download
+
+ [{{{#BASIC}"8" - Send BASIC Interpreter}}]  Initiate Speediboot BASIC bootstrapping download
+
+ [{{{#Ping}"Y" - Ping}}]  One-way ping request (Client -> Server)
+
+* DOS ADT Compatible Functions
+
+ [{{{#DIR}"D" - DIR}}]  DOS ADT compatible listing of the current directory
+
+ [{{{#Receive}"R" - Receive}}] DOS ADT compatible download 140k disk
+
+ [{{{#Send}"S" - Send}}] DOS ADT compatible upload 140k disk
+
+ [{{{#Nibble}"N" - Send Nibble Image}}] DOS ADT/A2V2 compatible upload of nibble image
+
+* Virtual Drive Server Functions
+
+ [{{{#Read}"E"+$01 - Read Block}}] ProDOS device driver compatible read block request
+
+ [{{{#Write}"E"+$02/$04 - Write Block}}] ProDOS device driver compatible write block request
+
+ [{{{#Read3}"E"+$03/$05 - Read Block with timestamp update}}] ProDOS device driver compatible read block request with timestamp update
+
+* {Change Directory}
+
+-------------
+
+ Apple sends:
+   One byte: "C" ($C3)
+   Byte stream: directory name (null terminated)
+
+ Host sends: return code:
+   $00 = ok
+   $06 = Unable to change directory
+
+-------------
+
+* {Get} (Receive) disk (Host -> Apple ][)
+
+------------
+
+ Apple sends:
+   One byte: "Z" ($DA)
+   Byte stream: file name (null terminated)
+
+ Host sends:
+   Two bytes: file size in blocks (LSB, MSB)
+   One byte: return code:
+     $00 = File exists (and file size is valid)
+     $02 = File does not exist
+     $04 = File exists, not recognized as a valid disk image
+
+ Apple sends:
+   One byte: "G" ($C7)
+   Byte stream: file name (null terminated)
+
+ Host sends: return code:
+   $00 = Ok
+   $02 = File not found (Apple aborts)
+
+ Apple sends:
+   $06 = ACK
+
+ (parts = filesize /(40 * 512), remainder = filesize % (40 * 512))
+ (loop: parts * 40 blocks + remainder * blocks)
+
+   Host sends:
+     2 bytes: current block number (LSB, MSB)
+     1 byte: half-block number (2 = bytes 0-255, 1 = bytes 256-511)
+     Half-block, RLE encoded
+     two bytes:
+       CRC (LSB)
+       CRC (MSB)
+
+   Apple sends:
+     One byte acknowledgement:
+       $06 = ACK (Apple understood the packet, CRC is correct; send next one)
+       $15 = NAK (Resend this same packet again: block number tells what Apple
+                 is still waiting to get a good packet for)
+     Two bytes: current block number (LSB, MSB)
+     One byte: half-block number (2 = bytes 0-255, 1 = bytes 256-511)
+
+   Note: if the host receives a NAK, and the Apple is expecting a packet 
+         that is one greater than what's just been sent, then an ACK got 
+         lost.  Recovery is for the host to go ahead and advance to the next
+         block and send that.
+
+ (loop end)
+
+ Apple sends: One byte: number of errors encountered
+
+------------
+
+* {Put} (Send) disk  (from Apple ][ to host)
+
+------------
+
+Apple sends:
+  One byte: "Z" ($DA)
+  Byte stream: file name (null terminated)
+
+Host sends:
+  Two bytes: file size in blocks (LSB, MSB)
+  One byte: return code:
+    $00 = File exists (and file size is valid)
+    $02 = File does not exist
+    $04 = File exists, not recognized as a valid disk image
+
+Apple sends:
+  One byte: "P" ($D0)
+  Byte stream: file name (null terminated)
+  Two bytes:
+    Number of blocks to follow (LSB)
+    Number of blocks to follow (MSB)
+
+Host sends: return code:
+  $00 = Ok
+  $02 = Unable to write (Apple aborts)
+
+Apple sends:
+  $06 = ACK
+
+(parts = filesize /(40 * 512), remainder = filesize % (40 * 512))
+(loop: parts * 40 blocks + remainder * blocks)
+
+  Apple sends:
+    Two bytes: current block number (LSB, MSB)
+    One byte: half-block number (2 = bytes 0-255, 1 = bytes 256-511)
+    Half-block, RLE encoded
+    two bytes:
+      CRC (LSB)
+      CRC (MSB)
+
+  Host sends one byte acknowledgement:
+    $06 = ACK (Host understood the packet, CRC is correct; send next one)
+              (Also: this is a duplicate packet, already received; acknowledge
+              so the Apple sends the next one)
+    $15 = NAK (Resend the same packet again)
+
+(end loop)
+
+Apple sends: One byte: number of errors encountered
+
+------------
+
+* {Batch} send (unique suffix added to specified prefix)
+
+------------
+
+Apple sends:
+  One byte: "B" ($C2)
+  Byte stream: file name prefix (null terminated)
+  Two bytes:
+    Number of blocks to follow (LSB)
+    Number of blocks to follow (MSB)
+
+Host sends:
+  One byte: return code:
+  $00 = Ok
+  $02 = Unable to write (Apple aborts)
+
+Apple sends:
+  $06 = ACK
+
+(parts = filesize /(40 * 512), remainder = filesize % (40 * 512))
+(loop: parts * 40 blocks + remainder * blocks)
+
+  Apple sends:
+    Two bytes: current block number (LSB, MSB)
+    One byte: half-block number (2 = bytes 0-255, 1 = bytes 256-511)
+    Half-block, RLE encoded
+    two bytes:
+      CRC (LSB)
+      CRC (MSB)
+
+  Host sends one byte acknowledgement:
+    $06 = ACK (Host understood the packet, CRC is correct; send next one)
+              (Also: this is a duplicate packet, already received; acknowledge
+              so the Apple sends the next one)
+    $15 = NAK (Resend the same packet again)
+
+(end loop)
+
+Apple sends: One byte: number of errors encountered
+
+------------
+
+* {Multiple} nibble send (unique suffix added to specified prefix)
+
+------------
+
+Apple sends:
+  One byte: "M" ($CC)
+  Byte stream: file name prefix (null terminated)
+  Two bytes:
+    Number of blocks to follow (LSB - ignored at host)
+    Number of blocks to follow (MSB - ignored at host)
+
+Host sends:
+  One byte: return code:
+  $00 = Ok
+  $02 = Unable to write (Apple aborts)
+
+Apple sends:
+  $06 = ACK
+
+(Assuming zero return code...)
+Apple sends: $06 = ACK
+(loop, 35 tracks)
+  (loop, 52 blocks * 256 bytes)
+    Apple sends:
+      one byte: block number within the track (starting at 0)
+      one byte: track number
+      one byte: $02
+      Next block, RLE encoded
+      two bytes:
+        CRC (LSB)
+        CRC (MSB)
+
+    Host sends:
+      $06 = ACK
+      $15 = NAK
+
+  (end block loop)
+
+  Host sends:
+    $06 = ACK analysis was successful; please proceed with the next track
+    $15 = NAK analysis failed; abort the operation
+    $18 = CAN analysis failed, but please continue with next track
+    $05 = ENQ analysis was inconclusive; please re-read the same track and send the newly read data
+
+(end track loop)
+
+Apple sends:
+ $00 = error count
+
+------------
+
+* Speediboot {ProDOS} Download
+
+------------
+
+Apple sends:
+  One byte: "2" ($B2)
+
+Host sends:
+  One byte: "P" ($50)
+  Two bytes: image size in bytes (LSB, MSB)
+  Continuous byte stream of ProDOS image - grub starts execution at $2000, returns to grub at $7000
+
+------------
+
+* {SOS Kernel} Download
+
+------------
+
+Apple sends:
+  One byte: "3" ($B3)
+
+Host sends:
+  Continuous byte stream of $56 pages ($5600 bytes) of SOS kernel file image
+
+------------
+
+* {SOS Interpreter} Download
+
+------------
+
+Apple sends:
+  One byte: "4" ($B4)
+
+Host sends:
+  One byte: "S" ($53)
+  Two bytes: image size in bytes (LSB, MSB)
+  Continuous byte stream of serial ADTPro SOS program file image
+
+------------
+
+* {SOS Driver} Download
+
+------------
+
+Apple sends:
+  One byte: "5" ($B5)
+
+Host sends:
+  Two bytes: image size in bytes (LSB, MSB)
+  Continuous byte stream of SOS driver file image
+
+------------
+
+* Speediboot {ADTPro} Download
+
+------------
+
+Apple sends:
+  One byte: "6" ($B6)
+
+Host sends:
+  One byte: "A" ($41)
+  Two bytes: image size in bytes (LSB, MSB)
+  Continuous byte stream of ADTPro program file image - grub starts execution at $2000
+
+------------
+
+* Speediboot {VSDrive} Download
+
+------------
+
+Apple sends:
+  One byte: "7" ($B7)
+
+Host sends:
+  One byte: "V" ($56)
+  Two bytes: image size in bytes (LSB, MSB)
+  Continuous byte stream of VSDrive program file image - grub starts execution at $2000, returns to grub at $7000
+
+------------
+
+* Speediboot {BASIC} Download
+
+------------
+
+Apple sends:
+  One byte: "8" ($B8)
+
+Host sends:
+  One byte: "B" ($42)
+  Two bytes: image size in bytes (LSB, MSB)
+  Continuous byte stream of BASIC file image - grub starts execution at $2000
+
+------------
+
+* {Ping}
+
+------------
+
+Apple sends: One byte: "Y" ($D9)
+
+Host displays the message: "Ping request received from client" (no protocol response sent)
+
+------------
+
+DOS ADT Compatible Functions
+
+* {Receive} 140k disk (from host to Apple ][)
+
+------------
+
+Apple sends: One byte: "R" ($D2)
+Apple sends: Byte stream: file name (null terminated)
+
+Host sends one byte return code:
+  $00 = ok
+  $1a = file can't be opened (Old ADT message number)
+  $1e = not a 140k image (Old ADT message number)
+
+(Assuming zero return code...)
+(loop: 5 parts * 7 tracks * 16 sectors)
+
+  Apple sends one byte acknowledgement:
+    $06 = ACK (always ACK for the first sector)
+    $15 = NAK
+
+  Host sends:
+    Next sector, RLE encoded
+    two bytes:
+      CRC (LSB)
+      CRC (MSB)
+
+(loop end)
+
+Apple sends:
+  One byte: number of errors encountered
+
+------------
+
+* {Send} 140k disk (from Apple ][ to host)
+
+------------
+
+Apple sends: One byte: "S" ($D3)
+
+Host sends one byte return code:
+  $00 = Ok
+  $1c = File exists
+  $1a = Can't open
+  $1e = Disk full
+
+(Assuming zero return code...)
+(loop: 5 parts * 7 tracks * 16 sectors)
+
+  Host sends:
+    $00 = ready to commence
+
+  Apple sends:
+    Next sector, RLE encoded
+    two bytes:
+      CRC (LSB)
+      CRC (MSB)
+
+  Host sends one byte acknowledgement:
+    $06 = ACK
+    $15 = NAK
+
+(loop end)
+
+Apple sends:
+  One byte: number of errors encountered
+
+------------
+
+* Send {Nibble} Disk (from Apple ][ to host)
+
+------------
+
+Apple sends: Byte stream: "N" ($CE),
+  $01, $01, $00 (protocol negotiation)
+
+Host sends one byte return code:
+  $06 = ACK (the host supports this protocol)
+  $15 = NAK (the host does not support this protocol)
+
+(Assuming ACK return code...)
+Apple sends:
+  Byte stream: file name (null terminated)
+
+Host sends one byte return code:
+  $00 = Ok
+  $1c = File exists
+  $1a = Can't open
+  $1e = Disk full
+
+(Assuming zero return code...)
+Apple sends: $06 = ACK
+(loop, 35 tracks)
+  (loop, 52 blocks * 256 bytes)
+    Apple sends:
+      $15 = NAK
+      one byte: block number within the track (starting at 0)
+      one byte: track number
+      one byte: $02
+      Next block, RLE encoded
+      two bytes:
+        CRC (LSB)
+        CRC (MSB)
+
+    Host sends:
+      $06 = ACK
+      $15 = NAK
+
+  (end block loop)
+
+  Host sends:
+    $06 = ACK analysis was successful; please proceed with the next track
+    $15 = NAK analysis failed; abort the operation
+    $18 = CAN analysis failed, but please continue with next track
+    $05 = ENQ analysis was inconclusive; please re-read the same track and send the newly read data
+
+(end track loop)
+
+Apple sends:
+ $00 = error count
+
+------------
+
+* {DIR}
+
+------------
+
+Apple sends: One byte: "D" ($C4)
+
+Host sends: 
+  Screen-formatted data of directory contents; null-terminated
+
+  Final byte:
+    $00 = last screen
+    $01 = another screen follows
+
+If final byte is $01:
+  Apple sends one byte:
+      "D" ($C4) = retrieve subsequent screen
+      $00 = abort
+
+------------
+
+Vitual Drive Server Functions
+
+* {Read} Block
+
+------------
+
+ The Apple sends: byte stream:
+   One byte: "E" ($C5)
+   One byte: $01
+   Two bytes: requested block number (LSB, MSB)
+   One byte: EOR of the first four bytes
+
+ Host sends: byte stream:
+   One byte: "E" ($C5)
+   One byte: $01
+   Two bytes: requested block number (LSB, MSB)
+   One byte: EOR of the first four bytes
+   Requested block data (512 bytes)
+   One byte: EOR of all bytes in block
+
+------------
+
+* {Read3} - Block read with date/time update 
+
+------------
+
+ The Apple sends: byte stream:
+   One byte: "E" ($C5)
+   One byte: $03 (for drive 1) or $05 (for drive 2)
+   Two bytes: requested block number (LSB, MSB)
+   One byte: EOR of the first four bytes
+
+ Host sends: byte stream:
+   One byte: "E" ($C5)
+   One byte: $03 (for drive 1) or $05 (for drive 2)
+   Two bytes: requested block number (LSB, MSB)
+   Four bytes: ProDOS date and timestamp data (ultimately destined for $BF90 to $BF93)
+   One byte: EOR of the first eight bytes
+   Requested block data (512 bytes)
+   One byte: EOR of all bytes in block
+
+------------
+
+* {Write} Block
+
+------------
+
+ The Apple sends: byte stream:
+   One byte: "E" ($C5)
+   One byte: $02 (for drive 1) or $04 (for drive 2)
+   Two bytes: requested block number (LSB, MSB)
+   One byte: EOR of the first four bytes
+   Requested block data (512 bytes)
+   One byte: EOR of all bytes in block
+
+ Host sends: byte stream:
+   One byte: "E" ($C5)
+   One byte: $02 (for drive 1) or $04 (for drive 2)
+   Two bytes: requested block number (LSB, MSB)
+   One byte: EOR of the first four bytes
+
+------------

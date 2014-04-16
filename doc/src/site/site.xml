@@ -64,8 +64,9 @@
         <item name="Version 1 History" href="historyolddetail.html" collapse="true"/>
       </item>
       <item name="Credits" href="credits.html"/>
-      <item name="Protocol" href="protocol.html"/>
-      <item name="Protocol-Wide" href="protocolwide.html"/>
+      <item name="Protocol" href="protocol.html" collapse="true">
+        <item name="Version 1 Protocol" href="protocolv1.html"/>
+      </item>
       <item name="ADT Compatibility" href="compatibility.html"/>
       <item name="Development" href="developing.html"/>
     </menu>

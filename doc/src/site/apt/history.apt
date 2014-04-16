@@ -10,7 +10,7 @@ ADTPro Release History
 
  New functionality:
 
- * New protocol (called "wide" during development) that makes transport more reliable and significantly faster with tunable payload lengths
+ * New protocol (code-named "Wide") that makes transport more reliable and significantly faster with tunable payload lengths
 
  * [Client] Support for Uthernet II card
 
