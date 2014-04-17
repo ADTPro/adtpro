@@ -592,7 +592,7 @@ public class CommsThread extends Thread
 					}
 					else
 					{
-						bs.writeBytes("NO FILES"); //$NON-NLS-1$
+						//bs.writeBytes("NO FILES"); //$NON-NLS-1$
 						bs.writeByte('\0');
 						bs.writeByte('\0');
 						sendPacketWide(bs.getBuffer(), requestedPage, 2);
@@ -602,7 +602,7 @@ public class CommsThread extends Thread
 				{
 					Log.println(true, "sendDirectory exception:"); //$NON-NLS-1$
 					Log.printStackTrace(t1);
-					_transport.writeBytes("NO FILES"); //$NON-NLS-1$
+					//_transport.writeBytes("NO FILES"); //$NON-NLS-1$
 					_transport.writeByte('\0');
 					_transport.writeByte('\0');
 					_transport.pushBuffer();
@@ -610,7 +610,7 @@ public class CommsThread extends Thread
 			}
 			else
 			{
-				_transport.writeBytes("NO FILES"); //$NON-NLS-1$
+				//_transport.writeBytes("NO FILES"); //$NON-NLS-1$
 				_transport.writeByte('\0');
 				_transport.writeByte('\0');
 				_transport.pushBuffer();

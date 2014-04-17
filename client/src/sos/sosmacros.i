@@ -64,6 +64,20 @@
 	lda CH
 .endmacro
 
+.macro LDA_CV
+	txa
+	pha
+	tya
+	pha
+	jsr READPOSN
+	sty CV
+	pla
+	tay
+	pla
+	tax
+	lda CV
+.endmacro
+
 .macro SET_HTAB
 	jsr HTAB
 .endmacro

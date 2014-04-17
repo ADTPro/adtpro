@@ -25,13 +25,22 @@
 
 ;---------------------------------------------------------
 ; DIR - get directory from the host and print it
-; Host sends 0,1 after pages 1..N-1, 0,0 after last page
+; Modes: 
+;  - Plain directory display; pages up and down
+;  - Chooser display; pages up and down, hitting return selects one (input buffer will hold chosen name)
 ; BLKPTR should be set to the beginning of the receive buffer
 ;---------------------------------------------------------
 DIR:
-	jsr GETFN1
+	jsr GETFN
 	lda #$00	; Screen page number zero
 	sta NIBPCNT	; Borrow NIBPCNT for that purpose
+	sta NDUHIGHWATER
+	sta NDUCANCONT
+	sta NDULASTPAGE
+	sta NDULASTROW
+	ldy #$03
+	sty COL_SAV	; Borrow COL_SAV as vertical position counter
+
 DIRWARM:
 	ldy #PMWAIT
 	jsr WRITEMSGAREA
@@ -42,6 +51,7 @@ DIRWARM:
 	ldy TMOT
 	bne DIRTIMEOUT
 
+DIRDISP0:
 	jsr HOME	; Clear screen
 	ldy #$00	; Reset counter
 
@@ -61,32 +71,166 @@ DIRMORE:
 
 DIRPAGE:
 	lda (Buffer),Y	; Get byte from buffer
-	bne DIRCONT
+	sta NDUCANCONT	; Save that off
+	bne @NewUI
+	LDA_CV
+	sta NDULASTROW	; Save that off
+	dec NDULASTROW
+	lda NIBPCNT
+	sta NDULASTPAGE
+; Here, we would decide if we're doing a plain DIR display vs. interacting more...
 
-	ldy #PMSG30	; No more files, wait for a key
-	jsr WRITEMSGAREA 	; ... and return
-	jsr READ_CHAR	; Wait for input
-	rts
+@NewUI:	jmp NewDirUI
+
 
 DIRTIMEOUT:
-	jsr DIRABORT
 HOSTTIMEOUT:
 	ldy #PHMTIMEOUT
 	jsr SHOWHM1
 	jsr PAUSE
 	rts
 
-DIRCONT:
-	ldy #PMSG29	; "ANY KEY TO CONTINUE, ESC STOPS"
-	jsr WRITEMSGAREA
-	jsr READ_CHAR
-	eor #CHR_ESC
-	beq DIRDONE
-	inc NIBPCNT
-	jmp DIRWARM
-DIRDONE:
-	jmp DIRABORT
+NewDirUI:
 
+; If we have no files, we need to jmp to DIREND so we don't bother with this loopy business.
+
+	lda NDULASTROW
+	cmp #$02
+	bne :+
+	jmp CDMSG
+:	ldy #PMSG23a		; SELECT WITH RETURN, ESC CANCELS
+	jsr WRITEMSGAREA
+
+NDURedraw:
+	jsr NDUInvertCurrentLine
+NDUNavLoop:
+	CONDITION_KEYPRESS	; Convert to upper case, etc.  OS dependent.
+	jsr READ_CHAR		; Wait for input
+	sta ZP			; Borrow ZP for remembering keypress
+	cmp #CHR_A
+	bne @TryUp
+	jmp NDUPageUp	
+@TryUp:
+	cmp #$8b		; Up?
+	beq @IsUp
+	cmp #$88		; Left?
+	beq @IsUp
+	bne @TryDown
+@IsUp:	lda COL_SAV
+	cmp #$03		; Are we at the top of the page?
+	bne @RoomForUp
+	jmp NDUPageUp
+@RoomForUp:
+	jsr NDUInvertCurrentLine
+	dec COL_SAV
+	jmp NDURedraw
+@TryDown:
+	cmp #CHR_Z
+	bne :+
+	jmp NDUPageDown
+:	cmp #$8a		; Down?
+	beq @IsDown
+	cmp #$95		; Right?
+	beq @IsDown
+	bne @TryReturn
+@IsDown:
+	lda NIBPCNT
+	cmp NDULASTPAGE		; Are we on the last page?
+	bne :+			; No - go for it
+	LDA_CV
+	cmp NDULASTROW		; Yes - are we on the last line?
+	bne :+			; No - go for it
+	jmp NDUNavLoop		; Yes - nowhere to go, so forget it
+:	lda COL_SAV
+	cmp #$14
+	bne @RoomForDown
+	jmp NDUPageDown
+@RoomForDown:
+	jsr NDUInvertCurrentLine
+	inc COL_SAV
+	jmp NDURedraw
+@TryReturn:
+	cmp #$8d		; Return?
+	bne :+
+				; Save a pointer or something to the name
+	rts
+:	cmp #CHR_ESC
+	beq :+
+	jmp NDUNavLoop
+:	rts
+
+NDUPageUp:
+	lda NIBPCNT
+	bne @Top
+	jmp NDUNavLoop
+@Top:	dec NIBPCNT
+	LDA_BIGBUF_ADDR_LO	; Re-connect the block pointer to the
+	sta Buffer		; Big Buffer(TM), 1k * NIBPCNT again
+	LDA_BIGBUF_ADDR_HI
+	clc
+	adc NIBPCNT
+	adc NIBPCNT
+	adc NIBPCNT
+	adc NIBPCNT
+	sta Buffer+1
+	lda ZP
+	cmp #CHR_A		; was it page up?
+	bne :+			; No, so branch forward and put the cursor at the bottom of the screen
+	lda #$03		; Yes, so put the cursor at the top of the screen.
+	jmp @Sta
+:	lda #$14
+@Sta:	sta COL_SAV
+	jmp DIRDISP0
+
+NDUPageDown:
+	lda NIBPCNT
+	cmp #$13		; Are we at the end of our buffer space?
+	bne :+			; No - go for it
+	jmp NDUNavLoop		; Yes - nothing to do
+:	lda NDUCANCONT		; Are we on the last page?
+	bne :+			; No - go for it
+	jmp NDUNavLoop		; Yes - nothing to do
+:	lda #$03
+	sta COL_SAV
+	lda NIBPCNT
+	cmp NDUHIGHWATER	; Have we been to this page already?
+	bpl @NeedIt		; No - go get it
+	jmp @AlreadyHaveIt	; Yes - show it from memory
+; Ready to ask for another page...
+@NeedIt:
+	inc NIBPCNT
+	inc NDUHIGHWATER
+	jmp DIRWARM
+@AlreadyHaveIt:
+	inc NIBPCNT
+	LDA_BIGBUF_ADDR_LO	; Re-connect the block pointer to the
+	sta Buffer		; Big Buffer(TM), 1k * NIBPCNT again
+	LDA_BIGBUF_ADDR_HI
+	clc
+	adc NIBPCNT
+	adc NIBPCNT
+	adc NIBPCNT
+	adc NIBPCNT
+	sta Buffer+1
+	lda #$03
+	sta COL_SAV
+	jmp DIRDISP0
+
+NDUInvertCurrentLine:
+	ldy COL_SAV
+	ldx #$00
+	lda #$28
+	jsr INVERSE
+	rts
+
+NDUCANCONT:
+	.byte $00
+NDULASTPAGE:
+	.byte $00
+NDULASTROW:
+	.byte $00
+NDUHIGHWATER:
+	.byte $00
 ;---------------------------------------------------------
 ; CD - Change directory
 ;---------------------------------------------------------
@@ -103,7 +247,7 @@ CDSTART:
 	jsr CDREPLY
 	bcs CDTIMEOUT
 	bne CDERROR
-	ldy #PMSG14
+CDMSG:	ldy #PMSG14
 	jsr WRITEMSGAREA
 	jsr PAUSE
 

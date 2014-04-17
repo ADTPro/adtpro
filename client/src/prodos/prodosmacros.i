@@ -55,6 +55,10 @@
 	lda CH
 .endmacro
 
+.macro LDA_CV
+	lda CV
+.endmacro
+
 .macro SET_HTAB
 	sta CH
 .endmacro
