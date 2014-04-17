@@ -16,6 +16,8 @@ ADTPro Release History
 
  * [Client] Arrow-and-Return interface for the main menu
 
+ * [Client] Directory function allows for wildcard filtering of files
+
  * Separated ProDOS and SOS boot disks for ADTPro client; VDRIVE boot disk remains common to both
 
  []

@@ -30,6 +30,7 @@ import org.adtpro.transport.ProtocolVersionException;
 import org.adtpro.transport.SerialTransport;
 import org.adtpro.transport.TransportTimeoutException;
 import org.adtpro.gui.Gui;
+import org.adtpro.utilities.ByteStream;
 import org.adtpro.utilities.Log;
 import org.adtpro.utilities.StringUtilities;
 import org.adtpro.utilities.UnsignedByte;
@@ -313,7 +314,7 @@ public class CommsThread extends Thread
 			_parent.setMainText(Messages.getString("CommsThread.1")); //$NON-NLS-1$
 			_parent.setSecondaryText(_parent.getWorkingDirectory()); //$NON-NLS-1$
 			Log.println(false, "CommsThread.dispatchCommand() Received DIR command."); //$NON-NLS-1$
-			sendDirectory();
+			sendDirectoryWide(envelope);
 			_parent.setSecondaryText(_parent.getWorkingDirectory()); //$NON-NLS-1$
 			_busy = false;
 			break;
@@ -441,7 +442,7 @@ public class CommsThread extends Thread
 			// 40 dashes separates the wheat from the chaff
 			_transport.writeBytes("----------------------------------------"); //$NON-NLS-1$
 
-			File[] files = _parent.getFiles();
+			String[] files = _parent.getFiles();
 			if (files.length > 0)
 			{
 				i = 0;
@@ -449,7 +450,7 @@ public class CommsThread extends Thread
 				line = (_parent.getWorkingDirectory().length() + 13) / 40 + 2;
 				while (_shouldRun)
 				{
-					if ((i > 0) && (i + files[j].getName().length() > 40))
+					if ((i > 0) && (i + files[j].length() > 40))
 					{
 						while (i++ < 40)
 							_transport.writeByte(' ');
@@ -465,9 +466,9 @@ public class CommsThread extends Thread
 						if (waitForData(15) == '\0')
 							break;
 					}
-					line += (files[j].getName().length() / 40);
-					i += (files[j].getName().length() % 40);
-					_transport.writeBytes(files[j].getName());
+					line += (files[j].length() / 40);
+					i += (files[j].length() % 40);
+					_transport.writeBytes(files[j]);
 					j++;
 					if (j + 1 > files.length)
 					{
@@ -499,6 +500,121 @@ public class CommsThread extends Thread
 			_transport.writeByte('\0');
 			_transport.writeByte('\0');
 			_transport.pushBuffer();
+		}
+	}
+
+	public void sendDirectoryWide(byte[] envelope)
+	{
+		int i, start, end;
+		int pageLength = 18;
+		byte[] dirPacket = new byte[1024];
+		ByteStream bs = new ByteStream(dirPacket);
+		Log.println(false, "CommsThread.sendDirectoryWide() entry.");
+		String directory, filespec;
+		byte continuation = '\0';
+		byte[] payload = pullPayloadWide(envelope);
+		StringBuffer dest = new StringBuffer();
+		if (payload != null)
+		{
+			for (i = 0; i < payload.length - 2; i++)
+			{
+				Log.println(false, "CommsThread.sendDirectoryWide() payload[" + i + "] " + UnsignedByte.toString(payload[i]));
+				dest.append((char) (UnsignedByte.intValue(payload[i]) & 0x7f));
+			}
+			int requestedPage = UnsignedByte.intValue(payload[payload.length - 1]);
+			Log.println(false, "CommsThread.sendDirectoryWide() value: " + dest.toString().trim());
+			filespec = dest.toString().trim();
+			Log.println(false, "CommsThread.sendDirectoryWide() Seeking directory of: " + _parent.getWorkingDirectory());
+			directory = _parent.getWorkingDirectory();
+			String[] files;
+			if (filespec.length() > 0)
+				files = _parent.getFiles(filespec);
+			else
+				files = _parent.getFiles();
+			if (files != null)
+			{
+				// First off, does everything fit naturally?
+				if (directory.length() <= 66)
+				{
+					// Yes... so add a little bit of extra sugar
+					directory = "DIRECTORY OF: " + directory;
+				}
+				// Now, is it bigger than 2 lines?
+				if (directory.length() > 80)
+				{
+					// Yes - so lop it off
+					directory = directory.substring(directory.length() - 79, directory.length());
+				}
+				else if (directory.length() < 80)
+				{
+					// No - so add a return
+					directory = directory.concat("\r");
+				}
+				// else... directory length IS 80, and so we don't need to do anything.
+				if (directory.length() < 40)
+					directory = directory.concat("\r");
+				else if (directory.length() == 40)
+					directory = directory.concat("\r");
+
+				for (i = 0; i < 1024; i++)
+					dirPacket[i] = 0;
+				try
+				{
+					bs.writeBytes(directory);
+					// 40 dashes separates the wheat from the chaff
+					bs.writeBytes("----------------------------------------"); //$NON-NLS-1$
+					if (files.length > 0)
+					{
+						start = requestedPage * pageLength;
+						end = start + pageLength;
+						continuation = '\1';
+						if (end > files.length)
+						{
+							continuation = '\0';
+							end = files.length;
+						}
+						// line = (_parent.getWorkingDirectory().length() + 13) / 40 + 2;
+						for (i = start; i < end; i++)
+						{
+							String name = files[i];
+							if (name.length() > 40)
+							{
+								name = name.substring(0, 38).concat("..");
+							}
+							Log.println(false, "CommsThread.sendDirectoryWide() sending name[" + i + "]: " + name);
+							bs.writeBytes(name);
+							if (name.length() < 40)
+								bs.writeByte('\r');
+						}
+						bs.writeByte('\0');
+						bs.writeByte(continuation);
+						sendPacketWide(bs.getBuffer(), requestedPage, 2);
+					}
+					else
+					{
+						bs.writeBytes("NO FILES"); //$NON-NLS-1$
+						bs.writeByte('\0');
+						bs.writeByte('\0');
+						sendPacketWide(bs.getBuffer(), requestedPage, 2);
+					}
+				}
+				catch (Throwable t1)
+				{
+					Log.println(true, "sendDirectory exception:"); //$NON-NLS-1$
+					Log.printStackTrace(t1);
+					_transport.writeBytes("NO FILES"); //$NON-NLS-1$
+					_transport.writeByte('\0');
+					_transport.writeByte('\0');
+					_transport.pushBuffer();
+				}
+			}
+			else
+			{
+				_transport.writeBytes("NO FILES"); //$NON-NLS-1$
+				_transport.writeByte('\0');
+				_transport.writeByte('\0');
+				_transport.pushBuffer();
+			}
 		}
 	}
 
@@ -956,8 +1072,6 @@ public class CommsThread extends Thread
 			for (int i = 0; i < payload.length; i++)
 			{
 				Log.println(false, "CommsThread.changeDirectoryWide() payload[" + i + "] " + UnsignedByte.toString(payload[i]));
-				// if (payload[i] == 0x00)
-				// break;
 				dest.append((char) (UnsignedByte.intValue(payload[i]) & 0x7f));
 			}
 			Log.println(false, "CommsThread.changeDirectoryWide() value: " + dest.toString().trim());

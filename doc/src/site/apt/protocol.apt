@@ -419,7 +419,7 @@ Continuous byte stream of BASIC file image - grub starts execution at $2000
 
  Apple sends: {{{#Directory_Packet}Directory Packet}}
 
- Host sends: 
+ Host sends {{{#Send_Image_Data_Packet}Send Image Data Packet}} ('A'+'S' / $C1+$D3) 
 
 ------------
 
@@ -458,9 +458,14 @@ Check byte:
 
 Envelope:
   One byte: 'A' ($C1)
-  Two bytes: payload length ($0000)
+  Two bytes: payload length (file spec + null, not including check byte)
   One byte: 'D' ($C4)
-  One byte: EOR of the first four bytes ($15)
+  One byte: EOR of the prior four bytes
+Payload:
+  Byte stream: file name spec, null terminated
+  One byte: Screen sequence number
+Check byte:
+  One byte: EOR of the payload
 -------------
 
 * {Query File Size Packet} - Command
@@ -580,7 +585,7 @@ Check byte:
 
 Envelope:
   One byte: 'A' ($C1)
-  Two bytes: payload length ($0001)
+  Two bytes: payload length ($01, $00)
   One byte: 'Y' ($D9)
   One byte: EOR of prior four bytes ($19)
 Payload:
@@ -595,7 +600,7 @@ Check byte:
 
 Envelope:
   One byte: 'A' ($C1)
-  Two bytes: payload length ($0001)
+  Two bytes: payload length ($01, $00)
   One byte: 'F' ($C6)
   One byte: EOR of prior four bytes ($06)
 Payload:

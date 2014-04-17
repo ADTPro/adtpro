@@ -1,6 +1,6 @@
 ;
 ; ADTPro - Apple Disk Transfer ProDOS
-; Copyright (C) 2006 - 2012 by David Schmidt
+; Copyright (C) 2006 - 2014 by David Schmidt
 ; david__schmidt at users.sourceforge.net
 ;
 ; This program is free software; you can redistribute it and/or modify it 
@@ -29,13 +29,16 @@
 ; BLKPTR should be set to the beginning of the receive buffer
 ;---------------------------------------------------------
 DIR:
+	jsr GETFN1
+	lda #$00	; Screen page number zero
+	sta NIBPCNT	; Borrow NIBPCNT for that purpose
+DIRWARM:
 	ldy #PMWAIT
 	jsr WRITEMSGAREA
 
-	GO_SLOW			; Slow down for SOS
-	jsr DIRREQUEST
+:	jsr DIRREQUEST
 	jsr DIRREPLY
-	GO_FAST			; Speed back up for SOS
+	bcs :-
 	ldy TMOT
 	bne DIRTIMEOUT
 
@@ -62,7 +65,7 @@ DIRPAGE:
 
 	ldy #PMSG30	; No more files, wait for a key
 	jsr WRITEMSGAREA 	; ... and return
-	jsr RDKEY;
+	jsr READ_CHAR	; Wait for input
 	rts
 
 DIRTIMEOUT:
@@ -74,11 +77,13 @@ HOSTTIMEOUT:
 	rts
 
 DIRCONT:
-	ldy #PMSG29	; "space to continue, esc to stop"
+	ldy #PMSG29	; "ANY KEY TO CONTINUE, ESC STOPS"
 	jsr WRITEMSGAREA
-	jsr RDKEY
-	eor #CHR_ESC	; NOT ESCAPE, CONTINUE NORMALLY
-	bne DIR		; BY SENDING A "D" TO PC
+	jsr READ_CHAR
+	eor #CHR_ESC
+	beq DIRDONE
+	inc NIBPCNT
+	jmp DIRWARM
 DIRDONE:
 	jmp DIRABORT
 
@@ -94,7 +99,6 @@ CD:
 CDSTART:
 	ldy #PMWAIT
 	jsr WRITEMSGAREA	; Tell user to have patience
-	GO_SLOW			; Slow down for SOS
 	jsr CDREQUEST
 	jsr CDREPLY
 	bcs CDTIMEOUT
@@ -104,7 +108,6 @@ CDSTART:
 	jsr PAUSE
 
 CDDONE:
-	GO_FAST			; Speed back up for SOS
 	rts
 
 CDTIMEOUT:
@@ -113,5 +116,4 @@ CDERROR:
 	tay
 	jsr SHOWHM1
 	jsr PAUSE
-	GO_FAST			; Speed back up for SOS
 	jmp ABORT

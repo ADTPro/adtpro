@@ -22,72 +22,116 @@
 ; CDREQUEST - Request current directory change
 ;---------------------------------------------------------
 CDREQUEST:
-	lda #CHR_C	; Ask host to Change Directory
+	lda #CHR_C		; Ask host to Change Directory
+	GO_SLOW			; Slow down for SOS
 	jsr FNREQUEST
 	lda CHECKBYTE
 	jsr PUTC
+	GO_FAST			; Speed up for SOS
 	rts
 
 
 ;---------------------------------------------------------
 ; DIRREQUEST - Request current directory contents
+; NIBPCNT contains the page number to request
 ;---------------------------------------------------------
 DIRREQUEST:
-	jsr PARMINT	; Clean up the comms device
-	lda #CHR_A		; Envelope
-	jsr PUTC
-	lda #$00
-	jsr PUTC		; Payload length - lsb
-	lda #$00
-	jsr PUTC		; Payload length - msb
+	jsr PARMINT		; Clean up the comms device
 	lda #CHR_D		; Send "DIR" command to PC
-	jsr PUTC		; Send command
-	eor #$c1		; Check byte is simply A^|D
-	jsr PUTC		; Send check byte
+	GO_SLOW			; Slow down for SOS
+	jsr FNREQUEST
+	lda NIBPCNT
+	jsr PUTC
+	eor CHECKBYTE
+	jsr PUTC
+	GO_FAST			; Speed back up for SOS
 	rts
+	
 
 ;---------------------------------------------------------
 ; DIRREPLY - Reply to current directory contents
+; NIBPCNT contains the page number that was requested - which is 1k-worth of transmission (4 256byte pages, 2 blocks, 2BAO)
+; Returns carry set on CRC failure (should retry - nak sent)
+; Returns TMOT > 0 on timeout (should not retry)
 ;---------------------------------------------------------
 DIRREPLY:
 	ldy #$00
 	sty TMOT	; Clear timeout processing
+	sty PAGECNT
 	LDA_BIGBUF_ADDR_LO	; Connect the block pointer to the
-	sta Buffer	; beginning of the Big Buffer(TM)
+	sta Buffer		; Big Buffer(TM), 1k * NIBPCNT
+	sta BLKPTR
+	lda #$04
+	sta PAGECNT+1
 	LDA_BIGBUF_ADDR_HI
+	clc
+	adc NIBPCNT
+	adc NIBPCNT
+	adc NIBPCNT
+	adc NIBPCNT
 	sta Buffer+1
-@DirGetNext:
-	jsr GETC	; Get character from serial port
-	bcs @DirTimeout	; Bail if we are timing out
-	php		; Save flags
-	sta (Buffer),Y	; Store byte
-	iny		; Bump counter
-	bne @NEXT	; Skip
-	inc Buffer+1	; Next 256 bytes
-@NEXT:
-	plp		; Restore flags
-	bne @DirGetNext	; Loop until a zero is found
+	sta BLKPTR+1
 
-	jsr GETC	; Get continuation character
-	sta (Buffer),Y 	; Store continuation byte too
+	; clear out the memory at (Buffer)
+	ldx #$04
+	lda #$00
+	tay
+:	sta (Buffer),y
+	iny
+	bne :-
+	inc Buffer+1
+	dex
+	bne :-
+	lda BLKPTR+1
+	sta Buffer+1	; Restore Buffer pointer
+
+	jsr RECVWIDE
+	bcs @DirTimeout
+	lda HOSTBLX+1	; Prepare the acknowledge packet-required variables
+	sta BLKHI
+	lda HOSTBLX
+	clc
+	adc #$02
+	sta BLKLO
+	bcc :+
+	inc BLKHI
+:	lda <CRC
+	cmp PCCRC
+	bne @DirRetry
+	lda <CRC+1
+	cmp PCCRC+1
+	bne @DirRetry
+	ldx #CHR_ACK
+	jsr PUTACKBLK
 	LDA_BIGBUF_ADDR_LO	; Re-connect the block pointer to the
-	sta Buffer	; beginning of the Big Buffer(TM)
+	sta Buffer		; Big Buffer(TM), 1k * NIBPCNT again
 	LDA_BIGBUF_ADDR_HI
+	clc
+	adc NIBPCNT
+	adc NIBPCNT
+	adc NIBPCNT
+	adc NIBPCNT
 	sta Buffer+1
+	clc		; Indicate success
 	rts
 
+@DirRetry:
+	ldx #CHR_NAK
+	jsr PUTACKBLK
+	sec
+	rts 
+
 @DirTimeout:
+	clc
 	ldy #$01
 	sta TMOT
 	rts
 
 
 ;---------------------------------------------------------
-; DIRABORT - Abort current directory contents
+; DIRABORT - Abort current directory contents - (no op now)
 ;---------------------------------------------------------
 DIRABORT:
-	lda #$00
-	jmp PUTC	; ESCAPE, SEND 00 AND RETURN
 	rts
 
 
@@ -97,12 +141,15 @@ DIRABORT:
 QUERYFNREQUEST:
 	jsr PARMINT	; Clean up the comms device
 	lda #CHR_Z	; Ask host for file size
+	GO_SLOW			; Slow down for SOS
 	jsr FNREQUEST
 	lda CHECKBYTE
 	jsr PUTC
+	GO_FAST		; Speed back up for SOS
 	rts
 
 QUERYFNREPLY:
+	GO_SLOW			; Slow down for SOS
 	jsr GETC	; Get response from host: file size
 	bcs @QFNTimeout
 	sta HOSTBLX
@@ -111,14 +158,17 @@ QUERYFNREPLY:
 	sta HOSTBLX+1
 	jsr GETC	; Get response from host: return code/message
 	bcs @QFNTimeout
+	GO_FAST		; Speed back up for SOS
 	rts
 @QFNTimeout:
+	GO_FAST		; Speed back up for SOS
 	jsr HOSTTIMEOUT
 	jmp BABORT
 
 
 ;---------------------------------------------------------
 ; FNREQUEST - Request something with a file name
+; Assumes SOS has been slowed down already
 ;---------------------------------------------------------
 FNREQUEST:
 	pha
@@ -143,6 +193,8 @@ FNREQUEST:
 	beq @addtwo
 	cmp #CHR_G	; Was it a Get?
 	beq @addone	
+	cmp #CHR_D	; Was it a Dir?
+	beq @addone
 	jmp @noadd	; Everyone else - no add
 @addtwo:
 	inx		; Increment x twice if so... need room for 2 more bytes
@@ -404,8 +456,10 @@ RECVWIDE:
 	bcs RWERR	; Timeout - bail
 	jsr GETC	; Get block number, LSB
 	bcs RWERR	; Timeout - bail
+	sta HOSTBLX
 	jsr GETC	; Get block number, MSB
 	bcs RWERR	; Timeout - bail
+	sta HOSTBLX+1
 			; TODO - probably should save/check the block number is the one we need...
 RW1:
 	jsr GETC	; Get difference
