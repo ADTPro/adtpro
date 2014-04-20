@@ -18,16 +18,6 @@ selections.
  You can rotate through the options of a particular selection with the right and
 left arrow keys.  Your Apple has right and left arrow keys; trust me.
 
-* Enable Sound
-
- The sound option is, of course, up to you.  
-
-[images/configaudio1.png]
-
- ADTPro makes bleating sounds when
-things finish or abort.  I personally think computers should be seen and not
-heard, but not everyone feels that way.  Express your own personal feelings here.
-
 * Blocks at Once
 
  Blocks at Once tunes the number of 512-byte blocks to send "at once" within a transmission packet.
@@ -35,14 +25,24 @@ A higher number will make disk transfers go faster, but will offer less immediat
 watch the progress bar move.
 Audio is quite slow in general, and ADTPro benefits greatly from a higher Blocks at Once setting.
 
-[images/configaudio3.png]
+[images/configaudioBlocks.png]
+
+* Enable Sound
+
+ The sound option is, of course, up to you.  
+
+[images/configaudioSound.png]
+
+ ADTPro makes bleating sounds when
+things finish or abort.  I personally think computers should be seen and not
+heard, but not everyone feels that way.  Express your own personal feelings here.
 
 * {Save Configuration}
 
  Hit the "Return" key to work with these parameters.  Once you get a 
 configuration that works for you, select "YES" for SAVE CONFIG and hit Return.
 
-[images/configaudio2.png]
+[images/configaudioSave.png]
 
  This will save <<<ADTPROAUD.CONF>>> to the same place where you started
 ADTPro from.
