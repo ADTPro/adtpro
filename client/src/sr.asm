@@ -216,9 +216,12 @@ RECEIVE:
 	sta BAOCNT
 	lda #$00
 	sta ECOUNT		; Clear error flag
-	jsr GETFN
-	bne SRSTART
-	jmp SRDONE
+	jsr GETFN		; Ask for some input
+	bne SRSTART		; If we got some... ask the host for it by name
+	jsr DIR1		; No... so request a directory
+	bcs @Done		; They escaped from DIR
+	bcc SRSTART		; Branch always to SRSTART
+@Done:	jmp SRDONE
 
 SRSTART:
 	ldy #PMWAIT

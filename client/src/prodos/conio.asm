@@ -32,6 +32,8 @@ INIT_SCREEN:
 	jsr $FB2F	; TEXT MODE, FULL WINDOW
 	jsr $FE89	; INPUT FROM KEYBOARD
 	jsr $FE93	; OUTPUT TO 40-COL SCREEN
+	lda #$00
+	sta $c00f	; Turn mousetext on for inverse lowercase
 
 	; Clean out the whole system bit map
 	ldx	#($C0 / 8) - 1
@@ -253,8 +255,43 @@ UNINVERSE:
 	jsr TABV
 	ldy CH
 INV1:	lda (BASL),Y
-	and #$BF
-	eor #$80
+	sta ZP		; Stash A for a minute
+	and #$e0	; Isolate the top 3 bits
+	cmp #$80	; Is it 8?
+	beq @PrintIt	; Yes, so stays 8
+	cmp #$a0	; is it a?
+	bne :+		; No
+	lda ZP		; Yes, so change to 2
+	and #$1f
+	ora #$20
+	jmp @PrintIt
+:	cmp #$c0	; is it c?
+	bne :+		; No
+	lda ZP		; Yes, so changes to 0
+	and #$1f
+	jmp @PrintIt
+:	cmp #$e0	; is it e?
+	bne :+		; No
+	lda ZP		; Yes, so changes to 6
+	and #$1f
+	ora #$60
+	jmp @PrintIt
+:	cmp #$20	; Is it 2?
+	bne @TryZero	; No
+	lda ZP		; Yes, so change to a
+	and #$1f
+	ora #$a0
+	jmp @PrintIt
+@TryZero:
+	cmp #$00	; Is it 0?
+	bne :+
+	lda ZP		; Yes, so change to c
+	ora #$c0
+	jmp @PrintIt
+:	lda ZP		; Must be 6
+	and #$1f	; Change to e
+	ora #$e0
+@PrintIt:
 	sta (BASL),Y
 	iny
 	cpy INUM
@@ -274,6 +311,26 @@ SET_INVERSE:
 SET_NORMAL:
 	lda #$FF	; Back to normal
 	sta <INVFLG
+	rts
+
+;---------------------------------------------------------
+; SCRAPE - Scrape a line of text from the screen at the current cursor position, copy to input buffer
+;---------------------------------------------------------
+SCRAPE:
+	ldy #$00
+	sta CH		; Set cursor to first position
+@Scr1:	lda (BASL),Y
+	cmp #$A0
+	beq :+
+	sty INUM
+:	sta IN_BUF,Y
+	iny
+	cpy #$28	; Whole screen width
+	bne @Scr1
+	lda #$00	; Null-terminate it
+	ldy INUM
+	iny
+	sta IN_BUF,y
 	rts
 
 ;---------------------------------------------------------

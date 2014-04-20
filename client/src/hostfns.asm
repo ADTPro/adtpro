@@ -32,7 +32,7 @@
 ;---------------------------------------------------------
 DIR:
 	jsr GETFN
-	lda #$00	; Screen page number zero
+DIR1:	lda #$00	; Screen page number zero
 	sta NIBPCNT	; Borrow NIBPCNT for that purpose
 	sta NDUHIGHWATER
 	sta NDUCANCONT
@@ -152,12 +152,15 @@ NDUNavLoop:
 @TryReturn:
 	cmp #$8d		; Return?
 	bne :+
-				; Save a pointer or something to the name
+	jsr NDUInvertCurrentLine	; Un-invert currentline
+	jsr SCRAPE		; Scrape the line contents
+	clc
 	rts
 :	cmp #CHR_ESC
 	beq :+
 	jmp NDUNavLoop
-:	rts
+:	sec			; Escaped out
+	rts
 
 NDUPageUp:
 	lda NIBPCNT
