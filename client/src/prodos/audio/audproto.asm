@@ -50,22 +50,19 @@ CDREQUEST:
 
 ;---------------------------------------------------------
 ; DIRREQUEST - Request current directory contents
+; NIBPCNT contains the page number to request
 ;---------------------------------------------------------
 DIRREQUEST:
 	ldax #AUD_BUFFER
 	stax UTILPTR
 	stax A1L
 	stax A2L	; Set everyone up to talk to the AUD_BUFFER
-	lda #CHR_A		; Envelope
+	lda #CHR_D	; Send "DIR" command to PC
+	jsr FNREQUEST
+	lda NIBPCNT
 	jsr BUFBYTE
-	lda #$00
-	jsr BUFBYTE		; Payload length - lsb
-	lda #$00
-	jsr BUFBYTE		; Payload length - msb
-	lda #CHR_D
-	jsr BUFBYTE		; Send command
-	eor #$c1		; Check byte is simply A^|D
-	jsr BUFBYTE		; Send check byte
+	eor CHECKBYTE
+	jsr BUFBYTE
 	ldax UTILPTR
 	stax A2L
 	jsr aud_send
@@ -74,24 +71,82 @@ DIRREQUEST:
 
 ;---------------------------------------------------------
 ; DIRREPLY - Reply to current directory contents
+; NIBPCNT contains the page number that was requested - which is 1k-worth of transmission (4 256byte pages, 2 blocks, 2BAO)
+; Returns carry set on CRC failure (should retry - nak sent)
+; Returns TMOT > 0 on timeout (should not retry)
 ;---------------------------------------------------------
 DIRREPLY:
 	ldy #$00
 	sty TMOT	; Clear timeout processing
-	ldax #AUD_BUFFER
-	stax A1L
-	stax Buffer	; DIRDISP expects data at (Buffer)
-	jsr aud_receive
-	rts
+	sty PAGECNT
+	LDA_BIGBUF_ADDR_LO	; Connect the block pointer to the
+	sta BLKPTR		; Big Buffer(TM), 1k * NIBPCNT
+	lda #$04
+	sta PAGECNT+1
+	LDA_BIGBUF_ADDR_HI
+	clc
+	adc NIBPCNT
+	adc NIBPCNT
+	adc NIBPCNT
+	adc NIBPCNT
+	sta BLKPTR+1
 
-
-;---------------------------------------------------------
-; DIRABORT - Abort current directory contents
-;---------------------------------------------------------
-DIRABORT:
+	; Borrow Buffer ponter for a minute
+	ldax BLKPTR
+	stax Buffer 
+	; clear out the memory at (Buffer)
+	ldx #$04
 	lda #$00
-	jsr PUTC
+	tay
+:	sta (Buffer),y
+	iny
+	bne :-
+	inc Buffer+1
+	dex
+	bne :-
+
+	jsr RECVWIDE
+	bcs @DirTimeout
+	lda HOSTBLX+1	; Prepare the acknowledge packet-required variables
+	sta BLKHI
+	lda HOSTBLX
+	clc
+	adc #$02
+	sta BLKLO
+	bcc :+
+	inc BLKHI
+:	lda <CRC
+	cmp PCCRC
+	bne @DirRetry
+	lda <CRC+1
+	cmp PCCRC+1
+	bne @DirRetry
+	ldx #CHR_ACK
+	jsr PUTACKBLK
+	LDA_BIGBUF_ADDR_LO	; Re-connect the block pointer to the
+	sta Buffer		; Big Buffer(TM), 1k * NIBPCNT again
+	LDA_BIGBUF_ADDR_HI
+	clc
+	adc NIBPCNT
+	adc NIBPCNT
+	adc NIBPCNT
+	adc NIBPCNT
+	sta Buffer+1
+	clc		; Indicate success
 	rts
+
+@DirRetry:
+	ldx #CHR_NAK
+	jsr PUTACKBLK
+	sec
+	rts 
+
+@DirTimeout:
+	clc
+	ldy #$01
+	sta TMOT
+	rts
+
 
 ;---------------------------------------------------------
 ; QUERYFNREQUEST
@@ -153,6 +208,8 @@ FNREQUEST:
 	cmp #CHR_M	; Was it a Multiple nibble?
 	beq @addtwo
 	cmp #CHR_G	; Was it a Get?
+	beq @addone
+	cmp #CHR_D	; Was it a Dir?
 	beq @addone	
 	jmp @noadd	; Everyone else - no add
 @addtwo:

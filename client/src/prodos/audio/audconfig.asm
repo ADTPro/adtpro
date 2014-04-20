@@ -285,7 +285,7 @@ PBAO:	.byte 3		; Blocks at once (4)
 PSOUND:	.byte 0		; Sounds? (YES)
 PSAVE:	.byte 1		; Save parms? (NO)
 
-DEFAULT:	.byte 0,3,1	; Default parm indices
+DEFAULT:	.byte 3,0,1	; Default parm indices
 PARMSEND:
 PNIBBL:	.byte 1			; Enable nibbles (NO - and not exposed to the user or saved)
 BAOTbl:		.byte 1,2,3,4,5
