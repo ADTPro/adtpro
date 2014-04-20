@@ -1,0 +1,33 @@
+ -----
+ ADTPro Directory Listing
+ -----
+ David Schmidt (david__schmidt at users dot souceforge dot net)
+ -----
+
+Directory Listing
+
+ You can get a listing of the current working directory by hitting the "D" key from the main menu.
+At first, you are presented with an opportunity to narrow down the files to display:
+
+[images/dirBlank.png]
+
+ You can simply leave that blank and hit the Return key; you will then be presented with a view of all the
+files in the current working directory:
+
+[images/dirBlankResults.png]
+
+ If there is more than one page of results, you can page up and down with the "A" and "Z" keys, respectively.
+You can change the current working directory with the
+{{{./misc.html#Change}CD}} menu option.
+
+ If you have many files in your current working directory, you can narrow down the results at first
+by specifying a wildcard at the initial prompt:
+
+[images/dirSpec.png]
+
+ The results will be narrowed down to whatever satisfies your wildcard specification.
+
+[images/dirSpecResults.png]
+
+ Again, if there is more than one page of results, you can flip back and forth among them with the
+"A" and "Z" keys.

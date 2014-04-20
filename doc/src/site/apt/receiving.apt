@@ -11,6 +11,14 @@ you want to copy from the host to a disk on your Apple:
 
 [images/receive.png]
 
+ You can also leave that prompt blank, and hitting the Return key will bring up a
+listing of files in the current working directory, allowing you to simply pick one
+by highlighting its name and hitting the Return key.
+You can page back and forth with the "A" and "Z" keys respectively,
+and move the cursor up and down with left/up and right/down keys respectively:
+
+[images/dirBlankResults.png] 
+
  You can copy images in any of the following formats:
 
  * .DSK (Often, but not always, DOS-order images)
@@ -124,7 +132,7 @@ transfer, and how it might be better converted to a disk size you expect.
  Once a compressed file is successfully converted to a virtual disk image, it is
 served to the client, but there isn't really an indication of exactly what size image
 was created to hold the contents.
-But if you indicate the unit you want to write to on the client end, it will either work -
+But if you indicate the unit you want to write to on the client end, it will either simply work
 or ADTPro will complain that there is an image size mismatch, indicating a different size
 virtual disk image was created to hold the contents.
 If that happens, it will also be a good time to consult the external tools mentioned

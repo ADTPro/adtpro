@@ -10,16 +10,6 @@ Miscellaneous Functions
  client program, screen capture text will appear white-on-black for ProDOS, and
  green-on-black for SOS below.
 
-* {Nibble}/Half Track Send
-
- The nibble/half track send function is still experimental.  The ProDOS serial
- and Ethernet clients have the capability to send nibble images (see
- {{{./configserial.html#Nibbles} nibble configuration}}.
- The DOS ADT client has the ability to send nibble and half track images, but
- only the A2V2 server (part of Virtual ][) reconstitutes them correctly.
- See the {{{./compatibility.html#Nibble}ADT Compatibility page}} for more 
- information.
-
 * {Format} Volumes (disks)
 
  The ADTPro client has built-in disk formatting capabilities.
@@ -55,7 +45,7 @@ will be given a chance to format another volume:
  Start by rotating it 1/8 turn in the suggested direction with a jewler's
  screwdriver; then retry formatting.
  
-* Change Working Directory
+* {Change} Working Directory
 
  Whatever directory the host software starts in will be the "Current working
 directory" until changed to something else.  Disk images will be read from and
@@ -70,14 +60,6 @@ the client:
 [images/cdDone.png]
 
  Note that you can also change the working directory from the server.
-
-* Directory
-
- Hitting the "D" key from the main menu will ask for a directory listing of the
-host's current working directory.  If the contents don't fit on one Apple screen, 
-you can hit a key to see the next screenful of information, until the last
-screenful is shown.  Hitting a key at that point will return you to the main
-menu.
 
 * {Volume List}
 

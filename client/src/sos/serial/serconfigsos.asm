@@ -43,38 +43,44 @@ SAVPARM:
 	ldy #PMSG24	; 'CONFIGURE ADTPRO PARAMETERS'
 	jsr WRITEMSG
 
-	ldx #$08	; Column
+	ldx #$07	; Column
 	ldy #$03	; Row
 	jsr GOTOXY
 	ldy #PMSG26	; 'COMMS DEVICE'
 	jsr WRITEMSG
 
-	ldx #$08	; Column
+	ldx #$07	; Column
 	ldy #$04	; Row
 	jsr GOTOXY
 	ldy #PMSG27	; 'BAUD RATE'
 	jsr WRITEMSG
 
-	ldx #$08	; Column
+	ldx #$07	; Column
 	ldy #$05	; Row
+	jsr GOTOXY
+	ldy #PMBlocksAtonce	; 'BLOCKS AT ONCE'
+	jsr WRITEMSG
+
+	ldx #$07	; Column
+	ldy #$06	; Row
 	jsr GOTOXY
 	ldy #PMSG28	; 'ENABLE SOUND'
 	jsr WRITEMSG
 
-	ldx #$08	; Column
-	ldy #$06	; Row
+	ldx #$07	; Column
+	ldy #$07	; Row
 	jsr GOTOXY
 	ldy #PMSG28a	; 'SAVE CONFIGURATION'
 	jsr WRITEMSG
 
 	ldx #$04	; Column
-	ldy #$14	; Row
+	ldy #$15	; Row
 	jsr GOTOXY
 	ldy #PMSG25	; 'CHANGE PARAMETERS WITH ARROW KEYS'
 	jsr WRITEMSG
 
 	ldx #$05	; Column
-	ldy #$15	; Row
+	ldy #$16	; Row
 	jsr GOTOXY
 	ldy #PMSG23a	; 'SELECT WITH RETURN, ESC CANCELS'
 	jsr WRITEMSG
@@ -87,7 +93,7 @@ REFRESH:
 
 NXTLINE:
 	stx LINECNT	; SAVE CURRENT LINE
-	lda #$15	; Start printing config parms in this column
+	lda #$16	; Start printing config parms in this column
 	SET_HTAB	; sta <CH
 	clc
 	lda PARMSIZ,X	; GET CURRENT VALUE (NEGATIVE:

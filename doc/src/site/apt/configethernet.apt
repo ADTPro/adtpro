@@ -63,6 +63,15 @@ If you have a IIgs, ensure you select "Your Card" in the IIgs' control
 panel for the slot your Ethernet card is in, and select that same slot
 number here.
 
+* Blocks at Once
+
+ Blocks at Once tunes the number of 512-byte blocks to send "at once" within a transmission packet.
+A higher number will make disk transfers go faster, but will offer less immediate feedback as you 
+watch the progress bar move.
+
+[images/ethconfigBlocks.png]
+
+
 * Enable Sound
 
  The sound option is, of course, up to you.  

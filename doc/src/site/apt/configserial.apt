@@ -47,7 +47,7 @@ left arrow keys.  Your Apple has right and left arrow keys; trust me.
  modem ports.
 
  If you have a IIgs and you want to use a Super Serial card in it, ensure you select
-"Your Card" in the IIgs' control panel for the slot your SSC card is in,
+"Your Card" in the IIgs control panel for the slot your SSC card is in,
 and select that same slot number here.
 
  If you have an Apple ///, the internal serial adapter will always be chosen by default.
@@ -104,10 +104,19 @@ connections section for details.
 
 [images/configBaud.png]
 
- 115200 is the absolute maximum baud rate that ADTPro supports.
+ 115200 is the normal and default baud rate that ADTPro uses most of the time.
 If you have a good serial cable, this speed will work reliably.
-9600 will work as long as the two computers are less than a mile apart from one another.
-If you can't get 9600 to work reliably, something else is wrong.
+19200 is supported for the 
+{{{./lc.html}Apple IIe card in the Mac LC computer.}}
+If you can't get 115200 to work reliably, something else is wrong.
+
+* Blocks at Once
+
+ Blocks at Once tunes the number of 512-byte blocks to send "at once" within a transmission packet.
+A higher number will make disk transfers go faster, but will offer less immediate feedback as you 
+watch the progress bar move.
+
+[images/configBlocks.png]
 
 * Enable Sound
 

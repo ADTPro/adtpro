@@ -7,7 +7,7 @@
 ADTPro Audio Configuration
 
  Hitting the "G" key from <<<ADTPROAUD>>>'s main menu brings up the ADTPro
-configuration screen, which doesn't really have much to configure:
+configuration screen:
 
 [images/configaudio.png]
 
@@ -27,6 +27,15 @@ left arrow keys.  Your Apple has right and left arrow keys; trust me.
  ADTPro makes bleating sounds when
 things finish or abort.  I personally think computers should be seen and not
 heard, but not everyone feels that way.  Express your own personal feelings here.
+
+* Blocks at Once
+
+ Blocks at Once tunes the number of 512-byte blocks to send "at once" within a transmission packet.
+A higher number will make disk transfers go faster, but will offer less immediate feedback as you 
+watch the progress bar move.
+Audio is quite slow in general, and ADTPro benefits greatly from a higher Blocks at Once setting.
+
+[images/configaudio3.png]
 
 * {Save Configuration}
 

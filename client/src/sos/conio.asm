@@ -122,14 +122,14 @@ HOME:
 ; Prints the logo on the screen
 ;---------------------------------------------------------
 SHOWLOGO:
-	ldx #$0a
+	ldx #$02
 	ldy #$02
 	jsr GOTOXY
 	lda #PMLOGO1	; Start with MLOGO1 message
 	sta ZP
 	tay
 LogoLoop:
-    	lda #$0a	; Get ready to HTAB $0a chars over
+    	lda #$02	; Get ready to HTAB $02 chars over
 	jsr HTAB	; Tab over to starting position
 	jsr WRITEMSG
 	inc ZP
@@ -642,6 +642,12 @@ GO_FAST_SOS:
 	sta $FFDF			; Write the environment register
 	pla
 	plp
+	rts
+
+;---------------------------------------------------------
+; SCRAPE - Scrape a line of text from the screen at the current cursor position, copy to input buffer
+;---------------------------------------------------------
+SCRAPE:
 	rts
 
 ;---------------------------------------------------------
