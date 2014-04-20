@@ -49,14 +49,14 @@ SAVPARM:
 	sta <CH
 	lda #$03	; Row
 	jsr TABV
-	ldy #PMSG28	; 'ENABLE SOUND'
+	ldy #PMBlocksAtonce ; 'BLOCKS AT ONCE'
 	jsr WRITEMSG
 
 	lda #$0A	; Column
 	sta <CH
 	lda #$04	; Row
 	jsr TABV
-	ldy #PMBlocksAtonce ; 'BLOCKS AT ONCE'
+	ldy #PMSG28	; 'ENABLE SOUND'
 	jsr WRITEMSG
 
 	lda #$0A	; Column
@@ -262,16 +262,16 @@ PARMDFTNEXT:
 
 PARMNUM	= $03		; Number of configurable parms
 ;			; Note - add bytes to OLDPARM if this is expanded.
-PARMSIZ: .byte 2,5,2	; Number of options for each parm
+PARMSIZ: .byte 5,2,2	; Number of options for each parm
 
 PARMTXT:
-	ascz "YES"
-	ascz "NO"
 	ascz "1"
 	ascz "2"
 	ascz "3"
 	ascz "4"
 	ascz "5"
+	ascz "YES"
+	ascz "NO"
 	ascz "YES"
 	ascz "NO"
 
