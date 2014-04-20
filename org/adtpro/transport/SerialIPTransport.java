@@ -135,7 +135,7 @@ public class SerialIPTransport extends ATransport
 			try
 			{
 				_socket = new Socket(_address, _port);
-				_socket.setSoTimeout(1000);
+				_socket.setSoTimeout(15000);
 				Log.println(false, "SerialIPTransport opened SerialIP port " + _port + " on host " + _host); //$NON-NLS-1$ //$NON-NLS-2$
 			}
 			catch (ConnectException ex)
