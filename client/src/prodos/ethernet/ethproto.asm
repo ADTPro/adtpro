@@ -65,6 +65,7 @@ CDREQUEST:
 
 ;---------------------------------------------------------
 ; DIRREQUEST - Request current directory contents
+; NIBPCNT contains the page number to request
 ;---------------------------------------------------------
 DIRREQUEST:
 	ldax #udp_outp + udp_data	; Point UTILPTR at the UDP outgoing buffer
@@ -74,16 +75,12 @@ DIRREQUEST:
 	sta udp_send_len+1
 	lda #STATE_DIR	; Set up for DIRREPLY1 callback
 	sta state
-	lda #CHR_A		; Envelope
+	lda #CHR_D	; Send "DIR" command to PC
+	jsr FNREQUEST
+	lda NIBPCNT
 	jsr BUFBYTE
-	lda #$00
-	jsr BUFBYTE		; Payload length - lsb
-	lda #$00
-	jsr BUFBYTE		; Payload length - msb
-	lda #CHR_D
-	jsr BUFBYTE		; Send command
-	eor #$c1		; Check byte is simply A^|D
-	jsr BUFBYTE		; Send check byte
+	eor CHECKBYTE
+	jsr BUFBYTE
 	GO_SLOW				; Slow down for SOS
 	jsr udp_send_nocopy
 	GO_FAST				; Speed back up for SOS
@@ -93,10 +90,83 @@ DIRREQUEST:
 
 ;---------------------------------------------------------
 ; DIRREPLY - serial compatibility and UDP callback entry points
+; NIBPCNT contains the page number that was requested - which is 1k-worth of transmission (4 256byte pages, 2 blocks, 2BAO)
+; Returns carry set on CRC failure (should retry - nak sent)
+; Returns TMOT > 0 on timeout (should not retry)
 ;---------------------------------------------------------
 DIRREPLY1:
-	ldax #udp_inp + udp_data + 1	; Point Buffer at the UDP incoming buffer
-	stax Buffer
+	ldy #$00
+	sty TMOT	; Clear timeout processing
+	sty PAGECNT
+	LDA_BIGBUF_ADDR_LO	; Connect the block pointer to the
+	sta BLKPTR		; Big Buffer(TM), 1k * NIBPCNT
+	lda #$04
+	sta PAGECNT+1
+	LDA_BIGBUF_ADDR_HI
+	clc
+	adc NIBPCNT
+	adc NIBPCNT
+	adc NIBPCNT
+	adc NIBPCNT
+	sta BLKPTR+1
+
+	; Borrow Buffer pointer for a minute
+	ldax BLKPTR
+	stax Buffer 
+	; clear out the memory at (Buffer)
+	ldx #$04
+	lda #$00
+	tay
+:	sta (Buffer),y
+	iny
+	bne :-
+	inc Buffer+1
+	dex
+	bne :-
+
+	jsr RECVWIDE
+	bcs @DirTimeout
+	lda HOSTBLX+1	; Prepare the acknowledge packet-required variables
+	sta BLKHI
+	lda HOSTBLX
+	clc
+	adc #$02
+	sta BLKLO
+	bcc :+
+	inc BLKHI
+:	lda <CRC
+	cmp PCCRC
+	bne @DirRetry
+	lda <CRC+1
+	cmp PCCRC+1
+	bne @DirRetry
+	ldx #CHR_ACK
+	jsr PUTACKBLK
+	LDA_BIGBUF_ADDR_LO	; Re-connect the block pointer to the
+	sta Buffer		; Big Buffer(TM), 1k * NIBPCNT again
+	LDA_BIGBUF_ADDR_HI
+	clc
+	adc NIBPCNT
+	adc NIBPCNT
+	adc NIBPCNT
+	adc NIBPCNT
+	sta Buffer+1
+	clc		; Indicate success
+	rts
+
+@DirRetry:
+	ldx #CHR_NAK
+	jsr PUTACKBLK
+	sec
+	rts 
+
+@DirTimeout:
+	clc
+	ldy #$01
+	sta TMOT
+	rts
+
+
 DIRREPLY:
 	rts
 

@@ -91,7 +91,7 @@ DIRREPLY:
 	adc NIBPCNT
 	sta BLKPTR+1
 
-	; Borrow Buffer ponter for a minute
+	; Borrow Buffer pointer for a minute
 	ldax BLKPTR
 	stax Buffer 
 	; clear out the memory at (Buffer)
