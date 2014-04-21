@@ -30,6 +30,12 @@
 ;  - Chooser display; pages up and down, hitting return selects one (input buffer will hold chosen name)
 ; BLKPTR should be set to the beginning of the receive buffer
 ;---------------------------------------------------------
+HOSTTIMEOUT:
+	ldy #PHMTIMEOUT
+	jsr SHOWHM1
+	jsr PAUSE
+	rts
+
 DIR:
 	jsr GETFN
 DIR1:	lda #$00	; Screen page number zero
@@ -49,7 +55,7 @@ DIRWARM:
 	jsr DIRREPLY
 	bcs :-
 	ldy TMOT
-	bne DIRTIMEOUT
+	bne HOSTTIMEOUT
 
 DIRDISP0:
 	jsr HOME	; Clear screen
@@ -78,23 +84,8 @@ DIRPAGE:
 	dec NDULASTROW
 	lda NIBPCNT
 	sta NDULASTPAGE
-; Here, we would decide if we're doing a plain DIR display vs. interacting more...
 
-@NewUI:	jmp NewDirUI
-
-
-DIRTIMEOUT:
-HOSTTIMEOUT:
-	ldy #PHMTIMEOUT
-	jsr SHOWHM1
-	jsr PAUSE
-	rts
-
-NewDirUI:
-
-; If we have no files, we need to jmp to DIREND so we don't bother with this loopy business.
-
-	lda NDULASTROW
+@NewUI:	lda NDULASTROW
 	cmp #$02
 	bne :+
 	jmp CDMSG

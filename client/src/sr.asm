@@ -218,9 +218,11 @@ RECEIVE:
 	sta ECOUNT		; Clear error flag
 	jsr GETFN		; Ask for some input
 	bne SRSTART		; If we got some... ask the host for it by name
-	jsr DIR1		; No... so request a directory
+REC1:	jsr DIR1		; No... so request a directory
 	bcs @Done		; They escaped from DIR
-	bcc SRSTART		; Branch always to SRSTART
+	lda NDULASTROW		; Was there no data returned from DIR?
+	cmp #$02
+	bne SRSTART		; Branch to SRSTART
 @Done:	jmp SRDONE
 
 SRSTART:
@@ -231,7 +233,7 @@ SRSTART:
 	bcs SRTIMEOUT
 	cmp #$00
 	beq @Ok
-	jmp PCERROR
+	jmp REC1
 @Ok:
 	ldy #PMSGDST	; 'SELECT DESTINATION VOLUME'
 	jsr PICKVOL
