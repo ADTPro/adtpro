@@ -25,7 +25,7 @@ ROW1 = $0d
 ROW2 = ROW1+1
 ROW3 = ROW1+2
 ROW4 = ROW1+3
-ROW5 = ROW1+5
+ROW5 = ROW1+4
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;                                                                               ;
@@ -65,6 +65,9 @@ NAME_SERIAL:
 	.byte	$00
 NAME_ETHERNET:
 	asc	"ADTPROETH.BIN"
+	.byte	$00
+NAME_UTHERNETII:
+	asc	"ADTPROUII.BIN"
 	.byte	$00
 NAME_AUDIO:
 	asc	"ADTPROAUD.BIN"
@@ -131,16 +134,20 @@ SPACE6: asc "  "
 	asc	"   PLEASE SELECT YOUR CONNECTION TYPE:"
 		.byte CHR_RETURN,CHR_RETURN,CHR_RETURN
 SerialLine:
-	asc	"(S)ERIAL   : SSC OR IIGS/IIC MODEM PORT"
+	asc "(S)ERIAL      : SSC, IIGS, IIC SERIAL"
 SerialLineEnd:
 	.byte $8d
-AudioLine:
-	asc	"(A)UDIO    : CASSETTE/AUDIO PORTS"
-AudioLineEnd:
-	.byte $8d
 EthernetLine:
-	asc "(E)THERNET : UTHERNET OR LANCEGS"
+	asc "(E)THERNET    : UTHERNET OR LANCEGS"
 EthernetLineEnd:
+	.byte $8d
+UthernetIILine:
+	asc "(U)THERNET II : UTHERNET II"
+UthernetIILineEnd:
+	.byte $8d
+AudioLine:
+	asc "(A)UDIO       : CASSETTE/AUDIO PORTS"
+AudioLineEnd:
 	.byte $8d
 QuitLine:
 	asc "(Q)UIT"
@@ -214,17 +221,9 @@ PRESS_ANY_KEY:
 	sta CV
 	jsr CLREOP
 
-	lda	#<MSG1
-	ldx	#>MSG1
-	jsr	PRINT
-
-;	lda	#<SPACE4
-;	ldx	#>SPACE4
-;	jsr	PRINT
-
-;	lda #<SerialLine
-;	ldx #>SerialLine
-;	jsr PRINT
+	lda #<MSG1
+	ldx #>MSG1
+	jsr PRINT
 
 	lda #$00
 	sta CH
@@ -233,10 +232,10 @@ PRESS_ANY_KEY:
 	jsr ToggleLine
 
 KbdLoop:
-	lda #$01		; Cursor the significant letter
+	lda #$01	; Cursor the significant letter
 	sta CH 
-	jsr RDKEY		; Read a key
-	and #$DF		; Convert to upper case
+	jsr RDKEY	; Read a key
+	and #$DF	; Convert to upper case
 
 	cmp #CHR_S	; S = Serial?
 	bne :+
@@ -244,59 +243,61 @@ KbdLoop:
 	sta NEWLINE
 	jmp KbdDone	
 
-:	cmp #CHR_A	; A = Audio?
-	bne :+
+:	cmp #CHR_E	; E = Ethernet?
+ 	bne :+
 	lda #ROW2
 	sta NEWLINE
 	jmp KbdDone	
-	
-:	cmp #CHR_E	; E = Ethernet?
+
+:	cmp #CHR_U	; U = Uthernet II?
  	bne :+
 	lda #ROW3
 	sta NEWLINE
 	jmp KbdDone	
 
-:	cmp #CHR_Q	; Q = Quit?
- 	bne :+
+:	cmp #CHR_A	; A = Audio?
+	bne :+
 	lda #ROW4
 	sta NEWLINE
 	jmp KbdDone	
+	
+:	cmp #CHR_Q	; Q = Quit?
+ 	bne :+
+	lda #ROW5
+	sta NEWLINE
+	jmp KbdDone	
 
-:	cmp #$8d		; Return key pressed?
+:	cmp #$8d	; Return key pressed?
 	bne :+
 	jmp KbdDone 
 	
-:	cmp #$88		; Left key?
+:	cmp #$88	; Left key?
 	beq IsLeft
-	cmp #$8b		; Up key?
+	cmp #$8b	; Up key?
 	bne NotLeft
 IsLeft:
 	lda CV
 	cmp #ROW1
 	beq LeftWrap
-	sec
-	sbc #$01
-	sta NEWLINE
+	dec NEWLINE
 LeftGo:
 	jsr HighlightLine
 	jmp KbdLoop
 LeftWrap:
-	lda #ROW4
+	lda #ROW5
 	sta NEWLINE
 	jmp LeftGo
 
 NotLeft:
-	cmp #$95		; Right key?
+	cmp #$95	; Right key?
 	beq IsRight
-	cmp #$8a		; Down key?
+	cmp #$8a	; Down key?
 	bne NotRight
 IsRight:
 	lda CV
-	cmp #ROW4
+	cmp #ROW5
 	beq RightWrap
-	clc
-	adc #$01
-	sta NEWLINE
+	inc NEWLINE
 RightGo:
 	jsr HighlightLine
 	jmp KbdLoop
@@ -306,7 +307,7 @@ RightWrap:
 	jmp RightGo
 
 NotRight:
-	jmp KbdLoop		; Nothing else to check for; loop back around
+	jmp KbdLoop	; Nothing else to check for; loop back around
 
 KbdDone:
 	jsr HighlightLine
@@ -377,19 +378,6 @@ Line5:
 	cmp #ROW2
 	bne Line6
 	tay
-	lda #AudioLineEnd-AudioLine
-	jsr INVERSE
-	ldx #$ff
-:	inx
-	lda NAME_AUDIO,x
-	sta KEYBUFF+1,x
-	bne :-
-	stx KEYBUFF
-	rts
-Line6:
-	cmp #ROW3
-	bne Line7
-	tay
 	lda #EthernetLineEnd-EthernetLine
 	jsr INVERSE
 	ldx #$ff
@@ -399,7 +387,33 @@ Line6:
 	bne :-
 	stx KEYBUFF
 	rts
+Line6:
+	cmp #ROW3
+	bne Line7
+	tay
+	lda #UthernetIILineEnd-UthernetIILine
+	jsr INVERSE
+	ldx #$ff
+:	inx
+	lda NAME_UTHERNETII,x
+	sta KEYBUFF+1,x
+	bne :-
+	stx KEYBUFF
+	rts
 Line7:
+	cmp #ROW4
+	bne Line8
+	tay
+	lda #AudioLineEnd-AudioLine
+	jsr INVERSE
+	ldx #$ff
+:	inx
+	lda NAME_AUDIO,x
+	sta KEYBUFF+1,x
+	bne :-
+	stx KEYBUFF
+	rts
+Line8:
 	tay
 	lda #QuitLineEnd-QuitLine
 	jsr INVERSE

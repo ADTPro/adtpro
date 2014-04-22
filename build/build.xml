@@ -156,9 +156,11 @@ everywhere it is invoked:
 		<delete file="${builddir}/ADTSOS" />
 		<delete file="${builddir}/ADTPROAUD" />
 		<delete file="${builddir}/ADTPROETH" />
+		<delete file="${builddir}/ADTPROUII" />
 		<delete file="${builddir}/ADTSOSETH" />
 		<delete file="${builddir}/ADTPROAUD.BIN" />
 		<delete file="${builddir}/ADTPROETH.BIN" />
+		<delete file="${builddir}/ADTPROUII.BIN" />
 		<delete file="${builddir}/ADTSOSETH.BIN" />
 		<delete file="${builddir}/GRUB2" />
 		<delete file="${builddir}/VSDRIVE_LOW" />
@@ -179,6 +181,7 @@ everywhere it is invoked:
 		<delete file="${projdir}/org/adtpro/resources/adtpro.dmp" />
 		<delete file="${projdir}/org/adtpro/resources/adtproaud.dmp" />
 		<delete file="${projdir}/org/adtpro/resources/adtproeth.dmp" />
+		<delete file="${projdir}/org/adtpro/resources/adtprouii.dmp" />
 		<delete file="${projdir}/org/adtpro/resources/grub.dmp" />
 		<delete file="${projdir}/org/adtpro/resources/grub2.dmp" />
 		<delete file="${projdir}/org/adtpro/resources/vsdrive_low.raw" />
@@ -188,6 +191,7 @@ everywhere it is invoked:
 		<delete file="${projdir}/org/adtpro/resources/adtpro.raw" />
 		<delete file="${projdir}/org/adtpro/resources/adtproaud.raw" />
 		<delete file="${projdir}/org/adtpro/resources/adtproeth.raw" />
+		<delete file="${projdir}/org/adtpro/resources/adtprouii.raw" />
 		<delete file="${projdir}/org/adtpro/resources/adtsos.raw" />
 		<delete file="${projdir}/org/adtpro/resources/SK.raw" />
 		<delete file="${projdir}/org/adtpro/resources/SOSLoader.raw" />
@@ -223,6 +227,10 @@ everywhere it is invoked:
 		<echo message="Assembling ADTPROETH source..."/>
 		<exec dir="${projdir}/client/src" executable="${assemblerPath}/ca65">
 			<arg line="-t none -I . -l prodos/ethernet/ethmain.asm" />
+		</exec>
+		<echo message="Assembling ADTPROUII source..."/>
+		<exec dir="${projdir}/client/src" executable="${assemblerPath}/ca65">
+			<arg line="-t none -I . -l prodos/ethernet/uiimain.asm" />
 		</exec>
 		<echo message="Assembling ADTPRO source..."/>
 		<exec dir="${projdir}/client/src" executable="${assemblerPath}/ca65">
@@ -265,6 +273,10 @@ everywhere it is invoked:
 		<exec dir="${projdir}/client/src" executable="${assemblerPath}/ld65">
 			<arg line="-o ADTPROETH.BIN -m adtproeth.map -C prodos/ethernet/adtpro.cfg prodos/ethernet/ethmain.o ip65/ip65.lib tail.o" />
 		</exec>
+		<echo message="Linking ADTPROUII..."/>
+		<exec dir="${projdir}/client/src" executable="${assemblerPath}/ld65">
+			<arg line="-o ADTPROUII.BIN -m adtprouii.map -C prodos/ethernet/adtpro.cfg prodos/ethernet/uiimain.o tail.o" />
+		</exec>
 		<echo message="Linking grub2..."/>
 		<exec dir="${projdir}/client/src" executable="${assemblerPath}/ld65">
 			<arg line="-o GRUB2 -m grub2.map -C prodos/serial/grub2/grub2.cfg prodos/serial/grub2/grub2.o" />
@@ -279,6 +291,7 @@ everywhere it is invoked:
 		<move file="${projdir}/client/src/STARTUP.SYSTEM" tofile="${builddir}/STARTUP.SYSTEM" />
 		<copy file="${projdir}/client/src/ADTPRO" tofile="${builddir}/ADTPROAUD" />
 		<copy file="${projdir}/client/src/ADTPRO" tofile="${builddir}/ADTPROETH" />
+		<copy file="${projdir}/client/src/ADTPRO" tofile="${builddir}/ADTPROUII" />
 		<move file="${projdir}/client/src/ADTPRO" tofile="${builddir}/ADTPRO" />
 		<move file="${projdir}/client/src/ADTPRO.BIN" tofile="${builddir}/ADTPRO.BIN" />
 		<copy file="${builddir}/ADTPRO.BIN" tofile="${basedir}/org/adtpro/resources/adtpro.raw" />
@@ -286,6 +299,8 @@ everywhere it is invoked:
 		<copy file="${builddir}/ADTPROAUD.BIN" tofile="${basedir}/org/adtpro/resources/adtproaud.raw" />
 		<move file="${projdir}/client/src/ADTPROETH.BIN" tofile="${builddir}/ADTPROETH.BIN" />
 		<copy file="${builddir}/ADTPROETH.BIN" tofile="${basedir}/org/adtpro/resources/adtproeth.raw" />
+		<move file="${projdir}/client/src/ADTPROUII.BIN" tofile="${builddir}/ADTPROUII.BIN" />
+		<copy file="${builddir}/ADTPROUII.BIN" tofile="${basedir}/org/adtpro/resources/adtprouii.raw" />
 		<move file="${projdir}/client/src/GRUB2" tofile="${builddir}/GRUB2" />
 		<move file="${projdir}/client/src/GRUB_VSDRIVE" tofile="${builddir}/GRUB_VSDRIVE" />
 		<!--
@@ -293,6 +308,7 @@ everywhere it is invoked:
 		-->
 		<appleDump infilename="${projdir}/org/adtpro/resources/PD.raw" outfilename="${basedir}/org/adtpro/resources/PD.dmp" applename="PD" startaddrhex="2000" numbyteswide="10" decoration="begin" finalline="2000G E000G"/>
 		<appleDump infilename="${builddir}/ADTPROETH.BIN" outfilename="${basedir}/org/adtpro/resources/adtproeth.dmp" applename="ADTPROETH.BIN" startaddrhex="800" numbyteswide="10" decoration="begin" finalline="800G"/>
+		<appleDump infilename="${builddir}/ADTPROUII.BIN" outfilename="${basedir}/org/adtpro/resources/adtprouii.dmp" applename="ADTPROUII.BIN" startaddrhex="800" numbyteswide="10" decoration="begin" finalline="800G"/>
 		<appleDump infilename="${builddir}/ADTPROAUD.BIN" outfilename="${basedir}/org/adtpro/resources/adtproaud.dmp" applename="ADTPROAUD.BIN" startaddrhex="800" numbyteswide="10" decoration="begin" finalline="800G"/>
 		<appleDump infilename="${builddir}/ADTPRO.BIN" outfilename="${basedir}/org/adtpro/resources/adtpro.dmp" applename="ADTPRO.BIN" startaddrhex="800" numbyteswide="10"  decoration="begin" finalline="800G"/>
 		<appleDump infilename="${builddir}/GRUB2" outfilename="${basedir}/org/adtpro/resources/grub2.dmp" applename="GRUB2" startaddrhex="7000" numbyteswide="10" decoration="yes" />
@@ -443,12 +459,15 @@ everywhere it is invoked:
 		<appleCommander command="p" input="${builddir}/ADTPRO" imagename="${builddir}/${distName}/disks/${diskName}.DSK" filename="ADTPRO" type="sys" address="8192"/>
 		<appleCommander command="p" input="${builddir}/ADTPRO" imagename="${builddir}/${distName}/disks/${diskName}.DSK" filename="ADTPROAUD" type="sys" address="8192"/>
 		<appleCommander command="p" input="${builddir}/ADTPRO" imagename="${builddir}/${distName}/disks/${diskName}.DSK" filename="ADTPROETH" type="sys" address="8192"/>
+		<appleCommander command="p" input="${builddir}/ADTPRO" imagename="${builddir}/${distName}/disks/${diskName}.DSK" filename="ADTPROUII" type="sys" address="8192"/>
 		<echo message="Adding ADTPRO to 5.25 disk image..."/>
 		<appleCommander command="p" input="${builddir}/ADTPRO.BIN" imagename="${builddir}/${distName}/disks/${diskName}.DSK" filename="ADTPRO.BIN" type="bin" address="2048"/>
 		<echo message="Adding ADTPROAUD to 5.25 disk image..."/>
 		<appleCommander command="p" input="${builddir}/ADTPROAUD.BIN" imagename="${builddir}/${distName}/disks/${diskName}.DSK" filename="ADTPROAUD.BIN" type="bin" address="2048"/>
 		<echo message="Adding ADTPROETH to 5.25 disk image..."/>
 		<appleCommander command="p" input="${builddir}/ADTPROETH.BIN" imagename="${builddir}/${distName}/disks/${diskName}.DSK" filename="ADTPROETH.BIN" type="bin" address="2048"/>
+		<echo message="Adding ADTPROUII to 5.25 disk image..."/>
+		<appleCommander command="p" input="${builddir}/ADTPROUII.BIN" imagename="${builddir}/${distName}/disks/${diskName}.DSK" filename="ADTPROUII.BIN" type="bin" address="2048"/>
 
 		<!--
 		And the .po version...
@@ -458,6 +477,7 @@ everywhere it is invoked:
 		<appleCommander command="p" input="${builddir}/ADTPRO" imagename="${builddir}/${distName}/disks/${diskName}.PO" filename="ADTPRO" type="sys" address="8192"/>
 		<appleCommander command="p" input="${builddir}/ADTPRO" imagename="${builddir}/${distName}/disks/${diskName}.PO" filename="ADTPROAUD" type="sys" address="8192"/>
 		<appleCommander command="p" input="${builddir}/ADTPRO" imagename="${builddir}/${distName}/disks/${diskName}.PO" filename="ADTPROETH" type="sys" address="8192"/>
+		<appleCommander command="p" input="${builddir}/ADTPRO" imagename="${builddir}/${distName}/disks/${diskName}.PO" filename="ADTPROUII" type="sys" address="8192"/>
 
 		<echo message="Adding ADTPRO to 3.5 disk image..."/>
 		<appleCommander command="p" input="${builddir}/ADTPRO.BIN" imagename="${builddir}/${distName}/disks/${diskName}.PO" filename="ADTPRO.BIN" type="bin" address="2048"/>
@@ -467,6 +487,9 @@ everywhere it is invoked:
 
 		<echo message="Adding ADTPROETH to 3.5 disk image..."/>
 		<appleCommander command="p" input="${builddir}/ADTPROETH.BIN" imagename="${builddir}/${distName}/disks/${diskName}.PO" filename="ADTPROETH.BIN" type="bin" address="2048"/>
+
+		<echo message="Adding ADTPROUII to 3.5 disk image..."/>
+		<appleCommander command="p" input="${builddir}/ADTPROUII.BIN" imagename="${builddir}/${distName}/disks/${diskName}.PO" filename="ADTPROUII.BIN" type="bin" address="2048"/>
 
 		<!--
 		Put a nice volume name on the disk images
@@ -481,8 +504,10 @@ everywhere it is invoked:
 		<delete file="${builddir}/STARTUP.SYSTEM" />
 		<delete file="${builddir}/ADTPROAUD" />
 		<delete file="${builddir}/ADTPROETH" />
+		<delete file="${builddir}/ADTPROUII" />
 		<delete file="${builddir}/ADTPRO.BIN" />
 		<delete file="${builddir}/ADTPROETH.BIN" />
+		<delete file="${builddir}/ADTPROUII.BIN" />
 		<delete file="${builddir}/ADTPROAUD.BIN" />
 		<delete file="${builddir}/GRUB2" />
 		<delete file="${builddir}/GRUB_VSDRIVE" />
