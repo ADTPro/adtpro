@@ -86,7 +86,7 @@ public class UDPTransport extends ATransport
     }
     if (_inPacketPtr + 1 > _inPacketLen)
     {
-      Log.println(false,"UDPTransport.readByte() needs to pull a buffer; we're out of data.");
+      // Log.println(false,"UDPTransport.readByte() needs to pull a buffer; we're out of data.");
       try
       {
         pullBuffer(seconds);
@@ -234,7 +234,7 @@ public class UDPTransport extends ATransport
 
   public void pullBuffer(int seconds) throws Exception
   {
-    Log.println(false,"UDPTransport.pullBuffer() entry.");
+    // Log.println(false,"UDPTransport.pullBuffer() entry.");
     _receiveBuffer = new byte[1500];
     _packet.setData(_receiveBuffer);
     _socket.setSoTimeout(seconds*1000);
