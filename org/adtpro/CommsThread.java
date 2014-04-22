@@ -148,7 +148,7 @@ public class CommsThread extends Thread
 				}
 				catch (TransportTimeoutException e)
 				{
-					Log.println(false, "CommsThread.commandLoop() Timeout in command..."); //$NON-NLS-1$
+					// Log.println(false, "CommsThread.commandLoop() Timeout in command..."); //$NON-NLS-1$
 				}
 			if (_shouldRun)
 			{
@@ -3552,7 +3552,7 @@ public class CommsThread extends Thread
 			}
 			catch (TransportTimeoutException tte)
 			{
-				Log.println(false, "CommsThread.waitForData.TransportTimeoutException! (location 0)");
+				// Log.println(false, "CommsThread.waitForData.TransportTimeoutException! (location 0)");
 				throw tte;
 				// _shouldRun = false;
 			}
