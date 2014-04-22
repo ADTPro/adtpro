@@ -58,6 +58,18 @@ INIT_SCREEN:
 
 	lda #$00
 	sta D_CONTROL_DATA
+	lda #$03
+	sta D_CONTROL_CODE
+	CALLOS OS_D_CONTROL, D_CONTROL_PARMS	; Set keyboard mode to single char
+
+	lda #$00
+	sta D_CONTROL_DATA
+	lda #$05
+	sta D_CONTROL_CODE
+	CALLOS OS_D_CONTROL, D_CONTROL_PARMS	; Set typeahead buffer to zero
+
+	lda #$00
+	sta D_CONTROL_DATA
 	lda #$0f
 	sta D_CONTROL_CODE
 	CALLOS OS_D_CONTROL, D_CONTROL_PARMS	; Turn escape mode off
@@ -297,9 +309,28 @@ WRITEMSG_HT:
 READ_CHAR:
 GETCHR1:
 RDKEY:
-	lda $C000
-	bpl RDKEY
-	bit $C010
+	jsr ECHO_OFF
+
+	lda #$80
+	sta D_CONTROL_DATA
+	lda #$0a
+	sta D_CONTROL_CODE
+	CALLOS OS_D_CONTROL, D_CONTROL_PARMS	; Turn no-wait to $80
+
+:	lda #$01
+	sta CONSREAD_COUNT
+	CALLOS OS_READFILE, CONSREAD_PARMS
+	lda CONSREAD_XFERCT
+	beq :-
+
+	lda #$00
+	sta D_CONTROL_DATA
+	lda #$0a
+	sta D_CONTROL_CODE
+	CALLOS OS_D_CONTROL, D_CONTROL_PARMS	; Turn no-wait to $00
+
+	lda CONSREAD_INPUT
+
 	rts
 
 ERRORCK:
@@ -328,22 +359,6 @@ SOS_ERROR_MESSAGE_END	=*
 ; Read a line of input from the console
 ;---------------------------------------------------------
 READ_LINE:
-	; Attempt to get rid of leading/queued garbage by reading
-	; the console with no-wait, then waiting for the real thing.
-	; Calling SOS to clear the typeahead cache didn't help because
-	; data was already in the read buffer.  This still isn't perfect,
-	; but it's (much) better than before.
-	bit $c010				; Strobe keyboard - may help with escape mode? 
-	lda #$80
-	sta D_CONTROL_DATA
-	lda #$0a
-	sta D_CONTROL_CODE
-	CALLOS OS_D_CONTROL, D_CONTROL_PARMS	; Turn no-wait to $80
-
-	jsr ECHO_OFF
-	lda #$ff
-	sta CONSREAD_COUNT
-	CALLOS OS_READFILE, CONSREAD_PARMS	; Consume all input so far
 
 	lda #$00
 	sta D_CONTROL_DATA
@@ -352,7 +367,7 @@ READ_LINE:
 	CALLOS OS_D_CONTROL, D_CONTROL_PARMS	; Turn no-wait to $00
 
 	jsr ECHO_ON
-	lda #$ff
+	lda #$7f
 	sta CONSREAD_COUNT
 	CALLOS OS_READFILE, CONSREAD_PARMS
 
@@ -366,30 +381,23 @@ READ_LINE:
 	beq READ_LINE_DONE
 READ_CONDITION_LOOP:
 	dex
-	lda CONSREAD_INPUT,X
+	lda CONSREAD_INPUT,x
 	ora #$80
 	sta CONSREAD_INPUT,x
+	cmp #CHR_ESC
+	beq READ_LINE_ESC
 	cpx #$00
 	bne READ_CONDITION_LOOP
 READ_LINE_DONE:
 	jsr ECHO_OFF
-
-;lda #$20		; Dump out input
-;jsr COUT
-;lda CONSREAD_XFERCT
-;jsr PRBYTE
-;lda #$20
-;jsr COUT
-;ldx #$00
-;:lda CONSREAD_INPUT,x
-;jsr COUT
-;inx
-;cpx CONSREAD_XFERCT
-;bne :-
-
 	lda CONSREAD_XFERCT		; Exits with number of bytes read
 	rts
-	
+
+READ_LINE_ESC:
+	lda #$00
+	sta CONSREAD_XFERCT
+	jmp READ_LINE_DONE
+
 ;---------------------------------------------------------
 ; ECHO_ON|OFF - turn keypress echo on or off
 ;---------------------------------------------------------
@@ -452,15 +460,18 @@ CLRMSGAREA_DATA:
 ;   Y - starting y coordinate
 ;---------------------------------------------------------
 INVERSE:
-	sta INUM
+	pha
 	lda #$12
 	sta ATTRIB
+	pla
 	jmp INV_GO		; Code for start printing normally
 UNINVERSE:
-	sta INUM
+	pha
 	lda #$11		; Code for start printing in inverse
 	sta ATTRIB
+	pla
 INV_GO:
+	sta INUM
 	jsr GOTOXY
 	lda ATTRIB
 	jsr COUT

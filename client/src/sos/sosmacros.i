@@ -101,6 +101,20 @@
 ; Nothing to see here...
 .endmacro
 
+.macro SET_INVERSE_SOS
+	pha
+	lda #$11
+	sta ATTRIB
+	pla
+.endmacro
+
+.macro SET_UNINVERSE_SOS
+	pha
+	lda #$12
+	sta ATTRIB
+	pla
+.endmacro
+
 .macro COUT_MAYBE_INVERSE_SOS
 	cmp #CHR_BLK
 	bne :+
@@ -114,5 +128,5 @@
 .endmacro
 
 .define	NRM_BLOCK $11,$20
-.define	INV_CHR_L $12,$0c,$11
+.define	INV_CHR_L $12,CHR_L,$11
 .define	INV_BLOCK $12,$20,$11

@@ -1,6 +1,6 @@
 ;
 ; ADTPro - Apple Disk Transfer ProDOS
-; Copyright (C) 2006 - 2011 by David Schmidt
+; Copyright (C) 2006 - 2014 by David Schmidt
 ; david__schmidt at users.sourceforge.net
 ;
 ; This program is free software; you can redistribute it and/or modify it 
@@ -314,8 +314,10 @@ HILIGHT_MENU:
 	lda PREV_MENU
 	cmp #$ff	; Skip if prev menu was undefined
 	beq :+
+	SET_INVERSE_SOS
 	jsr HI_2
-:	ldy CUR_MENU
+:	SET_UNINVERSE_SOS
+	ldy CUR_MENU
 HI_GO:	jsr HI_2
 HI_DONE:
 	rts
@@ -331,7 +333,7 @@ HI_2:	ldx #$03
 	pla
 	tax
 	pla
-	jsr INVERSE
+	jsr INV_GO
 	rts
 
 MOVE_MENU:

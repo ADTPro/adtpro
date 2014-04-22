@@ -39,6 +39,14 @@
 	and #$DF	; Convert to upper case
 .endmacro
 
+.macro SET_INVERSE_SOS
+; Nothing to see here...
+.endmacro
+
+.macro SET_UNINVERSE_SOS
+; Nothing to see here...
+.endmacro
+
 .macro LDA_BIGBUF_ADDR_HI
 	lda #>BIGBUF
 .endmacro

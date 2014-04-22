@@ -245,6 +245,7 @@ READ_CHAR:
 ;---------------------------------------------------------
 INVERSE:
 UNINVERSE:
+INV_GO:
 	clc
 	sta INUM
 	stx CH		; Set cursor to first position
