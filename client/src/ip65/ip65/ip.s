@@ -195,6 +195,14 @@ verifyheader:
 :	lda ip_inp + ip_frag + 1
 	bne @badpacket
 
+	lda ip_inp+10
+	bne @has_cksum
+	lda ip_inp+11
+	bne @has_cksum
+	clc
+	rts
+
+@has_cksum:
 	ldax #ip_inp			; verify checksum
 	stax ip_cksum_ptr
 	ldax #20
