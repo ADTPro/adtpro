@@ -172,6 +172,7 @@ everywhere it is invoked:
 		<delete file="${builddir}/${distName}.zip" />
 		<delete file="${builddir}/${distName}.dmg" />
 		<delete file="${builddir}/${distName}/disks/${diskName}.DSK" />
+		<delete file="${builddir}/${distName}/disks/${disk3Name}.DSK" />
 		<delete file="${builddir}/${distName}/disks/${vdriveDiskName}.DSK" />
 		<delete file="${builddir}/${distName}/disks/${diskName}.PO" />
 		<delete file="${projdir}/org/adtpro/resources/adt.dmp" />
