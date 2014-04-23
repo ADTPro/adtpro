@@ -254,10 +254,9 @@ PARMINT:
 	beq NOPE
 	ldax serverip
 	jsr w5100_init
+	jsr PATCHNULL
 	jsr PINGREQUEST
-	rts
-NOPE:	jsr PATCHNULL
-	rts
+NOPE:	rts
 
 
 ;---------------------------------------------------------
@@ -283,7 +282,7 @@ NULLW5100:
 PARMDFT:
 	lda CONFIGYET
 	bne WARMER	; If no manual config yet, scan the slots
-	jsr FindSlot	; Seems to be failing on emulators?
+	jsr FindSlot
 WARMER:
 	ldx #PARMNUM-1
 DFTLOOP:
@@ -435,9 +434,9 @@ PDHCP:	.byte 0		; DHCP Configuration? (YES)
 
 ip_parms:
 serverip:	.byte 192, 168,   0,  12
-cfg_ip:		.byte   0,   0,   0,   0 ; ip address of local machine (will be overwritten if dhcp_init is called)
-cfg_netmask:	.byte   0,   0,   0,   0 ; netmask of local network (will be overwritten if dhcp_init is called)
-cfg_gateway:	.byte   0,   0,   0,   0 ; ip address of router on local network (will be overwritten if dhcp_init is called)
+cfg_ip:		.byte 192, 168,   0, 111 ; ip address of local machine (will be overwritten if dhcp_init is called)
+cfg_netmask:	.byte 255, 255, 255,   0 ; netmask of local network (will be overwritten if dhcp_init is called)
+cfg_gateway:	.byte 192, 168,   0,   1 ; ip address of router on local network (will be overwritten if dhcp_init is called)
 
 DEFAULT:	.byte 2,1,0,1,1,0	; Default parm indices
 CONFIGYET:	.byte 0			; Has the user configged yet?
