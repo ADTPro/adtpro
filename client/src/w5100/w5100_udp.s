@@ -1,13 +1,13 @@
-ptr := $06         ; 2 byte pointer value
-tmp := $08         ; 1 byte temporary value
-bas := $09         ; 1 byte socket 1 Base Address (hibyte)
-sha := $19         ; 2 byte physical addr shadow ($F000-$FFFF)
-len := $1B         ; 2 byte frame length
-adv := $1D         ; 2 byte pointer register advancement
+ptr := $80	; 2 byte pointer value
+tmp := $82	; 1 byte temporary value
+bas := $83	; 1 byte socket 1 Base Address (hibyte)
+sha := $84	; 2 byte physical addr shadow ($F000-$FFFF)
+len := $86	; 2 byte frame length
+adv := $88	; 2 byte pointer register advancement
 
-mode := $C0C4
-addr := $C0C5
-data := $C0C7
+mode := $C0C4	; Will be self-modified
+addr := $C0C5	; Will be self-modified
+data := $C0C7	; Will be self-modified
 
 .export w5100_init
 .export recv_init, recv_byte, recv_done
@@ -19,12 +19,9 @@ w5100_init_error:
 	rts
 
 w5100_init:
+	; Set ip_parms pointer
+	stax ptr
 	jsr w5100_self_modify
-        ; Set ip_parms pointer
-        ldax #hdr
-        stax ptr
-;        sta ptr
-;       stx ptr+1
 
         ; S/W Reset
         lda #$80

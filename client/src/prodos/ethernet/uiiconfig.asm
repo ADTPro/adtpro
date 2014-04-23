@@ -252,6 +252,10 @@ NOSAVE:
 PARMINT:
 	lda CONFIGYET
 	beq NOPE
+	ldax serverip
+	jsr w5100_init
+	jsr PINGREQUEST
+	rts
 NOPE:	jsr PATCHNULL
 	rts
 
@@ -362,8 +366,10 @@ FindSlot:
 FindSlotLoop:
 	stx COMMSLOT	; w5100_init looks for COMMSLOT to be the index
 	clc
+	ldax serverip
 	jsr w5100_init
 	bcc FoundSlot
+	jsr PINGREQUEST
 	ldx COMMSLOT
 	inx
 	stx COMMSLOT
