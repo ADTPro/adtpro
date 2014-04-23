@@ -26,6 +26,7 @@ ROW2 = ROW1+1
 ROW3 = ROW1+2
 ROW4 = ROW1+3
 ROW5 = ROW1+4
+ROW6 = ROW1+5
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;                                                                               ;
@@ -311,7 +312,7 @@ NotRight:
 
 KbdDone:
 	jsr HighlightLine
-	lda #ROW5
+	lda #ROW6
 	sta CV
 	jsr TABV
 

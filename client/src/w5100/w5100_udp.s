@@ -9,26 +9,28 @@ mode := $C0C4
 addr := $C0C5
 data := $C0C7
 
-.export init
+.export w5100_init
 .export recv_init, recv_byte, recv_done
 .export send_init, send_byte, send_done
 
 ;------------------------------------------------------------------------------
-init_error:
+w5100_init_error:
 	sec
 	rts
 
-init:
+w5100_init:
 	jsr w5100_self_modify
         ; Set ip_parms pointer
-        sta ptr
-        stx ptr+1
+        ldax #hdr
+        stax ptr
+;        sta ptr
+;       stx ptr+1
 
         ; S/W Reset
         lda #$80
 fixw01:	sta mode
 fixw02:	lda mode
-        bne init_error
+        bne w5100_init_error
 
         ; Indirect Bus I/F mode, Address Auto-Increment
         lda #$03
@@ -100,6 +102,7 @@ fixw09:	sta data
         ; addr is already set
         lda #$01
 fixw10:	sta data
+	clc
         rts
 
 ;------------------------------------------------------------------------------

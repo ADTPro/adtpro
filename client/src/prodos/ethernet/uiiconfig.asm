@@ -279,7 +279,7 @@ NULLW5100:
 PARMDFT:
 	lda CONFIGYET
 	bne WARMER	; If no manual config yet, scan the slots
-;	jsr FindSlot	; Seems to be failing on emulators?
+	jsr FindSlot	; Seems to be failing on emulators?
 WARMER:
 	ldx #PARMNUM-1
 DFTLOOP:
@@ -353,16 +353,16 @@ ENDVAL:	dex
 	rts
 
 ;---------------------------------------------------------
-; FindSlot - Find an uther card
+; FindSlot - Find an Uthernet II card
 ;---------------------------------------------------------
 FindSlot:
 	lda COMMSLOT
 	sta TempSlot
 	ldx #$00	; Slot number - start at min and work up
 FindSlotLoop:
-	stx COMMSLOT	; ip65_init looks for COMMSLOT to be the index
+	stx COMMSLOT	; w5100_init looks for COMMSLOT to be the index
 	clc
-;	jsr ip65_init
+	jsr w5100_init
 	bcc FoundSlot
 	ldx COMMSLOT
 	inx
@@ -414,7 +414,7 @@ PARMTXT:
 	ascz "NO"
 
 CONFIG_FILE_NAME:	.byte 14
-			asc "ADTPROETH.CONF"
+			asc "ADTPROUII.CONF"
 
 YSAVE:	.byte $00
 
