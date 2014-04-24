@@ -1,3 +1,49 @@
+;
+; ADTPro - Apple Disk Transfer ProDOS
+; Copyright (C) 2014 by David Schmidt
+; david__schmidt at users.sourceforge.net
+;
+; This program is free software; you can redistribute it and/or modify it 
+; under the terms of the GNU General Public License as published by the 
+; Free Software Foundation; either version 2 of the License, or (at your 
+; option) any later version.
+;
+; This program is distributed in the hope that it will be useful, but 
+; WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY 
+; or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License 
+; for more details.
+;
+; You should have received a copy of the GNU General Public License along 
+; with this program; if not, write to the Free Software Foundation, Inc., 
+; 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+;
+
+;
+; Copyright (c) 2014, Oliver Schmidt
+; All rights reserved.
+; 
+; Redistribution and use in source and binary forms, with or without
+; modification, are permitted provided that the following conditions are met:
+;     * Redistributions of source code must retain the above copyright
+;       notice, this list of conditions and the following disclaimer.
+;     * Redistributions in binary form must reproduce the above copyright
+;       notice, this list of conditions and the following disclaimer in the
+;      documentation and/or other materials provided with the distribution.
+;     * Neither the name of the <organization> nor the
+;       names of its contributors may be used to endorse or promote products
+;       derived from this software without specific prior written permission.
+;
+; THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+; ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+; WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+; DISCLAIMED. IN NO EVENT SHALL OLIVER SCHMIDT BE LIABLE FOR ANY
+; DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+; (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+; ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+; (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+; SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
 ptr := $80	; 2 byte pointer value
 tmp := $82	; 1 byte temporary value
 bas := $83	; 1 byte socket 1 Base Address (hibyte)
@@ -5,9 +51,9 @@ sha := $84	; 2 byte physical addr shadow ($F000-$FFFF)
 len := $86	; 2 byte frame length
 adv := $88	; 2 byte pointer register advancement
 
-mode := $C0C4	; Will be self-modified
-addr := $C0C5	; Will be self-modified
-data := $C0C7	; Will be self-modified
+mode := $C0C4	; Usage will be self-modified
+addr := $C0C5	; Usage will be self-modified
+data := $C0C7	; Usage will be self-modified
 
 .export w5100_init
 .export recv_init, recv_byte, recv_done
@@ -20,18 +66,22 @@ w5100_init_error:
 
 w5100_init:
 	; Set ip_parms pointer
+	lda #<ip_parms
+	sta ptr
+	ldx #>ip_parms
+	stx ptr+1
 	stax ptr
 	jsr w5100_self_modify
 
         ; S/W Reset
         lda #$80
-fixw01:	sta mode
-fixw02:	lda mode
+fix_mode_01:	sta mode
+fix_mode_02:	lda mode
         bne w5100_init_error
 
         ; Indirect Bus I/F mode, Address Auto-Increment
         lda #$03
-fixw03:	sta mode
+fix_mode_03:	sta mode
 
         ; Gateway IP Address Register: IP address of router on local network
         ldx #$00                ; Hibyte
@@ -49,7 +99,8 @@ fixw03:	sta mode
         ; -> addr is already set
         ldx #$00
 imac:	lda w5100_mac,x
-fixw06:	sta data
+fix_data_01:
+	sta data
         inx
         cpx #$06
         bcc imac
@@ -64,12 +115,14 @@ fixw06:	sta data
         ldy #$1A                ; Lobyte
         jsr set_addr
         lda #$0A
-fixw07:	sta data
+fix_data_02:
+	sta data
 
         ; TX Memory Size Register: Assign 4KB each to sockets 0 and 1
         ; -> addr is already set
         ; -> A is still $0A
-fixw08:	sta data
+fix_data_03:
+	sta data
 
         ; Socket 1 Destination IP Address Register: Destination IP address
         ; This has to be the last call to set_ipv4value because it writes
@@ -93,12 +146,14 @@ fixw08:	sta data
         ldy #$00
         jsr set_addrsocket1
         lda #$02
-fixw09:	sta data
+fix_data_04:
+	sta data
 
         ; Socket 1 Command Register: OPEN
         ; addr is already set
         lda #$01
-fixw10:	sta data
+fix_data_05:
+	sta data
 	clc
         rts
 
@@ -108,7 +163,8 @@ set_ipv4value:
         ldx #$03
 simore:	lda (ptr),y
         iny
-fixw11:	sta data
+fix_data_06:
+	sta data
         sta hdr+2,x
         dex
         bpl simore
@@ -119,8 +175,10 @@ fixw11:	sta data
 set_data6502:
         lda #<6502
         ldx #>6502
-fixw12:	stx data                ; Hibyte
-fixw13:	sta data                ; Lobyte
+fix_data_07:
+	stx data                ; Hibyte
+fix_data_08:
+	sta data                ; Lobyte
         rts
 
 ;------------------------------------------------------------------------------
@@ -212,7 +270,8 @@ prolog:
         ; Check for completion of previous command
         ; Socket 1 Command Register: 0 ?
         jsr set_addrcmdreg1
-fixw14:	ldx data
+fix_data_09:
+	ldx data
         bne rts_cs              ; Not completed -> error
 
         ; Socket Size Register: not 0 ?
@@ -238,7 +297,8 @@ rts_cs: sec                     ; Error (size == 0)
 
 recv_byte:
         ; Read byte
-fixw15:	lda data
+fix_data_10:
+	lda data
 
         ; Increment physical addr shadow lobyte
         inc sha
@@ -249,7 +309,8 @@ fixw15:	lda data
 
 send_byte:
         ; Write byte
-fixw16:	sta data
+fix_data_11:
+	sta data
 
         ; Increment physical addr shadow lobyte
         inc sha
@@ -285,21 +346,26 @@ epilog: jsr set_addrsocket1
         tax
         lda ptr+1
         adc adv+1
-fixw17:	sta data                ; Hibyte
-fixw18:	stx data                ; Lobyte
+fix_data_12:
+	sta data                ; Hibyte
+fix_data_13:
+	stx data                ; Lobyte
 
         ; Set command register
         tya                     ; Restore command
         jsr set_addrcmdreg1
-fixw19:	sta data
+fix_data_14:
+	sta data
         sec                     ; When coming from _recv_init -> error
         rts
 
 ;------------------------------------------------------------------------------
 
 set_addrphysical:
-fixw20:	lda data                ; Hibyte
-fixw21:	ldy data                ; Lobyte
+fix_data_15:
+	lda data                ; Hibyte
+fix_data_16:
+	ldy data                ; Lobyte
         sty ptr
         sta ptr+1
         and #>$0FFF             ; Socket Mask Address (hibyte)
@@ -310,8 +376,10 @@ fixw21:	ldy data                ; Lobyte
         sty sha
         sta sha+1
 set_addr:
-fixw04:	stx addr                ; Hibyte
-fixw05:	sty addr+1              ; Lobyte
+fix_addr_01:
+	stx addr                ; Hibyte
+fix_addr_02:
+	sty addr+1              ; Lobyte
         rts
 
 ;------------------------------------------------------------------------------
@@ -333,8 +401,10 @@ set_addrbase:
 
 get_wordsocket1:
         jsr set_addrsocket1
-fixw22:	lda data                ; Hibyte
-fixw23:	ldx data                ; Lobyte
+fix_data_17:
+	lda data                ; Hibyte
+fix_data_18:
+	ldx data                ; Lobyte
         rts
 
 ; w5100_self_modify - make all entry points variable so we can move the
@@ -359,35 +429,35 @@ w5100_self_modify:
 	;   i.e. Slot 6 = $E4
 	;   i.e. Slot 7 = $F4
 ; $c0s4 - WIZNET_MODE_REG - save off all references to mode
-	sta fixw01 + 1
-	sta fixw02 + 1
-	sta fixw03 + 1
+	sta fix_mode_01 + 1
+	sta fix_mode_02 + 1
+	sta fix_mode_03 + 1
 ; $c0s5 - WIZNET_ADDR_HI
 	adc #$01
-	sta fixw04 + 1
+	sta fix_addr_01 + 1
 ; $c0s6 - WIZNET_ADDR_LO
 	adc #$01
-	sta fixw05 + 1
+	sta fix_addr_02 + 1
 ; $c0s7 - WIZNET_DATA_REG
 	adc #$01
-	sta fixw06 + 1
-	sta fixw07 + 1
-	sta fixw08 + 1
-	sta fixw09 + 1
-	sta fixw10 + 1
-	sta fixw11 + 1
-	sta fixw12 + 1
-	sta fixw13 + 1
-	sta fixw14 + 1
-	sta fixw15 + 1
-	sta fixw16 + 1
-	sta fixw17 + 1
-	sta fixw18 + 1
-	sta fixw19 + 1
-	sta fixw20 + 1
-	sta fixw21 + 1
-	sta fixw22 + 1
-	sta fixw23 + 1
+	sta fix_data_01 + 1
+	sta fix_data_02 + 1
+	sta fix_data_03 + 1
+	sta fix_data_04 + 1
+	sta fix_data_05 + 1
+	sta fix_data_06 + 1
+	sta fix_data_07 + 1
+	sta fix_data_08 + 1
+	sta fix_data_09 + 1
+	sta fix_data_10 + 1
+	sta fix_data_11 + 1
+	sta fix_data_12 + 1
+	sta fix_data_13 + 1
+	sta fix_data_14 + 1
+	sta fix_data_15 + 1
+	sta fix_data_16 + 1
+	sta fix_data_17 + 1
+	sta fix_data_18 + 1
 
 	rts
 

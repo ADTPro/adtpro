@@ -252,11 +252,10 @@ NOSAVE:
 PARMINT:
 	lda CONFIGYET
 	beq NOPE
-	ldax serverip
 	jsr w5100_init
-	jsr PATCHNULL
 	jsr PINGREQUEST
-NOPE:	rts
+NOPE:	jsr PATCHNULL
+	rts
 
 
 ;---------------------------------------------------------
