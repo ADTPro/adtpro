@@ -48,8 +48,8 @@ ptr := $80	; 2 byte pointer value
 tmp := $82	; 1 byte temporary value
 bas := $83	; 1 byte socket 1 Base Address (hibyte)
 sha := $84	; 2 byte physical addr shadow ($F000-$FFFF)
-len := $86	; 2 byte frame length
-adv := $88	; 2 byte pointer register advancement
+;len := $86	; 2 byte frame length
+;adv := $88	; 2 byte pointer register advancement
 
 mode := $C0C4	; Usage will be self-modified
 addr := $C0C5	; Usage will be self-modified
@@ -75,13 +75,16 @@ w5100_init:
 
         ; S/W Reset
         lda #$80
-fix_mode_01:	sta mode
-fix_mode_02:	lda mode
+fix_mode_01:
+	sta mode
+fix_mode_02:
+	lda mode
         bne w5100_init_error
 
         ; Indirect Bus I/F mode, Address Auto-Increment
         lda #$03
-fix_mode_03:	sta mode
+fix_mode_03:
+	sta mode
 
         ; Gateway IP Address Register: IP address of router on local network
         ldx #$00                ; Hibyte
@@ -229,7 +232,7 @@ recv_init:
         plp                     ; Restore C
         bcs recv_done
 
-        ; Return success with data length
+        ; Return success with data in length
         lda len
         ldx len+1
         clc
@@ -238,19 +241,19 @@ recv_init:
 ;------------------------------------------------------------------------------
 
 send_init:
-        ; Set pointer advancement
-        sta adv
-        stx adv+1
+	; Set pointer advancement
+	lda #$00
+	sta adv
+	sta adv+1
+	; Socket 1 TX Free Size Register: 0 or volatile ?
+	lda #$20                ; Socket TX Free Size Register
+	jsr prolog
+	bcs :+
 
-        ; Socket 1 TX Free Size Register: 0 or volatile ?
-        lda #$20                ; Socket TX Free Size Register
-        jsr prolog
-        bcs :+
-
-        ; Socket 1 TX Free Size Register: < advancement ?
-        cpx adv                 ; Lobyte
-        sbc adv+1               ; Hibyte
-        bcc rts_cs
+	; Socket 1 TX Free Size Register: < advancement ?
+;	cpx adv                 ; Lobyte
+;	sbc adv+1               ; Hibyte
+;	bcc rts_cs
 
         ; Socket 1 TX Write Pointer Register
         ldy #$24
@@ -303,6 +306,7 @@ fix_data_10:
         ; Increment physical addr shadow lobyte
         inc sha
         beq incsha
+        clc
         rts
 
 ;------------------------------------------------------------------------------
@@ -312,15 +316,21 @@ send_byte:
 fix_data_11:
 	sta data
 
-        ; Increment physical addr shadow lobyte
-        inc sha
+	inc adv
+	bne :+
+	inc adv+1
+
+	; Increment physical addr shadow lobyte
+:	inc sha
         beq incsha
         rts
 
         ; Increment physical addr shadow hibyte
 incsha: inc sha+1
-        beq set_addrbase
-        rts
+	bne :+
+	jsr set_addrbase
+:	clc
+	rts
 
 ;------------------------------------------------------------------------------
 
@@ -333,13 +343,14 @@ recv_done:
 ;------------------------------------------------------------------------------
 
 send_done:
-        ; Set parameters for commit code
-        lda #$20                ; SEND
-        ldy #$24                ; Socket TX Write Pointer Register
 
-        ; Advance pointer register
+	; Set parameters for commit code
+	lda #$20                ; SEND
+	ldy #$24                ; Socket TX Write Pointer Register
+
+	; Advance pointer register
 epilog: jsr set_addrsocket1
-        tay                     ; Save command
+	tay                     ; Save command
         clc
         lda ptr
         adc adv
@@ -474,3 +485,5 @@ w5100_mac:    .byte $00, $08, $DC     ; OUI of WIZnet
 
 hdr:    .word 6502              ; Destination Port
         .res  4                 ; Destination IP Address
+adv:	.res 2
+len:	.res 2
