@@ -95,8 +95,8 @@ DIRPAGE:
 NDURedraw:
 	jsr NDUInvertCurrentLine
 NDUNavLoop:
-	CONDITION_KEYPRESS	; Convert to upper case, etc.  OS dependent.
 	jsr READ_CHAR		; Wait for input
+	CONDITION_KEYPRESS	; Convert to upper case, etc.  OS dependent.
 	sta ZP			; Borrow ZP for remembering keypress
 	cmp #CHR_A
 	bne @TryUp
@@ -112,7 +112,7 @@ NDUNavLoop:
 	bne @RoomForUp
 	jmp NDUPageUp
 @RoomForUp:
-	jsr NDUInvertCurrentLine
+	jsr NDUUnInvertCurrentLine
 	dec COL_SAV
 	jmp NDURedraw
 @TryDown:
@@ -137,13 +137,13 @@ NDUNavLoop:
 	bne @RoomForDown
 	jmp NDUPageDown
 @RoomForDown:
-	jsr NDUInvertCurrentLine
+	jsr NDUUnInvertCurrentLine
 	inc COL_SAV
 	jmp NDURedraw
 @TryReturn:
 	cmp #$8d		; Return?
 	bne :+
-	jsr NDUInvertCurrentLine	; Un-invert currentline
+	jsr NDUUnInvertCurrentLine	; Un-invert currentline
 	jsr SCRAPE		; Scrape the line contents
 	clc
 	rts
@@ -210,11 +210,16 @@ NDUPageDown:
 	sta COL_SAV
 	jmp DIRDISP0
 
+NDUUnInvertCurrentLine:
+	SET_UNINVERSE_SOS
+	jmp NDUInvertGo
 NDUInvertCurrentLine:
+	SET_INVERSE_SOS
+NDUInvertGo:
 	ldy COL_SAV
 	ldx #$00
 	lda #$28
-	jsr INVERSE
+	jsr INV_GO
 	rts
 
 NDUCANCONT:

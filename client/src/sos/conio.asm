@@ -460,16 +460,10 @@ CLRMSGAREA_DATA:
 ;   Y - starting y coordinate
 ;---------------------------------------------------------
 INVERSE:
-	pha
-	lda #$12
-	sta ATTRIB
-	pla
-	jmp INV_GO		; Code for start printing normally
+	SET_INVERSE_SOS
+	jmp INV_GO
 UNINVERSE:
-	pha
-	lda #$11		; Code for start printing in inverse
-	sta ATTRIB
-	pla
+	SET_UNINVERSE_SOS
 INV_GO:
 	sta INUM
 	jsr GOTOXY

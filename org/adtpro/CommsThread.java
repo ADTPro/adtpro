@@ -4156,6 +4156,7 @@ public class CommsThread extends Thread
 	{
 		if (_transport.transportType() == ATransport.TRANSPORT_TYPE_SERIAL)
 		{
+			//if (speed != ((SerialTransport)_transport).getSpeed())
 			try
 			{
 				Log.println(false, "CommsThread.setSpeed() Attempting to set the serial port's speed to " + speed);
