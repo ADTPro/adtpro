@@ -1,6 +1,6 @@
 ;
 ; ADTPro - Apple Disk Transfer ProDOS
-; Copyright (C) 2008 - 2012 by David Schmidt
+; Copyright (C) 2008 - 2014 by David Schmidt
 ; david__schmidt at users.sourceforge.net
 ;
 ; This program is free software; you can redistribute it and/or modify it 
@@ -22,12 +22,14 @@
 ; INITIII - Initialize the /// ACIA
 ;---------------------------------------------------------
 INITIII:
+;	jsr deallocsir	; Deallocate ACIA SIR if it's allocated
+	jsr allocsir	; Allocate the ACIA SIR to us 
 	lda #$0B	; COMMAND: NO PARITY, RTS ON,
 	sta $C0F2	; DTR ON, NO INTERRUPTS (Command mode register)
 	ldy PSPEED	; CONTROL: 8 DATA BITS, 1 STOP
 	lda BPSCTRL,Y	; BIT, BAUD RATE DEPENDS ON
 	sta $C0F3	; PSPEED (Control register)
-	jsr PATCHIII
+	jsr PATCHIII	; Patch in our serial entry points
 	rts
 
 ;---------------------------------------------------------
@@ -88,7 +90,9 @@ IIIGETLoop:
 ; RESETIII - Clean up ///
 ;---------------------------------------------------------
 RESETIII:
+	GO_SLOW		; Slow SOS down for this - the higher-level software (main) doesn't bracket it.
 	bit $C0F0	; CLEAR ACIA INPUT REGISTER
+	GO_FAST		; Speed SOS back up
 	rts
 
 ;---------------------------------------------------------
@@ -111,6 +115,57 @@ PATCHIII:
 	sta RESETIO+2
 
 	rts
+
+;---------------------------------------------------------
+; allocsir - Allocate the ACIA for ourselves
+;---------------------------------------------------------
+allocsir:
+	bit OPENFLG	; Serial port ready to be opened?
+	bpl :+		; Yes
+	rts
+:	lda #SIRCOUNT
+	ldx SIRADDR
+	ldy SIRADDR+1
+	lda B_REG
+	and #$0f
+	sta MIHBANK
+	jsr ALLOCSIR
+	bcs :+
+	lda #$80
+	sta OPENFLG	; Open succeeded
+:	rts
+
+;---------------------------------------------------------
+; deallocsir - Un-allocate the ACIA (not reached)
+;---------------------------------------------------------
+deallocsir:
+	asl OPENFLG	; Serial port already open?
+	bcs :+		; No, so we can close
+	rts
+:	lda #SIRCOUNT
+	ldx SIRADDR
+	ldy SIRADDR+1
+	jsr DEALCSIR
+	lda #$00
+	sta OPENFLG	; Close succeeded
+	rts
+
+;---------------------------------------------------------
+; acia_interrupt - Just absorb ACIA interrupts - we don't use them
+;---------------------------------------------------------
+acia_interrupt:
+	rts
+
+SIRADDR:
+	.addr SIRTABLE
+SIRTABLE:
+	.byte 1,0	; ACIA resource
+	.addr acia_interrupt
+MIHBANK:
+	.byte 0
+SIRCOUNT= *-SIRTABLE
+OPENFLG:
+	.byte 0
 
 ; C0F0 ($C088):  ACIADR  Data register.
 ; C0F1 ($C089):  ACIASR  Status register.

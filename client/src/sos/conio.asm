@@ -86,10 +86,10 @@ INIT_SCREEN:
 	ora #$80			; Add the extended addressing bit
 	sta BIGBUF_XBYTE		; This is our xbyte for BIGBUF addressing
 
-	lda $FFDF			; Read the environment register
+	lda E_REG			; Read the environment register
 	and #$f7			; Turn $C000-$CFFF to R/W
 	ora #$40			; Turn $C000-$CFFF to I/O
-	sta $FFDF			; Write the environment register
+	sta E_REG			; Write the environment register
 
 ; Points SOS’ NMI vector at the debug routine in SOS. It normally
 ; points at an RTS so that hitting RESET doesn’t do anything. This
@@ -638,9 +638,9 @@ WAIT3:	SBC #$01
 GO_SLOW_SOS:
 	php
 	pha
-	lda $FFDF			; Read the environment register
+	lda E_REG			; Read the environment register
 	ora #$80			; Set 1MHz switch
-	sta $FFDF			; Write the environment register
+	sta E_REG			; Write the environment register
 	pla
 	plp
 	rts
@@ -648,9 +648,9 @@ GO_SLOW_SOS:
 GO_FAST_SOS:
 	php
 	pha
-	lda $FFDF			; Read the environment register
+	lda E_REG			; Read the environment register
 	and #$7f			; Set 2MHz switch
-	sta $FFDF			; Write the environment register
+	sta E_REG			; Write the environment register
 	pla
 	plp
 	rts

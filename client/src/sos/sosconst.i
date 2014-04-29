@@ -1,6 +1,6 @@
 ;
 ; ADTPro - Apple Disk Transfer ProDOS
-; Copyright (C) 2008 - 2010 by David Schmidt
+; Copyright (C) 2008 - 2014 by David Schmidt
 ; david__schmidt at users.sourceforge.net
 ;
 ; This program is free software; you can redistribute it and/or modify it 
@@ -21,8 +21,6 @@
 .include "applechr.i"		; ASCII string productions
 .include "const.i"		; ProDOS/SOS, CHR equates
 
-MAXSLOT = $04	; The largest slot number we're likely to encounter (one-indexed)
-
 ;---------------------------------------------------------
 ; Horizontal tabs for volume display
 ;---------------------------------------------------------
@@ -37,3 +35,12 @@ VOL_LINE_LEN = $26
 OS_CALL_OFFSET	= 1	; Offset to the SOS call type byte
 CHR_RETURN	= $0d	; Carriage return
 IN_BUF		= CONSREAD_INPUT
+ALLOCSIR	= $1913
+DEALCSIR	= $1916
+
+;--------------------------------------------------------- 
+; Apple /// hardware stuff
+;--------------------------------------------------------- 
+MAXSLOT		= $04	; The largest slot number we're likely to encounter (one-indexed)
+E_REG		= $FFDF	; Environment register
+B_REG		= $FFEF	; Bank register
