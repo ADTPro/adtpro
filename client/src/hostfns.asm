@@ -211,10 +211,10 @@ NDUPageDown:
 	jmp DIRDISP0
 
 NDUUnInvertCurrentLine:
-	SET_UNINVERSE_SOS
+	SET_INVERSE_SOS
 	jmp NDUInvertGo
 NDUInvertCurrentLine:
-	SET_INVERSE_SOS
+	SET_UNINVERSE_SOS
 NDUInvertGo:
 	ldy COL_SAV
 	ldx #$00
