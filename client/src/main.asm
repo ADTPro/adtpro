@@ -312,11 +312,11 @@ HILIGHT_MENU:
 	sty PREV_MENU
 	sta CUR_MENU
 	lda PREV_MENU
-	cmp #$ff	; Skip if prev menu was undefined
+	cmp #$ff	; Skip un-highlighting if prev menu was undefined
 	beq :+
-	SET_INVERSE_SOS
+	SET_UNINVERSE_SOS
 	jsr HI_2
-:	SET_UNINVERSE_SOS
+:	SET_INVERSE_SOS
 	ldy CUR_MENU
 HI_GO:	jsr HI_2
 HI_DONE:
@@ -334,9 +334,6 @@ HI_2:	ldx #$03
 	tax
 	pla
 	jsr INV_GO
-	rts
-
-MOVE_MENU:
 	rts
 
 ;---------------------------------------------------------

@@ -471,10 +471,10 @@ INV_GO:
 	jsr COUT
 	ldx INUM
 :	jsr READVID
-	jsr COUT		; Reflect the characters on screen, inverted!
+	jsr COUT	; Reflect the characters on screen, inverted!
 	dex
 	bne :-
-	lda #$11		; Code for start printing normally
+	lda #$11	; Start printing normally no matter what
 	jsr COUT
 	rts
 

@@ -103,14 +103,14 @@
 
 .macro SET_INVERSE_SOS
 	pha
-	lda #$11
+	lda #$12
 	sta ATTRIB
 	pla
 .endmacro
 
 .macro SET_UNINVERSE_SOS
 	pha
-	lda #$12
+	lda #$11
 	sta ATTRIB
 	pla
 .endmacro
