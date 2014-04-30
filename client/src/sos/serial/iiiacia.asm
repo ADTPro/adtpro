@@ -25,15 +25,18 @@ INITIII:
 ;	jsr deallocsir	; Deallocate ACIA SIR if it's allocated
 	jsr allocsir	; Allocate the ACIA SIR to us 
 	lda #$0B	; COMMAND: NO PARITY, RTS ON,
+	GO_SLOW
 	sta $C0F2	; DTR ON, NO INTERRUPTS (Command mode register)
 	ldy PSPEED	; CONTROL: 8 DATA BITS, 1 STOP
 	lda BPSCTRL,Y	; BIT, BAUD RATE DEPENDS ON
 	sta $C0F3	; PSPEED (Control register)
+	GO_FAST
 	jsr PATCHIII	; Patch in our serial entry points
 	rts
 
 ;---------------------------------------------------------
 ; IIIPUT - Send accumulator out the serial line
+; Assumes already in GO_SLOW mode
 ;---------------------------------------------------------
 IIIPUT:
 	pha		; Push A onto the stack
@@ -57,6 +60,7 @@ IIIABORT:
 ;---------------------------------------------------------
 ; IIIGET - Get a character from the ACIA (XY unchanged)
 ;          Carry set on timeout, clear on data (returned in Accumulator)
+; Assumes already in GO_SLOW mode
 ;---------------------------------------------------------
 IIIGET:
 	lda #$00

@@ -20,6 +20,7 @@
 
 ;---------------------------------------------------------
 ; CDREQUEST - Request current directory change
+; Calls GO_SLOW/GO_FAST
 ;---------------------------------------------------------
 CDREQUEST:
 	lda #CHR_C		; Ask host to Change Directory
@@ -85,7 +86,7 @@ DIRREPLY:
 	lda BLKPTR+1
 	sta Buffer+1	; Restore Buffer pointer
 
-	jsr RECVWIDE
+	jsr RECVWIDE	; Calls GO_SLOW/GO_FAST
 	bcs @DirTimeout
 	lda HOSTBLX+1	; Prepare the acknowledge packet-required variables
 	sta BLKHI
@@ -102,7 +103,7 @@ DIRREPLY:
 	cmp PCCRC+1
 	bne @DirRetry
 	ldx #CHR_ACK
-	jsr PUTACKBLK
+	jsr PUTACKBLK		; Calls GO_SLOW/GO_FAST
 	LDA_BIGBUF_ADDR_LO	; Re-connect the block pointer to the
 	sta Buffer		; Big Buffer(TM), 1k * NIBPCNT again
 	LDA_BIGBUF_ADDR_HI
@@ -112,12 +113,12 @@ DIRREPLY:
 	adc NIBPCNT
 	adc NIBPCNT
 	sta Buffer+1
-	clc		; Indicate success
+	clc			; Indicate success
 	rts
 
 @DirRetry:
 	ldx #CHR_NAK
-	jsr PUTACKBLK
+	jsr PUTACKBLK		; Calls GO_SLOW/GO_FAST
 	sec
 	rts 
 
@@ -216,10 +217,12 @@ FNREQUEST:
 ; CHR_P - typical put
 ; CHR_N - nibble send
 ; CHR_H - half track send
+; Calls GO_SLOW/GO_FAST
 ;---------------------------------------------------------
 PUTREQUEST:
 	jsr PARMINT	; Clean up the comms device
 	lda SendType
+	GO_SLOW
 	jsr FNREQUEST
 	lda NUMBLKS	; Send the total block size
 	jsr PUTC
@@ -229,12 +232,14 @@ PUTREQUEST:
 	jsr PUTC
 	eor CHECKBYTE
 	jsr PUTC	; Send check byte
+	GO_FAST
 	rts
 
 
 ;---------------------------------------------------------
 ; PUTACKBLK - Send acknowlegedment packet
 ; X contains the acknowledgement type
+; Calls GO_SLOW/GO_FAST
 ;---------------------------------------------------------
 PUTACKBLK:
 	stx SLOWX
@@ -267,9 +272,11 @@ PUTACKBLK:
 
 ;---------------------------------------------------------
 ; PUTFINALACK - Send error count for requests
+; Calls GO_SLOW/GO_FAST
 ;---------------------------------------------------------
 PUTFINALACK:
 	lda #CHR_A
+	GO_SLOW
 	jsr PUTC	; Wide protocol - 'A'
 	lda #$01
 	jsr PUTC	; Wide protocol - lsb of bytes to expect
@@ -282,20 +289,24 @@ PUTFINALACK:
 	lda ECOUNT	; Errors during send?
 	jsr PUTC
 	jsr PUTC	; Check byte will be the same thing
+	GO_FAST
 	rts
 
 
 ;---------------------------------------------------------
 ; GETREQUEST - Request an image be sent from the host
+; Calls GO_SLOW/GO_FAST
 ;---------------------------------------------------------
 GETREQUEST:
 	jsr PARMINT	; Clean up the comms device
 	lda #CHR_G	; Tell host we are Getting/Receiving
+	GO_SLOW
 	jsr FNREQUEST
 	lda BAOCNT
 	jsr PUTC	; Express number of blocks at once (BAOCNT)
 	eor CHECKBYTE
 	jsr PUTC	; Send check byte
+	GO_FAST
 	rts
 
 
@@ -310,7 +321,9 @@ CDREPLY:
 GETREPLY:
 GETREPLY2:
 BATCHREPLY:
+	GO_SLOW
 	jsr GETC
+	GO_FAST
 	rts
 
 
@@ -359,10 +372,8 @@ RECVMORE:
 	lda SCOUNT
 	sta BLKPTR+1	; Restore BLKPTR msb when looping
 
-	GO_SLOW		; Slow down for SOS
-	jsr PUTACKBLK	; Send ack/nak packet for blocks
-	jsr RECVWIDE
-	GO_FAST		; Speed back up for SOS
+	jsr PUTACKBLK	; Send ack/nak packet for blocks; calls GO_SLOW/GO_FAST
+	jsr RECVWIDE	; Calls GO_SLOW/GO_FAST
 	bcs RECVERR
 	lda <CRC
 	cmp PCCRC
@@ -398,8 +409,8 @@ SENDBLKS:
 	sta PAGECNT+1
 :	lda SCOUNT
 	sta BLKPTR+1	; Restore BLKPTR msb when looping
-	GO_SLOW		; Slow down for SOS
 	jsr SENDWIDE
+	GO_SLOW		; Slow down for SOS
 	jsr GETC	; Receive reply
 	GO_FAST		; Speed back up for SOS
 	bcs @SendTimeout
@@ -417,8 +428,10 @@ SENDBLKS:
 ; BLKPTR - in - points at buffer to save to
 ; PAGECNT is used as 2-byte value of length to ultimately receive
 ; CRC is computed and stored
+; Calls GO_SLOW/GO_FAST
 ;---------------------------------------------------------
 RWERR:
+	GO_FAST		; Speed back up for SOS
 	sec
 	rts
 
@@ -428,7 +441,7 @@ RECVWIDE:
 	lda BLKPTR+1
 	sta BUFPTR+1
 	ldy #00		; Start at beginning of buffer
-
+	GO_SLOW		; Slow down for SOS
 	jsr GETC	; Get protocol - must be an 'A'
 	bcs RWERR	; Timeout - bail
 	cmp #CHR_A	;
@@ -495,6 +508,7 @@ RWNext:	dec PAGECNT+1
 ;   BLKLO/BLKHI - in - block number to start with
 ;   BLKPTR points to data to send
 ;   PAGECNT holds the number of bytes to send
+; Calls GO_SLOW/GO_FAST
 ;---------------------------------------------------------
 SENDWIDE:
 	ldy #$00	; Start at first byte
@@ -502,6 +516,7 @@ SENDWIDE:
 	sty <CRC+1
 	sty <RLEPREV
 	lda #CHR_A
+	GO_SLOW
 	jsr PUTC	; Wide protocol - 'A'
 	sta CHECKBYTE
 	lda PAGECNT
@@ -541,6 +556,7 @@ SW1:	lda (BLKPTR),Y	; GET BYTE TO SEND
 	lda <CRC+1
 	jsr PUTC
 	inc BLKPTR+1	; Final update of BLKPTR
+	GO_FAST
 	rts
 
 SW2:	jsr UPDCRC
@@ -558,6 +574,7 @@ SW4:	tya		; DIFFERENCE NOT A ZERO
 	jsr PUTC
 	lda <CRC+1
 	jsr PUTC
+	GO_FAST
 	inc BLKPTR+1	; Final update of BLKPTR
 	rts		; OR RETURN IF NO MORE BYTES
 
@@ -569,6 +586,7 @@ SW4:	tya		; DIFFERENCE NOT A ZERO
 ; Returns:
 ;   length of name in X
 ;   accumulated check byte in CHECKBYTE
+; Assumes GO_SLOW mode
 ;---------------------------------------------------------
 SENDFN:
 	ldx #$00
