@@ -647,11 +647,44 @@ GO_FAST_SOS:
 	plp
 	rts
 
+
 ;---------------------------------------------------------
-; SCRAPE - Scrape a line of text from the screen at the current cursor position, copy to input buffer
+; SCRAPE - Scrape a line of text from the screen 
+; Assumes we must go up one line (because of return being hit)
+; Copy data to input buffer, null-terminate at last non-space character
 ;---------------------------------------------------------
 SCRAPE:
+	jsr READPOSN
+	dey
+	jsr GOTOXY
+	ldy #$00
+@Scr1:	jsr READVID	; Read character under cursor
+	cmp #$20	; Is it a space?
+	beq :+
+	sty INUM	; Record last non-space character
+:	sta IN_BUF,y
+	jsr COUT	; Advance cursor one position
+	iny
+	cpy #$28
+	bne @Scr1	
+	lda #$00	; Null-terminate it
+	ldy INUM
+	iny
+	sta IN_BUF,y
 	rts
+
+	lda #<IN_BUF
+	sta UTILPTR
+	clc
+	adc #$10
+	sta UTILPTR2
+	lda #>IN_BUF
+	sta UTILPTR+1
+	sta UTILPTR2+1
+	jsr DUMPMEM
+	jsr RDKEY	
+	rts
+
 
 ;---------------------------------------------------------
 ; Quit to SOS
