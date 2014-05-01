@@ -28,6 +28,7 @@ everywhere it is invoked:
 	<property name="disk3Name" value="ADTPROSOS-${versionString}" />
 	<property name="a3sysutils-vs" value="${builddir}/SysUtilsA3-VSDrive-1.28.dsk" />
 	<property name="volName" value="ADTPro.${versionString}" />
+	<property name="vol3Name" value="ADTProSOS.${versionString}" />
 	<property name="vdriveDistName" value="VDrive-${versionString}" />
 	<property name="vdriveDiskName" value="VDRIVE-${versionString}" />
 	<property name="vdriveVolName" value="VDrive.${versionString}" />
@@ -494,8 +495,9 @@ everywhere it is invoked:
 		<!--
 		Put a nice volume name on the disk images
 		-->
-		<echo message="Adding ADTPro volume name to 5.25 disk image..."/>
+		<echo message="Adding ADTPro volume names to 5.25 disk images..."/>
 		<appleCommander command="n" imagename="${builddir}/${distName}/disks/${diskName}.DSK" volname="${volName}"/>
+		<appleCommander command="n" imagename="${builddir}/${distName}/disks/${vdriveDiskName}.DSK" volname="${vdriveVolName}"/>
 
 		<echo message="Adding ADTPro volume name to 3.5 disk image..."/>
 		<appleCommander command="n" imagename="${builddir}/${distName}/disks/${diskName}.PO" volname="${volName}"/>
@@ -535,9 +537,7 @@ everywhere it is invoked:
 		<!--
 		Put a nice volume name on the disk images
 		-->
-		<appleCommander command="n" imagename="${builddir}/${distName}/disks/${diskName}.DSK" volname="${volName}"/>
-		<appleCommander command="n" imagename="${builddir}/${distName}/disks/${disk3Name}.DSK" volname="${volName}"/>
-		<appleCommander command="n" imagename="${builddir}/${distName}/disks/${vdriveDiskName}.DSK" volname="${vdriveVolName}"/>
+		<appleCommander command="n" imagename="${builddir}/${distName}/disks/${disk3Name}.DSK" volname="${vol3Name}"/>
 		<delete file="${builddir}/ADTSOS" />
 		<delete file="${builddir}/ADTSOSETH" />
 		<delete file="${builddir}/VSDRIVE.A3DRVR" />
