@@ -588,14 +588,14 @@ public class CommsThread extends Thread
 						}
 						bs.writeByte('\0');
 						bs.writeByte(continuation);
-						sendPacketWide(bs.getBuffer(), requestedPage, 2);
+						sendPacketWide(bs.getBuffer(), requestedPage, 2, 1);
 					}
 					else
 					{
 						//bs.writeBytes("NO FILES"); //$NON-NLS-1$
 						bs.writeByte('\0');
 						bs.writeByte('\0');
-						sendPacketWide(bs.getBuffer(), requestedPage, 2);
+						sendPacketWide(bs.getBuffer(), requestedPage, 2, 1);
 					}
 				}
 				catch (Throwable t1)
@@ -2115,6 +2115,12 @@ public class CommsThread extends Thread
 	public boolean sendPacketWide(byte[] buffer, int block, int blocksAtOnce)
 	// Send a packet with RLE compression
 	{
+		return sendPacketWide(buffer, block, blocksAtOnce, 15);
+	}
+
+	public boolean sendPacketWide(byte[] buffer, int block, int blocksAtOnce, int timeoutSuggestion)
+	// Send a packet with RLE compression
+	{
 		boolean rc = false;
 
 		int byteCount = 0, crc, ok = CHR_NAK, currentRetries = 0;
@@ -2172,7 +2178,7 @@ public class CommsThread extends Thread
 				_transport.pushBuffer();
 				Log.println(false, "CommsThread.sendPacketWide() calculated CRC: " + (crc & 0xffff));
 				// Pull a real ack packet
-				byte[] ackEnvelope = pullEnvelopeWide(true); // Will always return an envelope size + command
+				byte[] ackEnvelope = pullEnvelopeWide(true,timeoutSuggestion); // Will always return an envelope size + command
 				byte[] ackPayload = null;
 				if (UnsignedByte.intValue(ackEnvelope[2]) == 0xcb)
 				{
@@ -3989,7 +3995,7 @@ public class CommsThread extends Thread
 							}
 							_transport.writeByte(buffer[i]);
 							_transport.pushBuffer();
-							// sleep(1); Sleeping here seemed to really slow down Windows OSes
+							// sleep(1); // Sleeping here seemed to really slow down Windows OSes
 							if (_shouldRun)
 							{
 								_parent.setProgressValue(i + 1);
