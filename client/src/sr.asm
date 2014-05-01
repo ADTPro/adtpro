@@ -507,9 +507,10 @@ SRBAD:
 	lda #CHR_X
 SROK:
 	ldx BAOCNT
-:	COUT_MAYBE_INVERSE_SOS
+@Here:
+	COUT_MAYBE_INVERSE_SOS
 	dex
-	bne :-
+	bne @Here
 	clc
 	lda BLKLO
 	adc BAOCNT

@@ -117,14 +117,14 @@
 
 .macro COUT_MAYBE_INVERSE_SOS
 	cmp #CHR_BLK
-	bne :+
+	bne @CDone
 	pha
 	lda #$12		; Code for start printing in inverse
 	jsr COUT
 	pla
 	jsr COUT
 	lda #$11		; Code for start printing normally
-:	jsr COUT
+@CDone:	jsr COUT
 .endmacro
 
 .define	NRM_BLOCK $11,$20
