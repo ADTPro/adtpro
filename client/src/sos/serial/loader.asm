@@ -58,10 +58,11 @@ BankTest:			; Find and use the highest writable bank
 	jsr	ACIAInit	; Get the environment all set up
 
 ; Set up our pointers
-	lda	#$00
-	sta	BUF_P
 	lda	#$1e		; SOS.KERNEL initially occupies $1e00 to $73ff
 	sta	BUF_P+1
+	lda	#$00
+	sta	BUF_P
+	jsr	IIIPut		; Send a zero just to prime the pump
 
 ; Say we're active
 	ldx	#<message_1
@@ -73,6 +74,7 @@ BankTest:			; Find and use the highest writable bank
 
 ; Poll the port until we get a magic incantation
 	ldy	#$00
+	
 Poll:
 	jsr	GrubIIIGet
 	cmp	#$53		; First character will be "S" from "SOS" in SOS.KERNEL
