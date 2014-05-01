@@ -500,9 +500,9 @@ public final class Gui extends JFrame implements ActionListener
 	public void setSerialSpeed(int speed)
 	{
 		if (speed == 0)
-			speed = Integer.parseInt(_properties.getProperty("CommPortSpeed"));
+			speed = Integer.parseInt(_properties.getProperty("CommPortSpeed","115200"));
 		_commsThread.setSpeed(speed);
-		String oldSpeed = _properties.getProperty("CommPortSpeed");
+		String oldSpeed = _properties.getProperty("CommPortSpeed","115200");
 		_properties.setProperty("CommPortSpeed", new String("" + speed));
 		setSerialTitle();
 		_properties.setProperty("CommPortSpeed", oldSpeed);

@@ -3965,6 +3965,9 @@ public class CommsThread extends Thread
 							{
 								_transport.writeByte(0x53); // Send an "S" to trigger the start
 								length = length - 1; // SOS seems to need this reduced by one...
+//								if (_resource.equals(Messages.getString("Gui.BS.SOSDRIVER")))
+//										length = length - 1; // SOS seems to need this reduced by two?
+										
 							}
 							else if (_resource.equals(Messages.getString("Gui.BS.ProDOSRaw")))
 							{

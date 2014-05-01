@@ -9,13 +9,13 @@ GRUBIIIGET	:= $a040	; Borrow Grub's IIIGET
 
 ; If the code for the loader is modified, these addresses must be changed to match
 ACIAINIT	:= $A161	; Borrow the Loader's ACIAINIT
-LDRSendEnvelope	:= $A174	; Borrow the Loader's SendEnvelope routine
-LDRRESTORE	:= $A1A6	; Borrow the Loader's RESTORE
-LDRMessage	:= $A197	; Borrow the Loader's Message routine
-LDRMessage_2	:= $A1BB	; Borrow the Loader's message_2
-LDRMessage_3	:= $A1CA	; Borrow the Loader's message_3
-LDREnvelope	:= $A1E8	; Borrow the Loader's Wide protocol envelope space
-LDRPayload	:= $A1ED	; Borrow the Loader's Wide protocol payload space
+LDRSendEnvelope	:= $A182	; Borrow the Loader's SendEnvelope routine
+LDRMessage	:= $A1A5	; Borrow the Loader's Message routine
+LDRRESTORE	:= $A1B4	; Borrow the Loader's RESTORE
+LDRMessage_2	:= $A1C9	; Borrow the Loader's message_2
+LDRMessage_3	:= $A1D8	; Borrow the Loader's message_3
+LDREnvelope	:= $A1F6	; Borrow the Loader's Wide protocol envelope space
+LDRPayload	:= $A1FB	; Borrow the Loader's Wide protocol payload space
 
 ACIADR		:= $c0f0	; Data register. $c0f0 for ///, $c088+S0 for SSC
 ACIASR		:= $c0f1	; Status register. $c0f1 for ///, $c089+S0 for SSC
@@ -379,7 +379,7 @@ D_PATHL:.byte   $FF,$9A,$A0,$FF,$9A,$A0,$A0,$A0
         .byte   $A0,$A0,$F9,$A0,$C1,$E9,$A0,$9E
         .byte   $A1,$A0,$F5,$A0,$A0,$A5,$A0,$A0
         .byte   $88,$00,$00,$88,$0C
-SOSLDR:
+SOSLDR:				; SOS loader main entry point
 lda     #$00
         tax
 SLDR010:sta     CZPAGE,x
@@ -694,7 +694,7 @@ LDR070:	lda     $1901
 	jsr     MOVE
 
 	jsr	ACIAINIT
-	lda	$b5		; Request driver #180/$b5/"5"
+	lda	#$b5		; Request driver #180/$b5/"5"
 	jsr	LDRSendEnvelope
 
 ; Poll the port until we get a magic incantation

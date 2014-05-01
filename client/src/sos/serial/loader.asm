@@ -24,6 +24,10 @@
 ; waiting Apple /// that has typed in the Grub loader.  The Grub loads this
 ; into $a100 and executes it, pulling in the (serial modified) SOS kernel,
 ; driver, then interp (ADTPro itself).
+;
+; THE KERNEL RELIES ON HARD-CODED ADDRESSES IN THIS MODULE.  IF CHANGES ARE
+; MADE HERE - TAKE A LOOK AT kernel.asm AND CHANGE ALL LDR* ADDRESSES ACCORDINGLY.
+;
 
 KBDSTROBE	:= $c010
 E_REG		:= $ffdf
@@ -62,7 +66,6 @@ BankTest:			; Find and use the highest writable bank
 	sta	BUF_P+1
 	lda	#$00
 	sta	BUF_P
-	jsr	IIIPut		; Send a zero just to prime the pump
 
 ; Say we're active
 	ldx	#<message_1
@@ -116,6 +119,15 @@ ACIAInit:
 	sta	ACIAMR		; Store via ACIA mode register.
 	lda	#$1e		; $16=300, $1e=9600, $1f=19200, $10=115k
 	sta	ACIACR		; Store via ACIA control register.
+	ldx	#$ff
+@2:	ldy	#$ff
+@1:	dey
+	bne	@1
+	dex
+	bne	@2
+	txa
+	jsr	IIIPut		; Send a zero just to prime the pump
+
 	rts
 
 ; Send an enveloped byte
