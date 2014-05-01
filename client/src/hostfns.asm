@@ -93,7 +93,33 @@ DIRPAGE:
 	jsr WRITEMSGAREA
 
 NDURedraw:
+;	LDA_CV		; Some handy debug code for watching the state of items in real time
+;	sta SLOWX
+;	ldx #$25
+;	ldy #$00
+;	jsr GOTOXY
+;	lda NDULASTROW
+;	jsr PRBYTE
+;	ldx #$22
+;	ldy #$00
+;	jsr GOTOXY
+;	lda SLOWX
+;	jsr PRBYTE
+;	ldx #$1f
+;	ldy #$00
+;	jsr GOTOXY
+;	lda COL_SAV
+;	jsr PRBYTE
+;	ldx #$1c
+;	ldy #$00
+;	jsr GOTOXY
+;	lda NIBPCNT
+;	jsr PRBYTE
+;	lda SLOWX
+;	jsr TABV
+
 	jsr NDUInvertCurrentLine
+
 NDUNavLoop:
 	jsr READ_CHAR		; Wait for input
 	CONDITION_KEYPRESS	; Convert to upper case, etc.  OS dependent.
@@ -128,7 +154,7 @@ NDUNavLoop:
 	lda NIBPCNT
 	cmp NDULASTPAGE		; Are we on the last page?
 	bne :+			; No - go for it
-	LDA_CV
+	lda COL_SAV
 	cmp NDULASTROW		; Yes - are we on the last line?
 	bne :+			; No - go for it
 	jmp NDUNavLoop		; Yes - nowhere to go, so forget it
