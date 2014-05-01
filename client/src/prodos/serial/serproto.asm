@@ -37,7 +37,7 @@ CDREQUEST:
 ; NIBPCNT contains the page number to request
 ;---------------------------------------------------------
 DIRREQUEST:
-	jsr PARMINT		; Clean up the comms device
+;	jsr PARMINT		; Clean up the comms device
 	lda #CHR_D		; Send "DIR" command to PC
 	GO_SLOW			; Slow down for SOS
 	jsr FNREQUEST
@@ -73,18 +73,18 @@ DIRREPLY:
 	sta Buffer+1
 	sta BLKPTR+1
 
-	; clear out the memory at (Buffer)
+	; clear out the memory at (BLKPTR)
 	ldx #$04
 	lda #$00
 	tay
-:	sta (Buffer),y
+:	sta (BLKPTR),y
 	iny
 	bne :-
-	inc Buffer+1
+	inc BLKPTR+1
 	dex
 	bne :-
-	lda BLKPTR+1
-	sta Buffer+1	; Restore Buffer pointer
+	lda Buffer+1
+	sta BLKPTR+1	; Restore Buffer pointer to the beginning of this segment
 
 	jsr RECVWIDE	; Calls GO_SLOW/GO_FAST
 	bcs @DirTimeout
@@ -113,6 +113,7 @@ DIRREPLY:
 	adc NIBPCNT
 	adc NIBPCNT
 	sta Buffer+1
+	sta BLKPTR+1
 	clc			; Indicate success
 	rts
 
@@ -133,7 +134,7 @@ DIRREPLY:
 ; QUERYFNREQUEST/REPLY
 ;---------------------------------------------------------
 QUERYFNREQUEST:
-	jsr PARMINT	; Clean up the comms device
+;	jsr PARMINT	; Clean up the comms device
 	lda #CHR_Z	; Ask host for file size
 	GO_SLOW			; Slow down for SOS
 	jsr FNREQUEST
@@ -166,7 +167,7 @@ QUERYFNREPLY:
 ;---------------------------------------------------------
 FNREQUEST:
 	pha
-	jsr PARMINT	; Clean up the comms device
+;	jsr PARMINT	; Clean up the comms device
 	lda #CHR_A	; Envelope
 	sta CHECKBYTE
 	jsr PUTC
@@ -220,7 +221,7 @@ FNREQUEST:
 ; Calls GO_SLOW/GO_FAST
 ;---------------------------------------------------------
 PUTREQUEST:
-	jsr PARMINT	; Clean up the comms device
+;	jsr PARMINT	; Clean up the comms device
 	lda SendType
 	GO_SLOW
 	jsr FNREQUEST
@@ -243,7 +244,7 @@ PUTREQUEST:
 ;---------------------------------------------------------
 PUTACKBLK:
 	stx SLOWX
-	jsr PARMINT	; Clean up the comms device
+;	jsr PARMINT	; Clean up the comms device
 	lda #CHR_A	; Envelope
 	GO_SLOW		; Slow down for SOS
 	jsr PUTC
@@ -298,7 +299,7 @@ PUTFINALACK:
 ; Calls GO_SLOW/GO_FAST
 ;---------------------------------------------------------
 GETREQUEST:
-	jsr PARMINT	; Clean up the comms device
+;	jsr PARMINT	; Clean up the comms device
 	lda #CHR_G	; Tell host we are Getting/Receiving
 	GO_SLOW
 	jsr FNREQUEST
@@ -436,7 +437,7 @@ RWERR:
 	rts
 
 RECVWIDE:
-	lda BLKPTR
+	lda BLKPTR	; Hang on to the pointer to the beginning of this chunk
 	sta BUFPTR
 	lda BLKPTR+1
 	sta BUFPTR+1
@@ -494,7 +495,7 @@ RWNext:	dec PAGECNT+1
 	sta PCCRC+1
 	lda XFERLEN+1
 	sta PAGECNT+1
-	lda BUFPTR
+	lda BUFPTR	; Restore the pointer to the beginning of this chunk
 	sta BLKPTR
 	lda BUFPTR+1
 	sta BLKPTR+1

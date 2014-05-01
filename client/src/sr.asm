@@ -431,14 +431,17 @@ SR_COMN:
 	cmp #CHR_V		; Are we receiving?
 	bne SRCALL		; No - skip buffer clear-out
 	ldy #$00		; Clean out the whole buffer
-:	lda #$00
-	sta (UTILPTR),y
+	ldx #$00
+@Clr1:	lda #$00
+@Clr2:	sta (BLKPTR),y
 	iny
-	bne :-
-	inc UTILPTR+1
+	bne @Clr2
+	inc BLKPTR+1
+	inx
+	cpx #$50		; Have we cleaned out all $50 pages?
+	bne @Clr1
 	lda UTILPTR+1
-	cmp #$b6
-	bne :-
+	sta BLKPTR+1		; Re-connect BLKPTR to the top of BIG_BUF
 
 SRCALL:
 	lda NonDiskII		; Is this (not) a Disk II?

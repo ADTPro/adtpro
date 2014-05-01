@@ -316,7 +316,7 @@ public class SerialTransport extends ATransport
 
   public void writeBytes(byte data[], String log)
   {
-	Log.println(false,"SerialTransport.writeBytes() adding "+data.length+" bytes to the stream.");
+	// Log.println(false,"SerialTransport.writeBytes() adding "+data.length+" bytes to the stream.");
     if (_outPacketPtr + data.length > _sendBuffer.length)
     {
       Log.println(false, "SerialTransport.writeBytes() Re-allocating the send buffer: "+_sendBuffer.length+" bytes is the new size.");

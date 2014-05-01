@@ -116,6 +116,7 @@
 .endmacro
 
 .macro COUT_MAYBE_INVERSE_SOS
+	pha
 	cmp #CHR_BLK
 	bne @CDone
 	pha
@@ -125,6 +126,7 @@
 	jsr COUT
 	lda #$11		; Code for start printing normally
 @CDone:	jsr COUT
+	pla
 .endmacro
 
 .define	NRM_BLOCK $11,$20

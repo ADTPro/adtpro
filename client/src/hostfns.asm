@@ -62,11 +62,11 @@ DIRDISP0:
 	ldy #$00	; Reset counter
 
 DIRDISP:
-	lda (Buffer),Y	; Get byte from buffer
+	lda (BLKPTR),Y	; Get byte from buffer
 	php		; Save flags
 	iny		; Bump
 	bne DIRMORE	; Skip
-	inc Buffer+1	; Next 256 bytes
+	inc BLKPTR+1	; Next 256 bytes
 DIRMORE:
 	plp		; Restore flags
 	beq DIRPAGE	; Page or dir end?
@@ -76,7 +76,7 @@ DIRMORE:
 	jmp DIRDISP	; Loop back around
 
 DIRPAGE:
-	lda (Buffer),Y	; Get byte from buffer
+	lda (BLKPTR),Y	; Get byte from buffer
 	sta NDUCANCONT	; Save that off
 	bne @NewUI
 	LDA_CV
@@ -159,14 +159,14 @@ NDUPageUp:
 	jmp NDUNavLoop
 @Top:	dec NIBPCNT
 	LDA_BIGBUF_ADDR_LO	; Re-connect the block pointer to the
-	sta Buffer		; Big Buffer(TM), 1k * NIBPCNT again
+	sta BLKPTR		; Big Buffer(TM), 1k * NIBPCNT again
 	LDA_BIGBUF_ADDR_HI
 	clc
 	adc NIBPCNT
 	adc NIBPCNT
 	adc NIBPCNT
 	adc NIBPCNT
-	sta Buffer+1
+	sta BLKPTR+1
 	lda ZP
 	cmp #CHR_A		; was it page up?
 	bne :+			; No, so branch forward and put the cursor at the bottom of the screen
@@ -198,14 +198,14 @@ NDUPageDown:
 @AlreadyHaveIt:
 	inc NIBPCNT
 	LDA_BIGBUF_ADDR_LO	; Re-connect the block pointer to the
-	sta Buffer		; Big Buffer(TM), 1k * NIBPCNT again
+	sta BLKPTR		; Big Buffer(TM), 1k * NIBPCNT again
 	LDA_BIGBUF_ADDR_HI
 	clc
 	adc NIBPCNT
 	adc NIBPCNT
 	adc NIBPCNT
 	adc NIBPCNT
-	sta Buffer+1
+	sta BLKPTR+1
 	lda #$03
 	sta COL_SAV
 	jmp DIRDISP0
@@ -230,6 +230,8 @@ NDULASTROW:
 	.byte $00
 NDUHIGHWATER:
 	.byte $00
+
+
 ;---------------------------------------------------------
 ; CD - Change directory
 ;---------------------------------------------------------
