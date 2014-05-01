@@ -568,9 +568,9 @@ public class CommsThread extends Thread
 						start = requestedPage * pageLength;
 						end = start + pageLength;
 						continuation = '\1';
-						if (end > files.length)
+						if (end >= files.length)
 						{
-							continuation = '\0';
+							continuation = '\0';	// There isn't any more
 							end = files.length;
 						}
 						// line = (_parent.getWorkingDirectory().length() + 13) / 40 + 2;
@@ -592,7 +592,7 @@ public class CommsThread extends Thread
 					}
 					else
 					{
-						//bs.writeBytes("NO FILES"); //$NON-NLS-1$
+						bs.writeBytes("NO FILES"); //$NON-NLS-1$
 						bs.writeByte('\0');
 						bs.writeByte('\0');
 						sendPacketWide(bs.getBuffer(), requestedPage, 2, 1);
