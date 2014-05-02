@@ -1,6 +1,6 @@
 /*
  * ADTPro - Apple Disk Transfer ProDOS
- * Copyright (C) 2006 - 2012 by David Schmidt
+ * Copyright (C) 2006 - 2014 by David Schmidt
  * david__schmidt at users.sourceforge.net
  *
  * This program is free software; you can redistribute it and/or modify it 
@@ -867,8 +867,8 @@ public final class Gui extends JFrame implements ActionListener
 			if (_commsThread.supportsBootstrap())
 			{
 				/*
-				 * The types of things that support bootstrapping are either
-				 * Serial or Audio; and Audio supports only a subset of things
+				 * The types of things that support bootstrapping are Serial,
+				 * Serial over IP, or Audio; Audio supports only a subset of things
 				 * Serial does. Except for dosAction2... that one is Audio-only.
 				 */
 				menuBootstrap.setEnabled(true);

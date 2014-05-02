@@ -357,7 +357,7 @@ everywhere it is invoked:
 		</exec>
 		<echo message="Linking loader..."/>
 		<exec dir="${projdir}/client/src" executable="${assemblerPath}/ld65">
-			<arg line="-o LOADER -m loader.map -C sos/serial/plain.cfg sos/serial/loader.o" />
+			<arg line="-o LOADER -m loader.map -C sos/serial/loader.cfg sos/serial/loader.o" />
 		</exec>
 		<echo message="Linking SOS Kernel..."/>
 		<exec dir="${projdir}/client/src" executable="${assemblerPath}/ld65">

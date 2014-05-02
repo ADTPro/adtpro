@@ -39,12 +39,13 @@ ACIASR		:= $c0f1	; Status register. $c0f1 for ///, $c089+S0 for SSC
 ACIAMR		:= $c0f2	; Command mode register. $c0f2 for ///, $c08a+S0 for SSC
 ACIACR		:= $c0f3	; Control register.  $c0f3 for ///, $c08b+S0 for SSC
 
-GrubIIIGet	:= $a040	; Borrow the Grub's IIIGet routine
+GrubIIIGet	:= $A047	; Borrow the Grub's IIIGet routine
 
 Signature:
-	.byte	$47		; The first byte that grub will see: a "G" character
+	.byte	$47		; The first byte that grub will see: a "G" character; not executed
 	.org	$a100
 Entry:
+	jsr	ClearScreen
 	ldx	#$fb
 	txs			; Some nonsense about .CONSOLE mucking with the stack
 	bit	KBDSTROBE
@@ -72,6 +73,7 @@ BankTest:			; Find and use the highest writable bank
 	jsr	Message
 
 ; Ask for the kernel
+RequestKernel:
 	lda	#$b3		; Send "3", kernel request
 	jsr	SendEnvelope
 
@@ -79,7 +81,8 @@ BankTest:			; Find and use the highest writable bank
 	ldy	#$00
 	
 Poll:
-	jsr	GrubIIIGet
+	jsr	IIIGet
+	bcs	RequestKernel	; Timeout?  Request again
 	cmp	#$53		; First character will be "S" from "SOS" in SOS.KERNEL
 	bne	Poll
 	sta	(BUF_P),y	; Save that first "S"
@@ -87,9 +90,10 @@ Poll:
 
 ; We got the magic signature; start reading data
 Read:	
-	jsr	GrubIIIGet	; Pull a byte
+	jsr	IIIGet	; Pull a byte - start over if we run out of bytes or time out
+	bcs	RequestKernel
 	sta	(BUF_P),y	; Save it
-	sta	$0410		; Print it in the status area
+	sta	$0797		; Print our throbber in the status area
 	iny
 	bne	Read
 	inc	BUF_P+1		; Increment another page
@@ -109,6 +113,30 @@ Read:
 ; Call SOSLDR entry point
 	jmp	$1e70	; SOSLDR v1.3 Entry point
 
+;---------------------------------------------------------
+; IIIGet - Get a character from Super Serial Card (XY unchanged)
+;          Carry set on timeout, clear on data (returned in Accumulator)
+;---------------------------------------------------------
+IIIGet:
+	lda	#$00
+	sta	Timer
+	sta	Timer+1
+IIIGetLoop:
+	lda	ACIASR	; Check status bits
+	and	#$68
+	cmp	#$8
+	beq	IIIGot	; Byte exists; go get it
+@TimerInc:
+	inc	Timer
+	bne	IIIGetLoop	; Timer non-zero, loop
+	inc	Timer+1
+	bne	IIIGetLoop	; Timer non-zero, loop
+	sec
+	rts		; Timeout	
+IIIGot:	lda	ACIADR	; Get character
+	clc
+	rts
+
 ACIAInit:
 ; Set up the environment
 	lda	E_REG		; Read the environment register
@@ -119,16 +147,7 @@ ACIAInit:
 	sta	ACIAMR		; Store via ACIA mode register.
 	lda	#$10		; $16=300, $1e=9600, $1f=19200, $10=115k
 	sta	ACIACR		; Store via ACIA control register.
-	ldx	#$ff
-@2:	ldy	#$ff
-@1:	dey
-	bne	@1
-	dex
-	bne	@2
-	txa
-	jsr	IIIPut		; Send a zero just to prime the pump
-	jsr	IIIPut		; Send a zero just to prime the pump
-
+	bit	ACIADR		; Clear the data register
 	rts
 
 ; Send an enveloped byte
@@ -156,10 +175,10 @@ IIIPutC1:
 
 Message:
 	stx	SelfMod+1
-	ldy	#$0e
+	ldy	#$07
 SelfMod:
 	lda	message_1,y
-	sta	$400,y
+	sta	$78f,y
 	dey
 	bpl	SelfMod
 	rts
@@ -170,23 +189,45 @@ RESTORE:
 	rts
 
 message_1:
-	.byte	"LOADING KERNEL:"
+	.byte	"KERNEL: "
 
 message_2:
-	.byte	"LOADING INTERP:"
+	.byte	"INTERP: "
 
 message_3:
-	.byte	"LOADING DRIVER:"
+	.byte	"DRIVER: "
 
 message_4:
-	.byte	$cf, $cb, $a1, $a0, $a0, $a0, $a0, $a0	; "OK!"
-	.byte	$a0, $a0, $a0, $a0, $a0, $a0, $a0
+	.byte	"///OK///"
 
 Envelope:
-	.byte $c1, $01, $00, $c6, $06
+	.byte	$c1, $01, $00, $c6, $06
 Payload:	; This will be a bootstrap file request - this last byte is sent twice (x eor x = x)
-	.byte $00
-
-.align	256
 	.byte	$00
-.assert	* = $a200, error, "Code got too big to fit in a block!"
+
+ClearScreen:
+	lda #$a0
+	ldy #$78
+	jsr Fill1
+	ldy #$78
+	jsr Fill2
+	rts
+Fill1:	dey
+	sta $400,y
+	sta $480,y
+	sta $500,y
+	sta $580,y
+	bne Fill1
+	rts
+Fill2:	dey
+	sta $600,y
+	sta $680,y
+	sta $700,y
+	sta $780,y
+	bne Fill2
+	rts
+Timer:	.word	$0000
+Pad:
+	.res	$a2ff-*,$00
+.assert	* = $a2ff, error, "Code got too big to fit in a block!"
+	.byte	$00

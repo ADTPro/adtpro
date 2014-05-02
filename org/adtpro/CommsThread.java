@@ -3956,12 +3956,19 @@ public class CommsThread extends Thread
 						}
 						if (_resource.equals(Messages.getString("Gui.BS.SOSINTERP")) || _resource.equals(Messages.getString("Gui.BS.ProDOSRaw")) || _resource.equals(Messages.getString("Gui.BS.BSpeed")) || _resource.equals(Messages.getString("Gui.BS.ADTProRaw")) || _resource.equals(Messages.getString("Gui.BS.VSDriveRaw")) || _resource.equals(Messages.getString("Gui.BS.SOSDRIVER")))
 						{
+							int length = buffer.length;
 							// If we're sending binary bootstrap stuff, we need
 							// to prepend the length and stuff
 							// Log.println(true,
 							// "DEBUG: CommsThread.Worker.run() writing length header.");
-							int length = buffer.length;
-							if ((_resource.equals(Messages.getString("Gui.BS.SOSINTERP"))) || (_resource.equals(Messages.getString("Gui.BS.SOSDRIVER"))))
+							if ((_resource.equals(Messages.getString("Gui.BS.SOSINTERP"))))
+							{
+								_transport.writeByte(0x53); // Send an "S" to trigger the start
+								_transport.pushBuffer();
+								sleep(0);	// Give SOS a little time to put up its message
+								length = length - 1; // SOS seems to need this reduced by one...
+							}
+							else if ((_resource.equals(Messages.getString("Gui.BS.SOSDRIVER"))))
 							{
 								_transport.writeByte(0x53); // Send an "S" to trigger the start
 								_transport.pushBuffer();
@@ -3997,7 +4004,7 @@ public class CommsThread extends Thread
 							}
 							_transport.writeByte(buffer[i]);
 							_transport.pushBuffer();
-							if ((_resource.equals(Messages.getString("Gui.BS.SOSINTERP"))) || (_resource.equals(Messages.getString("Gui.BS.SOSDRIVER"))))
+							if ((_resource.equals(Messages.getString("Gui.BS.SOSKERNEL"))) || (_resource.equals(Messages.getString("Gui.BS.SOSINTERP"))) || (_resource.equals(Messages.getString("Gui.BS.SOSDRIVER"))))
 								sleep(1); // Sleeping here seemed to really slow down Windows OSes
 							if (_shouldRun)
 							{

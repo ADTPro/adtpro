@@ -1,6 +1,6 @@
 /*
  * ADTPro - Apple Disk Transfer ProDOS
- * Copyright (C) 2012 by David Schmidt
+ * Copyright (C) 2012 - 2014 by David Schmidt
  * david__schmidt at users.sourceforge.net
  *
  * This program is free software; you can redistribute it and/or modify it 
@@ -219,6 +219,7 @@ public class SerialIPTransport extends ATransport
 
 	public void pushBuffer()
 	{
+/*
 		Log.println(false, "SerialIPTransport.pushBuffer() entry.");
 		Log.println(false, "SerialIPTransport.pushBuffer() pushing data:");
 		for (int i = 0; i < _outPacketPtr; i++)
@@ -228,7 +229,7 @@ public class SerialIPTransport extends ATransport
 			Log.print(false, UnsignedByte.toString(_sendBuffer[i]) + " ");
 		}
 		Log.println(false, "");
-
+*/
 		if (_socket != null)
 		{
 			try
@@ -252,7 +253,7 @@ public class SerialIPTransport extends ATransport
 			Log.println(false, "SerialIPTransport.pushBuffer() socket not connected.");
 		}
 		_outPacketPtr = 0;
-		Log.println(false, "SerialIPTransport.pushBuffer() exit.");
+		// Log.println(false, "SerialIPTransport.pushBuffer() exit.");
 	}
 
 	public void pullBuffer(int seconds) throws Exception

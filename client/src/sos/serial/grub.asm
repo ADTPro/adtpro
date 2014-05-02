@@ -1,6 +1,6 @@
 ;
 ; ADTPro - Apple Disk Transfer ProDOS
-; Copyright (C) 2008 - 2010 by David Schmidt
+; Copyright (C) 2008 - 2014 by David Schmidt
 ; david__schmidt at users.sourceforge.net
 ;
 ; This program is free software; you can redistribute it and/or modify it 
@@ -80,17 +80,21 @@ Entry:	sei
 
 ; Poll the port until we get a magic incantation
 Poll:
-	jsr	IIIGet
+	jsr	IIIGet		; Don't need to worry about timeouts - just read forever
 	cmp	#$47		; First character will be "G" from bigger bootstrap loader
 	bne	Poll
 
 ; We got the magic signature; start reading data
+	ldx	#$02
 Read:	
 	jsr	IIIGet		; Pull a byte
 	sta	(BUF_P),y	; Save it
 	sta	$0427		; Print it in the status area
 	iny
-	bne	Read		; Only going to pull $100 bytes
+	bne	Read		; Pull in a full page
+	inc	BUF_P+1		; Bump pointer for next page
+	dex
+	bne	Read		; Get the second page
 
 ; Call bootstrap entry point
 	jmp	$a100		; Bigger booter entry point
