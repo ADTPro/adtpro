@@ -721,7 +721,6 @@ public final class Gui extends JFrame implements ActionListener
 			}
 			else if ((e.getActionCommand().equals(Messages.getString("Gui.BS.DOS"))) || //$NON-NLS-1$
 					(e.getActionCommand().equals(Messages.getString("Gui.BS.DOS2"))) || //$NON-NLS-1$
-					(e.getActionCommand().equals(Messages.getString("Gui.BS.SOS"))) || //$NON-NLS-1$
 					(e.getActionCommand().equals(Messages.getString("Gui.BS.ProDOS"))) || //$NON-NLS-1$
 					(e.getActionCommand().equals(Messages.getString("Gui.BS.ProDOSFast"))) || //$NON-NLS-1
 					(e.getActionCommand().equals(Messages.getString("Gui.BS.ProDOSVSDrive"))) || //$NON-NLS-1
@@ -749,6 +748,20 @@ public final class Gui extends JFrame implements ActionListener
 				{
 					pacing = 250;
 				}
+				Log.println(false, "Gui.actionPerformed getting instructions with speed = " + speed + " pacing = " + pacing);
+				message = _commsThread.getInstructions(e.getActionCommand(), size, speed);
+				/* Ask the user if she is sure */
+				int ret = JOptionPane.showOptionDialog(_parent, message, Messages.getString("Gui.Name"), JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE, null, buttons, buttons[0]);
+				if (ret == JOptionPane.YES_OPTION)
+				{
+					_commsThread.requestSend(e.getActionCommand(), true, pacing, speed);
+				}
+			}
+			else if (e.getActionCommand().equals(Messages.getString("Gui.BS.SOS"))) //$NON-NLS-1$
+			{
+				int size = _commsThread.requestSend(e.getActionCommand());
+				int speed = 115200;
+				int pacing = 100;
 				Log.println(false, "Gui.actionPerformed getting instructions with speed = " + speed + " pacing = " + pacing);
 				message = _commsThread.getInstructions(e.getActionCommand(), size, speed);
 				/* Ask the user if she is sure */

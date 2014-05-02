@@ -74,7 +74,7 @@ for example.
 -----------------
 A000:78 D8 A9 40 8D CA FF AD
 A008:DF FF 09 F2 8D DF FF A9
-A010:0B 8D F2 C0 A9 1E 8D F3
+A010:0B 8D F2 C0 A9 10 8D F3
 A018:C0 A9 00 A8 85 7E A9 A1
 A020:85 7F A2 48 8E 24 04 E8
 A028:8E 25 04 20 40 A0 C9 47
@@ -130,10 +130,17 @@ A000G
     Dismiss the dialog box that appears (since you have just followed the 
     same instructions, the bootstrap loader is already running now).
     The bootstrapping process should now continue without any further need for 
-    intervention.  As data is sent from the ADTPro server down to the ///,
+    intervention.  As data is sent from the ADTPro server to the Apple ///,
     a character will flash to the right of the status message to indicate progress.
-    If the screen stays still, you will want to re-check your serial
-    {{{./connectionsserial.html#Apple3}connections.}}
+
+    If the screen stops updating for more than a few seconds, you will want to
+    re-check your serial
+    {{{./connectionsserial.html#Apple3}connections}} and potentially try again.
+    You can do that by stopping the /// with the Ctrl-OpenApple-Reset key sequence
+    to get to the monitor.  Then. type A000G and hit Return to start over without
+    having to re-type the initial grub program.  Click on the "Bootstrapping->SOS" 
+    menu item and hopefully your luck will change.
+
     Some of the stages bootstrapping will be going through:
 
     *
@@ -157,7 +164,7 @@ A000G
     The next step of sending the ADTPro distribution diskette will create
     bootable diskette for you.
 
-    [[1]] You are now ready to {{{./receiving.html}receive}} the ADTPRO-v.r.m.DSK
+    [[1]] You are now ready to {{{./receiving.html}receive}} the ADTPROSOS-v.r.m.DSK
     disk image from the host.  Once you've done that, you've got a bootable SOS 
     diskette that contains the ADTPro client program.
 

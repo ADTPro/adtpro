@@ -522,7 +522,7 @@ public class SerialTransport extends ATransport
         else
           if (guiString.equals(Messages.getString("Gui.BS.SOS")))
           {
-            _parent.setSerialSpeed(9600);
+            //_parent.setSerialSpeed(9600);
             /* ret = Messages.getString("Gui.BS.DumpSOSInstructionsDone"); */
           }
     Log.println(false, "SerialTransport.getInstructionsDone() returning: " + ret);

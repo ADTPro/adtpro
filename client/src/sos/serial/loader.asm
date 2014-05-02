@@ -117,7 +117,7 @@ ACIAInit:
 ; Set up the serial port
 	lda	#$0b		; No parity, etc.
 	sta	ACIAMR		; Store via ACIA mode register.
-	lda	#$1e		; $16=300, $1e=9600, $1f=19200, $10=115k
+	lda	#$10		; $16=300, $1e=9600, $1f=19200, $10=115k
 	sta	ACIACR		; Store via ACIA control register.
 	ldx	#$ff
 @2:	ldy	#$ff
@@ -126,6 +126,7 @@ ACIAInit:
 	dex
 	bne	@2
 	txa
+	jsr	IIIPut		; Send a zero just to prime the pump
 	jsr	IIIPut		; Send a zero just to prime the pump
 
 	rts

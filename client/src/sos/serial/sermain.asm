@@ -55,7 +55,6 @@ sendnib:
 motoron:
 motoroff:
 	rts
-
 ; Stubs:
 ROM:
 ;BSAVE:

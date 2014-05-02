@@ -389,20 +389,20 @@ public class CommsThread extends Thread
 				_parent.setMainText(Messages.getString("CommsThread.5")); //$NON-NLS-1$
 				_parent.setSecondaryText(""); //$NON-NLS-1$
 				Log.println(false, "CommsThread.sendBootstrapFileWide() Received Apple /// SOS.KERNEL dump command."); //$NON-NLS-1$
-				requestSend(Messages.getString("Gui.BS.SOSKERNEL"), true, 0, 9600);
+				requestSend(Messages.getString("Gui.BS.SOSKERNEL"), true, 0, 115200);
 				break;
 			case (byte) 180: // "4": Initiate SOS.INTERP dump
 				_parent.setMainText(Messages.getString("CommsThread.5")); //$NON-NLS-1$
 				_parent.setSecondaryText(""); //$NON-NLS-1$
 				Log.println(false, "CommsThread.sendBootstrapFileWide() Received Apple /// SOS.INTERP dump command."); //$NON-NLS-1$
-				requestSend(Messages.getString("Gui.BS.SOSINTERP"), true, 0, 9600);
+				requestSend(Messages.getString("Gui.BS.SOSINTERP"), true, 0, 115200);
 				break;
 			case (byte) 181: // "5": Initiate SOS.DRIVER dump
 				_parent.setMainText(Messages.getString("CommsThread.5")); //$NON-NLS-1$
 				_parent.setSecondaryText(""); //$NON-NLS-1$
 				Log.println(false, "CommsThread.sendBootstrapFileWide() Received Apple /// SOS.DRIVER dump command."); //$NON-NLS-1$
-				requestSend(Messages.getString("Gui.BS.SOSDRIVER"), true, 0, 9600);
-				_parent.setSerialSpeed(0);
+				requestSend(Messages.getString("Gui.BS.SOSDRIVER"), true, 0, 115200);
+				// _parent.setSerialSpeed(0);
 				break;
 			case (byte) 182: // "6": Initiate ADTPro dump
 				_parent.setMainText(Messages.getString("CommsThread.5")); //$NON-NLS-1$
@@ -3961,13 +3961,12 @@ public class CommsThread extends Thread
 							// Log.println(true,
 							// "DEBUG: CommsThread.Worker.run() writing length header.");
 							int length = buffer.length;
-							if (_resource.equals(Messages.getString("Gui.BS.SOSINTERP")) || _resource.equals(Messages.getString("Gui.BS.SOSDRIVER")))
+							if ((_resource.equals(Messages.getString("Gui.BS.SOSINTERP"))) || (_resource.equals(Messages.getString("Gui.BS.SOSDRIVER"))))
 							{
 								_transport.writeByte(0x53); // Send an "S" to trigger the start
+								_transport.pushBuffer();
+								sleep(20);	// Give SOS a little time to put up its message
 								length = length - 1; // SOS seems to need this reduced by one...
-//								if (_resource.equals(Messages.getString("Gui.BS.SOSDRIVER")))
-//										length = length - 1; // SOS seems to need this reduced by two?
-										
 							}
 							else if (_resource.equals(Messages.getString("Gui.BS.ProDOSRaw")))
 							{
@@ -3998,7 +3997,8 @@ public class CommsThread extends Thread
 							}
 							_transport.writeByte(buffer[i]);
 							_transport.pushBuffer();
-							// sleep(1); // Sleeping here seemed to really slow down Windows OSes
+							if ((_resource.equals(Messages.getString("Gui.BS.SOSINTERP"))) || (_resource.equals(Messages.getString("Gui.BS.SOSDRIVER"))))
+								sleep(1); // Sleeping here seemed to really slow down Windows OSes
 							if (_shouldRun)
 							{
 								_parent.setProgressValue(i + 1);

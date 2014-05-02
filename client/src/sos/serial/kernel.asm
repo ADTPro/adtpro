@@ -10,17 +10,13 @@ GRUBIIIGET	:= $a040	; Borrow Grub's IIIGET
 ; If the code for the loader is modified, these addresses must be changed to match
 ACIAINIT	:= $A161	; Borrow the Loader's ACIAINIT
 LDRSendEnvelope	:= $A182	; Borrow the Loader's SendEnvelope routine
-LDRMessage	:= $A1A5	; Borrow the Loader's Message routine
-LDRRESTORE	:= $A1B4	; Borrow the Loader's RESTORE
-LDRMessage_2	:= $A1C9	; Borrow the Loader's message_2
-LDRMessage_3	:= $A1D8	; Borrow the Loader's message_3
-LDREnvelope	:= $A1F6	; Borrow the Loader's Wide protocol envelope space
-LDRPayload	:= $A1FB	; Borrow the Loader's Wide protocol payload space
+LDRMessage	:= $A1A8	; Borrow the Loader's Message routine
+LDRRESTORE	:= $A1B7	; Borrow the Loader's RESTORE
+LDRMessage_2	:= $A1CC	; Borrow the Loader's message_2
+LDRMessage_3	:= $A1DB	; Borrow the Loader's message_3
+LDREnvelope	:= $A1F9	; Borrow the Loader's Wide protocol envelope space
+LDRPayload	:= $A1FE	; Borrow the Loader's Wide protocol payload space
 
-ACIADR		:= $c0f0	; Data register. $c0f0 for ///, $c088+S0 for SSC
-ACIASR		:= $c0f1	; Status register. $c0f1 for ///, $c089+S0 for SSC
-ACIAMR		:= $c0f2	; Command mode register. $c0f2 for ///, $c08a+S0 for SSC
-ACIACR		:= $c0f3	; Control register.  $c0f3 for ///, $c08b+S0 for SSC
 ZPAGE           := $0000
 I_BASE_P        := $0002
 RDBUF_P		:= $04
@@ -634,13 +630,13 @@ PollInterpNext:
 	jsr GRUBIIIGET
 	cmp #$53		; Trigger character is an "S"
 	bne PollInterpNext
+	ldx #<LDRMessage_2	; Tell 'em we're reading
+	jsr LDRMessage
 	jsr GRUBIIIGET		; LSB of length
 	sta size
 	jsr GRUBIIIGET		; MSB of length
 	sta size+1		; We're ready to read everything else now
 
-	ldx #<LDRMessage_2	; Tell 'em we're reading
-	jsr LDRMessage
 	ldy #$00
 ReadInterp:			; We got the magic signature; start reading data
 	jsr GRUBIIIGET		; Pull a byte
