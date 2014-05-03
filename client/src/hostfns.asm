@@ -50,12 +50,18 @@ DIR1:	lda #$00	; Screen page number zero
 DIRWARM:
 	ldy #PMWAIT
 	jsr WRITEMSGAREA
+	jsr DIRREQUEST
 
-:	jsr DIRREQUEST
-	jsr DIRREPLY
+	lda #$03
+	sta ZP		; Retry counter - ensure you don't use ZP in the underlying protocol call
+:	jsr DIRREPLY
 	bcs :-
 	ldy TMOT
-	bne HOSTTIMEOUT
+	beq DIRDISP0
+	; We timed out or otherwise failed; let's retry a couple of times.
+	dec ZP
+	bne :-
+	jmp HOSTTIMEOUT
 
 DIRDISP0:
 	jsr HOME	; Clear screen

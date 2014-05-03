@@ -38,6 +38,27 @@ CDREQUEST:
 ;---------------------------------------------------------
 DIRREQUEST:
 ;	jsr PARMINT		; Clean up the comms device
+
+	LDA_BIGBUF_ADDR_HI
+	clc
+	adc NIBPCNT
+	adc NIBPCNT
+	adc NIBPCNT
+	adc NIBPCNT
+	sta BLKPTR+1
+	; clear out 1k of memory at (BLKPTR) - we don't likely have 
+	; time to do this between request and reply
+	ldx #$04
+	LDA_BIGBUF_ADDR_LO	; Connect the block pointer to the
+	sta BLKPTR		; Big Buffer(TM), 1k * NIBPCNT
+	tay
+:	sta (BLKPTR),y
+	iny
+	bne :-
+	inc BLKPTR+1
+	dex
+	bne :-
+	
 	lda #CHR_D		; Send "DIR" command to PC
 	GO_SLOW			; Slow down for SOS
 	jsr FNREQUEST
@@ -53,9 +74,9 @@ DIRREQUEST:
 ; DIRREPLY - Reply to current directory contents
 ; NIBPCNT contains the page number that was requested - which is 1k-worth of transmission (4 256byte pages, 2 blocks, 2BAO)
 ; Returns carry set on CRC failure (should retry - nak sent)
-; Returns TMOT > 0 on timeout (should not retry)
 ;---------------------------------------------------------
 DIRREPLY:
+
 	ldy #$00
 	sty TMOT	; Clear timeout processing
 	sty PAGECNT
@@ -73,21 +94,8 @@ DIRREPLY:
 	sta Buffer+1
 	sta BLKPTR+1
 
-	; clear out the memory at (BLKPTR)
-	ldx #$04
-	lda #$00
-	tay
-:	sta (BLKPTR),y
-	iny
-	bne :-
-	inc BLKPTR+1
-	dex
-	bne :-
-	lda Buffer+1
-	sta BLKPTR+1	; Restore Buffer pointer to the beginning of this segment
-
 	jsr RECVWIDE	; Calls GO_SLOW/GO_FAST
-	bcs @DirTimeout
+	bcs @DirRetry	; Really any failure... time out or garbage received
 	lda HOSTBLX+1	; Prepare the acknowledge packet-required variables
 	sta BLKHI
 	lda HOSTBLX
@@ -122,12 +130,6 @@ DIRREPLY:
 	jsr PUTACKBLK		; Calls GO_SLOW/GO_FAST
 	sec
 	rts 
-
-@DirTimeout:
-	clc
-	ldy #$01
-	sta TMOT
-	rts
 
 
 ;---------------------------------------------------------
@@ -430,6 +432,7 @@ SENDBLKS:
 ; PAGECNT is used as 2-byte value of length to ultimately receive
 ; CRC is computed and stored
 ; Calls GO_SLOW/GO_FAST
+; Returns carry set on error (timeout or garbage received)
 ;---------------------------------------------------------
 RWERR:
 	GO_FAST		; Speed back up for SOS
