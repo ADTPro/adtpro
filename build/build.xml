@@ -143,7 +143,7 @@ everywhere it is invoked:
 
 	<target name="wipe">
 		<!--
-		Clean up everything
+		Really, really clean up everything
 		-->
 		<delete dir="${builddir}/${distName}" />
 	</target>
@@ -152,6 +152,7 @@ everywhere it is invoked:
 		<!--
 		Clean up everything
 		-->
+		<delete file="${builddir}/ADT" />
 		<delete file="${builddir}/ADTPRO" />
 		<delete file="${builddir}/ADTPRO.SYSTEM" />
 		<delete file="${builddir}/ADTSOS" />
@@ -254,6 +255,13 @@ everywhere it is invoked:
 			<arg line="-t none -l grub_vsdrive.asm" />
 		</exec>
 		<!--
+		Assemble and link the ADT source
+		-->
+		<echo message="Assembling ADT source..."/>
+		<exec dir="${projdir}/client/src/dos" executable="${assemblerPath}/cl65">
+			<arg line="-t none -l adt.s -o ADT" />
+		</exec>
+		<!--
 		Link the bits
 		-->
 		<echo message="Linking Startup/Launcher..."/>
@@ -303,6 +311,8 @@ everywhere it is invoked:
 		<copy file="${builddir}/ADTPROETH.BIN" tofile="${basedir}/org/adtpro/resources/adtproeth.raw" />
 		<move file="${projdir}/client/src/ADTPROUII.BIN" tofile="${builddir}/ADTPROUII.BIN" />
 		<copy file="${builddir}/ADTPROUII.BIN" tofile="${basedir}/org/adtpro/resources/adtprouii.raw" />
+		<move file="${projdir}/client/src/dos/ADT" tofile="${builddir}/ADT" />
+		<copy file="${builddir}/ADT" tofile="${basedir}/org/adtpro/resources/adt.raw" />
 		<move file="${projdir}/client/src/GRUB2" tofile="${builddir}/GRUB2" />
 		<move file="${projdir}/client/src/GRUB_VSDRIVE" tofile="${builddir}/GRUB_VSDRIVE" />
 		<!--
@@ -313,6 +323,7 @@ everywhere it is invoked:
 		<appleDump infilename="${builddir}/ADTPROUII.BIN" outfilename="${basedir}/org/adtpro/resources/adtprouii.dmp" applename="ADTPROUII.BIN" startaddrhex="800" numbyteswide="10" decoration="begin" finalline="800G"/>
 		<appleDump infilename="${builddir}/ADTPROAUD.BIN" outfilename="${basedir}/org/adtpro/resources/adtproaud.dmp" applename="ADTPROAUD.BIN" startaddrhex="800" numbyteswide="10" decoration="begin" finalline="800G"/>
 		<appleDump infilename="${builddir}/ADTPRO.BIN" outfilename="${basedir}/org/adtpro/resources/adtpro.dmp" applename="ADTPRO.BIN" startaddrhex="800" numbyteswide="10"  decoration="begin" finalline="800G"/>
+		<appleDump infilename="${builddir}/ADT" outfilename="${basedir}/org/adtpro/resources/adt.dmp" applename="ADT" startaddrhex="803" numbyteswide="10" decoration="yes" />
 		<appleDump infilename="${builddir}/GRUB2" outfilename="${basedir}/org/adtpro/resources/grub2.dmp" applename="GRUB2" startaddrhex="7000" numbyteswide="10" decoration="yes" />
 		<appleDump infilename="${builddir}/GRUB_VSDRIVE" outfilename="${basedir}/org/adtpro/resources/grub_vsdrive.dmp" applename="GRUB_VSDRIVE" startaddrhex="7000" numbyteswide="10" decoration="yes" />
 	</target>
