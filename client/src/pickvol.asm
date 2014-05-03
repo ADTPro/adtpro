@@ -1,6 +1,6 @@
 ;
 ; ADTPro - Apple Disk Transfer ProDOS
-; Copyright (C) 2006 - 2010 by David Schmidt
+; Copyright (C) 2006 - 2014 by David Schmidt
 ; david__schmidt at users.sourceforge.net
 ;
 ; This program is free software; you can redistribute it and/or modify it 
@@ -27,7 +27,7 @@
 ;   $FF in A if escape was hit
 ;---------------------------------------------------------
 PICKVOL:
-	sty ZP		; Borrow space for the top-line message ptr
+	sty TopMessage
 	jsr PRINTVOL
 	jsr INVROW
 	lda LASTVOL
@@ -124,7 +124,7 @@ VREREAD:
 	bne VESC	; No - continue with next group
 	lda #$00	; Yes - re-read volume information
 	sta LASTVOL	; Reset volume counter
-	ldy ZP		; Get our top-line message back
+	ldy TopMessage	; Get our top-line message back
 	jsr PRINTVOL	; Re-read volume information
 	jsr INVROW	; Invert the current row selection
 	jmp VOLLOOP	; Back to the top of the loop
@@ -142,14 +142,18 @@ ESCAPE:
 ; Preserves X, Y
 ;---------------------------------------------------------
 PICKVOL2:
-	sty SLOWY
-	stx SLOWX
+	tya
+	pha
+	txa
+	pha
 	ldx #$00
 	ldy #$16
 	jsr GOTOXY
 	jsr CLREOP
-	ldy SLOWY
-	ldx SLOWX
+	pla
+	tax
+	pla
+	tay
 	jsr DRAWBDR
 	jmp VOLLOOP
 
@@ -179,3 +183,4 @@ UNINVROW:
 VCURROW:	.byte $00	; The current row the cursor is on (zero-indexed)
 LASTVOLZERO:	.byte $00
 VROFFS	= $05
+TopMessage:	.byte $00
