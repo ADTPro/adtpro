@@ -17,6 +17,7 @@ LDRMessage_2	:= $A1E0	; Borrow the Loader's message_2
 LDRMessage_3	:= $A1E8	; Borrow the Loader's message_3
 LDREnvelope	:= $A1F8	; Borrow the Loader's Wide protocol envelope space
 LDRPayload	:= $A1FD	; Borrow the Loader's Wide protocol payload space
+LDRReadDriver	:= $A22B	; Transplant the ReadDriver routine in loader space
 
 ZPAGE		:= $0000
 I_BASE_P	:= $0002
@@ -637,12 +638,11 @@ PollInterpNext:
 	ldx #<LDRMessage_2	; Tell 'em we're reading
 	jsr LDRMessage
 	jsr GrubIIIGet		; LSB of length
-	;bcs ReceiveInterpWarm
+;	bcs ReceiveInterpWarm
 	sta size
 	jsr GrubIIIGet		; MSB of length
-	;bcs ReceiveInterpWarm
+;	bcs ReceiveInterpWarm
 	sta size+1		; We're ready to read everything else now
-
 	ldy #$00
 ReadInterp:			; We got the magic signature; start reading data
 	jsr LDRIIIGet		; Pull a byte
@@ -661,7 +661,7 @@ ReadInterp:			; We got the magic signature; start reading data
 	jmp ReadInterp		; Go back for more
 
 ReadInterpDone:
-	jsr	LDRRESTORE
+	jsr LDRRESTORE
 
 ReceiveInterpPadBegin:
 	.res	$20c0-ReceiveInterpPadBegin, $ea
@@ -697,10 +697,10 @@ LDR070:	lda     $1901
 	jsr     MOVE
 
 RequestDriver:
-;	jsr ACIAInit
+	jsr ACIAInit
 RequestDriverWarm:
-	lda	#$b5		; Request driver #180/$b5/"5"
-	jsr	LDRSendEnvelope
+	lda #$b5		; Request driver #180/$b5/"5"
+	jsr LDRSendEnvelope
 ; Poll the port until we get a magic incantation
 Poll:
 	lda #$00		; #>LDREND-$2000+$400 = $58*00*
@@ -708,8 +708,6 @@ Poll:
 	sta b_p
 	lda #$58		; #<LDREND-$2000+$400 = $*58*00
 	sta b_p+1
-;	lda #$80
-;	sta CXPAGE+b_p+1	; Set XBYTE to $80 - using Xtended addressing
 PollNext:
 	jsr LDRIIIGet
 	bcs RequestDriverWarm
@@ -723,7 +721,7 @@ PollNext:
 	ldx #<LDRMessage_3	; Tell 'em we're reading
 	jsr LDRMessage
 	ldy #$00
-	jmp ReadDriver
+	jmp LDRReadDriver	; We had to borrow space in Loader for this routine...
 
 ReceiveDriverPad:
 	.res	$2144-ReceiveDriverPad, $ea
@@ -10743,24 +10741,6 @@ L73B7:  tya
 	rts
 L73BA:  lda     #$E2
 	jsr     LEE17
-
-ReadDriver:			; We got the magic signature; start reading data
-	jsr GrubIIIGet		; Pull a byte
-	sta (b_p),y		; Save it
-	sta $0797		; Print throbber in the status area
-	iny
-	cpy size		; Is y equal to the LSB of our target?
-	bne :+			; No... check for next pageness
-	lda size+1		; LSB is equal; is MSB?
-	beq ReadDone		; Yes... so done
-:	cpy #$00		; Check for page increment
-	bne ReadDriver
-	inc b_p+1		; Increment another page
-	dec size+1
-	jmp ReadDriver		; Branch always - go back for more
-ReadDone:
-	jsr	LDRRESTORE
-	jmp	ReceiveDriverDone
 
 FreeSpace:
 	.res	$7400-FreeSpace,$00

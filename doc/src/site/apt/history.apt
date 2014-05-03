@@ -14,9 +14,11 @@ ADTPro Release History
 
  * [Client] Support for Uthernet II card
 
+ * [Client] Arrow-and-Return interface for choosing a file to receive
+
  * [Client] Arrow-and-Return interface for the main menu
 
- * [Client] Directory function allows for wildcard filtering of files, paging forward and backward
+ * [Client] Directory listing allows for wildcard filtering of files, paging forward and backward
 
  * Separated ProDOS and SOS boot disks for ADTPro client; VDRIVE boot disk remains common to both
 
@@ -25,5 +27,13 @@ ADTPro Release History
  Bug fixes:
 
  * When the server decides to abort, the new protocol will not react to the "spray of commands" when the client (re-)sends data that isn't supposed to be commands
+
+ * [SOS Client] Keyboard interaction works correctly
+
+ * [SOS Client] Changing serial connected-ness while client is running no longer causes fatal SOS $02 errors
+
+ * [SOS Bootstrap] Timeout logic borrowed from Speediboot makes SOS bare-metal bootstrapping more reliable and prettier
+
+ []
 
 * Click for {{{./historyolddetail.html}Version 1 History}}

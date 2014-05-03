@@ -33,6 +33,8 @@ KBDSTROBE	:= $c010
 E_REG		:= $ffdf
 BANK_REG	:= $ffef
 BUF_P		:= $7e
+size		:= $30
+b_p		:= $32
 
 ACIADR		:= $c0f0	; Data register. $c0f0 for ///, $c088+S0 for SSC
 ACIASR		:= $c0f1	; Status register. $c0f1 for ///, $c089+S0 for SSC
@@ -40,6 +42,8 @@ ACIAMR		:= $c0f2	; Command mode register. $c0f2 for ///, $c08a+S0 for SSC
 ACIACR		:= $c0f3	; Control register.  $c0f3 for ///, $c08b+S0 for SSC
 
 GrubIIIGet	:= $A047	; Borrow the Grub's IIIGet routine
+
+KRNLReceiveDriverDone := $2144	; Kernel return point
 
 Signature:
 	.byte	$47		; The first byte that grub will see: a "G" character; not executed
@@ -226,6 +230,25 @@ Fill2:	dey
 	sta $780,y
 	bne Fill2
 	rts
+
+ReadDriver:			; We got the magic signature; start reading data
+	jsr GrubIIIGet		; Pull a byte
+	sta (b_p),y		; Save it
+	sta $0797		; Print throbber in the status area
+	iny
+	cpy size		; Is y equal to the LSB of our target?
+	bne :+			; No... check for next pageness
+	lda size+1		; LSB is equal; is MSB?
+	beq ReadDone		; Yes... so done
+:	cpy #$00		; Check for page increment
+	bne ReadDriver
+	inc b_p+1		; Increment another page
+	dec size+1
+	jmp ReadDriver		; Branch always - go back for more
+ReadDone:
+	jsr	RESTORE
+	jmp	KRNLReceiveDriverDone
+
 Timer:	.word	$0000
 Pad:
 	.res	$a2ff-*,$00
