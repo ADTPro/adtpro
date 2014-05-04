@@ -366,6 +366,8 @@ public class CommsThread extends Thread
 			break;
 		default:
 			Log.println(false, "CommsThread.dispatchCommand() Received unknown command: " + UnsignedByte.toString(envelope[2])); //$NON-NLS-1$
+			// Consume the offending payload so the results don't get "executed"
+			pullPayloadWide(envelope);
 			break;
 		}
 		Log.println(false, "CommsThread.dispatchCommand() exit.");
