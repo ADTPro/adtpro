@@ -23,7 +23,6 @@
 ;---------------------------------------------------------
 TIMEY	= $8a
 DONE	= $1a
-NXTA1	= $FCBA
 HEADR	= $FCC9
 LASTIN	= $2f
 TAPEIN	= $C060

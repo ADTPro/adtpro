@@ -38,7 +38,6 @@ STATE_DIR	= 1
 STATE_QUERY	= 5
 STATE_RECVBLKS	= 6
 STATE_WAITING_ONE_BYTE_REPLY = 8
-NXTA1		= $FCBA
 
 
 ;---------------------------------------------------------

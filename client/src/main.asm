@@ -337,6 +337,19 @@ HI_2:	ldx #$03
 	rts
 
 ;---------------------------------------------------------
+; NXTA1 - increment 16-bit A1 variable and compare to A2
+;---------------------------------------------------------
+NXTA1:
+	lda A1L
+	cmp A2L
+	lda A1H
+	sbc A2H
+	inc A1L
+	bne :+
+	inc A1H
+:	rts
+
+;---------------------------------------------------------
 ; Table of menu highlighting coordinates
 ; Length, Column, Row
 ;---------------------------------------------------------
