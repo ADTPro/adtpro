@@ -57,6 +57,27 @@ DIRREQUEST:
 	stax UTILPTR
 	stax A1L
 	stax A2L	; Set everyone up to talk to the AUD_BUFFER
+
+	LDA_BIGBUF_ADDR_HI
+	clc
+	adc NIBPCNT
+	adc NIBPCNT
+	adc NIBPCNT
+	adc NIBPCNT
+	sta BLKPTR+1
+	; clear out 1k of memory at (BLKPTR) - we don't generally
+	; have time to do this between request and reply
+	ldx #$04
+	LDA_BIGBUF_ADDR_LO	; Connect the block pointer to the
+	sta BLKPTR		; Big Buffer(TM), 1k * NIBPCNT
+	tay
+:	sta (BLKPTR),y
+	iny
+	bne :-
+	inc BLKPTR+1
+	dex
+	bne :-
+
 	lda #CHR_D	; Send "DIR" command to PC
 	jsr FNREQUEST
 	lda NIBPCNT
@@ -91,22 +112,8 @@ DIRREPLY:
 	adc NIBPCNT
 	sta BLKPTR+1
 
-	; Borrow Buffer pointer for a minute
-	ldax BLKPTR
-	stax Buffer 
-	; clear out the memory at (Buffer)
-	ldx #$04
-	lda #$00
-	tay
-:	sta (Buffer),y
-	iny
-	bne :-
-	inc Buffer+1
-	dex
-	bne :-
-
 	jsr RECVWIDE
-	bcs @DirTimeout
+	bcs @DirRetry	; Really any failure... time out or garbage received
 	lda HOSTBLX+1	; Prepare the acknowledge packet-required variables
 	sta BLKHI
 	lda HOSTBLX
@@ -140,12 +147,6 @@ DIRREPLY:
 	jsr PUTACKBLK
 	sec
 	rts 
-
-@DirTimeout:
-	clc
-	ldy #$01
-	sta TMOT
-	rts
 
 
 ;---------------------------------------------------------

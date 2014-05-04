@@ -75,6 +75,27 @@ DIRREQUEST:
 	sta udp_send_len+1
 	lda #STATE_DIR	; Set up for DIRREPLY1 callback
 	sta state
+
+	LDA_BIGBUF_ADDR_HI
+	clc
+	adc NIBPCNT
+	adc NIBPCNT
+	adc NIBPCNT
+	adc NIBPCNT
+	sta BLKPTR+1
+	; clear out 1k of memory at (BLKPTR) - we don't generally
+	; have time to do this between request and reply
+	ldx #$04
+	LDA_BIGBUF_ADDR_LO	; Connect the block pointer to the
+	sta BLKPTR		; Big Buffer(TM), 1k * NIBPCNT
+	tay
+:	sta (BLKPTR),y
+	iny
+	bne :-
+	inc BLKPTR+1
+	dex
+	bne :-
+
 	lda #CHR_D	; Send "DIR" command to PC
 	jsr FNREQUEST
 	lda NIBPCNT
@@ -110,22 +131,8 @@ DIRREPLY1:
 	adc NIBPCNT
 	sta BLKPTR+1
 
-	; Borrow Buffer pointer for a minute
-	ldax BLKPTR
-	stax Buffer 
-	; clear out the memory at (Buffer)
-	ldx #$04
-	lda #$00
-	tay
-:	sta (Buffer),y
-	iny
-	bne :-
-	inc Buffer+1
-	dex
-	bne :-
-
 	jsr RECVWIDE
-	bcs @DirTimeout
+	bcs @DirRetry	; Really any failure... time out or garbage received
 	lda HOSTBLX+1	; Prepare the acknowledge packet-required variables
 	sta BLKHI
 	lda HOSTBLX
@@ -159,13 +166,6 @@ DIRREPLY1:
 	jsr PUTACKBLK
 	sec
 	rts 
-
-@DirTimeout:
-	clc
-	ldy #$01
-	sta TMOT
-	rts
-
 
 DIRREPLY:
 	rts
