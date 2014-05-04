@@ -812,14 +812,6 @@ RDBIT_NO_TIMEOUT:
 	cpy #$80	; Set carry on Y-register
 	rts
 
-BumpA1:
-	clc
-	inc A1L
-	bne BumpA1Done
-	inc A1H
-BumpA1Done:
-	rts
-
 TAPTMOT:
 	lda #$01
 	sta TIMEY	; In case we come around once more, we'll still get decremented to zero

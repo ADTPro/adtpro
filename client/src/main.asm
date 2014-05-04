@@ -337,17 +337,16 @@ HI_2:	ldx #$03
 	rts
 
 ;---------------------------------------------------------
-; NXTA1 - increment 16-bit A1 variable and compare to A2
+; BumpA1 - increment 16-bit A1 variable
 ;---------------------------------------------------------
-NXTA1:
-	lda A1L
-	cmp A2L
-	lda A1H
-	sbc A2H
+BumpA1:
+	clc
 	inc A1L
-	bne :+
+	bne BumpA1Done
 	inc A1H
-:	rts
+BumpA1Done:
+	rts
+
 
 ;---------------------------------------------------------
 ; Table of menu highlighting coordinates
