@@ -84,7 +84,7 @@ public class SerialTransport extends ATransport
     _parent = parent;
     _hardware = hardware;
     _currentSpeed = Integer.parseInt(speed);
-    _sendBuffer = new byte[1500];
+    _sendBuffer = new byte[32768];
     Log.println(false, "SerialTransport constructor exit.");
   }
 

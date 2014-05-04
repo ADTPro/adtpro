@@ -490,6 +490,9 @@ RW2:
 RWNext:	dec PAGECNT+1
 	beq @Done	; Done?
 	inc BLKPTR+1	; Get ready for another page
+	lda BLKPTR+1
+	cmp #$c0
+	beq RWERR	; Protect ourselves from buffer overrun
 	jmp RW1
 @Done:	jsr GETC	; Done - get CRC
 	sta PCCRC
