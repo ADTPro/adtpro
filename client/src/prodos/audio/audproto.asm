@@ -131,7 +131,7 @@ DIRREPLY:
 	ldx #CHR_ACK
 	jsr PUTACKBLK
 	LDA_BIGBUF_ADDR_LO	; Re-connect the block pointer to the
-	sta Buffer		; Big Buffer(TM), 1k * NIBPCNT again
+	sta BLKPTR		; Big Buffer(TM), 1k * NIBPCNT again
 	LDA_BIGBUF_ADDR_HI
 	clc
 	adc NIBPCNT
@@ -139,6 +139,7 @@ DIRREPLY:
 	adc NIBPCNT
 	adc NIBPCNT
 	sta Buffer+1
+	sta BLKPTR+1
 	clc		; Indicate success
 	rts
 
@@ -461,10 +462,6 @@ SENDBLKS:
 ; PAGECNT is used as 2-byte value of length to ultimately receive
 ; CRC is computed and stored
 ;---------------------------------------------------------
-RWERR:
-	sec
-	rts
-
 RECVWIDE:
 	ldy #$00
 	sty TMOT	; Clear timeout processing
@@ -495,8 +492,11 @@ RECVWIDE:
 	jsr NXTA1
 	lda (A1L,X)	; Get protocol - check byte (discarded for the moment)
 	jsr NXTA1	; Block number, LSB
+	lda (A1L,X)
+	sta HOSTBLX
 	jsr NXTA1	; Block number, MSB
-			; TODO - probably should save/check the block number is the one we need...
+	lda (A1L,X)
+	sta HOSTBLX+1
 	lda BLKPTR
 	sta BUFPTR
 	lda BLKPTR+1
@@ -520,13 +520,16 @@ RW2:
 			; ...else check for more or return
 
 RWNext:	dec PAGECNT+1
-	beq @Done	; Done?
+	beq RWDone	; Done?
 	inc BLKPTR+1	; Get ready for another page
 	lda BLKPTR+1
 	cmp #$c0
 	beq RWERR	; Protect ourselves from buffer overrun
 	jmp RW1
-@Done:
+RWERR:
+	sec
+	rts
+RWDone:
 	jsr NXTA1	; Increment the pointer to data we're reading
 	lda (A1L,X)	; Done - get CRC
 	sta PCCRC

@@ -579,8 +579,11 @@ RECVWIDE_REPLY:
 	jsr NXTA1
 	lda (A1L,X)	; Get protocol - check byte (discarded for the moment)
 	jsr NXTA1	; Block number, LSB
+	lda (A1L,X)
+	sta HOSTBLX
 	jsr NXTA1	; Block number, MSB
-			; TODO - probably should save/check the block number is the one we need...
+	lda (A1L,X)
+	sta HOSTBLX+1
 	lda BLKPTR
 	sta BUFPTR
 	lda BLKPTR+1
