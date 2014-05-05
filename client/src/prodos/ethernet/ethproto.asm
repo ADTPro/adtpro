@@ -63,6 +63,33 @@ CDREQUEST:
 
 
 ;---------------------------------------------------------
+; HOMEREQUEST - Client is entering home state, server should too
+;---------------------------------------------------------
+HOMEREQUEST:
+	ldax #udp_outp + udp_data	; Point UTILPTR at the UDP data buffer
+	stax UTILPTR
+	lda #$00
+	sta udp_send_len
+	sta udp_send_len+1
+	lda #CHR_A			; Ask host to Go Home
+	jsr BUFBYTE
+	lda #$00
+	jsr BUFBYTE
+	jsr BUFBYTE
+	lda #CHR_X			; Ask host to Go Home
+	jsr BUFBYTE
+	lda #$19			; Pre-calculated checkbyte
+	jsr BUFBYTE
+	lda #STATE_IDLE
+	sta state
+	GO_SLOW				; Slow down for SOS
+	jsr udp_send_nocopy
+	GO_FAST				; Speed back up for SOS
+	jsr RECEIVE_LOOP_FAST
+	rts
+
+
+;---------------------------------------------------------
 ; DIRREQUEST - Request current directory contents
 ; NIBPCNT contains the page number to request
 ;---------------------------------------------------------
@@ -111,7 +138,7 @@ DIRREQUEST:
 ;---------------------------------------------------------
 ; DIRREPLY - serial compatibility and UDP callback entry points
 ; NIBPCNT contains the page number that was requested - which is 1k-worth of transmission (4 256byte pages, 2 blocks, 2BAO)
-; Returns carry set on CRC failure (should retry - nak sent)
+; Returns with QUERYRC set to $80 on CRC failure (should retry - nak sent)
 ; Returns TMOT > 0 on timeout (should not retry)
 ;---------------------------------------------------------
 DIRREPLY1:
@@ -130,7 +157,7 @@ DIRREPLY1:
 	adc NIBPCNT
 	sta BLKPTR+1
 
-	jsr RECVWIDE
+	jsr RECVWIDE_REPLY
 	bcs @DirRetry	; Really any failure... time out or garbage received
 	lda HOSTBLX+1	; Prepare the acknowledge packet-required variables
 	sta BLKHI
@@ -149,24 +176,27 @@ DIRREPLY1:
 	ldx #CHR_ACK
 	jsr PUTACKBLK
 	LDA_BIGBUF_ADDR_LO	; Re-connect the block pointer to the
-	sta Buffer		; Big Buffer(TM), 1k * NIBPCNT again
+	sta BLKPTR		; Big Buffer(TM), 1k * NIBPCNT again
 	LDA_BIGBUF_ADDR_HI
 	clc
 	adc NIBPCNT
 	adc NIBPCNT
 	adc NIBPCNT
 	adc NIBPCNT
-	sta Buffer+1
-	clc		; Indicate success
+	sta BLKPTR+1
+	lda #$00		; Indicate success
+	sta QUERYRC
 	rts
 
 @DirRetry:
 	ldx #CHR_NAK
 	jsr PUTACKBLK
-	sec
+	lda #$80
+	sta QUERYRC	; Indicate failure
 	rts 
 
 DIRREPLY:
+	asl QUERYRC	; Shift high bit of QUERYRC into C flag
 	rts
 
 
@@ -226,13 +256,15 @@ FNREQUEST:
 	cmp #CHR_P	; Was it a Put?
 	beq @addtwo
 	cmp #CHR_N	; Was it a Nibble?
-	beq @addtwo	
+	beq @addtwo
 	cmp #CHR_B	; Was it a Batch?
 	beq @addtwo
 	cmp #CHR_M	; Was it a Multiple nibble?
 	beq @addtwo
 	cmp #CHR_G	; Was it a Get?
-	beq @addone	
+	beq @addone
+	cmp #CHR_D	; Was it a Dir?
+	beq @addone
 	jmp @noadd	; Everyone else - no add
 @addtwo:
 	inx		; Increment x twice if so... need room for 2 more bytes

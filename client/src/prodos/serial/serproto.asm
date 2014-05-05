@@ -33,6 +33,24 @@ CDREQUEST:
 
 
 ;---------------------------------------------------------
+; HOMEREQUEST - Client is entering home state, server should too
+;---------------------------------------------------------
+HOMEREQUEST:
+	lda #CHR_A	; Envelope
+	GO_SLOW		; Slow down for SOS
+	jsr PUTC
+	lda #$00	; Zero byte payload
+	jsr PUTC
+	jsr PUTC
+	lda CHR_X	; Go Home
+	jsr PUTC
+	lda #$19	; Pre-calculted check byte
+	jsr PUTC	; Send check byte
+	GO_FAST		; Speed back up for SOS
+	rts
+
+
+;---------------------------------------------------------
 ; DIRREQUEST - Request current directory contents
 ; NIBPCNT contains the page number to request
 ;---------------------------------------------------------

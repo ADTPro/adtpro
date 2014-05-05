@@ -29,6 +29,7 @@ import org.adtpro.transport.AudioTransport;
 import org.adtpro.transport.ProtocolVersionException;
 import org.adtpro.transport.SerialTransport;
 import org.adtpro.transport.TransportTimeoutException;
+import org.adtpro.transport.GoHomeException;
 import org.adtpro.gui.Gui;
 import org.adtpro.utilities.ByteStream;
 import org.adtpro.utilities.Log;
@@ -263,12 +264,7 @@ public class CommsThread extends Thread
 					_busy = false;
 					break;
 				/*
-				 * case (byte) 207: // "O": Get Nibble Disk _busy = true;
-				 * _parent.setMainText(Messages.getString("CommsThread.13"));
-				 * //$NON-NLS-1$ _parent.setSecondaryText(""); //$NON-NLS-1$
-				 * Log.println(false, "CommsThread.commandLoop() Received Nibble
-				 * Get command."); //$NON-NLS-1$ sendNibbleDisk(false); _busy =
-				 * false; break;
+				 * case (byte) 207: // "O": Get Nibble Disk _busy = true; _parent.setMainText(Messages.getString("CommsThread.13")); //$NON-NLS-1$ _parent.setSecondaryText(""); //$NON-NLS-1$ Log.println(false, "CommsThread.commandLoop() Received Nibble Get command."); //$NON-NLS-1$ sendNibbleDisk(false); _busy = false; break;
 				 */
 				case (byte) 214: // "V": Put Half Track Disk
 					_busy = true;
@@ -363,6 +359,9 @@ public class CommsThread extends Thread
 			Log.println(false, "CommsThread.dispatchCommand() Received Send Bootstrap File."); //$NON-NLS-1$
 			sendBootstrapFileWide(envelope);
 			_busy = false;
+			break;
+		case (byte) 216: // "X": Go Home
+			Log.println(false, "CommsThread.dispatchCommand() Received Home command.  How charming."); //$NON-NLS-1$
 			break;
 		default:
 			Log.println(false, "CommsThread.dispatchCommand() Received unknown command: " + UnsignedByte.toString(envelope[2])); //$NON-NLS-1$
@@ -572,7 +571,7 @@ public class CommsThread extends Thread
 						continuation = '\1';
 						if (end >= files.length)
 						{
-							continuation = '\0';	// There isn't any more
+							continuation = '\0'; // There isn't any more
 							end = files.length;
 						}
 						// line = (_parent.getWorkingDirectory().length() + 13) / 40 + 2;
@@ -1007,31 +1006,34 @@ public class CommsThread extends Thread
 		byte checkByte = 0x00, oneByte;
 		int length = envelope[0] + (envelope[1] * 256);
 		Log.println(false, "CommsThread.pullPayloadWide() entry.");
-		payload = new byte[length];
-		try
+		if (length > 0)
 		{
-			for (int i = 0; i < length; i++)
+			payload = new byte[length];
+			try
 			{
+				for (int i = 0; i < length; i++)
+				{
+					oneByte = waitForData(1);
+					payload[i] = oneByte;
+					Log.println(false, "CommsThread.pullPayloadWide() payload byte [" + i + "]: " + UnsignedByte.toString(oneByte)); //$NON-NLS-1$
+					checkByte ^= oneByte;
+				}
 				oneByte = waitForData(1);
-				payload[i] = oneByte;
-				Log.println(false, "CommsThread.pullPayloadWide() payload byte [" + i + "]: " + UnsignedByte.toString(oneByte)); //$NON-NLS-1$
-				checkByte ^= oneByte;
+				Log.println(false, "CommsThread.pullPayloadWide() received   checkbyte: " + UnsignedByte.toString(oneByte)); //$NON-NLS-1$
+				Log.println(false, "CommsThread.pullPayloadWide() calculated checkbyte: " + UnsignedByte.toString(checkByte)); //$NON-NLS-1$
+				if (checkByte != oneByte)
+				{
+					Log.println(false, "CommsThread.pullPayloadWide() Got erroneous checkbyte on length."); //$NON-NLS-1$
+					payload = null;
+				}
+				else
+					Log.println(false, "CommsThread.pullPayloadWide() checkbyte on payload matched."); //$NON-NLS-1$
 			}
-			oneByte = waitForData(1);
-			Log.println(false, "CommsThread.pullPayloadWide() received   checkbyte: " + UnsignedByte.toString(oneByte)); //$NON-NLS-1$
-			Log.println(false, "CommsThread.pullPayloadWide() calculated checkbyte: " + UnsignedByte.toString(checkByte)); //$NON-NLS-1$
-			if (checkByte != oneByte)
+			catch (TransportTimeoutException e)
 			{
-				Log.println(false, "CommsThread.pullPayloadWide() Got erroneous checkbyte on length."); //$NON-NLS-1$
+				Log.println(false, "CommsThread.pullPayloadWide() Timeout waiting for payload."); //$NON-NLS-1$
 				payload = null;
 			}
-			else
-				Log.println(false, "CommsThread.pullPayloadWide() checkbyte on payload matched."); //$NON-NLS-1$
-		}
-		catch (TransportTimeoutException e)
-		{
-			Log.println(false, "CommsThread.pullPayloadWide() Timeout waiting for payload."); //$NON-NLS-1$
-			payload = null;
 		}
 		return payload;
 	}
@@ -1153,8 +1155,7 @@ public class CommsThread extends Thread
 				if ((length * 512) == Disk.APPLE_140KB_DISK)
 				{
 					/*
-					 * If we're a 140k disk, append ".dsk" to the name if it
-					 * didn't already have it
+					 * If we're a 140k disk, append ".dsk" to the name if it didn't already have it
 					 */
 					if ((!tempName.endsWith(".DSK")) && (!tempName.endsWith(".DO")))
 						name = name + ".dsk";
@@ -1162,8 +1163,7 @@ public class CommsThread extends Thread
 				else
 				{
 					/*
-					 * If we're a ProDOS disk, append ".po" to the name if it
-					 * didn't already have that or ".hdv"
+					 * If we're a ProDOS disk, append ".po" to the name if it didn't already have that or ".hdv"
 					 */
 					if ((!tempName.endsWith(".PO")) && (!tempName.endsWith(".HDV")))
 						name = name + ".po";
@@ -1277,13 +1277,13 @@ public class CommsThread extends Thread
 			catch (FileNotFoundException ex)
 			{
 				_transport.writeByte(0x02); // New ADT protocol: HMFIL - unable
-											// to write file
+							    // to write file
 				_transport.pushBuffer();
 			}
 			catch (IOException ex2)
 			{
 				_transport.writeByte(0x02); // New ADT protocol: HMFIL - unable
-											// to write file
+							    // to write file
 				_transport.pushBuffer();
 			}
 			finally
@@ -1314,6 +1314,7 @@ public class CommsThread extends Thread
 	public void receiveDiskWide(boolean generateName, byte[] envelope)
 	/* Main receive routine - Host <- Apple (Apple sends) */
 	{
+		boolean shouldContinue = true;
 		Log.println(false, "CommsThread.receiveDiskWide() entry.");
 		_startTime = System.currentTimeMillis();
 		StringBuffer dest = new StringBuffer();
@@ -1380,8 +1381,7 @@ public class CommsThread extends Thread
 				if ((blocksLength * 512) == Disk.APPLE_140KB_DISK)
 				{
 					/*
-					 * If we're a 140k disk, append ".dsk" to the name if it
-					 * didn't already have it
+					 * If we're a 140k disk, append ".dsk" to the name if it didn't already have it
 					 */
 					if ((!tempName.endsWith(".DSK")) && (!tempName.endsWith(".DO")))
 						name = name + ".dsk";
@@ -1389,8 +1389,7 @@ public class CommsThread extends Thread
 				else
 				{
 					/*
-					 * If we're a ProDOS disk, append ".po" to the name if it
-					 * didn't already have that or ".hdv"
+					 * If we're a ProDOS disk, append ".po" to the name if it didn't already have that or ".hdv"
 					 */
 					if ((!tempName.endsWith(".PO")) && (!tempName.endsWith(".HDV")))
 						name = name + ".po";
@@ -1409,17 +1408,25 @@ public class CommsThread extends Thread
 				do
 				{
 					Log.println(false, "receiveDiskWide() about to wait for a packet."); //$NON-NLS-1$
-					bytesReceived = receivePacketWide(tempBuffer, 0);
-					if (bytesReceived == 0) // We didn't get any bump in data
-						break;
-					blocksDone += bytesReceived / 512;
-					_parent.setProgressValue(blocksDone);
-					Log.println(false, "Writing up to block " + blocksDone + "."); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-					byte[] buffer = new byte[bytesReceived];
-					java.lang.System.arraycopy(tempBuffer, 0, buffer, 0, bytesReceived);
-					fos.write(buffer);
-					buffer = null;
-				} while (blocksDone < blocksLength);
+					try
+					{
+						bytesReceived = receivePacketWide(tempBuffer, 0);
+						if (bytesReceived == 0) // We didn't get any bump in data
+							break;
+						blocksDone += bytesReceived / 512;
+						_parent.setProgressValue(blocksDone);
+						Log.println(false, "Writing up to block " + blocksDone + "."); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+						byte[] buffer = new byte[bytesReceived];
+						java.lang.System.arraycopy(tempBuffer, 0, buffer, 0, bytesReceived);
+						fos.write(buffer);
+						buffer = null;
+					}
+					catch (GoHomeException e)
+					{
+						shouldContinue = false;
+						packetResult = 1;
+					}
+				} while ((blocksDone < blocksLength) && (shouldContinue == true));
 				Log.println(false, "CommsThread.receiveDiskWide() finished writing file.");
 				fos.close();
 				if (packetResult == 0)
@@ -1483,13 +1490,13 @@ public class CommsThread extends Thread
 			catch (FileNotFoundException ex)
 			{
 				_transport.writeByte(0x02); // New ADT protocol: HMFIL - unable
-											// to write file
+							    // to write file
 				_transport.pushBuffer();
 			}
 			catch (IOException ex2)
 			{
 				_transport.writeByte(0x02); // New ADT protocol: HMFIL - unable
-											// to write file
+							    // to write file
 				_transport.pushBuffer();
 			}
 			finally
@@ -1547,7 +1554,7 @@ public class CommsThread extends Thread
 				{
 					// If the file exists, then...
 					_transport.writeByte(0x00); // Tell Apple ][ we're ready to
-												// go
+								    // go
 					_transport.pushBuffer();
 					Log.println(false, "CommsThread.sendDisk() about to wait for initial ack.");
 					ack = waitForData(15);
@@ -1658,7 +1665,7 @@ public class CommsThread extends Thread
 		Log.println(false, "CommsThread.sendDiskWide() entry.");
 		Log.println(false, "Current working directory: " + _parent.getWorkingDirectory());
 		byte[] payload = pullPayloadWide(envelope);
-		//		int blocksDone = 0;
+		// int blocksDone = 0;
 		byte ack;
 		int length;
 		boolean sendSuccess = false;
@@ -1755,7 +1762,7 @@ public class CommsThread extends Thread
 								if (fortyCount == 40)
 									fortyCount = 0;
 								block += tempBlockCnt;
-								//blocksDone+=tempBlockCnt;
+								// blocksDone+=tempBlockCnt;
 								_parent.setProgressValue(block);
 							}
 							else
@@ -1868,8 +1875,7 @@ public class CommsThread extends Thread
 					try
 					{
 						/*
-						 * ADT protocol: receive acknowledgement for "previous"
-						 * sector
+						 * ADT protocol: receive acknowledgement for "previous" sector
 						 */
 						ack = waitForData(15);
 						if (ack == 0x06)
@@ -2180,7 +2186,7 @@ public class CommsThread extends Thread
 				_transport.pushBuffer();
 				Log.println(false, "CommsThread.sendPacketWide() calculated CRC: " + (crc & 0xffff));
 				// Pull a real ack packet
-				byte[] ackEnvelope = pullEnvelopeWide(true,timeoutSuggestion); // Will always return an envelope size + command
+				byte[] ackEnvelope = pullEnvelopeWide(true, timeoutSuggestion); // Will always return an envelope size + command
 				byte[] ackPayload = null;
 				if (UnsignedByte.intValue(ackEnvelope[2]) == 0xcb)
 				{
@@ -2307,11 +2313,7 @@ public class CommsThread extends Thread
 						else
 						{
 							/*
-							 * {0xFC, 0xFF, 0xFF, 0xFF, 0xFF}, {0xF9, 0xFE,
-							 * 0xFF, 0xFF, 0xFF}, {0xF3, 0xFC, 0xFF, 0xFF,
-							 * 0xFF}, {0xE7, 0xF9, 0xFE, 0xFF, 0xFF}, {0xCF,
-							 * 0xF3, 0xFC, 0xFF, 0xFF}, {0x9F, 0xE7, 0xF9, 0xFE,
-							 * 0xFF},
+							 * {0xFC, 0xFF, 0xFF, 0xFF, 0xFF}, {0xF9, 0xFE, 0xFF, 0xFF, 0xFF}, {0xF3, 0xFC, 0xFF, 0xFF, 0xFF}, {0xE7, 0xF9, 0xFE, 0xFF, 0xFF}, {0xCF, 0xF3, 0xFC, 0xFF, 0xFF}, {0x9F, 0xE7, 0xF9, 0xFE, 0xFF},
 							 */
 							if ((i + 4 < buffer.length) && ((buffer[i] == UnsignedByte.loByte(0x7e)) && (buffer[i + 1] == UnsignedByte.loByte(0x7f)) && (buffer[i + 2] == UnsignedByte.loByte(0x7f)) && (buffer[i + 3] == UnsignedByte.loByte(0x7f)) && (buffer[i + 4] == UnsignedByte.loByte(0x7f))) || ((buffer[i] == UnsignedByte.loByte(0x7c)) && (buffer[i + 1] == UnsignedByte.loByte(0x7f)) && (buffer[i + 2] == UnsignedByte.loByte(0x7f)) && (buffer[i + 3] == UnsignedByte.loByte(0x7f)) && (buffer[i + 4] == UnsignedByte.loByte(0x7f))) || ((buffer[i] == UnsignedByte.loByte(0x79)) && (buffer[i + 1] == UnsignedByte.loByte(0x7e)) && (buffer[i + 2] == UnsignedByte.loByte(0x7f)) && (buffer[i + 3] == UnsignedByte.loByte(0x7f)) && (buffer[i + 4] == UnsignedByte.loByte(0x7f))) || ((buffer[i] == UnsignedByte.loByte(0x73)) && (buffer[i + 1] == UnsignedByte.loByte(0x7c)) && (buffer[i + 2] == UnsignedByte.loByte(0x7f)) && (buffer[i + 3] == UnsignedByte.loByte(0x7f)) && (buffer[i + 4] == UnsignedByte.loByte(0x7f))) || ((buffer[i] == UnsignedByte.loByte(0x67)) && (buffer[i + 1] == UnsignedByte.loByte(0x79)) && (buffer[i + 2] == UnsignedByte.loByte(0x7e)) && (buffer[i + 3] == UnsignedByte.loByte(0x7f)) && (buffer[i + 4] == UnsignedByte.loByte(0x7f))) || ((buffer[i] == UnsignedByte.loByte(0x4f)) && (buffer[i + 1] == UnsignedByte.loByte(0x73)) && (buffer[i + 2] == UnsignedByte.loByte(0x7c)) && (buffer[i + 3] == UnsignedByte.loByte(0x7f)) && (buffer[i + 4] == UnsignedByte.loByte(0x7f))) || ((buffer[i] == UnsignedByte.loByte(0x1f)) && (buffer[i + 1] == UnsignedByte.loByte(0x67)) && (buffer[i + 2] == UnsignedByte.loByte(0x79)) && (buffer[i + 3] == UnsignedByte.loByte(0x7e)) && (buffer[i + 4] == UnsignedByte.loByte(0x7f))))
 							{
@@ -2423,7 +2425,7 @@ public class CommsThread extends Thread
 						waitForData(15);
 						waitForData(15);
 						_parent.setProgressMaximum(26 * 35); // Chunks times
-																// tracks
+										     // tracks
 						_parent.setSecondaryText(disk.getFilename());
 						for (int track = 0; track < 35; track++)
 						{
@@ -2601,7 +2603,7 @@ public class CommsThread extends Thread
 							_parent.setProgressValue((numTracks * 52) + part + 1);
 						}
 						// Read the final byte, always zero
-						//_transport.readByte(5);
+						// _transport.readByte(5);
 						// Dump the raw track
 						Log.println(false, "Dumping out raw track " + numTracks + ": (zero-based; first try)");
 						for (int i = 0; i < 6656; i++)
@@ -2613,11 +2615,7 @@ public class CommsThread extends Thread
 						 * Dump out the track
 						 */
 						/*
-						 * Log.println(false, "Dumping out track "+numTracks+":
-						 * (zero-based)"); for (int i = 0; i < 6656; i++)
-						 * Log.print(false,
-						 * UnsignedByte.toString(rawNibbleBuffer[i]));
-						 * Log.println(false, "");
+						 * Log.println(false, "Dumping out track "+numTracks+": (zero-based)"); for (int i = 0; i < 6656; i++) Log.print(false, UnsignedByte.toString(rawNibbleBuffer[i])); Log.println(false, "");
 						 */
 						if (realTrack1 != null)
 						{
@@ -2643,13 +2641,7 @@ public class CommsThread extends Thread
 									realTrack2 = NibbleAnalysis.analyzeNibbleBuffer(rawNibbleBuffer);
 									// Dump the raw track
 									/*
-									 * Log.println(false,
-									 * "Dumping out raw track "+numTracks+":
-									 * (zero-based; second try)"); for (int i =
-									 * 0; i < 6656; i++) Log.print(false,
-									 * UnsignedByte
-									 * .toString(rawNibbleBuffer[i]));
-									 * Log.println(false, "");
+									 * Log.println(false, "Dumping out raw track "+numTracks+": (zero-based; second try)"); for (int i = 0; i < 6656; i++) Log.print(false, UnsignedByte .toString(rawNibbleBuffer[i])); Log.println(false, "");
 									 */
 									Log.println(false, "receiveNibbleDisk() accuracies: realTrack1: " + realTrack1.accuracy + " realTrack2: " + realTrack2.accuracy);
 									if (realTrack2.accuracy > realTrack1.accuracy)
@@ -2868,6 +2860,8 @@ public class CommsThread extends Thread
 				{
 					int trackRetry = 0;
 					double accuracy = 0;
+					try
+					{
 					boolean rc = receiveNibbleTrackWide(trackBuffer);
 					if (rc == true)
 					{
@@ -2910,6 +2904,12 @@ public class CommsThread extends Thread
 					else
 						fos.write(realTrack[0].trackBuffer);
 					_parent.setProgressValue(numTracks + 1);
+					}
+					catch (GoHomeException e)
+					{
+						shouldContinue = false;
+						break;
+					}
 				}
 				fos.flush();
 				fos.close();
@@ -2974,7 +2974,7 @@ public class CommsThread extends Thread
 		Log.println(false, "CommsThread.receiveNibbleDiskWide() exit.");
 	}
 
-	public boolean receiveNibbleTrackWide(byte[] trackBuffer)
+	public boolean receiveNibbleTrackWide(byte[] trackBuffer) throws GoHomeException
 	{
 		boolean rc = true;
 		byte[] tempBuffer = new byte[65536];
@@ -3160,8 +3160,7 @@ public class CommsThread extends Thread
 			restarting = false;
 			if ((preambleStyle == 2 || ((preambleStyle == 1) && (_client01xCompatibleProtocol == false)) || (_transport.transportType() == ATransport.TRANSPORT_TYPE_UDP) || (_transport.transportType() == ATransport.TRANSPORT_TYPE_AUDIO)))
 			/*
-			 * Remember, UDP and Audio originally had a preamble from the
-			 * beginning.
+			 * Remember, UDP and Audio originally had a preamble from the beginning.
 			 */
 			{
 				try
@@ -3255,7 +3254,7 @@ public class CommsThread extends Thread
 						else
 						{
 							data = waitForData(1); // We have a run - get the
-													// length!
+									       // length!
 							// Log.println(false,"CommsThread.receivePacket() Received run length: "+UnsignedByte.toString(data));
 							do
 							{
@@ -3317,8 +3316,7 @@ public class CommsThread extends Thread
 			else if (rc == -2)
 			{
 				/*
-				 * We received an out-of-sync packet (likely a duplicate).
-				 * Acknowledge it, and swing around again for another try.
+				 * We received an out-of-sync packet (likely a duplicate). Acknowledge it, and swing around again for another try.
 				 */
 				_transport.writeByte(CHR_ACK);
 				_transport.pushBuffer();
@@ -3343,7 +3341,7 @@ public class CommsThread extends Thread
 					Log.println(true, "CommsThread.receivePacket() block: " + (buffNum / 2) + " offset: " + offset + ".");
 					Log.println(true, "CommsThread.receivePacket() backoff sleeping for " + ((retries * pauseMS) / 1000) + " seconds.");
 					sleep(retries * pauseMS); // Sleep each time we have to
-												// retry
+								  // retry
 				}
 				catch (InterruptedException e)
 				{
@@ -3360,7 +3358,7 @@ public class CommsThread extends Thread
 		return rc;
 	}
 
-	public int receivePacketWide(byte[] buffer, int offset)
+	public int receivePacketWide(byte[] buffer, int offset) throws GoHomeException
 	// Receive an enveloped wide packet with RLE compression
 	// Returns:
 	// number of bytes successfully read - CRC matched
@@ -3379,7 +3377,8 @@ public class CommsThread extends Thread
 			bytesReceived = 0;
 			prev = 0;
 			envelope = pullEnvelopeWide(true);
-			if ((envelope[0] | envelope[1] | envelope[2]) != (byte) 0)
+			if (((envelope[0] | envelope[1] | envelope[2]) != (byte) 0) &&
+				(UnsignedByte.intValue(envelope[2]) != 0xd8))
 			{
 				int expectedBytes = envelope[0] + (envelope[1] * 256);
 				Log.println(false, "CommsThread.receivePacketWide() expecting to read " + expectedBytes + " bytes after RLE decompression.");
@@ -3391,33 +3390,33 @@ public class CommsThread extends Thread
 					Log.println(false, "CommsThread.receivePacketWide() incoming block is " + incomingBlock + ".");
 					for (localCount = 0; localCount < envelope[1]; localCount++)
 					{
-						//Log.println(false, "CommsThread.receivePacketWide() top of localBlockCount loop. localCount="+localCount);
+						// Log.println(false, "CommsThread.receivePacketWide() top of localBlockCount loop. localCount="+localCount);
 						for (byteCount = 0; byteCount < 256;)
 						{
 							// Log.println(false, "CommsThread.receivePacketWide() byteCount: " + byteCount);
 							// Wait for a byte...
 							data = waitForData(1);
-							//Log.println(false, "Received: " + UnsignedByte.toString(data));
+							// Log.println(false, "Received: " + UnsignedByte.toString(data));
 							if (UnsignedByte.intValue(data) > 0)
 							{
 								prev += UnsignedByte.intValue(data);
-								//if ((byteCount+1) % 32 == 0)
-								//	Log.println(false, "");
+								// if ((byteCount+1) % 32 == 0)
+								// Log.println(false, "");
 								buffer[offset + (localCount * 256) + byteCount++] = prev;
-								//Log.println(false, "CommsThread.receivePacketWide() buffer["+(offset + (localCount * 256) + byteCount)+"] = 0x"+UnsignedByte.toString(prev));
+								// Log.println(false, "CommsThread.receivePacketWide() buffer["+(offset + (localCount * 256) + byteCount)+"] = 0x"+UnsignedByte.toString(prev));
 							}
 							else
 							{
 								data = waitForData(1); // We have a run - get the length!
-								//Log.println(false, "CommsThread.receivePacketWide() Received run length: 0x" + UnsignedByte.toString(data));
+								// Log.println(false, "CommsThread.receivePacketWide() Received run length: 0x" + UnsignedByte.toString(data));
 								do
 								{
-									//Log.println(false, "Byte[" + UnsignedByte.toString(UnsignedByte.loByte(byteCount)) + "]=0x" + UnsignedByte.toString(prev) + " (rle)");
-									//if ((byteCount+1) % 32 == 0)
-									//	Log.println(false, "");
+									// Log.println(false, "Byte[" + UnsignedByte.toString(UnsignedByte.loByte(byteCount)) + "]=0x" + UnsignedByte.toString(prev) + " (rle)");
+									// if ((byteCount+1) % 32 == 0)
+									// Log.println(false, "");
 									buffer[offset + (localCount * 256) + byteCount++] = prev;
-									//Log.println(false, "CommsThread.receivePacketWide() buffer["+(offset + (localCount * 256) + byteCount)+"] = 0x"+UnsignedByte.toString(prev));
-									//Log.print(false, UnsignedByte.toString(buffer[offset + (localCount * 256) + byteCount - 1]) + " ");
+									// Log.println(false, "CommsThread.receivePacketWide() buffer["+(offset + (localCount * 256) + byteCount)+"] = 0x"+UnsignedByte.toString(prev));
+									// Log.print(false, UnsignedByte.toString(buffer[offset + (localCount * 256) + byteCount - 1]) + " ");
 								} while (_shouldRun && byteCount < 256 && byteCount != UnsignedByte.intValue(data));
 							}
 							if (!_shouldRun)
@@ -3450,6 +3449,12 @@ public class CommsThread extends Thread
 					break;
 				}
 			}
+			else if (UnsignedByte.intValue(envelope[2]) == 0xd8)
+			{
+				Log.println(false, "CommsThread.receivePacketWide() told to go home.");
+				throw new GoHomeException();
+			}
+
 			if (bytesReceived == 0)
 			{
 				retries++;
@@ -3466,7 +3471,7 @@ public class CommsThread extends Thread
 					Log.println(true, "CommsThread.receivePacketWide() offset: " + offset + ".");
 					Log.println(true, "CommsThread.receivePacketWide() backoff sleeping for " + ((retries * pauseMS) / 1000) + " seconds.");
 					sleep(retries * pauseMS); // Sleep each time we have to
-												// retry
+								  // retry
 				}
 				catch (InterruptedException e)
 				{
@@ -3536,9 +3541,7 @@ public class CommsThread extends Thread
 	public byte waitForData(int timeout) throws TransportTimeoutException
 	{
 		/*
-		 * FIXME: This needs to figure out a better way to set timeouts - not
-		 * once per byte read, but only when different timing transitions are
-		 * needed.
+		 * FIXME: This needs to figure out a better way to set timeouts - not once per byte read, but only when different timing transitions are needed.
 		 */
 		// Log.println(false, "CommsThread.waitForData() entry, timeout: " +
 		// timeout);
@@ -3967,13 +3970,13 @@ public class CommsThread extends Thread
 							{
 								_transport.writeByte(0x53); // Send an "S" to trigger the start
 								_transport.pushBuffer();
-								sleep(0);	// Give SOS a little time to put up its message
+								sleep(0); // Give SOS a little time to put up its message
 							}
 							else if ((_resource.equals(Messages.getString("Gui.BS.SOSDRIVER"))))
 							{
 								_transport.writeByte(0x53); // Send an "S" to trigger the start
 								_transport.pushBuffer();
-								sleep(20);	// Give SOS a little time to put up its message
+								sleep(20); // Give SOS a little time to put up its message
 								length = length - 1; // SOS seems to need this reduced by one...
 							}
 							else if (_resource.equals(Messages.getString("Gui.BS.ProDOSRaw")))
@@ -4030,9 +4033,7 @@ public class CommsThread extends Thread
 						Log.println(false, "commsThread.Worker.run() speed = " + _speed + " pacing = " + _pacing);
 						int numLines = 0;
 						/*
-						 * Go through once and just count the number of lines in
-						 * the file. We use that to determine when to start
-						 * slowing down the pacing.
+						 * Go through once and just count the number of lines in the file. We use that to determine when to start slowing down the pacing.
 						 */
 						for (int i = 0; i < buffer.length; i++)
 						{
@@ -4041,9 +4042,7 @@ public class CommsThread extends Thread
 						}
 						int currentLine = 0;
 						/*
-						 * "Slow" pacing is 500ms. If they asked for pacing even
-						 * slower than that, we need to respect that too. So
-						 * take the max of their pacing and 500ms.
+						 * "Slow" pacing is 500ms. If they asked for pacing even slower than that, we need to respect that too. So take the max of their pacing and 500ms.
 						 */
 						int slowPacing = 500;
 						if (slowPacing < _pacing)
@@ -4068,9 +4067,7 @@ public class CommsThread extends Thread
 								try
 								{
 									/*
-									 * Are we within the boundaries of what was
-									 * supposed to be sent with slower pacing -
-									 * at the beginning or end of the file?
+									 * Are we within the boundaries of what was supposed to be sent with slower pacing - at the beginning or end of the file?
 									 */
 									if ((_slowFirst > currentLine) || (currentLine > (numLines - _slowLast)))
 									{
@@ -4173,7 +4170,7 @@ public class CommsThread extends Thread
 	{
 		if (_transport.transportType() == ATransport.TRANSPORT_TYPE_SERIAL)
 		{
-			//if (speed != ((SerialTransport)_transport).getSpeed())
+			// if (speed != ((SerialTransport)_transport).getSpeed())
 			try
 			{
 				Log.println(false, "CommsThread.setSpeed() Attempting to set the serial port's speed to " + speed);
@@ -4221,8 +4218,7 @@ public class CommsThread extends Thread
 	}
 
 	/*
-	 * public void setProtocolCompatibility(boolean state) {
-	 * _client01xCompatibleProtocol = state; }
+	 * public void setProtocolCompatibility(boolean state) { _client01xCompatibleProtocol = state; }
 	 */
 
 	public String getInstructions(String guiString, int size, int speed)

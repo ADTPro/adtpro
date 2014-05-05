@@ -58,6 +58,8 @@ ADTPro-Wide Protocol - Proposal Under Revision
 
  [{{{#Summary_Packet}Summary ('A'+'Y' / $C1+$D9)}}] Final acknowledgement/summary of results
 
+ [{{{#Home}Return to Home State('A'+'X' / $C1+$D8)}}] Sender is in home state; partner should return there as well
+
 Virtual Drive Server Functions
 
  [{{{#Read}Read Block ('E'+$01)}}] ProDOS device driver compatible read block request
@@ -465,9 +467,13 @@ Check byte:
 
 Envelope:
   One byte: 'A' ($C1)
-  Two bytes: payload length ($0000)
+  Two bytes: payload length ($0001)
   One byte: 'D' ($C4)
-  One byte: EOR of the first four bytes ($15)
+  One byte: EOR of the first four bytes ($04)
+Payload:
+  One byte: 1k "page" to send
+Check byte:
+  One byte: EOR of the payload (will be same as the payload byte)
 -------------
 
 * {Query File Size Packet} - Command
@@ -594,6 +600,17 @@ Payload:
   One byte: number of errors encountered
 Check byte:
   One byte: EOR of the payload (will be same as the payload byte)
+-------------
+
+* {Home} - Command/Response
+
+-------------
+
+Envelope:
+  One byte: 'A' ($C1)
+  Two bytes: payload length ($0000)
+  One byte: 'X' ($D8)
+  One byte: EOR of prior four bytes ($18)
 -------------
 
 Vitual Drive Server Functions

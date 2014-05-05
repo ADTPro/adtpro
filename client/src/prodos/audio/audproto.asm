@@ -48,6 +48,13 @@ CDREQUEST:
 
 
 ;---------------------------------------------------------
+; HOMEREQUEST - Client is entering home state, server should too
+;---------------------------------------------------------
+HOMEREQUEST:
+	rts
+
+
+;---------------------------------------------------------
 ; DIRREQUEST - Request current directory contents
 ; NIBPCNT contains the page number to request
 ;---------------------------------------------------------

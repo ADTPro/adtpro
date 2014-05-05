@@ -49,5 +49,7 @@
 
 	.segment "IP65ZP" : zeropage
 
+HOMEREQUEST:
+	rts
 PEND:
 	.segment "DATA"
