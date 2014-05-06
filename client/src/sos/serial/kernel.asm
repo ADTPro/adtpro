@@ -8,16 +8,16 @@ size		:= $30
 GrubIIIGet	:= $A047	; Borrow Grub's IIIGet
 
 ; If the code for the loader is modified, these addresses must be changed to match
-LDRIIIGet	:= $A168	; Borrow the Loader's IIIGet
-ACIAInit	:= $A18A	; Borrow the Loader's ACIAInit
-LDRSendEnvelope	:= $A1A0	; Borrow the Loader's SendEnvelope routine
-LDRMessage	:= $A1C3	; Borrow the Loader's Message routine
-LDRRESTORE	:= $A1D2	; Borrow the Loader's RESTORE
-LDRMessage_2	:= $A1E0	; Borrow the Loader's message_2
-LDRMessage_3	:= $A1E8	; Borrow the Loader's message_3
-LDREnvelope	:= $A1F8	; Borrow the Loader's Wide protocol envelope space
-LDRPayload	:= $A1FD	; Borrow the Loader's Wide protocol payload space
-LDRReadDriver	:= $A22B	; Transplant the ReadDriver routine in loader space
+LDRIIIGet	:= $A184	; Borrow the Loader's IIIGet
+ACIAInit	:= $A1A6	; Borrow the Loader's ACIAInit
+LDRSendEnvelope	:= $A1BC	; Borrow the Loader's SendEnvelope routine
+LDRMessage	:= $A1DF	; Borrow the Loader's Message routine
+LDRRESTORE	:= $A1EE	; Borrow the Loader's RESTORE
+LDRMessage_2	:= $A2D6	; Borrow the Loader's message_2
+LDRMessage_3	:= $A2EA	; Borrow the Loader's message_3
+LDREnvelope	:= $A349	; Borrow the Loader's Wide protocol envelope space
+LDRPayload	:= $A34E	; Borrow the Loader's Wide protocol payload space
+LDRReadDriver	:= $A34F	; Transplant the ReadDriver routine in loader space
 
 ZPAGE		:= $0000
 I_BASE_P	:= $0002
@@ -648,7 +648,7 @@ ReadInterp:			; We got the magic signature; start reading data
 	jsr LDRIIIGet		; Pull a byte
 	bcs ReadInterpDone	;ReceiveInterpWarm
 	sta (b_p),y		; Save it
-	sta $0797		; Print throbber in the status area
+	sta $07bd+8		; Print throbber in the status area
 	iny
 	cpy size		; Is y equal to the LSB of our target?
 	bne :+			; No... check for next pageness

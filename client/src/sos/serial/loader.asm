@@ -123,7 +123,7 @@ Read:
 	jsr	IIIGet	; Pull a byte - start over if we run out of bytes or time out
 	bcs	RequestKernel
 	sta	(BUF_P),y	; Save it
-	sta	$0797		; Print our throbber in the status area
+	sta	$07c5		; Print our throbber in the status area
 	iny
 	bne	Read
 	inc	BUF_P+1		; Increment another page
@@ -205,10 +205,10 @@ IIIPutC1:
 
 Message:
 	stx	SelfMod+1
-	ldy	#$07
+	ldy	#$14
 SelfMod:
 	lda	message_1,y
-	sta	$78f,y
+	sta	$7b1,y
 	dey
 	bpl	SelfMod
 	rts
@@ -217,19 +217,6 @@ RESTORE:
 	lda	#$32
 	sta	ENV_REG
 	rts
-
-message_1:
-	.byte	"KERNEL: "
-
-message_2:
-	.byte	"INTERP: "
-
-message_3:
-	.byte	"DRIVER: "
-
-message_4:
-	.byte	"///OK///"
-
 
 	MLOGO1:	.byte NRM_BLOCK,NRM_BLOCK,INV_BLOCK,INV_BLOCK,INV_BLOCK,NRM_BLOCK,NRM_BLOCK,NRM_BLOCK
 		.byte INV_BLOCK,INV_BLOCK,INV_BLOCK,INV_BLOCK,NRM_BLOCK,NRM_BLOCK,NRM_BLOCK
@@ -280,6 +267,19 @@ message_4:
 		.byte NRM_BLOCK,INV_CHR_L,INV_CHR_L
 		.byte CHR_RETURN
 	MLOGO6_END =*
+
+message_1:
+	.byte	" LOADING SOS KERNEL:"
+
+message_2:
+	.byte	"   LOADING ADTPRO  :"
+
+message_3:
+	.byte	"LOADING SOS DRIVERS:"
+
+message_4:
+	.byte	"   ///   OK   ///   "
+
 
 ;---------------------------------------------------------
 ; Logo message tables
@@ -340,7 +340,7 @@ Payload:	; This will be a bootstrap file request - this last byte is sent twice 
 ReadDriver:			; We got the magic signature; start reading data
 	jsr GrubIIIGet		; Pull a byte
 	sta (b_p),y		; Save it
-	sta $0797		; Print throbber in the status area
+	sta $07c5		; Print throbber in the status area
 	iny
 	cpy size		; Is y equal to the LSB of our target?
 	bne :+			; No... check for next pageness

@@ -32,7 +32,7 @@ CROUT	= $fcef
 PRBYTE	= $f9ae
 
 .define	INV_BLOCK $20	; ASCII for an inverse space
-.define	INV_CHR_L $2C	; ASCII for an inverse "L" character
+.define	INV_CHR_L $4C	; ASCII for an inverse "L" character
 .define	NRM_BLOCK $A0	; ASCII for a normal space
 
 ;---------------------------------------------------------
