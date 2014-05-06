@@ -16,7 +16,7 @@ disk, and you'll be ready to go.  If not... read on.
  their serial ports, refer back to the
  {{{./connectionsserial.html#Apple3}Connections}} section.
 
- If you'd rather have a pre-built ADTPro floppy disk arrive at your door than
+ If you'd rather have a pre-built ADTPro floppy disk for SOS arrive at your door than
 create one yourself, {{{http://retrofloppy.com/products.html#ADTPRO}click here.}}
 
 * Bootstrapping demonstration video
@@ -31,9 +31,7 @@ null modem cable, all the way to making a bootable ADTPro floppy:
 
  The Apple /// doesn't have the rich set of firmware the way the Apple II does.
 That means that the serial port setup and communications software has to be
-"bootstrapped" - that is, typed in - by you, dear reader.  The bootstrapping 
-operation happens at 9600 baud, and that speed is not customizable.  
-ADTPro client and server cooperate to set the speed automatically.
+"bootstrapped" - that is, typed in - by you, dear reader.
 
  The Apple /// does have
 a minimally functional command line interface, or "monitor."  It is accessible with 
@@ -43,12 +41,14 @@ next to an arrow prompt.  You then proceed to type in and run a short bootstrap
 loader; clicking on "Bootstrapping->SOS" from the ADTPro server gives instructions
 for that.
 The bootstrap loader then waits to accept the rest of bootstrapping code from the ADTPro server,
-which flows when you dismiss the ADTPro server dialog box.
+which starts flowing once you dismiss the ADTPro server dialog box.
 ADTPro will complete the bootstrapping process and leave you with your /// running
 the ADTPro client under SOS, where you can format blank disks and reconstitute software
-from virtual disk images.
+from virtual disk images.  
+The first disk you create should, of course, be the ADTPROSOS-v.r.m.DSK disk image
+so you never have to type in the loader program again!
 
- Public domain Apple /// software is available {{{http://apple3.org}here,}}
+ Other public domain Apple /// software is available {{{http://apple3.org}here,}}
 for example.
 
 * {Detailed steps}
@@ -128,25 +128,33 @@ A000G
     []
 
     [[1]] On the ADTPro server, click on the "Bootstrapping->SOS" menu item.
-    Dismiss the dialog box that appears (since you have just followed the 
-    same instructions, the bootstrap loader is already running now).
+    You can click "Ok" on the dialog box that appears since you have just followed the 
+    same instructions and the bootstrap loader is running on the Apple /// now.
     The bootstrapping process should now continue without any further need for 
     intervention.  As data is sent from the ADTPro server to the Apple ///,
     a character will flash to the right of the status message to indicate progress.
 
-    If the screen stops updating for more than a few seconds, you will want to
-    re-check your serial
+    If the screen never changes or stops updating for more than a few seconds, 
+    you will want to re-check your serial
     {{{./connectionsserial.html#Apple3}connections}} and potentially try again.
     You can do that by stopping the /// with the Ctrl-OpenApple-Reset key sequence
-    to get to the monitor.  Then. type A000G and hit Return to start over without
-    having to re-type the initial grub program.  Click on the "Bootstrapping->SOS" 
+    to get back to the monitor.  Then. type A000G and hit Return to start over without
+    having to re-type the initial loader program.  Click on the "Bootstrapping->SOS" 
     menu item and hopefully your luck will change.
 
     Some of the stages bootstrapping will be going through:
 
     *
     
-[images/bootstrap34.png]
+[images/bootstrap341.png]
+
+    *
+    
+[images/bootstrap342.png]
+
+    *
+    
+[images/bootstrap343.png]
 
     []
 
