@@ -29,12 +29,17 @@
 ; MADE HERE - TAKE A LOOK AT kernel.asm AND CHANGE ALL LDR* ADDRESSES ACCORDINGLY.
 ;
 
+	.include "sos/serial/loader.i"
+
 KBDSTROBE	:= $c010
-E_REG		:= $ffdf
+ENV_REG		:= $ffdf
 BANK_REG	:= $ffef
-BUF_P		:= $7e
+
 size		:= $30
 b_p		:= $32
+BUF_P		:= $7e
+UTILPTR		:= $82
+ZP		:= $84
 
 ACIADR		:= $c0f0	; Data register. $c0f0 for ///, $c088+S0 for SSC
 ACIASR		:= $c0f1	; Status register. $c0f1 for ///, $c089+S0 for SSC
@@ -49,7 +54,7 @@ Signature:
 	.byte	$47		; The first byte that grub will see: a "G" character; not executed
 	.org	$a100
 Entry:
-	jsr	ClearScreen
+	jsr	COL40		; Clear screen, 40 column mode
 	ldx	#$fb
 	txs			; Some nonsense about .CONSOLE mucking with the stack
 	bit	KBDSTROBE
@@ -65,6 +70,27 @@ BankTest:			; Find and use the highest writable bank
 	bne	BankTest
 
 	jsr	ACIAInit	; Get the environment all set up
+
+;---------------------------------------------------------
+; SHOWLOGO
+; 
+; Prints the logo on the screen
+;---------------------------------------------------------
+SHOWLOGO:
+	jsr CROUT
+	jsr CROUT
+	lda #PMLOGO1	; Start with MLOGO1 message
+	sta ZP
+	tay
+LogoLoop:
+    	lda #$02	; Get ready to HTAB $02 chars over
+	sta CH
+	jsr WRITEMSG
+	inc ZP
+	inc ZP		; Get next logo message
+	ldy ZP
+	cpy #PMLOGO6+2	; Stop at MLOGO6 message
+	bne LogoLoop
 
 ; Set up our pointers
 	lda	#$1e		; SOS.KERNEL initially occupies $1e00 to $73ff
@@ -106,9 +132,9 @@ Read:
 	bne	Read		; If not... go back for more
 
 ; Go fast again
-	lda	E_REG	; Read the environment register
+	lda	ENV_REG	; Read the environment register
 	and	#$7f	; Set 2MHz switch
-	sta	E_REG	; Write the environment register
+	sta	ENV_REG	; Write the environment register
 
 ; Say we're done
 	ldx	#<message_4
@@ -143,9 +169,9 @@ IIIGot:	lda	ACIADR	; Get character
 
 ACIAInit:
 ; Set up the environment
-	lda	E_REG		; Read the environment register
+	lda	ENV_REG		; Read the environment register
 	ora	#$f2		; Set 1MHz switch, Video + I/O space
-	sta	E_REG		; Write the environment register
+	sta	ENV_REG		; Write the environment register
 ; Set up the serial port
 	lda	#$0b		; No parity, etc.
 	sta	ACIAMR		; Store via ACIA mode register.
@@ -189,7 +215,7 @@ SelfMod:
 
 RESTORE:
 	lda	#$32
-	sta	E_REG
+	sta	ENV_REG
 	rts
 
 message_1:
@@ -204,32 +230,112 @@ message_3:
 message_4:
 	.byte	"///OK///"
 
+
+	MLOGO1:	.byte NRM_BLOCK,NRM_BLOCK,INV_BLOCK,INV_BLOCK,INV_BLOCK,NRM_BLOCK,NRM_BLOCK,NRM_BLOCK
+		.byte INV_BLOCK,INV_BLOCK,INV_BLOCK,INV_BLOCK,NRM_BLOCK,NRM_BLOCK,NRM_BLOCK
+		.byte INV_BLOCK,INV_BLOCK,INV_BLOCK,INV_BLOCK,INV_BLOCK,INV_BLOCK,NRM_BLOCK
+		.byte INV_CHR_L,INV_CHR_L,INV_CHR_L,INV_CHR_L
+		.byte CHR_RETURN
+	MLOGO1_END =*
+
+	MLOGO2:	.byte NRM_BLOCK,INV_BLOCK,INV_BLOCK,NRM_BLOCK,INV_BLOCK,INV_BLOCK,NRM_BLOCK,NRM_BLOCK
+		.byte INV_BLOCK,INV_BLOCK,NRM_BLOCK,NRM_BLOCK,INV_BLOCK,INV_BLOCK,NRM_BLOCK
+		.byte NRM_BLOCK,NRM_BLOCK,INV_BLOCK,INV_BLOCK,NRM_BLOCK,NRM_BLOCK,NRM_BLOCK
+		.byte INV_CHR_L,INV_CHR_L,NRM_BLOCK,NRM_BLOCK,INV_CHR_L,INV_CHR_L
+		.byte CHR_RETURN
+	MLOGO2_END =*
+
+	MLOGO3:	.byte INV_BLOCK,INV_BLOCK,NRM_BLOCK,NRM_BLOCK,NRM_BLOCK,INV_BLOCK,INV_BLOCK,NRM_BLOCK
+		.byte INV_BLOCK,INV_BLOCK,NRM_BLOCK,NRM_BLOCK,INV_BLOCK,INV_BLOCK,NRM_BLOCK
+		.byte NRM_BLOCK,NRM_BLOCK,INV_BLOCK,INV_BLOCK,NRM_BLOCK,NRM_BLOCK,NRM_BLOCK
+		.byte INV_CHR_L,INV_CHR_L,NRM_BLOCK,NRM_BLOCK,INV_CHR_L,INV_CHR_L,NRM_BLOCK
+		.byte NRM_BLOCK,INV_CHR_L,INV_CHR_L,NRM_BLOCK
+		.byte NRM_BLOCK,INV_CHR_L,INV_CHR_L
+		.byte CHR_RETURN
+	MLOGO3_END =*
+
+	MLOGO4:	.byte INV_BLOCK,INV_BLOCK,INV_BLOCK,INV_BLOCK,INV_BLOCK,INV_BLOCK,INV_BLOCK,NRM_BLOCK
+		.byte INV_BLOCK,INV_BLOCK,NRM_BLOCK,NRM_BLOCK,INV_BLOCK,INV_BLOCK,NRM_BLOCK
+		.byte NRM_BLOCK,NRM_BLOCK,INV_BLOCK,INV_BLOCK,NRM_BLOCK,NRM_BLOCK,NRM_BLOCK
+		.byte INV_CHR_L,INV_CHR_L,INV_CHR_L,INV_CHR_L,NRM_BLOCK,NRM_BLOCK,NRM_BLOCK
+		.byte INV_CHR_L,NRM_BLOCK,NRM_BLOCK,NRM_BLOCK
+		.byte INV_CHR_L,NRM_BLOCK,NRM_BLOCK,INV_CHR_L
+		.byte CHR_RETURN
+	MLOGO4_END =*
+
+	MLOGO5:	.byte INV_BLOCK,INV_BLOCK,NRM_BLOCK,NRM_BLOCK,NRM_BLOCK,INV_BLOCK,INV_BLOCK,NRM_BLOCK
+		.byte INV_BLOCK,INV_BLOCK,NRM_BLOCK,NRM_BLOCK,INV_BLOCK,INV_BLOCK,NRM_BLOCK
+		.byte NRM_BLOCK,NRM_BLOCK,INV_BLOCK,INV_BLOCK,NRM_BLOCK,NRM_BLOCK,NRM_BLOCK
+		.byte INV_CHR_L,INV_CHR_L,NRM_BLOCK,NRM_BLOCK,NRM_BLOCK,NRM_BLOCK,NRM_BLOCK
+		.byte INV_CHR_L,NRM_BLOCK,NRM_BLOCK,NRM_BLOCK
+		.byte INV_CHR_L,NRM_BLOCK,NRM_BLOCK,INV_CHR_L
+		.byte CHR_RETURN
+	MLOGO5_END =*
+
+	MLOGO6:	.byte INV_BLOCK,INV_BLOCK,NRM_BLOCK,NRM_BLOCK,NRM_BLOCK,INV_BLOCK,INV_BLOCK,NRM_BLOCK
+		.byte INV_BLOCK,INV_BLOCK,INV_BLOCK,INV_BLOCK,NRM_BLOCK,NRM_BLOCK,NRM_BLOCK
+		.byte NRM_BLOCK,NRM_BLOCK,INV_BLOCK,INV_BLOCK,NRM_BLOCK,NRM_BLOCK,NRM_BLOCK
+		.byte INV_CHR_L,INV_CHR_L,NRM_BLOCK,NRM_BLOCK,NRM_BLOCK,NRM_BLOCK,NRM_BLOCK
+		.byte INV_CHR_L,NRM_BLOCK,NRM_BLOCK,NRM_BLOCK
+		.byte NRM_BLOCK,INV_CHR_L,INV_CHR_L
+		.byte CHR_RETURN
+	MLOGO6_END =*
+
+;---------------------------------------------------------
+; Logo message tables
+;---------------------------------------------------------
+
+PMLOGO1 = $00
+PMLOGO2 = $02
+PMLOGO3 = $04
+PMLOGO4 = $06
+PMLOGO5 = $08
+PMLOGO6 = $0a
+
+MSGTBL:	.addr MLOGO1,MLOGO2,MLOGO3,MLOGO4,MLOGO5,MLOGO6
+MSGLENTBL:
+	.byte MLOGO1_END-MLOGO1
+	.byte MLOGO2_END-MLOGO2
+	.byte MLOGO3_END-MLOGO3
+	.byte MLOGO4_END-MLOGO4
+	.byte MLOGO5_END-MLOGO5
+	.byte MLOGO6_END-MLOGO6
+
+;---------------------------------------------------------
+; WRITEMSG - Print null-terminated message number in Y
+;---------------------------------------------------------
+; Entry - print message at current cursor pos
+WRITEMSG:
+	lda MSGTBL,Y
+	sta <UTILPTR
+	lda MSGTBL+1,Y
+	sta <UTILPTR+1
+; Entry - print message at current cursor pos
+;         set UTILPTR to point to message
+WRITEMSG_RAW:
+	clc
+	tya
+	ror		; Divide Y by 2 to get the message length out of the table
+	tay
+	lda MSGLENTBL,Y
+	beq WRITEMSGEND	; Bail if length is zero (i.e. MNULL)
+	sta WRITEMSGLEN
+	ldy #$00
+WRITEMSGLOOP:
+	lda (UTILPTR),Y
+	jsr COUT
+	iny
+	cpy WRITEMSGLEN
+	bne WRITEMSGLOOP
+WRITEMSGEND:
+	rts
+
+WRITEMSGLEN:	.byte $00
+
 Envelope:
 	.byte	$c1, $01, $00, $c6, $06
 Payload:	; This will be a bootstrap file request - this last byte is sent twice (x eor x = x)
 	.byte	$00
-
-ClearScreen:
-	lda #$a0
-	ldy #$78
-	jsr Fill1
-	ldy #$78
-	jsr Fill2
-	rts
-Fill1:	dey
-	sta $400,y
-	sta $480,y
-	sta $500,y
-	sta $580,y
-	bne Fill1
-	rts
-Fill2:	dey
-	sta $600,y
-	sta $680,y
-	sta $700,y
-	sta $780,y
-	bne Fill2
-	rts
 
 ReadDriver:			; We got the magic signature; start reading data
 	jsr GrubIIIGet		; Pull a byte
@@ -248,9 +354,8 @@ ReadDriver:			; We got the magic signature; start reading data
 ReadDone:
 	jsr	RESTORE
 	jmp	KRNLReceiveDriverDone
-
 Timer:	.word	$0000
 Pad:
-	.res	$a2ff-*,$00
-.assert	* = $a2ff, error, "Code got too big to fit in a block!"
+	.res	$a3ff-*,$00
+.assert	* = $a3ff, error, "Code got too big to fit!"
 	.byte	$00
