@@ -3966,13 +3966,8 @@ public class CommsThread extends Thread
 							// to prepend the length and stuff
 							// Log.println(true,
 							// "DEBUG: CommsThread.Worker.run() writing length header.");
-							if ((_resource.equals(Messages.getString("Gui.BS.SOSINTERP"))))
-							{
-								_transport.writeByte(0x53); // Send an "S" to trigger the start
-								_transport.pushBuffer();
-								sleep(0); // Give SOS a little time to put up its message
-							}
-							else if ((_resource.equals(Messages.getString("Gui.BS.SOSDRIVER"))))
+							if ((_resource.equals(Messages.getString("Gui.BS.SOSINTERP")))
+								|| ((_resource.equals(Messages.getString("Gui.BS.SOSDRIVER")))))
 							{
 								_transport.writeByte(0x53); // Send an "S" to trigger the start
 								_transport.pushBuffer();
