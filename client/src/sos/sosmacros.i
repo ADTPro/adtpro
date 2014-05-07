@@ -129,6 +129,25 @@
 	pla
 .endmacro
 
+.macro GO_KERNEL
+	lda E_REG
+	sta USER_E_REG
+	lda Z_REG
+	sta USER_Z_REG
+	ora #$05		; Set ROM on, stack to alternate
+	sta E_REG
+	lda #$03		; Use true zero page
+	sta Z_REG
+.endmacro
+
+.macro GO_USER
+	lda USER_E_REG
+	sta E_REG		; Restore Environment register
+	lda USER_Z_REG
+	sta Z_REG		; Restore zero page
+.endmacro
+
+
 .define	NRM_BLOCK $11,$20
 .define	INV_CHR_L $12,CHR_L,$11
 .define	INV_BLOCK $12,$20,$11
