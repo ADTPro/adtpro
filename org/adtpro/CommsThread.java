@@ -1,5 +1,5 @@
 /*
- * ADTPro - Apple Disk Transfer ProDOS
+* ADTPro - Apple Disk Transfer ProDOS
  * Copyright (C) 2007 - 2014 by David Schmidt
  * david__schmidt at users.sourceforge.net
  *
@@ -4003,7 +4003,9 @@ public class CommsThread extends Thread
 							}
 							_transport.writeByte(buffer[i]);
 							_transport.pushBuffer();
-							if ((_resource.equals(Messages.getString("Gui.BS.SOSKERNEL"))) || (_resource.equals(Messages.getString("Gui.BS.SOSINTERP"))) || (_resource.equals(Messages.getString("Gui.BS.SOSDRIVER"))))
+							if ((_resource.equals(Messages.getString("Gui.BS.SOSKERNEL"))) || (_resource.equals(Messages.getString("Gui.BS.SOSINTERP"))))
+								sleep(0); // Sleeping here seemed to really slow down Windows OSes
+							else if ((_resource.equals(Messages.getString("Gui.BS.SOSDRIVER"))))
 								sleep(1); // Sleeping here seemed to really slow down Windows OSes
 							if (_shouldRun)
 							{
