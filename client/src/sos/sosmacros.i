@@ -129,7 +129,7 @@
 	pla
 .endmacro
 
-.macro GO_KERNEL
+.macro GO_MONITOR
 	lda E_REG
 	sta USER_E_REG
 	lda Z_REG

@@ -58,6 +58,8 @@ CRCTBLL:	.res $100	; CRC LOW TABLE  ($100 Bytes)
 CRCTBLH:	.res $100	; CRC HIGH TABLE ($100 Bytes)
 BLKHI:		.byte $01
 BLKLO:		.byte $01
+USER_Z_REG:	.byte $00	; Local storage for Zero-page register
+USER_E_REG:	.byte $00	; Local storage for Environment register
 output_buffer:	.res 520	; For ip65 buffer space
 
 ;----------------------------------------------------
