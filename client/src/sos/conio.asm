@@ -26,7 +26,7 @@
 ; Sets up the screen for behaviors we expect
 ;---------------------------------------------------------
 INIT_SCREEN:
-	; Prepare the system for our expecations
+	; Prepare the system for our expectations
 	CALLOS OS_OPEN, OPEN_PARMS	; Open the console
 	jsr ERRORCK
 	lda OPEN_REF
@@ -92,8 +92,8 @@ INIT_SCREEN:
 	ora #$40			; Turn $C000-$CFFF to I/O
 	sta E_REG			; Write the environment register
 
-; Points SOS’ NMI vector at the debug routine in SOS. It normally
-; points at an RTS so that hitting RESET doesn’t do anything. This
+; Points SOS' NMI vector at the debug routine in SOS. It normally
+; points at an RTS so that hitting RESET doesn't do anything. This
 ; changes it so when you hit RESET, SOS enters a routine that saves all the
 ; important stuff, and jumps into the built in monitor. To reenter SOS, do
 ; a 198CG from the monitor. Known to work through SOS 1.3.
