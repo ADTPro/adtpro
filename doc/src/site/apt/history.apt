@@ -12,8 +12,6 @@ ADTPro Release History
 
  * New protocol (code-named "Wide") that makes transport more reliable and significantly faster with tunable payload lengths
 
- * [Client] Support for Uthernet II card
-
  * [Client] Arrow-and-Return interface for choosing a file to receive
 
  * [Client] Arrow-and-Return interface for the main menu
@@ -32,7 +30,7 @@ ADTPro Release History
 
  * [SOS Client] Changing serial connected-ness while client is running no longer causes fatal SOS $02 errors
 
- * [SOS Bootstrap] Timeout logic borrowed from Speediboot makes SOS bare-metal bootstrapping more reliable and prettier
+ * [SOS Client] Bare-metal bootstrap more reliable with timeout logic borrowed from Speediboot and made prettier with a logo and better display management
 
  []
 
