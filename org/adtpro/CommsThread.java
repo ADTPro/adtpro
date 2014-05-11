@@ -177,7 +177,7 @@ public class CommsThread extends Thread
 					break;
 				case (byte) 193: // "A": Basic Transport Envelope
 					_busy = true;
-					_parent.setSecondaryText(""); //$NON-NLS-1$
+					// _parent.setSecondaryText(""); //$NON-NLS-1$
 					Log.println(false, "CommsThread.commandLoop() Received wide protocol request."); //$NON-NLS-1$
 					dispatchCommand(pullEnvelopeWide(false));
 					_busy = false;

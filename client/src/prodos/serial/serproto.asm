@@ -42,7 +42,7 @@ HOMEREQUEST:
 	lda #$00	; Zero byte payload
 	jsr PUTC
 	jsr PUTC
-	lda CHR_X	; Go Home
+	lda #CHR_X	; Go Home
 	jsr PUTC
 	lda #$19	; Pre-calculted check byte
 	jsr PUTC	; Send check byte
