@@ -315,10 +315,8 @@ HILIGHT_MENU:
 	lda PREV_MENU
 	cmp #$ff	; Skip un-highlighting if prev menu was undefined
 	beq :+
-	SET_UNINVERSE_SOS
 	jsr HI_2
-:	SET_INVERSE_SOS
-	ldy CUR_MENU
+:	ldy CUR_MENU
 HI_GO:	jsr HI_2
 HI_DONE:
 	rts
@@ -342,9 +340,9 @@ HI_2:	ldx #$03
 ;---------------------------------------------------------
 BumpA1:
 	clc
-	inc A1L
+	inc <A1L
 	bne BumpA1Done
-	inc A1H
+	inc <A1H
 BumpA1Done:
 	rts
 

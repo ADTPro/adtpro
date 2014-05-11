@@ -77,15 +77,15 @@ DIRMORE:
 	plp		; Restore flags
 	beq DIRPAGE	; Page or dir end?
 	ora #$80
-	CONDITION_CR	; SOS needs to fix up the carriage return
-	jsr COUT1	; Display
+	;CONDITION_CR	; SOS needs to fix up the carriage return
+	jsr COUT	; Display
 	jmp DIRDISP	; Loop back around
 
 DIRPAGE:
 	lda (BLKPTR),Y	; Get byte from buffer
 	sta NDUCANCONT	; Save that off
 	bne @NewUI
-	LDA_CV
+	lda CV
 	sta NDULASTROW	; Save that off
 	dec NDULASTROW
 	lda NIBPCNT
@@ -243,10 +243,8 @@ NDUPageDown:
 	jmp DIRDISP0
 
 NDUUnInvertCurrentLine:
-	SET_UNINVERSE_SOS
 	jmp NDUInvertGo
 NDUInvertCurrentLine:
-	SET_INVERSE_SOS
 NDUInvertGo:
 	ldy COL_SAV
 	ldx #$00

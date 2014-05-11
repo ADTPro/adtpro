@@ -59,7 +59,7 @@ VOLLOOP:
 	ldx #$25	; Column
 	ldy #$15	; Row
 	jsr GOTOXY
-	jsr RDKEY
+	jsr READ_CHAR
 	CONDITION_KEYPRESS
 
 VKEYDN:
@@ -130,9 +130,9 @@ VREREAD:
 	jmp VOLLOOP	; Back to the top of the loop
 
 VESC:	cmp #$9B
-	beq ESCAPE
+	beq @ESCAPE
 	jmp VOLLOOP	; No, it was an unknown key - loop back around
-ESCAPE:
+@ESCAPE:
 	lda #$FF	; Set accumulator negative - no choice made
 	rts		; Back out to caller
 

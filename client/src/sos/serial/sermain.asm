@@ -1,6 +1,6 @@
 ;
 ; ADTPro - Apple Disk Transfer ProDOS
-; Copyright (C) 2008 - 2013 by David Schmidt
+; Copyright (C) 2008 - 2014 by David Schmidt
 ; david__schmidt at users.sourceforge.net
 ;
 ; This program is free software; you can redistribute it and/or modify it 
@@ -30,6 +30,7 @@
 ;---------------------------------------------------------
 ; Pull in all the rest of the code
 ;---------------------------------------------------------
+	.include "sos/rawio.asm"	; Apple II-like I/O stand-in
 	.include "sos/conio.asm"	; Console I/O
 	.include "print.asm"
 	.include "prodos/serial/serproto.asm"
@@ -47,20 +48,19 @@
 	.include "sos/format.asm"			; Note: includes FORMAT segment
 	.include "bsave.asm"
 
-; Stubs from Disk II-related stuff
-ReceiveNib:
-GO_TRACK0:
-INIT_DISKII:
-sendnib:
+; From Nibble code:
+; Note: we could use all of the Disk II functions if we resolve the BIGBUF references 
+; in diskii.asm, specifically ADR_TRK.  Also, there are some page boundary requirements
+; that would have to be respected. 
 motoron:
 motoroff:
+INIT_DISKII:
+GO_TRACK0:
+sendnib:
 	rts
 ; Stubs:
 ROM:
 ;BSAVE:
-CH:
-CV:
-INVFLG:
 DevAdr:
 DevList:
 DevCnt:

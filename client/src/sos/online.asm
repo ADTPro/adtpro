@@ -1,6 +1,6 @@
 ;
 ; ADTPro - Apple Disk Transfer ProDOS
-; Copyright (C) 2006 - 2011 by David Schmidt
+; Copyright (C) 2006 - 2014 by David Schmidt
 ; david__schmidt at users.sourceforge.net
 ;
 ; This program is free software; you can redistribute it and/or modify it 
@@ -311,10 +311,8 @@ VOLINSTRUCT:
 ;   UTILPTR points to the next device in the DEVICES table
 ;---------------------------------------------------------
 PRT1VOL:
-	lda #$1e		; Set the cursor at the left edge
-	jsr COUT
-	lda #$20		; One space over
-	jsr COUT
+	lda #$01		; Set the cursor at one space over from the left edge
+	sta CH
 
 	lda UTILPTR
 	sta PRT1PTR		; Save a pointer to the beginning of the structure
@@ -338,13 +336,18 @@ PRT1VOL:
 	sta UTILPTR
 	bcc :+
 	inc UTILPTR+1
-:
+:	ldy #$00
+@Printable:
+	lda (UTILPTR),y
+	ora #$80		; Make normal characters out of inverse (could be combined with @Printable2 routine)
+	sta (UTILPTR),y
+	iny
+	cpy #$0f
+	bne @Printable
 	lda #$0f
-	sta WRITE_LEN
-	jsr WRITEMSG_RAW	; Write the device name
+	jsr WRITEMSG_RAWLEN	; Write the device name
 
-	lda #$20
-	jsr COUT		; Space between Device Name and Volume Name
+	inc CH			; Space between Device Name and Volume Name
 
 	clc
 	lda PRT1PTR+1
@@ -354,15 +357,19 @@ PRT1VOL:
 	sta UTILPTR
 	bcc :+
 	inc UTILPTR+1
-:
+:	ldy #$00
+@Printable2:
+	lda (UTILPTR),y
+	ora #$80		; Make normal characters out of inverse (could be combined with @Printable routine)
+	sta (UTILPTR),y
+	iny
+	cpy #$0f
+	bne @Printable2
 	lda #$0f
-	sta WRITE_LEN
-	jsr WRITEMSG_RAW	; Write the volume name
+	jsr WRITEMSG_RAWLEN	; Write the volume name
 
-	lda #$20
-	jsr COUT		; Space between Volume Name and Volume Blocks
-	lda #$20
-	jsr COUT		; Double space between Volume Name and Volume Blocks
+	inc CH			; Space between Volume Name and Volume Blocks
+	inc CH			; Double space between Volume Name and Volume Blocks
 
 	lda NUMBLKS
 	ldx NUMBLKS+1

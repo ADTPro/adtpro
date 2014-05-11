@@ -30,6 +30,7 @@
 ;---------------------------------------------------------
 ; Pull in all the rest of the code
 ;---------------------------------------------------------
+	.include "sos/rawio.asm"	; Console I/O
 	.include "sos/conio.asm"	; Console I/O
 	.include "print.asm"
 	.include "sos/online.asm"
@@ -57,9 +58,6 @@ motoroff:
 
 ; Stubs:
 ROM:
-CH:
-CV:
-INVFLG:
 DevAdr:
 DevList:
 DevCnt:

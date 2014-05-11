@@ -59,17 +59,17 @@ IPConfig:
 @Dots:	clc
 	lda #xpos
 	adc #$03
-	jsr HTAB
+	sta <CH
 	lda #CHR_DOT
 	jsr COUT1
 	lda #xpos
 	adc #$07
-	jsr HTAB
+	sta <CH
 	lda #CHR_DOT
 	jsr COUT1
 	lda #xpos
 	adc #$0b
-	jsr HTAB
+	sta <CH
 	lda #CHR_DOT
 	jsr COUT1
 	iny
@@ -276,14 +276,14 @@ RenderNumber:
 	clc
 	lda #xpos
 	adc raw_x
-	jsr HTAB
+	sta <CH
 	lda current_value
 	jsr ToDecimal
 	clc
 	lda #xpos
 	adc raw_x
 	adc #$02
-	jsr HTAB
+	sta <CH
 	rts
 
 ;---------------------------------------------------------

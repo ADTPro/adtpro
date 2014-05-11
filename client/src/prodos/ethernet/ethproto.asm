@@ -590,30 +590,30 @@ RWERR1:
 
 RECVWIDE_REPLY:
 	ldax #udp_inp + udp_data + 1	; Point Buffer at the incoming UDP data buffer
-	stax A1L
+	stax <A1L
 	ldx #$00
-	lda (A1L,X)
+	lda (<A1L,X)
 	cmp #CHR_A	; Get protocol - must be an 'A'
 	bne RWERR
 	jsr BumpA1
-	lda (A1L,X)	; Get payload length, LSB
+	lda (<A1L,X)	; Get payload length, LSB
 	sta PAGECNT
 	sta XFERLEN
 	jsr BumpA1
-	lda (A1L,X)	; Get payload length, MSB
+	lda (<A1L,X)	; Get payload length, MSB
 	sta PAGECNT+1
 	sta XFERLEN+1
 	jsr BumpA1
-	lda (A1L,X)	; Get protocol - must be an 'S'
+	lda (<A1L,X)	; Get protocol - must be an 'S'
 	cmp #CHR_S
 	bne RWERR1
 	jsr BumpA1
-	lda (A1L,X)	; Get protocol - check byte (discarded for the moment)
+	lda (<A1L,X)	; Get protocol - check byte (discarded for the moment)
 	jsr BumpA1	; Block number, LSB
-	lda (A1L,X)
+	lda (<A1L,X)
 	sta HOSTBLX
 	jsr BumpA1	; Block number, MSB
-	lda (A1L,X)
+	lda (<A1L,X)
 	sta HOSTBLX+1
 	lda BLKPTR
 	sta BUFPTR
@@ -623,7 +623,7 @@ RECVWIDE_REPLY:
 
 RW1:
 	jsr BumpA1	; Increment the pointer to data we're reading
-	lda (A1L,X)	; Get difference
+	lda (<A1L,X)	; Get difference
 	beq RW2		; If zero, get new index
 	sta (BLKPTR),Y	; else put char in buffer
 	iny		; ...and increment index to data we're writing
@@ -632,7 +632,7 @@ RW1:
 
 RW2:
 	jsr BumpA1	; Increment the pointer to data we're reading
-	lda (A1L,X)	; Get new index ...
+	lda (<A1L,X)	; Get new index ...
 	tay		; ... in the Y register
 	bne RW1		; Loop if index <> 0
 			; ...else check for more or return
@@ -646,10 +646,10 @@ RWNext:	dec PAGECNT+1
 	jmp RW1
 @Done:
 	jsr BumpA1	; Increment the pointer to data we're reading
-	lda (A1L,X)	; Done - get CRC lsb
+	lda (<A1L,X)	; Done - get CRC lsb
 	sta PCCRC
 	jsr BumpA1	; Increment the pointer to data we're reading
-	lda (A1L,X)	; Done - get CRC msb
+	lda (<A1L,X)	; Done - get CRC msb
 	sta PCCRC+1
 	lda XFERLEN+1
 	sta PAGECNT+1

@@ -1,6 +1,6 @@
 ;
 ; ADTPro - Apple Disk Transfer ProDOS
-; Copyright (C) 2006 - 2012 by David Schmidt
+; Copyright (C) 2006 - 2014 by David Schmidt
 ; david__schmidt at users.sourceforge.net
 ;
 ; This program is free software; you can redistribute it and/or modify it 
@@ -82,7 +82,7 @@ TD3:	pha		; Save remainder
 	lda #_' '
 	jmp TD4
 :	inc DigitYet	; Print out a digit
-TD4:	jsr COUT1
+TD4:	jsr COUT
 	pla		; Get remainder
 	dey
 	bpl TD1

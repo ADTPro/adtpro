@@ -27,53 +27,8 @@
 ;---------------------------------------------------------
 INIT_SCREEN:
 	; Prepare the system for our expectations
-	CALLOS OS_OPEN, OPEN_PARMS	; Open the console
-	jsr ERRORCK
-	lda OPEN_REF
-	sta WRITE_REF			; Save off our console file references
-	sta WRITE1_REF
-	sta CONSREAD_REF
-	sta CONSRD1_REF
-
-	lda #INIT_SCREEN_DATA_END-INIT_SCREEN_DATA
-	sta WRITE_LEN
-	lda #<INIT_SCREEN_DATA
-	sta UTILPTR
-	lda #>INIT_SCREEN_DATA
-	sta UTILPTR+1
-	jsr WRITEMSG_RAW
-					; Ask for device number of the console
-	CALLOS OS_GET_DEV_NUM, GET_DEV_NUM_PARMS
-	jsr ERRORCK
-	lda GET_DEV_NUM_REF
-	sta D_STATUS_NUM		; Save off our console device references
-	sta D_CONTROL_NUM
-
-	lda #$80
-	sta D_CONTROL_DATA
-	lda #$0d
-	sta D_CONTROL_DATA+1
-	lda #$02
-	sta D_CONTROL_CODE
-	CALLOS OS_D_CONTROL, D_CONTROL_PARMS	; Turn data entry termination on
-
-	lda #$00
-	sta D_CONTROL_DATA
-	lda #$03
-	sta D_CONTROL_CODE
-	CALLOS OS_D_CONTROL, D_CONTROL_PARMS	; Set keyboard mode to single char
-
-	lda #$00
-	sta D_CONTROL_DATA
-	lda #$05
-	sta D_CONTROL_CODE
-	CALLOS OS_D_CONTROL, D_CONTROL_PARMS	; Set typeahead buffer to zero
-
-	lda #$00
-	sta D_CONTROL_DATA
-	lda #$0f
-	sta D_CONTROL_CODE
-	CALLOS OS_D_CONTROL, D_CONTROL_PARMS	; Turn escape mode off
+	jsr SETUP
+	jsr COL40
 
 	CALLOS OS_FIND_SEG, FIND_SEG_PARMS
 	bne Local_Quit
@@ -110,24 +65,29 @@ INIT_SCREEN:
 
 	rts
 
+	lda #$00
+@1:	cmp #$8d
+	beq @2
+	jsr COUT
+	ldy CH
+	cpy #$20
+	bne @4
+	pha
+	jsr CROUT
+	pla
+@4:	clc
+	adc #$01
+	bne @1
+@3:	jmp @3
+@2:	lda #$20
+	jsr COUT
+	lda #$8e
+	jmp @1
+
+	rts
+
 Local_Quit:
 	jmp QUIT
-
-INIT_SCREEN_DATA:
-	.byte 16, 0	; Set 40 columns
-	.byte 21, $0f	; Make return do newline
-	.byte 28	; Clear screen
-INIT_SCREEN_DATA_END:
-
-;---------------------------------------------------------
-; HOME
-; 
-; Clears the screen
-;---------------------------------------------------------
-HOME:
-	lda #$1c
-	jsr COUT
-	rts
 
 ;---------------------------------------------------------
 ; SHOWLOGO
@@ -143,7 +103,7 @@ SHOWLOGO:
 	tay
 LogoLoop:
     	lda #$02	; Get ready to HTAB $02 chars over
-	jsr HTAB	; Tab over to starting position
+	sta <CH		; Tab over to starting position
 	jsr WRITEMSG
 	inc ZP
 	inc ZP		; Get next logo message
@@ -153,7 +113,7 @@ LogoLoop:
 
 	jsr CROUT
     	lda #$12
-	jsr HTAB
+	sta <CH
 	ldy #PMSG01	; Version number
 	jsr WRITEMSG
 
@@ -164,30 +124,45 @@ LogoLoop:
 ;---------------------------------------------------------
 ; Entry - clear and print at the message area (row $16)
 WRITEMSGAREA:
+	sty SLOWY
 	lda #$16
 	jsr TABV
+	ldy SLOWY
 ; Entry - print message at left border, current row, clear to end of page
 WRITEMSGLEFT:
+	sty SLOWY
 	lda #$00
-	jsr HTAB
-	lda #$1d		; Clear end of page
-	jsr COUT
+	sta CH
+	jsr CLREOP
+	ldy SLOWY
+; Entry - print message at current cursor pos
 WRITEMSG:
 	lda MSGTBL,Y
-	sta UTILPTR		; Point UTILPTR at our message
+	sta UTILPTR
 	lda MSGTBL+1,Y
 	sta UTILPTR+1
-
+; Entry - print message at current cursor pos
+;         set UTILPTR to point to null-term message
+WRITEMSG_RAW:
 	clc
 	tya
 	ror		; Divide Y by 2 to get the message length out of the table
 	tay
 	lda MSGLENTBL,Y
+	beq WRITEMSGEND	; Bail if length is zero (i.e. MNULL)
 WRITEMSG_RAWLEN:
-	sta WRITE_LEN
-WRITEMSG_RAW:
-	CALLOS OS_WRITEFILE, WRITE_PARMS
-	jmp ERRORCK		; Retrun through error handler for SOS errors
+	sta WRITEMSGLEN
+	ldy #$00
+WRITEMSGLOOP:
+	lda (UTILPTR),Y
+	jsr COUT
+	iny
+	cpy WRITEMSGLEN
+	bne WRITEMSGLOOP
+WRITEMSGEND:
+	rts
+
+WRITEMSGLEN:	.byte $00
 
 ;---------------------------------------------------------
 ; IPShowMsg
@@ -235,8 +210,7 @@ HMOK:
 	ror		; Divide Y by 2 to get the message length out of the table
 	tay
 	lda HMSGLENTBL,Y
-	sta WRITE_LEN
-	jmp WRITEMSG_RAW	; Call the regular message printer
+	jmp WRITEMSG_RAWLEN	; Call the regular message printer
 	
 ;---------------------------------------------------------
 ; HLINE - Prints a row of underlines at current cursor position
@@ -245,7 +219,7 @@ HLINE:
 	ldx #$28
 HLINEX:			; Send in your own X for length
 	lda #$DF
-HLINE1:	jsr COUT1
+HLINE1:	jsr COUT
 	dex
 	bne HLINEX
 	rts
@@ -254,200 +228,45 @@ HLINE1:	jsr COUT1
 ; GOTOXY - Position the cursor
 ;---------------------------------------------------------
 GOTOXY:
-	stx WRITEMSG_XY+1
-	sty WRITEMSG_XY+2
-	lda #<WRITEMSG_XY
-	sta UTILPTR
-	lda #>WRITEMSG_XY
-	sta UTILPTR+1
-	lda #$03
-	sta WRITE_LEN
-	jmp WRITEMSG_RAW	; Finish through WRITEMSG_RAW
-
-WRITEMSG_XY:
-	.byte 26, $00, $00	; $1a/26 is the code for absolute position
-
-;---------------------------------------------------------
-; TABV - Vertical tab to accumulator value
-; VTABS TO ROW IN A-REG
-;---------------------------------------------------------
-TABV:
-	sta WRITEMSG_VT+1
-	lda #<WRITEMSG_VT
-	sta UTILPTR
-	lda #>WRITEMSG_VT
-	sta UTILPTR+1
-	lda #$02
-	sta WRITE_LEN
-	jsr WRITEMSG_RAW
-	rts
-	
-
-WRITEMSG_VT:
-	.byte $19, $16		; $19/25d is the code for vertical position
-
-;---------------------------------------------------------
-; HTAB - Horizontal tab to column in accumulator
-;---------------------------------------------------------
-HTAB:
-	sta WRITEMSG_HT+1
-	lda #<WRITEMSG_HT
-	sta UTILPTR
-	lda #>WRITEMSG_HT
-	sta UTILPTR+1
-	lda #$02
-	sta WRITE_LEN
-	jmp WRITEMSG_RAW
-
-WRITEMSG_HT:
-	.byte $18,$16
-
-;---------------------------------------------------------
-; GETCHR1
-; 
-; Read a character from the console
-;---------------------------------------------------------
-READ_CHAR:
-GETCHR1:
-RDKEY:
-	jsr ECHO_OFF
-
-	lda #$80
-	sta D_CONTROL_DATA
-	lda #$0a
-	sta D_CONTROL_CODE
-	CALLOS OS_D_CONTROL, D_CONTROL_PARMS	; Turn no-wait to $80
-
-:	CALLOS OS_READFILE, CONSRD1_PARMS
-	lda CONSRD1_XFERCT
-	beq :-
-
-	lda #$00
-	sta D_CONTROL_DATA
-	lda #$0a
-	sta D_CONTROL_CODE
-	CALLOS OS_D_CONTROL, D_CONTROL_PARMS	; Turn no-wait to $00
-
-	lda CONSRD1_INPUT
+	stx <CH
+	tya
+	jsr TABV
 	rts
 
-ERRORCK:
-	beq NoError
-SOS_ERROR:
-	pha
-	lda #SOS_ERROR_MESSAGE_END-SOS_ERROR_MESSAGE
-	sta WRITE_LEN
-	lda #<SOS_ERROR_MESSAGE
-	sta UTILPTR
-	lda #>SOS_ERROR_MESSAGE
-	sta UTILPTR+1
-	jsr WRITEMSG_RAW
-	pla
-	jsr PRBYTE
-	sec
-NoError:
-	rts
-
-SOS_ERROR_MESSAGE:	asc "SOS ERROR: "
-SOS_ERROR_MESSAGE_END	=*
-
 ;---------------------------------------------------------
-; READ_LINE
-;
-; Read a line of input from the console
+; READ_LINE - Read a line of input from the console
 ;---------------------------------------------------------
 READ_LINE:
-
-	lda #$00
-	sta D_CONTROL_DATA
-	lda #$0a
-	sta D_CONTROL_CODE
-	CALLOS OS_D_CONTROL, D_CONTROL_PARMS	; Turn no-wait to $00
-
-	jsr ECHO_ON
-	lda #$7f
-	sta CONSREAD_COUNT
-	CALLOS OS_READFILE, CONSREAD_PARMS
-
-	ldx CONSREAD_XFERCT		; Output is available at CONSREAD_INPUT
-					; for CONSREAD_XFERCT bytes
-	dex				; Skip the trailing Ctrl-M
-	stx CONSREAD_XFERCT
-	lda #$00
-	sta CONSREAD_INPUT,x
-	cpx #$00
-	beq READ_LINE_DONE
-READ_CONDITION_LOOP:
-	dex
-	lda CONSREAD_INPUT,x
-	ora #$80
-	sta CONSREAD_INPUT,x
-	cmp #CHR_ESC
-	beq READ_LINE_ESC
-	cpx #$00
-	bne READ_CONDITION_LOOP
-READ_LINE_DONE:
-	jsr ECHO_OFF
-	lda CONSREAD_XFERCT		; Exits with number of bytes read
-	rts
-
-READ_LINE_ESC:
-	lda #$00
-	sta CONSREAD_XFERCT
-	jmp READ_LINE_DONE
-
-;---------------------------------------------------------
-; ECHO_ON|OFF - turn keypress echo on or off
-;---------------------------------------------------------
-ECHO_ON:
-	lda #$05
-	jsr COUT		; Turn cursor on
-	lda #$80
-	sta D_CONTROL_DATA
-	jmp ECHO_GO
-ECHO_OFF:
-	lda #$06
-	jsr COUT		; Turn cursor off
-	lda #$00
-	sta D_CONTROL_DATA
-ECHO_GO:
-	lda #$0B
-	sta D_CONTROL_CODE
-	CALLOS OS_D_CONTROL, D_CONTROL_PARMS	; Turn screen echo on
-	clc
+	jsr GETLN2	; Get answer from INBUF (no prompt character)
+	ldy RDTEMP
+	lda #0		; Null terminate it
+	sta (INBUF),y
+	txa
 	rts
 
 ;---------------------------------------------------------
-; Character output
-; 
-; Send one character to the console from Accumulator
-; Special case: CROUT, which prints a carriage return
+; READ_CHAR - Read a single character, no cursor
 ;---------------------------------------------------------
-CROUT:	; Output return character
-	lda #$0d
-COUT:	; Character output routine (print to screen)
-COUT1:	; Character output
-	sta WRITE1_DATA
-	CALLOS OS_WRITEFILE, WRITE1_PARMS
+READ_CHAR:
+	lda $C000         ;WAIT FOR NEXT COMMAND
+	bpl READ_CHAR
+	bit $C010
 	rts
 
 ;---------------------------------------------------------
-; CLRMSGAREA - Clear out the bottom part of the screen
+; SET_INVERSE - Set output to inverse mode
+; SET_NORMAL - Set output to normal mode
 ;---------------------------------------------------------
-CLRMSGAREA:
-	lda #<CLRMSGAREA_DATA
-	sta UTILPTR
-	lda #>CLRMSGAREA_DATA
-	sta UTILPTR+1
-	lda #$04
-	sta WRITE_LEN
-	jmp WRITEMSG_RAW	; Return through writemsg
-
-CLRMSGAREA_DATA:
-	.byte $1a		; Control: Absolute Position
-	.byte $00		; Horizontal Position
-	.byte $14		; Vertical Position
-	.byte $1d		; Control: Clear to end of page
+SET_INVERSE:
+	lda MODES	; Start printing in inverse
+	and #$7f	; Turn high bit off
+	sta MODES
+	rts
+SET_NORMAL:
+	lda MODES	; Start printing in inverse
+	ora #$80	; Tick high bit on
+	sta MODES
+	rts
 
 ;---------------------------------------------------------
 ; INVERSE - Invert/highlight the characters on the screen
@@ -458,158 +277,46 @@ CLRMSGAREA_DATA:
 ;   Y - starting y coordinate
 ;---------------------------------------------------------
 INVERSE:
-	SET_INVERSE_SOS
-	jmp INV_GO
 UNINVERSE:
-	SET_UNINVERSE_SOS
 INV_GO:
 	sta INUM
-	jsr GOTOXY
-	lda ATTRIB
-	jsr COUT
-	ldx INUM
-:	jsr READVID
-	jsr COUT	; Reflect the characters on screen, inverted!
-	dex
-	bne :-
-	lda #$11	; Start printing normally no matter what
-	jsr COUT
+	stx CH		; Set cursor to first position
+	txa
+	clc
+	adc INUM	; Add starting position to count of total bytes
+	sta INUM
+	tya
+	jsr TABV
+	ldy CH
+INV1:
+	lda (BAS4L),Y
+	pha
+	asl
+	bcs @WasNorm
+	pla
+	ora #$80
+	bmi @PrintIt	; Always
+@WasNorm:
+	pla
+	and #$7f	; Turn bit 7 off, for inverse-ness
+@PrintIt:
+	sta (BAS4L),Y
+	iny
+	cpy INUM
+	bne INV1
 	rts
 
 INUM:	.byte $00
-ATTRIB:	.byte $12
 
 ;---------------------------------------------------------
-; SET_INVERSE - Set output to inverse mode
-; SET_NORMAL - Set output to normal mode
+; CLRMSGAREA - Clear out the bottom part of the screen
 ;---------------------------------------------------------
-SET_INVERSE:
-	lda #$12		; Code for start printing in inverse
-	jsr COUT
-	rts
-SET_NORMAL:
-	lda #$11		; Code for start printing normally
-	jsr COUT
-	rts
-
-;---------------------------------------------------------
-; PRBYTE: Print Byte routine (HEX value)
-;---------------------------------------------------------
-PRBYTE:	
-	PHA		; PRINT BYTE AS 2 HEX
-	LSR		; DIGITS, DESTROYS A-REG
-	LSR
-	LSR
-	LSR
-	JSR PRHEXZ
-	PLA
-	AND #$0F	; PRINT HEX DIG IN A-REG
-PRHEXZ:	ORA #$B0	;  LSB'S
-	CMP #$BA
-	BCC MyCOUT
-	ADC #$06
-MyCOUT:	JMP COUT
-	rts
-
-;---------------------------------------------------------
-; DUMPMEM:
-; 
-; Dump memory to console starting from UTILPTR to UTILPTR2
-;---------------------------------------------------------
-DUMPMEM:
-	ldy #$00
-DUMPNEXTLINE:
-	ldx #$08
-	lda <UTILPTR+1
-	jsr PRBYTE
-	lda <UTILPTR
-	jsr PRBYTE
-	lda #$20
-	jsr COUT
-DUMPNEXTONE:
-	lda (UTILPTR),Y
-	jsr PRBYTE
-	lda #$20
-	jsr COUT
-	clc
-	inc <UTILPTR
-	bne :+
-	inc <UTILPTR+1
-:	lda <UTILPTR
-	cmp <UTILPTR2
-	bne DUMPNEXT
-	lda <UTILPTR+1
-	cmp <UTILPTR2+1
-	bne DUMPNEXT
-	jmp DUMPDONE
-DUMPNEXT:
-	dex
-	bne DUMPNEXTONE
-	jsr CROUT
-	jmp DUMPNEXTLINE
-DUMPDONE:	
-	rts
-
-;---------------------------------------------------------
-; READVID:
-; 
-; Read character under cursor
-;---------------------------------------------------------
-READVID:
-	lda #$11
-	sta D_STATUS_CODE
-	CALLOS OS_D_STATUS, D_STATUS_PARMS
-	clc
-	lda D_STATUS_DATA
-	rts
-
-;---------------------------------------------------------
-; CLREOP: Clear to end of screen
-;---------------------------------------------------------
-CLREOP:	; Clear to end of screen
-CLRLN:
-	lda #$1d
-	jsr COUT
-	rts
-
-;---------------------------------------------------------
-; CLREOL:	Clear to end of line
-;---------------------------------------------------------
-CLREOL:	; Clear to end of line
-	lda #$1F
-	jsr COUT
-	rts
-
-;---------------------------------------------------------
-; BASCALC - CALC BASE ADR IN BASL,H
-;---------------------------------------------------------
-BASCALC: PHA              ;CALC BASE ADR IN BASL,H
-         LSR              ;  FOR GIVEN LINE NO
-         AND   #$03       ;  0<=LINE NO.<=$17
-         ORA   #$04       ;ARG=000ABCDE, GENERATE
-         STA   BASH       ;  BASH=000001CD
-         PLA              ;  AND
-         AND   #$18       ;  BASL=EABAB000
-         BCC   BSCLC2
-         ADC   #$7F
-BSCLC2:  STA   BASL
-         ASL
-         ASL
-         ORA   BASL
-         STA   BASL
-         RTS
-
-;---------------------------------------------------------
-; READPOSN:
-; 
-; Read cursor position in x,y
-;---------------------------------------------------------
-READPOSN:
-	ldx #$10
-	stx D_STATUS_CODE
-	CALLOS OS_D_STATUS, D_STATUS_PARMS
-	ldx D_STATUS_DATA
-	ldy D_STATUS_DATA+1
+CLRMSGAREA:
+	lda #$00
+	sta <CH
+	lda #$14
+	jsr TABV
+	jsr CLREOP
 	rts
 
 ;---------------------------------------------------------
@@ -649,42 +356,24 @@ GO_FAST_SOS:
 
 
 ;---------------------------------------------------------
-; SCRAPE - Scrape a line of text from the screen 
-; Assumes we must go up one line (because of return being hit)
-; Copy data to input buffer, null-terminate at last non-space character
+; SCRAPE - Scrape a line of text from the screen at the current cursor position, copy to input buffer
 ;---------------------------------------------------------
 SCRAPE:
-	jsr READPOSN
-	dey
-	jsr GOTOXY
 	ldy #$00
-@Scr1:	jsr READVID	; Read character under cursor
-	cmp #$20	; Is it a space?
+	sta CH		; Set cursor to first position
+@Scr1:	lda (BAS4L),Y
+	cmp #$A0
 	beq :+
-	sty INUM	; Record last non-space character
-:	sta IN_BUF,y
-	jsr COUT	; Advance cursor one position
+	sty INUM
+:	sta IN_BUF,Y
 	iny
-	cpy #$28
-	bne @Scr1	
+	cpy #$28	; Whole screen width
+	bne @Scr1
 	lda #$00	; Null-terminate it
 	ldy INUM
 	iny
 	sta IN_BUF,y
 	rts
-
-	lda #<IN_BUF
-	sta UTILPTR
-	clc
-	adc #$10
-	sta UTILPTR2
-	lda #>IN_BUF
-	sta UTILPTR+1
-	sta UTILPTR2+1
-	jsr DUMPMEM
-	jsr RDKEY	
-	rts
-
 
 ;---------------------------------------------------------
 ; Quit to SOS
@@ -694,4 +383,4 @@ QUIT:
 	CALLOS OS_QUIT, QUITL
 
 QUITL:
-        .byte	$00,$00,$00,$00,$00,$00
+	.byte	$00,$00,$00,$00,$00,$00

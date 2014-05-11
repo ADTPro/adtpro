@@ -50,38 +50,6 @@
 	lda #$00
 .endmacro
 
-.macro LDA_CH
-	txa
-	pha
-	tya
-	pha
-	jsr READPOSN
-	stx CH
-	pla
-	tay
-	pla
-	tax
-	lda CH
-.endmacro
-
-.macro LDA_CV
-	txa
-	pha
-	tya
-	pha
-	jsr READPOSN
-	sty CV
-	pla
-	tay
-	pla
-	tax
-	lda CV
-.endmacro
-
-.macro SET_HTAB
-	jsr HTAB
-.endmacro
-
 .macro GO_SLOW
 	jsr GO_SLOW_SOS		; Defined in conio.asm
 .endmacro
@@ -101,34 +69,6 @@
 ; Nothing to see here...
 .endmacro
 
-.macro SET_INVERSE_SOS
-	pha
-	lda #$12
-	sta ATTRIB
-	pla
-.endmacro
-
-.macro SET_UNINVERSE_SOS
-	pha
-	lda #$11
-	sta ATTRIB
-	pla
-.endmacro
-
-.macro COUT_MAYBE_INVERSE_SOS
-	pha
-	cmp #CHR_BLK
-	bne @CDone
-	pha
-	lda #$12		; Code for start printing in inverse
-	jsr COUT
-	pla
-	jsr COUT
-	lda #$11		; Code for start printing normally
-@CDone:	jsr COUT
-	pla
-.endmacro
-
 .macro GO_MONITOR
 	lda E_REG
 	sta USER_E_REG
@@ -146,8 +86,3 @@
 	lda USER_Z_REG
 	sta Z_REG		; Restore zero page
 .endmacro
-
-
-.define	NRM_BLOCK $11,$20
-.define	INV_CHR_L $12,CHR_L,$11
-.define	INV_BLOCK $12,$20,$11

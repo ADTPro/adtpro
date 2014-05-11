@@ -94,7 +94,7 @@ REFRESH:
 NXTLINE:
 	stx LINECNT	; SAVE CURRENT LINE
 	lda #$16	; Start printing config parms in this column
-	SET_HTAB	; sta <CH
+	sta <CH
 	clc
 	lda PARMSIZ,X	; GET CURRENT VALUE (NEGATIVE:
 	sbc PARMS,X	; LAST VALUE HAS CURVAL=0)
@@ -119,15 +119,15 @@ PRINTIT:
 	jsr SET_INVERSE
 
 PRTVAL:	lda #$A0	; SPACE BEFORE & AFTER VALUE
-	jsr COUT1
+	jsr COUT
 PRTLOOP:
 	iny		; PRINT VALUE
 	lda PARMTXT,Y
 	beq ENDPRT
-	jsr COUT1
+	jsr COUT
 	jmp PRTLOOP
 ENDPRT:	lda #$A0
-	jsr COUT1
+	jsr COUT
 	jsr SET_NORMAL
 ENDVAL:	dex
 	bpl VALLOOP	; PRINT REMAINING VALUES

@@ -288,7 +288,7 @@ REFRESH:
 NXTLINE:
 	stx LINECNT	; SAVE CURRENT LINE
 	lda #$15	; Start printing config parms in this column
-	jsr HTAB	; sta <CH
+	sta <CH
 	clc
 	lda PARMSIZ,X	; GET CURRENT VALUE (NEGATIVE:
 	sbc PARMS,X	; LAST VALUE HAS CURVAL=0)

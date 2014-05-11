@@ -90,7 +90,7 @@ SEND:
 	cmp #$02	; File doesn't exist - so everything's ok
 	beq SMSTART
 	lda #$00
-	SET_HTAB
+	sta <CH
 	lda #$15
 	jsr TABV
 	jsr CLREOP
@@ -350,7 +350,7 @@ COMPLETE:
 	jsr WRITEMSG
 CNOERR:
 	lda #$a1
-	jsr COUT1
+	jsr COUT
 	jsr CROUT
 COMPLETE1:
 	jsr PAUSE
@@ -391,13 +391,13 @@ RECVING:
 
 SR_COMN:
 	lda #H_BUF
-	SET_HTAB
+	sta <CH
 	lda #V_MSG	; Message row
 	jsr TABV
 	ldy SR_WR_C
 	jsr WRITEMSG
 	lda #$00	; Reposition cursor to beginning of
-	SET_HTAB	;   buffer row
+	sta <CH		;   buffer row
 	lda #V_BUF
 	jsr TABV
 
@@ -457,17 +457,17 @@ SRCALL:
 	lda BLKHI		; Is this the last pass when sending?
 	bne SRGO		; No - skip the motor, don't need it
 SRON:	jsr motoron	
-SRGO:	LDA_CH
+SRGO:	lda CH
 	sta COL_SAV
 	lda SRCHR
-	COUT_MAYBE_INVERSE_SOS
+	jsr COUT
 
 	lda COL_SAV	; Retrieve the previous horizontal cursor position
 
 	lda #V_MSG	; Start printing at first number spot
 	jsr TABV
 	lda #H_NUM1
-	SET_HTAB
+	sta <CH
 
 	clc
 	lda BLKLO	; Increment the 16-bit block number
@@ -481,7 +481,7 @@ SRGO:	LDA_CH
 	jsr PRD		; Print block number in decimial
 
 	lda COL_SAV	; Position cursor to next
-	SET_HTAB	;   buffer row
+	sta <CH	;   buffer row
 	lda #V_BUF
 	jsr TABV
 
@@ -498,7 +498,7 @@ SR1:
 SRCOMN:
 	bcs SRBAD
 	lda COL_SAV	; Position cursor to next buffer row - 
-	SET_HTAB	;   have to reassert this, as IIgs messes it up
+	sta <CH		;   have to reassert this, as IIgs messes it up
 	lda SRCHROK
 	jmp SROK
 
@@ -506,12 +506,12 @@ SRBAD:
 	lda #$01
 	sta ECOUNT
 	lda COL_SAV	; Position cursor to next
-	SET_HTAB	;   buffer row
+	sta <CH		;   buffer row
 	lda #CHR_X
 SROK:
 	ldx BAOCNT
 @Here:
-	COUT_MAYBE_INVERSE_SOS
+	jsr COUT
 	dex
 	bne @Here
 	clc

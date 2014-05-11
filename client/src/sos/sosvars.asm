@@ -20,7 +20,7 @@
 
 .export output_buffer
 
-.global CAPBLKS, PARMBUF, BLKLO, BLKHI, BIGBUF, CRCTBLL, CRCTBLH
+.global CAPBLKS, PARMBUF, BLKLO, BLKHI, CRCTBLL, CRCTBLH
 .global NUMBLKS, HOSTBLX, UNITNBR
 .global PARMS, COMMSLOT, PSPEED, PSOUND, PSAVE, PGSSLOT, SR_WR_C, SLOWA, SLOWX, SLOWY
 .global PCCRC, COLDSTART, BAUD, NonDiskII, SendType
@@ -41,8 +41,6 @@ BLKPTR		= $26		; ($02 bytes) Used by SEND and RECEIVE
 BIGBUF_ADDR_LO	= $26
 BIGBUF_ADDR_HI	= $27
 BIGBUF_XBYTE	= $1627		; XByte address for our bank
-BASL		= $28
-BASH		= $29
 synccnt		= $2a		; ($02 bytes) Used by nibble/halftrack
 CRC		= $2c		; ($02 bytes) Used by ONLINE, SEND and RECEIVE
 Buffer  	= $2e 		; ($02 bytes) Address pointer for FORMAT data
@@ -50,10 +48,6 @@ CRCY		= $30		; ($01 byte) Used by UDP SEND
 TMOT   	 	= $31		; ($01 byte) Timeout indicator
 NIBPCNT		= $32		; ($01 byte) Counts nibble pages
 UTILPTR2	= $33		; ($02 bytes) Used for printing messages too
-A1L		= $35		; ($02 bytes) Used with a2 in ethernet transport buffer movement
-A1H		= $36		; (MSB of A1L)
-A2L		= $37		; ($02 bytes)
-A2H		= $38		; (MSB of A2L)
 CRCTBLL:	.res $100	; CRC LOW TABLE  ($100 Bytes)
 CRCTBLH:	.res $100	; CRC HIGH TABLE ($100 Bytes)
 BLKHI:		.byte $01
@@ -67,18 +61,6 @@ output_buffer:	.res 520	; For ip65 buffer space
 ;----------------------------------------------------
 
 PARMBUF:	.res $04
-
-; Table for open
-
-OPEN_PARMS:	.byte 4
-OPEN_NAME:	.addr CONSOLE
-OPEN_REF:	.byte $ff
-OPEN_OPT_PTR:	.addr 0
-OPEN_LEN:	.byte 0
-
-CONSOLE:	.byte CONSOLE_END-CONSOLE_BODY
-CONSOLE_BODY:	.byte ".CONSOLE"
-CONSOLE_END:
 
 ; Table for write string
 
@@ -95,31 +77,6 @@ WRITE1_DATA_PTR:
 		.word WRITE1_DATA
 WRITE1_LEN:	.word $0001
 WRITE1_DATA:	.byte $00
-
-; Table for console read
-
-CONSREAD_PARMS:	.byte $04
-CONSREAD_REF:	.byte $00
-		.word CONSREAD_INPUT
-CONSREAD_COUNT:	.word $0001
-CONSREAD_XFERCT:.word $0000
-CONSREAD_INPUT:	.res $100, $00
-
-CONSRD1_PARMS:	.byte $04
-CONSRD1_REF:	.byte $00
-		.word CONSRD1_INPUT
-CONSRD1_COUNT:	.word $0001
-CONSRD1_XFERCT:	.word $0000
-CONSRD1_INPUT:	.byte $00
-
-; Table for get device number
-
-GET_DEV_NUM_PARMS:
-		.byte $02
-GET_DEV_NUM_NAME:
-		.addr CONSOLE
-GET_DEV_NUM_REF:
-		.byte $00
 
 ; Table for device status
 

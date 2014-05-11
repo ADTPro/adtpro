@@ -33,8 +33,8 @@ VOL_LINE_LEN = $26
 ; SOS specific stuff
 ;--------------------------------------------------------- 
 OS_CALL_OFFSET	= 1	; Offset to the SOS call type byte
-CHR_RETURN	= $0d	; Carriage return
-IN_BUF		= CONSREAD_INPUT
+CHR_RETURN	= $8d	; Carriage return
+IN_BUF		= $300
 ALLOCSIR	= $1913
 DEALCSIR	= $1916
 
@@ -44,3 +44,7 @@ DEALCSIR	= $1916
 MAXSLOT		= $04	; The largest slot number we're likely to encounter (one-indexed)
 E_REG		= $FFDF	; Environment register
 B_REG		= $FFEF	; Bank register
+
+INV_CHR_L	= $4c
+INV_BLOCK	= $20
+NRM_BLOCK	= $a0

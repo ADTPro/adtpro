@@ -1,6 +1,6 @@
 ;
 ; ADTPro - Apple Disk Transfer ProDOS
-; Copyright (C) 2008 - 2011 by David Schmidt
+; Copyright (C) 2008 - 2014 by David Schmidt
 ; david__schmidt at users.sourceforge.net
 ;
 ; This program is free software; you can redistribute it and/or modify it 
@@ -61,15 +61,15 @@ WRITING:
 RW_COMN:
 	lda UNITNBR
 	sta D_RW_DEV_NUM
-	lda #H_BUF	; Column - r/w/s/r
-	jsr HTAB
+	lda #H_BUF	; Function description message column - r/w/s/r
+	sta CH
 	lda #V_MSG	; Message row
 	jsr TABV
 	ldy SR_WR_C
 	jsr WRITEMSG
 
 	lda #$00	; Reposition cursor to beginning of
-	jsr HTAB	; buffer row
+	sta CH		; buffer row
 	lda #V_BUF
 	jsr TABV
 
@@ -130,14 +130,16 @@ RWCALL:
 	cmp #CHR_ESC	; ESCAPE = ABORT
 
 	beq RABORT
-	LDA_CH
-	sta COL_SAV
 	lda RWCHR
-	jsr COUT
+	jsr CHROVER
 
-	ldy #V_MSG	; start printing at first number spot
-	ldx #H_NUM1
-	jsr GOTOXY
+	lda CH
+	sta COL_SAV
+
+	lda #V_MSG	; start printing at first number spot
+	jsr TABV
+	lda #H_NUM1
+	sta CH
 
 	clc
 	lda BLKLO	; Increment the 16-bit block number
@@ -149,6 +151,11 @@ RWCALL:
 	lda NUM
 	ldy #CHR_0
 	jsr PRD		; Print block number in decimal
+
+	lda COL_SAV	; Reposition cursor to previous
+	sta CH		; buffer row
+	lda #V_BUF
+	jsr TABV
 
 RWDIR:	CALLOS OS_READBLOCK, D_RW_PARMS
 	bne RWBAD
@@ -170,23 +177,21 @@ RWOK:
 	bcc :+
 	inc BLKHI	; Send the block count back out via updated BLKLO/HI
 :
-	lda COL_SAV	; Reposition cursor to previous
-	jsr HTAB	; buffer row
-	lda #V_BUF	; Start printing the result of this I/O action
-	jsr TABV
+;	lda COL_SAV	; Reposition cursor to previous
+;	sta <CH		;   buffer row
+;	lda #V_BUF	; Start printing the result of this I/O action
+;	jsr TABV
 
 	ldx #$08
 @loop:
 	lda RWRESULT
 	cmp #CHR_BLK
 	bne :+
-	jsr SET_INVERSE
 	lda RWRESULT
 :	jsr COUT
 	dex
 	cpx #$00
 	bne @loop
-	jsr SET_NORMAL
 
 	sec
 	lda BCOUNT
@@ -213,63 +218,6 @@ RWOK:
 
 	rts
 
-DUMP_CALL:
-	jsr CROUT
-	lda #<D_RW_PARMS
-	sta UTILPTR
-	lda #>D_RW_PARMS
-	sta UTILPTR+1
-	lda #<D_RW_END
-	sta UTILPTR2
-	lda #>D_RW_END
-	sta UTILPTR2+1
-	; Dump memory to console starting from UTILPTR to UTILPTR2
-	jsr DUMPMEM
-	jsr CROUT
-
-	lda #$26
-	sta UTILPTR
-	lda #$00
-	sta UTILPTR+1
-	lda #$28
-	sta UTILPTR2
-	lda #$00
-	sta UTILPTR2+1
-
-	; Dump memory to console starting from UTILPTR to UTILPTR2
-	jsr DUMPMEM
-
-	jsr CROUT
-
-	lda #$26
-	sta UTILPTR
-	lda #$16
-	sta UTILPTR+1
-	lda #$28
-	sta UTILPTR2
-	lda #$16
-	sta UTILPTR2+1
-
-	; Dump memory to console starting from UTILPTR to UTILPTR2
-	
-	jsr DUMPMEM
-
-	jsr CROUT
-
-	lda #$fd
-	sta UTILPTR
-	lda #$01
-	sta UTILPTR+1
-	lda #$fe
-	sta UTILPTR2
-	lda #$01
-	sta UTILPTR2+1
-
-	; Dump memory to console starting from UTILPTR to UTILPTR2
-	
-	jsr DUMPMEM
-
-	rts
 
 RWCHR:	.byte CHR_R	; Character to notify what we're doing
 RWCHROK:	.byte CHR_BLK	; Character to write when things are OK

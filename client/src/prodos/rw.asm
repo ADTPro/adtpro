@@ -59,14 +59,14 @@ RW_COMN:
 	lda DIFF
 	sta BCOUNT	; Get a local copy of block count to mess with
 	lda #H_BUF	; Column - r/w/s/r
-	jsr HTAB
+	sta <CH  
 	lda #V_MSG	; Message row
 	jsr TABV
 	ldy SR_WR_C
 	jsr WRITEMSG
 
 	lda #$00	; Reposition cursor to beginning of
-	jsr HTAB	; buffer row
+	sta <CH		; buffer row
 	lda #V_BUF
 	jsr TABV
 
@@ -149,7 +149,7 @@ RWCALL:
 	lda #V_MSG	; start printing at first number spot
 	jsr TABV
 	lda #H_NUM1
-	jsr HTAB
+	sta <CH
 
 	clc
 	lda BLKLO	; Increment the 16-bit block number
@@ -163,20 +163,20 @@ RWCALL:
 	jsr PRD		; Print block number in decimal
 
 	lda COL_SAV	; Reposition cursor to previous
-	jsr HTAB		; buffer row
+	sta <CH		; buffer row
 	lda #V_BUF
 	jsr TABV
 
 RWDIR:	CALLOS OS_READBLOCK, PARMBUF
 	bne RWBAD
 	lda RWCHROK
-	jsr COUT1
+	jsr COUT
 	jmp RWOK
 RWBAD:
 	lda #$01
 	sta ECOUNT
 	lda #CHR_X
-	jsr COUT1
+	jsr COUT
 RWOK:	inc PARMBUF+3	; Advance buffer $100 bytes
 	inc PARMBUF+3	; Advance buffer another $100 bytes
 	inc BLKLO	; Advance block counter by one (word width)

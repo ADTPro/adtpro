@@ -44,7 +44,7 @@ GetSendType:
 	jsr WRITEMSG
 	; (S)TANDARD (N)IBBLE:
 GetSendLoop:
-	jsr RDKEY
+	jsr READ_CHAR
 	CONDITION_KEYPRESS	; Convert to upper case
 	cmp #CHR_S
 	beq GetSendFold	; Fold to "P"
@@ -76,7 +76,7 @@ PAUSE:
 	jsr CLREOP
 	ldy #PMSG16
 	jsr WRITEMSGLEFT
-	jsr RDKEY
+	jsr READ_CHAR
 	cmp #$9B
 	beq PAUSEESC
 	clc
@@ -93,7 +93,7 @@ PAUSEESC:
 YN:
 	jsr WRITEMSGAREA
 YNLOOP:
-	jsr RDKEY
+	jsr READ_CHAR
 	CONDITION_KEYPRESS	; Convert to upper case
 	cmp #CHR_Y
 	beq YNYES

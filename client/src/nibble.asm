@@ -224,7 +224,7 @@ nibblank:
 	lda #$0e		; Fixed vertical position
 	jsr TABV		; Calculate BASL from a
 	lda #2			; Initial horizontal position
-	jsr HTAB
+	sta CH
 	lda #CHR_SP		; The character to display
 nibblnk1:
 	jsr COUT		; Put on screen
@@ -241,7 +241,7 @@ nibblnk1:
 ;---------------------------------------------------------
 nibshow:
 	tay		; CHARACTER IN Y
-	LDA_CH		; Get horizontal position
+	lda CH		; Get horizontal position
 	pha
 	lda CV
 	pha		; SAVE CV ON STACK
@@ -276,7 +276,7 @@ NIBDISP:
 	pla
 	jsr TABV	; RESTORE CV
 	pla
-	SET_HTAB	; Restore horizontal position
+	sta CH		; Restore horizontal position
 	rts
 
 
@@ -422,7 +422,7 @@ nibtitle:
 	lda #_I' '		; inverse space char
 	jsr COUT
 	lda #0			; at start of line
-	SET_HTAB
+	sta CH
 	lda #_I' '		; inverse space char
 	jsr COUT
 	lda #_I'>'		; inverse character!
