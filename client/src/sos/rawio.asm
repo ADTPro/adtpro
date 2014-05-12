@@ -18,7 +18,7 @@
 ; 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 ;
 
-KBDFLG		:= $57
+KBDATA		:= $57
 LMARGIN		:= $0058
 RMARGIN		:= $0059
 WINTOP		:= $005A
@@ -589,17 +589,20 @@ KEYIN2: pla
 	plp
 	bcc KEYIN1
 KEYIN3: lda $C000
-	pha
+	sta KBDATA
 	lda $C008
-	sta KBDFLG
 	and #$02
 	cmp #$02
-	beq @Shift
-	pla
+	beq @Shift	; Shift was hit; for A-Z, this is a no-op
+	lda KBDATA
+	cmp #$C1
+	bmi @Shift
+	cmp #$DB
+	bpl @Shift
 	clc
 	adc #$20
-	pha
-@Shift:	pla
+	sta KBDATA
+@Shift:	lda KBDATA
 KEYIN4: bit $C010
 	rts
 KEYWAIT:inc TBAS4L
