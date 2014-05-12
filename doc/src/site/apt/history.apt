@@ -18,6 +18,8 @@ ADTPro Release History
 
  * [Client] Directory listing allows for wildcard filtering of files, paging forward and backward
 
+ * [SOS Client] Slow driver-based screen I/O subsystem replaced with custom code, significantly speeding up display
+
  * Separated ProDOS and SOS boot disks for ADTPro client; VDRIVE boot disk remains common to both
 
  []
