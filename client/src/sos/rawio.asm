@@ -79,7 +79,7 @@ SETUP:	cld
 	bpl @Loop
 	lda #$00
 	sta INBUF
-	lda #$03
+	lda #$1e
 	sta INBUF+1
 	lda #$BF
 	sta MODES

@@ -34,7 +34,7 @@ VOL_LINE_LEN = $26
 ;--------------------------------------------------------- 
 OS_CALL_OFFSET	= 1	; Offset to the SOS call type byte
 CHR_RETURN	= $8d	; Carriage return
-IN_BUF		= $300
+IN_BUF		= $1e00	; Must match the value that's set in rawio.asm at INBUF
 ALLOCSIR	= $1913
 DEALCSIR	= $1916
 
