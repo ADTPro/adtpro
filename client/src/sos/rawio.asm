@@ -626,9 +626,7 @@ ESC2:   cmp ESCTABL,y
 	beq ESC3
 	dey
 	bpl ESC2
-RDCHAR: lda #$80
-	and MODES
-	lsr
+RDCHAR:	lda #$20
 	sta CURSOR
 	jsr RDKEY
 	cmp #$9B
