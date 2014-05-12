@@ -18,6 +18,7 @@
 ; 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 ;
 
+KBDFLG		:= $57
 LMARGIN		:= $0058
 RMARGIN		:= $0059
 WINTOP		:= $005A
@@ -588,6 +589,17 @@ KEYIN2: pla
 	plp
 	bcc KEYIN1
 KEYIN3: lda $C000
+	pha
+	lda $C008
+	sta KBDFLG
+	and #$02
+	cmp #$02
+	beq @Shift
+	pla
+	clc
+	adc #$20
+	pha
+@Shift:	pla
 KEYIN4: bit $C010
 	rts
 KEYWAIT:inc TBAS4L

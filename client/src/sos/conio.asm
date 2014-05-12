@@ -65,27 +65,6 @@ INIT_SCREEN:
 
 	rts
 
-	lda #$00
-@1:	cmp #$8d
-	beq @2
-	jsr COUT
-	ldy CH
-	cpy #$20
-	bne @4
-	pha
-	jsr CROUT
-	pla
-@4:	clc
-	adc #$01
-	bne @1
-@3:	jmp @3
-@2:	lda #$20
-	jsr COUT
-	lda #$8e
-	jmp @1
-
-	rts
-
 Local_Quit:
 	jmp QUIT
 
