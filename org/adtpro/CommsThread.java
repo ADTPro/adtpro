@@ -544,7 +544,7 @@ public class CommsThread extends Thread
 				if (directory.length() > 80)
 				{
 					// Yes - so lop it off
-					directory = directory.substring(directory.length() - 79, directory.length());
+					directory = directory.substring(directory.length() - 80, directory.length());
 				}
 				else if (directory.length() < 80)
 				{
