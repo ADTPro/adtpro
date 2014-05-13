@@ -44,6 +44,7 @@ DEALCSIR	= $1916
 MAXSLOT		= $04	; The largest slot number we're likely to encounter (one-indexed)
 E_REG		= $FFDF	; Environment register
 B_REG		= $FFEF	; Bank register
+Z_REG		= $FFD0	; Zero-page register
 
 INV_CHR_L	= $4c
 INV_BLOCK	= $20

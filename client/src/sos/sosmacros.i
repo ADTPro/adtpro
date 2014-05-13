@@ -70,14 +70,16 @@
 .endmacro
 
 .macro GO_MONITOR
-	lda E_REG
-	sta USER_E_REG
 	lda Z_REG
 	sta USER_Z_REG
+	lda E_REG
+	sta USER_E_REG
 	ora #$05		; Set ROM on, stack to alternate
+	and #$FB
 	sta E_REG
 	lda #$03		; Use true zero page
 	sta Z_REG
+	jmp $F901		; Jump to the monitor
 .endmacro
 
 .macro GO_USER
