@@ -591,10 +591,10 @@ KEYIN2: pla
 KEYIN3: lda $C000
 	sta KBDATA
 	lda $C008
-	and #$02
-	cmp #$02
-	beq @Shift	; Shift was hit; for A-Z, this is a no-op
-	lda KBDATA
+	and #$0a	; Mask off all but the shift and alpha lock buttons
+	cmp #$08	; Is shift off and alpha lock off?
+	bne @Shift
+	lda KBDATA	; Yes - then move to lowercase
 	cmp #$C1
 	bmi @Shift
 	cmp #$DB
