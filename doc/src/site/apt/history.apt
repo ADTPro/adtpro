@@ -34,6 +34,8 @@ ADTPro Release History
 
  * [SOS Client] Bare-metal bootstrap more reliable with timeout logic borrowed from Speediboot and made prettier with a logo and better display management
 
+ * [Build] Re-architected 'Ant' build system to be completely dependency-driven; allows complete granularity of build targets
+
  []
 
 * Click for {{{./historyolddetail.html}Version 1 History}}
