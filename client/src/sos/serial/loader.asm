@@ -34,6 +34,7 @@
 KBDSTROBE	:= $c010
 ENV_REG		:= $ffdf
 BANK_REG	:= $ffef
+Z_REG		:= $ffd0
 
 size		:= $30
 b_p		:= $32
@@ -48,6 +49,7 @@ ACIACR		:= $c0f3	; Control register.  $c0f3 for ///, $c08b+S0 for SSC
 
 GrubIIIGet	:= $A047	; Borrow the Grub's IIIGet routine
 
+KRNLRequestDriverWarm := $20FF	; Kernel (re-)request driver download  
 KRNLReceiveDriverDone := $2144	; Kernel return point
 
 Signature:
@@ -338,7 +340,8 @@ Payload:	; This will be a bootstrap file request - this last byte is sent twice 
 	.byte	$00
 
 ReadDriver:			; We got the magic signature; start reading data
-	jsr GrubIIIGet		; Pull a byte
+	jsr IIIGet		; Pull a byte
+	bcs ReadAgain
 	sta (b_p),y		; Save it
 	sta $07c5		; Print throbber in the status area
 	iny
@@ -352,8 +355,18 @@ ReadDriver:			; We got the magic signature; start reading data
 	dec size+1
 	jmp ReadDriver		; Branch always - go back for more
 ReadDone:
-	jsr	RESTORE
-	jmp	KRNLReceiveDriverDone
+	jsr RESTORE
+	jmp KRNLReceiveDriverDone
+ReadAgain:
+	jmp KRNLRequestDriverWarm 
+;GoMonitor:			; Handy dandy debug routine to jump directly into the monitor
+;	lda ENV_REG
+;	ora #$05		; Set ROM on, stack to alternate
+;	and #$FB
+;	sta ENV_REG
+;	lda #$03		; Use true zero page
+;	sta Z_REG
+;	jmp $F901		; Jump to the monitor
 Timer:	.word	$0000
 Pad:
 	.res	$a3ff-*,$00
