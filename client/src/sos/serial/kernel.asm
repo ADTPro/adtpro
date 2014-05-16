@@ -699,20 +699,19 @@ LDR070:	lda     $1901
 RequestDriver:
 	jsr ACIAInit
 RequestDriverWarm:
-	lda #$b5		; Request driver #180/$b5/"5"
-	jsr LDRSendEnvelope
-; Poll the port until we get a magic incantation
-Poll:
 	lda #$00		; #>LDREND-$2000+$400 = $58*00*
 	tay
 	sta b_p
 	lda #$58		; #<LDREND-$2000+$400 = $*58*00
 	sta b_p+1
-PollNext:
+	lda #$b5		; Request driver #180/$b5/"5"
+	jsr LDRSendEnvelope
+; Poll the port until we get a magic incantation
+Poll:
 	jsr LDRIIIGet
 	bcs RequestDriverWarm
 	cmp #$53		; Trigger character is an "S"
-	bne PollNext
+	bne Poll
 	jsr GrubIIIGet		; LSB of length
 	sta size
 	jsr GrubIIIGet		; MSB of length
