@@ -150,7 +150,7 @@ public class UDPTransport extends ATransport
   public void writeBytes(byte data[])
   {
     //Log.println(false,"UDPTransport.writeBytes() entry.");
-    if ((1499 - _outPacketPtr) >= data.length)
+    if ((1500 - _outPacketPtr) >= data.length)
     {
       //Log.println(false,"UDPTransport.writeBytes() writing "+data.length+" bytes into packet starting from "+_outPacketPtr+".");
       if (_outPacketPtr == 0)
@@ -165,8 +165,8 @@ public class UDPTransport extends ATransport
         //Log.println(false,"  data to buffer: "+data[i]);
       }
     }
-    //else
-      //Log.println(false,"DEBUG: UDPTransport.writeBytes() didn't have room!");
+    else
+      Log.println(false,"UDPTransport.writeBytes() didn't have room!");
   }
 
   public void writeBytes(char[] data)
@@ -211,7 +211,7 @@ public class UDPTransport extends ATransport
   public void pushBuffer()
   {
     Log.println(false,"UDPTransport.pushBuffer() entry.");
-    Log.println(false, "UDPTransport.pushBuffer() pushing data:");
+    Log.println(false, "UDPTransport.pushBuffer() pushing "+_outPacketPtr+" bytes of data:");
     for (int i = 0; i < _outPacketPtr; i++)
     {
       if (((i % 32) == 0) && (i != 0)) Log.println(false, "");
