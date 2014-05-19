@@ -2869,7 +2869,7 @@ public class CommsThread extends Thread
 					double accuracy = 0;
 					try
 					{
-					boolean rc = receiveNibbleTrackWide(trackBuffer);
+					boolean rc = receiveNibbleTrackWide(trackBuffer, numTracks);
 					if (rc == true)
 					{
 						realTrack[trackRetry] = NibbleAnalysis.analyzeNibbleBuffer(trackBuffer);
@@ -2879,7 +2879,7 @@ public class CommsThread extends Thread
 						{
 							_transport.writeByte(CHR_ENQ);
 							_transport.pushBuffer();
-							rc = receiveNibbleTrackWide(trackBuffer);
+							rc = receiveNibbleTrackWide(trackBuffer, numTracks);
 							if (rc == true)
 							{
 								realTrack[trackRetry] = NibbleAnalysis.analyzeNibbleBuffer(trackBuffer);
@@ -2981,25 +2981,32 @@ public class CommsThread extends Thread
 		Log.println(false, "CommsThread.receiveNibbleDiskWide() exit.");
 	}
 
-	public boolean receiveNibbleTrackWide(byte[] trackBuffer) throws GoHomeException
+	public boolean receiveNibbleTrackWide(byte[] trackBuffer, int trackNumber) throws GoHomeException
 	{
 		boolean rc = true;
 		byte[] tempBuffer = new byte[65536];
 		int offset = 0;
 		int bytesReceived = 0;
+		int blockNumber = 0;
 		Log.println(false, "receiveNibbleTrackWide() entry."); //$NON-NLS-1$
 		do
 		{
-			bytesReceived = receivePacketWide(tempBuffer, 0);
+			bytesReceived = receivePacketWide(tempBuffer, 0, blockNumber);
 			if (bytesReceived == 0) // We didn't get any bump in data
 			{
 				rc = false;
+			}
+			else if (bytesReceived == -1)
+			{
+				Log.println(false, "receiveNibbleTrackWide() skipping 512 bytes due to duplicate acknowledgement."); //$NON-NLS-1$
+				// offset += bytesReceived;
 			}
 			else
 			{
 				Log.println(false, "receiveNibbleTrackWide() adding " + bytesReceived + " bytes to the track buffer, now at length " + (bytesReceived + offset) + " bytes."); //$NON-NLS-1$
 				java.lang.System.arraycopy(tempBuffer, 0, trackBuffer, offset, bytesReceived);
 				offset += bytesReceived;
+				blockNumber++;
 			}
 		} while ((rc == true) && (offset < 13312));
 		Log.println(false, "receiveNibbleTrackWide() exit; rc=" + rc); //$NON-NLS-1$
@@ -3383,7 +3390,7 @@ public class CommsThread extends Thread
 		int bytesReceived = 0;
 		int incomingBlock = 0;
 
-		Log.println(false, "CommsThread.receivePacketWide() entry; offset: " + offset + ".");
+		Log.println(false, "CommsThread.receivePacketWide() entry; expected start block: " + expectedStartBlock + " buffer offset: " + offset + ".");
 		do // Loop to retry if necessary
 		{
 			Log.println(false, "CommsThread.receivePacketWide() top of receivePacketWide loop.");
