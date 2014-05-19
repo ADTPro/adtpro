@@ -56,6 +56,9 @@ motoron:
 motoroff:
 	rts
 
+; Temp storage re-used from nibble code - but didn't exist in SOS version, so claim it here 
+RS_TEMP:	.byte $00
+
 ; Stubs:
 ROM:
 DevAdr:

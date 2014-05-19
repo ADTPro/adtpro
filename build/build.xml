@@ -274,6 +274,7 @@ all
 		Start Empty ProDOS disk images containing the release number
 		-->
 		<echo message="Prepping ProDOS disk images..."/>
+		<delete file="${builddir}/${distName}/disks/${diskName}.DSK"/>
 		<copy file="${builddir}/ADTProBase.dsk" tofile="${builddir}/${distName}/disks/${diskName}.DSK" />
 		<copy file="${builddir}/ADTProBase.po" tofile="${builddir}/${distName}/disks/${diskName}.PO" />
 		<appleCommander command="n" imagename="${builddir}/${distName}/disks/${diskName}.DSK" volname="${volName}"/>

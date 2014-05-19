@@ -44,6 +44,9 @@ STATE_WAITING_ONE_BYTE_REPLY = 8
 ; CDREQUEST - Request current directory change
 ;---------------------------------------------------------
 CDREQUEST:
+	lda #$03
+	sta RS_TEMP	; Count of retries	
+CDREQUEST_Warm:
 	ldax #udp_outp + udp_data	; Point UTILPTR at the UDP data buffer
 	stax UTILPTR
 	lda #$00
@@ -59,6 +62,43 @@ CDREQUEST:
 	jsr udp_send_nocopy
 	GO_FAST				; Speed back up for SOS
 	jsr RECEIVE_LOOP_FAST
+	bcc :+
+	lda TMOT
+	beq :+
+	dec RS_TEMP
+	bne CDREQUEST_Warm
+	sec
+:	rts
+
+
+;---------------------------------------------------------
+; CDREPLY - Reply to current directory change
+; PUTREPLY - Reply from send an image to the host
+; BATCHREPLY - Reply from send multiple images to the host
+; GETREPLY - Reply from requesting an image be sent from the host
+; One-byte replies
+;---------------------------------------------------------
+ONE_BYTE_REPLY:
+PUTREPLY1:
+BATCHREPLY1:
+GETREPLY2:
+	lda #STATE_IDLE
+	sta state
+	lda TMOT
+	bne @Repl1
+	lda udp_inp + udp_data + 1	; Pick up the data byte from incoming buffer
+	jmp @Repl2
+@Repl1:	lda #PHMTIMEOUT			; Load up timeout indicator
+@Repl2:	sta QUERYRC
+CDREPLY:
+PUTREPLY:
+BATCHREPLY:
+GETREPLY:
+	clc
+	lda TMOT
+	beq @Ok
+	sec
+@Ok:	lda QUERYRC
 	rts
 
 
@@ -94,6 +134,10 @@ HOMEREQUEST:
 ; NIBPCNT contains the page number to request
 ;---------------------------------------------------------
 DIRREQUEST:
+	lda #$03
+	sta RS_TEMP	; Count of retries
+	sta QUERYRC	; No success yet
+DIRREQUEST_Warm:
 	ldax #udp_outp + udp_data	; Point UTILPTR at the UDP outgoing buffer
 	stax UTILPTR
 	lda #$00
@@ -128,11 +172,15 @@ DIRREQUEST:
 	jsr BUFBYTE
 	eor CHECKBYTE
 	jsr BUFBYTE
-	GO_SLOW				; Slow down for SOS
+	GO_SLOW			; Slow down for SOS
 	jsr udp_send_nocopy
-	GO_FAST				; Speed back up for SOS
-	jsr RECEIVE_LOOP_FAST
-	rts
+	GO_FAST			; Speed back up for SOS
+	jsr RECEIVE_LOOP_FAST	; Run through DIRREPLY1 callback
+	bcc :+
+	dec RS_TEMP
+	bne DIRREQUEST_Warm
+	sec			; Indicate failure
+:	rts
 
 
 ;---------------------------------------------------------
@@ -142,8 +190,11 @@ DIRREQUEST:
 ; Returns TMOT > 0 on timeout (should not retry)
 ;---------------------------------------------------------
 DIRREPLY1:
+	lda #STATE_IDLE
+	sta state
+	lda TMOT
+	bne @DirRetry	
 	ldy #$00
-	sty TMOT	; Clear timeout processing
 	sty PAGECNT
 	LDA_BIGBUF_ADDR_LO	; Connect the block pointer to the
 	sta BLKPTR		; Big Buffer(TM), 1k * NIBPCNT
@@ -184,57 +235,23 @@ DIRREPLY1:
 	adc NIBPCNT
 	adc NIBPCNT
 	sta BLKPTR+1
-	lda #$00		; Indicate success
+	lda #$00
 	sta QUERYRC
+	clc		; Indicate success
 	rts
 
 @DirRetry:
 	ldx #CHR_NAK
 	jsr PUTACKBLK
-	lda #$80
-	sta QUERYRC	; Indicate failure
+	sec		; Indicate failure
 	rts 
 
 DIRREPLY:
-	asl QUERYRC	; Shift high bit of QUERYRC into C flag
-	rts
-
-
-;---------------------------------------------------------
-; DIRABORT - Abort current directory contents
-;---------------------------------------------------------
-DIRABORT:
-	lda #$00
-	jsr PUTC
-	rts
-
-;---------------------------------------------------------
-; CDREPLY - Reply to current directory change
-; PUTREPLY - Reply from send an image to the host
-; BATCHREPLY - Reply from send multiple images to the host
-; GETREPLY - Reply from requesting an image be sent from the host
-; One-byte replies
-;---------------------------------------------------------
-ONE_BYTE_REPLY:
-PUTREPLY1:
-BATCHREPLY1:
-GETREPLY2:
-	lda TMOT
-	bne @Repl1
-	lda udp_inp + udp_data + 1	; Pick up the data byte from incoming buffer
-	jmp @Repl2
-@Repl1:	lda #PHMTIMEOUT			; Load up timeout indicator
-@Repl2:	sta QUERYRC
-CDREPLY:
-PUTREPLY:
-BATCHREPLY:
-GETREPLY:
+	lda QUERYRC
 	clc
-	lda TMOT
-	beq @Ok
+	beq :+
 	sec
-@Ok:	lda QUERYRC
-	rts
+:	rts
 
 
 ;---------------------------------------------------------
@@ -351,9 +368,10 @@ PUTACKBLK:
 	jsr BUFBYTE
 	eor CHECKBYTE
 	jsr BUFBYTE	; Send check byte
-	GO_SLOW				; Slow down for SOS
+	GO_SLOW		; Slow down for SOS
 	jsr udp_send_nocopy
-	GO_FAST				; Speed back up for SOS
+	GO_FAST		; Speed back up for SOS
+	jsr RECEIVE_LOOP_FAST
 	rts
 
 
@@ -439,6 +457,9 @@ BGo:	jsr PUTREQUEST
 ; QUERYFNREQUEST
 ;---------------------------------------------------------
 QUERYFNREQUEST:
+	lda #$03
+	sta RS_TEMP	; Count of retries
+QUERYFNREQUEST_Warm:
 	ldax #udp_outp + udp_data	; Point UTILPTR at the UDP outgoing data buffer
 	stax UTILPTR
 	lda #$00
@@ -448,19 +469,27 @@ QUERYFNREQUEST:
 	jsr FNREQUEST
 	lda CHECKBYTE
 	jsr BUFBYTE
-	lda #STATE_QUERY	; Set up for the QUERYFNREPLY callback
+	lda #STATE_QUERY	; Set up for the QUERYFNREPLY1 callback
 	sta state
 	GO_SLOW				; Slow down for SOS
 	jsr udp_send_nocopy
 	GO_FAST				; Speed back up for SOS
 	jsr RECEIVE_LOOP_FAST
-	rts
+	bcc :+
+	lda TMOT
+	beq :+
+	dec RS_TEMP
+	bne QUERYFNREQUEST_Warm
+	sec
+:	rts
 
 
 ;---------------------------------------------------------
 ; QUERYFNREPLY -
 ;---------------------------------------------------------
 QUERYFNREPLY1:
+	lda #STATE_IDLE
+	sta state
 	lda TMOT
 	bne :+
 	lda udp_inp + udp_data + 1	; File size lsb
@@ -469,17 +498,17 @@ QUERYFNREPLY1:
 	sta HOSTBLX+1
 	lda udp_inp + udp_data + 3	; Return code/message
 	sta QUERYRC			; Just some temp storage
-	jmp QUERYFNREPLYDONE
-:
-	lda #PHMTIMEOUT
+	jmp QFNOk
+:	lda #PHMTIMEOUT
 	sta QUERYRC
 QUERYFNREPLY:
 	lda TMOT
-	beq @Ok
+	beq QFNOk
 	sec
-	jmp @Done
-@Ok:	clc
-@Done:	lda QUERYRC
+	jmp QFNDone
+QFNOk:	clc
+QFNDone:
+	lda QUERYRC
 QUERYFNREPLYDONE:
 	rts
 
@@ -490,11 +519,13 @@ QUERYFNREPLYDONE:
 ; BLKPTR points to starting block to receive - updated here
 ;---------------------------------------------------------
 RECVBLKS:
+	lda #$03
+	sta RS_TEMP	; Count of retries
+	sta QUERYRC	; No success yet
 	lda BLKPTR
 	sta PAGECNT
 	lda BLKPTR+1
 	sta PAGECNT+1
-	
 	ldx #CHR_ACK	; Initial ack
 
 RECVMORE:
@@ -506,9 +537,13 @@ RECVMORE:
 	lda SCOUNT
 	sta BLKPTR+1	; Restore BLKPTR msb when looping
 
-	jsr PUTACKBLK	; Send ack/nak packet for blocks
-	jsr RECVWIDE
-	bcs RECVERR 
+	ldy #$00
+	sty TMOT	; Clear timeout processing
+	lda #STATE_RECVBLKS	; Set up to be called back at RECVWIDE_REPLY
+	sta state
+	jsr PUTACKBLK	; Send ack/nak packet for blocks; callback runs through RECVWIDE_REPLY
+	lda QUERYRC
+	bne RECVERR
 	lda <CRC
 	cmp PCCRC
 	bne RECVERR
@@ -519,7 +554,11 @@ RECVMORE:
 	rts
 
 RECVERR:
-	ldx #CHR_NAK	; CRC error, ask for a resend
+	dec RS_TEMP	; Retry if we have retries left
+	bne :+
+	sec		; No retries remain - indicate failure and return
+	rts
+:	ldx #CHR_NAK	; CRC error, ask for a resend
 	jmp RECVMORE
 
 
@@ -534,23 +573,29 @@ RECVERR:
 ;   carry set in case of timeout
 ;---------------------------------------------------------
 SENDBLKS:
+	lda #$03
+	sta RS_TEMP	; Count of retries
 	lda BLKPTR+1
 	sta SCOUNT	; Stash the msb of BLKPTR, which SENDWIDE trashes
-	lda #$00
+@S2:	lda #$00
 	sta PAGECNT
 	lda BAOCNT
 	asl		; Convert blocks to pages
 	sta PAGECNT+1
-:	lda SCOUNT	; Restore BLKPTR msb when looping
+@SendAgain:
+	lda SCOUNT	; Restore BLKPTR msb when looping
 	sta BLKPTR+1
 	jsr SENDWIDE	; Pushes blocks out and runs callback ONE_BYTE_REPLY
 	jsr PUTREPLY	; Retrieve results from ONE_BYTE_REPLY
 	bcs @SendTimeout
 	cmp #CHR_ACK	; Is it ACK?  Loop back if NAK.
-	bne :-
+	bne @SendTimeout
 	clc
 	rts
 @SendTimeout:
+	dec RS_TEMP
+	lda RS_TEMP
+	bne @S2
 	sec		; Indicate failure
 	rts
 
@@ -561,34 +606,13 @@ SENDBLKS:
 ; PAGECNT is used as 2-byte value of length to ultimately receive
 ; CRC is computed and stored
 ;---------------------------------------------------------
-RECVWIDE:
-	ldy #$00
-	sty TMOT	; Clear timeout processing
-	lda #STATE_RECVBLKS	; Set up to be called back at RECVWIDE_REPLY
-	sta state
-	jsr RECEIVE_LOOP_FAST
-	rts
-
 RWERR:
-	php
-	pha
-	inc $400
-	pla
-	sta $0427
-	plp
-	sec
-	rts
-
-RWERR1:
-	php
-	pha
-	inc $401
-	pla
-	plp
 	sec
 	rts
 
 RECVWIDE_REPLY:
+	lda #STATE_IDLE
+	sta state
 	ldax #udp_inp + udp_data + 1	; Point Buffer at the incoming UDP data buffer
 	stax <A1L
 	ldx #$00
@@ -606,7 +630,7 @@ RECVWIDE_REPLY:
 	jsr BumpA1
 	lda (<A1L,X)	; Get protocol - must be an 'S'
 	cmp #CHR_S
-	bne RWERR1
+	bne RWERR
 	jsr BumpA1
 	lda (<A1L,X)	; Get protocol - check byte (discarded for the moment)
 	jsr BumpA1	; Block number, LSB
@@ -642,7 +666,7 @@ RWNext:	dec PAGECNT+1
 	inc BLKPTR+1	; Get ready for another page
 	lda BLKPTR+1
 	cmp #$c0
-	beq RWERR2	; Protect ourselves from buffer overrun
+	beq RWERR	; Protect ourselves from buffer overrun
 	jmp RW1
 @Done:
 	jsr BumpA1	; Increment the pointer to data we're reading
@@ -658,16 +682,9 @@ RWNext:	dec PAGECNT+1
 	lda BUFPTR+1
 	sta BLKPTR+1
 	jsr UNDIFFWide
+	lda #$00
+	sta QUERYRC
 	clc
-	rts
-
-RWERR2:
-	php
-	pha
-	inc $402
-	pla
-	plp
-	sec
 	rts
 
 
@@ -867,10 +884,10 @@ UDPDISPATCH:
 
 TIMEOUTENTRY:
 	lda state
-	php
-	ldx #STATE_IDLE	; Set state back to idle
-	stx state
-	plp
+;	php
+;	ldx #STATE_IDLE	; Set state back to idle
+;	stx state
+;	plp
 
 			; Receiving a DIR reply?
 	cmp #STATE_DIR

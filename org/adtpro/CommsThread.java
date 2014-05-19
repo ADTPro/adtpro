@@ -1410,16 +1410,23 @@ public class CommsThread extends Thread
 					Log.println(false, "receiveDiskWide() about to wait for a packet."); //$NON-NLS-1$
 					try
 					{
-						bytesReceived = receivePacketWide(tempBuffer, 0);
+						bytesReceived = receivePacketWide(tempBuffer, 0, blocksDone);
 						if (bytesReceived == 0) // We didn't get any bump in data
 							break;
-						blocksDone += bytesReceived / 512;
-						_parent.setProgressValue(blocksDone);
-						Log.println(false, "Writing up to block " + blocksDone + "."); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-						byte[] buffer = new byte[bytesReceived];
-						java.lang.System.arraycopy(tempBuffer, 0, buffer, 0, bytesReceived);
-						fos.write(buffer);
-						buffer = null;
+						if (bytesReceived == -1) // We ack'd an earlier packet
+						{
+							Log.println(false, "Acknowledged earlier packet at block " + blocksDone + "."); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+						}
+						else
+						{
+							blocksDone += bytesReceived / 512;
+							_parent.setProgressValue(blocksDone);
+							Log.println(false, "Writing up to block " + blocksDone + "."); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+							byte[] buffer = new byte[bytesReceived];
+							java.lang.System.arraycopy(tempBuffer, 0, buffer, 0, bytesReceived);
+							fos.write(buffer);
+							buffer = null;
+						}
 					}
 					catch (GoHomeException e)
 					{
@@ -3359,6 +3366,11 @@ public class CommsThread extends Thread
 	}
 
 	public int receivePacketWide(byte[] buffer, int offset) throws GoHomeException
+	{
+		return receivePacketWide(buffer, offset, -1);
+	}
+
+	public int receivePacketWide(byte[] buffer, int offset, int expectedStartBlock) throws GoHomeException
 	// Receive an enveloped wide packet with RLE compression
 	// Returns:
 	// number of bytes successfully read - CRC matched
@@ -3369,6 +3381,7 @@ public class CommsThread extends Thread
 		byte data = 0x00, prev, crc1 = 0, crc2 = 0;
 		byte[] envelope;
 		int bytesReceived = 0;
+		int incomingBlock = 0;
 
 		Log.println(false, "CommsThread.receivePacketWide() entry; offset: " + offset + ".");
 		do // Loop to retry if necessary
@@ -3384,9 +3397,9 @@ public class CommsThread extends Thread
 				Log.println(false, "CommsThread.receivePacketWide() expecting to read " + expectedBytes + " bytes after RLE decompression.");
 				try
 				{
-					int incomingBlock = 0;
-					incomingBlock += waitForData(1);
-					incomingBlock += waitForData(1) * 256;
+					incomingBlock = 0;
+					incomingBlock += UnsignedByte.intValue(waitForData(1));
+					incomingBlock += (UnsignedByte.intValue(waitForData(1)) * 256);
 					Log.println(false, "CommsThread.receivePacketWide() incoming block is " + incomingBlock + ".");
 					for (localCount = 0; localCount < envelope[1]; localCount++)
 					{
@@ -3402,7 +3415,14 @@ public class CommsThread extends Thread
 								prev += UnsignedByte.intValue(data);
 								// if ((byteCount+1) % 32 == 0)
 								// Log.println(false, "");
-								buffer[offset + (localCount * 256) + byteCount++] = prev;
+								if ((expectedStartBlock < 0) || (expectedStartBlock == incomingBlock))
+								{
+									buffer[offset + (localCount * 256) + byteCount++] = prev;
+								}
+								else
+								{
+									byteCount++;
+								}
 								// Log.println(false, "CommsThread.receivePacketWide() buffer["+(offset + (localCount * 256) + byteCount)+"] = 0x"+UnsignedByte.toString(prev));
 							}
 							else
@@ -3414,7 +3434,14 @@ public class CommsThread extends Thread
 									// Log.println(false, "Byte[" + UnsignedByte.toString(UnsignedByte.loByte(byteCount)) + "]=0x" + UnsignedByte.toString(prev) + " (rle)");
 									// if ((byteCount+1) % 32 == 0)
 									// Log.println(false, "");
-									buffer[offset + (localCount * 256) + byteCount++] = prev;
+									if ((expectedStartBlock < 0) || (expectedStartBlock == incomingBlock))
+									{
+										buffer[offset + (localCount * 256) + byteCount++] = prev;
+									}
+									else
+									{
+										byteCount++;
+									}
 									// Log.println(false, "CommsThread.receivePacketWide() buffer["+(offset + (localCount * 256) + byteCount)+"] = 0x"+UnsignedByte.toString(prev));
 									// Log.print(false, UnsignedByte.toString(buffer[offset + (localCount * 256) + byteCount - 1]) + " ");
 								} while (_shouldRun && byteCount < 256 && byteCount != UnsignedByte.intValue(data));
@@ -3429,16 +3456,23 @@ public class CommsThread extends Thread
 					crc1 = waitForData(1);
 					crc2 = waitForData(1);
 					received_crc = UnsignedByte.intValue(crc1, crc2);
-					computed_crc = doCrc(buffer, offset, expectedBytes);
-					if (received_crc != computed_crc)
+					if ((expectedStartBlock < 0) || (expectedStartBlock == incomingBlock))
 					{
-						bytesReceived = 0;
-						Log.println(true, "Incorrect CRC. Computed: " + computed_crc + " Received: " + received_crc); //$NON-NLS-1$ //$NON-NLS-2$
-						_transport.pauseIncorrectCRC();
+						computed_crc = doCrc(buffer, offset, expectedBytes);
+						if (received_crc != computed_crc)
+						{
+							bytesReceived = 0;
+							Log.println(true, "Incorrect CRC. Computed: " + computed_crc + " Received: " + received_crc); //$NON-NLS-1$ //$NON-NLS-2$
+							_transport.pauseIncorrectCRC();
+						}
+						else
+						{
+							Log.println(false, "Correct CRC. Computed: " + computed_crc + " Received: " + received_crc); //$NON-NLS-1$ //$NON-NLS-2$
+							bytesReceived = expectedBytes;
+						}
 					}
 					else
 					{
-						Log.println(false, "Correct CRC. Computed: " + computed_crc + " Received: " + received_crc); //$NON-NLS-1$ //$NON-NLS-2$
 						bytesReceived = expectedBytes;
 					}
 				}
@@ -3490,6 +3524,8 @@ public class CommsThread extends Thread
 				_transport.flushSendBuffer();
 			}
 		} while ((bytesReceived == 0) && (_shouldRun == true) && (retries < _maxRetries));
+		if ((expectedStartBlock > -1) && (incomingBlock < expectedStartBlock))
+			bytesReceived = -1;
 		Log.println(false, "CommsThread.receivePacketWide() exit, bytesReceived = " + bytesReceived);
 
 		return bytesReceived;

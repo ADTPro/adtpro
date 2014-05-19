@@ -51,17 +51,8 @@ DIRWARM:
 	ldy #PMWAIT
 	jsr WRITEMSGAREA
 	jsr DIRREQUEST
-
-	lda #$03
-	sta ZP		; Retry counter - ensure you don't use ZP in the underlying protocol call
-:	jsr DIRREPLY
-	bcs :-
-	ldy TMOT
-	beq DIRDISP0
-	; We timed out or otherwise failed; let's retry a couple of times.
-	dec ZP
-	bne :-
-	jmp HOSTTIMEOUT
+	jsr DIRREPLY
+	bcs HOSTTIMEOUT	; We timed out or had some other communications failure
 
 DIRDISP0:
 	jsr HOME	; Clear screen
@@ -276,8 +267,8 @@ CDSTART:
 	jsr WRITEMSGAREA	; Tell user to have patience
 	jsr CDREQUEST
 	jsr CDREPLY
-	bcs CDTIMEOUT
-	bne CDERROR
+	bcs CDTIMEOUT		; Carry set on comms error
+	bne CDERROR		; Accumulator contains return code
 CDMSG:	ldy #PMSG14
 	jsr WRITEMSGAREA
 	jsr PAUSE
