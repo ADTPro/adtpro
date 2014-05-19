@@ -39,53 +39,46 @@
 	.endmacro
 
 	.org $a000	; Make the listing legible
-ClearScreen:
-	lda #$a0
-	ldy #$78
-	jsr Fill1
-	ldy #$78
-	jsr Fill2
-	rts
-Fill1:	dey
-	sta $400,y
-	sta $480,y
-	sta $500,y
-	sta $580,y
-	bne Fill1
-	rts
-Fill2:	dey
-	sta $600,y
-	sta $680,y
-	sta $700,y
-	sta $780,y
-	bne Fill2
-
-	ldx #<message_1
-	ldy #$00
+	lda #$03
+	sta $ffd0	; Use the monitor's zero page
+	jsr $fb7d	; Call the ROM's clear screen routine
+	lda #$05
+	jsr $FBC5	; Set CV
+	lda #$00
+	sta $5c		; Set CH
 	jsr Message
-	ldx #<message_2
-	ldy #$80
-	jsr Message
-:	bcc :-
+:	jmp :-
 
 Message:
-	stx SelfMod1+1
-	sty SelfMod2+1
-	ldy #39
-SelfMod1:
-	lda message_1,y
-SelfMod2:
-	sta $78f,y
-	dey
-	bpl SelfMod1
-	clc
-	rts
+	tay
+	lda #<message_1
+	sta $fe
+	lda #>message_1
+	sta $ff
+@MLoop:	lda ($fe),y
+@MDone:	beq @MDone 
+	jsr $FC39	; COUT
+	iny
+	jmp @MLoop
 
+	
 message_1:
-	asc "THIS DISK WILL NOT BOOT ON AN APPLE ///."
-
-message_2:
-	asc "PLEASE INSERT ANOTHER DISK AND REBOOT.  "
+	asc "WELCOME TO YOUR "
+	.byte $41, $50, $50, $4c, $45, $20, $2f, $2f, $2f ; APPLE /// (inverse)
+	asc "! THIS DISK IS "
+	asc "PART OF THE ADTPRO DISTRIBUTION, BUT IT "
+	asc "IS INTENDED FOR THE "
+	.byte  $41, $50, $50, $4c, $45, $20, $5d, $5b ; APPLE ][ (inverse)
+	asc ". PLEASE"
+	.byte $8d
+	asc "BOOT THE "
+	.byte $53, $4f, $53 ; SOS (inverse)
+	asc"-SPECIFIC DISK INSTEAD."
+	.byte $8d, $8d
+	asc "COOL /// FACT: CTRL-OPENAPPLE-RESET"
+	.byte $8d
+	asc "STARTS A MINI-MONITOR."
+	.byte $00
 
 Filler:
 	.res $a100-Filler,$00
