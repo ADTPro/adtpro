@@ -214,6 +214,7 @@ PARMRST:
 	sta PARMS,Y
 	dey
 	bpl @PR1
+	sec
 	jmp NOSAVE
 ENDCFG:
 	; Save off IP parms
@@ -235,8 +236,10 @@ SAVPARM2:
 	sta CURPARM
 
 	lda PSAVE	; Did they ask to save?
-	bne NOSAVE
+	bne NOSAVE2
 	jsr BSAVE
+NOSAVE2:
+	clc
 NOSAVE:
 	rts
 

@@ -220,6 +220,7 @@ PARMRST:
 	sta PARMS,Y
 	dey
 	bpl @PR1
+	sec
 	jmp NOSAVE
 ENDCFG:
 	; Save off IP parms
@@ -241,8 +242,10 @@ SAVPARM2:
 	sta CURPARM
 
 	lda PSAVE	; Did they ask to save?
-	bne NOSAVE
+	bne NOSAVE2
 	jsr BSAVE
+NOSAVE2:
+	clc
 NOSAVE:
 	rts
 
@@ -414,7 +417,7 @@ YSAVE:	.byte $00
 PARMS:
 COMMSLOT:
 	.byte 2		; Zero-indexed comms slot (3)
-PBAO:	.byte 1		; Blocks at once (2)
+PBAO:	.byte 0		; Blocks at once (1)
 PSOUND:	.byte 0		; Sounds? (YES)
 PNIBBL:	.byte 1		; Enable nibbles? (NO)
 PSAVE:	.byte 1		; Save parms? (NO)
@@ -426,7 +429,7 @@ cfg_ip:		.byte   0,   0,   0,   0 ; ip address of local machine (will be overwri
 cfg_netmask:	.byte   0,   0,   0,   0 ; netmask of local network (will be overwritten if dhcp_init is called)
 cfg_gateway:	.byte   0,   0,   0,   0 ; ip address of router on local network (will be overwritten if dhcp_init is called)
 
-DEFAULT:	.byte 2,1,0,1,1,0	; Default parm indices
+DEFAULT:	.byte 2,0,0,1,1,0	; Default parm indices
 CONFIGYET:	.byte 0			; Has the user configged yet?
 PARMSEND:
 cfg_dns:	.byte   0,   0,   0,   0 ; ip address of dns server to use (will be overwritten if dhcp_init is called)

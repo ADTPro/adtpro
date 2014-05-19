@@ -121,9 +121,12 @@ KCONFENTRY:
 	lda #MENU_CONFIG
 	jsr HILIGHT_MENU
 	jsr CONFIG      ; YES, DO CONFIGURE ROUTINE
+	php
 	jsr HOME	; Clear screen; PARMINT may leave a complaint
+	plp
+	bcs :+
 	jsr PARMINT     ; AND INTERPRET PARAMETERS
-	jmp MAINL
+:	jmp MAINL
 
 
 KABOUT:	cmp #$9F	; ABOUT MESSAGE? ("?" KEY)

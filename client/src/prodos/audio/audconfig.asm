@@ -209,10 +209,11 @@ PARMRST:
 	sta PARMS,Y
 	dey
 	bpl PARMRST
+	sec
 	jmp NOSAVE
 ENDCFG:
 	lda PSAVE	; Did they ask to save?
-	bne NOSAVE
+	bne NOSAVE2
 
 	ldy #PARMNUM-1	; Save previous parameters
 SAVPARM2:
@@ -223,6 +224,8 @@ SAVPARM2:
 	lda #$00
 	sta CURPARM
 	jsr BSAVE
+NOSAVE2:
+	clc
 NOSAVE:
 	rts
 
