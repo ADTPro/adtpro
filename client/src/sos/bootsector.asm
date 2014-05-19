@@ -38,6 +38,13 @@
 		.endrep
 	.endmacro
 
+; Define an inverse ASCII string
+	.macro  inv Arg
+		.repeat .strlen(Arg), I
+		.byte   .strat(Arg, I)
+		.endrep
+	.endmacro
+
 	.org $a000	; Make the listing legible
 	lda #$03
 	sta $ffd0	; Use the monitor's zero page
@@ -64,15 +71,15 @@ Message:
 	
 message_1:
 	asc "WELCOME TO YOUR "
-	.byte $41, $50, $50, $4c, $45, $20, $2f, $2f, $2f ; APPLE /// (inverse)
+	inv "APPLE ///"
 	asc "! THIS DISK IS "
 	asc "PART OF THE ADTPRO DISTRIBUTION, BUT IT "
 	asc "IS INTENDED FOR THE "
-	.byte  $41, $50, $50, $4c, $45, $20, $5d, $5b ; APPLE ][ (inverse)
+	inv "APPLE ]["
 	asc ". PLEASE"
 	.byte $8d
 	asc "BOOT THE "
-	.byte $53, $4f, $53 ; SOS (inverse)
+	inv "SOS"
 	asc"-SPECIFIC DISK INSTEAD."
 	.byte $8d, $8d
 	asc "COOL /// FACT: CTRL-OPENAPPLE-RESET"
