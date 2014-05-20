@@ -149,7 +149,3 @@ ADTPro Virtual Drive
 and will reflect the Virtual.po and Virtual2.po images served by the ADTPro server.   
 
 [images/vdrivesos1.png]
-
- It is important to connect your {{{./connectionsserial.html#Apple3}null modem}} to the Apple /// and start
-the ADTPro server (and click the Serial button) before booting and using the serial driver.
-If you don't, changing the connectedness of the cabling while running causes SOS to crash with a $02 error.   

@@ -56,13 +56,13 @@ Starting ADTPro
 
 [images/serialConfig.png]
 
-* {Starting the Client} - ProDOS
+* Starting the Client - {ProDOS}
 
  (If you don't have the ADTPro client software on your Apple II yet, 
  take a look at the {{{./bootstrap.html}serial}} or {{{./bootstrapaudio.html}audio}}
  bootstrapping section to get that started.) 
 
- When you boot your Apple ][ from the ADTPro disk, it will start a simple
+ When you boot your Apple ][ from the ADTPro-v.r.m.dsk disk, it will start a simple
  menu where you can pick which version of ADTPro you wish to start:
 
 [images/hello.png]
@@ -71,6 +71,14 @@ Starting ADTPro
  or by using arrow keys and hitting the Return key to select one.
  Be sure to choose a client program at the Apple II end to match the communications
  device being used at the host end.
+
+ If you accidentally start from the SOS-specific disk intended for the Apple ///, you will
+ see this screen when you boot:
+
+[images/WrongBoot2.png]
+
+ You will need to boot a disk made from the ADTPro-v.r.m.dsk image rather than the
+ ADTProSOS-v.r.m.dsk disk image.
 
  You can have a particular version always start automatically by making it the first
  (or only) program that ends in <<<.SYSTEM>>> on the disk.
@@ -141,10 +149,11 @@ That has the effect of starting the IIgs in 8-bit ProDOS (BASIC) mode.
 ADTPro can't maintain the tight timing necessary for serial communications when the full
 GSOS has booted, as it modifies the serial environment.
 
-* {Starting the Client - SOS}
+* Starting the Client - {SOS}
 
  Booting a diskette in an Apple /// computer will automatically run
- any program named <<<SOS.INTERP.>>>  The ADTPro distribution diskette comes
+ any program named <<<SOS.INTERP.>>>  The ADTPro SOS distribution diskette image
+ ADTProSOS-v.r.m.dsk comes
  configured with the serial ADTPro client version named <<<SOS.INTERP.>>>
  The ethernet version is also on the diskette, but is named <<<SOS.INTERPETH.>>>
  In order to run the ethernet version, it will be necessary to rename
@@ -153,3 +162,15 @@ GSOS has booted, as it modifies the serial environment.
  The Apple /// utilities disk or any Apple disk image manipulation utility program like
  {{{http://ciderpress.sourceforge.net}CiderPress}} or 
  {{{http://applecommander.sourceforge.net}AppleCommander}} can be used to do this.
+
+ Starting from your ADTProSOS-v.r.m.dsk disk will bring up the main menu:
+
+[images/bootstrap35.png]
+
+ If you accidentally start from the ProDOS-specific disk intended for the Apple II, you will
+ see this screen when you boot:
+
+[images/WrongBoot3.png]
+
+ You will then need to boot a disk made from the ADTProSOS-v.r.m.dsk image rather than the
+ ADTPro-v.r.m.dsk disk image.

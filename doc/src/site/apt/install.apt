@@ -9,13 +9,15 @@ ADTPro Installation
  Welcome to ADTPro!
 
  To get started, you will need a Java installation you can call from the
- command line.  This means that if you type the command 
+ command line of your host computer.  This means that if you type the command 
  <<<"java -version">>> from a terminal window it ought to produce 
- output other than complaints.
+ a Java message and not complaints.
  One place to get a downloadable Java distribution is from Oracle:
  {{{http://www.oracle.com/technetwork/java/javase/downloads/index.html}Java SE JRE download.}}
  When you get there, look for a Java SE <<JRE>> download button.
- Download for your platform and install it.
+ Download for your platform and install it, paying careful attention on Windows 
+ to 32-bit or 64-bit versions; letting Oracle pick for you has been known to 
+ result in the incorrect version being installed.
 
  The ADTPro distribution comes as a single file named something similar to
  <<<ADTPro-v.r.m>>> with an extension particular to the target platform:
@@ -96,7 +98,7 @@ Distribution contents
 
  [<<<ADTPro-v.r.m.app>>>] An OSX server application for OSX 10.3 and above
 
- [<<<adtpro.command>>>] An OSX server startup command file for OSX 10.2 and below
+ [<<<ADTPro.command>>>] An OSX server startup command file
 
  [<<<adtpro.sh>>>] A Linux/Solaris server startup shell script
 
@@ -108,13 +110,11 @@ Distribution contents
 
  [<<<README>>>] The info you're looking at now, mostly
 
- [<<<disks/ADTPRO-v.r.m.DSK>>>] ADTPro client-side software (an Apple 140K disk image)
+ [<<<disks/ADTPRO-v.r.m.DSK>>>] ADTPro Apple II client-side software (an Apple 140K disk image)
 
- [<<<disks/ADTPRO-v.r.m.PO>>>] ADTPro client-side software (an Apple 800K disk image)
+ [<<<disks/ADTPROSOS-v.r.m.DSK>>>] ADTPro Apple /// client-side software (an Apple 140K disk image)
 
- [<<<disks/ADTvr.DSK>>>] An enhanced legacy Apple DOS ADT client, capable 
-   of running with Super Serial hardware, the IIgs, the IIc and compatibles, and the Apple ///
-   (an Apple 140K disk image)
+ [<<<disks/ADTPRO-v.r.m.PO>>>] ADTPro Apple II client-side software (an Apple 800K disk image)
 
  [<<<disks/VDRIVE-v.r.m.DSK>>>] Virtual drive driver software (see the {{{./vdrive.html}virtual drive}} section)
 
