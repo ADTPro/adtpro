@@ -58,7 +58,7 @@ all
 	<property name="distName" value="ADTPro-${versionString}" />
 	<property name="diskName" value="ADTPRO-${versionString}" />
 	<property name="disk3Name" value="ADTPROSOS-${versionString}" />
-	<property name="a3sysutils-vs" value="${builddir}/SysUtilsA3-VSDrive-1.28.dsk" />
+	<property name="a3sysutils-vs" value="${builddir}/SysUtilsA3-VSDrive-1.31.dsk" />
 	<property name="volName" value="ADTPro.${versionString}" />
 	<property name="vol3Name" value="ADTProSOS.${versionString}" />
 	<property name="vdriveDistName" value="VDrive-${versionString}" />
