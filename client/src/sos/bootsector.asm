@@ -53,8 +53,6 @@
 	jsr $FBC5	; Set CV
 	lda #$00
 	sta $5c		; Set CH
-	jsr Message
-:	jmp :-
 
 Message:
 	tay
@@ -63,29 +61,37 @@ Message:
 	lda #>message_1
 	sta $ff
 @MLoop:	lda ($fe),y
-@MDone:	beq @MDone 
+	beq @ReadChar 
 	jsr $FC39	; COUT
 	iny
-	jmp @MLoop
+	bne @MLoop	; Loop as long as we are under 256 bytes... 
+			; which is much more than we can ever have,
+			; since this is only half of a block to begin with!
+@ReadChar:
+	lda $C000	; Wait for a keypress
+	bpl @ReadChar
+	bit $C010	; Strobe the keyboard
+	jsr $fb7d	; Call the ROM's clear screen routine
+	jmp $F6A1	; Reboot
 
-	
 message_1:
-	asc "WELCOME TO YOUR "
+	asc "  WELCOME TO ADTPRO ON YOUR "
 	inv "APPLE ///"
-	asc "! THIS DISK IS "
-	asc "PART OF THE ADTPRO DISTRIBUTION, BUT IT "
-	asc "IS INTENDED FOR THE "
-	inv "APPLE ]["
-	asc ". PLEASE"
-	.byte $8d
-	asc "BOOT THE "
-	inv "SOS"
-	asc"-SPECIFIC DISK INSTEAD."
+	asc "!"
 	.byte $8d, $8d
-	asc "COOL /// FACT: CTRL-OPENAPPLE-RESET"
+	asc " YOU'VE BOOTED THE ADTPRO DISK INTENDED"
 	.byte $8d
-	asc "STARTS A MINI-MONITOR."
-	.byte $00
+	asc "  FOR THE "
+	inv "APPLE ]["
+	asc ".  PLEASE INSERT THE"
+	.byte $8d
+	asc "    "
+	inv "SOS"
+	asc "-"
+	asc "SPECIFIC ADTPRO DISK INSTEAD."
+	.byte $8d, $8d
+	asc "        PRESS ANY KEY TO REBOOT..."
+	.byte $8d, $00
 
 Filler:
 	.res $a100-Filler,$00
