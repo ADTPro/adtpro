@@ -30,7 +30,7 @@ ADTPro Release History
 
  * [SOS Client] Keyboard interaction works correctly
 
- * [SOS Client] Changing serial connected-ness while client is running no longer causes fatal SOS $02 errors
+ * [SOS Client, SOS VSDrive] Changing serial connected-ness to the Apple /// no longer causes fatal SOS $02 errors
 
  * [SOS Client] Bare-metal bootstrap more reliable with timeout logic borrowed from Speediboot and made prettier with a logo and better display management
 
