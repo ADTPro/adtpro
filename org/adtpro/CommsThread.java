@@ -4012,10 +4012,9 @@ public class CommsThread extends Thread
 							if ((_resource.equals(Messages.getString("Gui.BS.SOSINTERP")))
 								|| ((_resource.equals(Messages.getString("Gui.BS.SOSDRIVER")))))
 							{
-								sleep(20); // Give SOS a little time to put up its message
 								_transport.writeByte(0x53); // Send an "S" to trigger the start
 								_transport.pushBuffer();
-								sleep(20); // Give SOS a little more time to put up its message
+								sleep(20); // Give SOS a little time to put up its message
 								length = length - 1; // SOS seems to need this reduced by one...
 							}
 							else if (_resource.equals(Messages.getString("Gui.BS.ProDOSRaw")))
@@ -4046,13 +4045,9 @@ public class CommsThread extends Thread
 								break;
 							}
 							_transport.writeByte(buffer[i]);
+							if (((_resource.equals(Messages.getString("Gui.BS.SOSKERNEL"))) || (_resource.equals(Messages.getString("Gui.BS.SOSINTERP"))) || (_resource.equals(Messages.getString("Gui.BS.SOSDRIVER"))))  && (i < 2))
+								sleep(1); // Letting this run unthrottled seemed to miss the first byte...
 							_transport.pushBuffer();
-							/* 
-							if ((_resource.equals(Messages.getString("Gui.BS.SOSKERNEL"))) || (_resource.equals(Messages.getString("Gui.BS.SOSINTERP"))))
-								sleep(0); // Sleeping here seemed to really slow down Windows OSes
-							else if ((_resource.equals(Messages.getString("Gui.BS.SOSDRIVER"))))
-								sleep(1); // Sleeping here seemed to really slow down Windows OSes
-							 */
 							if (_shouldRun)
 							{
 								_parent.setProgressValue(i + 1);
