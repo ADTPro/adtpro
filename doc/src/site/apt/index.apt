@@ -27,7 +27,7 @@ compatible computer with at least 64k of memory.
 
     * The Apple's {{{./connectionsaudio.html}cassette ports}}
 
- ADTPro has these features:
+ ADTPro's main features:
 
     * Transfers any storage device ProDOS or SOS can access
 
@@ -35,11 +35,11 @@ compatible computer with at least 64k of memory.
 
     * Runs on Linux, Mac OSX, OS/2, Windows, and probably Solaris
 
-    * Understands many digital disk formats: .DSK, .SDK, .SHK, .BXY, .PO, .DO, .NIB, 2IMG
+    * Understands many digital disk image formats: .DSK, .SDK, .SHK, .BXY, .PO, .DO, .NIB, 2IMG
 
     * Understands many physical Apple disk formats: DOS, ProDOS, SOS, Pascal, CP/M, among others 
 
-    * Serves the original {{{./compatibility.html}ADT client}} as well as the ADTPro client
+    * Serves the original DOS {{{./compatibility.html}ADT client}} as well as the ADTPro client
 
     * {{{#Bootstrapping}Bootstraps}} Apple II and Apple /// computers from bare metal over {{{./bootstrap.html}serial}} or {{{./bootstrapaudio.html}cassette}} ports
 
@@ -47,7 +47,7 @@ compatible computer with at least 64k of memory.
 
     * {{{./misc.html#Format}Formats}} blank disks
 
-    * Serves {{{./vdrive.html}virtual}} drives via serial or Ethernet on the Apple II and Apple ///
+    * Serves {{{./vdrive.html}virtual}} drives via serial or Ethernet on the Apple II and via serial on the Apple ///
 
  The latest ADTPro can always be 
 {{{./download.html}downloaded}}
@@ -56,23 +56,22 @@ from the SourceForge
 
 * {Bootstrapping} the Apple II or Apple ///
 
-  If you already use the DOS version of ADT, you can use it to transfer the 
-disk image containing ADTPro that comes with this project
-(ADTPRO-v.r.m.DSK) to your Apple.  Reboot the Apple with the ADTPro floppy, and
+  If you already have a way to transfer virtual disk images to your Apple, you can use that
+ to transfer the latest disk image containing ADTPro that comes with this project
+(ADTPRO-v.r.m.DSK or ADTPROSOS-v.r.m.DSK) to your Apple.  Reboot the Apple with the ADTPro floppy, and
 you're ready to go.
 
-  If you don't use DOS ADT now, don't have software for your Apple yet, 
-or don't have a serial card, more bootstrapping scenarios and configurations 
-are detailed below.
+  If you don't have software for your Apple yet, more bootstrapping scenarios and configurations 
+are detailed here:
 
- * Click {{{./bootstrap.html}II serial}} or {{{./bootstrapaudio.html}II audio}} to get started with an Apple II.
+ * See {{{./bootstrap.html}II serial}} or {{{./bootstrapaudio.html}II audio}} to get started with an Apple II.
 
- * Click  {{{./bootstrap3.html}/// serial}} to get started with an Apple ///.
+ * See  {{{./bootstrap3.html}/// serial}} to get started with an Apple ///.
 
  []
 
  If you still need to connect your host and Apple computers with physical cables,
- refer back to the "Connections" section for your connection type:
+ refer to the "Connections" section for your connection type:
 
  * {{{./connectionsserial.html}Serial cabling connections}}
 
@@ -80,20 +79,6 @@ are detailed below.
 
  []
 
-  Here is a 5-minute overview video of the Apple II bootstrapping process, end-to-end:
+  Here is a 5-minute video of the Apple II bootstrapping process, end-to-end:
 
  youtubereplace4
-
-* {Demo} Presentation
-
- Attached below are slides to a brief demonstration presentation I gave to a local 
- Mac users group.  It goes through the basic steps it takes to bootstrap the 
- Apple II.  There are speaker notes, and it contains a few resources and links.
-
- * PowerPoint: {{{http://adtpro.sourceforge.net/ADTProIntro.ppt}ADTProIntro.ppt}}
-
- * OpenDocument: {{{http://adtpro.sourceforge.net/ADTProIntro.odp}ADTProIntro.odp}}
-
- []
-
-[images/ADTProPPT.png]

@@ -5,7 +5,7 @@
   <artifactId>doc</artifactId>
   <version>Website</version>
   <name>ADTPro</name>
-  <url>http://maven.apache.org/maven2</url>
+  <url>http://adtpro.sourceforge.net</url>
   <inceptionYear>2006</inceptionYear>
   <organization>
     <name>David Schmidt</name>
@@ -18,4 +18,19 @@
   </distributionManagement>
   <build>
   </build>
+  <reporting>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-project-info-reports-plugin</artifactId>
+        <version>2.6</version>
+        <reportSets>
+          <reportSet>
+            <reports><!-- select reports -->
+            </reports>
+          </reportSet>
+        </reportSets>
+      </plugin>
+    </plugins>
+  </reporting>
 </project>
