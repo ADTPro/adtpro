@@ -29,7 +29,7 @@
 ;  * Put up a little prompt to show we're alive
 ;  * Poll the serial port for data
 ;  * Once we see a "G" on the port, start reading $100 more bytes into $a100
-;  * After reading $100 bytes, jump to $a100 (we don't count the initial "G")
+;  * After reading $300 bytes, jump to $a100 (we don't count the initial "G")
 ;
 ; That's it!  The loader that gets sent into $a100 is a more robust
 ; version that does some more environment preparation and pulls in the
@@ -52,10 +52,7 @@ ACIASR		:= $c0f1	; Status register. $c0f1 for ///, $c089+S0 for SSC
 ACIAMR		:= $c0f2	; Command mode register. $c0f2 for ///, $c08a+S0 for SSC
 ACIACR		:= $c0f3	; Control register.  $c0f3 for ///, $c08b+S0 for SSC
 
-Entry:	sei
-	cld
-	lda	#$40
-	sta	$ffca		; Disable interrupts
+Entry:
 ; Set up the environment
 	lda	E_REG		; Read the environment register
 	ora	#$f2		; Set 1MHz switch, Video + I/O space
@@ -85,7 +82,7 @@ Poll:
 	bne	Poll
 
 ; We got the magic signature; start reading data
-	ldx	#$02
+	ldx	#$03		; Three pages total
 Read:	
 	jsr	IIIGet		; Pull a byte
 	sta	(BUF_P),y	; Save it
@@ -94,7 +91,7 @@ Read:
 	bne	Read		; Pull in a full page
 	inc	BUF_P+1		; Bump pointer for next page
 	dex
-	bne	Read		; Get the second page
+	bne	Read		; Go back for another page
 
 ; Call bootstrap entry point
 	jmp	$a100		; Bigger booter entry point
