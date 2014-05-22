@@ -17,7 +17,8 @@ files in the current working directory:
 [images/dirBlankResults.png]
 
  If there is more than one page of results, you can page up and down with the "A" and "Z" keys, respectively.
-You can change the current working directory with the
+You can scroll up and down through the listing with the arrow keys.
+If you need to change the current working directory, you must go back to the main menu and use the
 {{{./misc.html#Change}CD}} menu option.
 
  If you have many files in your current working directory, you can narrow down the results at first

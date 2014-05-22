@@ -58,7 +58,7 @@ for example.
 
     [[1]] Turn on the Apple ///; hit the Ctrl-OpenApple-Reset key sequence to
     get the monitor command line interface.  The prompt should look like this
-    in the upper left-hand corner of the screen:
+    in the upper left corner of the screen:
 
     *
 
@@ -117,7 +117,7 @@ A000G
 -----------------
 
     [[1]] If the bootstrap loader is functioning correctly, an inverse word "HI" will
-    appear in the upper-right hand corner of the screen.  The Apple /// is now
+    appear in the upper right corner of the screen.  The Apple /// is now
     waiting for further instructions from the ADTPro server.
     The screen will look something like this:
 
@@ -146,15 +146,15 @@ A000G
 
     *
     
-[images/bootstrap341.png]
+[images/bootstrap34.png]
 
     *
     
-[images/bootstrap342.png]
+[images/bootstrap35.png]
 
     *
     
-[images/bootstrap343.png]
+[images/bootstrap36.png]
 
     []
 
@@ -162,7 +162,7 @@ A000G
 
     *
     
-[images/bootstrap35.png]
+[images/bootstrap37.png]
 
     []
 

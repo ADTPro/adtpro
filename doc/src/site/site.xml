@@ -13,7 +13,7 @@
     </links>
 
     <menu name="ADTPro">
-      <item name="Main" href="index.html"/>
+      <item name="Home" href="index.html"/>
       <item name="Download" href="download.html"/>
       <item name="Support Discussion" href="forum.html"/>
     </menu>
@@ -51,7 +51,7 @@
     </menu>
 
     <menu name="Resources">
-      <item name="ADTPro Support Discussion" href="forum.html"/>
+      <item name="Support Discussion" href="forum.html"/>
       <item name="Non-English Resources" href="translations.html"/>
       <item name="Cleaning a Disk Drive" href="http://www.youtube.com/watch?v=CMF3PL17kqg"/>
       <item name="Apple as a Terminal" href="http://web.archive.org/web/20100817014158/http://dataswamp.net/apple2eserialterm/index.php"/>
