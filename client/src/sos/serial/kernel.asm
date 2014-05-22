@@ -5,7 +5,7 @@ b_p		:= $32
 size		:= $30
 
 ; If the code for grub is modified, this address must be changed to match
-GrubIIIGet	:= $A047	; Borrow Grub's IIIGet
+GrubIIIGet	:= $A040	; Borrow Grub's IIIGet
 
 ; If the code for the loader is modified, these addresses must be changed to match
 LDRIIIGet	:= $A184	; Borrow the Loader's IIIGet

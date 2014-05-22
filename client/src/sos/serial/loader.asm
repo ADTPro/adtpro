@@ -47,7 +47,7 @@ ACIASR		:= $c0f1	; Status register. $c0f1 for ///, $c089+S0 for SSC
 ACIAMR		:= $c0f2	; Command mode register. $c0f2 for ///, $c08a+S0 for SSC
 ACIACR		:= $c0f3	; Control register.  $c0f3 for ///, $c08b+S0 for SSC
 
-GrubIIIGet	:= $A047	; Borrow the Grub's IIIGet routine
+GrubIIIGet	:= $A040	; Borrow the Grub's IIIGet routine
 
 KRNLRequestDriverWarm := $20FF	; Kernel (re-)request driver download  
 KRNLReceiveDriverDone := $2144	; Kernel return point
