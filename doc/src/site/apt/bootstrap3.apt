@@ -72,17 +72,16 @@ for example.
     The sequence of lines to type is this:
 
 -----------------
-A000:78 D8 A9 40 8D CA FF AD
-A008:DF FF 09 F2 8D DF FF A9
-A010:0B 8D F2 C0 A9 10 8D F3
-A018:C0 A9 00 A8 85 7E A9 A1
-A020:85 7F A2 48 8E 24 04 E8
-A028:8E 25 04 20 47 A0 C9 47
-A030:D0 F9 A2 03 20 47 A0 91
-A038:7E 8D 27 04 C8 D0 F5 E6
-A040:7F CA D0 F0 4C 00 A1 AD
-A048:F1 C0 29 68 C9 08 D0 F7
-A050:AD F0 C0 60 
+A000:AD DF FF 09 F2 8D DF FF
+A008:A9 0B 8D F2 C0 A9 10 8D
+A010:F3 C0 A9 00 A8 85 7E A9
+A018:A1 85 7F A2 48 8E 24 04
+A020:E8 8E 25 04 20 40 A0 C9
+A028:47 D0 F9 A2 03 20 40 A0
+A030:91 7E 8D 27 04 C8 D0 F5
+A038:E6 7F CA D0 F0 4C 00 A1
+A040:AD F1 C0 29 68 C9 08 D0
+A048:F7 AD F0 C0 60
 -----------------
 
     It is imperative that these numbers and letters be typed in exactly and precisely
@@ -96,7 +95,7 @@ A050:AD F0 C0 60
     type the following command:
 
 -----------------
-A000.A053
+A000.A04C
 -----------------
 
     Any line can be corrected by re-typing that entire line (starting on a new,
