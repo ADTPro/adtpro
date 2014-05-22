@@ -19,14 +19,16 @@
 ;
 
 	.include "prodos/prodosmacros.i"	; OS macros
-	.include "prodos/prodosconst.i"	; OS equates, characters, etc.
+	.include "prodos/prodosconst.i"		; OS equates, characters, etc.
 
 ROW1 = $0d
 ROW2 = ROW1+1
 ROW3 = ROW1+2
 ROW4 = ROW1+3
 ROW5 = ROW1+4
-ROW6 = ROW1+5
+;ROW6 = ROW1+5
+TopRow = ROW1
+LoadingRow = ROW5;
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;                                                                               ;
@@ -43,12 +45,12 @@ ROW6 = ROW1+5
 
 GET_FILE_INFO_PARAM:
 	.byte	$0A		;PARAM_COUNT
-	.addr	KEYBUFF	;Keyboard buffer repurposed for file name storage
+	.addr	KEYBUFF		;Keyboard buffer repurposed for file name storage
 	.byte	$00		;ACCESS
 	.byte	$00		;FILE_TYPE
 FILE_INFO_ADDR:
 	.word	$0000	;AUX_TYPE
-	.byte	$00		;STORAGE_TYPE
+	.byte	$00	;STORAGE_TYPE
 	.word	$0000	;BLOCKS_USED
 	.word	$0000	;MOD_DATE
 	.word	$0000	;MOD_TIME
@@ -57,8 +59,8 @@ FILE_INFO_ADDR:
 
 OPEN_PARAM:
 	.byte	$03		;PARAM_COUNT
-	.addr	KEYBUFF	;Keyboard buffer repurposed for file name storage
-	.addr	PRODOS_MLI - 1024	;IO_BUFFER
+	.addr	KEYBUFF		;Keyboard buffer repurposed for file name storage
+	.addr	PRODOS_MLI-$400	;IO_BUFFER
 OPEN_REF:	.byte	$00	;REF_NUM
 
 NAME_SERIAL:
@@ -67,9 +69,9 @@ NAME_SERIAL:
 NAME_ETHERNET:
 	asc	"ADTPROETH.BIN"
 	.byte	$00
-NAME_UTHERNETII:
-	asc	"ADTPROUII.BIN"
-	.byte	$00
+;NAME_UTHERNETII:
+;	asc	"ADTPROUII.BIN"
+;	.byte	$00
 NAME_AUDIO:
 	asc	"ADTPROAUD.BIN"
 	.byte	$00
@@ -134,22 +136,27 @@ SPACE6: asc "  "
 		.byte CHR_RETURN,CHR_RETURN,CHR_RETURN
 	asc	"   PLEASE SELECT YOUR CONNECTION TYPE:"
 		.byte CHR_RETURN,CHR_RETURN,CHR_RETURN
+SerialRow = ROW1;
 SerialLine:
 	asc "(S)ERIAL      : SSC, IIGS, IIC SERIAL"
 SerialLineEnd:
 	.byte $8d
-EthernetLine:
-	asc "(E)THERNET    : UTHERNET OR LANCEGS"
-EthernetLineEnd:
-	.byte $8d
-UthernetIILine:
-	asc "(U)THERNET II : UTHERNET II"
-UthernetIILineEnd:
-	.byte $8d
+AudioRow = ROW2;
 AudioLine:
 	asc "(A)UDIO       : CASSETTE/AUDIO PORTS"
 AudioLineEnd:
 	.byte $8d
+EthernetRow = ROW3;
+EthernetLine:
+	asc "(E)THERNET    : UTHERNET OR LANCEGS"
+EthernetLineEnd:
+	.byte $8d
+;UthernetIIRow = ROW2;
+;UthernetIILine:
+;	asc "(U)THERNET II : UTHERNET II"
+;UthernetIILineEnd:
+;	.byte $8d
+QuitRow = ROW4;
 QuitLine:
 	asc "(Q)UIT"
 QuitLineEnd:
@@ -169,24 +176,24 @@ ELLIPSES:
 .segment	"DATA_0300"
 
 READ_PARAM:
-	.byte	$04		;PARAM_COUNT
+	.byte	$04	;PARAM_COUNT
 READ_REF:
-	.byte	$00		;REF_NUM
+	.byte	$00	;REF_NUM
 READ_ADDR:
 	.addr	$0000	;DATA_BUFFER
 	.word	$FFFF	;REQUEST_COUNT
 	.word	$0000	;TRANS_COUNT
 
 CLOSE_PARAM:
-	.byte	$01		;PARAM_COUNT
+	.byte	$01	;PARAM_COUNT
 CLOSE_REF:
-	.byte	$00		;REF_NUM
+	.byte	$00	;REF_NUM
 
 QUIT_PARAM:
-	.byte	$04		;PARAM_COUNT
-	.byte	$00		;QUIT_TYPE
+	.byte	$04	;PARAM_COUNT
+	.byte	$00	;QUIT_TYPE
 	.word	$0000	;RESERVED
-	.byte	$00		;RESERVED
+	.byte	$00	;RESERVED
 	.word	$0000	;RESERVED
 
 FILE_NOT_FOUND:
@@ -240,31 +247,31 @@ KbdLoop:
 
 	cmp #CHR_S	; S = Serial?
 	bne :+
-	lda #ROW1
-	sta NEWLINE
-	jmp KbdDone	
-
-:	cmp #CHR_E	; E = Ethernet?
- 	bne :+
-	lda #ROW2
-	sta NEWLINE
-	jmp KbdDone	
-
-:	cmp #CHR_U	; U = Uthernet II?
- 	bne :+
-	lda #ROW3
+	lda #SerialRow
 	sta NEWLINE
 	jmp KbdDone	
 
 :	cmp #CHR_A	; A = Audio?
 	bne :+
-	lda #ROW4
+	lda #AudioRow
 	sta NEWLINE
 	jmp KbdDone	
 	
+:	cmp #CHR_E	; E = Ethernet?
+ 	bne :+
+	lda #EthernetRow
+	sta NEWLINE
+	jmp KbdDone	
+
+;:	cmp #CHR_U	; U = Uthernet II?
+;	bne :+
+;	lda #ROW3
+;	sta NEWLINE
+;	jmp KbdDone	
+
 :	cmp #CHR_Q	; Q = Quit?
  	bne :+
-	lda #ROW5
+	lda #QuitRow
 	sta NEWLINE
 	jmp KbdDone	
 
@@ -285,7 +292,7 @@ LeftGo:
 	jsr HighlightLine
 	jmp KbdLoop
 LeftWrap:
-	lda #ROW5
+	lda #QuitRow
 	sta NEWLINE
 	jmp LeftGo
 
@@ -296,7 +303,7 @@ NotLeft:
 	bne NotRight
 IsRight:
 	lda CV
-	cmp #ROW5
+	cmp #QuitRow
 	beq RightWrap
 	inc NEWLINE
 RightGo:
@@ -312,7 +319,7 @@ NotRight:
 
 KbdDone:
 	jsr HighlightLine
-	lda #ROW6
+	lda #LoadingRow
 	sta CV
 	jsr TABV
 
@@ -363,7 +370,7 @@ HighlightLine:
 ToggleLine:
 	lda CV
 Line4:
-	cmp #ROW1
+	cmp #SerialRow
 	bne Line5
 	tay
 	lda #SerialLineEnd-SerialLine
@@ -376,34 +383,8 @@ Line4:
 	stx KEYBUFF
 	rts
 Line5:
-	cmp #ROW2
+	cmp #AudioRow
 	bne Line6
-	tay
-	lda #EthernetLineEnd-EthernetLine
-	jsr INVERSE
-	ldx #$ff
-:	inx
-	lda NAME_ETHERNET,x
-	sta KEYBUFF+1,x
-	bne :-
-	stx KEYBUFF
-	rts
-Line6:
-	cmp #ROW3
-	bne Line7
-	tay
-	lda #UthernetIILineEnd-UthernetIILine
-	jsr INVERSE
-	ldx #$ff
-:	inx
-	lda NAME_UTHERNETII,x
-	sta KEYBUFF+1,x
-	bne :-
-	stx KEYBUFF
-	rts
-Line7:
-	cmp #ROW4
-	bne Line8
 	tay
 	lda #AudioLineEnd-AudioLine
 	jsr INVERSE
@@ -414,7 +395,33 @@ Line7:
 	bne :-
 	stx KEYBUFF
 	rts
-Line8:
+Line6:
+	cmp #EthernetRow
+	bne Line7
+	tay
+	lda #EthernetLineEnd-EthernetLine
+	jsr INVERSE
+	ldx #$ff
+:	inx
+	lda NAME_ETHERNET,x
+	sta KEYBUFF+1,x
+	bne :-
+	stx KEYBUFF
+	rts
+;Line7:
+;	cmp #UthernetIIRow
+;	bne Line8
+;	tay
+;	lda #UthernetIILineEnd-UthernetIILine
+;	jsr INVERSE
+;	ldx #$ff
+;:	inx
+;	lda NAME_UTHERNETII,x
+;	sta KEYBUFF+1,x
+;	bne :-
+;	stx KEYBUFF
+	rts
+Line7:
 	tay
 	lda #QuitLineEnd-QuitLine
 	jsr INVERSE

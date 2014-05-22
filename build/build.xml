@@ -237,6 +237,8 @@ all
 		<copy file="${projdir}/client/src/ADTPRO.BIN" tofile="${basedir}/org/adtpro/resources/adtpro.raw" />
 		<echo message="Adding ADTPRO to 5.25 disk image..."/>
 		<appleCommander command="p" input="${projdir}/client/src/ADTPRO.BIN" imagename="${builddir}/${distName}/disks/${diskName}.DSK" filename="ADTPRO.BIN" type="bin" address="2048"/>
+		<echo message="Adding ADTPRO to 3.5 disk image..."/>
+		<appleCommander command="p" input="${projdir}/client/src/ADTPRO.BIN" imagename="${builddir}/${distName}/disks/${diskName}.PO" filename="ADTPRO.BIN" type="bin" address="2048"/>
 		<delete file="${projdir}/client/src/ADTPRO.BIN" />
 	</target>
 	<target name="prodos-audio" depends="prodos-adtpro-image-prep, common" description="Build the ADTPro Audio Client (ProDOS)">
@@ -252,6 +254,8 @@ all
 		<copy file="${projdir}/client/src/ADTPROAUD.BIN" tofile="${basedir}/org/adtpro/resources/adtproaud.raw" />
 		<echo message="Adding ADTPROAUD to 5.25 disk image..."/>
 		<appleCommander command="p" input="${projdir}/client/src/ADTPROAUD.BIN" imagename="${builddir}/${distName}/disks/${diskName}.DSK" filename="ADTPROAUD.BIN" type="bin" address="2048"/>
+		<echo message="Adding ADTPROAUD to 3.5 disk image..."/>
+		<appleCommander command="p" input="${projdir}/client/src/ADTPROAUD.BIN" imagename="${builddir}/${distName}/disks/${diskName}.PO" filename="ADTPROAUD.BIN" type="bin" address="2048"/>
 		<delete file="${projdir}/client/src/ADTPROAUD.BIN" />
 	</target>
 	<target name="prodos-ethernet" depends="ip65, prodos-adtpro-image-prep, common" description="Build the ADTPro Ethernet Client (ProDOS)">
@@ -267,6 +271,8 @@ all
 		<copy file="${projdir}/client/src/ADTPROETH.BIN" tofile="${basedir}/org/adtpro/resources/adtproeth.raw" />
 		<echo message="Adding ADTPROETH to 5.25 disk image..." />
 		<appleCommander command="p" input="${projdir}/client/src/ADTPROETH.BIN" imagename="${builddir}/${distName}/disks/${diskName}.DSK" filename="ADTPROETH.BIN" type="bin" address="2048"/>
+		<echo message="Adding ADTPROETH to 3.5 disk image..."/>
+		<appleCommander command="p" input="${projdir}/client/src/ADTPROETH.BIN" imagename="${builddir}/${distName}/disks/${diskName}.PO" filename="ADTPROETH.BIN" type="bin" address="2048"/>
 		<delete file="${projdir}/client/src/ADTPROETH.BIN" />
 	</target>
 	<target name="prodos-adtpro-image-prep" description="Start Empty ProDOS Disk Images">
@@ -298,7 +304,11 @@ all
 		<appleCommander command="p" input="${projdir}/client/src/ADTPRO" imagename="${builddir}/${distName}/disks/${diskName}.DSK" filename="ADTPRO" type="sys" address="8192"/>
 		<appleCommander command="p" input="${projdir}/client/src/ADTPRO" imagename="${builddir}/${distName}/disks/${diskName}.DSK" filename="ADTPROAUD" type="sys" address="8192"/>
 		<appleCommander command="p" input="${projdir}/client/src/ADTPRO" imagename="${builddir}/${distName}/disks/${diskName}.DSK" filename="ADTPROETH" type="sys" address="8192"/>
-		<appleCommander command="p" input="${projdir}/client/src/ADTPRO" imagename="${builddir}/${distName}/disks/${diskName}.DSK" filename="ADTPROUII" type="sys" address="8192"/>
+		<echo message="Adding startup files to 3.5 disk image..."/>
+		<appleCommander command="p" input="${projdir}/client/src/STARTUP.SYSTEM" imagename="${builddir}/${distName}/disks/${diskName}.PO" filename="STARTUP.SYSTEM" type="sys" address="8192"/>
+		<appleCommander command="p" input="${projdir}/client/src/ADTPRO" imagename="${builddir}/${distName}/disks/${diskName}.PO" filename="ADTPRO" type="sys" address="8192"/>
+		<appleCommander command="p" input="${projdir}/client/src/ADTPRO" imagename="${builddir}/${distName}/disks/${diskName}.PO" filename="ADTPROAUD" type="sys" address="8192"/>
+		<appleCommander command="p" input="${projdir}/client/src/ADTPRO" imagename="${builddir}/${distName}/disks/${diskName}.PO" filename="ADTPROETH" type="sys" address="8192"/>
 		<delete file="${projdir}/client/src/STARTUP.SYSTEM" />
 		<delete file="${projdir}/client/src/ADTPRO" />
 	</target>
@@ -566,7 +576,6 @@ all
 		<delete file="${projdir}/org/adtpro/resources/adtpro.dmp" />
 		<delete file="${projdir}/org/adtpro/resources/adtproaud.dmp" />
 		<delete file="${projdir}/org/adtpro/resources/adtproeth.dmp" />
-		<delete file="${projdir}/org/adtpro/resources/adtprouii.dmp" />
 		<delete file="${projdir}/org/adtpro/resources/grub.dmp" />
 		<delete file="${projdir}/org/adtpro/resources/grub2.dmp" />
 		<delete file="${projdir}/org/adtpro/resources/PD.dmp" />

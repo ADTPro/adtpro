@@ -60,7 +60,7 @@ MAINL:
 RESETIO:
 	jsr $0000	; Pseudo-indirect JSR to reset the IO device
 	jsr MainScreen
-	jsr HOMEREQUEST
+;	jsr HOMEREQUEST	; Probably don't want to do this _every_ time...
 	lda CUR_MENU
 	jsr HILIGHT_ABSOLUTE	; Start menu highlighting
 
