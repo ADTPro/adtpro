@@ -48,6 +48,7 @@ entrypoint:
 	jsr BLOAD	; Load up user parameters, if any
 	jsr HOME	; Clear screen
 	jsr PARMINT	; Interpret parameters - may leave a complaint
+	jsr HOMEREQUEST	; Probably don't want to do this _every_ time - but at least once is nice
 	jmp MAINL	; And off we go!
 
 ;---------------------------------------------------------
@@ -60,7 +61,6 @@ MAINL:
 RESETIO:
 	jsr $0000	; Pseudo-indirect JSR to reset the IO device
 	jsr MainScreen
-;	jsr HOMEREQUEST	; Probably don't want to do this _every_ time...
 	lda CUR_MENU
 	jsr HILIGHT_ABSOLUTE	; Start menu highlighting
 
