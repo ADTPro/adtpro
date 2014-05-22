@@ -109,7 +109,6 @@ BASCALC	= $FBC1 ; Calculate screen line
 CLREOL	= $FC9C	; Clear to end of line
 CLREOP	= $FC42	; Clear to end of screen
 HOME	= $FC58	; Clear screen
-NXTA1	= $FCBA	; Increment A1, compare to A2
 TABV	= $FB5B	; Set BASL from Accumulator
 VTAB	= $FC22	; SET BASL FROM CV
 RDKEY	= $FD0C	; Character input

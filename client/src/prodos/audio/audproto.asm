@@ -483,24 +483,24 @@ RECVWIDE:
 	lda (A1L,X)
 	cmp #CHR_A	; Get protocol - must be an 'A'
 	bne RWERR
-	jsr NXTA1
+	jsr BumpA1
 	lda (A1L,X)	; Get payload length, LSB
 	sta PAGECNT
 	sta XFERLEN
-	jsr NXTA1
+	jsr BumpA1
 	lda (A1L,X)	; Get payload length, MSB
 	sta PAGECNT+1
 	sta XFERLEN+1
-	jsr NXTA1
+	jsr BumpA1
 	lda (A1L,X)	; Get protocol - must be an 'S'
 	cmp #CHR_S
 	bne RWERR
-	jsr NXTA1
+	jsr BumpA1
 	lda (A1L,X)	; Get protocol - check byte (discarded for the moment)
-	jsr NXTA1	; Block number, LSB
+	jsr BumpA1	; Block number, LSB
 	lda (A1L,X)
 	sta HOSTBLX
-	jsr NXTA1	; Block number, MSB
+	jsr BumpA1	; Block number, MSB
 	lda (A1L,X)
 	sta HOSTBLX+1
 	lda BLKPTR
@@ -510,7 +510,7 @@ RECVWIDE:
 	ldy #$00
 
 RW1:
-	jsr NXTA1	; Increment the pointer to data we're reading
+	jsr BumpA1	; Increment the pointer to data we're reading
 	lda (A1L,X)	; Get difference
 	beq RW2		; If zero, get new index
 	sta (BLKPTR),Y	; else put char in buffer
@@ -519,7 +519,7 @@ RW1:
 	beq RWNext	; Branch always
 
 RW2:
-	jsr NXTA1	; Increment the pointer to data we're reading
+	jsr BumpA1	; Increment the pointer to data we're reading
 	lda (A1L,X)	; Get new index ...
 	tay		; ... in the Y register
 	bne RW1		; Loop if index <> 0
@@ -536,10 +536,10 @@ RWERR:
 	sec
 	rts
 RWDone:
-	jsr NXTA1	; Increment the pointer to data we're reading
+	jsr BumpA1	; Increment the pointer to data we're reading
 	lda (A1L,X)	; Done - get CRC
 	sta PCCRC
-	jsr NXTA1	; Increment the pointer to data we're reading
+	jsr BumpA1	; Increment the pointer to data we're reading
 	lda (A1L,X)	; Done - get CRC
 	sta PCCRC+1
 	lda XFERLEN+1
@@ -706,7 +706,7 @@ WR1:	LDX #$00
 	PHA
 	LDA (A1L,X)
 	JSR WRBYTE
-	JSR NXTA1
+	JSR BumpA1
 	LDY #$1D
 	PLA
 	BCC WR1
