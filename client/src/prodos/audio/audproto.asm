@@ -23,6 +23,7 @@
 ;---------------------------------------------------------
 TIMEY	= $8a
 DONE	= $1a
+NXTA1	= $FCBA
 HEADR	= $FCC9
 LASTIN	= $2f
 TAPEIN	= $C060
@@ -144,7 +145,7 @@ DIRREPLY:
 	adc NIBPCNT
 	adc NIBPCNT
 	adc NIBPCNT
-	sta Buffer+1
+;	sta Buffer+1
 	sta BLKPTR+1
 	clc		; Indicate success
 	rts
@@ -676,25 +677,10 @@ GETC:
 	lda AUD_BUFFER	; Send back whatever we received
 	rts
 
-;---------------------------------------------------------
-; BUFBYTE
-; Add accumulator to the outgoing packet
-; UTILPTR points to the next byte we're going to save - and keeps a running total
-;---------------------------------------------------------
-BUFBYTE:
-	php
-	sty UDPI	; Store Y for safe keeping
-	ldy #$00
-	sta (UTILPTR),Y
-	inc UTILPTR
-	bne :+
-	inc UTILPTR+1
-:	ldy UDPI	; Restore Y
-	plp
-	rts
 
 ;---------------------------------------------------------
 ; aud_send - Send a packet out the cassette port
+; Note - this timing-sensitive routine can't cross a page boundary.
 ;---------------------------------------------------------
 aud_send:
 	lda #$02	; Only train for a little while - not 10 seconds!
@@ -706,7 +692,7 @@ WR1:	LDX #$00
 	PHA
 	LDA (A1L,X)
 	JSR WRBYTE
-	JSR BumpA1
+	JSR NXTA1
 	LDY #$1D
 	PLA
 	BCC WR1
@@ -747,7 +733,26 @@ WRTAPE:	LDY   TAPEOUT
 	RTS
 
 ;---------------------------------------------------------
+; BUFBYTE
+; Add accumulator to the outgoing packet
+; UTILPTR points to the next byte we're going to save - and keeps a running total
+;---------------------------------------------------------
+BUFBYTE:
+	php
+	sty UDPI	; Store Y for safe keeping
+	ldy #$00
+	sta (UTILPTR),Y
+	inc UTILPTR
+	bne :+
+	inc UTILPTR+1
+:	ldy UDPI	; Restore Y
+	plp
+	rts
+
+
+;---------------------------------------------------------
 ; aud_receive - Receive a packet from the cassette port
+; Note - this timing-sensitive routine can't cross a page boundary.
 ;---------------------------------------------------------
 aud_receive:
 	lda #$01
