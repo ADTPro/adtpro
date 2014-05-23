@@ -1,4 +1,5 @@
 #!/bin/sh
+rm -rf target
 mvn site
 cd target/site
 perl -i.orig -p ../../htmlpassthrough.re webring.html

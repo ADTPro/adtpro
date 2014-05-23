@@ -165,7 +165,7 @@ GSOS has booted, as it modifies the serial environment.
 
  Starting from your ADTProSOS-v.r.m.dsk disk will bring up the main menu:
 
-[images/bootstrap35.png]
+[images/bootstrap37.png]
 
  If you accidentally start from the ProDOS-specific disk intended for the Apple II, you will
  see this screen when you boot:
