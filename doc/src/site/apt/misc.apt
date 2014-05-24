@@ -10,6 +10,18 @@ Miscellaneous Functions
  client program, screen capture text will appear white-on-black for ProDOS, and
  green-on-black for SOS below.
 
+
+ * {{{Format} Format Volumes (disks)}}
+
+ * {{{Change} Change Working Directory}}
+
+ * {{{Volume_List} Volume List}}
+ 
+ * {{{Virtual_Serial} Virtual Serial over IP}}
+
+ []
+
+
 * {Format} Volumes (disks)
 
  The ADTPro client has built-in disk formatting capabilities.

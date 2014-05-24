@@ -6,6 +6,16 @@
 
 ADTPro Virtual Drive
 
+ * {{{Contents} Distribution Disk Contents}}
+
+ * {{{Serial} Starting the VSDRIVE Client - Serial/ProDOS}}
+
+ * {{{Ethernet} Starting the VEDRIVE Client - Ethernet/ProDOS}}
+
+ * {{{SOS} Starting the VSDRIVE Client - Serial/SOS}}
+
+ []
+
  The ADTPro server can host two virtual hard drives to a connected Apple II or /// machine running a driver from 
  the distribution disk, VDRIVE-v.r.m.DSK.
  This is a different function from the usual disk transfer mechanics of the ADTPro client.
@@ -32,7 +42,7 @@ ADTPro Virtual Drive
  So if you find yourself surprised by a blank disk appearing, just check what ADTPro's current working
  directory is with the "File->Change working directory" menu item on the server.
 
-* VDRIVE Distribution Disk Contents
+* VDRIVE Distribution Disk {Contents}
 
  The VDRIVE-v.r.m.DSK distribution disk is bootable on both Apple II and Apple /// computers.
  The file contents of the VDRIVE-v.r.m.DSK disk specific to the Apple II are as follows:
@@ -68,7 +78,7 @@ ADTPro Virtual Drive
 
  []
 
-* Starting the VSDRIVE Client - Serial
+* Starting the VSDRIVE Client - {Serial}
  
  Once you've established your {{{./connectionsserial.html}serial}} 
  connection between your Apple II and the ADTPro host server, boot or otherwise access the
@@ -102,7 +112,7 @@ ADTPro Virtual Drive
 
 [images/vdrive2.png]
 
-* Starting the VEDRIVE client - {Ethernet}
+* Starting the VEDRIVE Client - {Ethernet}
  
  Once you've established your {{{./configethernet.html}Ethernet}}
  connection between your Apple II and the ADTPro host server, boot or otherwise access the

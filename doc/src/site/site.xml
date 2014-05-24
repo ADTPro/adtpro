@@ -9,6 +9,12 @@
     <fluidoSkin>
       <topBarEnabled>true</topBarEnabled>
       <sideBarEnabled>false</sideBarEnabled>
+      <topBarIcon>
+        <name>Maven Fluido Skin</name>
+        <alt>Maven Fluido Skin</alt>
+        <src>/images/ADTPro.ico</src>
+        <href>/index.html</href>
+      </topBarIcon>
     </fluidoSkin>
   </custom>
   <bannerLeft>
@@ -28,7 +34,11 @@
       <item name="Support Discussion" href="forum.html"/>
       <item name="Download" href="download.html"/>
     </links>
-
+<!-- Would be nice if we could use breadcrumbs...
+    <breadcrumbs>
+      <item name="ADTPro" href="http://adtpro.sourceforge.net/index.html"/>
+    </breadcrumbs>
+-->
     <menu name="ADTPro">
       <item name="Home" href="index.html"/>
       <item name="Download" href="download.html"/>

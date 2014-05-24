@@ -4,7 +4,13 @@
  David Schmidt (david__schmidt at users dot souceforge dot net)
  -----
 
-Receiving Disk Images
+ * {{{Receiving} Receiving Disk Images}}
+
+ * {{{Compressed} Compressed Files}}
+
+ []
+ 
+{Receiving} Disk Images
 
  Hitting the "R" key from the main menu lets you enter the name of the disk image
 you want to copy from the host to a disk on your Apple:

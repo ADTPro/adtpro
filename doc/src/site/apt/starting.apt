@@ -6,7 +6,15 @@
 
 Starting ADTPro
 
-* Starting the Server
+ * {{{Server}Starting the Server}}
+
+ * {{{ProDOS}Starting the Client - ProDOS}}
+
+ * {{{SOS}Starting the Client - SOS}}
+
+ []
+
+* Starting the {Server}
 
  Start the ADTPro server from your host computer's command line
  or by clicking on the startup program for your host operating
