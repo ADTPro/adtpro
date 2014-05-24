@@ -6,11 +6,12 @@
 
 Apple /// Serial Bootstrapping
 
- If you already have the DOS version of ADT and the Apple II emulator on disk
-for your ///, you can use them to transfer the ADTPro disk image in 
-Apple II mode.  Just tell ADT that you're using an SSC in slot 7 
-(where the emulated SSC lives) and transfer away.  Reboot with the ADTPro
-disk, and you'll be ready to go.  If not... read on.
+  If you already use the DOS version of ADT, or an earlier version of ADTPro,
+you can use it to transfer the 
+virtual floppy containing ADTPro for SOS that comes with this project
+(ADTPROSOS-v.r.m.DSK) to your Apple ///.  
+Reboot with the ADTPro SOS floppy, and you're ready to go.
+If not... read on.
 
  If you still need to connect your host and Apple /// computers through 
  their serial ports, refer back to the

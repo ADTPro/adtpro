@@ -61,7 +61,7 @@ all the way to making a bootable ADTPro floppy:
       If this is the first time you've connected via the serial port, you will be presented with 
       the serial configuration dialog box, where you'll need to choose which serial port to use.
 
-    [[1]] Click on the "Bootstrapping->ProDOS->Speediboot" menu item.  
+    [[1]] Click on the <<Bootstrapping->ProDOS->Speediboot>> menu item.  
       A dialog box will come up instructing you to type a set of commands
       on the Apple:
 
@@ -71,7 +71,7 @@ all the way to making a bootable ADTPro floppy:
 
     * <<< <ctrl-A>14B>>> (The number will depend on the speed you have chosen from the bootstrapping 
       tab on the serial configuration dialog box.  
-      When you hit <<< <ctrl-A>, >>> the Apple Super Serial card will respond with "<<<APPLE SSC:>>>" and the
+      When you hit <<< <ctrl-A> >>>, the Apple Super Serial card will respond with "<<<APPLE SSC:>>>" and the
       IIgs and IIc will respond with a blinking "<<<?>>>".  At that prompt, 
       enter the number in your dialog box and the <<<B>>>
       key with no spaces.  The Super Serial card will require you to hit the <<<Return>>> key, but the IIgs 
@@ -82,7 +82,7 @@ all the way to making a bootable ADTPro floppy:
 
     []
 
-    [[1]] Dismiss the ADTPro server dialog by clicking on the <<<Ok>>> button.
+    [[1]] Dismiss the ADTPro server dialog by clicking on the <<Ok>> button.
       You should start to see text flowing across the Apple screen now.
       The progress bar on the ADTPro server will show how far along the
       transfers are.     
@@ -131,9 +131,9 @@ all the way to making a bootable ADTPro floppy:
 
   On the host side, select these menu items one at a time and follow the prompts:
 
-    [[1]] Bootstrapping->ProDOS->Send ProDOS
+    [[1]] <<Bootstrapping->ProDOS->Send ProDOS>>
 
-    [[1]] Bootstrapping->ProDOS->Send ADTPro Serial Client
+    [[1]] <<Bootstrapping->ProDOS->Send ADTPro Serial Client>>
 
     []
 
@@ -154,10 +154,10 @@ all the way to making a bootable ADTPro floppy:
       port that will serve as the connection to the Apple.
 
     [[1]] {Decide which version} of the client you wish to send, and click that menu option.
-      You can send the audio version ("Bootstrapping->ProDOS->Send ADTPro Audio Client"),
+      You can send the audio version (<<Bootstrapping->ProDOS->Send ADTPro Audio Client>>),
       the serial version
-      ("Bootstrapping->ProDOS->Send ADTPro Serial Client"), or the ethernet version
-      ("Bootstrapping->ProDOS->Send ADTPro Ethernet Client").  You don't have to stick
+      (<<Bootstrapping->ProDOS->Send ADTPro Serial Client>>), or the ethernet version
+      (<<Bootstrapping->ProDOS->Send ADTPro Ethernet Client>>).  You don't have to stick
       to the same method of communicating with your Apple once you've finished
       with the initial bootstrapping, but you certainly can if you want to.
 
@@ -221,7 +221,7 @@ all the way to making a bootable ADTPro floppy:
       dialog box, where you'll need to choose which serial port to use.
 
     [[1]] If the dialog box doesn't come up on it own, 
-      click on Bootstrapping->Serial Pacing.
+      click on <<Bootstrapping->Serial Pacing>>.
       You should be able to run with 150ms pacing and 9600 baud on an 
       unaccelerated Apple:
 
@@ -231,7 +231,7 @@ all the way to making a bootable ADTPro floppy:
 
       Click on Ok with these values.
 
-    [[1]] Click on the "Bootstrapping->EsDOS ][->{Send EsDOS ][ Part 1}" menu item.
+    [[1]] Click on the <<Bootstrapping->EsDOS ][->{Send EsDOS ][ Part 1}>> menu item.
       (Serial bootstrapping doesn't require EsDOS ][ Part 2.)
       
     [[1]] A dialog box will come up instructing you to type a set of commands
@@ -276,7 +276,7 @@ all the way to making a bootable ADTPro floppy:
 
     [[1]] Now that DOS is running, it will be necessary to slow down the serial
       pacing and speed for the next step.  
-      Click on the ADTPro menu item Bootstrapping->Serial Pacing and set
+      Click on the ADTPro menu item <<Bootstrapping->Serial Pacing>> and set
       the pacing to 250, and speed down to 2400 to be safe:
 
       *
@@ -287,7 +287,7 @@ all the way to making a bootable ADTPro floppy:
 
     [[1]] Put a freshly formatted disk in the Apple drive and close the drive door.
 
-    [[1]] Click on the "Bootstrapping->EsDOS ][->{Send DOS ADT Client}" menu item.
+    [[1]] Click on the <<Bootstrapping->EsDOS ][->{Send DOS ADT Client}>> menu item.
       
     [[1]] A dialog box will come up instructing you to type a set of commands
       on the Apple.  They will be similar to the following:
@@ -353,7 +353,7 @@ all the way to making a bootable ADTPro floppy:
       If this is the first time you've connected via the serial port, you will be presented with 
       the serial configuration dialog box, where you'll need to choose which serial port to use.
 
-    [[1]] Click on the "Bootstrapping->ProDOS->VSDrive + Speediboot" menu item.  
+    [[1]] Click on the <<Bootstrapping->ProDOS->VSDrive + Speediboot>> menu item.  
       A dialog box will come up instructing you to type a set of commands
       on the Apple:
 
@@ -426,7 +426,7 @@ all the way to making a bootable ADTPro floppy:
 
  The net result is substantially faster bootstrapping than before.
  Using the serial configuration dialog box, bootstrapping tab
- (<<<Bootstrapping->Serial Pacing>>>)
+ (<<Bootstrapping->Serial Pacing>>)
  lets you control line pacing specifically for the bootstrapping
  operations, but you should not need to change it:
 
