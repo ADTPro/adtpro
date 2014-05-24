@@ -330,11 +330,3 @@ items like "usbserial":
   Once connected, ADTPro will be able to operate normally over the USB connection,
 including {{{./bootstrap.html#Starting_from_bare_metal}bare metal}} bootstrapping
 operations.
-
-* {Other Serial Pinout References}
-
- Be careful - these sometimes disagree with one another:
-
- * {{http://www.netbsd.org/docs/Hardware/Misc/serial.html}}
-
- * {{http://web.archive.org/web/20090330065836/http://home.swbell.net/rubywand/Csa2T1TCOM.html#006}}
