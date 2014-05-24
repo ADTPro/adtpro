@@ -31,7 +31,7 @@ and move the cursor up and down with left/up and right/down keys respectively:
  
  * .SHK, .BXY (Shrink-it file archives similar to today's .zip files)
 
- * .NIB (Nybble-ized images - though ADTPro only writes normal in-track data)
+ * .NIB (Nibble-ized images - though ADTPro only writes normal in-track data)
 
  * .2MG (2IMG images)
 

@@ -14,7 +14,7 @@ ADTPro Ethernet Connections
  plugging a Cat-5 Ethernet cable from the card into your home router or
  switch.  You just need to set ADTPro's IP parameters (details 
  {{{./configethernet.html#Client_IP_Configuration}below}}).
- ADTPro will automatically detect which kind of ethernet card you have, as well
+ ADTPro will automatically detect which kind of Ethernet card you have, as well
  as the slot it is in.  It will ask for network parameters from DHCP by default, or
  you can set them explicitly yourself.
  
@@ -26,17 +26,17 @@ ADTPro Ethernet Connections
 
 ADTPro Ethernet {Client IP Configuration}
 
- The ProDOS ethernet version of the ADTPro client program is named <<<ADTPROETH>>>
- on the distribution diskette.  Ways of making <<<ADTPROETH>>> start automatically
+ The ProDOS Ethernet version of the ADTPro client program is named <<<ADTPROETH>>>
+ on the ADTPro-v.r.m.dsk disk.  Ways of making <<<ADTPROETH>>> start automatically
  are discussed {{{./starting.html#Starting_the_Client}here.}}
- The SOS version of the ethernet ADTPro client
- program is named <<<SOS.INTERPETH>>> on the distribution diskette.  It will
+ The SOS version of the Ethernet ADTPro client
+ program is named <<<SOS.INTERPETH>>> on the ADTProSOS-v.r.m.dsk disk.  It will
  be necessary to rename <<<SOS.INTERPETH>>> to <<<SOS.INTERP>>> (also deleting
  or renaming the original serial <<<SOS.INTERP>>> program) in order to run it.  
  Additional details about starting the client on SOS are 
- {{{./starting.html#Starting_the_Client_-_SOS}here.}}
+ {{{./starting.html#SOS}here.}}
  
- Hitting the "G" key from ADTPro's main menu brings up the ethernet 
+ Hitting the "G" key from ADTPro's main menu brings up the Ethernet 
  configuration screen:
 
 [images/ethconfig.png]
@@ -159,7 +159,7 @@ if you need it.
  Ethernet card to a different slot, for example) you may need to reset
  ADTPro to factory defaults.  To do that, boot the Apple with ProDOS, and 
  get to a BASIC prompt (perhaps using the
- ADTPro diskette itself). Delete the configuration file:
+ ADTPro disk itself). Delete the configuration file:
  
  * <<<DELETE ADTPROETH.CONF>>>
 

@@ -23,7 +23,7 @@ create one yourself, {{{http://retrofloppy.com/products.html#ADTPRO}click here.}
 
   Here is a 5-minute overview video of the bootstrapping process.
 It shows the bare-metal bootstrapping scenario of an Apple /// with a
-null modem cable, all the way to making a bootable ADTPro floppy:
+null modem cable, all the way to making a bootable ADTPro SOS floppy:
 
  youtubereplace3
 
@@ -38,7 +38,7 @@ a minimally functional command line interface, or "monitor."  It is accessible w
 the familiar (to Apple IIe users) Ctrl-OpenApple-Reset key sequence.
 The machine will beep, and you will be presented with a blinking cursor 
 next to an arrow prompt.  You then proceed to type in and run a short bootstrap
-loader; clicking on "Bootstrapping->SOS" from the ADTPro server gives instructions
+loader; clicking on <<Bootstrapping->SOS>> from the ADTPro server gives instructions
 for that.
 The bootstrap loader then waits to accept the rest of bootstrapping code from the ADTPro server,
 which starts flowing once you dismiss the ADTPro server dialog box.
@@ -89,7 +89,7 @@ A048:F7 AD F0 C0 60
     It will be important to review and re-check the lines before actually running it.
     To ensure that you never have to type this in more than once, follow all the way
     through to the end of this procedure to format a new floppy and {{{./receiving.html}receive}}
-    the full, bootable ADTPro disk that ships with this distribution.
+    the full, bootable ADTPro SOS disk that ships with this distribution: ADTProSOS-v.r.m.dsk.
 
     [[1]] To review the entire bootstrap loader program you typed in,
     type the following command:
@@ -126,7 +126,7 @@ A000G
 
     []
 
-    [[1]] On the ADTPro server, click on the "Bootstrapping->SOS" menu item.
+    [[1]] On the ADTPro server, click on the <<Bootstrapping->SOS>> menu item.
     You can click "Ok" on the dialog box that appears since you have just followed the 
     same instructions and the bootstrap loader is running on the Apple /// now.
     The bootstrapping process should now continue without any further need for 
@@ -138,7 +138,7 @@ A000G
     {{{./connectionsserial.html#Apple3}connections}} and potentially try again.
     You can do that by stopping the /// with the Ctrl-OpenApple-Reset key sequence
     to get back to the monitor.  Then. type A000G and hit Return to start over without
-    having to re-type the initial loader program.  Click on the "Bootstrapping->SOS" 
+    having to re-type the initial loader program.  Click on the <<Bootstrapping->SOS>> 
     menu item and hopefully your luck will change.
 
     Some of the stages bootstrapping will be going through:

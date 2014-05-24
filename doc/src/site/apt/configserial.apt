@@ -4,14 +4,14 @@
  David Schmidt (david__schmidt at users dot souceforge dot net)
  -----
 
-ADTPro Serial Configuration
+ADTPro Serial Client Configuration
 
- Hitting the "G" key from <<<ADTPRO>>>'s main menu brings up the ADTPro configuration screen:
+ Hitting the "G" key from ADTPro's main menu brings up the serial configuration screen:
 
 [images/config.png]
 
- You can scroll between the selections with the up and down arrow keys.  If your
-Apple doesn't have up and down arrow keys, the space bar will cycle between the
+ You can scroll among the selections with the up and down arrow keys.  If your
+Apple doesn't have up and down arrow keys, the space bar will cycle among the
 selections.
 
  You can rotate through the options of a particular selection with the right and
@@ -22,7 +22,7 @@ left arrow keys.  Your Apple has right and left arrow keys; trust me.
  serial card to a different slot, for example) you may need to reset
  ADTPro to factory defaults.  To do that, boot the Apple with ProDOS, and 
  get to a BASIC prompt (perhaps using the
- ADTPro diskette itself). Delete the configuration file:
+ ADTPro diskette itself). Delete the configuration file from the Applesoft BASIC prompt:
  
  * <<<DELETE ADTPRO.CONF>>>
 
@@ -50,9 +50,6 @@ left arrow keys.  Your Apple has right and left arrow keys; trust me.
 "Your Card" in the IIgs control panel for the slot your SSC card is in,
 and select that same slot number here.
 
- If you have an Apple ///, the internal serial adapter will always be chosen by default.
-If you want to use a Super Serial card instead, you will need to select its slot here.
-
  Various serial cabling options are discussed in the
  {{{./connectionsserial.html}serial connections}} section.
 
@@ -68,11 +65,10 @@ to the host computer.  See the
 {{{./connectionsserial.html#MiniDIN8}IIgs modem port}}
 connections section for details.
 
- Note that it's not particularly reliable to run ADTPro under GSOS.
-It's best to start up under ProDOS - the distribution diskette is well suited to this.
-If you normally start with GSOS, you can hit the '8' key as the computer booting
-and it'll start in 8-bit ProDOS and drop you into the
-BASIC interpreter, just like the old days.
+ If you normally start your IIgs with GSOS, you are advised to hit the '8' key while 
+ booting. That has the effect of starting the IIgs in 8-bit ProDOS (BASIC) mode. 
+ ADTPro can't maintain the tight timing necessary for serial communications when 
+ 16-bit GSOS has booted, as it modifies the serial environment.
 
  <<Miscellaneous Serial Devices>>
 
@@ -97,10 +93,11 @@ BASIC interpreter, just like the old days.
  to the host computer.  See the
 {{{./connectionsserial.html#Apple3}Apple /// RS-232-C port cabling}}
 connections section for details.
-  
+If you want to use a Super Serial card instead, you will need to select its slot here.
+
 * Baud Rate
 
- Select the highest baud rate that still works reliably.
+ When in doubt - leave this set to the default of 115200.
 
 [images/configBaud.png]
 
@@ -115,6 +112,7 @@ If you can't get 115200 to work reliably, something else is wrong.
  Blocks at Once tunes the number of 512-byte blocks to send "at once" within a transmission packet.
 A higher number will make disk transfers go faster, but will offer less immediate feedback as you 
 watch the progress bar move.
+One block-at-once will make the progress bar run very smoothly; 40 blocks-at-once will be very jerky (but will be the fastest).
 
 [images/configBlocks.png]
 

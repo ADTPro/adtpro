@@ -10,7 +10,7 @@ ADTPro Installation
 
  To get started, you will need a Java installation you can call from the
  command line of your host computer.  This means that if you type the command 
- <<<"java -version">>> from a terminal window it ought to produce 
+ <<<java -version>>> from a terminal window it ought to produce 
  a Java message and not complaints.
  One place to get a downloadable Java distribution is from Oracle:
  {{{http://www.oracle.com/technetwork/java/javase/downloads/index.html}Java SE JRE download.}}
@@ -70,6 +70,7 @@ Unix RXTX {Considerations}
  by RXTX, you will get an error similar to the one below on startup:
 
 +-------
+
 java.lang.UnsatisfiedLinkError: Can't find library rxtxSerial (librxtxSerial.so)
   in sun.boot.library.path or java.library.path
 sun.boot.library.path=/opt/IBMJava2-142/jre/bin
@@ -92,40 +93,40 @@ Distribution contents
 
  The distribution should contain most of these files, depending on platform:
 
- [<<<adtpro.bat>>>] A Windows server startup batch file
+ <<<adtpro.bat>>> - A Windows server startup batch file
 
- [<<<adtpro.cmd>>>] An OS/2 server startup command file
+ <<<adtpro.cmd>>> - An OS/2 server startup command file
 
- [<<<ADTPro-v.r.m.app>>>] An OSX server application for OSX 10.3 and above
+ <<<ADTPro-v.r.m.app>>> - An OSX server application for OSX 10.3 and above
 
- [<<<ADTPro.command>>>] An OSX server startup command file
+ <<<ADTPro.command>>> - An OSX server startup command file
 
- [<<<adtpro.sh>>>] A Linux/Solaris server startup shell script
+ <<<adtpro.sh>>> - A Linux/Solaris server startup shell script
 
- [<<<ac.bat>>>] A Windows AppleCommander command line invoker batch file
+ <<<ac.bat>>> - A Windows AppleCommander command line invoker batch file
 
- [<<<ac.sh>>>] A Linux/Solaris AppleCommander command line invoker script
+ <<<ac.sh>>> - A Linux/Solaris AppleCommander command line invoker script
 
- [<<<LICENSE>>>] The GNU Public License file
+ <<<LICENSE>>> - The GNU Public License file
 
- [<<<README>>>] The info you're looking at now, mostly
+ <<<README>>> - The info you're looking at now, mostly
 
- [<<<disks/ADTPRO-v.r.m.DSK>>>] ADTPro Apple II client-side software (an Apple 140K disk image)
+ <<<disks/ADTPRO-v.r.m.DSK>>> - ADTPro Apple II client-side software (an Apple 140K disk image)
 
- [<<<disks/ADTPROSOS-v.r.m.DSK>>>] ADTPro Apple /// client-side software (an Apple 140K disk image)
+ <<<disks/ADTPROSOS-v.r.m.DSK>>> - ADTPro Apple /// client-side software (an Apple 140K disk image)
 
- [<<<disks/ADTPRO-v.r.m.PO>>>] ADTPro Apple II client-side software (an Apple 800K disk image)
+ <<<disks/ADTPRO-v.r.m.PO>>> - ADTPro Apple II client-side software (an Apple 800K disk image)
 
- [<<<disks/VDRIVE-v.r.m.DSK>>>] Virtual drive driver software (see the {{{./vdrive.html}virtual drive}} section)
+ <<<disks/VDRIVE-v.r.m.DSK>>> - Virtual drive driver software (see the {{{./vdrive.html}virtual drive}} section)
 
- [<<<disks/Virtual.po>>>] A blank example virtual disk that is served to virtual drive requests
+ <<<disks/Virtual.po>>> - A blank example virtual disk that is served to virtual drive requests
 
- [<<<disks/Virtual2.po>>>] A blank example virtual disk that is served to virtual drive requests
+ <<<disks/Virtual2.po>>> - A blank example virtual disk that is served to virtual drive requests
 
- [<<<lib/ADTPro-v.r.m.jar>>>] ADTPro server-side software (a Java .jar file)
+ <<<lib/ADTPro-v.r.m.jar>>> - ADTPro server-side software (a Java .jar file)
  
- [<<<lib/AppleCommander/AppleCommander-v.r.m.p-ac.jar>>>] AppleCommander support software  (a Java .jar file)
+ <<<lib/AppleCommander/AppleCommander-v.r.m.p-ac.jar>>> - AppleCommander support software  (a Java .jar file)
                           
- [<<<lib/rxtx/...>>>] Java serial library files
+ <<<lib/rxtx/...>>> - Java serial library files
 
  []

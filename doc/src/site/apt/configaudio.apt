@@ -4,15 +4,15 @@
  David Schmidt (david__schmidt at users dot souceforge dot net)
  -----
 
-ADTPro Audio Configuration
+ADTPro Audio Client Configuration
 
- Hitting the "G" key from <<<ADTPROAUD>>>'s main menu brings up the ADTPro
+ Hitting the "G" key from ADTPro's main menu brings up the ADTPro
 configuration screen:
 
 [images/configaudio.png]
 
- You can scroll between the selections with the up and down arrow keys.  If your
-Apple doesn't have up and down arrow keys, the space bar will cycle between the
+ You can scroll among the selections with the up and down arrow keys.  If your
+Apple doesn't have up and down arrow keys, the space bar will cycle among the
 selections.
 
  You can rotate through the options of a particular selection with the right and
@@ -44,7 +44,7 @@ configuration that works for you, select "YES" for SAVE CONFIG and hit Return.
 
 [images/configaudioSave.png]
 
- This will save <<<ADTPROAUD.CONF>>> to the same place where you started
+ This will save a file named <<<ADTPROAUD.CONF>>> to the same place where you started
 ADTPro from.
-When you start <<<ADTPROAUD>>> again, it will use the configuration 
+When you start ADTPro again, it will use the configuration 
 parameters you saved last.

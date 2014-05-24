@@ -12,27 +12,27 @@ Starting ADTPro
  or by clicking on the startup program for your host operating
  system:
 
- [<<<adtpro.sh>>>] Linux, Solaris (You downloaded the .tar.gz package, didn't you?)
+ <<<adtpro.sh>>> - Linux, Solaris (You downloaded the .tar.gz package, didn't you?)
 
- [<<<ADTPro-v.r.m.app>>>] OSX (You downloaded the .dmg package, didn't you?)
+ <<<ADTPro-v.r.m.app>>> - OSX (You downloaded the .dmg package, didn't you?)
 
- [<<<adtpro.cmd>>>] OS/2
+ <<<adtpro.cmd>>> - OS/2
 
- [<<<adtpro.bat>>>] Windows
+ <<<adtpro.bat>>> - Windows
 
  []
  
- One optional parameter on server batch/script startup causes it to start in a 
- particular mode - all but <<<localhost>>> are translated to your native locale 
+ One optional parameter on <<server>> batch/script startup causes it to start in a 
+ particular mode - all but <<localhost>> are translated to your native locale 
  if you are using a language translated version of ADTPro:
 
- [serial] Start in serial mode
+ <<serial>> - Start in serial mode
  
- [ethernet] Start in Ethernet mode
+ <<ethernet>> - Start in Ethernet mode
  
- [audio] Start in audio mode
+ <<audio>> - Start in audio mode
  
- [localhost] Start in {{{./misc.html#Virtual_Serial}virtual serial}} over IP mode
+ <<localhost>> - Start in {{{./misc.html#Virtual_Serial}virtual serial}} over IP mode
 
  []
 
@@ -42,19 +42,19 @@ Starting ADTPro
 
  From here, you can select the communications device you want to use at 
  the host end by clicking one of the shiny buttons (besides Disconnect, of course).
- If you would like to start the server up already listening in particular mode, you can
- supply the startup script with the name of the communications mode of choice (as shown
- on the button).
- In English, those are Serial, Ethernet, and Audio.  For example, the invocation 
- 'adtpro ethernet' starts up the server with the Ethernet button "pushed."
 
  Note that serial communications has an additional set of
- configuration options, accessible from the <<<File->Serial Configuration>>>
+ configuration options, accessible from the <<File->Serial Configuration>>
  menu item.  The first time you use serial communications, the Serial Configuration
  dialog box will come up automatically to allow you to pick a communications port
  and speed:
 
 [images/serialConfig.png]
+
+ You will want to choose which ever serial port you have connected to your Apple client,
+ and in general you should keep the default speed of 115200.
+ The only exception should be when you're communicating to the {{{./lc.html}Apple IIe card}} -
+ choose 19200 in that case.
 
 * Starting the Client - {ProDOS}
 
@@ -132,31 +132,32 @@ Starting ADTPro
 
 [images/adtpro.png]
 
- The best way to test communications is to hit the "D" key from the client to 
-ask for a directory listing at the host.  If the client "hangs" waiting for 
+ The best way to test communications is to hit the "D" key (and hit Return at the "FILENAME?" prompt)
+from the client to 
+ask for a directory listing at the host.  If the client times out waiting for 
 a response from the host, or if garbled data comes back, it will be necessary
 to check the physical connections, port names and speeds on both host and
-client ends.  The ethernet version of ADTPro (<<<ADTPROETH>>>) often needs 
+client ends.  The Ethernet version of ADTPro (<<<ADTPROETH>>>) sometimes needs 
 a couple of directory queries to find the server after setting up its 
 {{{./configethernet.html}configuration.}}
 If you're using the audio
 version of ADTPro (<<<ADTPROAUD>>>), ensure the volume setting for your sound
-card is set to halfway up the scale (i.e. much louder than you'd 
+card is set at least halfway up the scale (i.e. much louder than you'd 
 generally listen to computer speakers).
 
  <<IIgs/GSOS Note:>> users running GSOS are advised to hit the '8' key while booting.
 That has the effect of starting the IIgs in 8-bit ProDOS (BASIC) mode.  
-ADTPro can't maintain the tight timing necessary for serial communications when the full
+ADTPro can't maintain the tight timing necessary for serial communications when 16-bit
 GSOS has booted, as it modifies the serial environment.
 
 * Starting the Client - {SOS}
 
- Booting a diskette in an Apple /// computer will automatically run
- any program named <<<SOS.INTERP.>>>  The ADTPro SOS distribution diskette image
+ Booting a disk in an Apple /// computer will automatically run
+ any program named <<<SOS.INTERP>>>.  The ADTPro SOS distribution disk image
  ADTProSOS-v.r.m.dsk comes
- configured with the serial ADTPro client version named <<<SOS.INTERP.>>>
- The ethernet version is also on the diskette, but is named <<<SOS.INTERPETH.>>>
- In order to run the ethernet version, it will be necessary to rename
+ configured with the serial ADTPro client version named <<<SOS.INTERP>>>.
+ The Ethernet version is also on that same disk, but is named <<<SOS.INTERPETH>>>.
+ In order to run the Ethernet version, it will be necessary to rename
  <<<SOS.INTERPETH>>> to <<<SOS.INTERP>>> (also deleting or renaming the
  original serial <<<SOS.INTERP>>> program).  
  The Apple /// utilities disk or any Apple disk image manipulation utility program like
@@ -168,7 +169,7 @@ GSOS has booted, as it modifies the serial environment.
 [images/bootstrap37.png]
 
  If you accidentally start from the ProDOS-specific disk intended for the Apple II, you will
- see this screen when you boot:
+instead see this screen when you boot:
 
 [images/WrongBoot3.png]
 

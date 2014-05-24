@@ -29,63 +29,63 @@ operations from an ADTPro-Wide server will automatically create ADTPro-Wide clie
 
 * ADTPro Functions
 
- [{{{#Change_Directory}CD}}]  Change working directory
+ <<{{{#Change_Directory}CD}}>> - Change working directory
 
- [{{{#Directory}Directory}}]  View contents of current working directory
+ <<{{{#Directory}Directory}}>> - View contents of current working directory
 
- [{{{#Get}Get}}]  Initiate disk image download from host
+ <<{{{#Get}Get}}>> - Initiate disk image download from host
 
- [{{{#Put}Put}}]  Initiate disk image upload to host (always overwrite)
+ <<{{{#Put}Put}}>> - Initiate disk image upload to host (always overwrite)
 
- [{{{#Batch}Batch}}]  Initiate batch upload (unique suffix added to specified filename prefix)
+ <<{{{#Batch}Batch}}>> - Initiate batch upload (unique suffix added to specified filename prefix)
 
- [{{{#Nibble}Nibble}}]  Initiate nibble disk upload to host (always overwrite)
+ <<{{{#Nibble}Nibble}}>> - Initiate nibble disk upload to host (always overwrite)
 
- [{{{#Multiple}Multiple}}]  Initiate multiple nibble batch upload (unique suffix added to specified filename prefix)
+ <<{{{#Multiple}Multiple}}>> - Initiate multiple nibble batch upload (unique suffix added to specified filename prefix)
 
 * Bootstrapping Functions
 
- [{{{#Speediboot}Speediboot}}]  Initiate Speediboot ProDOS/ADTPro bootstrap
+ <<{{{#Speediboot}Speediboot}}>> - Initiate Speediboot ProDOS/ADTPro bootstrap
 
- [{{{#SOS}SOS}}]  Initiate SOS/ADTPro bootstrap
+ <<{{{#SOS}SOS}}>> - Initiate SOS/ADTPro bootstrap
 
- [{{{#VSDrive}VSDrive}}]  Initiate Speediboot ProDOS/VSDrive/BASIC bootstrap
+ <<{{{#VSDrive}VSDrive}}>> - Initiate Speediboot ProDOS/VSDrive/BASIC bootstrap
 
 * Packet Formats
 
- [{{{#Change_Directory_Packet}CD  ('A'+'C' / $C1+$C3)}}]  Change working directory
+ <<{{{#Change_Directory_Packet}CD  ('A'+'C' / $C1+$C3)}}>> - Change working directory
 
- [{{{#Directory_Packet}Directory ('A'+'D' / $C1+$C4)}}]  View contents of current working directory
+ <<{{{#Directory_Packet}Directory ('A'+'D' / $C1+$C4)}}>> - View contents of current working directory
 
- [{{{#Query_File_Size_Packet}Size ('A'+'Z' / $C1+$DA)}}]  Query file size
+ <<{{{#Query_File_Size_Packet}Size ('A'+'Z' / $C1+$DA)}}>> - Query file size
 
- [{{{#Image_Get_Packet}Get ('A'+'G' / $C1+$C7)}}]  Initiate disk image download from host
+ <<{{{#Image_Get_Packet}Get ('A'+'G' / $C1+$C7)}}>> - Initiate disk image download from host
  
- [{{{#Image_Put_Packet}Put ('A'+'P' / $C1+$D0)}}]  Initiate disk image upload to host (always overwrite)
+ <<{{{#Image_Put_Packet}Put ('A'+'P' / $C1+$D0)}}>> - Initiate disk image upload to host (always overwrite)
  
- [{{{#Batch_Put_Packet}Batch ('A'+'B' / $C1+$C2)}}]  Initiate batch disk image upload to host (unique suffix added to specified filename prefix)
+ <<{{{#Batch_Put_Packet}Batch ('A'+'B' / $C1+$C2)}}>> - Initiate batch disk image upload to host (unique suffix added to specified filename prefix)
  
- [{{{#Nibble_Put_Packet}Nibble ('A'+'N' / $C1+$CD)}}]  Initiate nibble disk image upload to host
+ <<{{{#Nibble_Put_Packet}Nibble ('A'+'N' / $C1+$CD)}}>> - Initiate nibble disk image upload to host
  
- [{{{#Multiple_Nibble_Put_Packet}Multiple ('A'+'M' / $C1+$CC)}}]  Initiate batch nibble disk image upload to host (unique suffix added to specified filename prefix)
+ <<{{{#Multiple_Nibble_Put_Packet}Multiple ('A'+'M' / $C1+$CC)}}>> - Initiate batch nibble disk image upload to host (unique suffix added to specified filename prefix)
  
- [{{{#Send_Image_Data_Packet}Send Image Data ('A'+'S' / $C1+$D3)}}]  RLE compressed data for image transfer (page-aligned)
+ <<{{{#Send_Image_Data_Packet}Send Image Data ('A'+'S' / $C1+$D3)}}>> - RLE compressed data for image transfer (page-aligned)
 
- [{{{#Acknowledgement_Packet}Acknowledgement ('A'+'K' / $C1+$CB)}}] Acknowledgement - one of ACK, NAK, CAN
+ <<{{{#Acknowledgement_Packet}Acknowledgement ('A'+'K' / $C1+$CB)}}>> - Acknowledgement - one of ACK, NAK, CAN
 
- [{{{#Summary_Packet}Summary ('A'+'Y' / $C1+$D9)}}] Final acknowledgement/summary of results
+ <<{{{#Summary_Packet}Summary ('A'+'Y' / $C1+$D9)}}>> - Final acknowledgement/summary of results
 
- [{{{#Home}Return to Home State('A'+'X' / $C1+$D8)}}] Sender is in home state; partner should return there as well
+ <<{{{#Home}Return to Home State('A'+'X' / $C1+$D8)}}>> - Sender is in home state; partner should return there as well
 
- [{{{#Send_File}Send File ('A'+'F' / $C1+$C6)}}] Send bootstrapping file
+ <<{{{#Send_File}Send File ('A'+'F' / $C1+$C6)}}>> - Send bootstrapping file
 
 * Virtual Drive Server Functions
 
- [{{{#Read}Read Block ('E'+$01)}}] ProDOS device driver compatible read block request
+ <<{{{#Read}Read Block ('E'+$01)}}>> - ProDOS device driver compatible read block request
 
- [{{{#Write}Write Block ('E'+$02/$04)}}] ProDOS device driver compatible write block request
+ <<{{{#Write}Write Block ('E'+$02/$04)}}>> - ProDOS device driver compatible write block request
 
- [{{{#Read3}Read Block with timestamp update ('E'+$03/$05)}}] ProDOS device driver compatible read block request with timestamp update
+ <<{{{#Read3}Read Block with timestamp update ('E'+$03/$05)}}>> - ProDOS device driver compatible read block request with timestamp update
 
 
 ADTPro Function Flows

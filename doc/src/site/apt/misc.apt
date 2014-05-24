@@ -16,7 +16,7 @@ Miscellaneous Functions
 ProDOS and SOS don't include an <<<INIT>>> or <<<FORMAT>>> command
 natively, so this is the place to get your media initially formatted.
 Note that formatting a disk does not make it <bootable.>
-Choosing <<<F>>> from the main menu brings up the volume selection
+Choosing "F" from the main menu brings up the volume selection
 screen:
 
 [images/format1.png]

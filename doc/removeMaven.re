@@ -1,4 +1,4 @@
-s@v\.r\.m@1.3.0@ig;
+s@v\.r\.m@2.0.0@ig;
 s@\<a href="http://maven.apache.org/" title="Built by Maven" class="poweredBy"\>@<a href="http://sourceforge.net/projects/adtpro"><img src="http://sflogo.sourceforge.net/sflogo.php?group_id=170262&amp;type=13" width="120" height="30" alt="Get Apple Disk Transfer ProDOS at SourceForge.net. Fast, secure and Free Open Source software downloads" /></a>@ig;
 s@\<img class="builtBy" alt="Built by Maven" src="\./images/logos/maven-feather.png" \/\>@@ig;
 s@\</body\>@\<script src\=\"http\:\/\/www.google-analytics.com\/urchin.js\" type\=\"text\/javascript\"\>\<\/script\>\<script type\=\"text\/javascript\"\>_uacct \= \"UA-697468-1\";urchinTracker\(\);\<\/script\>\<\/body\>@ig;

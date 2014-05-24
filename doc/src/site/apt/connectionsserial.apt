@@ -213,7 +213,7 @@ and non-standard, so we're only discussing the non-hardware handshaking cable he
 If you happen to have an Imagewriter I cable, you will need to tick the 
 "Apple IIc w/Imagewrite Cable"
 checkbox in the serial config dialog box, brought up from the 
-<<<File->Serial Configuration>>> menu item:
+<<File->Serial Configuration>> menu item:
 
 [images/tickiic.png]
 
@@ -316,7 +316,7 @@ plugging your serial cable into.
 
   At the ADTPro server software end, should see those names repeated in the
 serial configuration dialog box (which comes up with the 
-<<<File->Serial Configuration>>> menu item).
+<<File->Serial Configuration>> menu item).
 In Keyspan's case, you will see a prefix of "tty" and "cu" added to each port name.
 ADTPro seems to be able to function normally using either flavor.
 
