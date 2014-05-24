@@ -41,7 +41,7 @@ Mac OSX, and SuSE Linux.
 
  * {{{./developing.html#Starting_from_Scratch}Starting from Scratch}}
  
- * {{{./developing.html#Downloading/Importing the ADTPro Project}Downloading/Importing the ADTPro Project}}
+ * {{{./developing.html#Downloading} Downloading/Importing the ADTPro Project}}
  
  * {{{./developing.html#Configuring_the_Project_Properties}Configuring the Project Properties}}
  
@@ -66,7 +66,7 @@ The minimum amount of work you'd go through to do so:
  
  []
 
-* {Downloading/Importing the ADTPro Project}
+* {Downloading}/Importing the ADTPro Project
 
  Connect Eclipse to the ADTPro CVS repository on Sourceforge by going through
 the next few configuration dialogs in Eclipse.

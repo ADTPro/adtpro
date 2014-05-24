@@ -19,19 +19,19 @@ DOS-ADT Compatibility
 
 *-----:-----:------:------:------:------+
 || <<Program>> || <<Latest Client Version>> || <<Client Platforms>> || <<Server Platforms>> || <<Comms>> || <<Notes>>
-*-----:-----:------:------+
+*-----:-----:------:------:------:------+
  ADTPro | wide | II,+,e,c,GS,Laser,/// | Linux, OS/2, OSX, Solaris, Windows (Java) | Serial, Uthernet/Uthernet II, Audio | Nibble capable 
-*-----:-----:------:------+
+*-----:-----:------:------:------:------+
  ADTPro | v1 | II,+,e,c,GS,Laser,/// | Linux, OS/2, OSX, Solaris, Windows (Java) | Serial, Uthernet, Audio | Nibble capable 
-*-----:-----:------:------+
+*-----:-----:------:------:------:------+
  ADT (Shipped with ADTPro v1) | 2.4 | II,+,e,c,GS,Laser,/// | ADTPro or Virtual ][ A2V2 on OSX | Serial (115.2k) | Nibble/half-track capable
-*-----:-----:------:------+
+*-----:-----:------:------:------:------+
  ADT ({{{https://github.com/david-schmidt/adt/wiki}GitHub}}) | 1.33 | II,+,e,c,GS,Laser | PC DOS, Windows | Serial (115.2k) | 
-*-----:-----:------:------+
+*-----:-----:------:------:------:------+
  A2V2 (Shipped with Virtual ][) | 2.1 |  II,+,e,c  | Virtual ][ A2V2 on OSX | Serial (19.2k) | Nibble/half-track capable
-*-----:-----:------:------+
+*-----:-----:------:------:------:------+
  MacADT | 1.21 |  II,+,e,c  | Mac OS9 and earlier | Serial (19.2k) |
-*-----:-----:------:------+
+*-----:-----:------:------:------:------+
 
  Generally speaking, the client program (the part that runs on the Apple II)
  for any of these programs is compatible with the ADTPro server.

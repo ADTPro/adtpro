@@ -6,7 +6,7 @@
 
 ADTPro-Wide Protocol
 
- The ADTPro-Wide protocol is an evolution of the {{{protocolv1.html}1-byte command protocol}} that the
+ The ADTPro-Wide protocol is an evolution of the {{{./protocolv1.html}1-byte command protocol}} that the
 original DOS-based ADT used and ADTPro v1 extended.
 The first problem the ADTDPro-Wide protocol was designed to solve
 is that there was no enveloping of commands, and just a little enveloping of payloads
