@@ -52,7 +52,7 @@ all
 -->
 
 <project name="ADTPro" default="all" basedir="..">
-	<property name="versionString" value="v.r.m" />
+	<property name="versionString" value="2.0.0" />
 	<property name="projdir" value="${basedir}" />
 	<property name="builddir" value="${basedir}/build" />
 	<property name="distName" value="ADTPro-${versionString}" />
@@ -492,6 +492,7 @@ all
 		<exec dir="${projdir}/client/src" executable="${assemblerPath}/ld65">
 			<arg line="-o sos/bootsector.raw -C sos/serial/plain.cfg sos/bootsector.o" />
 		</exec>
+		<!-- Note: keep this binary GRUB if you want to write it out to sector zero of a disk image for SOS bootstrap testing. --> 
 		<delete file="${projdir}/client/src/GRUB" />
 	</target>
 	<target name="sos-vsdrive" depends="vdrive-image-prep" description="Copy Virtual Serial Drive Driver (SOS)">

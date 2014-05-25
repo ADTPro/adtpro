@@ -24,7 +24,12 @@ create one yourself, {{{http://retrofloppy.com/products.html#ADTPRO}click here.}
 
   Here is a 5-minute overview video of the bootstrapping process.
 It shows the bare-metal bootstrapping scenario of an Apple /// with a
-null modem cable, all the way to making a bootable ADTPro SOS floppy:
+null modem cable, all the way to making a bootable ADTPro SOS floppy.
+While it shows version 1 of the bootstrap software, the process is largely the same with version 2.
+Just be sure you use the type-in program in the {{{Detailed_steps}detailed steps below}}
+rather than the one displayed in the video.
+Also, you will want to receive the disk named ADTPROSOS-v.r.m.DSK since that is now the
+one that is specific to the Apple ///.
 
  youtubereplace3
 
@@ -148,9 +153,13 @@ A000G
     
 [images/bootstrap34.png]
 
+       *
+
     *
     
 [images/bootstrap35.png]
+
+       *
 
     *
     
@@ -167,14 +176,14 @@ A000G
     []
 
     [[1]] Use the ADTPro client's {{{./misc.html#Format}format}} function to
-    format a diskette or two.  Note that in the SOS world, formatting
-    a diskette doesn't make it bootable - it just prepares the filesystem
+    format a disk or two.  Note that in the SOS world, formatting
+    a disk doesn't make it bootable - it just prepares the filesystem
     for writing.
-    The next step of sending the ADTPro distribution diskette will create
-    bootable diskette for you.
+    The next step of sending the ADTPro SOS distribution disk image will create
+    bootable disk for you.
 
     [[1]] You are now ready to {{{./receiving.html}receive}} the ADTPROSOS-v.r.m.DSK
     disk image from the host.  Once you've done that, you've got a bootable SOS 
-    diskette that contains the ADTPro client program.
+    disk that contains the ADTPro client program.
 
     []

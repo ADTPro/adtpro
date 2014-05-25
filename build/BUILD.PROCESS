@@ -10,14 +10,14 @@ assembler lives in your installation.
 The web site is built using Maven (http://maven.apache.org/).
 Go into the doc directory and run the command "mvn site".
 The resulting directory rooted at doc/target/site is
-the stuff that gets uploaded to sourceforge.
+the stuff that gets uploaded to Sourceforge.
 
  * Did the boot sector of ADTProBase.dsk change?  If so, be sure to
    re-enable booting on Franklin 1x00 computers.  Bring it up in
    a hex editor and change:
-   AD60:4D3B28690BD003
+   4D60:4D 3B 28 69 0B D0 03
    to:
-   AD60:4D3B28690BEAEA
+   4D60:4D 3B 28 69 0B EA EA
    If PRODOS on the disk changes, it'll lose the Bird's Better Bye
    that's hacked into it.
 
@@ -28,7 +28,8 @@ the stuff that gets uploaded to sourceforge.
  * Check for the code that needs to lie within a page boundary.
    Reading a listing, look for these routines:
    Trans:/Trans2:
-   rdnibtr:   
+   rdnibtr:
+   aud_send:/aud_receive:   
 
  * Make sure the version number is updated.  Places where 
    the version number is encoded:
@@ -46,7 +47,7 @@ the stuff that gets uploaded to sourceforge.
    * Search for default: and make the '5' in position 4 be '6'
 
  * Perform a build
-   * Ensure you are using the 'all' target, not 'dev'
+   * Ensure you are using the 'all' target
    * Ensure your project properties for the Java Compiler are set to 1.4, not 5.0 or above
      to suit our OSX 10.3.x friends
 
@@ -54,6 +55,7 @@ the stuff that gets uploaded to sourceforge.
    * Ensure all files have a current date on the virtual disks
    * Ensure each bootstrap text content works
    * Ensure that floppy formatting works
+   * Ensure audio send/receive works
 
  * Update history.apt in doc to have the date and release number, with included content
 

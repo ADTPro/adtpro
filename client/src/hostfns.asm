@@ -34,6 +34,7 @@ HOSTTIMEOUT:
 	ldy #PHMTIMEOUT
 	jsr SHOWHM1
 	jsr PAUSE
+	sec
 	rts
 
 DIR:

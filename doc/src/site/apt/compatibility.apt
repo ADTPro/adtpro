@@ -20,9 +20,7 @@ DOS-ADT Compatibility
 *-----:-----:------:------:------:------+
 || <<Program>> || <<Latest Client Version>> || <<Client Platforms>> || <<Server Platforms>> || <<Comms>> || <<Notes>>
 *-----:-----:------:------:------:------+
- ADTPro | wide | II,+,e,c,GS,Laser,/// | Linux, OS/2, OSX, Solaris, Windows (Java) | Serial, Uthernet/Uthernet II, Audio | Nibble capable 
-*-----:-----:------:------:------:------+
- ADTPro | v1 | II,+,e,c,GS,Laser,/// | Linux, OS/2, OSX, Solaris, Windows (Java) | Serial, Uthernet, Audio | Nibble capable 
+ ADTPro | v.r.m | II,+,e,c,GS,Laser,/// | Linux, OS/2, OSX, Solaris, Windows (Java) | Serial, Uthernet, Audio | Nibble capable 
 *-----:-----:------:------:------:------+
  ADT (Shipped with ADTPro v1) | 2.4 | II,+,e,c,GS,Laser,/// | ADTPro or Virtual ][ A2V2 on OSX | Serial (115.2k) | Nibble/half-track capable
 *-----:-----:------:------:------:------+
@@ -38,16 +36,16 @@ DOS-ADT Compatibility
  Version 1.0.4 of ADTPro started shipping with a new offshoot of the original
  ADT client, based in part on the 1.33 version and in part on the 
  A2V2-embedded version.  The result is a superset of all the function that
- came with the latest historical ADT client, plus the nascent nibble/halftrack
+ came with the latest historical ADT client, plus the nascent nibble/half-track
  extensions from the A2V2 project.  The Nibble extensions have since been incorporated
  into ADTPro, and the versions of ADTPro after the v1 line will no longer include 
  the DOS-based ADT client.
 
-ADT {Nibble}/Halftrack Usage
+ADT {Nibble}/Half-track Usage
 
- ADT versions 2.3 and later introduce
- nibble and halftrack disk extraction.  Halftrack capability is only present in
- the ADT client (i.e. only nibble capability is not in the ADTPro client).  
+ ADT versions 2.3 and later introduce nibble and half-track disk extraction.
+ Half-track capability is only present in
+ the ADT client (i.e. the ADTPro client only has nibble capability).  
  The Virtual ][ A2V2 server is the only server that can actually reconstitute disk
  images based on these technologies so far.
 

@@ -45,6 +45,7 @@ create one yourself, {{{http://retrofloppy.com/products.html#ADTPRO}click here.}
 *  Bootstrapping Demonstration {Video}
 
   Here is a 5-minute overview video of the bootstrapping process.
+It hasn't been updated with the new look for version 2, but the process is the same.
 It shows the bare-metal bootstrapping scenario of an Apple IIc compatible,
 all the way to making a bootable ADTPro floppy:
 

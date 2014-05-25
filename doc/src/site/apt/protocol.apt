@@ -598,7 +598,7 @@ Envelope:
   One byte: 'A' ($C1)
   Two bytes: payload length ($0000)
   One byte: 'X' ($D8)
-  One byte: EOR of prior four bytes ($18)
+  One byte: EOR of prior four bytes ($19)
 -------------
 
 * {Send File} - Command

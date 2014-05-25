@@ -2212,6 +2212,11 @@ public class CommsThread extends Thread
 					else
 						ok = 0x18; // CANcel
 				}
+				else if (UnsignedByte.intValue(ackEnvelope[2]) == 0xd8)
+				{
+					Log.println(false, "CommsThread.sendPacketWide() received home request; client is aborting."); //$NON-NLS-1$
+					ok = 0x18; // CANcel
+				}
 				else
 				{
 					Log.println(false, "CommsThread.sendPacketWide() Well, ack envelope was unexpected: " + UnsignedByte.toString(ackEnvelope[2])); //$NON-NLS-1$
@@ -2222,6 +2227,11 @@ public class CommsThread extends Thread
 			if (ok == CHR_ACK)
 			{
 				rc = true;
+			}
+			else if (ok == CHR_CAN)
+			{
+				currentRetries = _maxRetries + 1;
+				rc = false;
 			}
 			else
 			{

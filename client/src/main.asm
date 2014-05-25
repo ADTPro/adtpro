@@ -281,6 +281,7 @@ ABORT:	ldx top_stack	; Pop goes the stackptr
 	txs
 	jsr motoroff	; Turn potentially active drive off
 	bit $C010	; Strobe the keyboard
+	jsr HOMEREQUEST	; Tell the server we're taking our ball and going home
 	jmp MAINLUP	; ... and restart
 
 ;---------------------------------------------------------

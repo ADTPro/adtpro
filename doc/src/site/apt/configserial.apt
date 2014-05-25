@@ -101,11 +101,10 @@ If you want to use a Super Serial card instead, you will need to select its slot
 
 [images/configBaud.png]
 
- 115200 is the normal and default baud rate that ADTPro uses most of the time.
+ 115200 is the normal and default baud rate that ADTPro should use.
 If you have a good serial cable, this speed will work reliably.
-19200 is supported for the 
-{{{./lc.html}Apple IIe card in the Mac LC computer.}}
-If you can't get 115200 to work reliably, something else is wrong.
+19200 is supported for the {{{./lc.html}Apple IIe card in the Mac LC computer.}}
+If you can't get 115200 to work reliably, something in your cabling (or potentially your USB driver) is wrong.
 
 * Blocks at Once
 
