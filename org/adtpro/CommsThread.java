@@ -3016,7 +3016,7 @@ public class CommsThread extends Thread
 				Log.println(false, "receiveNibbleTrackWide() adding " + bytesReceived + " bytes to the track buffer, now at length " + (bytesReceived + offset) + " bytes."); //$NON-NLS-1$
 				java.lang.System.arraycopy(tempBuffer, 0, trackBuffer, offset, bytesReceived);
 				offset += bytesReceived;
-				blockNumber++;
+				blockNumber += bytesReceived / 512;
 			}
 		} while ((rc == true) && (offset < 13312));
 		Log.println(false, "receiveNibbleTrackWide() exit; rc=" + rc); //$NON-NLS-1$

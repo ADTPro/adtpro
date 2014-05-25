@@ -85,7 +85,7 @@ snibtrak:
 	lda #$00
 	sta BLKLO
 	sta BLKHI		; Starting block
-	ldx PBAO		; Default blocks-at-once to move
+	ldx PBAO		; Default blocks-at-once to move - Note that Serial doesn't benefit from granularity here; it should just use 40 BAO.
 	lda BAOTbl,X
 	sta BAOCNT		; Number of blocks (512-bytes) to send before requesting an ACK
 	cmp DIFF		; What if BAOCNT is larger than the number of blocks?
