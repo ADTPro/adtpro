@@ -250,7 +250,10 @@ PARMINT:
 	lda CONFIGYET
 	beq NOPE
 	jsr INITUTHER
-	lda #$a0
+	bcc :+
+	ldy #PMUTHBAD
+	jsr WRITEMSGAREA
+:	lda #$a0
 	jsr DELAY
 	jsr PINGREQUEST	; Do a couple of ping requests to prime the pump
 	lda #$10
@@ -316,15 +319,15 @@ PRINTIT:
 	jsr SET_INVERSE
 
 PRTVAL:	lda #$A0	; SPACE BEFORE & AFTER VALUE
-	jsr COUT1
+	jsr COUT
 PRTLOOP:
 	iny		; PRINT VALUE
 	lda PARMTXT,Y
 	beq ENDPRT
-	jsr COUT1
+	jsr COUT
 	jmp PRTLOOP
 ENDPRT:	lda #$A0
-	jsr COUT1
+	jsr COUT
 	jsr SET_NORMAL
 ENDVAL:	dex
 	bpl VALLOOP	; PRINT REMAINING VALUES

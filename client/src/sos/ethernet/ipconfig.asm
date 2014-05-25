@@ -61,17 +61,15 @@ IPConfig:
 	adc #$03
 	sta <CH
 	lda #CHR_DOT
-	jsr COUT1
-	lda #xpos
-	adc #$07
-	sta <CH
-	lda #CHR_DOT
-	jsr COUT1
-	lda #xpos
-	adc #$0b
-	sta <CH
-	lda #CHR_DOT
-	jsr COUT1
+	jsr COUT
+	inc <CH
+	inc <CH
+	inc <CH
+	jsr COUT
+	inc <CH
+	inc <CH
+	inc <CH
+	jsr COUT
 	iny
 	cpy #ypos+4
 	beq :+
@@ -108,16 +106,12 @@ IPConfig:
 	rts
 
 IPConfigTopEntry:
-	lda #$05
-	jsr COUT		; Turn cursor on
 	lda #$00
 	sta raw_x
 	sta raw_y
 	jmp IPConfigReEntry
 
 IPConfigBottomEntry:
-	lda #$05
-	jsr COUT		; Turn cursor on
 	lda #$00
 	sta raw_x
 	lda #$03
@@ -145,10 +139,6 @@ IPConfigReEntry:
 	cmp #$03
 	beq ExitLeft
 IPConfigExit:
-	pha
-	lda #$06	; Turn the cursor back off
-	jsr COUT
-	pla
 	rts
 
 ExitLeft:
@@ -177,8 +167,6 @@ ExitUp:
 	sec
 	sbc #$01
 	bcs :+
-	lda #$06	; Turn the cursor back off
-	jsr COUT
 	ldx #PARMNUM-1	; Head back to upper config items - bottom
 	rts
 :	sta raw_y
@@ -192,8 +180,6 @@ ExitDown:
 	adc raw_y
 	cmp #$04
 	bmi :+
-	lda #$06	; Turn the cursor back off
-	jsr COUT
 	ldx #$00	; Head back to upper config items - top
 	txa
 	rts
