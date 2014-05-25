@@ -24,7 +24,9 @@ Your distribution should contain most of these, depending on platform:
  * ac.bat                 - AppleCommander command line batch file invoker
  * LICENSE                - The GNU Public License file
  * README                 - The info you're looking at now
- * disks/ADTPRO-v.r.m.DSK - ADTPro client-side software
+ * disks/ADTPRO-v.r.m.DSK - ADTPro ProDOS client-side software
+                            (an Apple 140K disk image)
+ * disks/ADTPROSOS-v.r.m.DSK - ADTPro SOS client-side software
                             (an Apple 140K disk image)
  * disks/ADTPRO-v.r.m.PO  - ADTPro client-side software
                             (an Apple 800K disk image)
@@ -79,7 +81,7 @@ buttons to choose your communications type.
 If you currently use the DOS ADT program, select the Serial button.
 You can transfer the ADTPro-v.r.m.dsk file to your apple using the
 DOS ADT client and ADTPro server. Reboot your Apple with the new
-ADTPro client diskette in the disk drive and you're ready to go!
+ADTPro client disk in the disk drive and you're ready to go!
 
 If you aren't already using DOS ADT, or if you don't have any
 software for your Apple yet, there's lots of help available. Start
