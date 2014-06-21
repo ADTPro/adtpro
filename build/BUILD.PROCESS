@@ -35,6 +35,7 @@ the stuff that gets uploaded to Sourceforge.
    the version number is encoded:
    * build/build.xml: <property name="versionString" value="v.r.m" />
    * build/build.xml: DOS version number, if necessary: <property name="dosVersionString" value="vrm" />
+   * doc/pom.xml: <version>v.r.m</version>
    * doc/removemaven.re: s@v\.r\.m@v.r.m@ig;  <- Note: this one should stay
      at the "current" release level instead of reverting to "v.r.m" because
      it can go into documentation between releases.
