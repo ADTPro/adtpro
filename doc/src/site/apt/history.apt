@@ -6,6 +6,14 @@
 
 ADTPro Release History
 
+* Unreleased - in CVS now
+
+ Bug fixes:
+
+ * [Serial Client] Flush the send buffer occasionally for our native serial port friends
+
+ []
+
 * 2.0.0 - May 25, 2014
 
  New functionality:

@@ -334,6 +334,8 @@ public class SerialTransport extends ATransport
     {
       _sendBuffer[_outPacketPtr++] = data[i];
     }
+    if (_outPacketPtr > 255)
+      pushBuffer();
   }
 
   public void writeBytes(String str)
