@@ -10,7 +10,7 @@ ADTPro Release History
 
  Bug fixes:
 
- * [Serial Client] Flush the send buffer occasionally for our native serial port friends
+ * [Server] Flush the serial send buffer occasionally for our native serial port friends
 
  []
 
