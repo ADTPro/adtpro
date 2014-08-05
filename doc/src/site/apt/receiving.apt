@@ -90,8 +90,8 @@ do - you have the option to go ahead and do it anyway:
 [images/receiveMismatch.png]
 
  From a purely ProDOS standpoint, the operation will generally work if the 
-destination has more capacity than the source (i.e. the host image is smaller 
-than the destination disk at the Apple).  Some space will be wasted in the process.
+destination has more capacity than the source (i.e. the destination disk on the
+Apple is bigger than the image you're receiving).  Some space will be wasted in the process.
 But if you are trying to put a 5.25" .DSK image of a game, say, onto a 3.5" floppy,
 don't expect that to work.  It won't be bootable, and DOS won't understand how
 to operate the 3.5" disk.   
