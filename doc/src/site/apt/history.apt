@@ -8,6 +8,12 @@ ADTPro Release History
 
 * Unreleased - in CVS now
 
+ New functionality:
+
+ * [Audio] Client sends test stream of data for input tuning on host side
+
+ []
+
  Bug fixes:
 
  * Server and client agree on more situations where a transfer should be aborted
