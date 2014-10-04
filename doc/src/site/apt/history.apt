@@ -10,6 +10,8 @@ ADTPro Release History
 
  Bug fixes:
 
+ * Server and client agree on more situations where a transfer should be aborted
+
  * [Server] Flush the serial send buffer occasionally for our native serial port friends
 
  []
