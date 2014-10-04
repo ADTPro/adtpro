@@ -78,10 +78,7 @@ MOD6:	and #$68
 	beq MOD4	; Byte exists; go get it
 	lda $C000	; Check for escape once in a while
 	cmp #CHR_ESC	; Escape = abort
-	bne @TimerInc
-	sec
-	rts		; Escape hit
-@TimerInc:
+	beq SABORT
 	inc Timer
 	bne SSCGetLoop	; Timer non-zero, loop
 	inc Timer+1

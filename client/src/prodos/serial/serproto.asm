@@ -86,7 +86,7 @@ DIRREQUEST:
 	jsr PUTC
 	GO_FAST			; Speed back up for SOS
 	rts
-	
+
 
 ;---------------------------------------------------------
 ; DIRREPLY - Reply to current directory contents
@@ -478,7 +478,9 @@ RECVWIDE:
 	sta XFERLEN+1
 	jsr GETC	; Get protocol - must be an 'S'
 	bcs RWERR	; Timeout - bail
-	cmp #CHR_S	;
+	cmp #CHR_X	; Told to go home?
+	beq RWABORT	; Do it!
+	cmp #CHR_S	; Otherwise - need an 'S'
 	bne RWERR
 	jsr GETC	; Get protocol - check byte (discarded for the moment)
 	bcs RWERR	; Timeout - bail
@@ -527,6 +529,8 @@ RWNext:	dec PAGECNT+1
 	clc
 	rts
 
+RWABORT:
+	jmp BABORT
 
 ;---------------------------------------------------------
 ; SENDWIDE - Send a chunk of data

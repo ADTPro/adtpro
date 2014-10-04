@@ -495,8 +495,11 @@ RECVWIDE:
 	jsr BumpA1
 	lda (A1L,X)	; Get protocol - must be an 'S'
 	cmp #CHR_S
-	bne RWERR
-	jsr BumpA1
+	beq @RWOK
+	cmp #CHR_X	; Told to go home?
+	bne RWERR	; No - generic error
+	jmp ABORT	; Yes - go home!
+@RWOK:	jsr BumpA1
 	lda (A1L,X)	; Get protocol - check byte (discarded for the moment)
 	jsr BumpA1	; Block number, LSB
 	lda (A1L,X)

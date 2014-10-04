@@ -606,10 +606,6 @@ SENDBLKS:
 ; PAGECNT is used as 2-byte value of length to ultimately receive
 ; CRC is computed and stored
 ;---------------------------------------------------------
-RWERR:
-	sec
-	rts
-
 RECVWIDE_REPLY:
 	lda #STATE_IDLE
 	sta state
@@ -630,8 +626,11 @@ RECVWIDE_REPLY:
 	jsr BumpA1
 	lda (<A1L,X)	; Get protocol - must be an 'S'
 	cmp #CHR_S
-	bne RWERR
-	jsr BumpA1
+	beq RWSOK	; 'S' it is... go ahead
+	cmp #CHR_X	; Told to go home?
+	bne RWERR	; No... retry because of generic error
+	jmp BABORT	; Go home!
+RWSOK:	jsr BumpA1
 	lda (<A1L,X)	; Get protocol - check byte (discarded for the moment)
 	jsr BumpA1	; Block number, LSB
 	lda (<A1L,X)
@@ -662,13 +661,17 @@ RW2:
 			; ...else check for more or return
 
 RWNext:	dec PAGECNT+1
-	beq @Done	; Done?
+	beq RWDone	; Done?
 	inc BLKPTR+1	; Get ready for another page
 	lda BLKPTR+1
 	cmp #$c0
 	beq RWERR	; Protect ourselves from buffer overrun
 	jmp RW1
-@Done:
+RWERR:
+	sec
+	rts
+
+RWDone:
 	jsr BumpA1	; Increment the pointer to data we're reading
 	lda (<A1L,X)	; Done - get CRC lsb
 	sta PCCRC

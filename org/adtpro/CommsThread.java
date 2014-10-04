@@ -363,6 +363,11 @@ public class CommsThread extends Thread
 		case (byte) 216: // "X": Go Home
 			Log.println(false, "CommsThread.dispatchCommand() Received Home command.  How charming."); //$NON-NLS-1$
 			break;
+		case (byte) 203: // "K": Acknowledgement
+			Log.println(false, "CommsThread.dispatchCommand() Received stray acknowledgement packet.  Sending Home in response."); //$NON-NLS-1$
+			pullPayloadWide(envelope);
+			sendHome();
+			break;
 		default:
 			Log.println(false, "CommsThread.dispatchCommand() Received unknown command: " + UnsignedByte.toString(envelope[2])); //$NON-NLS-1$
 			// Consume the offending payload so the results don't get "executed"
@@ -1038,6 +1043,18 @@ public class CommsThread extends Thread
 		return payload;
 	}
 
+	public void sendHome()
+	{
+		Log.println(false, "CommsThread.sendHome() entry.");
+		_transport.writeByte(UnsignedByte.loByte(0xc1)); // 'A'
+		_transport.writeByte(0);
+		_transport.writeByte(0);
+		_transport.writeByte(UnsignedByte.loByte(0xd8)); // 'X'
+		_transport.writeByte(19);
+		_transport.pushBuffer();
+		Log.println(false, "CommsThread.sendHome() exit.");
+	}
+
 	public void changeDirectory()
 	{
 		byte rc = 0x06;
@@ -1496,14 +1513,12 @@ public class CommsThread extends Thread
 			}
 			catch (FileNotFoundException ex)
 			{
-				_transport.writeByte(0x02); // New ADT protocol: HMFIL - unable
-							    // to write file
+				_transport.writeByte(0x02); // New ADT protocol: HMFIL - unable to write file
 				_transport.pushBuffer();
 			}
 			catch (IOException ex2)
 			{
-				_transport.writeByte(0x02); // New ADT protocol: HMFIL - unable
-							    // to write file
+				_transport.writeByte(0x02); // New ADT protocol: HMFIL - unable to write file
 				_transport.pushBuffer();
 			}
 			finally
