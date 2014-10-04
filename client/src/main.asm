@@ -134,11 +134,7 @@ KABOUT:	cmp #$9F	; ABOUT MESSAGE? ("?" KEY)
 KABOUTENTRY:
 	lda #MENU_ABOUT
 	jsr HILIGHT_MENU
-	lda #$15
-	jsr TABV
-	ldy #PMSG17	; "About" message
-	jsr WRITEMSGLEFT
-	jsr READ_CHAR
+	jsr ABOUT
 	jmp MAINLUP	; Clear and start over
 
 KVOLUMS:

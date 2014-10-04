@@ -30,6 +30,7 @@
 ;---------------------------------------------------------
 ; Pull in all the rest of the code
 ;---------------------------------------------------------
+	.include "about.asm"
 	.include "sos/rawio.asm"	; Apple II-like I/O stand-in
 	.include "sos/conio.asm"	; Console I/O
 	.include "print.asm"

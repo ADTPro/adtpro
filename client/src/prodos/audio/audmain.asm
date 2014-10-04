@@ -28,6 +28,7 @@
 ; Pull in all the rest of the code
 ;---------------------------------------------------------
 	.include "main.asm"
+	.include "prodos/audio/about.asm"		; Test tone generation in addition to 'about' message
 	.include "prodos/prodosvars.asm"		; Variables
 	.include "prodos/serial/sermessages.asm"	; Messages
 	.include "prodos/conio.asm"		; Console I/O

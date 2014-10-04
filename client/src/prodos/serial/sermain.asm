@@ -28,6 +28,7 @@
 ; Pull in all the rest of the code
 ;---------------------------------------------------------
 	.include "main.asm"
+	.include "about.asm"
 	.include "prodos/prodosvars.asm"		; Variables
 	.include "prodos/serial/sermessages.asm"	; Messages
 	.include "prodos/conio.asm"		; Console I/O

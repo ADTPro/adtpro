@@ -1,6 +1,6 @@
 ;
 ; ADTPro - Apple Disk Transfer ProDOS
-; Copyright (C) 2007 - 2014 by David Schmidt
+; Copyright (C) 2014 by David Schmidt
 ; david__schmidt at users.sourceforge.net
 ;
 ; This program is free software; you can redistribute it and/or modify it 
@@ -18,25 +18,43 @@
 ; 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 ;
 
-;---------------------------------------------------------
-; INITAUDIO - Initialize audio processing
-;---------------------------------------------------------
-INITAUDIO:
-	jsr PATCHAUDIO
-	rts
+; Audio 'about' message - send out test 'home' messages to the server for
+; audio level debug
+ABOUT:
+	lda #$15
+	jsr TABV
+	ldy #PMSG17	; "About" message
+	jsr WRITEMSGLEFT
 
-;---------------------------------------------------------
-; RESETAUDIO - Clean up
-;---------------------------------------------------------
-RESETAUDIO:
-	rts
+LEVEL_SEND:
+	ldax #AUD_BUFFER
+	stax UTILPTR
+	stax A1L
+	stax A2L	; Set everyone up to talk to the AUD_BUFFER
 
-;---------------------------------------------------------
-; PATCHAUDIO - Patch the entry points of SSC processing
-;---------------------------------------------------------
-PATCHAUDIO:
-	lda #<RESETAUDIO
-	sta RESETIO+1
-	lda #>RESETAUDIO
-	sta RESETIO+2
-	rts
+; Sending beacon
+
+	lda #CHR_A	; Envelope
+	jsr BUFBYTE
+	lda #$00	; Zero byte payload
+	jsr BUFBYTE
+	jsr BUFBYTE
+	lda #CHR_X	; Go Home
+	jsr BUFBYTE
+	lda #$19	; Pre-calculted check byte
+	jsr BUFBYTE
+
+	ldax UTILPTR
+	stax A2L
+	jsr aud_send
+	ldx #$03
+:	lda #$ff
+	jsr DELAY
+	lda $C000
+	bmi ADONE
+	dex
+	bne :-
+	lda $C000
+	bpl LEVEL_SEND
+
+ADONE:	rts
