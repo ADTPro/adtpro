@@ -1,6 +1,6 @@
 ;
 ; ADTPro - Apple Disk Transfer ProDOS
-; Copyright (C) 2007 by David Schmidt
+; Copyright (C) 2007 - 2014 by David Schmidt
 ; david__schmidt at users.sourceforge.net
 ;
 ; This program is free software; you can redistribute it and/or modify it 
@@ -22,42 +22,4 @@
 ; INITAUDIO - Initialize audio processing
 ;---------------------------------------------------------
 INITAUDIO:
-	jsr PATCHAUDIO
-	rts
-
-;---------------------------------------------------------
-; AUDIOPUT - Send accumulator out the cassette port
-;---------------------------------------------------------
-AUDIOPUT:
-	rts
-
-
-;---------------------------------------------------------
-; AUDIOGET - Get a character from Super Serial Card (XY unchanged)
-;---------------------------------------------------------
-AUDIOGET:
-	lda $C000
-	cmp #CHR_ESC	; Escape = abort
-	bne AUDIOGETNEXT
-	jmp PABORT
-
-AUDIOGETNEXT:
-			; Get character
-	rts
-
-;---------------------------------------------------------
-; RESETAUDIO - Clean up
-;---------------------------------------------------------
-RESETAUDIO:
-	rts
-
-;---------------------------------------------------------
-; PATCHAUDIO - Patch the entry points of SSC processing
-;---------------------------------------------------------
-PATCHAUDIO:
-	lda #<RESETAUDIO
-	sta RESETIO+1
-	lda #>RESETAUDIO
-	sta RESETIO+2
-
 	rts
