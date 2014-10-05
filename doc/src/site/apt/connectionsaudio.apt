@@ -33,25 +33,8 @@ ADTPro Audio Connections
  have two different inputs: line in and  microphone in.  You would need to
  use your sound card's control panel to specify which one you will be using for 
  this exercise.  Note that the host's output volume control should be set at 
- 50% of the maximum; this is probably substantially louder than you would 
+ 70% of the maximum; this is probably substantially louder than you would 
  normally listen to your computer's speakers.
-
-* Your Microphone May Need {Boosting}
-
- Microphone inputs on modern computers often do not amplify the Apple II audio
- signal to adequately "hear" it.
- This might manifest itself by a successful bootstrap followed by unsuccessful
- attempts to send or receive a disk image via the audio client, for example.
- You may need to adjust your audio preferences within your operating system
- to amplify the incoming signal.
-
- On the OSX operating system, you will find the microphone boost by opening the
- Audio-MIDI configuration tool, selecting the setting for line-in, and then moving
- the volume sliders all the way to the right.
- 
- On the Windows operating system, you will typically find the microphone boost
- by opening the volume control panel, hitting the "Advanced" button, and selcting
- "MIC Boost" in the "Other Controls" section.
 
 * Connections at the Apple
 
@@ -89,5 +72,44 @@ ADTPro Audio Connections
  (the white wire in these examples).
 
  <<Note:>> The host's output volume control should be set at 
- 50% of the maximum; this is probably substantially louder than you would 
+ 70% of the maximum; this is probably substantially louder than you would 
  normally listen to your computer's speakers.
+
+* Your Microphone May Need {Boosting}
+
+ Microphone inputs on modern computers often do not amplify the Apple II audio
+ signal to adequately "hear" it.
+ This might manifest itself by a successful bootstrap followed by unsuccessful
+ attempts to send or receive a disk image via the audio client, for example.
+ You may need to adjust your audio preferences within your operating system
+ to amplify the incoming signal.
+
+ On the OSX operating system, you will find the microphone boost by opening the
+ Audio-MIDI configuration tool, selecting the setting for line-in, and then moving
+ the volume sliders all the way to the right.
+
+ On the Windows operating system, you will typically find the microphone boost
+ by opening the volume control panel, hitting the "Advanced" button, and selcting
+ "MIC Boost" in the "Other Controls" section.
+
+* {Testing} Microphone Levels
+
+ Starting with ADTPro version 2.0.1, the ADTPro client can send out test packets
+ continuously so that you can make any necessary adjustments to your operating
+ system or wiring until they are successfully "heard" at the host.  The test 
+ packets are activated at the client end by simply accessing the "About" screen
+ of ADTPro, which is the question mark "(?)" from the main menu:
+
+[images/about.png]
+
+ Whenever the "About" message is displayed, the ADTPro audio client will be continuously
+ sending a test packet to the server.  Once the test server starts successfully 
+ receiving these test packets, the server will show a message at the bottom of the 
+ window like this:
+
+[images/heard1.png]
+
+ The number in the message "Heard audio signal #x" will increment for every message
+ successfully received.  So once the correct volume levels have been reached, the
+ number should be observed as continuously increasing whenever the "(?)" menu item is
+ active.

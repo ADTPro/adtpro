@@ -10,7 +10,7 @@ ADTPro Release History
 
  New functionality:
 
- * [Audio] Client sends test stream of data for input tuning on host side
+ * [Audio] Client sends test stream of data for volume tuning on host side
 
  []
 
