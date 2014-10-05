@@ -362,6 +362,10 @@ public class CommsThread extends Thread
 			break;
 		case (byte) 216: // "X": Go Home
 			Log.println(false, "CommsThread.dispatchCommand() Received Home command.  How charming."); //$NON-NLS-1$
+			if (_transport.transportType() == ATransport.TRANSPORT_TYPE_AUDIO)
+			{
+				_parent.setSecondaryText("Heard audio signal #"+_lastAudioPacket++); //$NON-NLS-1$
+			}
 			break;
 		case (byte) 203: // "K": Acknowledgement
 			Log.println(false, "CommsThread.dispatchCommand() Received stray acknowledgement packet.  Sending Home in response."); //$NON-NLS-1$
@@ -4294,4 +4298,5 @@ public class CommsThread extends Thread
 
 	public static int lastNibNumber = 1;
 	public static String lastNibName = "";
+	public static int _lastAudioPacket = 0;
 }
