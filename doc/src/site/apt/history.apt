@@ -18,6 +18,8 @@ ADTPro Release History
 
  * Server and client agree on more situations where a transfer should be aborted
 
+ * [Server] Text bootstrapping data is packed more densely for faster transfer
+
  * [Server] Flush the serial send buffer occasionally for our native serial port friends
 
  []
