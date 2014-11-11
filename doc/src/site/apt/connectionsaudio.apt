@@ -103,7 +103,7 @@ ADTPro Audio Connections
 [images/about.png]
 
  Whenever the "About" message is displayed, the ADTPro audio client will be continuously
- sending a test packet to the server.  Once the test server starts successfully 
+ sending a test packet to the server.  Once it starts successfully 
  receiving these test packets, the server will show a message at the bottom of the 
  window like this:
 
