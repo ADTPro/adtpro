@@ -6,9 +6,9 @@
 
 ADTPro Credits
 
- ADTPro's client side borrows heavily from the original Apple Disk Transfer (ADT) base code from version 1.23.  
+ ADTPro's client code borrowed heavily from the original Apple Disk Transfer (ADT) base code from version 1.23.  
 The original ADT was written by Paul Guertin.
-ADT is currently maintained here: {{http://adt.berlios.de/}}
+ADT is currently maintained here: {{http://github.com/david-schmidt/adt}}
 
  The server side was very much a direct translation from the ADTWin's C++
 server code to Java.  The Win32 GUI code was written by Sean Gugler.  The
@@ -23,7 +23,7 @@ sector-by-sector status, but added slot independence.
 I also borrowed config file loading and saving from
 the FASTDSK package, and added config file creation as well.
 
- {{{http://a2retrosystems.com}Glenn Jones}} generously donated an Uthernet card
+ {{{http://a2retrosystems.com}Glenn Jones}} generously donated Uthernet cards
 to enable IP transport development for both II and /// machines. 
  
  The IP stack is taken from MagerValp's tight and fast ip65 code (now integrated into
@@ -61,12 +61,10 @@ copy-protected disks and put them in .nib format, removing the need to run
 the likes of SST to generate the image.
    
  The Pascal entry point serial communications code was contributed by {{{http://jaoswald.wordpress.com/2006/07/25/apple-ii-disk-transfer/}Joseph Oswald}}.
-It was originally used to support the IIgs at 19,200 baud, but is now being used
-to support the Laser 128's serial port (and anything else that can communicate
-using Pascal entry points in slot 2).
+It supports anything that can communicate using Pascal entry points in slot 2.
 
  The code to interface directly with the IIgs' Serial Communications Controller
-chip was borrowed partially from the "Warp Six BBS" code:
+chip was borrowed in part from the "Warp Six BBS" code:
 {{http://www.apple2.org.za/gswv/a2zine/Utils/Z8530_SCCsamples_info.txt}}.
 Note that the current code is not nearly as nice to the system as the BBS code is.
 It <<will>> break AppleTalk if it's running.
@@ -83,7 +81,7 @@ Their original notice remains in the
 introductory article here:
 {{http://www.developer.com/java/other/article.php/1565671}}
 I found some very helpful audio code from the {{{http://www.jbother.org/}JBother}} project:
-{{http://www.jbother.org/api/src-html/com/valhalla/jbother/sound/SoundPlayer.html}}
+{{http://web.archive.org/web/20080705222016/http://www.jbother.org/api/src-html/com/valhalla/jbother/sound/SoundPlayer.html}}
 The audio code in ADTPro is a particularly undisciplined extension of these two sources.
 Marc Ressl came to my aid and cleaned up as much as he dared.
 
@@ -100,7 +98,7 @@ was critical to debugging operations.  Important information on how to accomplis
 was published in the "/// Cheers!" magazine from {{{http://www.callapple.org/magazines/cheers/}Call-A.P.P.L.E.}}
 
  The ProDOS loader concepts used to speed up booting (by eliminating the need for Applesoft)
-were from Oliver Schmidt's LOADER.SYSTEM contribution to cc65, available
+are from Oliver Schmidt's LOADER.SYSTEM contribution to cc65, available
 {{{http://cc65.oldos.net/contrib/loader-1.4.txt}here}}.
 
  Thanks to ADTPro's {{{./translations.html}translators}}.
