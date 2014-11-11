@@ -84,7 +84,7 @@ public class AppleDump extends Task
             ps.print(address.toUpperCase() + ":");
             addr += _numBytes;
           }
-          ps.print(UnsignedByte.toString(datum));
+          ps.print(UnsignedByte.toShortString(datum));
           if (j % _numBytes < (_numBytes - 1) )
             ps.print(" ");
         }

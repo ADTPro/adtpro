@@ -395,9 +395,9 @@ all
 		<exec dir="${projdir}/client/src" executable="${assemblerPath}/ld65" failonerror="true">
 			<arg line="-o GRUB_VSDRIVE -m grub_vsdrive.map -C prodos/serial/grub2/grub_vsdrive.cfg prodos/serial/grub2/grub_vsdrive.o" />
 		</exec>
-		<appleDump infilename="${projdir}/client/src/GRUB2" outfilename="${basedir}/org/adtpro/resources/grub2.dmp" applename="GRUB2" startaddrhex="7000" numbyteswide="10" decoration="yes" />
-		<appleDump infilename="${projdir}/client/src/GRUB_VSDRIVE" outfilename="${basedir}/org/adtpro/resources/grub_vsdrive.dmp" applename="GRUB_VSDRIVE" startaddrhex="7000" numbyteswide="10" decoration="yes" />
-		<appleDump infilename="${projdir}/org/adtpro/resources/PD.raw" outfilename="${basedir}/org/adtpro/resources/PD.dmp" applename="PD" startaddrhex="2000" numbyteswide="10" decoration="begin" finalline="2000G E000G"/>
+		<appleDump infilename="${projdir}/client/src/GRUB2" outfilename="${basedir}/org/adtpro/resources/grub2.dmp" applename="GRUB2" startaddrhex="7000" numbyteswide="80" decoration="yes" />
+		<appleDump infilename="${projdir}/client/src/GRUB_VSDRIVE" outfilename="${basedir}/org/adtpro/resources/grub_vsdrive.dmp" applename="GRUB_VSDRIVE" startaddrhex="7000" numbyteswide="80" decoration="yes" />
+		<appleDump infilename="${projdir}/org/adtpro/resources/PD.raw" outfilename="${basedir}/org/adtpro/resources/PD.dmp" applename="PD" startaddrhex="2000" numbyteswide="80" decoration="begin" finalline="2000G E000G"/>
 		<delete file="${projdir}/client/src/GRUB2" />
 		<delete file="${projdir}/client/src/GRUB_VSDRIVE" />
 		<!--
