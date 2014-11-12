@@ -78,8 +78,12 @@ public class AppleDump extends Task
           datum = (byte) fis.read();
           if (j % _numBytes == 0)
           {
+            if (j == 0)
+            ps.print("25:0\r\n");
             if (j > 0)
-              ps.print("\r\n");
+            {
+                ps.print("\r\n25:0\r\n");
+            }
             address = Integer.toHexString(addr);
             ps.print(address.toUpperCase() + ":");
             addr += _numBytes;
@@ -96,6 +100,7 @@ public class AppleDump extends Task
         }
         if (_finalLine != null)
         {
+          ps.print("\r\n");
           ps.print("\r\n");
           ps.print(_finalLine+"\r\n");
         }
