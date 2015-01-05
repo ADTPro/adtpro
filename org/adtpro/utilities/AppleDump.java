@@ -82,7 +82,7 @@ public class AppleDump extends Task
             ps.print("25:0\r\n");
             if (j > 0)
             {
-                ps.print("\r\n25:0\r\n");
+                ps.print(" N 25:0\r\n");
             }
             address = Integer.toHexString(addr);
             ps.print(address.toUpperCase() + ":");
