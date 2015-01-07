@@ -107,7 +107,7 @@ are from Oliver Schmidt's LOADER.SYSTEM contribution to cc65, available
 
  Thanks to the {{{http://maven.apache.org}Maven}} project for web page generation.
 
-ADT Lineage
+ADT {Lineage}
 
  Rich Williamson (glitch at eskimo dot com) released SENDDISK on April 9, 1993.
 His Apple-side program read an entire disk with DOS' RWTS (Read Write
