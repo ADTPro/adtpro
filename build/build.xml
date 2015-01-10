@@ -233,7 +233,7 @@ all
 		<exec dir="${projdir}/client/src" executable="${assemblerPath}/ld65" failonerror="true">
 			<arg line="-o ADTPRO.BIN -m adtproser.map -C prodos/serial/adtpro.cfg prodos/serial/sermain.o tail.o" />
 		</exec>
-		<appleDump infilename="${projdir}/client/src/ADTPRO.BIN" outfilename="${basedir}/org/adtpro/resources/adtpro.dmp" applename="ADTPRO.BIN" startaddrhex="800" numbyteswide="9"  decoration="begin" finalline="800G"/>
+		<appleDump infilename="${projdir}/client/src/ADTPRO.BIN" outfilename="${basedir}/org/adtpro/resources/adtpro.dmp" applename="ADTPRO.BIN" startaddrhex="800" numbyteswide="22"  decoration="begin" finalline="800G"/>
 		<copy file="${projdir}/client/src/ADTPRO.BIN" tofile="${basedir}/org/adtpro/resources/adtpro.raw" />
 		<echo message="Adding ADTPRO to 5.25 disk image..."/>
 		<appleCommander command="p" input="${projdir}/client/src/ADTPRO.BIN" imagename="${builddir}/${distName}/disks/${diskName}.DSK" filename="ADTPRO.BIN" type="bin" address="2048"/>
@@ -250,7 +250,7 @@ all
 		<exec dir="${projdir}/client/src" executable="${assemblerPath}/ld65" failonerror="true">
 			<arg line="-o ADTPROAUD.BIN -m adtproaud.map -C prodos/audio/adtpro.cfg prodos/audio/audmain.o tail.o" />
 		</exec>
-		<appleDump infilename="${projdir}/client/src/ADTPROAUD.BIN" outfilename="${basedir}/org/adtpro/resources/adtproaud.dmp" applename="ADTPROAUD.BIN" startaddrhex="800" numbyteswide="9" decoration="begin" finalline="800G"/>
+		<appleDump infilename="${projdir}/client/src/ADTPROAUD.BIN" outfilename="${basedir}/org/adtpro/resources/adtproaud.dmp" applename="ADTPROAUD.BIN" startaddrhex="800" numbyteswide="22" decoration="begin" finalline="800G"/>
 		<copy file="${projdir}/client/src/ADTPROAUD.BIN" tofile="${basedir}/org/adtpro/resources/adtproaud.raw" />
 		<echo message="Adding ADTPROAUD to 5.25 disk image..."/>
 		<appleCommander command="p" input="${projdir}/client/src/ADTPROAUD.BIN" imagename="${builddir}/${distName}/disks/${diskName}.DSK" filename="ADTPROAUD.BIN" type="bin" address="2048"/>
@@ -267,7 +267,7 @@ all
 		<exec dir="${projdir}/client/src" executable="${assemblerPath}/ld65" failonerror="true">
 			<arg line="-o ADTPROETH.BIN -m adtproeth.map -C prodos/ethernet/adtpro.cfg prodos/ethernet/ethmain.o ip65/ip65.lib tail.o" />
 		</exec>
-		<appleDump infilename="${projdir}/client/src/ADTPROETH.BIN" outfilename="${basedir}/org/adtpro/resources/adtproeth.dmp" applename="ADTPROETH.BIN" startaddrhex="800" numbyteswide="9" decoration="begin" finalline="800G"/>
+		<appleDump infilename="${projdir}/client/src/ADTPROETH.BIN" outfilename="${basedir}/org/adtpro/resources/adtproeth.dmp" applename="ADTPROETH.BIN" startaddrhex="800" numbyteswide="22" decoration="begin" finalline="800G"/>
 		<copy file="${projdir}/client/src/ADTPROETH.BIN" tofile="${basedir}/org/adtpro/resources/adtproeth.raw" />
 		<echo message="Adding ADTPROETH to 5.25 disk image..." />
 		<appleCommander command="p" input="${projdir}/client/src/ADTPROETH.BIN" imagename="${builddir}/${distName}/disks/${diskName}.DSK" filename="ADTPROETH.BIN" type="bin" address="2048"/>
@@ -395,9 +395,9 @@ all
 		<exec dir="${projdir}/client/src" executable="${assemblerPath}/ld65" failonerror="true">
 			<arg line="-o GRUB_VSDRIVE -m grub_vsdrive.map -C prodos/serial/grub2/grub_vsdrive.cfg prodos/serial/grub2/grub_vsdrive.o" />
 		</exec>
-		<appleDump infilename="${projdir}/client/src/GRUB2" outfilename="${basedir}/org/adtpro/resources/grub2.dmp" applename="GRUB2" startaddrhex="7000" numbyteswide="9" decoration="yes" />
-		<appleDump infilename="${projdir}/client/src/GRUB_VSDRIVE" outfilename="${basedir}/org/adtpro/resources/grub_vsdrive.dmp" applename="GRUB_VSDRIVE" startaddrhex="7000" numbyteswide="9" decoration="yes" />
-		<appleDump infilename="${projdir}/org/adtpro/resources/PD.raw" outfilename="${basedir}/org/adtpro/resources/PD.dmp" applename="PD" startaddrhex="2000" numbyteswide="9" decoration="begin" finalline="2000G E000G"/>
+		<appleDump infilename="${projdir}/client/src/GRUB2" outfilename="${basedir}/org/adtpro/resources/grub2.dmp" applename="GRUB2" startaddrhex="7000" numbyteswide="22" decoration="yes" />
+		<appleDump infilename="${projdir}/client/src/GRUB_VSDRIVE" outfilename="${basedir}/org/adtpro/resources/grub_vsdrive.dmp" applename="GRUB_VSDRIVE" startaddrhex="7000" numbyteswide="22" decoration="yes" />
+		<appleDump infilename="${projdir}/org/adtpro/resources/PD.raw" outfilename="${basedir}/org/adtpro/resources/PD.dmp" applename="PD" startaddrhex="2000" numbyteswide="22" decoration="begin" finalline="2000G E000G"/>
 		<delete file="${projdir}/client/src/GRUB2" />
 		<delete file="${projdir}/client/src/GRUB_VSDRIVE" />
 		<!--
@@ -408,7 +408,7 @@ all
 			<arg line="-t none -l adt.s -o ADT" />
 		</exec>
 		<copy file="${projdir}/client/src/dos/ADT" tofile="${basedir}/org/adtpro/resources/adt.raw" />
-		<appleDump infilename="${projdir}/client/src/dos/ADT" outfilename="${basedir}/org/adtpro/resources/adt.dmp" applename="ADT" startaddrhex="803" numbyteswide="9" decoration="yes" />
+		<appleDump infilename="${projdir}/client/src/dos/ADT" outfilename="${basedir}/org/adtpro/resources/adt.dmp" applename="ADT" startaddrhex="803" numbyteswide="22" decoration="yes" />
 		<delete file="${projdir}/client/src/dos/ADT" />
 	</target>
 

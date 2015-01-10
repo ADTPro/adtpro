@@ -179,8 +179,6 @@ A000G
     format a disk or two.  Note that in the SOS world, formatting
     a disk doesn't make it bootable - it just prepares the filesystem
     for writing.
-    The next step of sending the ADTPro SOS distribution disk image will create
-    bootable disk for you.
 
     [[1]] You are now ready to {{{./receiving.html}receive}} the ADTPROSOS-v.r.m.DSK
     disk image from the host.  Once you've done that, you've got a bootable SOS 

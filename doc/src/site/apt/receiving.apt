@@ -20,7 +20,8 @@ you want to copy from the host to a disk on your Apple:
  You can also leave that prompt blank, and hitting the Return key will bring up a
 listing of files in the current working directory, allowing you to simply pick one
 by highlighting its name and hitting the Return key.
-You can page back and forth with the "A" and "Z" keys respectively,
+
+ You can page back and forth with the "A" and "Z" keys respectively,
 and move the cursor up and down with left/up and right/down keys respectively:
 
 [images/dirBlankResults.png] 
@@ -42,6 +43,10 @@ and move the cursor up and down with left/up and right/down keys respectively:
  * .2MG (2IMG images)
 
 []
+
+ Note that if a file name is longer than 40 characters, it will not be correctly communicated
+ to the host and it will fail to find the file.  In that case, either rename it something shorter on the host
+ or type in the entire long name at the prompt.
 
  After hitting Return to specify the file name, ADTPro will present you with a
 screen to pick a "volume" (a slot/drive combination). The slot and drive
