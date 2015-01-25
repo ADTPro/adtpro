@@ -13,7 +13,7 @@ that are not readily visible.  The full list looks like this:
 
  * {{{http://java.sun.com/javase/downloads/index.jsp}Java SDK}} - compiles Java-based server
 
- * {{{http://www.cc65.org/}cc65}} - a multiplatform toolchain with a nice 6502 macro assembler
+ * {{{http://cc65.github.io/cc65/}cc65}} - a multiplatform toolchain with a nice 6502 macro assembler
 
  * {{{http://www.rxtx.org/}rxtx}} - multiplatform Java serial library
 
