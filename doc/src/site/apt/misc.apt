@@ -87,7 +87,7 @@ ProDOS or SOS can see:
 assignments of a particular volume.  The Volume Name column will show you
 what ProDOS thinks it's called.  It typically takes ProDOS a fair amount of
 time to scan for all volumes and names, so ADTPro caches this information.
-If you remove and insert different disks, or format disks, you may want to 
+If you remove and insert different disks, you may want to 
 hit the 'R' key to re-scan for the latest names.
 
  The "Blocks" column is the count of ProDOS blocks present on the disk.  Each 
@@ -130,8 +130,8 @@ Starting the ADTPro server with the command line parameter 'localhost' triggers 
 emulator is actually the entity serving the port, and the ADTPro server is the client in this case.
 When started with the 'localhost' parameter, the ADTPro server titlebar will reflect the port and host
 it will be trying to connect to.
-The ADTPro server will then contact an emulator that starts serving its serial port as socket port 1977
-on the local machine.
+The ADTPro server will then attempt to contact an emulator that starts serving its serial port as 
+socket port 1977 (the default for AppleWin) on the local machine.
 
  The first time ADTPro starts in this mode, it will write out two new properties in the ADTPro.properties file:
 
@@ -140,7 +140,17 @@ SerialIPPort=1977
 SerialIPHost=localhost
 -----------------
 
- These values may be changed in the properties file to accommodate different ports and hosts. 
+ These values may be changed in the properties file to accommodate different ports and hosts.
+ The following are the default ports used by emulators for slot 2 serial emulation:
+ 
+*-------:-----+
+|| <<Emulator>> || <<Port>> |
+*-------:-----+
+| AppleWin | 1977 |
+*-------:-----+
+| GSport/KEGS | 6502 |
+*-------:-----+
+ 
 
  The usual connect/disconnect buttons do not function when the ADTPro server is started in this mode,
 and pressing one of them will terminate the virtual serial communications and start whatever other mode
