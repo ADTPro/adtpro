@@ -5,6 +5,8 @@ s@youtubereplace3@<object width="425" height="344"><param name="movie" value="ht
 s@youtubereplace4@<object style="height: 390px; width: 640px"><param name="movie" value="http://www.youtube.com/v/1xworYThmMI?version=3&feature=player_detailpage"><param name="allowFullScreen" value="true"><param name="allowScriptAccess" value="always"><embed src="http://www.youtube.com/v/1xworYThmMI?version=3&feature=player_detailpage" type="application/x-shockwave-flash" allowfullscreen="true" allowScriptAccess="always" width="640" height="360"></object>@ig;
 s@<img src="images/iigsNullModem3.jpg" alt="" />@<a href="http://retrofloppy.com/products.html#DIN8DE9" target\="_new"><img src="images/iigsNullModem3.jpg" /></a>@ig;
 s@<img src="images/nullModemDIN5DE9v3.jpg" alt="" />@<a href="http://retrofloppy.com/products.html#DIN5DE9" target\="_new"><img src="images/nullModemDIN5DE9v3.jpg" /></a>@ig;
+s@<img src="images/Disks3MFFBox.jpg" alt="" />@<a href="http://retrofloppy.com/products.html#BlankDisks" target\="_new"><img src="images/Disks3MFFBox.jpg" /></a>@ig;
+s@<img src="images/products.png" alt="" />@<a href="http://retrofloppy.com/products.html" target\="_new"><img src="images/products.png" /></a>@ig;
 s@<img src="images/USBMac.jpg" alt="" />@<a href="http://retrofloppy.com/products.html#USBMAC" target\="_new"><img src="images/USBMac.jpg" /></a>@ig;
 s@<img src="images/a3NullModem.png" alt="" />@<a href="http://retrofloppy.com/products.html#DB25DE9NULL" target\="_new"><img src="images/a3NullModem.png" /></a>@ig;
 s@<img src="images/USBMac.jpg" alt="" />@<a href="http://retrofloppy.com/products.html#USBMAC" target\="_new"><img src="images/USBMac.jpg" /></a>@ig;
