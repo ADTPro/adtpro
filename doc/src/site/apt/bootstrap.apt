@@ -98,10 +98,6 @@ all the way to making a bootable ADTPro floppy:
     There are three phases to the bootstrapping operation, and all should 
     follow automatically.
 
-    If at any point the bootstrapping process seems to stop working, or
-    pauses for more than 10 seconds or so, press the "ESC" key on the Apple
-    to attempt to re-start. 
-
     The text that flows at first is a program that searches for compatible 
     serial hardware, which then uses that connection to complete the bootstrapping operation.
     Once the bootstrapper is running, the block should be flashing random characters,
@@ -441,11 +437,11 @@ all the way to making a bootable ADTPro floppy:
  (i.e. hit reset before any disk loads after turning the machine on).
 
  The defaults now are to send initial bootstrapping data at 9600 baud, with 
- a 150 millisecond delay after each line.  The first few
+ a 250 millisecond delay after each line.  The first few
  lines slow down much more than that because they rely on the 
  BASIC interpreter, which takes extra time to process.
- After the Speediboot process takes over, everything else happens even
- faster than that.
+ After the Speediboot process takes over, everything else happens at top speed
+ no matter what.
 
  The net result is substantially faster bootstrapping than before.
  Using the serial configuration dialog box, bootstrapping tab
@@ -455,9 +451,11 @@ all the way to making a bootable ADTPro floppy:
 
 [images/serialConfig2.png]
 
- The defaults for pacing and speed should work fine for communications to any Apple.
+ The defaults for pacing and speed should work fine for communications to any Apple
+ or compatible.
  If you have trouble with these bootstrapping operations, you may find it necessary
- to slow down the baud rate, increase the pacing interval, or both.
+ to increase the pacing interval, but you should not need to slow down the baud rate.
+ If you find yourself wanting to do that, chances are something in your connection is wrong.
  Again, the important thing is to not have DOS or ProDOS loaded when going through
  bootstrapping operations.
 
@@ -469,4 +467,4 @@ all the way to making a bootable ADTPro floppy:
 [images/serialConfig.png]
 
  And if you are using an Imagewriter I cable with an Apple IIc, don't forget to check the 
- "Apple IIc Serial" box on the Port tab.
+ "Apple IIc w/ImageWriter Cable" box on the Port tab.

@@ -6,11 +6,13 @@
 
 ADTPro Release History
 
-* Unreleased - in CVS now
+* 2.0.1 - March 21, 2015
 
  New functionality:
 
  * [Audio] Client sends test stream of data for volume tuning on host side
+
+ * [Server] Text bootstrapping data is packed more densely for faster transfer
 
  []
 
@@ -18,7 +20,7 @@ ADTPro Release History
 
  * Server and client agree on more situations where a transfer should be aborted
 
- * [Server] Text bootstrapping data is packed more densely for faster transfer
+ * [Client] Don't hang on a GS on startup if a connection isn't pre-established
 
  * [Server] Flush the serial send buffer occasionally for our native serial port friends
 

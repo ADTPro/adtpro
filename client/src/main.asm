@@ -48,6 +48,9 @@ entrypoint:
 	jsr BLOAD	; Load up user parameters, if any
 	jsr HOME	; Clear screen
 	jsr PARMINT	; Interpret parameters - may leave a complaint
+	lda COMMSLOT	; Check if we're on a GS or not (slot will be 7 if so)
+	cmp #$07	; The HOMEREQUEST will hang if a connection isn't complete
+	beq MAINL	; It's a GS... skip it!
 	jsr HOMEREQUEST	; Probably don't want to do this _every_ time - but at least once is nice
 	jmp MAINL	; And off we go!
 
