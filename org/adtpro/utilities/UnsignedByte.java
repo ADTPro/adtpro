@@ -1,6 +1,6 @@
 /*
  * ADTPro - Apple Disk Transfer ProDOS
- * Copyright (C) 2006 by David Schmidt
+ * Copyright (C) 2006 - 2015 by David Schmidt
  * david__schmidt at users.sourceforge.net
  *
  * This program is free software; you can redistribute it and/or modify it 
@@ -103,7 +103,7 @@ public class UnsignedByte
   public static String toShortString(byte b)
   {
     int i = intValue(b);
-    if (i < 15)
+    if (i < 16)
     {
     char c1;
     if (i % 16 < 10) c1 = (char) (i % 16 + 48);

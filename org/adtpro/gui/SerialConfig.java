@@ -1,6 +1,6 @@
 /*
  * ADTPro - Apple Disk Transfer ProDOS
- * Copyright (C) 2007 - 2013 by David Schmidt
+ * Copyright (C) 2007 - 2015 by David Schmidt
  * david__schmidt at users.sourceforge.net
  *
  * This program is free software; you can redistribute it and/or modify it 
@@ -252,7 +252,7 @@ public class SerialConfig extends JDialog implements ActionListener
     _theSingleton.iicCheckBox.setSelected(properties.getProperty("HardwareHandshaking", "false").compareTo("true") == 0); //$NON-NLS-1$ //$NON-NLS-2$
     _theSingleton.comboComPort.setSelectedItem(properties.getProperty("CommPort", "COM1")); //$NON-NLS-1$ //$NON-NLS-2$
     _theSingleton.comboBootstrapSpeed.setSelectedItem(properties.getProperty("CommPortBootstrapSpeed", "9600")); //$NON-NLS-1$ //$NON-NLS-2$
-    _theSingleton.comboBootstrapPacing.setSelectedItem(properties.getProperty("CommPortBootstrapPacing", "150")); //$NON-NLS-1$ //$NON-NLS-2$
+    _theSingleton.comboBootstrapPacing.setSelectedItem(properties.getProperty("CommPortBootstrapPacing", "250")); //$NON-NLS-1$ //$NON-NLS-2$
   }
 
   public static String getPort()

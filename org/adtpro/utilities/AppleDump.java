@@ -1,6 +1,6 @@
 /*
  * ADTPro - Apple Disk Transfer ProDOS
- * Copyright (C) 2006, 2009 by David Schmidt
+ * Copyright (C) 2006 - 2015 by David Schmidt
  * david__schmidt at users.sourceforge.net
  *
  * This program is free software; you can redistribute it and/or modify it 
@@ -62,51 +62,50 @@ public class AppleDump extends Task
 				}
 				int addr = Integer.parseInt(_startAddrHex, 16);
 				int max = fis.available();
-				int bpl = 24, bpls = 22;
-				int lps = 7;
-				int currentBpl = 0, currentLine = 1;
+				int bpl = 114, bpls = 107;
+				int lps = 5;
+				int currentBpl = 0, nextBpl = 0, currentLine = 1;
 				String address = null;
-				ps.print("25:0\r\n");
+				// Our little welcome message
+				ps.print("25:0 N 7D0:1 4 14 10 12 F A0 N 25:0\r\n");
 				for (int j = 0; j < max; j++)
 				{
-					if (currentBpl == 0)
-					{
-			            address = Integer.toHexString(addr);
-			            ps.print(address.toUpperCase() + ":");
-					}
 					datum = (byte) fis.read();
-					addr ++;
-					ps.print(UnsignedByte.toShortString(datum));
-					currentBpl ++;
-					if (currentLine < lps)
-					{
-						System.err.println("currentLine < lps: "+currentLine+" < "+lps);
-						// We're on an interior line
-						if (currentBpl < bpl)
-							ps.print(" ");
-						else
-						{
-							ps.print("\r\n");
-							currentBpl = 0;
-							currentLine ++;
-						}
-					}
+					if (UnsignedByte.intValue(datum) < 16)
+						nextBpl = 2;
 					else
+						nextBpl = 3;
+					if (currentBpl + nextBpl > bpls)
 					{
-						// We're on an exterior line
-						if (currentBpl < bpls)
+						if (currentLine == lps)
 						{
-							ps.print(" ");
-							System.err.println("currentLine == lps: "+currentLine+" == "+lps+" i="+currentBpl);
-						}
-						else
-						{
+							// We're on an exterior line
 							ps.print(" N 25:0\r\n");
-							System.err.println("currentLine == lps: "+currentLine+" == "+lps+" Printing end of line.");
 							currentBpl = 0;
 							currentLine = 1;
 						}
 					}
+					if (currentBpl + nextBpl > bpl)
+					{
+						// Overflow!  Reset the line.
+						if (currentLine < lps)
+						{
+							// We're on an interior line
+							ps.print("\r\n");
+							currentBpl = 0;
+							currentLine++;
+						}
+					}
+					if (currentBpl == 0)
+					{
+						address = Integer.toHexString(addr);
+						ps.print(address.toUpperCase() + ":");
+					}
+					addr++;
+					if (currentBpl > 0)
+						ps.print(" ");
+					currentBpl += nextBpl;
+					ps.print(UnsignedByte.toShortString(datum));
 				}
 				if ((_decoration.equalsIgnoreCase("yes")) || (_decoration.equalsIgnoreCase("end")))
 				{
@@ -140,7 +139,7 @@ public class AppleDump extends Task
 	public boolean checkArgs(String[] args)
 	{
 		boolean rc = false;
-		//    if (args.length == 10)
+		// if (args.length == 10)
 		{
 			if ((args[1] != null) && (args[3] != null) && (args[5] != null) && (args[7] != null) && (args[9] != null))
 			{
