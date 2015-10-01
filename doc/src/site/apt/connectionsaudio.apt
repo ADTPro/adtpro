@@ -92,7 +92,17 @@ ADTPro Audio Connections
  by opening the volume control panel, hitting the "Advanced" button, and selcting
  "MIC Boost" in the "Other Controls" section.
 
-* {Testing} Microphone Levels
+* {Additional} Audio Settings
+
+ Audio device drivers, especially on Windows platforms, have several settings and
+ adjustments that can be made that often interfere with good, clear sound generation.
+ Be on the lookout for questionable settings like "reverb," "stereo enhancement," and so on.
+ All should be turned off.
+
+ With some stereo cables, it has proven useful to slide the mixer and balance controls all 
+ the way to one side or the other.
+
+* {Testing} Audio Levels
 
  Starting with ADTPro version 2.0.1, the ADTPro client can send out test packets
  continuously so that you can make any necessary adjustments to your operating
