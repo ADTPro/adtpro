@@ -6,6 +6,14 @@
 
 ADTPro Release History
 
+* Unreleased - in CVS now:
+
+ Bug fixes:
+
+ * [Server] Sort directory contents explicitly for our Raspberry Pi friends
+
+ []
+
 * 2.0.1 - March 21, 2015
 
  New functionality:

@@ -32,6 +32,7 @@ import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.net.InetAddress;
+import java.util.Arrays;
 
 import javax.swing.*;
 
@@ -606,8 +607,8 @@ public final class Gui extends JFrame implements ActionListener
 		{
 			result[i] = files[i].getName();
 		}
+		Arrays.sort(result);
 		return result;
-		
 	}
 
 	public void setSerialAvailable(boolean avail)
