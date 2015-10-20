@@ -8,6 +8,10 @@ ADTPro Release History
 
 * Unreleased - in CVS now:
 
+ New functionality:
+
+ * Support added for Uthernet II
+
  Bug fixes:
 
  * [Server] Sort directory contents explicitly for our Raspberry Pi friends
