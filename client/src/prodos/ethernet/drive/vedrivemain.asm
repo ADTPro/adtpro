@@ -27,6 +27,7 @@
 	.export cfg_dns
 	.export dhcp_server
 	.export cfg_tftp_server
+	.export cfg_mac
 	.export output_buffer
 
 	.global COMMSLOT
@@ -49,5 +50,6 @@ cfg_dns:	.byte   0,   0,   0,   0 ; ip address of dns server to use (will be ove
 dhcp_server:	.byte   0,   0,   0,   0 ; will be set address of dhcp server that configuration was obtained from
 cfg_tftp_server:
 		.byte   0,   0,   0,   0 ; ip address of server to send tftp requests to (can be a broadcast address)
+cfg_mac:	.byte   0,   0,   0,   0,   0,   0 ; mac address of local machine (will be overwritten if ip65_init is called)
 output_buffer:
 	.res $0208,$00

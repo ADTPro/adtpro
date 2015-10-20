@@ -1,6 +1,6 @@
 ;
 ; ADTPro - Apple Disk Transfer ProDOS
-; Copyright (C) 2006 - 2014 by David Schmidt
+; Copyright (C) 2006 - 2015 by David Schmidt
 ; david__schmidt at users.sourceforge.net
 ;
 ; This program is free software; you can redistribute it and/or modify it 
@@ -24,6 +24,7 @@
 	.export cfg_dns
 	.export dhcp_server
 	.export cfg_tftp_server
+	.export cfg_mac
 
 ;---------------------------------------------------------
 ; CONFIG - ADTPro Configuration
@@ -352,26 +353,20 @@ ENDVAL:	dex
 ; FindSlot - Find an uther card
 ;---------------------------------------------------------
 FindSlot:
-	lda COMMSLOT
-	sta TempSlot
 	ldx #$00	; Slot number - start at min and work up
 FindSlotLoop:
-	stx COMMSLOT	; ip65_init looks for COMMSLOT to be the index
-	clc
+	stx TempSlot
+	inx		; One-indexed slot number for a2_set_slot
+	txa
+	jsr a2_set_slot
 	jsr ip65_init
+	ldx TempSlot
 	bcc FoundSlot
-	ldx COMMSLOT
 	inx
-	stx COMMSLOT
 	cpx #MAXSLOT
 	bne FindSlotLoop
-	jmp FindSlotDone
+	rts
 FoundSlot:
-	lda COMMSLOT
-	sta TempSlot
-FindSlotDone:
-; All done now, so clean up
-	ldx TempSlot
 	stx COMMSLOT
 	stx DEFAULT
 	rts
@@ -436,5 +431,6 @@ cfg_dns:	.byte   0,   0,   0,   0 ; ip address of dns server to use (will be ove
 dhcp_server:	.byte   0,   0,   0,   0 ; will be set address of dhcp server that configuration was obtained from
 cfg_tftp_server:
 		.byte   0,   0,   0,   0 ; ip address of server to send tftp requests to (can be a broadcast address)
+cfg_mac:	.byte   0,   0,   0,   0,   0,   0 ; mac address of local machine (will be overwritten if ip65_init is called)
 
 BAOTbl:		.byte 1,2

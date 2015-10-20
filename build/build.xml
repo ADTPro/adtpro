@@ -23,7 +23,6 @@ all
 					prodos-adtpro-image-prep
 					common
 				prodos-ethernet
-					ip65
 					prodos-adtpro-image-prep
 					common
 				prodos-bootstrap
@@ -36,7 +35,6 @@ all
 					sos-image-prep
 					common
 				sos-ethernet
-					ip65
 					sos-image-prep
 					common
 				sos-vsdrive
@@ -77,6 +75,7 @@ all
 	<property name="rxtxZip2" value="${rxtxVersion2}.zip" />
 	<property name="rxtxVersionCloudHopperWin64" value="ch-rxtx-2.2-20081207-win-x64" />
 	<property name="rxtxZipCHWin64" value="${rxtxVersionCloudHopperWin64}.zip" />
+	<property name="ip65lib" value="${builddir}/lib/ip65/ip65.lib ${builddir}/lib/ip65/a2combo.lib ${builddir}/lib/ip65/apple2.lib" />
 	<property name="dmgmegabytes" value="9" />
 	<taskdef name="appleDump" classname="org.adtpro.utilities.AppleDump" classpath="${projdir}"/>
 	<taskdef name="appleCommander" classname="com.webcodepro.applecommander.ui.AntTask" classpath="${projdir};${acJarPath}/${acJar}"/>
@@ -227,7 +226,7 @@ all
 	<target name="prodos-serial" depends="prodos-adtpro-image-prep, common" description="Build the ADTPro Serial Client (ProDOS)">
 		<echo message="Assembling prodos-serial client..."/>
 		<exec dir="${projdir}/client/src" executable="${assemblerPath}/ca65" failonerror="true">
-			<arg line="-t none -I . -l prodos/serial/sermain.asm" />
+			<arg line="-t none -I . -l prodos/serial/sermain.lst prodos/serial/sermain.asm" />
 		</exec>
 		<echo message="Linking ADTPRO..."/>
 		<exec dir="${projdir}/client/src" executable="${assemblerPath}/ld65" failonerror="true">
@@ -244,7 +243,7 @@ all
 	<target name="prodos-audio" depends="prodos-adtpro-image-prep, common" description="Build the ADTPro Audio Client (ProDOS)">
 		<echo message="Assembling prodos-audio client..."/>
 		<exec dir="${projdir}/client/src" executable="${assemblerPath}/ca65" failonerror="true">
-			<arg line="-t none -I . -l prodos/audio/audmain.asm" />
+			<arg line="-t none -I . -l prodos/audio/audmain.lst prodos/audio/audmain.asm" />
 		</exec>
 		<echo message="Linking ADTPROAUD..."/>
 		<exec dir="${projdir}/client/src" executable="${assemblerPath}/ld65" failonerror="true">
@@ -258,14 +257,14 @@ all
 		<appleCommander command="p" input="${projdir}/client/src/ADTPROAUD.BIN" imagename="${builddir}/${distName}/disks/${diskName}.PO" filename="ADTPROAUD.BIN" type="bin" address="2048"/>
 		<delete file="${projdir}/client/src/ADTPROAUD.BIN" />
 	</target>
-	<target name="prodos-ethernet" depends="ip65, prodos-adtpro-image-prep, common" description="Build the ADTPro Ethernet Client (ProDOS)">
+	<target name="prodos-ethernet" depends="prodos-adtpro-image-prep, common" description="Build the ADTPro Ethernet Client (ProDOS)">
 		<echo message="Assembling ADTPROETH source..."/>
 		<exec dir="${projdir}/client/src" executable="${assemblerPath}/ca65" failonerror="true">
-			<arg line="-t none -I . -l prodos/ethernet/ethmain.asm" />
+			<arg line="-t none -I . -l prodos/ethernet/ethmain.lst prodos/ethernet/ethmain.asm" />
 		</exec>
 		<echo message="Linking ADTPROETH..."/>
 		<exec dir="${projdir}/client/src" executable="${assemblerPath}/ld65" failonerror="true">
-			<arg line="-o ADTPROETH.BIN -m adtproeth.map -C prodos/ethernet/adtpro.cfg prodos/ethernet/ethmain.o ip65/ip65.lib tail.o" />
+			<arg line="-o ADTPROETH.BIN -m adtproeth.map -C prodos/ethernet/adtpro.cfg prodos/ethernet/ethmain.o ${ip65lib} tail.o" />
 		</exec>
 		<appleDump infilename="${projdir}/client/src/ADTPROETH.BIN" outfilename="${basedir}/org/adtpro/resources/adtproeth.dmp" applename="ADTPROETH.BIN" startaddrhex="800" numbyteswide="22" decoration="begin" finalline="800G"/>
 		<copy file="${projdir}/client/src/ADTPROETH.BIN" tofile="${basedir}/org/adtpro/resources/adtproeth.raw" />
@@ -288,10 +287,10 @@ all
 		<appleCommander command="n" imagename="${builddir}/${distName}/disks/${diskName}.PO" volname="${volName}"/>
 		<echo message="Assembling Startup/Launcher..."/>
 		<exec dir="${projdir}/client/src" executable="${assemblerPath}/ca65" failonerror="true">
-			<arg line="-t none -I . -l prodos/launch.asm" />
+			<arg line="-t none -I . -l prodos/launch.lst prodos/launch.asm" />
 		</exec>
 		<exec dir="${projdir}/client/src" executable="${assemblerPath}/ca65" failonerror="true">
-			<arg line="-t none -I . -l prodos/startup.asm" />
+			<arg line="-t none -I . -l prodos/startup.lst prodos/startup.asm" />
 		</exec>
 		<echo message="Linking Startup/Launcher..."/>
 		<exec dir="${projdir}/client/src" executable="${assemblerPath}/ld65" failonerror="true">
@@ -326,13 +325,13 @@ all
 		<appleCommander command="pro800" imagename="${builddir}/${distName}/disks/Virtual2.po" volname="${vdriveVolName2}"/>
 		<echo message="Assembling ProDOS virtual serial drive source..."/>
 		<exec dir="${projdir}/client/src" executable="${assemblerPath}/ca65" failonerror="true">
-			<arg line="-t none -I . -l prodos/serial/drive/vsdrive_low.asm" />
+			<arg line="-t none -I . -l prodos/serial/drive/vsdrive_low.lst prodos/serial/drive/vsdrive_low.asm" />
 		</exec>
 		<exec dir="${projdir}/client/src" executable="${assemblerPath}/ca65" failonerror="true">
-			<arg line="-t none -I . -l prodos/serial/drive/vsdrive_high.asm" />
+			<arg line="-t none -I . -l prodos/serial/drive/vsdrive_high.lst prodos/serial/drive/vsdrive_high.asm" />
 		</exec>
 		<exec dir="${projdir}/client/src" executable="${assemblerPath}/ca65" failonerror="true">
-			<arg line="-t none -I . -l prodos/serial/drive/vsdrive_speed.asm" />
+			<arg line="-t none -I . -l prodos/serial/drive/vsdrive_speed.lst prodos/serial/drive/vsdrive_speed.asm" />
 		</exec>
 		<echo message="Linking serial drive..."/>
 		<exec dir="${projdir}/client/src" executable="${assemblerPath}/ld65" failonerror="true">
@@ -362,11 +361,11 @@ all
 		<appleCommander command="pro800" imagename="${builddir}/${distName}/disks/Virtual2.po" volname="${vdriveVolName2}"/>
 		<echo message="Assembling ProDOS virtual ethernet drive source..."/>
 		<exec dir="${projdir}/client/src" executable="${assemblerPath}/ca65" failonerror="true">
-			<arg line="-t none -I . -l prodos/ethernet/drive/vedrive.asm" />
+			<arg line="-t none -I . -l prodos/ethernet/drive/vedrive.lst prodos/ethernet/drive/vedrive.asm" />
 		</exec>
 		<echo message="Linking ethernet drive..."/>
 		<exec dir="${projdir}/client/src" executable="${assemblerPath}/ld65" failonerror="true">
-			<arg line="-o DRIVE -m vedrive.map -C prodos/ethernet/drive/vedrive.cfg prodos/ethernet/drive/vedrive.o ip65/ip65.lib" />
+			<arg line="-o DRIVE -m vedrive.map -C prodos/ethernet/drive/vedrive.cfg prodos/ethernet/drive/vedrive.o ${ip65lib}" />
 		</exec>
 		<move file="${projdir}/client/src/DRIVE" tofile="${projdir}/client/src/VEDRIVE" />
 		<echo message="Adding VEDrive to 5.25 disk image..."/>
@@ -381,7 +380,7 @@ all
 		-->
 		<echo message="Assembling ProDOS serial Grub source..."/>
 		<exec dir="${projdir}/client/src/prodos/serial/grub2" executable="${assemblerPath}/ca65" failonerror="true">
-			<arg line="-t none -l grub2.asm" />
+			<arg line="-t none -l grub2.lst grub2.asm" />
 		</exec>
 		<echo message="Linking grub2..."/>
 		<exec dir="${projdir}/client/src" executable="${assemblerPath}/ld65" failonerror="true">
@@ -389,7 +388,7 @@ all
 		</exec>
 		<echo message="Assembling ProDOS serial Grub (vsdrive) source..."/>
 		<exec dir="${projdir}/client/src/prodos/serial/grub2" executable="${assemblerPath}/ca65" failonerror="true">
-			<arg line="-t none -l grub_vsdrive.asm" />
+			<arg line="-t none -l grub_vsdrive.lst grub_vsdrive.asm" />
 		</exec>
 		<echo message="Linking vsdrive grub..."/>
 		<exec dir="${projdir}/client/src" executable="${assemblerPath}/ld65" failonerror="true">
@@ -405,7 +404,7 @@ all
 		-->
 		<echo message="Assembling ADT source..."/>
 		<exec dir="${projdir}/client/src/dos" executable="${assemblerPath}/cl65" failonerror="true">
-			<arg line="-t none -l adt.s -o ADT" />
+			<arg line="-t none -l adt.lst adt.s -o ADT" />
 		</exec>
 		<copy file="${projdir}/client/src/dos/ADT" tofile="${basedir}/org/adtpro/resources/adt.raw" />
 		<appleDump infilename="${projdir}/client/src/dos/ADT" outfilename="${basedir}/org/adtpro/resources/adt.dmp" applename="ADT" startaddrhex="803" numbyteswide="22" decoration="yes" />
@@ -424,7 +423,7 @@ all
 		Build ADTSOS
 		-->
 		<exec dir="${projdir}/client/src" executable="${assemblerPath}/ca65" failonerror="true">
-			<arg line="-t none -I . -l sos/serial/sermain.asm" />
+			<arg line="-t none -I . -l sos/serial/sermain.lst sos/serial/sermain.asm" />
 		</exec>
 		<echo message="Linking ADTSOSSER..."/>
 		<exec dir="${projdir}/client/src" executable="${assemblerPath}/ld65" failonerror="true">
@@ -436,17 +435,17 @@ all
 		<delete file="${projdir}/client/src/ADTSOS" />
 	</target>
 
-	<target name="sos-ethernet" depends="ip65, sos-image-prep, common" description="Build the ADTPro Ethernet Client (SOS)">
+	<target name="sos-ethernet" depends="sos-image-prep, common" description="Build the ADTPro Ethernet Client (SOS)">
 		<!--
 		Build ADTSOSETH
 		-->
 		<echo message="Assembling ADTSOSETH source..."/>
 		<exec dir="${projdir}/client/src" executable="${assemblerPath}/ca65" failonerror="true">
-			<arg line="-t none -I . -l sos/ethernet/ethmain.asm" />
+			<arg line="-t none -I . -l sos/ethernet/ethmain.lst sos/ethernet/ethmain.asm" />
 		</exec>
 		<echo message="Linking ADTSOSETH..."/>
 		<exec dir="${projdir}/client/src" executable="${assemblerPath}/ld65" failonerror="true">
-			<arg line="-o ADTSOSETH -m adtsoseth.map -C sos/ethernet/adtpro.cfg sos/ethernet/ethmain.o ip65/ip65.lib tail.o" />
+			<arg line="-o ADTSOSETH -m adtsoseth.map -C sos/ethernet/adtpro.cfg sos/ethernet/ethmain.o ${ip65lib} tail.o" />
 		</exec>
 		<echo message="Adding ADTSOSETH to 5.25 disk image..."/>
 		<appleCommander command="p" input="${projdir}/client/src/ADTSOSETH" imagename="${builddir}/${distName}/disks/${disk3Name}.DSK" filename="SOS.INTERPETH" type="sos" address="0000"/>
@@ -459,7 +458,7 @@ all
 		-->
 		<echo message="Assembling SOS serial Grub source..."/>
 		<exec dir="${projdir}/client/src" executable="${assemblerPath}/ca65" failonerror="true">
-			<arg line="-t none -l sos/serial/grub.asm" />
+			<arg line="-t none -l sos/serial/grub.lst sos/serial/grub.asm" />
 		</exec>
 		<echo message="Linking grub..."/>
 		<exec dir="${projdir}/client/src" executable="${assemblerPath}/ld65" failonerror="true">
@@ -469,7 +468,7 @@ all
 		<appleDump infilename="${projdir}/client/src/GRUB" outfilename="${basedir}/org/adtpro/resources/grub.dmp" applename="GRUB" startaddrhex="A000" numbyteswide="8" decoration="end"/>
 		<echo message="Assembling SOS serial Loader source..."/>
 		<exec dir="${projdir}/client/src" executable="${assemblerPath}/ca65" failonerror="true">
-			<arg line="-t none -l sos/serial/loader.asm" />
+			<arg line="-t none -I . -l sos/serial/loader.lst sos/serial/loader.asm" />
 		</exec>
 		<echo message="Linking loader..."/>
 		<exec dir="${projdir}/client/src" executable="${assemblerPath}/ld65" failonerror="true">
@@ -478,7 +477,7 @@ all
 		<copy file="${projdir}/client/src/LOADER" tofile="${basedir}/org/adtpro/resources/SOSLoader.raw" />
 		<echo message="Assembling SOS Kernel..."/>
 		<exec dir="${projdir}/client/src" executable="${assemblerPath}/ca65" failonerror="true">
-			<arg line="-t none -l sos/serial/kernel.asm" />
+			<arg line="-t none -l sos/serial/kernel.lst sos/serial/kernel.asm" />
 		</exec>
 		<echo message="Linking SOS Kernel..."/>
 		<exec dir="${projdir}/client/src" executable="${assemblerPath}/ld65" failonerror="true">
@@ -487,7 +486,7 @@ all
 		<move file="${projdir}/client/src/sos/serial/SK.raw" tofile="${basedir}/org/adtpro/resources/SK.raw" />
 		<echo message="Assembling SOS boot sector..."/>
 		<exec dir="${projdir}/client/src" executable="${assemblerPath}/ca65" failonerror="true">
-			<arg line="-t none -l sos/bootsector.asm" />
+			<arg line="-t none -l sos/bootsector.lst sos/bootsector.asm" />
 		</exec>
 		<echo message="Linking SOS boot sector..."/>
 		<exec dir="${projdir}/client/src" executable="${assemblerPath}/ld65" failonerror="true">
@@ -517,44 +516,13 @@ all
 		-->
 		<echo message="Assembling end-of-source marker..."/>
 		<exec dir="${projdir}/client/src" executable="${assemblerPath}/ca65" failonerror="true">
-			<arg line="-t none -l tail.asm" />
+			<arg line="-t none -l tail.lst tail.asm" />
 		</exec>
 		<!--
 		Update messages
 		-->
 		<copy file="${projdir}/client/src/messagesOrig.asm" tofile="${projdir}/client/src/messages.asm" overwrite="true" />
 		<replace file="${projdir}/client/src/messages.asm" token="%ADTPRO_VERSION%" value="${versionString}"/>
-	</target>
-	<target name="ip65" description="Assemble the ip65 Stack">
-		<!--
-		Assemble the ip65 stack source
-		-->
-		<echo message="Assembling ip65 source..."/>
-		<apply executable="${assemblerPath}/ca65" dir="${projdir}/client/src/ip65/ip65" relative="true" failonerror="true">
-			<fileset dir="${projdir}/client/src/ip65/ip65" includes="**/*.s"/>
-			<arg value="-t"/>
-			<arg value="c64"/>
-			<arg value="-l"/>
-			<srcfile/>
-		</apply>
-		<echo message="Assembling ip65 drivers..."/>
-		<apply executable="${assemblerPath}/ca65" dir="${projdir}/client/src/ip65/drivers" relative="true" failonerror="true">
-			<fileset dir="${projdir}/client/src/ip65/drivers" includes="**/*.s"/>
-			<arg value="-t"/>
-			<arg value="c64"/>
-			<arg value="-l"/>
-			<srcfile/>
-		</apply>
-		<!--
-		Package the ip65 stack library
-		-->
-		<echo message="Packaging ip65 library..."/>
-		<apply executable="${assemblerPath}/ar65" dir="${projdir}/client/src/ip65" output="ar65garbageoutputdeleteme" failonerror="true">
-			<arg line="a ip65.lib "/>
-			<fileset dir="${projdir}/client/src/ip65/ip65" includes="**/*.o"/>
-			<fileset dir="${projdir}/client/src/ip65/drivers" includes="**/*.o"/>
-		</apply>
-		<delete file="ar65garbageoutputdeleteme" />
 	</target>
 
 	<!--

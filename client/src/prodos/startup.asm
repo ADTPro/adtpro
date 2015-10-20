@@ -69,9 +69,6 @@ NAME_SERIAL:
 NAME_ETHERNET:
 	asc	"ADTPROETH.BIN"
 	.byte	$00
-;NAME_UTHERNETII:
-;	asc	"ADTPROUII.BIN"
-;	.byte	$00
 NAME_AUDIO:
 	asc	"ADTPROAUD.BIN"
 	.byte	$00
@@ -138,24 +135,19 @@ SPACE6: asc "  "
 		.byte CHR_RETURN,CHR_RETURN,CHR_RETURN
 SerialRow = ROW1;
 SerialLine:
-	asc "(S)ERIAL      : SSC, IIGS, IIC SERIAL"
+	asc "(S)ERIAL    : SSC, IIGS, IIC SERIAL"
 SerialLineEnd:
 	.byte $8d
 AudioRow = ROW2;
 AudioLine:
-	asc "(A)UDIO       : CASSETTE/AUDIO PORTS"
+	asc "(A)UDIO     : CASSETTE/AUDIO PORTS"
 AudioLineEnd:
 	.byte $8d
 EthernetRow = ROW3;
 EthernetLine:
-	asc "(E)THERNET    : UTHERNET OR LANCEGS"
+	asc "(E)THERNET  : UTHERNET (II) OR LANCEGS"
 EthernetLineEnd:
 	.byte $8d
-;UthernetIIRow = ROW2;
-;UthernetIILine:
-;	asc "(U)THERNET II : UTHERNET II"
-;UthernetIILineEnd:
-;	.byte $8d
 QuitRow = ROW4;
 QuitLine:
 	asc "(Q)UIT"
@@ -262,12 +254,6 @@ KbdLoop:
 	lda #EthernetRow
 	sta NEWLINE
 	jmp KbdDone	
-
-;:	cmp #CHR_U	; U = Uthernet II?
-;	bne :+
-;	lda #ROW3
-;	sta NEWLINE
-;	jmp KbdDone	
 
 :	cmp #CHR_Q	; Q = Quit?
  	bne :+
@@ -407,19 +393,6 @@ Line6:
 	sta KEYBUFF+1,x
 	bne :-
 	stx KEYBUFF
-	rts
-;Line7:
-;	cmp #UthernetIIRow
-;	bne Line8
-;	tay
-;	lda #UthernetIILineEnd-UthernetIILine
-;	jsr INVERSE
-;	ldx #$ff
-;:	inx
-;	lda NAME_UTHERNETII,x
-;	sta KEYBUFF+1,x
-;	bne :-
-;	stx KEYBUFF
 	rts
 Line7:
 	tay

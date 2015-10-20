@@ -19,8 +19,8 @@
 ;
 ; Based on ideas from Terence J. Boldt
 
-DESTPAGE	= $78		; The destination page of the driver code; must match .org $xx00 in vedrive.asm
-COPYLEN		= $22		; The number of pages to copy - how big the driver is, including BSS not in image on disk
+DESTPAGE	= $76		; The destination page of the driver code; must match .org $xx00 in vedrive.asm
+COPYLEN		= $24		; The number of pages to copy - how big the driver is, including BSS not in image on disk
 
 	.org $2000
 	lda	serverip-(DESTPAGE*256)+asm_begin	; The config code uses this address to figure out where to patch the server IP address
@@ -148,26 +148,20 @@ PINGS:	ldx	#$08
 ; FindSlot - Find an uther card
 ;---------------------------------------------------------
 FindSlot:
-	lda COMMSLOT
-	sta TempSlot
 	ldx #$00	; Slot number - start at min and work up
 FindSlotLoop:
-	stx COMMSLOT	; ip65_init looks for COMMSLOT to be the index
-	clc
+	stx TempSlot
+	inx		; One-indexed slot number for a2_set_slot
+	txa
+	jsr a2_set_slot
 	jsr ip65_init
+	ldx TempSlot
 	bcc FoundSlot
-	ldx COMMSLOT
 	inx
-	stx COMMSLOT
 	cpx #MAXSLOT
 	bne FindSlotLoop
-	jmp FindSlotDone
+	rts
 FoundSlot:
-	lda COMMSLOT
-	sta TempSlot
-FindSlotDone:
-; All done now, so clean up
-	ldx TempSlot
 	stx COMMSLOT
 	rts
 

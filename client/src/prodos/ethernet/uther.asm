@@ -1,6 +1,6 @@
 ;
 ; ADTPro - Apple Disk Transfer ProDOS
-; Copyright (C) 2006 - 2012 by David Schmidt
+; Copyright (C) 2006 - 2015 by David Schmidt
 ; david__schmidt at users.sourceforge.net
 ;
 ; This program is free software; you can redistribute it and/or modify it 
@@ -21,6 +21,8 @@
 	.import ip65_init
 	.import ip65_process
 	.import dhcp_init
+
+	.import a2_set_slot
 
 	.import udp_add_listener
 	.import udp_callback
@@ -49,6 +51,10 @@
 INITUTHER:
 	jsr PATCHUTHER
 	GO_SLOW				; Slow down for SOS
+	ldx COMMSLOT
+	inx
+	txa
+	jsr a2_set_slot
 	jsr ip65_init
 	bcc @UTHEROK
 	jsr PATCHNULL

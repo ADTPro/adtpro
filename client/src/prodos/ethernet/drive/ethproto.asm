@@ -1,6 +1,6 @@
 ;
 ; ADTPro - Apple Disk Transfer ProDOS
-; Copyright (C) 2012 - 2013 by David Schmidt
+; Copyright (C) 2012 - 2015 by David Schmidt
 ; david__schmidt at users.sourceforge.net
 ;
 ; This program is free software; you can redistribute it and/or modify it 
@@ -18,9 +18,8 @@
 ; 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 ;
 
-	.import udp_send_nocopy
 	.import udp_send
-	.import udp_send_len
+	.import udp_send_internal
 	.import udp_send_len
 	.import ip_inp
 	.import udp_inp
@@ -294,7 +293,7 @@ WRLOOP:
 	jsr	BUFBYTE			; Send the checksum byte
 
 ENV_DONE:
-	jsr	udp_send_nocopy
+	jsr	udp_send_internal
 	lda	#STATE_ENVELOPE	; Set up for an envelope reply
 	sta	state
 	jsr	RECEIVE_LOOP_FAST

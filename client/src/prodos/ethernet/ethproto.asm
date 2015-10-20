@@ -1,6 +1,6 @@
 ;
 ; ADTPro - Apple Disk Transfer ProDOS
-; Copyright (C) 2006 - 2014 by David Schmidt
+; Copyright (C) 2006 - 2015 by David Schmidt
 ; david__schmidt at users.sourceforge.net
 ;
 ; This program is free software; you can redistribute it and/or modify it 
@@ -18,8 +18,8 @@
 ; 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 ;
 
-	.import udp_send_nocopy
 	.import udp_send
+	.import udp_send_internal
 	.import udp_send_len
 	.import ip_inp
 	.import udp_inp
@@ -59,7 +59,7 @@ CDREQUEST_Warm:
 	lda #STATE_WAITING_ONE_BYTE_REPLY
 	sta state
 	GO_SLOW				; Slow down for SOS
-	jsr udp_send_nocopy
+	jsr udp_send_internal
 	GO_FAST				; Speed back up for SOS
 	jsr RECEIVE_LOOP_FAST
 	bcc :+
@@ -123,7 +123,7 @@ HOMEREQUEST:
 	lda #STATE_IDLE
 	sta state
 	GO_SLOW				; Slow down for SOS
-	jsr udp_send_nocopy
+	jsr udp_send_internal
 	GO_FAST				; Speed back up for SOS
 	jsr RECEIVE_LOOP_FAST
 	rts
@@ -173,7 +173,7 @@ DIRREQUEST_Warm:
 	eor CHECKBYTE
 	jsr BUFBYTE
 	GO_SLOW			; Slow down for SOS
-	jsr udp_send_nocopy
+	jsr udp_send_internal
 	GO_FAST			; Speed back up for SOS
 	jsr RECEIVE_LOOP_FAST	; Run through DIRREPLY1 callback
 	bcc :+
@@ -330,7 +330,7 @@ PUTREQUEST:
 	lda #STATE_WAITING_ONE_BYTE_REPLY
 	sta state
 	GO_SLOW				; Slow down for SOS
-	jsr udp_send_nocopy
+	jsr udp_send_internal
 	GO_FAST				; Speed back up for SOS
 	jsr RECEIVE_LOOP_FAST
 	rts
@@ -369,7 +369,7 @@ PUTACKBLK:
 	eor CHECKBYTE
 	jsr BUFBYTE	; Send check byte
 	GO_SLOW		; Slow down for SOS
-	jsr udp_send_nocopy
+	jsr udp_send_internal
 	GO_FAST		; Speed back up for SOS
 	jsr RECEIVE_LOOP_FAST
 	rts
@@ -400,7 +400,7 @@ PUTFINALACK:
 	lda #STATE_IDLE	; Not requiring a reply
 	sta state
 	GO_SLOW				; Slow down for SOS
-	jsr udp_send_nocopy
+	jsr udp_send_internal
 	GO_FAST				; Speed back up for SOS
 	jsr RECEIVE_LOOP_FAST
 	rts
@@ -424,7 +424,7 @@ GETREQUEST:
 	lda #STATE_WAITING_ONE_BYTE_REPLY
 	sta state
 	GO_SLOW				; Slow down for SOS
-	jsr udp_send_nocopy
+	jsr udp_send_internal
 	GO_FAST				; Speed back up for SOS
 	jsr RECEIVE_LOOP_FAST
 	rts
@@ -472,7 +472,7 @@ QUERYFNREQUEST_Warm:
 	lda #STATE_QUERY	; Set up for the QUERYFNREPLY1 callback
 	sta state
 	GO_SLOW				; Slow down for SOS
-	jsr udp_send_nocopy
+	jsr udp_send_internal
 	GO_FAST				; Speed back up for SOS
 	jsr RECEIVE_LOOP_FAST
 	bcc :+
@@ -767,7 +767,7 @@ SW4:	tya		; DIFFERENCE NOT A ZERO
 SWGo:	lda #STATE_WAITING_ONE_BYTE_REPLY ; Set up to be called back with a single byte reply
 	sta state
 	GO_SLOW				; Slow down for SOS
-	jsr udp_send_nocopy
+	jsr udp_send_internal
 	GO_FAST				; Speed back up for SOS
 	jsr RECEIVE_LOOP_FAST
 	rts
