@@ -10,7 +10,8 @@ ADTPro Release History
 
  New functionality:
 
- * Support added for Uthernet II
+ * Support added for Uthernet II based on new integrated IP65 library from Oliver
+   Schmidt (http://oliverschmidt.github.io/ip65/)
 
  Bug fixes:
 
