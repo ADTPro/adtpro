@@ -36,7 +36,7 @@ READBLK:
 :	jsr	recv_init
 	bcc	:+
 	lda	$C000
-	cmp	CHR_ESC
+	cmp	#CHR_ESC
 	bne	:-
 	jmp	recv_fail
 :	jsr	recv_byte	; Packet sequence number... ignore for now
@@ -140,7 +140,7 @@ WRITEBLK:
 	jsr	send_init
 	bcc	:+
 	lda	$C000
-	cmp	CHR_ESC
+	cmp	#CHR_ESC
 	bne	:-
 	jmp	send_fail
 :	lda	#$00
@@ -172,7 +172,7 @@ WRLOOP:
 :	jsr	recv_init
 	bcc	:+
 	lda	$C000
-	cmp	CHR_ESC
+	cmp	#CHR_ESC
 	bne	:-
 	jmp	recv_fail
 :	jsr	recv_byte
@@ -217,7 +217,7 @@ COMMAND_ENVELOPE:
 	jsr	send_init
 	bcc	:+
 	lda	$C000
-	cmp	CHR_ESC
+	cmp	#CHR_ESC
 	bne	:-
 	jmp	send_fail
 :	lda	#CHR_E
