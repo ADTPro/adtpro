@@ -1,6 +1,6 @@
 ;
 ; ADTPro - Apple Disk Transfer ProDOS
-; Copyright (C) 2012 - 2014 by David Schmidt
+; Copyright (C) 2012 - 2015 by David Schmidt
 ; david__schmidt at users.sourceforge.net
 ;
 ; This program is free software; you can redistribute it and/or modify it 
@@ -19,17 +19,16 @@
 ;
 ; Based on ideas from Terence J. Boldt
 
-DESTPAGE	= $80		; The destination page of the driver code; must match .org $xx00 in vedrive.asm
+DESTPAGE	= $70		; The destination page of the driver code; must match .org $xx00 in vedrive.asm
 ;COPYLEN	= $03		; The number of pages to copy - how big the driver is, including BSS not in image on disk
 COPYLEN		= driver_end - driver_begin + $100
 
 	.org $2000
 	jsr	init_entry
 	bcc	:+
-	;jmp	nouII		; No uthernet II card
-:	ldax	ip_parms
-; DEBUG
-	;jsr	w5100_init	; There is no error indication from this - we need to be sure by now we have a UII by now
+	jmp	nouII		; No uthernet II card
+:	ldax	#ip_parms
+	jsr	w5100_init	; There is no error indication from this - we need to be sure by now we have a UII by now
 	lda	#DESTPAGE
 	sta	UTILPTR+1
 	sta	RSHIMEM		; Should only do this if it succeeds... Make sure nobody else's FREEBUFR removes us
@@ -97,11 +96,11 @@ instdev:
 	lda	#$A0 ; Slot 2, drive 2
 	sta	DEVLST,Y
 	; Copy hdr data to hdr_from_init
-	ldx	#$06
+	ldx	#$05
 :	lda	hdr,x
 	sta	hdr_from_init,x
 	dex
-	bne	:-
+	bpl	:-
 	jmp	report
 
 full:

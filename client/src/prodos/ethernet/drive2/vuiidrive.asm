@@ -32,7 +32,7 @@
 	.include "prodos/ethernet/drive2/vuiidrivevars.asm"
 
 driver_reloc:
-.org $8000
+.org $7000
 driver_begin:
 	.include "prodos/vdrive.asm"
 	.include "prodos/ethernet/drive2/vuiidriveio.asm"

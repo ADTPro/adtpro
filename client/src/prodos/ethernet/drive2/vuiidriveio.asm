@@ -25,7 +25,6 @@
 recv_fail1:
 	jmp recv_fail
 
-; READ
 READBLK:
 	lda	#$03		; Read command w/time request - command will be either 3 or 5
 	clc
@@ -34,8 +33,13 @@ READBLK:
 ; SEND COMMAND TO PC
 	jsr	COMMAND_ENVELOPE
 ; Pull and verify command envelope from host
-	ldax	#$09		; 9 bytes in the envelope
-	jsr	recv_init
+:	jsr	recv_init
+	bcc	:+
+	lda	$C000
+	cmp	CHR_ESC
+	bne	:-
+	jmp	recv_fail
+:	jsr	recv_byte	; Packet sequence number... ignore for now
 	jsr	recv_byte	; Command envelope begin
 	cmp	#CHR_E
 	bne	recv_fail1
@@ -67,7 +71,6 @@ READBLK:
 	jsr	recv_byte	; Checksum of command envelope
 	cmp	CHECKSUM
 	bne	recv_fail
-	jsr	recv_done
 	lda	TEMPDT
 	sta	TIME
 	lda	TEMPDT+1
@@ -80,22 +83,20 @@ READBLK:
 	lda	SCRN_THROB
 	sta	SCREEN_CONTENTS
 ; READ BLOCK AND VERIFY
-	ldax	#$0201
-	jsr	recv_init
-	ldx	#$00
 	ldy	#$00
-	stx	SCRN_THROB
+	sty	SCRN_THROB
+	sty	x_counter
 RDLOOP:
 	jsr	recv_byte
-	bcs	recv_fail
 	sta	(BUFLO),Y
 	iny
 	bne	RDLOOP
 
 	inc	BUFHI
-	inx
-	stx	SCRN_THROB
-	cpx	#$02
+	inc	x_counter
+	lda	x_counter
+	sta	SCRN_THROB
+	cmp	#$02
 	bne	RDLOOP
 
 	dec	BUFHI
@@ -105,14 +106,12 @@ RDLOOP:
 	sta	SCRN_THROB
 
 	jsr	recv_byte	; Checksum
-	bcs	recv_fail
-	pha		; Push checksum for now
+	pha			; Push checksum for now
 	ldx	#$00
 	jsr	CALC_CHECKSUM
-	pla	
+	pla
 	cmp	CHECKSUM
 	bne	recv_fail
-
 	jsr	recv_done
 	lda	#$00
 	clc
@@ -137,10 +136,16 @@ WRITEBLK:
 	jsr	COMMAND_ENVELOPE
 
 ; WRITE BLOCK AND CHECKSUM
-	ldax	#$0201
+:	ldax	#$0201
 	jsr	send_init
-	ldx	#$00
-	stx	CHECKSUM
+	bcc	:+
+	lda	$C000
+	cmp	CHR_ESC
+	bne	:-
+	jmp	send_fail
+:	lda	#$00
+	sta	x_counter
+	sta	CHECKSUM
 WRBKLOOP:
 	ldy	#$00
 WRLOOP:
@@ -150,8 +155,9 @@ WRLOOP:
 	bne	WRLOOP
 
 	inc	BUFHI
-	inx
-	cpx	#$02
+	inc	x_counter
+	lda	x_counter
+	cmp	#$02
 	bne	WRBKLOOP
 
 	dec	BUFHI
@@ -163,39 +169,58 @@ WRLOOP:
 	jsr	send_done	; Do it!
 
 ; READ ECHO'D COMMAND AND VERIFY
-	ldax	#$05
-	jsr	recv_init
-	jsr	recv_byte
-	bcs	recv_fail
+:	jsr	recv_init
+	bcc	:+
+	lda	$C000
+	cmp	CHR_ESC
+	bne	:-
+	jmp	recv_fail
+:	jsr	recv_byte
 	cmp	#CHR_E		; S/B Command envelope
 	bne	recv_fail
 	jsr	recv_byte
-	bcs	recv_fail
 	cmp	CURCMD		; S/B Write
 	bne	recv_fail
 	jsr	recv_byte	; Read LSB of requested block
-	bcs	recv_fail
 	cmp	BLKLO
 	bne	recv_fail
 	jsr	recv_byte	; Read MSB of requested block
-	bcs	recv_fail
 	cmp	BLKHI
-	bne	recv_fail
+	bne	recv_fail2
 	jsr	recv_byte	; Checksum of block - not the command envelope
-	bcs	recv_fail
 	cmp	CHECKSUM
-	bne	recv_fail
+	bne	recv_fail2
 	lda	#$00
 	jsr	recv_done
 	clc
 	rts
 
+;---------------------------------------------------------
+; recv_fail2 - Local re-branch to real fail routine
+;---------------------------------------------------------
+recv_fail2:
+	jmp recv_fail
+
+;---------------------------------------------------------
+; send_fail - Send aborted, so reset receive buffer
+;---------------------------------------------------------
+send_fail:
+	jsr	send_done
+	bit	$c010
+	sec
+	rts
+
 COMMAND_ENVELOPE:
 		; Send a command envelope (read/write) with the command in the accumulator
 	pha			; Hang on to the command for a sec...
-	ldax	#$05		; Get ready to send 5 bytes to W5100
+:	ldax	#$0005		; Get ready to send 5 bytes to W5100
 	jsr	send_init
-	lda	#CHR_E
+	bcc	:+
+	lda	$C000
+	cmp	CHR_ESC
+	bne	:-
+	jmp	send_fail
+:	lda	#CHR_E
 	jsr	send_byte	; Envelope
 	sta	CHECKSUM
 	pla			; Pull the command back off the stack
@@ -219,3 +244,6 @@ COMMAND_ENVELOPE:
 ;---------------------------------------------------------
 TEMPDT:	.res	4
 CURCMD: .res	1
+x_counter:
+	.res 1
+

@@ -84,7 +84,7 @@ recv_init:
         sta w5100_adv+1
 
         ; Skip frame if it doesn't originate from our
-        ; expected communicaion peer
+        ; expected communication peer
         plp                     ; Restore C
         bcs recv_done
 
@@ -300,5 +300,5 @@ get_wordsocket1:
         rts
 
 hdr_from_init:
-	.word 6502              ; Destination Port
-	.res  4                 ; Destination IP Address
+	.word $ffff		; Destination Port
+	.byte $01, $02, $03, $04	; Destination IP Address

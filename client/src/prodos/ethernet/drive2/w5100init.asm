@@ -106,7 +106,6 @@ w5100_init:
         jsr set_addrsocket1
         ldy #0*4                ; ip_parms::serverip
         jsr set_ipv4value
-
         ; Socket 1 Destination Port Register: 6502
         ; -> addr is already set
         jsr set_data6502
