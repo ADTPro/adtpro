@@ -782,7 +782,7 @@ public class CommsThread extends Thread
 
 	public void pullEnvelope()
 	{
-		byte command, checkReceived, blockCheckReceived, blocklo, blockhi, checkCalculated;
+		byte command, checkReceived, blocklo, blockhi, checkCalculated;
 		byte[] buffer = new byte[Disk.BLOCK_SIZE];
 		byte cs;
 		int block;
@@ -863,7 +863,7 @@ public class CommsThread extends Thread
 					{
 						buffer[i] = waitForData(5);
 					}
-					blockCheckReceived = waitForData(5);
+					checkReceived = waitForData(5);
 					Log.println(false, "Received buffer:");
 					for (int i = 0; i < Disk.BLOCK_SIZE; i++)
 					{
@@ -872,13 +872,13 @@ public class CommsThread extends Thread
 						Log.print(false, UnsignedByte.toString(buffer[i]) + " ");
 					}
 					Log.println(false, "");
-					if (blockCheckReceived == checksum(buffer, Disk.BLOCK_SIZE))
+					if (checkReceived == checksum(buffer, Disk.BLOCK_SIZE))
 					{
 						message = Messages.getString("CommsThread.26");
 						block = UnsignedByte.intValue(blocklo, blockhi);
 						message = StringUtilities.replaceSubstring(message, "%1", "" + block); //$NON-NLS-1$
 						_parent.setSecondaryText(message);
-						Log.println(false, "Block checksums matched at " + UnsignedByte.toString(blockCheckReceived)); //$NON-NLS-1$
+						Log.println(false, "Block checksums matched at " + UnsignedByte.toString(checkReceived)); //$NON-NLS-1$
 						Log.println(false, "Writing block " + UnsignedByte.intValue(blocklo, blockhi)); //$NON-NLS-1$
 						block = UnsignedByte.intValue(blocklo, blockhi);
 						if (command == 0x04)

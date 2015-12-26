@@ -670,5 +670,5 @@ Host sends: byte stream:
   One byte: 'E' ($C5)
   One byte: $02 (for drive 1) or $04 (for drive 2)
   Two bytes: requested block number (LSB, MSB)
-  One byte: EOR of the first four bytes
+  One byte: EOR of all bytes in block
 ------------
