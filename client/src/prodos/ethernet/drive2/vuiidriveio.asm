@@ -20,10 +20,12 @@
 ; Virtual drive over the serial port based on ideas by Terence J. Boldt
 
 ;---------------------------------------------------------
-; recv_fail1 - Local re-branch to real fail routine
+; recv_retry - Do it again
 ;---------------------------------------------------------
-recv_fail1:
-	jmp recv_fail
+recv_retry:
+	jsr	recv_done
+	bit	$c010	; Clear keyboard strobe
+	bit	$c030	; WHAP SPEAKER
 
 READBLK:
 	lda	#$03		; Read command w/time request - command will be either 3 or 5
@@ -42,16 +44,16 @@ READBLK:
 :	jsr	recv_byte	; Packet sequence number... ignore for now
 	jsr	recv_byte	; Command envelope begin
 	cmp	#CHR_E
-	bne	recv_fail1
+	bne	recv_retry
 	jsr	recv_byte	; Read command
 	cmp	CURCMD
-	bne	recv_fail1
+	bne	recv_retry
 	jsr	recv_byte	; LSB of requested block
 	cmp	BLKLO
-	bne	recv_fail1
+	bne	recv_retry
 	jsr	recv_byte	; MSB of requested block
 	cmp	BLKHI
-	bne	recv_fail1
+	bne	recv_retry
 	jsr	recv_byte	; LSB of time
 	sta	TEMPDT
 	eor	CHECKSUM
@@ -70,7 +72,7 @@ READBLK:
 	sta	CHECKSUM
 	jsr	recv_byte	; Checksum of command envelope
 	cmp	CHECKSUM
-	bne	recv_fail
+	bne	recv_retry
 	lda	TEMPDT
 	sta	TIME
 	lda	TEMPDT+1
@@ -111,8 +113,9 @@ RDLOOP:
 	jsr	CALC_CHECKSUM
 	pla
 	cmp	CHECKSUM
-	bne	recv_fail
-	jsr	recv_done
+	beq	:+
+	jmp	recv_retry
+:	jsr	recv_done
 	lda	#$00
 	clc
 	rts
@@ -127,6 +130,15 @@ recv_fail:
 	rts
 
 ; WRITE
+
+;---------------------------------------------------------
+; write_retry - Do it again
+;---------------------------------------------------------
+write_retry:
+	jsr	recv_done
+	bit	$c010	; Clear keyboard strobe
+	bit	$c030	; WHAP SPEAKER
+
 WRITEBLK:
 ; SEND COMMAND TO PC
 	lda	#$02		; Write command - command will be either 2 or 4
@@ -175,34 +187,35 @@ WRLOOP:
 	cmp	#CHR_ESC
 	bne	:-
 	jmp	recv_fail
-:	jsr	recv_byte
+:	jsr	recv_byte	; Packet sequence number... ignore for now
+	jsr	recv_byte
 	cmp	#CHR_E		; S/B Command envelope
-	bne	recv_fail
+	bne	write_retry
 	jsr	recv_byte
 	cmp	CURCMD		; S/B Write
-	bne	recv_fail
+	bne	write_retry
 	jsr	recv_byte	; Read LSB of requested block
 	cmp	BLKLO
-	bne	recv_fail
+	bne	write_retry
 	jsr	recv_byte	; Read MSB of requested block
 	cmp	BLKHI
-	bne	recv_fail2
+	bne	write_retry2
 	jsr	recv_byte	; Checksum of block - not the command envelope
 	cmp	CHECKSUM
-	bne	recv_fail2
+	bne	write_retry2
 	lda	#$00
 	jsr	recv_done
 	clc
 	rts
 
 ;---------------------------------------------------------
-; recv_fail2 - Local re-branch to real fail routine
+; write_retry2 - Local re-branch to real fail routine
 ;---------------------------------------------------------
-recv_fail2:
-	jmp recv_fail
+write_retry2:
+	jmp	write_retry
 
 ;---------------------------------------------------------
-; send_fail - Send aborted, so reset receive buffer
+; send_fail - Send aborted, so reset send buffer
 ;---------------------------------------------------------
 send_fail:
 	jsr	send_done
@@ -212,7 +225,7 @@ send_fail:
 
 COMMAND_ENVELOPE:
 		; Send a command envelope (read/write) with the command in the accumulator
-	pha			; Hang on to the command for a sec...
+	sta	SENDCMD		; Hang on to the command for a sec...
 :	ldax	#$0005		; Get ready to send 5 bytes to W5100
 	jsr	send_init
 	bcc	:+
@@ -223,7 +236,7 @@ COMMAND_ENVELOPE:
 :	lda	#CHR_E
 	jsr	send_byte	; Envelope
 	sta	CHECKSUM
-	pla			; Pull the command back off the stack
+	lda	SENDCMD		; Grab the original command
 	jsr	send_byte	; Send command
 	eor	CHECKSUM
 	sta	CHECKSUM
@@ -244,6 +257,8 @@ COMMAND_ENVELOPE:
 ;---------------------------------------------------------
 TEMPDT:	.res	4
 CURCMD: .res	1
+SENDCMD:
+	.res	1
 x_counter:
 	.res 1
 
