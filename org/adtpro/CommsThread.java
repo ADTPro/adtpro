@@ -889,17 +889,18 @@ public class CommsThread extends Thread
 						{
 							_vdisks.writeBlock(1, block, buffer);
 						}
-						_transport.writeByte(0xc5); // Reflect the 'E'
-						_transport.writeByte(command);
-						_transport.writeByte(blocklo);
-						_transport.writeByte(blockhi);
-						_transport.writeByte(checkReceived);
-						_transport.pushBuffer();
 					}
 					else
 					{
 						Log.println(false, "Block checksums did not match.  Received: " + UnsignedByte.toString(checkReceived) + " calculated: " + UnsignedByte.toString(checksum(buffer, Disk.BLOCK_SIZE))); //$NON-NLS-1$
 					}
+					// Protocol response
+					_transport.writeByte(0xc5); // Reflect the 'E'
+					_transport.writeByte(command);
+					_transport.writeByte(blocklo);
+					_transport.writeByte(blockhi);
+					_transport.writeByte(checkReceived);
+					_transport.pushBuffer();
 				}
 			}
 			else
