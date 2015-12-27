@@ -379,17 +379,27 @@ all
 		<appleCommander command="pro800" imagename="${builddir}/${distName}/disks/Virtual2.po" volname="${vdriveVolName2}"/>
 		<echo message="Assembling ProDOS virtual Uthernet II drive source..."/>
 		<exec dir="${projdir}/client/src" executable="${assemblerPath}/ca65" failonerror="true">
-			<arg line="-t none -I . -l prodos/ethernet/drive2/vuiidrive.lst prodos/ethernet/drive2/vuiidrive.asm" />
+			<arg line="-t none -I . -l prodos/ethernet/drive2/vuiidrive_low.lst prodos/ethernet/drive2/vuiidrive_low.asm" />
+		</exec>
+		<exec dir="${projdir}/client/src" executable="${assemblerPath}/ca65" failonerror="true">
+			<arg line="-t none -I . -l prodos/ethernet/drive2/vuiidrive_high.lst prodos/ethernet/drive2/vuiidrive_high.asm" />
 		</exec>
 		<echo message="Linking Uthernet II drive..."/>
 		<exec dir="${projdir}/client/src" executable="${assemblerPath}/ld65" failonerror="true">
-			<arg line="-o DRIVE2 -m vuiidrive.map -C prodos/ethernet/drive2/vuiidrive.cfg prodos/ethernet/drive2/vuiidrive.o ${ip65lib}" />
+			<arg line="-o VEDRIVE2L -m vuiidrive.map -C prodos/ethernet/drive2/vuiidrive.cfg prodos/ethernet/drive2/vuiidrive_low.o ${ip65lib}" />
 		</exec>
-		<move file="${projdir}/client/src/DRIVE2" tofile="${projdir}/client/src/VEDRIVE2" />
+		<exec dir="${projdir}/client/src" executable="${assemblerPath}/ld65" failonerror="true">
+			<arg line="-o VEDRIVE2H -m vuiidrive.map -C prodos/ethernet/drive2/vuiidrive.cfg prodos/ethernet/drive2/vuiidrive_high.o ${ip65lib}" />
+		</exec>
+		<move file="${projdir}/client/src/VEDRIVE2L" tofile="${projdir}/client/src/VEDRIVE2L" />
+		<move file="${projdir}/client/src/VEDRIVE2H" tofile="${projdir}/client/src/VEDRIVE2H" />
 		<echo message="Adding VEDrive2 to 5.25 disk image..."/>
-		<appleCommander command="d" input="${projdir}/client/src/VEDRIVE2" imagename="${builddir}/${distName}/disks/${vdriveDiskName}.DSK" filename="VEDRIVE2" failonerror="false"/>
-		<appleCommander command="p" input="${projdir}/client/src/VEDRIVE2" imagename="${builddir}/${distName}/disks/${vdriveDiskName}.DSK" filename="VEDRIVE2" type="SYS" address="8192"/>
-		<delete file="${projdir}/client/src/VEDRIVE2" />
+		<appleCommander command="d" imagename="${builddir}/${distName}/disks/${vdriveDiskName}.DSK" filename="VEDRIVE2L" failonerror="false"/>
+		<appleCommander command="d" imagename="${builddir}/${distName}/disks/${vdriveDiskName}.DSK" filename="VEDRIVE2H" failonerror="false"/>
+		<appleCommander command="p" input="${projdir}/client/src/VEDRIVE2L" imagename="${builddir}/${distName}/disks/${vdriveDiskName}.DSK" filename="VEDRIVE2L" type="SYS" address="8192"/>
+		<appleCommander command="p" input="${projdir}/client/src/VEDRIVE2H" imagename="${builddir}/${distName}/disks/${vdriveDiskName}.DSK" filename="VEDRIVE2H" type="SYS" address="8192"/>
+		<delete file="${projdir}/client/src/VEDRIVE2L" />
+		<delete file="${projdir}/client/src/VEDRIVE2H" />
 	</target>
 
 	<target name="prodos-bootstrap" description="Build Bootstrapping Components (ProDOS)">
