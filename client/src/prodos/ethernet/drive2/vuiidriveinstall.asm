@@ -1,6 +1,6 @@
 ;
 ; ADTPro - Apple Disk Transfer ProDOS
-; Copyright (C) 2012 - 2015 by David Schmidt
+; Copyright (C) 2015 by David Schmidt
 ; david__schmidt at users.sourceforge.net
 ;
 ; This program is free software; you can redistribute it and/or modify it 
@@ -37,6 +37,14 @@ COPYLEN		= driver_end - driver_begin + $100
 	bcs	nomem2
 ;	cmp	#DESTPAGE
 ;	bne	nomem		; Already loaded - re-init?
+
+	; Copy hdr data to hdr_from_init
+	ldx	#$05
+:	lda	hdr,x
+	sta	driver_reloc - driver_begin + hdr_from_init,x	; Memory in driver space, to be relocated
+	dex
+	bpl	:-
+
 	lda	#$00
 	tay
 	sta	UTILPTR
@@ -95,12 +103,6 @@ instdev:
 	iny
 	lda	#$A0 ; Slot 2, drive 2
 	sta	DEVLST,Y
-	; Copy hdr data to hdr_from_init
-	ldx	#$05
-:	lda	hdr,x
-	sta	hdr_from_init,x
-	dex
-	bpl	:-
 	jmp	report
 
 full:
