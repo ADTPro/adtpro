@@ -24,8 +24,12 @@
 ;---------------------------------------------------------
 recv_retry:
 	jsr	recv_done
+;	lda	#$24
+;	sta	POSN
+;	lda	BLKLO
+;	jsr	ToDecimal
 	bit	$c010	; Clear keyboard strobe
-	bit	$c030	; WHAP SPEAKER
+;	bit	$c030	; WHAP SPEAKER
 
 READBLK:
 	lda	#$03		; Read command w/time request - command will be either 3 or 5
@@ -71,9 +75,10 @@ READBLK:
 	eor	CHECKSUM
 	sta	CHECKSUM
 	jsr	recv_byte	; Checksum of command envelope
-	cmp	CHECKSUM
-	bne	recv_retry
-	lda	TEMPDT
+ 	cmp	CHECKSUM
+ 	beq	:+
+	jmp	recv_retry
+:	lda	TEMPDT
 	sta	TIME
 	lda	TEMPDT+1
 	sta	TIME+1
@@ -121,10 +126,9 @@ RDLOOP:
 	rts
 
 ;---------------------------------------------------------
-; recv_fail - Receive failed, so reset receive buffer
+; recv_fail - Receive failed
 ;---------------------------------------------------------
 recv_fail:
-	jsr	recv_done
 	bit	$c010
 	sec
 	rts
@@ -136,8 +140,12 @@ recv_fail:
 ;---------------------------------------------------------
 write_retry:
 	jsr	recv_done
+;	lda	#$20
+;	sta	POSN
+;	lda	BLKLO
+;	jsr	ToDecimal
 	bit	$c010	; Clear keyboard strobe
-	bit	$c030	; WHAP SPEAKER
+;	bit	$c030	; WHAP SPEAKER
 
 WRITEBLK:
 ; SEND COMMAND TO PC
@@ -193,10 +201,10 @@ WRLOOP:
 	bne	write_retry
 	jsr	recv_byte
 	cmp	CURCMD		; S/B Write
-	bne	write_retry
+	bne	write_retry2
 	jsr	recv_byte	; Read LSB of requested block
 	cmp	BLKLO
-	bne	write_retry
+	bne	write_retry2
 	jsr	recv_byte	; Read MSB of requested block
 	cmp	BLKHI
 	bne	write_retry2
@@ -215,10 +223,9 @@ write_retry2:
 	jmp	write_retry
 
 ;---------------------------------------------------------
-; send_fail - Send aborted, so reset send buffer
+; send_fail - Send aborted
 ;---------------------------------------------------------
 send_fail:
-	jsr	send_done
 	bit	$c010
 	sec
 	rts
@@ -253,6 +260,51 @@ COMMAND_ENVELOPE:
 	rts
 
 ;---------------------------------------------------------
+; ToDecimal
+; Prints accumulator as a decimal number
+; The number is right/space justified to 3 digits
+;---------------------------------------------------------
+;ToDecimal:
+;	ldy #$04
+;	sty POSN+1
+;	ldy #$00
+;	sty DigitYet
+;	ldy #2
+;TD1:	ldx #_'0'
+;TD2:	cmp DECTBL,Y  
+;	bcc TD3		; Digit finished
+;	sbc DECTBL,Y  
+;	inx              
+;	bne TD2		; Branch ...always
+;TD3:	pha		; Save remainder
+;	txa
+;	cmp #_'0'
+;	bne :+
+;	ldx DigitYet
+;	bne :+
+;	cpy #$00
+;	beq :+
+;	lda #_' '
+;	jmp TD4
+;:	inc DigitYet	; Print out a digit
+;TD4:	sty TEMPPER
+;	ldy #$00
+;	sta (POSN),y
+;	inc POSN
+;	ldy TEMPPER
+;	pla		; Get remainder
+;	dey
+;	bpl TD1
+;	rts    
+;
+;DECTBL:	.byte 1,10,100
+;POSN = $90
+;DigitYet:
+;	.byte 0
+;TEMPPER:
+;	.res 1
+
+;---------------------------------------------------------
 ; Variables
 ;---------------------------------------------------------
 TEMPDT:	.res	4
@@ -261,4 +313,3 @@ SENDCMD:
 	.res	1
 x_counter:
 	.res 1
-
