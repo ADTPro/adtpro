@@ -286,7 +286,7 @@ all the way to making a bootable ADTPro floppy:
     [[1]] Now that DOS is running, it will be necessary to slow down the serial
       pacing and speed for the next step.  
       Click on the ADTPro menu item <<Bootstrapping->Serial Pacing>> and set
-      the pacing to 250, and speed down to 2400 to be safe:
+      the pacing to 1000, and speed down to 2400 to be safe:
 
       *
 

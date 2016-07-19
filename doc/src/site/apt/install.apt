@@ -59,6 +59,10 @@ Unix RXTX {Considerations}
  For Unix variants other than Mac OSX, make sure the user that will be running 
  ADTPro is in the group <<<lock>>> or <<<uucp>>> so that lockfiles can work.
 
+ For Ubuntu, you will want to add the group <<<dialout>>> to your user with the
+ following command from a terminal window:
+ <<<sudo usermod -a -G dialout $USER>>>
+
  The <<<adtpro.sh>>> and <<<adtpro.command>>> files can be customized 
  to suit your environment.
  The main thing to do is to choose your platform for RXTX support.
