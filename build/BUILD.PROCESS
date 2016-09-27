@@ -12,15 +12,6 @@ Go into the doc directory and run the command "mvn site".
 The resulting directory rooted at doc/target/site is
 the stuff that gets uploaded to Sourceforge.
 
- * Did the boot sector of ADTProBase.dsk change?  If so, be sure to
-   re-enable booting on Franklin 1x00 computers.  Bring it up in
-   a hex editor and change:
-   4D60:4D 3B 28 69 0B D0 03
-   to:
-   4D60:4D 3B 28 69 0B EA EA
-   If PRODOS on the disk changes, it'll lose the Bird's Better Bye
-   that's hacked into it.
-
  * Did the Apple /// virtual drive driver change?  If so, copy over
    the new disk image from the git repository and point to it in 
    build.xml with the a3sysutils-vs property.
