@@ -1,6 +1,6 @@
 /*
  * ADTPro - Apple Disk Transfer ProDOS
- * Copyright (C) 2006 - 2009 by David Schmidt
+ * Copyright (C) 2006 - 2016 by David Schmidt
  * david__schmidt at users.sourceforge.net
  *
  * Serial Transport notions derived from the jSyncManager project
@@ -240,8 +240,6 @@ public class UDPTransport extends ATransport
     _socket.setSoTimeout(seconds*1000);
     _socket.receive(_packet);
     Log.println(false,"UDPTransport.pullBuffer() received a packet.");
-    _socket.connect(_packet.getSocketAddress());
-    Log.println(false,"UDPTransport.pullBuffer() connected to socket.");
     _receiveBuffer = _packet.getData();
     _inPacketLen = _packet.getLength();
     _inPacketPtr = 0;

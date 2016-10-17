@@ -1,6 +1,6 @@
 ;
 ; ADTPro - Apple Disk Transfer ProDOS
-; Copyright (C) 2008 - 2010 by David Schmidt
+; Copyright (C) 2008 - 2016 by David Schmidt
 ; david__schmidt at users.sourceforge.net
 ;
 ; This program is free software; you can redistribute it and/or modify it 
@@ -49,9 +49,8 @@ BLKPTR	= $1b		; ($02 bytes) Used by SEND and RECEIVE
 synccnt	= $1d		; ($02 bytes) Used by nibble/halftrack
 CRC	= $1d		; ($02 bytes) Used by ONLINE, SEND and RECEIVE
 Buffer  = $1d 		; ($02 bytes) Address pointer for FORMAT data
-CRCY	= $8a		; ($01 byte) Used by UDP SEND
-TMOT    = $8b		; ($01 byte) Timeout indicator
-NIBPCNT	= $8c		; ($01 byte) Counts nibble pages
+TMOT    = $80		; ($01 byte) Timeout indicator
+NIBPCNT	= $81		; ($01 byte) Counts nibble pages
 
 ;--------------------------------------------------------- 
 ; ProDOS specific stuff

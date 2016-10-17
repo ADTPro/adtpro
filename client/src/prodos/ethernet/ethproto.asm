@@ -1,6 +1,6 @@
 ;
 ; ADTPro - Apple Disk Transfer ProDOS
-; Copyright (C) 2006 - 2015 by David Schmidt
+; Copyright (C) 2006 - 2016 by David Schmidt
 ; david__schmidt at users.sourceforge.net
 ;
 ; This program is free software; you can redistribute it and/or modify it 
@@ -946,12 +946,13 @@ RECEIVE_LOOP_WARM:
 	inc TIMEOUT	; Increment our counter
 	bne :+
 	inc TMOT
-	jsr UDPDISPATCH
+	sec
 	rts
 
 :	lda state
 	cmp #STATE_IDLE		; Are we done/idle now?
 	bne RECEIVE_LOOP_PAUSE	; No, so pause a bit then retry
+	clc
 	rts
 
 RECEIVE_LOOP_PAUSE:
