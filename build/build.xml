@@ -361,17 +361,16 @@ all
 		<appleCommander command="pro800" imagename="${builddir}/${distName}/disks/Virtual2.po" volname="${vdriveVolName2}"/>
 		<echo message="Assembling ProDOS virtual ethernet drive source..."/>
 		<exec dir="${projdir}/client/src" executable="${assemblerPath}/ca65" failonerror="true">
-			<arg line="-t none -I . -l prodos/ethernet/drive/vedrive.lst prodos/ethernet/drive/vedrive.asm" />
+			<arg line="-t none -I . -l prodos/ethernet/drive/vedrive_low.lst prodos/ethernet/drive/vedrive_low.asm" />
 		</exec>
 		<echo message="Linking ethernet drive..."/>
 		<exec dir="${projdir}/client/src" executable="${assemblerPath}/ld65" failonerror="true">
-			<arg line="-o DRIVE -m vedrive.map -C prodos/ethernet/drive/vedrive.cfg prodos/ethernet/drive/vedrive.o ${ip65lib}" />
+			<arg line="-o VEDRIVE_LOW -m vedrive_low.map -C prodos/ethernet/drive/vedrive_low.cfg prodos/ethernet/drive/vedrive_low.o ${ip65lib}" />
 		</exec>
-		<move file="${projdir}/client/src/DRIVE" tofile="${projdir}/client/src/VEDRIVE" />
 		<echo message="Adding VEDrive to 5.25 disk image..."/>
-		<appleCommander command="d" input="${projdir}/client/src/VEDRIVE" imagename="${builddir}/${distName}/disks/${vdriveDiskName}.DSK" filename="VEDRIVE" failonerror="false"/>
-		<appleCommander command="p" input="${projdir}/client/src/VEDRIVE" imagename="${builddir}/${distName}/disks/${vdriveDiskName}.DSK" filename="VEDRIVE" type="SYS" address="8192"/>
-		<delete file="${projdir}/client/src/VEDRIVE" />
+		<appleCommander command="d" imagename="${builddir}/${distName}/disks/${vdriveDiskName}.DSK" filename="VEDRIVE.LOW" failonerror="false"/>
+		<appleCommander command="p" input="${projdir}/client/src/VEDRIVE_LOW" imagename="${builddir}/${distName}/disks/${vdriveDiskName}.DSK" filename="VEDRIVE.LOW" type="SYS" address="8192"/>
+		<delete file="${projdir}/client/src/VEDRIVE_LOW" />
 	</target>
 
 	<target name="prodos-vedrive2" depends="vdrive-image-prep" description="Builds the Uthernet II Virtual Ethernet Drive Driver (ProDOS)">
