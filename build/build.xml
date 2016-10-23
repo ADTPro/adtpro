@@ -75,7 +75,8 @@ all
 	<property name="rxtxZip2" value="${rxtxVersion2}.zip" />
 	<property name="rxtxVersionCloudHopperWin64" value="ch-rxtx-2.2-20081207-win-x64" />
 	<property name="rxtxZipCHWin64" value="${rxtxVersionCloudHopperWin64}.zip" />
-	<property name="ip65lib" value="${builddir}/lib/ip65/ip65.lib ${builddir}/lib/ip65/a2combo.lib ${builddir}/lib/ip65/apple2.lib" />
+	<property name="ip65lib" value="${builddir}/lib/ip65/ip65.lib ${builddir}/lib/ip65/a2combo.lib ${builddir}/lib/cc65/apple2.lib" />
+	<property name="ip65u2lib" value="${builddir}/lib/ip65/ip65.lib ${builddir}/lib/ip65/a2uther2.lib ${builddir}/lib/cc65/apple2.lib" />
 	<property name="dmgmegabytes" value="9" />
 	<taskdef name="appleDump" classname="org.adtpro.utilities.AppleDump" classpath="${projdir}"/>
 	<taskdef name="appleCommander" classname="com.webcodepro.applecommander.ui.AntTask" classpath="${projdir};${acJarPath}/${acJar}"/>
@@ -220,7 +221,7 @@ all
 	ProDOS section
 	============================================================================================
 	-->
-	<target name="prodos" depends="prodos-serial, prodos-audio, prodos-ethernet, prodos-bootstrap, prodos-vsdrive, prodos-vedrive, prodos-vedrive2" description="Orchestrate Overall Client Build for ProDOS" >
+	<target name="prodos" depends="prodos-serial, prodos-audio, prodos-ethernet, prodos-bootstrap, prodos-vsdrive, prodos-vedrive" description="Orchestrate Overall Client Build for ProDOS" >
 	</target>
 
 	<target name="prodos-serial" depends="prodos-adtpro-image-prep, common" description="Build the ADTPro Serial Client (ProDOS)">
@@ -363,14 +364,25 @@ all
 		<exec dir="${projdir}/client/src" executable="${assemblerPath}/ca65" failonerror="true">
 			<arg line="-t none -I . -l prodos/ethernet/drive/vedrive_low.lst prodos/ethernet/drive/vedrive_low.asm" />
 		</exec>
+		<exec dir="${projdir}/client/src" executable="${assemblerPath}/ca65" failonerror="true">
+			<arg line="-t apple2 -I ../../../ip65 -l prodos/ethernet/drive/vedrive_high.lst prodos/ethernet/drive/vedrive_high.asm" />
+		</exec>
 		<echo message="Linking ethernet drive..."/>
 		<exec dir="${projdir}/client/src" executable="${assemblerPath}/ld65" failonerror="true">
 			<arg line="-o VEDRIVE_LOW -m vedrive_low.map -C prodos/ethernet/drive/vedrive_low.cfg prodos/ethernet/drive/vedrive_low.o ${ip65lib}" />
+		</exec>
+		<exec dir="${projdir}/client/src" executable="${assemblerPath}/ld65" failonerror="true">
+			<arg line="-o VEDRIVE_HIGH -m vedrive_high.map -C prodos/ethernet/drive/vedrive_high.cfg prodos/ethernet/drive/vedrive_high.o ${ip65u2lib}" />
 		</exec>
 		<echo message="Adding VEDrive to 5.25 disk image..."/>
 		<appleCommander command="d" imagename="${builddir}/${distName}/disks/${vdriveDiskName}.DSK" filename="VEDRIVE.LOW" failonerror="false"/>
 		<appleCommander command="p" input="${projdir}/client/src/VEDRIVE_LOW" imagename="${builddir}/${distName}/disks/${vdriveDiskName}.DSK" filename="VEDRIVE.LOW" type="SYS" address="8192"/>
 		<delete file="${projdir}/client/src/VEDRIVE_LOW" />
+		<appleCommander command="d" imagename="${builddir}/${distName}/disks/${vdriveDiskName}.DSK" filename="VEDRIVE" failonerror="false"/>
+		<appleCommander command="p" input="${projdir}/client/src/VEDRIVE_HIGH" imagename="${builddir}/${distName}/disks/${vdriveDiskName}.DSK" filename="VEDRIVE" type="BIN" address="2051"/>
+		<delete file="${projdir}/client/src/VEDRIVE_HIGH" />
+		<appleCommander command="d" imagename="${builddir}/${distName}/disks/${vdriveDiskName}.DSK" filename="VEDRIVE.SYSTEM" failonerror="false"/>
+		<appleCommander command="p" input="${builddir}/lib/cc65/loader.system" imagename="${builddir}/${distName}/disks/${vdriveDiskName}.DSK" filename="VEDRIVE.SYSTEM" type="SYS" address="8192"/>
 	</target>
 
 	<target name="prodos-vedrive2" depends="vdrive-image-prep" description="Builds the Uthernet II Virtual Ethernet Drive Driver (ProDOS)">
