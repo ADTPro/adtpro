@@ -365,7 +365,7 @@ all
 			<arg line="-t none -I . -l prodos/ethernet/drive/vedrive_low.lst prodos/ethernet/drive/vedrive_low.asm" />
 		</exec>
 		<exec dir="${projdir}/client/src" executable="${assemblerPath}/ca65" failonerror="true">
-			<arg line="-t apple2 -I ../../../ip65 -l prodos/ethernet/drive/vedrive_high.lst prodos/ethernet/drive/vedrive_high.asm" />
+			<arg line="-t apple2 -I . -l prodos/ethernet/drive/vedrive_high.lst prodos/ethernet/drive/vedrive_high.asm" />
 		</exec>
 		<echo message="Linking ethernet drive..."/>
 		<exec dir="${projdir}/client/src" executable="${assemblerPath}/ld65" failonerror="true">
