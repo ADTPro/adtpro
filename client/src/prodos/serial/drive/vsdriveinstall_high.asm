@@ -1,6 +1,6 @@
 ;
 ; ADTPro - Apple Disk Transfer ProDOS
-; Copyright (C) 2012 - 2013 by David Schmidt
+; Copyright (C) 2012 - 2013, 2016 by David Schmidt
 ; david__schmidt at users.sourceforge.net
 ;
 ; This program is free software; you can redistribute it and/or modify it 
@@ -18,6 +18,8 @@
 ; 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 ;
 ; Virtual drive over the serial port based on ideas by Terence J. Boldt
+
+	VS_SLOT = 2		; Initial slot assignment
 
 	.org $2000
 
@@ -71,36 +73,38 @@ msgx:	lda	UTILPTR+1
 ; INITIALIZE DRIVER
 init:
 ; Find a likely place to install the driver in the device list.
-; Is there already a driver in slot 2, drive 1?
+; Is there already a driver in slot 1, drive 1?
 	ldx	DEVCNT
 checkdev:
 	lda	DEVLST,X	; Grab an active device number
-	cmp	#$a0		; Slot 2, drive 1?
-	beq	present		; Yes, check if it's our driver
+	cmp	#(VS_SLOT << 4)	; Slot x, drive 1?
+	beq	full		; Yes, someone already home
 	dex
 	bpl	checkdev	; Swing around until no more in list
 instdev:
 ; All ready to go - install away!
 	lda	#<DRIVER
-	sta	DEVADR21
-	sta	DEVADR22
+	sta	DEVADR01 + (VS_SLOT << 1)
+	sta	DEVADR02 + (VS_SLOT << 1)
 	lda	#>DRIVER
-	sta	DEVADR21+1
-	sta	DEVADR22+1
+	sta	DEVADR01 + 1 + (VS_SLOT << 1)
+	sta	DEVADR02 + 1 + (VS_SLOT << 1)
 ; Add to device list
 	inc	DEVCNT
 	ldy	DEVCNT
-	lda	#$20 ; Slot 2, drive 1
+	lda	#(VS_SLOT << 4) ; Slot x, drive 1
 	sta	DEVLST,Y
 	inc	DEVCNT
 	iny
-	lda	#$A0 ; Slot 2, drive 2
+	lda	#(VS_SLOT << 4) + $80 ; Slot x, drive 2
 	sta	DEVLST,Y
 	jmp	findser
 
 full:
 	jsr	msg
-	.byte	"SLOT 2 DRIVE ALREADY RESIDENT.",$00
+	.byte	"SLOT "
+	.byte	$b0 + VS_SLOT
+	.byte	"DRIVER ALREADY RESIDENT.",$00
 	rts
 
 fail:
@@ -110,10 +114,10 @@ INITPAS:
 	rts
 
 present:
-	lda	DEVADR21
+	lda	DEVADR11
 	cmp	#<DRIVER
 	bne	full
-	lda	DEVADR21+1
+	lda	DEVADR11+1
 	cmp	#>DRIVER
 	bne	full
 
@@ -136,7 +140,9 @@ findser:
 	jsr	RESETIO
 	lda	ROMONLY2	; Turn ROM back on in LC
 	jsr	msg
-	.byte	"DRIVES S2,D1/2 ON COMM SLOT ",$00
+	.byte	"DRIVES S"
+	.byte	$b0+VS_SLOT
+	.byte	",D1/2 ON COMM SLOT ",$00
 	pla
 	clc
 	adc	#$B1	; Add '1' to the found comm slot number for reporting
