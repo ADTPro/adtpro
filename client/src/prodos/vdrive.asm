@@ -1,6 +1,6 @@
 ;
 ; ADTPro - Apple Disk Transfer ProDOS
-; Copyright (C) 2012 - 2013 by David Schmidt
+; Copyright (C) 2012 - 2013, 2016 by David Schmidt
 ; david__schmidt at users.sourceforge.net
 ;
 ; This program is free software; you can redistribute it and/or modify it 
@@ -18,6 +18,8 @@
 ; 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 ;
 ; Virtual disk drive based on ideas from Terence J. Boldt
+
+V_SLOT	= 1   ; Slot to occupy
 
 ; PRODOS ZERO PAGE VALUES
 COMMAND	= $42 ; PRODOS COMMAND
@@ -42,9 +44,9 @@ DRIVER:
 	stx	STACKPTR	;   in case we need to beat a hasty retreat
 ; CHECK THAT WE HAVE THE RIGHT DRIVE
 	lda	UNIT
-	cmp	#$20		; SLOT 2 DRIVE 1
+	cmp	#(V_SLOT << 4)		; SLOT x DRIVE 1
 	beq	DOCMD1		; YEP, DO COMMAND
-	cmp	#$A0		; SLOT 2 DRIVE 2
+	cmp	#(V_SLOT << 4) + $80; SLOT x DRIVE 2
 	beq	DOCMD2		; YEP, DO COMMAND
 	sec	; NOPE, FAIL
 	lda	#NODEV

@@ -19,8 +19,6 @@
 ;
 ; Virtual drive over the serial port based on ideas by Terence J. Boldt
 
-	VS_SLOT = 2		; Initial slot assignment
-
 	.org $2000
 
 	lda	#$d0		; Destination location = $d000
@@ -73,37 +71,37 @@ msgx:	lda	UTILPTR+1
 ; INITIALIZE DRIVER
 init:
 ; Find a likely place to install the driver in the device list.
-; Is there already a driver in slot 1, drive 1?
+; Is there already a driver in slot x, drive 1?
 	ldx	DEVCNT
 checkdev:
 	lda	DEVLST,X	; Grab an active device number
-	cmp	#(VS_SLOT << 4)	; Slot x, drive 1?
+	cmp	#(V_SLOT << 4)	; Slot x, drive 1?
 	beq	full		; Yes, someone already home
 	dex
 	bpl	checkdev	; Swing around until no more in list
 instdev:
 ; All ready to go - install away!
 	lda	#<DRIVER
-	sta	DEVADR01 + (VS_SLOT << 1)
-	sta	DEVADR02 + (VS_SLOT << 1)
+	sta	DEVADR01 + (V_SLOT << 1)
+	sta	DEVADR02 + (V_SLOT << 1)
 	lda	#>DRIVER
-	sta	DEVADR01 + 1 + (VS_SLOT << 1)
-	sta	DEVADR02 + 1 + (VS_SLOT << 1)
+	sta	DEVADR01 + 1 + (V_SLOT << 1)
+	sta	DEVADR02 + 1 + (V_SLOT << 1)
 ; Add to device list
 	inc	DEVCNT
 	ldy	DEVCNT
-	lda	#(VS_SLOT << 4) ; Slot x, drive 1
+	lda	#(V_SLOT << 4) ; Slot x, drive 1
 	sta	DEVLST,Y
 	inc	DEVCNT
 	iny
-	lda	#(VS_SLOT << 4) + $80 ; Slot x, drive 2
+	lda	#(V_SLOT << 4) + $80 ; Slot x, drive 2
 	sta	DEVLST,Y
 	jmp	findser
 
 full:
 	jsr	msg
 	.byte	"SLOT "
-	.byte	$b0 + VS_SLOT
+	.byte	$b0 + V_SLOT
 	.byte	"DRIVER ALREADY RESIDENT.",$00
 	rts
 
@@ -114,10 +112,10 @@ INITPAS:
 	rts
 
 present:
-	lda	DEVADR11
+	lda	DEVADR01 + (V_SLOT << 1)
 	cmp	#<DRIVER
 	bne	full
-	lda	DEVADR11+1
+	lda	DEVADR01 + 1 + (V_SLOT << 1)
 	cmp	#>DRIVER
 	bne	full
 
@@ -141,7 +139,7 @@ findser:
 	lda	ROMONLY2	; Turn ROM back on in LC
 	jsr	msg
 	.byte	"DRIVES S"
-	.byte	$b0+VS_SLOT
+	.byte	$b0+V_SLOT
 	.byte	",D1/2 ON COMM SLOT ",$00
 	pla
 	clc
