@@ -89,7 +89,7 @@ full:
 	jsr	msg
 	.byte	"SLOT "
 	.byte	$b0 + V_SLOT
-	.byte	"DRIVER ALREADY RESIDENT.",$00
+	.byte	" DRIVER ALREADY PRESENT.",$00
 	rts
 
 fail:
