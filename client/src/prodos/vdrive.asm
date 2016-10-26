@@ -19,8 +19,6 @@
 ;
 ; Virtual disk drive based on ideas from Terence J. Boldt
 
-V_SLOT	= 1   ; Slot to occupy
-
 ; PRODOS ZERO PAGE VALUES
 COMMAND	= $42 ; PRODOS COMMAND
 UNIT	= $43 ; PRODOS SLOT/DRIVE
@@ -44,9 +42,11 @@ DRIVER:
 	stx	STACKPTR	;   in case we need to beat a hasty retreat
 ; CHECK THAT WE HAVE THE RIGHT DRIVE
 	lda	UNIT
-	cmp	#(V_SLOT << 4)		; SLOT x DRIVE 1
+FIXUP01:
+	cmp	#$00		; SLOT x DRIVE 1
 	beq	DOCMD1		; YEP, DO COMMAND
-	cmp	#(V_SLOT << 4) + $80; SLOT x DRIVE 2
+FIXUP02:
+	cmp	#$00		; SLOT x DRIVE 2
 	beq	DOCMD2		; YEP, DO COMMAND
 	sec	; NOPE, FAIL
 	lda	#NODEV

@@ -25,6 +25,7 @@
 
 .segment "INSTALL"
 	.include "prodos/ethernet/drive/vedriveinstall.asm"
+	.include "prodos/serial/drive/quit.asm"
 
 asm_begin:
 .segment "CODE"

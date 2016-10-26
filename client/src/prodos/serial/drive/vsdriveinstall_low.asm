@@ -1,6 +1,6 @@
 ;
 ; ADTPro - Apple Disk Transfer ProDOS
-; Copyright (C) 2012 - 2013, 2016 by David Schmidt
+; Copyright (C) 2012 - 2016 by David Schmidt
 ; david__schmidt at users.sourceforge.net
 ;
 ; This program is free software; you can redistribute it and/or modify it 
@@ -21,6 +21,80 @@
 
 	.org $2000
 
+; INITIALIZE DRIVER
+init:
+; Find a likely place to install the driver in the device list.
+; Is there already a driver in slot x, drive 1?
+scanslots:
+	inc	slotcnt
+	lda	slotcnt
+	sta	VS_SLOT
+	cmp	#$08
+	beq	full
+	asl
+	asl
+	asl
+	asl
+	sta	VS_SLOT_DEV1
+	clc
+	adc	#$80
+	sta	VS_SLOT_DEV2
+	ldx	DEVCNT
+checkdev:
+	lda	DEVLST,X	; Grab an active device number
+	cmp	VS_SLOT_DEV1	; Slot x, drive 1?
+	beq	scanslots	; Yes, someone already home - go to next slot
+	cmp	VS_SLOT_DEV2	; Slot x, drive 2?
+	beq	scanslots	; Yes, someone already home - go to next slot
+	dex
+	bpl	checkdev	; Swing around until no more in list
+	jmp	instdev
+full:
+	jsr	msg
+	.byte	"NO SLOT AVAILALBE FOR DRIVER.",$00
+	jmp	alldone
+
+instdev:
+; We now know that VS_SLOT is open if we need it.
+; But the question remains: are we already resident somewhere?
+	;bit	$C088
+	lda	DRIVER+$03
+	;bit	$C08A
+	cmp	#$63
+	beq	resident
+	jmp	ready	
+resident:
+	jsr	msg
+	.byte	"DRIVER ALREADY RESIDENT.",$00
+	jmp	alldone
+
+; All ready to go - install away!
+ready:
+	lda	VS_SLOT
+	clc
+	adc	#$b0
+	sta	FIXUP03
+	lda	VS_SLOT
+	asl
+	tax
+	lda	#<DRIVER
+	sta	DEVADR01,x
+	sta	DEVADR02,x
+	inx
+	lda	#>DRIVER
+	sta	DEVADR01,x
+	sta	DEVADR02,x
+; Add to device list
+	inc	DEVCNT
+	ldy	DEVCNT
+	lda	VS_SLOT_DEV1	; Slot x, drive 1
+	sta	DEVLST,Y
+	inc	DEVCNT
+	iny
+	lda	VS_SLOT_DEV2	; Slot x, drive 2
+	sta	DEVLST,Y
+
+moveit:
 	lda	#$4
 	jsr	GETBUFR
 	bcs	nomem2
@@ -45,88 +119,12 @@ copydriver:
 	inc	UTILPTR+1
 	dex
 	bne	copydriver
-	
-	jmp	init
-nomem:
-	jsr	FREEBUFR
-	jmp	init
-nomem2:
-	jsr	msg
-	.byte	"MEMORY NOT AVAILABLE.",$00
-	rts
-
-; INITIALIZE DRIVER
-init:
-; Find a likely place to install the driver in the device list.
-; Is there already a driver in slot 2, drive 1?
-	ldx	DEVCNT
-checkdev:
-	lda	DEVLST,X	; Grab an active device number
-	cmp	#(V_SLOT << 4)	; Slot x, drive 1?
-	beq	full		; Yes, driver already exists
-	dex
-	bpl	checkdev	; Swing around until no more in list
-instdev:
-; All ready to go - install away!
-	lda	#<DRIVER
-	sta	DEVADR01 + (V_SLOT << 1)
-	sta	DEVADR02 + (V_SLOT << 1)
-	lda	#>DRIVER
-	sta	DEVADR01 + 1 + (V_SLOT << 1)
-	sta	DEVADR02 + 1 + (V_SLOT << 1)
-; Add to device list
-	inc	DEVCNT
-	ldy	DEVCNT
-	lda	#(V_SLOT << 4) ; Slot x, drive 1
-	sta	DEVLST,Y
-	inc	DEVCNT
-	iny
-	lda	#(V_SLOT << 4) + $80 ; Slot x, drive 2
-	sta	DEVLST,Y
+	lda	VS_SLOT_DEV1
+	sta	FIXUP01+1
+	lda	VS_SLOT_DEV2
+	sta	FIXUP02+1
 	jmp	findser
 
-full:
-	jsr	msg
-	.byte	"SLOT "
-	.byte	$b0 + V_SLOT
-	.byte	" DRIVER ALREADY PRESENT.",$00
-	rts
-
-fail:
-INITPAS:
-	jsr	msg
-	.byte	"NO SERIAL DEVICE FOUND.",$00
-	rts
-
-present:
-	lda	DEVADR01 + (V_SLOT << 1)
-	cmp	#<DRIVER
-	bne	full
-	lda	DEVADR01 + 1 + (V_SLOT << 1)
-	cmp	#>DRIVER
-	bne	full
-
-; Find a serial device
-findser:
-	jsr	msg
-	.byte	"VSDRIVE: ",$00
-	jsr 	FindSlot	; Sniff out a likely comm slot
-	lda	COMMSLOT
-	bmi	fail
-	pha
-	jsr	PARMINT
-	jsr	RESETIO
-	jsr	msg
-	.byte	"DRIVES S"
-	.byte	$b0+V_SLOT
-	.byte	",D1/2 ON COMM SLOT ",$00
-	pla
-	clc
-	adc	#$B1	; Add '1' to the found comm slot number for reporting
-	jsr	COUT	; Tell 'em which one we're using
-	rts
-
-;***********************************************
 ;
 ; msg -- print an in-line message
 ;
@@ -148,3 +146,54 @@ msgx:	lda	UTILPTR+1
 	lda	UTILPTR
 	pha
 	rts
+
+nomem:
+	jsr	FREEBUFR
+	jmp	init
+nomem2:
+	jsr	msg
+	.byte	"MEMORY NOT AVAILABLE.",$00
+	rts
+
+fail:
+INITPAS:
+	jsr	msg
+	.byte	"NO SERIAL DEVICE FOUND.",$00
+	jmp	alldone
+
+VS_SLOT:
+	.byte	$01
+VS_SLOT_DEV1:
+	.byte	$00
+VS_SLOT_DEV2:
+	.byte	$00
+slotcnt:
+	.byte	$00
+
+; Find a serial device
+findser:
+	jsr	msg
+	.byte	"VSDRIVE: ",$00
+	jsr 	FindSlot	; Sniff out a likely comm slot
+	lda	COMMSLOT
+	bmi	fail
+	pha
+	jsr	PARMINT
+	jsr	RESETIO
+	jsr	msg
+	.byte	"DRIVES S"
+FIXUP03:
+	.byte	$b0
+	.byte	",D1/2 ON COMM SLOT ",$00
+	pla
+	clc
+	adc	#$B1	; Add '1' to the found comm slot number for reporting
+	jsr	COUT	; Tell 'em which one we're using
+	rts
+alldone:
+	;
+	; What to do next (rts vs. jmp) is set in the enveloping assembly.
+	; This allows us to use this same code to install and quit on 
+	; a boot disk, or install and continue to load BASIC as part of 
+	; serial bootstrapping operations.
+	;

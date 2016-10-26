@@ -1,6 +1,6 @@
 ;
 ; ADTPro - Apple Disk Transfer ProDOS
-; Copyright (C) 2012 - 2014, 2016 by David Schmidt
+; Copyright (C) 2012 - 2016 by David Schmidt
 ; david__schmidt at users.sourceforge.net
 ;
 ; This program is free software; you can redistribute it and/or modify it 
@@ -23,6 +23,79 @@ DESTPAGE	= $76		; The destination page of the driver code; must match .org $xx00
 COPYLEN		= $24		; The number of pages to copy - how big the driver is, including BSS not in image on disk
 
 	.org $2000
+
+; INITIALIZE DRIVER
+init:
+; Find a likely place to install the driver in the device list.
+; Is there already a driver in slot x, drive 1?
+scanslots:
+	inc	slotcnt
+	lda	slotcnt
+	sta	VE_SLOT
+	cmp	#$08
+	beq	full
+	asl
+	asl
+	asl
+	asl
+	sta	VE_SLOT_DEV1
+	clc
+	adc	#$80
+	sta	VE_SLOT_DEV2
+	ldx	DEVCNT
+checkdev:
+	lda	DEVLST,X	; Grab an active device number
+	cmp	VE_SLOT_DEV1	; Slot x, drive 1?
+	beq	scanslots	; Yes, someone already home - go to next slot
+	cmp	VE_SLOT_DEV2	; Slot x, drive 2?
+	beq	scanslots	; Yes, someone already home - go to next slot
+	dex
+	bpl	checkdev	; Swing around until no more in list
+	jmp	instdev
+full:
+	jsr	msg
+	.byte	"NO SLOT AVAILALBE FOR DRIVER.",$00
+	jmp	alldone
+
+instdev:
+; We now know that VE_SLOT is open if we need it.
+; But the question remains: are we already resident somewhere?
+	lda	DRIVER+$03
+	cmp	#$63
+	beq	resident
+	jmp	ready	
+resident:
+	jsr	msg
+	.byte	"DRIVER ALREADY RESIDENT.",$00
+	jmp	alldone
+
+; All ready to go - install away!
+ready:
+	lda	VE_SLOT
+	clc
+	adc	#$b0
+	sta	FIXUP03
+	lda	VE_SLOT
+	asl
+	tax
+	lda	#<DRIVER
+	sta	DEVADR01,x
+	sta	DEVADR02,x
+	inx
+	lda	#>DRIVER
+	sta	DEVADR01,x
+	sta	DEVADR02,x
+; Add to device list
+	inc	DEVCNT
+	ldy	DEVCNT
+	lda	VE_SLOT_DEV1	; Slot x, drive 1
+	sta	DEVLST,Y
+	inc	DEVCNT
+	iny
+	lda	VE_SLOT_DEV2	; Slot x, drive 2
+	sta	DEVLST,Y
+
+moveit:
 	lda	serverip-(DESTPAGE*256)+asm_begin	; The config code uses this address to figure out where to patch the server IP address
 	lda	RSHIMEM
 	cmp	#DESTPAGE
@@ -52,70 +125,24 @@ copydriver:
 	inc	UTILPTR+1
 	dex
 	bne	copydriver
-
-	jmp	init
-nomem:
-	jsr	FREEBUFR
-	jmp	init
-nomem2:
-	jsr	msg
-	.byte	"MEMORY NOT AVAILABLE.",$00
-	rts
-
-; INITIALIZE DRIVER
-init:
-; Find a likely place to install the driver in the device list.
-; Is there already a driver in slot 2, drive 1?
-	ldx	DEVCNT
-checkdev:
-	lda	DEVLST,X	; Grab an active device number
-	cmp	#(V_SLOT << 4)	; Slot x, drive 1?
-	beq	present		; Yes, check if it's our driver
-	dex
-	bpl	checkdev	; Swing around until no more in list
-instdev:
-; All ready to go - install away!
-	lda	#<DRIVER
-	sta	DEVADR01 + (V_SLOT << 1)
-	sta	DEVADR02 + (V_SLOT << 1)
-	lda	#>DRIVER
-	sta	DEVADR01 + 1 + (V_SLOT << 1)
-	sta	DEVADR02 + 1 + (V_SLOT << 1)
-; Add to device list
-	inc	DEVCNT
-	ldy	DEVCNT
-	lda	#(V_SLOT << 4) ; Slot x, drive 1
-	sta	DEVLST,Y
-	inc	DEVCNT
-	iny
-	lda	#(V_SLOT << 4) + $80 ; Slot x, drive 2
-	sta	DEVLST,Y
+test:
 	jsr	INITIO
 	bcs	fail
 	jmp	report
 
-full:
+nomem:
+	jsr	FREEBUFR
+nomem2:
 	jsr	msg
-	.byte	"SLOT "
-	.byte	$b0 + V_SLOT
-	.byte	" DRIVER ALREADY PRESENT.",$00
-	rts
+	.byte	"MEMORY NOT AVAILABLE.",$00
+	jmp	alldone
 
 fail:
 INITPAS:
 	jsr	msg
 	.byte	"NO COMMS DEVICE FOUND.",$00
-	rts
+	jmp	alldone
 
-present:
-	lda	DEVADR01 + (V_SLOT << 1)
-	cmp	#<DRIVER
-	bne	full
-	lda	DEVADR01 + 1 + (V_SLOT << 1)
-	cmp	#>DRIVER
-	bne	full
-	jsr	PINGS
-	bcs	fail
 report:	jsr	msg
 	.byte	"VEDRIVE: ",$00
 	lda	COMMSLOT
@@ -123,7 +150,8 @@ report:	jsr	msg
 	pha
 	jsr	msg
 	.byte	"DRIVES S"
-	.byte	$b0+V_SLOT
+FIXUP03:
+	.byte	$b0
 	.byte	",D1/2 ON COMM SLOT ",$00
 	pla
 	clc
@@ -148,6 +176,15 @@ PINGS:	ldx	#$08
 	clc
 	rts
 
+VE_SLOT:
+	.byte	$01
+VE_SLOT_DEV1:
+	.byte	$00
+VE_SLOT_DEV2:
+	.byte	$00
+slotcnt:
+	.byte	$00
+
 ;---------------------------------------------------------
 ; FindSlot - Find an uther card
 ;---------------------------------------------------------
@@ -171,7 +208,6 @@ FoundSlot:
 
 TempSlot:	.byte 0
 
-;***********************************************
 ;
 ; msg -- print an in-line message
 ;
@@ -194,3 +230,9 @@ msgx:	lda	UTILPTR+1
 	pha
 	rts
 
+alldone:
+	;
+	; What to do next (rts vs. jmp) is set in the enveloping assembly.
+	; This allows us to use this same code to install and quit on 
+	; a boot disk, or install and continue in BASIC.
+	;
