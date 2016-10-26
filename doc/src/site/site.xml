@@ -73,7 +73,11 @@
       </item>
       <item name="Receiving" href="receiving.html"/>
       <item name="Directory Listing" href="directory.html"/>
-      <item name="Virtual Drive" href="vdrive.html"/>
+      <item name="Virtual Drive" href="vdrive.html" collapse="true">
+        <item name="Serial" href="vsdrive.html" collapse="true"/>
+        <item name="Ethernet" href="vedrive.html" collapse="true"/>
+        <item name="Apple ///" href="v3drive.html" collapse="true"/>
+      </item>
       <item name="Misc. Functions" href="misc.html"/>
     </menu>
 

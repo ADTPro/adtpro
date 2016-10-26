@@ -1,0 +1,41 @@
+ -----
+ ADTPro Virtual Drive
+ -----
+ David Schmidt (david__schmidt at users dot souceforge dot net)
+ -----
+
+ADTPro Virtual Drive - {Serial}/ProDOS
+
+ Once you've established your {{{./connectionsserial.html}serial}} 
+ connection between your Apple II and the ADTPro host server, boot or otherwise access the
+ VDRIVE-v.r.m.DSK image on the Apple II side.
+ It will start with some brief instructions:
+ 
+[images/vdrive1.png]
+
+ The serial VSDRIVE driver will automatically search for compatible hardware and use it.
+ The slot that the serial hardware is in is independent of the slot that will be made available
+ to the system as the virtual drives.  
+ It is perfectly fine to have the serial adapter in physical slot 2 while
+ the driver makes virtual drives S2D1 and S2D2 available to the system.
+ The driver installation will search for a slot with two available spaces for drives starting
+ with slot 1 and move up to slot 7 until it finds room.  If no slots have two devices available, the installer will exit. 
+ 
+ There are two versions of the serial driver: VSDRIVE.LOW and VSDRIVE.
+ The VSDRIVE.LOW version will install itself in the main memory of the Apple II, reducing the amount of
+ memory available to BASIC and other programs.
+ The ProDOS Utilities Disk will not work with this version of the driver.
+ The VSDRIVE version will instead overwrite the Disk II driver, making Disk II floppies inaccessible
+ to ProDOS.
+ The ProDOS Utilities Disk is compatible with this version, and it will stay resident even when 
+ the ProDOS QUIT code is active.
+
+ On a machine with a typical Super Serial card adapter in slot 2 (or IIc/IIc+ or compatibles)
+ this message will be displayed as it starts:
+
+[images/vdrive6.png]
+
+ During normal operations with the virtual disk, activity will cause status messages to appear in the
+ server's message areas: 
+
+[images/vdrive2.png]

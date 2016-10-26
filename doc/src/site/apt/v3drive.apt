@@ -1,0 +1,14 @@
+ -----
+ ADTPro Virtual Drive
+ -----
+ David Schmidt (david__schmidt at users dot souceforge dot net)
+ -----
+
+ADTPro Virtual Drive - Serial/{SOS}
+
+ Using the virtual serial drives on SOS requires you to add the VSDRIVE.A3DRVR device driver to your boot disk.
+ The VDRIVE-v.r.m.DSK disk is bootable on the Apple ///, runs Business BASIC, and contains the required driver pre-installed for you. 
+ Once installed on any of your boot disks, the devices ".VSDRIVE" and ".VSDRIVE2" will be available to the system, 
+and will reflect the Virtual.po and Virtual2.po images served by the ADTPro server.   
+
+[images/vdrivesos1.png]

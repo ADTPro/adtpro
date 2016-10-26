@@ -1,0 +1,62 @@
+ -----
+ ADTPro Virtual Drive
+ -----
+ David Schmidt (david__schmidt at users dot souceforge dot net)
+ -----
+
+ADTPro Virtual Drive - {Ethernet}/ProDOS
+
+*Operation
+
+ First of all you need to run VEDRIVE.SETUP to create a configuration file.
+
+ Then run <<<VEDRIVE>>> (or <<<VEDRIVE.SYSTEM>>>) to install the Virtual Ethernet Drive. It will:
+
+  * Get an IP address via DHCP
+
+  * Detect all Disk II drives connected to ProDOS and disconnect them
+
+  * Connect the two ADTPro virtual hard drives as S1,D1 and S1,D2
+
+  []
+
+ When you're done with Virtual Ethernet Drive just run <<<VEDRIVE>>> again to uninstall it. That will:
+
+ * Reload the Disk II driver from the file PRODOS
+
+ * Disconnect the two ADTPro virtual hard drives
+
+ * Reconnect all devices disconnected by Virtual Ethernet Drive
+
+ []
+
+*Notes
+
+ The Virtual Ethernet Drive places the virtual hard drives at the end of the ProDOS device table just before the /RAM device (if present). This is because:
+
+ *Programs intending to disconnect /RAM but only looking for it at the end of the device table still find it there
+
+ *ProDOS volumes are searched from fast devices to slow devices (/RAM > virtual hard drives > real drives)
+
+ []
+
+ If <<<VEDRIVE>>> is run via <<<VEDRIVE.SYSTEM>>> and there an error is detected, you will be asked to press a key before you are returned to the ProDOS selector. Hence if VEDRIVE.SYSTEM just flickers the screen then everything is supposed to have worked just fine.
+
+ The Virtual Ethernet Drive reads files from the same ProDOS directory it is located in,
+independent from the current ProDOS prefix.
+
+    <<<VEDRIVE.SYSTEM>>> reads <<<VEDRIVE>>>\
+    <<<VEDRIVE>>> reads <<<VEDRIVE.CONFIG>>>\
+    <<<VEDRIVE>>> reads <<<PRODOS>>>
+
+ Uninstalling Virtual Ethernet Drive requires at least ProDOS 1.8.
+
+ Pressing Ctrl-Reset puts the Uthernet II into a default state. On next virtual drive access VEDRIVE detects this state and re-initializes the Uthernet II. For you this has three implications:
+
+  *  If <<<VEDRIVE>>> stops working due to a problem with the Uthernet II, then a Ctrl-Reset may very well fix it.
+
+  *  If you run a program that uses the Uthernet II for own purposes and does not follow the {{{https://github.com/a2retrosystems/uthernet2/wiki/W5100-Shared-Access}W5100 Shared Access conventions}} you can just press Ctrl-Reset after its termination to recover VEDRIVE.
+
+  *  If you run a program that uses the Uthernet II for own purposes and does follow the W5100 Shared Access conventions make sure to access the virtual drive once after a Ctrl-Rest before the program start to allow the presence of VEDRIVE to be detected by the program.
+
+ []
