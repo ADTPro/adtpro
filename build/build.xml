@@ -62,7 +62,8 @@ all
 	<property name="vdriveDistName" value="VDrive-${versionString}" />
 	<property name="vdriveDiskName" value="VDRIVE-${versionString}" />
 	<property name="vdriveVolName" value="VDrive.${versionString}" />
-	<property name="vdriveVolName2" value="VDrive2.${versionString}" />
+	<property name="vdriveVolName1" value="Hosted.VDrive1" />
+	<property name="vdriveVolName2" value="Hosted.VDrive2" />
 	<property file="${builddir}/ADTProBuild.properties"/>
 	<property file="${builddir}/ADTProBuild-default.properties"/>
 	<property name="acJarVersion" value="1.3.5.13-ac" />
@@ -322,7 +323,7 @@ all
 		<appleCommander command="n" imagename="${builddir}/${distName}/disks/${vdriveDiskName}.DSK" volname="${vdriveVolName}"/>
 	</target>
 	<target name="prodos-vsdrive" depends="vdrive-image-prep" description="Builds the Virtual Serial Drive Driver (ProDOS)">
-		<appleCommander command="pro800" imagename="${builddir}/${distName}/disks/Virtual.po" volname="${vdriveVolName}"/>
+		<appleCommander command="pro800" imagename="${builddir}/${distName}/disks/Virtual.po" volname="${vdriveVolName1}"/>
 		<appleCommander command="pro800" imagename="${builddir}/${distName}/disks/Virtual2.po" volname="${vdriveVolName2}"/>
 		<echo message="Assembling ProDOS virtual serial drive source..."/>
 		<exec dir="${projdir}/client/src" executable="${assemblerPath}/ca65" failonerror="true">
@@ -358,7 +359,7 @@ all
 	</target>
 
 	<target name="prodos-vedrive" depends="vdrive-image-prep" description="Builds the Virtual Ethernet Drive Driver (ProDOS)">
-		<appleCommander command="pro800" imagename="${builddir}/${distName}/disks/Virtual.po" volname="${vdriveVolName}"/>
+		<appleCommander command="pro800" imagename="${builddir}/${distName}/disks/Virtual.po" volname="${vdriveVolName1}"/>
 		<appleCommander command="pro800" imagename="${builddir}/${distName}/disks/Virtual2.po" volname="${vdriveVolName2}"/>
 		<echo message="Assembling ProDOS virtual ethernet drive source..."/>
 		<exec dir="${projdir}/client/src" executable="${assemblerPath}/ca65" failonerror="true">
@@ -386,7 +387,7 @@ all
 	</target>
 
 	<target name="prodos-vedrive2" depends="vdrive-image-prep" description="Builds the Uthernet II Virtual Ethernet Drive Driver (ProDOS)">
-		<appleCommander command="pro800" imagename="${builddir}/${distName}/disks/Virtual.po" volname="${vdriveVolName}"/>
+		<appleCommander command="pro800" imagename="${builddir}/${distName}/disks/Virtual.po" volname="${vdriveVolName1}"/>
 		<appleCommander command="pro800" imagename="${builddir}/${distName}/disks/Virtual2.po" volname="${vdriveVolName2}"/>
 		<echo message="Assembling ProDOS virtual Uthernet II drive source..."/>
 		<exec dir="${projdir}/client/src" executable="${assemblerPath}/ca65" failonerror="true">
