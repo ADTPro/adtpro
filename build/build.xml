@@ -380,7 +380,7 @@ all
 		<appleCommander command="p" input="${projdir}/client/src/VEDRIVE_LOW" imagename="${builddir}/${distName}/disks/${vdriveDiskName}.DSK" filename="VEDRIVE.LOW" type="SYS" address="8192"/>
 		<delete file="${projdir}/client/src/VEDRIVE_LOW" />
 		<appleCommander command="d" imagename="${builddir}/${distName}/disks/${vdriveDiskName}.DSK" filename="VEDRIVE" failonerror="false"/>
-		<appleCommander command="p" input="${projdir}/client/src/VEDRIVE_HIGH" imagename="${builddir}/${distName}/disks/${vdriveDiskName}.DSK" filename="VEDRIVE" type="BIN" address="2051"/>
+		<appleCommander command="p" input="${projdir}/client/src/VEDRIVE_HIGH" imagename="${builddir}/${distName}/disks/${vdriveDiskName}.DSK" filename="VEDRIVE" type="BIN" address="8192"/>
 		<delete file="${projdir}/client/src/VEDRIVE_HIGH" />
 		<appleCommander command="d" imagename="${builddir}/${distName}/disks/${vdriveDiskName}.DSK" filename="VEDRIVE.SYSTEM" failonerror="false"/>
 		<appleCommander command="p" input="${builddir}/lib/cc65/loader.system" imagename="${builddir}/${distName}/disks/${vdriveDiskName}.DSK" filename="VEDRIVE.SYSTEM" type="SYS" address="8192"/>
