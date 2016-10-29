@@ -125,6 +125,10 @@ copydriver:
 	inc	UTILPTR+1
 	dex
 	bne	copydriver
+	lda	VE_SLOT_DEV1
+	sta	FIXUP01+1
+	lda	VE_SLOT_DEV2
+	sta	FIXUP02+1
 test:
 	jsr	INITIO
 	bcs	fail
