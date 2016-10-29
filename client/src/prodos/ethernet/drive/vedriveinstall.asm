@@ -23,6 +23,7 @@ DESTPAGE	= $76		; The destination page of the driver code; must match .org $xx00
 COPYLEN		= $24		; The number of pages to copy - how big the driver is, including BSS not in image on disk
 
 	.org $2000
+	lda	serverip-(DESTPAGE*256)+asm_begin	; The config code uses this address to figure out where to patch the server IP address
 
 ; INITIALIZE DRIVER
 init:
@@ -96,7 +97,6 @@ ready:
 	sta	DEVLST,Y
 
 moveit:
-	lda	serverip-(DESTPAGE*256)+asm_begin	; The config code uses this address to figure out where to patch the server IP address
 	lda	RSHIMEM
 	cmp	#DESTPAGE
 	bne	:+
