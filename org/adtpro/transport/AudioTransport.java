@@ -70,7 +70,7 @@ public class AudioTransport extends ATransport
 		_captureThread = new CaptureThread(mixerIndex);
 		_captureThread.start();
 		Log.println(true, "AudioTransport opened.");
-		_sendBuffer = new byte[3000];
+		_sendBuffer = new byte[4000];
 		Log.println(false, "AudioTransport.open() exit.");
 	}
 
@@ -108,7 +108,7 @@ public class AudioTransport extends ATransport
 	public void writeBytes(byte data[])
 	{
 		// Log.println(false, "AudioTransport.writeBytes() entry.");
-		if ((2999 - _outPacketPtr) >= data.length)
+		if ((3999 - _outPacketPtr) >= data.length)
 		{
 			// Log.println(false, "AudioTransport.writeBytes() writing " + data.length
 			// + " bytes into packet starting from " + _outPacketPtr + ".");
@@ -124,7 +124,7 @@ public class AudioTransport extends ATransport
 
 	public void writeBytes(char[] data)
 	{
-		if ((2999 - _outPacketPtr) >= data.length)
+		if ((3999 - _outPacketPtr) >= data.length)
 		{
 			for (int i = 0; i < data.length; i++)
 			{

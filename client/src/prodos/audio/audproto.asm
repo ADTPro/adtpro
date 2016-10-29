@@ -846,7 +846,7 @@ PPROTO:	.byte $00	; Audio protocol = $00
 CHECKBYTE:
 	.byte $00
 AUD_BUFFER:
-	.res  3000,0	; Enough for up to 5 blocks at once
+	.res  4000,0	; Enough for up to 5 blocks at once
 QUERYRC:
 	.byte $00
 PUTCMSG:

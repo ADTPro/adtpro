@@ -20,6 +20,8 @@ ADTPro Release History
 
  Bug fixes:
 
+ * [Audio] Blocks with pathological RLE compression failed due to buffer overrun
+
  * [Server] Sort directory contents explicitly for our Raspberry Pi friends
 
  []
