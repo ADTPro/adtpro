@@ -225,66 +225,83 @@ install_vedrive:
   ror
   sta udp_audio                 ; $00 or $80
 
+; backup device driver address table
+  ldx #$20-1
+: lda devadr,x
+  sta devadr_bak,x
+  dex
+  bpl :-
+
 ; backup device count and device list
-  ldx #14
+  ldx #1+14-1
 : lda devcnt,x
   sta devcnt_bak,x
   dex
   bpl :-
 
-; remove all Disk II devices (if present) from driver address table and device list
+; remove all Disk II drives from device driver address table and device list
   ldx #$00
-  stx tmp2
-  stx tmp3
-: lda devadr,x
-  cmp #<__DISKII_START__        ; Disk II driver lo ?
+: lda #<__DISKII_START__        ; Disk II driver lo
+  cmp devadr,x
   bne :+
-  lda devadr+1,x
-  cmp #>__DISKII_START__        ; Disk II driver hi ?
+  lda #>__DISKII_START__        ; Disk II driver hi
+  cmp devadr+1,x
   bne :+
   lda devadr                    ; "No Device Connected" lo
   sta devadr,x
   lda devadr+1                  ; "No Device Connected" hi
   sta devadr+1,x
   txa
-  pha
   asl
   asl
   asl
+  stx tmp3
   jsr remove_device             ; remove from device list
   jsr online                    ; dealloc stale VCB
-  pla
-  tax
-  inc tmp2                      ; mark removed Disk II driver slot/drive
-: asl tmp2
-  rol tmp3
-  inx
+  ldx tmp3
+: inx
   inx
   cpx #$20                      ; size of driver address table
   bcc :--
-  lda tmp2
-  sta devmap_disk
-  lda tmp3
-  sta devmap_disk+1
+  jsr print_cr
 
-; backup and remove both slot 1 device driver addresses
-  lda devadr   + 1 << 1         ; slot 1 drive 1 lo
-  ldx devadr+1 + 1 << 1         ; slot 1 drive 1 hi
-  sta devadr_slot1
-  stx devadr_slot1+1
-  lda devadr   + 1 << 1 + $10   ; slot 1 drive 2 lo
-  ldx devadr+1 + 1 << 1 + $10   ; slot 1 drive 2 hi
-  sta devadr_slot1+2
-  stx devadr_slot1+3
+; find a slot with two unused device driver address table entries
+  lda #$00
+  sta tmp1                      ; virtual drive
+  ldx #1 << 1                   ; slot 1 drive 1
+: lda devadr                    ; "No Device Connected" lo
+  cmp devadr,x                  ; drive 1 lo
+  bne :+
+  cmp devadr + $10,x            ; drive 2 lo
+  bne :+
+  lda devadr+1                  ; "No Device Connected" hi
+  cmp devadr+1,x                ; drive 1 hi
+  bne :+
+  cmp devadr+1 + $10,x          ; drive 2 hi
+  bne :+
+  txa
+  asl
+  asl
+  asl
+  sta tmp1                      ; virtual drive
+  bne :++                       ; always
+: inx
+  inx
+  cpx #$10                      ; half size of driver address table
+  bcc :--
+
+; if there isn't a slot with two unused device driver address table entries
+; just remove slot 1 drive 1 and slot 1 drive 2
+: lda tmp1                      ; virtual drive
+  bne :+
   lda devadr                    ; "No Device Connected" lo
   ldx devadr+1                  ; "No Device Connected" hi
   sta devadr   + 1 << 1         ; slot 1 drive 1 lo
   stx devadr+1 + 1 << 1         ; slot 1 drive 1 hi
   sta devadr   + 1 << 1 + $10   ; slot 1 drive 2 lo
   stx devadr+1 + 1 << 1 + $10   ; slot 1 drive 2 hi
-
-; remove slot 1 devices (if present) from device list
   lda #1 << 4                   ; slot 1 drive 1
+  sta tmp1                      ; virtual drive
   jsr remove_device
   jsr online                    ; dealloc stale VCB
   lda #1 << 4 + $80             ; slot 1 drive 2
@@ -292,18 +309,17 @@ install_vedrive:
   jsr online                    ; dealloc stale VCB
   jsr print_cr
 
-; set the two slot 1 device driver addresses
-  lda #<driver                  ; Uthernet II driver lo
-  ldx #>driver                  ; Uthernet II driver hi
-  sta devadr   + 1 << 1         ; slot 1 drive 1 lo
-  stx devadr+1 + 1 << 1         ; slot 1 drive 1 hi
-  sta devadr   + 1 << 1 + $10   ; slot 1 drive 2 lo
-  stx devadr+1 + 1 << 1 + $10   ; slot 1 drive 2 hi
+; set the two virtual device driver addresses to the Uthernet 2 driver
+: lda tmp1                      ; virtual drive
+  jsr set_u2driver
+  lda tmp1                      ; virtual drive
+  ora #$80                      ; drive 2
+  jsr set_u2driver
 
-; add two slot 1 devices to device list just before /RAM (if present) because
+; add the two virtual devices to device list just before /RAM (if present) because
 ; - programs wanting to disconnect /RAM might assume it at the end of the list
 ; - devices are searched for unknown volumes starting at the end of the list
-;   so they are ordered best by speed (RAM > net > disk)
+;   so they are ordered best by speed (RAM > virtual > pyhsical)
   ldx devcnt
   bmi :+                        ; list temporarily empty
   lda devlst,x
@@ -313,9 +329,10 @@ install_vedrive:
   beq :++
 : clc                           ; have carry only set for equality
   inx
-: lda #1 << 4 + $80             ; slot 1 drive 2
+: lda tmp1                      ; virtual drive
+  ora #$80                      ; drive 2
   sta devlst,x
-  lda #1 << 4                   ; slot 1 drive 1
+  lda tmp1                      ; virtual drive
   sta devlst+1,x
   bcc :+
   tya
@@ -327,9 +344,11 @@ install_vedrive:
   inc devcnt
 
 ; print 'connect' messages
-  lda #1 << 4                   ; slot 1 drive 1
+  lda tmp1                      ; virtual drive
+  sta vedrive                   ; save for VCB dealloc on VEDRIVE removal
   jsr print_connect
-  lda #1 << 4 + $80             ; slot 1 drive 2
+  lda tmp1                      ; virtual drive
+  ora #$80                      ; drive 2
   jsr print_connect
   jsr print_cr
   jsr print_cr
@@ -374,11 +393,12 @@ install_vedrive:
 
 ; remove device (if present) from device list
 remove_device:
-  sta tmp1                      ; device to remove
+  sta tmp2                      ; device to remove
   ldx devcnt
   bmi :++                       ; list temporarily empty
 : lda devlst,x
-  cmp tmp1                      ; found ?
+  and #$F0                      ; mask device id
+  cmp tmp2                      ; found ?
   beq :++
   dex
   bpl :-
@@ -398,7 +418,7 @@ remove_device:
 
 ; print 'connect'
 print_connect:
-  sta tmp1
+  sta tmp2
   lda #<connect_msg
   ldx #>connect_msg
 
@@ -407,7 +427,7 @@ print_device:
   lda #<slot_msg
   ldx #>slot_msg
   jsr print_ascii_as_native
-  lda tmp1
+  lda tmp2
   lsr
   lsr
   lsr
@@ -419,12 +439,25 @@ print_device:
   lda #<drive_msg
   ldx #>drive_msg
   jsr print_ascii_as_native
-  lda tmp1
+  lda tmp2
   asl                           ; drive number in carry
   lda #$01
   adc #'0'                      ; 1 + drive number + '0'
   jsr print_a
-  lda tmp1
+  lda tmp2
+  rts
+
+
+; set Uthernet II driver in device driver address table
+set_u2driver:
+  lsr
+  lsr
+  lsr
+  tax
+  lda #<driver                  ; Uthernet II driver lo
+  sta devadr,x
+  lda #>driver                  ; Uthernet II driver hi
+  sta devadr+1,x
   rts
 
 ;------------------------------------------------------------------------------
@@ -451,36 +484,23 @@ remove_vedrive:
 ; Reset UDP driver
   jsr udp_reset
 
-; restore both slot 1 device driver addresses
-  lda devadr_slot1
-  ldx devadr_slot1+1
-  sta devadr   + 1 << 1         ; slot 1 drive 1 lo
-  stx devadr+1 + 1 << 1         ; slot 1 drive 1 hi
-  lda devadr_slot1+2
-  ldx devadr_slot1+3
-  sta devadr   + 1 << 1 + $10   ; slot 1 drive 2 lo
-  stx devadr+1 + 1 << 1 + $10   ; slot 1 drive 2 hi
-
-; restore all Disk II device driver addresses
-  ldx #(1 << 1)                 ; slot 1 drive 1
-: asl devmap_disk
-  rol devmap_disk+1
-  bcc :+
-  lda #<__DISKII_START__        ; Disk II driver lo
+; restore device driver address table
+  ldx #$20-1
+: lda devadr_bak,x
   sta devadr,x
-  lda #>__DISKII_START__        ; Disk II driver hi
-  sta devadr+1,x
-: inx
-  inx
-  cpx #$20                      ; size of driver address table
-  bcc :--
+  dex
+  bpl :-
 
 ; restore device count and device list
-  ldx #14
+  ldx #1+14-1
 : lda devcnt_bak,x
   sta devcnt,x
   dex
   bpl :-
+
+; get virtual drive for VCB dealloc
+  lda vedrive
+  sta tmp1
 
 ; switch LC bank 1 to write-only access
   bit lc_wo
@@ -502,9 +522,10 @@ remove_vedrive:
   jsr bltu2                     ; Applesoft block transfer up
 
 ; dealloc stale VCBs
-  lda #1 << 4                   ; slot 1 drive 1
+  lda tmp1                      ; virtual drive
   jsr online
-  lda #1 << 4 + $80             ; slot 1 drive 2
+  lda tmp1                      ; virtual drive
+  ora #$80                      ; drive 2
   jsr online
 
 ; switch LC bank 1 off and exit
@@ -578,6 +599,7 @@ load:
   .word close_param
   bcs code_exit
   rts
+
 
 online:
   bit lc_off
@@ -1561,15 +1583,16 @@ online_buffer:
 
 .segment "DRIVER"
 
+devadr_bak:
+  .word $0000, $0000, $0000, $0000, $0000, $0000, $0000, $0000
+  .word $0000, $0000, $0000, $0000, $0000, $0000, $0000, $0000
+
 devcnt_bak:
   .byte $00
   .word $0000, $0000, $0000, $00000, $0000, $0000, $0000
 
-devmap_disk:
-  .word $0000
-
-devadr_slot1:
-  .word $0000, $0000
+vedrive:
+  .byte $00
 
 udp_mac:
   .word $0000, $0000, $0000
