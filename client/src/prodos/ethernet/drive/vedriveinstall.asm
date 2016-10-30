@@ -27,6 +27,8 @@ COPYLEN		= $24		; The number of pages to copy - how big the driver is, including
 
 ; INITIALIZE DRIVER
 init:
+	lda #$00
+	sta slotcnt
 ; Find a likely place to install the driver in the device list.
 ; Is there already a driver in slot x, drive 1?
 scanslots:
