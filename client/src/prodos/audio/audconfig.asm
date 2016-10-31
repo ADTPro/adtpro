@@ -1,6 +1,6 @@
 ;
 ; ADTPro - Apple Disk Transfer ProDOS
-; Copyright (C) 2007 - 2014 by David Schmidt
+; Copyright (C) 2007 - 2016 by David Schmidt
 ; david__schmidt at users.sourceforge.net
 ;
 ; This program is free software; you can redistribute it and/or modify it 
@@ -292,3 +292,4 @@ DEFAULT:	.byte 3,0,1	; Default parm indices
 PARMSEND:
 PNIBBL:	.byte 1			; Enable nibbles (NO - and not exposed to the user or saved)
 BAOTbl:		.byte 1,2,3,4,5
+CONFIGYET:	.byte 1		; Has the user configged yet? (Unused on Audio)

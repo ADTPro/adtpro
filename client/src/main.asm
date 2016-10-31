@@ -1,6 +1,6 @@
 ;
 ; ADTPro - Apple Disk Transfer ProDOS
-; Copyright (C) 2006 - 2014 by David Schmidt
+; Copyright (C) 2006 - 2016 by David Schmidt
 ; david__schmidt at users.sourceforge.net
 ;
 ; This program is free software; you can redistribute it and/or modify it 
@@ -48,10 +48,15 @@ entrypoint:
 	jsr BLOAD	; Load up user parameters, if any
 	jsr HOME	; Clear screen
 	jsr PARMINT	; Interpret parameters - may leave a complaint
+	lda CONFIGYET	; Check if we've been configged yet
+	beq MAINL	; Skip HOMEREQUEST if not
 	lda COMMSLOT	; Check if we're on a GS or not (slot will be 7 if so)
 	cmp #$07	; The HOMEREQUEST will hang if a connection isn't complete
 	beq MAINL	; It's a GS... skip it!
+	ldy #PMWAIT	; Let them know we're going to holler at the host...
+	jsr WRITEMSGAREA
 	jsr HOMEREQUEST	; Probably don't want to do this _every_ time - but at least once is nice
+	jsr CLRMSGAREA
 	jmp MAINL	; And off we go!
 
 ;---------------------------------------------------------
