@@ -1,6 +1,6 @@
 /*
  * ADTPro - Apple Disk Transfer ProDOS
- * Copyright (C) 2006 - 2009 by David Schmidt
+ * Copyright (C) 2006 - 2016 by David Schmidt
  * david__schmidt at users.sourceforge.net
  *
  * This program is free software; you can redistribute it and/or modify it 
@@ -123,7 +123,7 @@ Gui.BS.DumpDOSAudioInstructions2Done=<html>Àü¼ÛÀÌ ¼º°øÇÏ¸é ¾ÖÇÃ¿¡¼­ ´ÙÀ½À» ÀÔ·ÂÇ
 Gui.BS.DumpProDOSInstructions=<html>¾ÖÇÃ¿¡¼­ ´ÙÀ½À» ÀÔ·ÂÇÏ¼¼¿ä:<br><code>IN#2&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code>(# µÚÀÇ ¼ıÀÚ´Â ½Ã¸®¾ó Ä«µå ½½·Ô ¹øÈ£ÀÔ´Ï´Ù.)<br><code>&lt;ctrl-A&gt;%1%B&nbsp;&nbsp;</code>(ctrl-A °¡ ¾ÈµÇ¸é <code>&lt;ctrl-I&gt;</code> (¿µ¹®ÀÚ 'I') »ç¿ë)<br><br>ÁØºñµÇ¸é È®ÀÎ ¹öÆ°À» ´©¸£¼¼¿ä...</html>
 Gui.BS.DumpProDOSInstructionsDone=<html>¿Ï·áµÇ¾ú½À´Ï´Ù.<br><br>ÀÌÁ¦, ADTPro ½Ã¸®¾ó Å¬¶óÀÌ¾ğÆ®¸¦ Àü¼ÛÇÏ¼¼¿ä.</html>
 Gui.BS.DumpProDOSAudioInstructions=<html>¿Àµğ¿À ÄÉÀÌºíÀÌ ¿¬°áµÇ¾îÀÖ´ÂÁö È®ÀÎÇÏ½Ã°í º¼·ıÀº 1/2 Á¤µµ·Î ¸ÂÃß¼¼¿ä.<br><br>¾ÖÇÃ¿¡¼­ ´ÙÀ½À» ÀÔ·ÂÇÏ¼¼¿ä:<br><code>CALL -151<br>2000.%1%R</code><br><br>¾ÖÇÃ¿¡¼­ ¸®ÅÏÅ°¸¦ ´©¸£½Å ÈÄ¿¡ È®ÀÎ ¹öÆ°À» ´©¸£¼¼¿ä...</html>
-Gui.BS.DumpProDOSAudioInstructionsDone=<html>Àü¼ÛÀÌ ¼º°øÇÏ¸é ¾ÖÇÃ¿¡¼­ ´ÙÀ½À» ÀÔ·ÂÇÏ¼¼¿ä:<br><code>2000G&nbsp;&nbsp;</code>(¿µ¹®ÀÚ 'O' °¡ ¾Æ´Ï¶ó ¼ıÀÚ '¿µ'ÀÔ´Ï´Ù.)<br><br>ÀÌÁ¦ ADTPro ¿Àµğ¿À Å¬¶óÀÌ¾ğÆ®¸¦ Àü¼ÛÇÏ¼¼¿ä.</html>
+Gui.BS.DumpProDOSAudioInstructionsDone=<html>Àü¼ÛÀÌ ¼º°øÇÏ¸é ¾ÖÇÃ¿¡¼­ ´ÙÀ½À» ÀÔ·ÂÇÏ¼¼¿ä:<br><code>2003G&nbsp;&nbsp;</code>(¿µ¹®ÀÚ 'O' °¡ ¾Æ´Ï¶ó ¼ıÀÚ '¿µ'ÀÔ´Ï´Ù.)<br><br>ÀÌÁ¦ ADTPro ¿Àµğ¿À Å¬¶óÀÌ¾ğÆ®¸¦ Àü¼ÛÇÏ¼¼¿ä.</html>
 Gui.BS.DumpSOSInstructions=<html><ol><li>Ctrl-OpenApple-Reset À» ´­·¯ Apple /// ¸ğ´ÏÅÍ ¸ğµå·Î µé¾î°¡¼¼¿ä.</li><li>´ÙÀ½ ÇÁ·Î±×·¥À» Á¤È®È÷ ÀÔ·ÂÇÏ¼¼¿ä:<br><code>A000:AD DF FF 09 F2 8D DF FF</code><br><code>A008:A9 0B 8D F2 C0 A9 10 8D</code><br><code>A010:F3 C0 A9 00 A8 85 7E A9</code><br><code>A018:A1 85 7F A2 48 8E 24 04</code><br><code>A020:E8 8E 25 04 20 40 A0 C9</code><br><code>A028:47 D0 F9 A2 03 20 40 A0</code><br><code>A030:91 7E 8D 27 04 C8 D0 F5</code><br><code>A038:E6 7F CA D0 F0 4C 00 A1</code><br><code>A040:AD F1 C0 29 68 C9 08 D0</code><br><code>A048:F7 AD F0 C0 60</code><br></li><li>´ÙÀ½ ¸í·ÉÀ» ³»·Á¼­ ÇÁ·Î±×·¥À» ½ÇÇà½ÃÅ°¼¼¿ä:<pre>A000G</pre></li><li>¹İÀüµÈ "HI" ¸Ş¼¼Áö°¡ Apple /// ¿¡ ³ªÅ¸³ª¸é º» Ã¢ÀÇ È®ÀÎ ¹öÆ°À» ´©¸£¼¼¿ä.</li><li>¸¸ÀÏ ³ªÅ¸³ªÁö ¾Ê´Â´Ù¸é, Ã³À½ºÎÅÍ ´Ù½Ã ÁÖÀÇ ±í°Ô ÀÔ·ÂÇÏ¼¼¿ä.</li></ol>
 Gui.BS.DumpSOSInstructionsDone=<html>SOS Ä¿³ÎÀÌ ºÎÆ®½ºÆ®·¡ÇÎµÇ°í ÀÖ½À´Ï´Ù!</html>
 Gui.BS.DumpADTInstructions=<html>DOS Æ÷¸ËµÈ ÇÃ·ÎÇÇ µğ½ºÅ©¸¦ µå¶óÀÌºê¿¡ ³ÖÀ¸¼¼¿ä.<br><b>*** ÆäÀÌ½Ì ¼Óµµ¸¦ ³·Ãß½Ã±æ ±ÇÇØµå¸³´Ï´Ù. (³ôÀº ¼ıÀÚ°¡ ³·Àº ¼ÓµµÀÓ) ***</b><br><br>¾ÖÇÃ¿¡¼­ ´ÙÀ½À» ÀÔ·ÂÇÏ¼¼¿ä:<br><code>IN#2&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code>(# µÚÀÇ ¼ıÀÚ´Â ½Ã¸®¾ó Ä«µå ½½·Ô ¹øÈ£ÀÔ´Ï´Ù.)<br><code>&lt;ctrl-A&gt;%1%B&nbsp;&nbsp;</code>(ctrl-A °¡ ¾ÈµÇ¸é <code>&lt;ctrl-I&gt;</code> (¿µ¹®ÀÚ 'I') »ç¿ë)<br><br>ÁØºñµÇ¸é È®ÀÎ ¹öÆ°À» ´©¸£¼¼¿ä...</html>

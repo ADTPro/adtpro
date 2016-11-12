@@ -1,6 +1,6 @@
 /*
  * ADTPro - Apple Disk Transfer ProDOS
- * Copyright (C) 2006 - 2010 by David Schmidt
+ * Copyright (C) 2006 - 2016 by David Schmidt
  * david__schmidt at users.sourceforge.net
  * Italian translation by Mauro Rospocher
  *
@@ -122,7 +122,7 @@ Gui.BS.DumpDOSAudioInstructions2Done=<html>Se l'invio \u00e8 riuscito, sull'Appl
 Gui.BS.DumpProDOSInstructions=<html>Sull'Apple scrivi:<br><code>IN#2&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code>(Il numero dipende dallo slot dove \u00e8 stata installata la scheda)<br><code>&lt;ctrl-A&gt;%1%B&nbsp;&nbsp;</code>(Pu\u00f2 essere <code>&lt;ctrl-I&gt;</code> (la lettera 'I'))<br><br>Premi il bottone Ok quando sei pronto...</html>
 Gui.BS.DumpProDOSInstructionsDone=<html>Fatto.<br><br>Adesso invia il client seriale ADTPro.</html>
 Gui.BS.DumpProDOSAudioInstructions=<html>Assicurati che il cavo audio sia connesso e che il volume sia alle met\u00e0.<br><br>Sull'Apple scrivi:<br><code>CALL -151<br>2000.%1%R</code><br><br>Premi il bottone Ok dopo aver premuto il tasto Return sull'Apple...</html>
-Gui.BS.DumpProDOSAudioInstructionsDone=<html>Se l'invio \u00e8 riuscito, sull'Apple scrivi:<br><code>2000G&nbsp;&nbsp;</code>(questi sono zero, non lettere 'O')<br><br>Ora procedi con l'invio del client Audio ADTPro.</html>
+Gui.BS.DumpProDOSAudioInstructionsDone=<html>Se l'invio \u00e8 riuscito, sull'Apple scrivi:<br><code>2003G&nbsp;&nbsp;</code>(questi sono zero, non lettere 'O')<br><br>Ora procedi con l'invio del client Audio ADTPro.</html>
 Gui.BS.DumpSOSInstructions=<html><ol><li>Avvia il monitor dell'Apple /// con la sequenza di tasti Ctrl-OpenApple-Reset.</li><li>Digita esattamente questo programma:<br><code>A000:AD DF FF 09 F2 8D DF FF</code><br><code>A008:A9 0B 8D F2 C0 A9 10 8D</code><br><code>A010:F3 C0 A9 00 A8 85 7E A9</code><br><code>A018:A1 85 7F A2 48 8E 24 04</code><br><code>A020:E8 8E 25 04 20 40 A0 C9</code><br><code>A028:47 D0 F9 A2 03 20 40 A0</code><br><code>A030:91 7E 8D 27 04 C8 D0 F5</code><br><code>A038:E6 7F CA D0 F0 4C 00 A1</code><br><code>A040:AD F1 C0 29 68 C9 08 D0</code><br><code>A048:F7 AD F0 C0 60</code><br></li><li>Digita questo comando per eseguire il programma:<pre>A000G</pre></li><li>Se l'Apple /// visualizza il messaggio "HI" in caratteri inversi, premi il bottone OK in questa finestra.</li><li>In caso contrario riparti dallo step 1 e verifica quello che hai digitato.</li></ol>
 Gui.BS.DumpSOSInstructionsDone=<html>SOS kernel \u00e8 in caricamento!</html>
 Gui.BS.DumpADTInstructions=<html>Devi avere un floppy disk nel lettore!<br><b>*** Hai abbassato l'intervallo di attesa? ***</b><br><br>Sull'Apple scrivi:<br><code>IN#2&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code>(Il numero dipende dallo slot dove \u00e8 stata installata la scheda)<br><code>&lt;ctrl-A&gt;%1%B&nbsp;&nbsp;</code>(Pu\u00f2 essere &lt;ctrl-I&gt; (la lettera 'I'))<br><br>Premi il bottone Ok quando sei pronto...</html>
