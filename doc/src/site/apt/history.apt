@@ -6,15 +6,18 @@
 
 ADTPro Release History
 
-* Unreleased - in CVS now:
+* 2.0.2 - November 12, 2016
 
  New functionality:
 
  * Support added for Uthernet II based on new integrated IP65 library from Oliver
    Schmidt (http://oliverschmidt.github.io/ip65/)
 
+ * Uthernet II virtual Ethernet driver from Oliver Schmidt that occupies the same
+   space as the Disk II driver
+
  * John Brooks' ProDOS 2.4.1 is the base operating system for all ADTPro actions
-   (Speediboot, base disks, etc.)
+   (Speediboot, text bootstrapping, base disks, etc.)
 
  []
 
@@ -23,6 +26,9 @@ ADTPro Release History
  * [Audio] Blocks with pathological RLE compression failed due to buffer overrun
 
  * [Server] Sort directory contents explicitly for our Raspberry Pi friends
+
+ * Skip initial serial ping request from GS to avoid blank screen when no
+   connection exists at first
 
  []
 
