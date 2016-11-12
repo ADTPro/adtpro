@@ -1,6 +1,6 @@
 ;
 ; ADTPro - Apple Disk Transfer ProDOS
-; Copyright (C) 2008 - 2014 by David Schmidt
+; Copyright (C) 2008 - 2016 by David Schmidt
 ; david__schmidt at users.sourceforge.net
 ;
 ; This program is free software; you can redistribute it and/or modify it 
@@ -112,7 +112,7 @@ PHMMAX	= $0a		; This must be two greater than the largest host message
 
 	MSG17:	asc "ADTPRO BY DAVID SCHMIDT. BASED ON WORKS "
 		asc "    BY PAUL GUERTIN AND MANY OTHERS.    "
-		asc "  VISIT: HTTP://ADTPRO.SOURCEFORGE.NET "
+		asc "        VISIT: HTTP://ADTPRO.COM "
 	MSG17_END =*
 
 	MSGSOU:	asc "   SELECT SOURCE VOLUME"
