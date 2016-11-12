@@ -11,24 +11,31 @@ ADTPro Release History
  New functionality:
 
  * Support added for Uthernet II based on new integrated IP65 library from Oliver
-   Schmidt (http://oliverschmidt.github.io/ip65/)
+   Schmidt ({{{http://oliverschmidt.github.io/ip65/}http://oliverschmidt.github.io/ip65/}})
 
- * Uthernet II virtual Ethernet driver from Oliver Schmidt that occupies the same
-   space as the Disk II driver
-
- * John Brooks' ProDOS 2.4.1 is the base operating system for all ADTPro actions
+ * Integrated John Brooks' {{{http://www.callapple.org/uncategorized/announcing-prodos-2-4-for-all-apple-ii-computers/}ProDOS 2.4.1}} as base operating system for all ADTPro actions
    (Speediboot, text bootstrapping, base disks, etc.)
+
+ * [VDrive] Uthernet II virtual Ethernet driver from Oliver Schmidt that occupies the same
+   space as the Disk II driver
 
  []
 
- Bug fixes:
+ Bug fixes/changes:
 
- * [Audio] Blocks with pathological RLE compression failed due to buffer overrun
+ * [Ethernet] Fixes from Oliver Schmidt in ADTPro's interaction with the IP65
+   library make for much more reliable transfers with all Ethernet cards
+
+ * [Audio] Fix buffer overruns causing stalled audio transfers due to 
+   pathological RLE compression
 
  * [Server] Sort directory contents explicitly for our Raspberry Pi friends
 
- * Skip initial serial ping request from GS to avoid blank screen when no
+ * Skip initial serial ping request from IIgs to avoid blank screen when no
    connection exists at first
+
+ * [VDrive] Default slot changed from slot 2 to slot 1 for virtual Ethernet
+   disk drivers
 
  []
 

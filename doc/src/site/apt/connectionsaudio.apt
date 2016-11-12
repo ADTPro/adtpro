@@ -104,7 +104,7 @@ ADTPro Audio Connections
 
 * {Testing} Audio Levels
 
- Starting with ADTPro version 2.0.1, the ADTPro client can send out test packets
+ Starting with ADTPro version 2.0.1 and higher, the ADTPro client can send out test packets
  continuously so that you can make any necessary adjustments to your operating
  system or wiring until they are successfully "heard" at the host.  The test 
  packets are activated at the client end by simply accessing the "About" screen

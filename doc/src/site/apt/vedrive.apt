@@ -8,9 +8,16 @@ ADTPro Virtual Drive - {Ethernet}/ProDOS
 
 *Operation
 
- First of all you need to run VEDRIVE.SETUP to create a configuration file.
+ Once you've established the Ethernet
+ connection between your Apple II and the ADTPro host server, boot or otherwise access the
+ VDRIVE-v.r.m.DSK disk image on your Apple II.
+ It will start with some brief instructions:
+ 
+[images/vdrive1.png]
 
- Then run <<<VEDRIVE>>> (or <<<VEDRIVE.SYSTEM>>>) to install the Virtual Ethernet Drive. It will:
+ First of all you need to run <<<VEDRIVE.SETUP>>> to create a configuration file.
+
+ Then run <<<VEDRIVE>>> to install the Virtual Ethernet Drive. It will:
 
   * Get an IP address via DHCP
 
