@@ -1,6 +1,6 @@
 ;
 ; ADTPro - Apple Disk Transfer ProDOS
-; Copyright (C) 2010 - 2014 by David Schmidt
+; Copyright (C) 2010 - 2016 by David Schmidt
 ; david__schmidt at users.sourceforge.net
 ;
 ; This program is free software; you can redistribute it and/or modify it 
@@ -145,7 +145,7 @@ AudioLineEnd:
 	.byte $8d
 EthernetRow = ROW3;
 EthernetLine:
-	asc "(E)THERNET  : UTHERNET (II) OR LANCEGS"
+	asc "(E)THERNET  : UTHERNET/II OR LANCEGS"
 EthernetLineEnd:
 	.byte $8d
 QuitRow = ROW4;
@@ -461,7 +461,6 @@ PRINT:
 PrintNext:
 	lda	(A1L),y
 	beq	PrintDone
-	;ora #$80
 	jsr	COUT
 	iny
 	bne	PrintNext
