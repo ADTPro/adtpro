@@ -23,6 +23,9 @@ ADTPro Release History
 
  Bug fixes/changes:
 
+ * [VDrive] Default slot changed from slot 2 to slot 1 for virtual Ethernet
+   disk drivers
+
  * [Ethernet] Fixes from Oliver Schmidt in ADTPro's interaction with the IP65
    library make for much more reliable transfers with all Ethernet cards
 
@@ -33,9 +36,6 @@ ADTPro Release History
 
  * Skip initial serial ping request from IIgs to avoid blank screen when no
    connection exists at first
-
- * [VDrive] Default slot changed from slot 2 to slot 1 for virtual Ethernet
-   disk drivers
 
  []
 
