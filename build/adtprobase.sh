@@ -59,7 +59,7 @@ fi
 
 # Set up the library location.
 export TWEAK1="-Djava.library.path="
-export TWEAK=$TWEAK1$ADTPRO_HOME/$RXTXLIB
+export TWEAK="$TWEAK1$ADTPRO_HOME/$RXTXLIB"
 
 if [ "$1x" = "headlessx" ]; then
   shift
