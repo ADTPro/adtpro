@@ -53,7 +53,7 @@ ADTPro Virtual Drive - {Ethernet}/ProDOS
 independent from the current ProDOS prefix.
 
     <<<VEDRIVE.SYSTEM>>> reads <<<VEDRIVE>>>\
-    <<<VEDRIVE>>> reads <<<VEDRIVE.CONFIG>>>\
+    <<<VEDRIVE>>> reads <<<VEDRIVE.SETUP>>>\
     <<<VEDRIVE>>> reads <<<PRODOS>>>
 
  Uninstalling Virtual Ethernet Drive requires at least ProDOS 1.8.

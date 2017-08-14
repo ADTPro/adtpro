@@ -55,7 +55,7 @@ ADTPro Virtual Drive
 
  <<<VSDRIVE.LOW>>> - Virtual serial device driver; leaves Disk II driver intact, but consumes main memory 
 
- <<<VEDRIVE.CONFIG>>> - Virtual ethernet configuration program, required to set parameters for the VEDRIVE and VEDRIVE.LOW driver;
+ <<<VEDRIVE.SETUP>>> - Virtual ethernet configuration/setup program, required to set parameters for the VEDRIVE and VEDRIVE.LOW driver;
  uses {{{http://appleii.ivanx.com/nuinput/}Ivan Drucker's}} excellent NUINPUT program
 
  <<<VEDRIVE>>> - Virtual Ethernet drive installer/uninstaller (intended to be run from BASIC.SYSTEM)
