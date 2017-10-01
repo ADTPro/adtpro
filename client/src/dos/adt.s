@@ -156,6 +156,10 @@
 ; Version History:
 ; ----------------
 
+; Version 2.41 August 2017 
+; - Leave the final screen up after a disk transfer
+; - Set default speed at 115.2k
+
 ; Version 2.4 March 2010 
 ; - Fix to allow Laser 128 machines to run at 115.2kbps
 ; - Fix slot scan for Franklin Ace 500 computers
@@ -223,7 +227,7 @@
 ; Version 1.00 - FIRST PUBLIC RELEASE
 
 ; The version number as a macro. Must not be more than 7 characters.
-.define		version_no	"2.4"
+.define		version_no	"2.41"
 
 ; Protocol number. Note it must be assigned a higher value when the protcol is
 ; modified, and must never be < $0101 or > $01FF
@@ -1368,7 +1372,9 @@ recvlup:
 	jsr	putc
 	lda	errors
 	jsr	putc		; SEND ERROR FLAG TO HOST
-	jmp	awbeep		; BEEP AND END
+
+	jsr	awbeep
+	jmp	pause		; WAIT FOR KEY AND END
 
 
 ;---------------------------------------------------------
@@ -1394,8 +1400,9 @@ sendlup:
 	bcc	sendlup
 	lda	errors
 	jsr	putc		; SEND ERROR FLAG TO HOST
-	jmp	awbeep		; BEEP AND END
 
+	jsr	awbeep
+	jmp	pause		; WAIT FOR KEY AND END
 
 ;---------------------------------------------------------
 ; SR7TRK - SEND (X=0) OR RECEIVE (X=1) 7 TRACKS
