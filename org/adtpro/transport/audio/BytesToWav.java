@@ -1,7 +1,7 @@
 /*
  * ADTPro - Apple Disk Transfer ProDOS
  * Copyright (C) 2007 by David Schmidt
- * david__schmidt at users.sourceforge.net
+ * 1110325+david-schmidt@users.noreply.github.com
  *
  * Serial Transport notions derived from the jSyncManager project
  * http://jsyncmanager.sourceforge.net/

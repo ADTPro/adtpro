@@ -1,7 +1,7 @@
  -----
  ADTPro Installation
  -----
- David Schmidt (david__schmidt at users dot souceforge dot net)
+ David Schmidt (1110325+david-schmidt@users.noreply.github.com)
  -----
 
 ADTPro Installation
@@ -47,10 +47,9 @@ ADTPro Installation
 
  []
 
- Please report troubles, bugs, requests for help, etc. on the Help 
- forum for ADTPro at SourceForge:
+ Please open an issue for any troubles, bugs, requests for help, etc. at GitHub:
 
- {{{./forum.html}http://adtpro.sourceforge.net/forum.html}}
+ {{https://github.com/ADTPro/adtpro/issues}}
 
  Good luck - and have fun!
 

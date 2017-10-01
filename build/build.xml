@@ -6,7 +6,7 @@ ADTProBuild.properties, leave it in the same directory, and customize it
 before running this. You'll want to add ant.jar to the build path, as well.
 
 See:
-http://adtpro.sourceforge.net/developing.html
+http://adtpro.com/developing.html
 
 Target dependency tree:
 

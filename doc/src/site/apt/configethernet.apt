@@ -1,7 +1,7 @@
  -----
  ADTPro Ethernet Connections
  -----
- David Schmidt (david__schmidt at users dot souceforge dot net)
+ David Schmidt (1110325+david-schmidt@users.noreply.github.com)
  -----
 
 ADTPro Ethernet Connections
@@ -151,7 +151,7 @@ The graphical network configuration program for your operating system will have 
 the details you need, but you may have to do some digging to get at them.
 Chances are, though, that if you bought one of these cards... you know these kinds of
 details.  Feel free to
-{{{http://adtpro.sourceforge.net/forum.html}ask for help}}
+{{{https://github.com/ADTPro/adtpro/issues}ask for help}}
 if you need it.
 
  <<Note:>> if you ever end up saving a configuration that is not compatible

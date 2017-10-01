@@ -1,5 +1,5 @@
 For detailed build instructions, see:
-http://adtpro.sourceforge.net/developing.html
+http://adtpro.com/developing.html
 
 The ADTPro project is using the ca65 macro assembler from
 the cc65 project (http://www.cc65.org/).  The file
@@ -10,7 +10,7 @@ assembler lives in your installation.
 The web site is built using Maven (http://maven.apache.org/).
 Go into the doc directory and run the command "mvn site".
 The resulting directory rooted at doc/target/site is
-the stuff that gets uploaded to Sourceforge.
+the stuff that gets uploaded to ADTPro.com.
 
  * Did the Apple /// virtual drive driver change?  If so, copy over
    the new disk image from the git repository and point to it in 
@@ -60,21 +60,10 @@ the stuff that gets uploaded to Sourceforge.
    stuff, build a ADTPro-v.r.m.dmg of the ADTPro-v.r.m directory
    (This happens automatically if you just do a regular build on a Mac)  
 
- * Using the new SourceForge File Release System, navigate to
-   the ADTPro project:
-   https://sourceforge.net/project/admin/?group_id=170262
-   and use whatever system they have in place today to add the release.
-   Tag each file for the appropriate platform so it is automatically
-   presented to visitors looking to download.
+ * Add .gz, .zip, and .dmg files to the tagged release.  Add the release
+   notes to the release.
 
- * Upload updated web contents. use SFTP to web.sourceforge.net
-   and User name: SFUSER,adtpro
-   Files go into /home/groups/a/ad/adtpro/htdocs; back up the 
-   old version first (name it the prior version number),
-   and move htdocsOLD/archive to htdocs/archive or the A3 library
-   will be inaccessible.  WinSCP is an easy Windows GUI to do the
-   uploading and movement with.  I haven't found a good GUI client
-   for OSX or Linux.
+ * Upload updated web contents to ADTPro.com
 
  * After upload and announcements go out (comp.sys.apple2, Freecode,
    Softpedia, cnet downloads, etc.) change build/build.xml back to

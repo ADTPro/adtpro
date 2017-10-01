@@ -1,7 +1,7 @@
  -----
  Developing ADTPro
  -----
- David Schmidt (david__schmidt at users dot souceforge dot net)
+ David Schmidt (1110325+david-schmidt@users.noreply.github.com)
  -----
 
 Developing ADTPro
@@ -68,16 +68,16 @@ The minimum amount of work you'd go through to do so:
 
 * {Downloading}/Importing the ADTPro Project
 
- Connect Eclipse to the ADTPro CVS repository on Sourceforge by going through
+ Connect Eclipse to the ADTPro repository in GitHub by going through
 the next few configuration dialogs in Eclipse.
  
- * From the Eclipse IDE: <<<File->New->Project,>>> then: <<<CVS->Projects from CVS:>>>
+ * From the Eclipse IDE: <<<File->Import->Project,>>> then: <<<Import Projects from Git:>>>
 
  ** 
 
 [images/eclipse1.png]
    
- * Fill in the CVS repository info:
+ * Fill in the Git repository info:
 
  **
  
@@ -110,7 +110,7 @@ and tell it where to find it.
 * {Configuring the Project Properties}
 
  Resolving the external jar dependencies is easiest to do by
-right-clicking on the top-level "<<<adtpro [adtpro.cvs.sourceforge.net]>>>"
+right-clicking on the top-level "<<<adtpro [master]>>>"
 object in the package explorer, then picking <<<Build Path->Configure Build Path...>>>
 from the context menu.  The Java Build Path dialog box will come up; 
 then click on the Libraries tab:

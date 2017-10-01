@@ -2,7 +2,7 @@ Welcome to ADTPro!
 ------------------
 
 Detailed setup instructions are available on the web:
-http://adtpro.sourceforge.net
+http://adtpro.com
 
 The ADTPro distribution comes as a single file named
 something similar to ADTPro-v.r.m with an extension
@@ -88,10 +88,10 @@ software for your Apple yet, there's lots of help available. Start
 at ADTPro's bootstrapping page to get the software transferred to
 your Apple.
 
-Please report troubles, bugs, requests for help, etc. on the Help
-forum for ADTPro at SourceForge:
+Please report troubles, bugs, requests for help, etc. using the 
+project's github issues tracker:
 
-http://sourceforge.net/apps/phpbb/adtpro/
+https://github.com/ADTPro/adtpro/issues
 
 Good luck - and have fun!
 
@@ -117,8 +117,9 @@ java.library.path=/opt/IBMJava2-142/jre/bin:
 
 Keep working at your startup script or take a look at the RXTX install
 instructions in the rxtx directory. Remember, you can always ask for
-help in the ADTPro help forum:
-http://sourceforge.net/apps/phpbb/adtpro/
+in a tracker:
+
+https://github.com/ADTPro/adtpro/issues
 
 RXTX binary build for 64-bit Windows provided as a courtesy of Cloudhopper.
 Please see http://rxtx.cloudhopper.net/ for more info.

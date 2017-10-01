@@ -11,5 +11,5 @@ s@<img src="images/USBMac.jpg" alt="" />@<a href="http://retrofloppy.com/product
 s@<img src="images/USBMac1.jpg" alt="" />@<a href="http://retrofloppy.com/products.html#USBMAC" target\="_new"><img src="images/USBMac1.jpg" /></a>@ig;
 s@<img src="images/USBMac3.jpg" alt="" />@<a href="http://retrofloppy.com/products.html#USBMAC" target\="_new"><img src="images/USBMac3.jpg" /></a>@ig;
 s@<img src="images/a3NullModem.png" alt="" />@<a href="http://retrofloppy.com/products.html#DB25DE9NULL" target\="_new"><img src="images/a3NullModem.png" /></a>@ig;
-s@<img src="images/ADTProPPT.png" alt="" />@<a href="http://adtpro.sourceforge.net/ADTProIntro.ppt" target\="_new"><img src="images/ADTProPPT.png" /></a>@ig;
+s@<img src="images/ADTProPPT.png" alt="" />@<a href="http://adtpro.com/ADTProIntro.ppt" target\="_new"><img src="images/ADTProPPT.png" /></a>@ig;
 s@<img src="images/download.png" alt="" />@<a href="download.html" target\="_new"><img src="images/download.png" /></a>@ig;
