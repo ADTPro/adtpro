@@ -33,6 +33,7 @@ import java.io.FilenameFilter;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.util.Arrays;
+import java.util.Properties;
 
 import javax.swing.*;
 
@@ -302,7 +303,10 @@ public final class Gui extends JFrame implements ActionListener
 		this.setVisible(true);
 		SerialConfig.getSingleton(this);
 		AudioConfig.getSingleton(this, _properties);
-		Log.println(true, "args.length = " + args.length);
+		Log.println(true, "OS: "+System.getProperty("os.name"));
+		Log.println(true, "Java VM: "+System.getProperty("java.vm.info"));
+		Log.println(true, "Java bit width: "+System.getProperty("sun.arch.data.model"));
+		Log.println(true, "Invocation args.length: " + args.length);
 		if (args.length > 0)
 		{
 			String arg0 = args[0];
