@@ -5,3 +5,5 @@ test
 ADTProTrace.txt
 MESSUI.ini
 mess.bat
+dest/
+tasks/

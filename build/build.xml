@@ -52,6 +52,9 @@ all
 <project name="ADTPro" default="all" basedir="..">
 	<property name="versionString" value="v.r.m" />
 	<property name="projdir" value="${basedir}" />
+	<property name="srcdir" value="${basedir}/src" />
+	<property name="destdir" value="${basedir}/dest" />
+	<property name="tasks" value="${basedir}/tasks" />
 	<property name="builddir" value="${basedir}/build" />
 	<property name="distName" value="ADTPro-${versionString}" />
 	<property name="diskName" value="ADTPRO-${versionString}" />
@@ -74,13 +77,14 @@ all
 	<property name="rxtxZip" value="${rxtxVersion}.zip" />
 	<property name="rxtxVersion2" value="rxtx-2.1-7-bins-r2" />
 	<property name="rxtxZip2" value="${rxtxVersion2}.zip" />
+	<property name="rxtxJar" value="${builddir}/lib/rxtx/RXTXcomm.jar" />
 	<property name="rxtxVersionCloudHopperWin64" value="ch-rxtx-2.2-20081207-win-x64" />
 	<property name="rxtxZipCHWin64" value="${rxtxVersionCloudHopperWin64}.zip" />
 	<property name="ip65lib" value="${builddir}/lib/ip65/ip65.lib ${builddir}/lib/ip65/a2combo.lib ${builddir}/lib/cc65/apple2.lib" />
 	<property name="ip65u2lib" value="${builddir}/lib/ip65/ip65.lib ${builddir}/lib/ip65/a2uther2.lib ${builddir}/lib/cc65/apple2.lib" />
 	<property name="dmgmegabytes" value="9" />
-	<taskdef name="appleDump" classname="org.adtpro.utilities.AppleDump" classpath="${projdir}"/>
-	<taskdef name="appleCommander" classname="com.webcodepro.applecommander.ui.AntTask" classpath="${projdir};${acJarPath}/${acJar}"/>
+	<!--<taskdef name="appleDump" classname="org.adtpro.utilities.AppleDump" classpath="${projdir}/src"/>-->
+	<taskdef name="appleCommander" classname="com.webcodepro.applecommander.ui.AntTask" classpath="${projdir}/src;${acJarPath}/${acJar}"/>
 	<taskdef name="jarbundler" classname="net.sourceforge.jarbundler.JarBundler" classpath="${jarBundlerJar}"/>
 	<echo message="${distName} building on ${os.name}."/>
 	<condition property="isOSX">
@@ -93,22 +97,22 @@ all
 
 	<target name="client" depends="prodos, sos" description="Build Client Resources" />
 
-	<target name="server" depends="zip, dmg" description="Build Server Resources" >
+	<target name="server" depends="prepare,compile,zip, dmg" description="Build Server Resources" >
 	</target>
 
 	<target name="jar" depends="scripts" description="Gather Java Resources for Executable Server" >
-		<copy file="${projdir}/org/adtpro/resources/messagesOrig.properties" tofile="${projdir}/org/adtpro/resources/messages.properties" overwrite="true" />
-		<replace file="${projdir}/org/adtpro/resources/messages.properties" token="%ADTPRO_VERSION%" value="${versionString}"/>
+		<copy file="${srcdir}/org/adtpro/resources/messagesOrig.properties" tofile="${destdir}/org/adtpro/resources/messages.properties" overwrite="true" />
+		<replace file="${destdir}/org/adtpro/resources/messages.properties" token="%ADTPRO_VERSION%" value="${versionString}"/>
 		<!-- Convert localized resource properties to ascii -->
-		<native2ascii encoding="EUC_KR" src="${projdir}/org/adtpro/resources" dest="${projdir}/org/adtpro/resources"
+		<native2ascii encoding="EUC_KR" src="${srcdir}/org/adtpro/resources" dest="${destdir}/org/adtpro/resources"
 		   includes="messages_ko_KR.native" ext=".properties" />
-		<native2ascii encoding="ISO-8859-1" src="${projdir}/org/adtpro/resources" dest="${projdir}/org/adtpro/resources"
+		<native2ascii encoding="ISO-8859-1" src="${srcdir}/org/adtpro/resources" dest="${destdir}/org/adtpro/resources"
 		   includes="messages_fr.native" ext=".properties" />
-		<native2ascii encoding="ISO-8859-1" src="${projdir}/org/adtpro/resources" dest="${projdir}/org/adtpro/resources"
+		<native2ascii encoding="ISO-8859-1" src="${srcdir}/org/adtpro/resources" dest="${destdir}/org/adtpro/resources"
 		   includes="messages_es.native" ext=".properties" />
-		<native2ascii encoding="ISO-8859-1" src="${projdir}/org/adtpro/resources" dest="${projdir}/org/adtpro/resources"
+		<native2ascii encoding="ISO-8859-1" src="${srcdir}/org/adtpro/resources" dest="${destdir}/org/adtpro/resources"
 		   includes="messages_it.native" ext=".properties" />
-		<native2ascii encoding="ISO-8859-1" src="${projdir}/org/adtpro/resources" dest="${projdir}/org/adtpro/resources"
+		<native2ascii encoding="ISO-8859-1" src="${srcdir}/org/adtpro/resources" dest="${destdir}/org/adtpro/resources"
 		   includes="messages_pt_BR.native" ext=".properties" />
 		<unzip src="${builddir}/lib/rxtx/${rxtxZip}"
 			dest="${builddir}/${distName}/lib/rxtx"/>
@@ -120,14 +124,23 @@ all
 		<copy file="${builddir}/README" todir="${builddir}/${distName}" />
 		<copy file="${builddir}/LICENSE" todir="${builddir}/${distName}" />
 		<copy file="${builddir}/ADTPro.html" todir="${builddir}/${distName}" />
-		<copy file="${projdir}/org/adtpro/resources/ADTPro.ico" todir="${builddir}/${distName}/lib" />
+		<copy file="${srcdir}/org/adtpro/resources/ADTPro.ico" todir="${builddir}/${distName}/lib" />
+		<!-- copy all of the static files to the dest dir (to have them in the jar) -->
+		<copy todir="${destdir}" >
+			<fileset dir="${srcdir}" excludes="**/*.java"/>
+		</copy>
 		<!-- jar up the source, object and properties files -->
 		<jar jarfile="${builddir}/${distName}/lib/${distName}.jar"
 			manifest="${builddir}/manifest.mf"
-			basedir="${projdir}"
+			basedir="${destdir}"
 			includes="org/**/*.class org/**/*.java org/**/*.properties org/**/*.png org/**/*.dmp org/**/*.raw LICENSE" />
 		<chmod dir="${builddir}/${distName}" perm="ugo+rx"
 			includes="**/*.sh"/>
+	</target>
+	<target name="compile">
+		<javac srcdir="${srcdir}" destdir="${destdir}" classpath="${acJarPath}/${acJar}:${rxtxJar}" includeantruntime="false">
+			<exclude name="org/adtpro/utilities/AppleDump.java" />
+		</javac>
 	</target>
 	<target name="zip" depends="jar" description="Zip Up the Downloadable Packcage">
 		<!-- zip up the whole sheebang -->
@@ -222,10 +235,11 @@ all
 	ProDOS section
 	============================================================================================
 	-->
-	<target name="prodos" depends="prodos-serial, prodos-audio, prodos-ethernet, prodos-bootstrap, prodos-vsdrive, prodos-vedrive" description="Orchestrate Overall Client Build for ProDOS" >
+	<target name="prodos" depends="prepare,prodos-serial, prodos-audio, prodos-ethernet, prodos-bootstrap, prodos-vsdrive, prodos-vedrive" description="Orchestrate Overall Client Build for ProDOS" >
 	</target>
 
-	<target name="prodos-serial" depends="prodos-adtpro-image-prep, common" description="Build the ADTPro Serial Client (ProDOS)">
+	<target name="prodos-serial" depends="tasks,prodos-adtpro-image-prep, common" description="Build the ADTPro Serial Client (ProDOS)">
+		<taskdef name="appleDump" classname="org.adtpro.utilities.AppleDump" classpath="${tasks}"/>
 		<echo message="Assembling prodos-serial client..."/>
 		<exec dir="${projdir}/client/src" executable="${assemblerPath}/ca65" failonerror="true">
 			<arg line="-t none -I . -l prodos/serial/sermain.lst prodos/serial/sermain.asm" />
@@ -234,8 +248,8 @@ all
 		<exec dir="${projdir}/client/src" executable="${assemblerPath}/ld65" failonerror="true">
 			<arg line="-o ADTPRO.BIN -m adtproser.map -C prodos/serial/adtpro.cfg prodos/serial/sermain.o tail.o" />
 		</exec>
-		<appleDump infilename="${projdir}/client/src/ADTPRO.BIN" outfilename="${basedir}/org/adtpro/resources/adtpro.dmp" applename="ADTPRO.BIN" startaddrhex="800" numbyteswide="22"  decoration="begin" finalline="800G"/>
-		<copy file="${projdir}/client/src/ADTPRO.BIN" tofile="${basedir}/org/adtpro/resources/adtpro.raw" />
+		<appleDump infilename="${projdir}/client/src/ADTPRO.BIN" outfilename="${destdir}/org/adtpro/resources/adtpro.dmp" applename="ADTPRO.BIN" startaddrhex="800" numbyteswide="22"  decoration="begin" finalline="800G"/>
+		<copy file="${projdir}/client/src/ADTPRO.BIN" tofile="${destdir}/org/adtpro/resources/adtpro.raw" />
 		<echo message="Adding ADTPRO to 5.25 disk image..."/>
 		<appleCommander command="p" input="${projdir}/client/src/ADTPRO.BIN" imagename="${builddir}/${distName}/disks/${diskName}.DSK" filename="ADTPRO.BIN" type="bin" address="2048"/>
 		<echo message="Adding ADTPRO to 3.5 disk image..."/>
@@ -251,8 +265,8 @@ all
 		<exec dir="${projdir}/client/src" executable="${assemblerPath}/ld65" failonerror="true">
 			<arg line="-o ADTPROAUD.BIN -m adtproaud.map -C prodos/audio/adtpro.cfg prodos/audio/audmain.o tail.o" />
 		</exec>
-		<appleDump infilename="${projdir}/client/src/ADTPROAUD.BIN" outfilename="${basedir}/org/adtpro/resources/adtproaud.dmp" applename="ADTPROAUD.BIN" startaddrhex="800" numbyteswide="22" decoration="begin" finalline="800G"/>
-		<copy file="${projdir}/client/src/ADTPROAUD.BIN" tofile="${basedir}/org/adtpro/resources/adtproaud.raw" />
+		<appleDump infilename="${projdir}/client/src/ADTPROAUD.BIN" outfilename="${destdir}/org/adtpro/resources/adtproaud.dmp" applename="ADTPROAUD.BIN" startaddrhex="800" numbyteswide="22" decoration="begin" finalline="800G"/>
+		<copy file="${projdir}/client/src/ADTPROAUD.BIN" tofile="${destdir}/org/adtpro/resources/adtproaud.raw" />
 		<echo message="Adding ADTPROAUD to 5.25 disk image..."/>
 		<appleCommander command="p" input="${projdir}/client/src/ADTPROAUD.BIN" imagename="${builddir}/${distName}/disks/${diskName}.DSK" filename="ADTPROAUD.BIN" type="bin" address="2048"/>
 		<echo message="Adding ADTPROAUD to 3.5 disk image..."/>
@@ -268,8 +282,8 @@ all
 		<exec dir="${projdir}/client/src" executable="${assemblerPath}/ld65" failonerror="true">
 			<arg line="-o ADTPROETH.BIN -m adtproeth.map -C prodos/ethernet/adtpro.cfg prodos/ethernet/ethmain.o ${ip65lib} tail.o" />
 		</exec>
-		<appleDump infilename="${projdir}/client/src/ADTPROETH.BIN" outfilename="${basedir}/org/adtpro/resources/adtproeth.dmp" applename="ADTPROETH.BIN" startaddrhex="800" numbyteswide="22" decoration="begin" finalline="800G"/>
-		<copy file="${projdir}/client/src/ADTPROETH.BIN" tofile="${basedir}/org/adtpro/resources/adtproeth.raw" />
+		<appleDump infilename="${projdir}/client/src/ADTPROETH.BIN" outfilename="${destdir}/org/adtpro/resources/adtproeth.dmp" applename="ADTPROETH.BIN" startaddrhex="800" numbyteswide="22" decoration="begin" finalline="800G"/>
+		<copy file="${projdir}/client/src/ADTPROETH.BIN" tofile="${destdir}/org/adtpro/resources/adtproeth.raw" />
 		<echo message="Adding ADTPROETH to 5.25 disk image..." />
 		<appleCommander command="p" input="${projdir}/client/src/ADTPROETH.BIN" imagename="${builddir}/${distName}/disks/${diskName}.DSK" filename="ADTPROETH.BIN" type="bin" address="2048"/>
 		<echo message="Adding ADTPROETH to 3.5 disk image..."/>
@@ -345,9 +359,9 @@ all
 		<exec dir="${projdir}/client/src" executable="${assemblerPath}/ld65" failonerror="true">
 			<arg line="-o VSDRIVE_SPEED -m vsdrive_speed.map -C prodos/serial/drive/vsdrive_high.cfg prodos/serial/drive/vsdrive_speed.o" />
 		</exec>
-		<copy file="${projdir}/client/src/VSDRIVE_LOW" tofile="${basedir}/org/adtpro/resources/vsdrive_low.raw" />
-		<copy file="${projdir}/client/src/VSDRIVE_HIGH" tofile="${basedir}/org/adtpro/resources/vsdrive_high.raw" />
-		<copy file="${projdir}/client/src/VSDRIVE_SPEED" tofile="${basedir}/org/adtpro/resources/vsdrive_speed.raw" />
+		<copy file="${projdir}/client/src/VSDRIVE_LOW" tofile="${destdir}/org/adtpro/resources/vsdrive_low.raw" />
+		<copy file="${projdir}/client/src/VSDRIVE_HIGH" tofile="${destdir}/org/adtpro/resources/vsdrive_high.raw" />
+		<copy file="${projdir}/client/src/VSDRIVE_SPEED" tofile="${destdir}/org/adtpro/resources/vsdrive_speed.raw" />
 		<delete file="${projdir}/client/src/VSDRIVE_SPEED" />
 		<echo message="Adding VSDrive to 5.25 disk image..."/>
 		<appleCommander command="d" imagename="${builddir}/${distName}/disks/${vdriveDiskName}.DSK" filename="VSDRIVE.LOW" failonerror="false"/>
@@ -434,9 +448,9 @@ all
 		<exec dir="${projdir}/client/src" executable="${assemblerPath}/ld65" failonerror="true">
 			<arg line="-o GRUB_VSDRIVE -m grub_vsdrive.map -C prodos/serial/grub2/grub_vsdrive.cfg prodos/serial/grub2/grub_vsdrive.o" />
 		</exec>
-		<appleDump infilename="${projdir}/client/src/GRUB2" outfilename="${basedir}/org/adtpro/resources/grub2.dmp" applename="GRUB2" startaddrhex="7000" numbyteswide="22" decoration="yes" />
-		<appleDump infilename="${projdir}/client/src/GRUB_VSDRIVE" outfilename="${basedir}/org/adtpro/resources/grub_vsdrive.dmp" applename="GRUB_VSDRIVE" startaddrhex="7000" numbyteswide="22" decoration="yes" />
-		<appleDump infilename="${projdir}/org/adtpro/resources/PD.raw" outfilename="${basedir}/org/adtpro/resources/PD.dmp" applename="PD" startaddrhex="2000" numbyteswide="22" decoration="begin" finalline="2003G E000G"/>
+		<appleDump infilename="${projdir}/client/src/GRUB2" outfilename="${destdir}/org/adtpro/resources/grub2.dmp" applename="GRUB2" startaddrhex="7000" numbyteswide="22" decoration="yes" />
+		<appleDump infilename="${projdir}/client/src/GRUB_VSDRIVE" outfilename="${destdir}/org/adtpro/resources/grub_vsdrive.dmp" applename="GRUB_VSDRIVE" startaddrhex="7000" numbyteswide="22" decoration="yes" />
+		<appleDump infilename="${srcdir}/org/adtpro/resources/PD.raw" outfilename="${destdir}/org/adtpro/resources/PD.dmp" applename="PD" startaddrhex="2000" numbyteswide="22" decoration="begin" finalline="2003G E000G"/>
 		<delete file="${projdir}/client/src/GRUB2" />
 		<delete file="${projdir}/client/src/GRUB_VSDRIVE" />
 		<!--
@@ -446,8 +460,8 @@ all
 		<exec dir="${projdir}/client/src/dos" executable="${assemblerPath}/cl65" failonerror="true">
 			<arg line="-t none -l adt.lst adt.s -o ADT" />
 		</exec>
-		<copy file="${projdir}/client/src/dos/ADT" tofile="${basedir}/org/adtpro/resources/adt.raw" />
-		<appleDump infilename="${projdir}/client/src/dos/ADT" outfilename="${basedir}/org/adtpro/resources/adt.dmp" applename="ADT" startaddrhex="803" numbyteswide="22" decoration="yes" />
+		<copy file="${projdir}/client/src/dos/ADT" tofile="${destdir}/org/adtpro/resources/adt.raw" />
+		<appleDump infilename="${projdir}/client/src/dos/ADT" outfilename="${destdir}/org/adtpro/resources/adt.dmp" applename="ADT" startaddrhex="803" numbyteswide="22" decoration="yes" />
 		<delete file="${projdir}/client/src/dos/ADT" />
 	</target>
 
@@ -456,7 +470,7 @@ all
 	SOS section
 	============================================================================================
 	-->
-	<target name="sos" depends="sos-serial, sos-ethernet, sos-vsdrive, sos-bootstrap" description="Orchestrate Overall Client Build for SOS" />
+	<target name="sos" depends="prepare, sos-serial, sos-ethernet, sos-vsdrive, sos-bootstrap" description="Orchestrate Overall Client Build for SOS" />
 	<target name="sos-serial" depends="sos-image-prep, common" description="Build the ADTPro Serial Client (SOS)">
 		<echo message="Assembling sos-serial client..."/>
 		<!--
@@ -469,7 +483,7 @@ all
 		<exec dir="${projdir}/client/src" executable="${assemblerPath}/ld65" failonerror="true">
 			<arg line="-o ADTSOS -m adtsosser.map -C sos/serial/adtpro.cfg sos/serial/sermain.o tail.o" />
 		</exec>
-		<copy file="${projdir}/client/src/ADTSOS" tofile="${basedir}/org/adtpro/resources/adtsos.raw" />
+		<copy file="${projdir}/client/src/ADTSOS" tofile="${destdir}/org/adtpro/resources/adtsos.raw" />
 		<echo message="Adding ADTSOS to 5.25 disk image..."/>
 		<appleCommander command="p" input="${projdir}/client/src/ADTSOS" imagename="${builddir}/${distName}/disks/${disk3Name}.DSK" filename="SOS.INTERP" type="sos" address="0000"/>
 		<delete file="${projdir}/client/src/ADTSOS" />
@@ -505,7 +519,7 @@ all
 			<arg line="-o GRUB -m grub.map -C sos/serial/plain.cfg sos/serial/grub.o" />
 		</exec>
 		<echo message="Dumping Grub..."/>
-		<appleDump infilename="${projdir}/client/src/GRUB" outfilename="${basedir}/org/adtpro/resources/grub.dmp" applename="GRUB" startaddrhex="A000" numbyteswide="8" decoration="end"/>
+		<appleDump infilename="${projdir}/client/src/GRUB" outfilename="${destdir}/org/adtpro/resources/grub.dmp" applename="GRUB" startaddrhex="A000" numbyteswide="8" decoration="end"/>
 		<echo message="Assembling SOS serial Loader source..."/>
 		<exec dir="${projdir}/client/src" executable="${assemblerPath}/ca65" failonerror="true">
 			<arg line="-t none -I . -l sos/serial/loader.lst sos/serial/loader.asm" />
@@ -514,7 +528,7 @@ all
 		<exec dir="${projdir}/client/src" executable="${assemblerPath}/ld65" failonerror="true">
 			<arg line="-o LOADER -m loader.map -C sos/serial/loader.cfg sos/serial/loader.o" />
 		</exec>
-		<copy file="${projdir}/client/src/LOADER" tofile="${basedir}/org/adtpro/resources/SOSLoader.raw" />
+		<copy file="${projdir}/client/src/LOADER" tofile="${destdir}/org/adtpro/resources/SOSLoader.raw" />
 		<echo message="Assembling SOS Kernel..."/>
 		<exec dir="${projdir}/client/src" executable="${assemblerPath}/ca65" failonerror="true">
 			<arg line="-t none -l sos/serial/kernel.lst sos/serial/kernel.asm" />
@@ -523,7 +537,7 @@ all
 		<exec dir="${projdir}/client/src" executable="${assemblerPath}/ld65" failonerror="true">
 			<arg line="-o sos/serial/SK.raw -C sos/serial/kernel.cfg sos/serial/kernel.o" />
 		</exec>
-		<move file="${projdir}/client/src/sos/serial/SK.raw" tofile="${basedir}/org/adtpro/resources/SK.raw" />
+		<move file="${projdir}/client/src/sos/serial/SK.raw" tofile="${destdir}/org/adtpro/resources/SK.raw" />
 		<echo message="Assembling SOS boot sector..."/>
 		<exec dir="${projdir}/client/src" executable="${assemblerPath}/ca65" failonerror="true">
 			<arg line="-t none -l sos/bootsector.lst sos/bootsector.asm" />
@@ -565,6 +579,18 @@ all
 		<replace file="${projdir}/client/src/messages.asm" token="%ADTPRO_VERSION%" value="${versionString}"/>
 	</target>
 
+	<target name="tasks" description="Compile tasks">
+		<mkdir dir="${tasks}" />
+		<javac srcdir="${srcdir}" destdir="${tasks}" includeantruntime="true" >
+			<include name="org/adtpro/utilities/AppleDump.java" />
+		</javac>
+	</target>
+
+	<!-- prepare jar output dir, including resources for copying of data files -->
+	<target name="prepare" description="Prepare jar destination">
+		<mkdir dir="${destdir}/org/adtpro/resources/" />
+	</target>
+
 	<!--
 	============================================================================================
 	Cleanup section
@@ -574,6 +600,8 @@ all
 		<!--
 		Clean up everything
 		-->
+		<delete dir="${destdir}" />
+		<delete dir="${tasks}" />
 		<delete file="${projdir}/client/src/messages.asm" />
 		<delete file="${builddir}/${distName}.tar.gz" />
 		<delete file="${builddir}/${distName}.zip" />
@@ -582,18 +610,8 @@ all
 		<delete file="${builddir}/${distName}/disks/${disk3Name}.DSK" />
 		<delete file="${builddir}/${distName}/disks/${vdriveDiskName}.DSK" />
 		<delete file="${builddir}/${distName}/disks/${diskName}.PO" />
-		<delete file="${projdir}/org/adtpro/resources/adt.dmp" />
-		<delete file="${projdir}/org/adtpro/resources/adtpro.dmp" />
-		<delete file="${projdir}/org/adtpro/resources/adtproaud.dmp" />
-		<delete file="${projdir}/org/adtpro/resources/adtproeth.dmp" />
-		<delete file="${projdir}/org/adtpro/resources/grub.dmp" />
-		<delete file="${projdir}/org/adtpro/resources/grub2.dmp" />
-		<delete file="${projdir}/org/adtpro/resources/PD.dmp" />
-		<delete file="${projdir}/org/adtpro/resources/PDSpeed.dmp" />
-		<delete file="${projdir}/org/adtpro/resources/messages.properties" />
 		<delete file="${projdir}/client/src/sos/bootsector.raw" />
 		<delete>
-			<fileset dir="${projdir}/org/adtpro/resources" includes="messages_*.properties"/>
 			<fileset dir="${projdir}/client/src" includes="**/*.o"/>
 			<fileset dir="${projdir}/client/src" includes="**/*.map"/>
 			<fileset dir="${projdir}/client/src" includes="**/*.lst"/>
