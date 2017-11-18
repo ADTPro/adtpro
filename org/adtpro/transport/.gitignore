@@ -1,9 +1,0 @@
-/ATransport.class
-/AudioTransport.class
-/GoHomeException.class
-/ProtocolVersionException.class
-/SerialIPTransport.class
-/SerialTransport.class
-/TransportClosedException.class
-/TransportTimeoutException.class
-/UDPTransport.class
