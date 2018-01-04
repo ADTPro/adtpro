@@ -20,9 +20,11 @@ Starting ADTPro
  or by clicking on the startup program for your host operating
  system:
 
- <<<adtpro.sh>>> - Linux, Solaris (You downloaded the .tar.gz package, didn't you?)
+ <<<adtpro.sh>>> - Linux, Solaris (you downloaded the .tar.gz package, didn't you?)
 
- <<<ADTPro-v.r.m.app>>> - OSX (You downloaded the .dmg package, didn't you?)
+ <<<ADTPro-v.r.m.app>>> - OSX 10.10 and below (you downloaded the .dmg package, didn't you?)
+
+ <<<adtpro.command>>> - OSX 10.11 and above (you downloaded the .dmg package, didn't you?)
 
  <<<adtpro.cmd>>> - OS/2
 
