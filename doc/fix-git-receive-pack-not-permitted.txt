@@ -1,0 +1,1 @@
+context-menu > team > remote > configure push to upstream > change > User authentication.
