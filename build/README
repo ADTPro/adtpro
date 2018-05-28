@@ -14,8 +14,8 @@ particular to the target platform:
 
 Your distribution should contain most of these, depending on platform:
 
- * ADTPro-v.r.m.app       - OSX server application for OSX 10.3 and above
- * adtpro.command         - OSX server startup command file for OSX 10.2 and below
+ * ADTPro-v.r.m.app       - OSX server application for OSX 10.3 through OSX 10.10
+ * adtpro.command         - OSX server startup command file for OSX 10.11 and above
  * adtpro.bat             - Windows server startup batch file
  * adtpro.cmd             - OS/2 server startup batch file
  * adtpro.sh              - Linux/Solaris server startup
