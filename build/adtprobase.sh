@@ -14,15 +14,14 @@
 # current working directory.
 export ADTPRO_HOME="`dirname \"$0\"`"
 cd "$ADTPRO_HOME"
-export ADTPRO_HOME=`pwd`
+export ADTPRO_HOME="`pwd`/"
 
 # Uncomment and modify one or both of the lines below if you
 # want to specify a particular location for Java or ADTPro.
-# NOTE: be sure to include a trailing slash on MY_JAVA_HOME,
-# but not on ADTPRO_HOME.
+# Note: They must have a trailing backslash as in the examples!
 #
 # export MY_JAVA_HOME=/usr/local/java/bin/
-# export ADTPRO_HOME=~/myuser/adtpro
+# export ADTPRO_HOME=~/myuser/adtpro/
 
 OS=`uname`
 OS_ARCH=`uname -p`
@@ -59,7 +58,7 @@ fi
 
 # Set up the library location.
 export TWEAK1="-Djava.library.path="
-export TWEAK="$TWEAK1$ADTPRO_HOME/$RXTXLIB"
+export TWEAK="$TWEAK1""$ADTPRO_HOME""$RXTXLIB"
 
 if [ "$1x" = "headlessx" ]; then
   shift
@@ -75,5 +74,4 @@ if [ "$1x" = "headlessx" ]; then
   fi
 fi
 
-cd "$ADTPRO_HOME"/disks
-$HEADLESS"$MY_JAVA_HOME"java -Xms256m -Xmx512m "$TWEAK" $ADTPRO_EXTRA_JAVA_PARMS -cp ../lib/%ADTPRO_VERSION%:../"$RXTXLIB"/../RXTXcomm.jar:../lib/AppleCommander/AppleCommander-%AC_VERSION%.jar org.adtpro.ADTPro $*
+$HEADLESS"$MY_JAVA_HOME"java -Xms256m -Xmx512m "$TWEAK" $ADTPRO_EXTRA_JAVA_PARMS -cp "$ADTPRO_HOME"lib/%ADTPRO_VERSION%:"$ADTPRO_HOME""$RXTXLIB"/../RXTXcomm.jar:"$ADTPRO_HOME"lib/AppleCommander/AppleCommander-%AC_VERSION%.jar org.adtpro.ADTPro $*
