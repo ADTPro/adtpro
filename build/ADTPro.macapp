@@ -1,0 +1,7 @@
+#!/bin/sh
+
+export ADTPRO_HOME="`dirname \"$0\"`"
+cd "$ADTPRO_HOME/../../.."
+export ADTPRO_HOME="`pwd`/"
+
+"$ADTPRO_HOME"ADTPro.command

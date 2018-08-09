@@ -28,11 +28,12 @@ chflags -R nouchg,noschg "$SRC"
 ditto -rsrcFork -v "$SRC" "/Volumes/$VOLUME"
 
 mkdir "/Volumes/$VOLUME/.background"
-cp ../org/adtpro/resources/ADTProMacInstallBackground.png "/Volumes/$VOLUME/.background/background.png"
+cp ../src/org/adtpro/resources/ADTProMacInstallBackground.png "/Volumes/$VOLUME/.background/background.png"
 cp ADTProDMG.icns "/Volumes/$VOLUME/.VolumeIcon.icns"
 SetFile -c icns "/Volumes/$VOLUME/.VolumeIcon.icns"
-SetFile -a C /Volumes/$VOLUME
-./lib/setfileicon ADTProFolder.icns /Volumes/$VOLUME/$VOLUME
+SetFile -a C "/Volumes/$VOLUME"
+./lib/setfileicon ADTProFolder.icns "/Volumes/$VOLUME/$VOLUME"
+./lib/setfileicon ADTPro.icns "/Volumes/$VOLUME/$VOLUME/$VOLUME.app"
 rm -rf /Volumes/$VOLUME/.Trashes
 rm -rf /Volumes/$VOLUME/.fseventsd
 
