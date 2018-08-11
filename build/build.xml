@@ -147,17 +147,15 @@ all
 		<zip destfile="${builddir}/${distName}.zip"
 			basedir="${builddir}"
 			includes="${distName}/**"/>
-		<tar destfile="${builddir}/${distName}.tar"
+		<tar destfile="${builddir}/${distName}.tar.gz"
+			compression="gzip"
 			basedir="${builddir}"
 			includes="${distName}/**"
-			excludes="${distName}/adtpro.sh">
-			<tarfileset dir="${builddir}" mode="755">
-				<include name="${distName}/adtpro.sh"/>
+			excludes="${distName}/*.sh">
+			<tarfileset dir="${builddir}" filemode="755">
+				<include name="${distName}/*.sh"/>
 			</tarfileset>
 		</tar>
-		<gzip destfile="${builddir}/${distName}.tar.gz"
-			src="${builddir}/${distName}.tar" />
-		<delete file="${builddir}/${distName}.tar" />
 	</target>
 	<target name="dmg" depends="jar" if="isOSX" description="Build OSX DMG Installable Package" >
 		<!-- Build a pretty Mac OSX .app bundle -->
