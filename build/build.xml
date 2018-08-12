@@ -72,7 +72,6 @@ all
 	<property name="acJarVersion" value="1.3.5.13-ac" />
 	<property name="acJarPath" value="${builddir}/lib/AppleCommander" />
 	<property name="acJar" value="AppleCommander-${acJarVersion}.jar" />
-	<property name="jarBundlerJar" value="${builddir}/lib/jarbundler-2.1.0/jarbundler-2.1.0.jar" />
 	<property name="rxtxVersion" value="rxtx-2.2pre2-local" />
 	<property name="rxtxZip" value="${rxtxVersion}.zip" />
 	<property name="rxtxVersion2" value="rxtx-2.1-7-bins-r2" />
@@ -85,7 +84,6 @@ all
 	<property name="dmgmegabytes" value="9" />
 	<!--<taskdef name="appleDump" classname="org.adtpro.utilities.AppleDump" classpath="${projdir}/src"/>-->
 	<taskdef name="appleCommander" classname="com.webcodepro.applecommander.ui.AntTask" classpath="${projdir}/src;${acJarPath}/${acJar}"/>
-	<taskdef name="jarbundler" classname="net.sourceforge.jarbundler.JarBundler" classpath="${jarBundlerJar}"/>
 	<echo message="${distName} building on ${os.name}."/>
 	<condition property="isOSX">
 		<os name="Mac OS X"/>
@@ -158,41 +156,25 @@ all
 		</tar>
 	</target>
 	<target name="dmg" depends="jar" if="isOSX" description="Build OSX DMG Installable Package" >
-		<!-- Build a pretty Mac OSX .app bundle -->
-		<jarbundler dir="${builddir}/${distName}"
-			name="${distName}"
-			shortname="ADTPro"
-			version="${versionString}"
-			bundleid="org.adtpro.ADTPro"
-			mainclass="org.adtpro.ADTPro"
-			icon="${builddir}/ADTPro.icns"
-			vmoptions="-Xms256m -Xmx512m -Djava.library.path=lib/rxtx/${rxtxVersion}/mac-10.5">
-			<jarfilelist dir="${builddir}/${distName}/lib">
-				<file name="rxtx/${rxtxVersion}/RXTXcomm.jar"/>
-				<file name="AppleCommander/${acJar}"/>
-				<file name="${distName}.jar"/>
-			</jarfilelist>
-		</jarbundler>
 		<!-- Add an empty directory in the .app for each languge we translate into -->
 		<mkdir dir="${builddir}/${distName}/${distName}.app/Contents/Resources/English.lproj"/>
 		<mkdir dir="${builddir}/${distName}/${distName}.app/Contents/Resources/French.lproj"/>
 		<mkdir dir="${builddir}/${distName}/${distName}.app/Contents/Resources/Korean.lproj"/>
- 		<mkdir dir="${builddir}/${distName}/${distName}.app/Contents/Resources/Spanish.lproj"/>
- 		<mkdir dir="${builddir}/${distName}/${distName}.app/Contents/Resources/Italian.lproj"/>
- 		<mkdir dir="${builddir}/${distName}/${distName}.app/Contents/Resources/pt.lproj"/>
+		<mkdir dir="${builddir}/${distName}/${distName}.app/Contents/Resources/Spanish.lproj"/>
+		<mkdir dir="${builddir}/${distName}/${distName}.app/Contents/Resources/Italian.lproj"/>
+		<mkdir dir="${builddir}/${distName}/${distName}.app/Contents/Resources/pt.lproj"/>
 
 		<!-- Get rid of stuff the Apple crowd doesn't need -->
 		<move file="${builddir}/${distName}/ADTPro.sh" tofile="${builddir}/${distName}/ADTPro.command"/>
 		<delete file="${builddir}/${distName}/ADTPro.bat" />
 		<delete file="${builddir}/${distName}/ADTPro.cmd" />
 		<delete file="${builddir}/${distName}/ac.bat" />
-		
-		<!-- Un-sign Apple's JavaApplicationStub -->
-		<echo message="Un-signing Apple's Java Application Stub."/>
-		<exec dir="${builddir}" os="Mac OS X" executable="/bin/sh">
-			<arg value="-c"/>
-			<arg value="${builddir}/unsign.rb ${builddir}/${distName}/${distName}.app/Contents/MacOS/JavaApplicationStub"/>
-		</exec>
+
+		<!-- Copy the app starter stub -->
+		<mkdir dir="${builddir}/${distName}/${distName}.app/Contents/MacOS"/>
+		<copy file="${builddir}/ADTPro.macapp" tofile="${builddir}/${distName}/${distName}.app/Contents/MacOS/${distName}"/>
+		<chmod file="${builddir}/${distName}/${distName}.app/Contents/MacOS/${distName}" perm="755"/>
+
 		<!-- Push the "ADTPro-v.r.m" directory one level deeper.  I couldn't seem to get Ant to do what I wanted, so I just dumped in the simple shell commands I needed. -->
 		<tempfile property="tempFile"/>
 		<echo message="Pushing package contents one level deeper."/>
