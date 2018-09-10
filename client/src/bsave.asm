@@ -1,6 +1,6 @@
 ;
 ; ADTPro - Apple Disk Transfer ProDOS
-; Copyright (C) 2006 - 2008 by David Schmidt
+; Copyright (C) 2006 - 2018 by David Schmidt
 ; 1110325+david-schmidt@users.noreply.github.com
 ;
 ; This program is free software; you can redistribute it and/or modify it 
@@ -64,13 +64,13 @@ BSAVE_MSGEND:
 ;
 BLOAD:
 	CALLOS OS_OPEN, FILE_OP
-	CALLOS_CHECK_POS	; Branch to BLOAD_END on error
-	jmp BLOAD_END
+	CALLOS_CHECK_POS	; Branch + if no error
+	jmp BLOAD_END		; Jump to BLOAD_END on error
 :	lda FILE_OPN		; copy file number
 	sta FILE_RDN
 	sta FILE_CLN
-BLOAD_CLOSE:
 	CALLOS OS_READFILE, FILE_RD
+BLOAD_CLOSE:
 	CALLOS OS_CLOSE, FILE_CL
 BLOAD_END:
 	rts
