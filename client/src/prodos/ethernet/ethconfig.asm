@@ -1,6 +1,6 @@
 ;
 ; ADTPro - Apple Disk Transfer ProDOS
-; Copyright (C) 2006 - 2015 by David Schmidt
+; Copyright (C) 2006 - 2018 by David Schmidt
 ; 1110325+david-schmidt@users.noreply.github.com
 ;
 ; This program is free software; you can redistribute it and/or modify it 
@@ -358,10 +358,14 @@ FindSlotLoop:
 	stx TempSlot
 	inx		; One-indexed slot number for a2_set_slot
 	txa
+	jsr DisqualifyCards
+	bcs Bump
 	jsr a2_set_slot
 	jsr ip65_init
 	ldx TempSlot
 	bcc FoundSlot
+Bump:
+	clc
 	inx
 	cpx #MAXSLOT
 	bne FindSlotLoop
@@ -372,6 +376,35 @@ FoundSlot:
 	rts
 
 TempSlot:	.byte 0
+
+
+;---------------------------------------------------------
+; DisqualifyCards - Eliminate cards from scan consideration based on firmware clues
+; On entry: A=X=slot
+; On exit:A=X=slot, carry set if card is disqualified
+;---------------------------------------------------------
+DisqualifyCards:
+	clc
+	adc #$c0
+	sta UTILPTR + 1
+	lda #$00
+	sta UTILPTR
+	ldy #$26
+	lda (UTILPTR),y
+	cmp #$e2	; Check some values
+	bne NotDisqualified
+	ldy #$4d
+	lda (UTILPTR),y
+	cmp #$fb	; Check some values
+	bne NotDisqualified
+	sec
+	bcs DisqualifyDone
+NotDisqualified:
+	clc
+DisqualifyDone:
+	txa
+	rts
+
 
 ;---------------------------------------------------------
 ; Configuration
@@ -419,7 +452,7 @@ PSAVE:	.byte 1		; Save parms? (NO)
 PDHCP:	.byte 0		; DHCP Configuration? (YES)
 
 ip_parms:
-serverip:	.byte 192, 168,   0,  12
+serverip:	.byte 192, 168,   1,  18
 cfg_ip:		.byte   0,   0,   0,   0 ; ip address of local machine (will be overwritten if dhcp_init is called)
 cfg_netmask:	.byte   0,   0,   0,   0 ; netmask of local network (will be overwritten if dhcp_init is called)
 cfg_gateway:	.byte   0,   0,   0,   0 ; ip address of router on local network (will be overwritten if dhcp_init is called)

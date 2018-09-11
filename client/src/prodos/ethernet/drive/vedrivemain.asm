@@ -1,6 +1,6 @@
 ;
 ; ADTPro - Apple Disk Transfer ProDOS
-; Copyright (C) 2012 by David Schmidt
+; Copyright (C) 2012 - 2018 by David Schmidt
 ; 1110325+david-schmidt@users.noreply.github.com
 ;
 ; This program is free software; you can redistribute it and/or modify it 
@@ -41,7 +41,7 @@ COMMSLOT:
 PDHCP:	.byte 0		; DHCP Configuration? (YES)
 
 ip_parms:
-serverip:	.byte 192, 168,   0,  12
+serverip:	.byte 192, 168,   1,  18
 cfg_ip:		.byte   0,   0,   0,   0 ; ip address of local machine (will be overwritten if dhcp_init is called)
 cfg_netmask:	.byte   0,   0,   0,   0 ; netmask of local network (will be overwritten if dhcp_init is called)
 cfg_gateway:	.byte   0,   0,   0,   0 ; ip address of router on local network (will be overwritten if dhcp_init is called)

@@ -1,6 +1,6 @@
 ;
 ; ADTPro - Apple Disk Transfer ProDOS
-; Copyright (C) 2006 - 2014 by David Schmidt
+; Copyright (C) 2006 - 2018 by David Schmidt
 ; 1110325+david-schmidt@users.noreply.github.com
 ;
 ; This program is free software; you can redistribute it and/or modify it 
@@ -25,7 +25,7 @@ raw_y:		.byte $00
 current_value:	.byte $00
 new_digit:	.byte $09
 ip_parms_temp:
-		.byte 192, 168,   0,  12
+		.byte 192, 168,   1,  18
 		.byte   0,   0,   0,   0
 		.byte   0,   0,   0,   0
 		.byte   0,   0,   0,   0

@@ -1,6 +1,6 @@
 ;
 ; ADTPro - Apple Disk Transfer ProDOS
-; Copyright (C) 2015 by David Schmidt
+; Copyright (C) 2015 - 2018 by David Schmidt
 ; 1110325+david-schmidt@users.noreply.github.com
 ;
 ; This program is free software; you can redistribute it and/or modify it 
@@ -28,7 +28,7 @@
 	.export cfg_mac
 
 ip_parms:
-serverip:	.byte 192, 168,   0,  12
+serverip:	.byte 192, 168,   1,  18
 cfg_ip:		.byte 192, 160,   0,  29 ; ip address of local machine (will be overwritten if dhcp_init is called)
 cfg_netmask:	.byte 255, 255, 255,   0 ; netmask of local network (will be overwritten if dhcp_init is called)
 cfg_gateway:	.byte 192, 168,   0,   1 ; ip address of router on local network (will be overwritten if dhcp_init is called)

@@ -1,6 +1,6 @@
 ;
 ; ADTPro - Apple Disk Transfer ProDOS
-; Copyright (C) 2012 - 2016 by David Schmidt
+; Copyright (C) 2012 - 2018 by David Schmidt
 ; 1110325+david-schmidt@users.noreply.github.com
 ;
 ; This program is free software; you can redistribute it and/or modify it 
@@ -200,10 +200,13 @@ FindSlotLoop:
 	stx TempSlot
 	inx		; One-indexed slot number for a2_set_slot
 	txa
+	jsr DisqualifyCards
+	bcs Bump
 	jsr a2_set_slot
 	jsr ip65_init
 	ldx TempSlot
 	bcc FoundSlot
+Bump:
 	inx
 	cpx #MAXSLOT
 	bne FindSlotLoop
@@ -213,6 +216,33 @@ FoundSlot:
 	rts
 
 TempSlot:	.byte 0
+
+;---------------------------------------------------------
+; DisqualifyCards - Eliminate cards from scan consideration based on firmware clues
+; On entry: A=X=slot
+; On exit:A=X=slot, carry set if card is disqualified
+;---------------------------------------------------------
+DisqualifyCards:
+	clc
+	adc #$c0
+	sta UTILPTR + 1
+	lda #$00
+	sta UTILPTR
+	ldy #$26
+	lda (UTILPTR),y
+	cmp #$e2	; Check some values
+	bne NotDisqualified
+	ldy #$4d
+	lda (UTILPTR),y
+	cmp #$fb	; Check some values
+	bne NotDisqualified
+	sec
+	bcs DisqualifyDone
+NotDisqualified:
+	clc
+DisqualifyDone:
+	txa
+	rts
 
 ;
 ; msg -- print an in-line message
