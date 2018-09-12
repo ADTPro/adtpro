@@ -6,12 +6,31 @@
 
 ADTPro Release History
 
+* In Git repository now
+
+ New functionality:
+
+ * Integrated John Clark's compilation of RXTX libraries for the Raspberry Pi: {{{https://github.com/inindev/raspberry-pi-rxtxlib}https://github.com/inindev/raspberry-pi-rxtxlib}}
+
+ []
+
+ Bug fixes/changes:
+ 
+ * First release on GitHub, includes some code reorganization
+
+ * [OSX Server] Worked around the Apple nanny state - the OSX application icon now works again on OSX 10.11+ thanks to the diligence of John Clark 
+
+ * Integrated John Brooks' {{{https://www.callapple.org/vintage-apple-computers/apple-ii/announcing-prodos-2-4-2-for-all-apple-ii-computers/}ProDOS 2.4.2}} as base operating system for all ADTPro actions
+   (Speediboot, text bootstrapping, base disks, etc.)
+
+ * [Ethernet] Worked around an incompatibility between MicroDrive/Turbo IIgs firmware and Uthernet card scan; address GitHub issue {{{#29}https://github.com/ADTPro/adtpro/issues/29}}
+
 * 2.0.2 - November 12, 2016
 
  New functionality:
 
  * Support added for Uthernet II based on new integrated IP65 library from Oliver
-   Schmidt ({{{http://oliverschmidt.github.io/ip65/}http://oliverschmidt.github.io/ip65/}})
+   Schmidt ({{{https://github.com/cc65/ip65}https://github.com/cc65/ip65}})
 
  * Integrated John Brooks' {{{http://www.callapple.org/uncategorized/announcing-prodos-2-4-for-all-apple-ii-computers/}ProDOS 2.4.1}} as base operating system for all ADTPro actions
    (Speediboot, text bootstrapping, base disks, etc.)
