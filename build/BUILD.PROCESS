@@ -25,8 +25,9 @@ the stuff that gets uploaded to ADTPro.com.
  * Make sure the version number is updated.  Places where 
    the version number is encoded:
    * build/build.xml: <property name="versionString" value="v.r.m" />
-   * build/build.xml: DOS version number, if necessary: <property name="dosVersionString" value="vrm" />
-   * doc/pom.xml: <version>v.r.m</version>
+   * doc/pom.xml: <version>v.r.m</version>    <- Note: this one should stay
+     at the "current" release level instead of reverting to "v.r.m" because
+     it can go into documentation between releases.
    * doc/removemaven.re: s@v\.r\.m@v.r.m@ig;  <- Note: this one should stay
      at the "current" release level instead of reverting to "v.r.m" because
      it can go into documentation between releases.
@@ -49,7 +50,7 @@ the stuff that gets uploaded to ADTPro.com.
    * Ensure that floppy formatting works
    * Ensure audio send/receive works
 
- * Update history.apt in doc to have the date and release number, with included content
+ * Update doc/src/site/apt/history.apt to have the date and release number, with included content
 
  * Commit all changes
 
@@ -63,11 +64,11 @@ the stuff that gets uploaded to ADTPro.com.
  * Add .gz, .zip, and .dmg files to the tagged release.  Add the release
    notes to the release.
 
- * Upload updated web contents to ADTPro.com
+ * Upload updated web contents (doc/target/site) to ADTPro.com
 
- * After upload and announcements go out (comp.sys.apple2, Freecode,
-   Softpedia, cnet downloads, etc.) change build/build.xml back to
-   unreleased: <property name="versionString" value="v.r.m" />
+ * After upload and announcements go out (comp.sys.apple2, etc.)
+   change build/build.xml versionString back to unreleased:
+   <property name="versionString" value="v.r.m" />
 
 Need to do a batch renumber of dump files?
 /* */

@@ -50,7 +50,7 @@ all
 -->
 
 <project name="ADTPro" default="all" basedir="..">
-	<property name="versionString" value="v.r.m" />
+	<property name="versionString" value="2.0.3" />
 	<property name="projdir" value="${basedir}" />
 	<property name="srcdir" value="${basedir}/src" />
 	<property name="destdir" value="${basedir}/dest" />
