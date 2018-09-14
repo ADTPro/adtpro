@@ -4,4 +4,26 @@ export ADTPRO_HOME="`dirname \"$0\"`"
 cd "$ADTPRO_HOME/../../.."
 export ADTPRO_HOME="`pwd`/"
 
+#
+# If we find ourselves in the Nanny State (tm), then try to get out.  Thanks, Obama.
+#
+if echo $ADTPRO_HOME | grep AppTranslocation > /dev/null; then
+  if [ -d "/Applications/ADTPro-%ADTPRO_VERSION%" ]
+  then
+    xattr -rd com.apple.quarantine /Applications/ADTPro-%ADTPRO_VERSION%
+    /usr/bin/osascript <<-EOF
+tell application "System Events"
+  activate
+  display dialog "ADTPro is now set up and ready to use from /Applications/ADTPro-%ADTPRO_VERSION%." buttons "OK" default button 1 with title "ADTPro Installation"
+end tell
+EOF
+  else
+    /usr/bin/osascript <<-EOF
+tell application "System Events"
+  activate
+    display dialog "ADTPro was not found in /Applications/ADTPro-%ADTPRO_VERSION%.  You will need to correct that before it will start up." buttons "OK" default button 1 with title "ADTPro Installation"
+end tell
+EOF
+  fi
+fi
 "$ADTPRO_HOME"ADTPro.command

@@ -173,6 +173,7 @@ all
 		<!-- Copy the app starter stub -->
 		<mkdir dir="${builddir}/${distName}/${distName}.app/Contents/MacOS"/>
 		<copy file="${builddir}/ADTPro.macapp" tofile="${builddir}/${distName}/${distName}.app/Contents/MacOS/${distName}"/>
+		<replace file="${builddir}/${distName}/${distName}.app/Contents/MacOS/${distName}" token="%ADTPRO_VERSION%" value="${versionString}"/>
 		<chmod file="${builddir}/${distName}/${distName}.app/Contents/MacOS/${distName}" perm="755"/>
 
 		<!-- Push the "ADTPro-v.r.m" directory one level deeper.  I couldn't seem to get Ant to do what I wanted, so I just dumped in the simple shell commands I needed. -->
