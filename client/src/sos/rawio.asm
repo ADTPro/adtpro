@@ -18,6 +18,19 @@
 ; 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 ;
 
+;
+; Rationale:
+;
+; This is essentially a copy of the monitor ROM, $F000-$FFFF, but just
+; clipping out the screen handling bits.  The zero page addresses below
+; are arbitrary, just fitting in with the others in use with ADTPro.
+; The reason we need to copy and modify the native ROM routines is that
+; mixed in along with the screen handlers are environment mode switches -
+; which we definitely want to avoid.  So you can't simply make (monitor)
+; ROM calls from SOS programs - you might find yourself flipping into
+; modes you wern't expecting. 
+;
+
 KBDATA		:= $57
 LMARGIN		:= $0058
 RMARGIN		:= $0059
