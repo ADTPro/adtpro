@@ -1,6 +1,6 @@
 /*
 * ADTPro - Apple Disk Transfer ProDOS
- * Copyright (C) 2007 - 2014 by David Schmidt
+ * Copyright (C) 2007 - 2018 by David Schmidt
  * 1110325+david-schmidt@users.noreply.github.com
  *
  * This program is free software; you can redistribute it and/or modify it 
@@ -67,6 +67,8 @@ public class CommsThread extends Thread
 	private Worker _worker = null;
 
 	private boolean _isBinary = false;
+
+	private String[] files = null;
 
 	VDiskPersister _vdisks;
 
@@ -452,7 +454,9 @@ public class CommsThread extends Thread
 			// 40 dashes separates the wheat from the chaff
 			_transport.writeBytes("----------------------------------------"); //$NON-NLS-1$
 
-			String[] files = _parent.getFiles();
+			if (files != null)
+				files = null;
+			files = _parent.getFiles();
 			if (files.length > 0)
 			{
 				i = 0;
@@ -536,7 +540,9 @@ public class CommsThread extends Thread
 			filespec = dest.toString().trim();
 			Log.println(false, "CommsThread.sendDirectoryWide() Seeking directory of: " + _parent.getWorkingDirectory());
 			directory = _parent.getWorkingDirectory();
-			String[] files;
+			if (files != null)
+				files = null;
+			files = _parent.getFiles();
 			if (filespec.length() > 0)
 				files = _parent.getFiles(filespec);
 			else
@@ -707,6 +713,7 @@ public class CommsThread extends Thread
 		StringBuffer dest = new StringBuffer();
 		Log.println(false, "CommsThread.queryFileSizeWide() entry.");
 		byte[] payload = pullPayloadWide(envelope);
+		String requestedFileName;
 		if (payload != null)
 		{
 			Log.println(false, "CommsThread.queryFileSizeWide() payload length: " + payload.length);
@@ -717,9 +724,18 @@ public class CommsThread extends Thread
 					break;
 				dest.append((char) (UnsignedByte.intValue(payload[i]) & 0x7f));
 			}
-			Log.println(false, "CommsThread.queryFileSizeWide() value: " + dest.toString().trim());
+			if (dest.charAt(0) == 0x01)
+			{
+				// We have an indexed file from the last directory command
+				requestedFileName = files[(18 * (payload[1]-1)) + (payload[2]-3)].trim();
+				Log.println(false, "CommsThread.queryFileSizeWide() value: " + requestedFileName);
+			}
+			else
+			{
+				Log.println(false, "CommsThread.queryFileSizeWide() value: " + dest.toString().trim());
+				requestedFileName = dest.toString().trim();
+			}
 
-			String requestedFileName = dest.toString().trim();
 			Disk disk = null;
 			try
 			{
@@ -1697,6 +1713,7 @@ public class CommsThread extends Thread
 		int length;
 		boolean sendSuccess = false;
 		_startTime = System.currentTimeMillis();
+		String requestedFileName;
 		if (payload != null)
 		{
 			StringBuffer dest = new StringBuffer();
@@ -1709,23 +1726,32 @@ public class CommsThread extends Thread
 					break;
 				dest.append((char) (UnsignedByte.intValue(payload[i]) & 0x7f));
 			}
-			Log.println(false, "CommsThread.sendDiskWide() name: " + dest.toString().trim());
-			String name = dest.toString().trim();
+			if (dest.charAt(0) == 0x01)
+			{
+				// We have an indexed file from the last directory command
+				requestedFileName = files[(18 * (payload[1]-1)) + (payload[2]-3)].trim();
+				Log.println(false, "CommsThread.sendDiskWide() value: " + requestedFileName);
+			}
+			else
+			{
+				Log.println(false, "CommsThread.sendDiskWide() value: " + dest.toString().trim());
+				requestedFileName = dest.toString().trim();
+			}
 			int blocksAtOnce = payload[i + 1]; // Apple sends preferred BAOCNT to send
 			Log.println(false, "CommsThread.sendDiskWide() number of blocks to send at once (BAOCNT): " + blocksAtOnce);
 
 			Disk disk = null;
 			try
 			{
-				Log.println(false, "CommsThread.sendDiskWide() looking for file: " + _parent.getWorkingDirectory() + name);
-				disk = new Disk(_parent.getWorkingDirectory() + name);
+				Log.println(false, "CommsThread.sendDiskWide() looking for file: " + _parent.getWorkingDirectory() + requestedFileName);
+				disk = new Disk(_parent.getWorkingDirectory() + requestedFileName);
 			}
 			catch (IOException io)
 			{
 				try
 				{
-					Log.println(false, "CommsThread.sendDiskWide() Failed to find that file.  Now looking for: " + name);
-					disk = new Disk(name);
+					Log.println(false, "CommsThread.sendDiskWide() Failed to find that file.  Now looking for: " + requestedFileName);
+					disk = new Disk(requestedFileName);
 				}
 				catch (IOException io2)
 				{
@@ -1801,10 +1827,10 @@ public class CommsThread extends Thread
 							_endTime = System.currentTimeMillis();
 							_diffMillis = (_endTime - _startTime) / 1000;
 							msg = Messages.getString("CommsThread.17");
-							msg = StringUtilities.replaceSubstring(msg, "%1", name);
+							msg = StringUtilities.replaceSubstring(msg, "%1", requestedFileName);
 							msg = StringUtilities.replaceSubstring(msg, "%2", "" + _diffMillis);
 							_parent.setSecondaryText(msg);
-							Log.println(true, "Apple received disk image " + name + " successfully in " + (float) (_endTime - _startTime) / 1000 + " seconds."); //$NON-NLS-1$ //$NON-NLS-2$
+							Log.println(true, "Apple received disk image " + requestedFileName + " successfully in " + (float) (_endTime - _startTime) / 1000 + " seconds."); //$NON-NLS-1$ //$NON-NLS-2$
 						}
 						else
 						{
