@@ -6,6 +6,12 @@
 
 ADTPro Release History
 
+* Prelease, in GitHub now:
+
+ Bug fixes/changes:
+ 
+ * Issue {{{https://github.com/ADTPro/adtpro/issues/53}#53}} - special characters and too-long filenames confused file picker 
+
 * 2.0.3 - September 14, 2018
 
  New functionality:

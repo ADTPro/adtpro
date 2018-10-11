@@ -1,6 +1,6 @@
 ;
 ; ADTPro - Apple Disk Transfer ProDOS
-; Copyright (C) 2008 - 2014 by David Schmidt
+; Copyright (C) 2008 - 2018 by David Schmidt
 ; 1110325+david-schmidt@users.noreply.github.com
 ;
 ; This program is free software; you can redistribute it and/or modify it 
@@ -220,7 +220,7 @@ READ_LINE:
 	ldy RDTEMP
 	lda #0		; Null terminate it
 	sta (INBUF),y
-	txa
+	tya
 	rts
 
 ;---------------------------------------------------------
@@ -335,23 +335,19 @@ GO_FAST_SOS:
 
 
 ;---------------------------------------------------------
-; SCRAPE - Scrape a line of text from the screen at the current cursor position, copy to input buffer
+; SCRAPE - Copy directory page and row numbers to input buffer
 ;---------------------------------------------------------
 SCRAPE:
-	ldy #$00
-	sta CH		; Set cursor to first position
-@Scr1:	lda (BAS4L),Y
-	cmp #$A0
-	beq :+
-	sty INUM
-:	sta IN_BUF,Y
-	iny
-	cpy #$28	; Whole screen width
-	bne @Scr1
+	lda #$01
+	sta IN_BUF
+	lda NIBPCNT	; Current directory page being viewed
+	clc
+	adc #$01	; Bump directory page by 1 so it's never zero
+	sta IN_BUF + 1
+	lda CV		; Vertical position on screen; will always be +3
+	sta IN_BUF + 2
 	lda #$00	; Null-terminate it
-	ldy INUM
-	iny
-	sta IN_BUF,y
+	sta IN_BUF + 3
 	rts
 
 ;---------------------------------------------------------
