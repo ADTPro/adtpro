@@ -10,7 +10,7 @@ ADTPro Release History
 
  Bug fixes/changes:
  
- * Issue {{{https://github.com/ADTPro/adtpro/issues/53}#53}} - special characters and too-long filenames confused file picker 
+ * Special characters and too-long filenames confused file picker - addresses issue {{{https://github.com/ADTPro/adtpro/issues/53}#53}}
 
 * 2.0.3 - September 14, 2018
 
@@ -29,7 +29,7 @@ ADTPro Release History
  * Integrated John Brooks' {{{https://www.callapple.org/vintage-apple-computers/apple-ii/announcing-prodos-2-4-2-for-all-apple-ii-computers/}ProDOS 2.4.2}} as base operating system for all ADTPro actions
    (Speediboot, text bootstrapping, base disks, etc.)
 
- * [Ethernet] Worked around an incompatibility between MicroDrive/Turbo IIgs firmware and Uthernet card scan; address GitHub issue {{{https://github.com/ADTPro/adtpro/issues/29}#29}}
+ * [Ethernet] Worked around an incompatibility between MicroDrive/Turbo IIgs firmware and Uthernet card scan; addresses issue {{{https://github.com/ADTPro/adtpro/issues/29}#29}}
  
  * Integrated DOS ADT 2.41, which includes the following enhancements:
 
