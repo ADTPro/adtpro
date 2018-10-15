@@ -10,7 +10,7 @@ ADTPro Release History
 
  Bug fixes/changes:
  
- * [Client] Special characters and too-long filenames confused file picker - addresses issue {{{https://github.com/ADTPro/adtpro/issues/53}#53}}
+ * [Client] Special characters and too-long filenames confused the file picker - addresses issue {{{https://github.com/ADTPro/adtpro/issues/53}#53}}
 
  * [SOS Client] Using Steve Nickolas' font loading technique, reduce the size of bootstrapping drivers by several K
 

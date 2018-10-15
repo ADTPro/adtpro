@@ -8,6 +8,22 @@ ADTPro Release Ancient History
 
 * Significant New Features
 
+ 2.0.2 - November 12, 2016
+ 
+    * Support added for Uthernet II, virtual Ethernet driver that occupies the same space as the Disk II driver
+
+ 2.0.1 - March 21, 2015
+
+    * [Audio] Client sends test stream of data for volume tuning on host side
+
+ 2.0.0 - May 25, 2014
+ 
+    * New protocol that makes transport more reliable and significantly faster with tunable payload lengths
+
+    * [Client] Arrow-and-Return, page up/down interface for displaying and choosing files
+
+    * [SOS Client] Slow driver-based screen I/O subsystem replaced with fast custom code
+
  1.2.9 - December 25, 2013
  
     * [Client] Disk II drives turn on early to reduce spin-up delay
