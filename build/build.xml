@@ -532,6 +532,20 @@ all
 	</target>
 	<target name="sos-vsdrive" depends="vdrive-image-prep" description="Copy Virtual Serial Drive Driver (SOS)">
 		<!--
+		Assemble the driver source
+		-->
+		<echo message="Assembling sos-driver..."/>
+		<exec dir="${projdir}/src/client/sos/serial/drive" executable="${assemblerPath}/ca65" failonerror="true">
+			<arg line=" -l vsdrivesos.lst vsdrive.asm -o vsdrivesos.o" />
+		</exec>
+		<!--
+		Link the driver object code
+		-->
+		<echo message="Linking sos-driver..."/>
+		<exec dir="${projdir}/src/client/sos/serial/drive" executable="${assemblerPath}/ld65" failonerror="true">
+			<arg line=" vsdrivesos.o -o vsdrivesos.o65 -C ${builddir}/Apple3_o65.cfg" />
+		</exec>
+		<!--
 		Copy out the Apple /// virtual serial drive driver
 		-->
 		<echo message="Copying sos-driver components..." />

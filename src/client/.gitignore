@@ -1,6 +1,7 @@
 *.map
 *.lst
 *.o
+*.o65
 MANUALBOOTSTRAP
 LOADER
 GRUB
