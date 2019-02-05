@@ -57,8 +57,7 @@ public class VDiskPersister
 				_disk1 = new Disk(pathPrefix + "Virtual.po"); //$NON-NLS-1$
 			    _disk1_filePath = Paths.get(pathPrefix + "Virtual.po");
 		        BasicFileAttributes attrs = Files.readAttributes(_disk1_filePath, BasicFileAttributes.class);
-		        FileTime _disk1_modifiedTime = attrs.lastModifiedTime();
-		        Log.println(false,"VDisk 1 modifiedTime : "+_disk1_modifiedTime.toMillis());
+		        _disk1_modifiedTime = attrs.lastModifiedTime();
 			}
 			catch (IOException e1)
 			{
@@ -69,8 +68,7 @@ public class VDiskPersister
 					_disk1 = new Disk(pathPrefix + "Virtual.po");
 				    _disk1_filePath = Paths.get(pathPrefix + "Virtual.po");
 			        BasicFileAttributes attrs = Files.readAttributes(_disk1_filePath, BasicFileAttributes.class);
-			        FileTime _disk1_modifiedTime = attrs.lastModifiedTime();
-			        Log.println(false,"VDisk 1 modifiedTime : "+_disk1_modifiedTime.toMillis());
+			        _disk1_modifiedTime = attrs.lastModifiedTime();
 				}
 				catch (IOException e)
 				{
@@ -85,8 +83,7 @@ public class VDiskPersister
 				_disk2 = new Disk(pathPrefix + "Virtual2.po"); //$NON-NLS-1$
 			    _disk2_filePath = Paths.get(pathPrefix + "Virtual2.po");
 		        BasicFileAttributes attrs = Files.readAttributes(_disk2_filePath, BasicFileAttributes.class);
-		        FileTime _disk2_modifiedTime = attrs.lastModifiedTime();
-		        Log.println(false,"VDisk 2 modifiedTime : "+_disk2_modifiedTime.toMillis());
+		        _disk2_modifiedTime = attrs.lastModifiedTime();
 			}
 			catch (IOException e1)
 			{
@@ -97,8 +94,7 @@ public class VDiskPersister
 					_disk2 = new Disk(pathPrefix + "Virtual2.po"); //$NON-NLS-1$
 				    _disk2_filePath = Paths.get(pathPrefix + "Virtual2.po");
 			        BasicFileAttributes attrs = Files.readAttributes(_disk2_filePath, BasicFileAttributes.class);
-			        FileTime _disk2_modifiedTime = attrs.lastModifiedTime();
-			        Log.println(false,"VDisk 2 modifiedTime : "+_disk2_modifiedTime.toMillis());
+			        _disk2_modifiedTime = attrs.lastModifiedTime();
 				}
 				catch (IOException e)
 				{
@@ -114,18 +110,22 @@ public class VDiskPersister
 		{
 	        BasicFileAttributes attrs = Files.readAttributes(_disk1_filePath, BasicFileAttributes.class);
 	        FileTime new1_modifiedTime = attrs.lastModifiedTime();
-	        Log.println(false,"VDisk 1 modifiedTime : "+new1_modifiedTime.toMillis());
 	        if (_disk1_modifiedTime != new1_modifiedTime)
+	        {
+		        Log.println(false,"New VDisk 1 data found - refreshing");
 	        	refreshDisks(disk); // Disk 1
+	        }
 			return _disk1.readBlock(block);
 		}
 		else
 		{
 	        BasicFileAttributes attrs = Files.readAttributes(_disk2_filePath, BasicFileAttributes.class);
 	        FileTime new2_modifiedTime = attrs.lastModifiedTime();
-	        Log.println(true,"VDisk 2 modifiedTime : "+new2_modifiedTime.toMillis());
 	        if (_disk2_modifiedTime != new2_modifiedTime)
+	        {
+		        Log.println(false,"New VDisk 2 data found - refreshing");
 	        	refreshDisks(disk); // Disk 2
+	        }
 			return _disk2.readBlock(block);
 		}
 	}
