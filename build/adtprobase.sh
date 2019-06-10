@@ -25,40 +25,43 @@ export ADTPRO_HOME="`pwd`/"
 
 OS=`uname`
 OS_ARCH=`uname -p`
+OS_MACHINE=`uname -m`
 
 # For Linux, use this:
 if [ "$OS" = "Linux" ]; then
-  if [ -f /usr/bin/raspi-config ]; then
-    export RXTXLIB=lib/rxtx/%RXTX_VERSION%/arm
-    ADTPRO_EXTRA_JAVA_PARMS="-Dgnu.io.rxtx.SerialPorts=/dev/ttyUSB0:/dev/ttyAMA0"
-  elif [ "$OS_ARCH" = "i686" ]; then
-    export RXTXLIB=lib/rxtx/%RXTX_VERSION%/i686-pc-linux-gnu
+  ADTPRO_EXTRA_JAVA_PARMS="-Dgnu.io.rxtx.SerialPorts=/dev/ttyUSB0:/dev/ttyAMA0"
+  # Prefer OS-supplied librxtxSerial.so
+  if [ -a "/usr/lib/librxtxSerial.so" ]; then
+    RXTXLIB=/usr/lib
+  elif [ "$OS_MACHINE" = "armv7l" ]; then
+    RXTXLIB="${ADTPRO_HOME}lib/rxtx/%RXTX_VERSION%/arm"
+  elif [ "$OS_ARCH" = "i386" -o "$OS_ARCH" = "i686" ]; then
+    RXTXLIB="${ADTPRO_HOME}lib/rxtx/%RXTX_VERSION%/i686-pc-linux-gnu"
+  elif [ "$OS_ARCH" = "x86_64" ]; then
+    RXTXLIB="${ADTPRO_HOME}lib/rxtx/%RXTX_VERSION%/x86_64-unknown-linux-gnu/librxtxSerial.so"
   else
-    if [ "$OS_ARCH" = "i386" ]; then
-      export RXTXLIB=lib/rxtx/%RXTX_VERSION%/i686-pc-linux-gnu
-    else  
-      export RXTXLIB=lib/rxtx/%RXTX_VERSION%/x86_64-unknown-linux-gnu
-    fi
+    echo "Unsupported Linux architecture ${OS_ARCH}."
+    exit
   fi
 fi
 
 # For OSX, use this:
 if [ "$OS" = "Darwin" ]; then
   if [ "$OS_ARCH" = "powerpc" ]; then
-    export RXTXLIB=lib/rxtx/%RXTX_VERSION_OLD%/Mac_OS_X
+    export RXTXLIB="${ADTPRO_HOME}lib/rxtx/%RXTX_VERSION_OLD%/Mac_OS_X"
   else
-    export RXTXLIB=lib/rxtx/%RXTX_VERSION%/mac-10.5
+    export RXTXLIB="${ADTPRO_HOME}lib/rxtx/%RXTX_VERSION%/mac-10.5"
   fi
 fi
 
 # For Solaris, use this:
 if [ "$OS" = "SunOS" ]; then
-  export RXTXLIB=lib/rxtx/%RXTX_VERSION%/sparc-sun-solaris2.10-32
+  export RXTXLIB="${ADTPRO_HOME}lib/rxtx/%RXTX_VERSION%/sparc-sun-solaris2.10-32"
 fi
 
 # Set up the library location.
-export TWEAK1="-Djava.library.path="
-export TWEAK="$TWEAK1""$ADTPRO_HOME""$RXTXLIB"
+TWEAK="-Djava.library.path="
+TWEAK+="${RXTXLIB}"
 
 if [ "$1x" = "headlessx" ]; then
   shift
@@ -74,4 +77,10 @@ if [ "$1x" = "headlessx" ]; then
   fi
 fi
 
-$HEADLESS"$MY_JAVA_HOME"java -Xms256m -Xmx512m "$TWEAK" $ADTPRO_EXTRA_JAVA_PARMS -cp "$ADTPRO_HOME"lib/%ADTPRO_VERSION%:"$ADTPRO_HOME""$RXTXLIB"/../RXTXcomm.jar:"$ADTPRO_HOME"lib/AppleCommander/AppleCommander-%AC_VERSION%.jar org.adtpro.ADTPro $*
+CLASSPATH="${ADTPRO_HOME}lib/ADTPro-2.0.3.jar"
+CLASSPATH+=":/usr/share/java/rxtx/RXTXcomm.jar"
+CLASSPATH+=":${ADTPRO_HOME}lib/AppleCommander/AppleCommander-1.3.5.13-ac.jar"
+
+${HEADLESS}"${MY_JAVA_HOME}"java -Xms256m -Xmx512m "$TWEAK" "${ADTPRO_EXTRA_JAVA_PARMS}" \
+	-cp "${CLASSPATH}" org.adtpro.ADTPro \
+	$*
