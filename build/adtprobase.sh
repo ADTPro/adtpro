@@ -81,6 +81,7 @@ CLASSPATH="${ADTPRO_HOME}lib/ADTPro-2.0.3.jar"
 CLASSPATH+=":/usr/share/java/rxtx/RXTXcomm.jar"
 CLASSPATH+=":${ADTPRO_HOME}lib/AppleCommander/AppleCommander-1.3.5.13-ac.jar"
 
-${HEADLESS}"${MY_JAVA_HOME}"java -Xms256m -Xmx512m "$TWEAK" "${ADTPRO_EXTRA_JAVA_PARMS}" \
+${HEADLESS}"${MY_JAVA_HOME}"java -Xms256m -Xmx512m \
+	"$TWEAK" "${ADTPRO_EXTRA_JAVA_PARMS}" \
 	-cp "${CLASSPATH}" org.adtpro.ADTPro \
 	$*
