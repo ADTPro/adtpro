@@ -35,9 +35,9 @@ if [ "$OS" = "Linux" ]; then
     RXTXLIB=/usr/lib
   elif [ "$OS_MACHINE" = "armv7l" ]; then
     RXTXLIB="${ADTPRO_HOME}lib/rxtx/%RXTX_VERSION%/arm"
-  elif [ "$OS_ARCH" = "i386" -o "$OS_ARCH" = "i686" ]; then
+  elif [ "$OS_MACHINE" = "i386" -o "$OS_MACHINE" = "i686" ]; then
     RXTXLIB="${ADTPRO_HOME}lib/rxtx/%RXTX_VERSION%/i686-pc-linux-gnu"
-  elif [ "$OS_ARCH" = "x86_64" ]; then
+  elif [ "$OS_MACHINE" = "x86_64" ]; then
     RXTXLIB="${ADTPRO_HOME}lib/rxtx/%RXTX_VERSION%/x86_64-unknown-linux-gnu/librxtxSerial.so"
   else
     echo "Unsupported Linux architecture ${OS_ARCH}."
