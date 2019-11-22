@@ -36,7 +36,7 @@ care of signal switching for you if you have one or the other and need to switch
 
   If you would like to purchase a ready-made serial cable, ADTPro-compatible
 cables are available
-{{{http://retrofloppy.com/products}here.}}
+{{{https://retrofloppy.com/products}here.}}
 
   To connect with a straight-through cable, set the Super Serial card's block to point
 downwards toward the word "Terminal," as in this picture:
@@ -82,7 +82,7 @@ mini-DIN modem connector of your IIgs or IIc+ to
 the serial or USB port of your host computer - and also performs a null-modem function 
 in between.  
 If you would like to purchase a null modem cable that is ready to use, click
-{{{http://retrofloppy.com/products/#DIN8DE9}here.}}  They look like this:
+{{{https://retrofloppy.com/products/#DIN8DE9}here.}}  They look like this:
 
 [images/iigsNullModem3.jpg]
 
@@ -138,7 +138,7 @@ DIN modem connector of your IIc, Laser 128, or Franklin Ace 500 to
 the serial or USB port of your host computer - and also performs a null-modem function 
 in between.
 If you would like to purchase a null modem that is ready to use, click
-{{{http://retrofloppy.com/products/#DIN5DE9}here.}}  They look like this:
+{{{https://retrofloppy.com/products/#DIN5DE9}here.}}  They look like this:
 
 [images/nullModemDIN5DE9v3.jpg]
 
@@ -220,7 +220,7 @@ checkbox in the serial config dialog box, brought up from the
 labeled "PORT C" on the back of your Apple /// to the serial or USB port of 
 your host computer - and also performs a null-modem function in between.
 If you would like to purchase a null modem cable that is ready to use, click
-{{{http://retrofloppy.com/products/#DB25DE9NULL}here.}}
+{{{https://retrofloppy.com/products/#DB25DE9NULL}here.}}
 They look like this:
 
 [images/a3NullModem.png]
@@ -256,7 +256,7 @@ that connects your host operating system to the USB adapter.
 
  If you would like to purchase one that is compatible with both Windows
 and OSX operating systems, I offer one for sale
-{{{http://retrofloppy.com/products/#USB}here}} that works with the
+{{{https://retrofloppy.com/products/#USB}here}} that works with the
 null modem cables shown above.  They look like this:
 
 [images/USBMac3.jpg]

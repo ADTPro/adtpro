@@ -135,8 +135,8 @@ fail to uncompress correctly - for example, if the resulting disk image ends up 
 just slightly too small to contain the unpacked files.
 ADTPro will respond that it was unable to open the file in that case.
 If this ends up happening, you can use external tools like
-{{{http://applecommander.sourceforge.net}AppleCommander}} or
-{{{http://ciderpress.sourceforge.net}CiderPress}} to understand more about the
+{{{https://applecommander.github.io/}AppleCommander}} or
+{{{https://a2ciderpress.com/}CiderPress}} to understand more about the
 compressed image you are trying to 
 transfer, and how it might be better converted to a disk size you expect.
 

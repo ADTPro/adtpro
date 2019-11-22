@@ -171,8 +171,8 @@ GSOS has booted, as it modifies the serial environment.
  <<<SOS.INTERPETH>>> to <<<SOS.INTERP>>> (also deleting or renaming the
  original serial <<<SOS.INTERP>>> program).  
  The Apple /// utilities disk or any Apple disk image manipulation utility program like
- {{{http://ciderpress.sourceforge.net}CiderPress}} or 
- {{{http://applecommander.sourceforge.net}AppleCommander}} can be used to do this.
+ {{{https://a2ciderpress.com/}CiderPress}} or 
+ {{{https://applecommander.github.io/}AppleCommander}} can be used to do this.
 
  Starting from your ADTProSOS-v.r.m.dsk disk will bring up the main menu:
 

@@ -20,7 +20,7 @@ ADTPro Audio Connections
  If you have an Apple II with less than 64k of memory, you won't be able to 
  use ADTPro at all; but a different project offers the ability to transfer
  disks over audio connections with less memory:
- {{{http://seb.riot.org/appleII/aladt.sml}Arme Leute Apple Disk Transfer (Poor Man's ADT)}}
+ {{{https://knzl.at/poor-mans-adt/}Arme Leute Apple Disk Transfer (Poor Man's ADT)}}
 
  In the example images below, I have a convention for white and black wires.
  The white wire connects the host audio out to the Apple cassette in.

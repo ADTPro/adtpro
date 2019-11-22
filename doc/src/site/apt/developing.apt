@@ -9,17 +9,17 @@ Developing ADTPro
  The build system for ADTPro actually uses several components
 that are not readily visible.  The full list looks like this:
 
- * {{{http://ant.apache.org/}Apache Ant}} - orchestrates the build process
+ * {{{https://ant.apache.org/}Apache Ant}} - orchestrates the build process
 
- * {{{http://java.sun.com/javase/downloads/index.jsp}Java SDK}} - compiles Java-based server
+ * {{{https://www.oracle.com/technetwork/java/javase/downloads/index.html}Java SDK}} - compiles Java-based server
 
- * {{{http://cc65.github.io/cc65/}cc65}} - a multiplatform toolchain with a nice 6502 macro assembler
+ * {{{https://cc65.github.io/}cc65}} - a multiplatform toolchain with a nice 6502 macro assembler
 
- * {{{http://www.rxtx.org/}rxtx}} - multiplatform Java serial library
+ * {{{http://rxtx.qbang.org/wiki/index.php/Main_Page}rxtx}} - multiplatform Java serial library
 
- * {{{http://maven.apache.org/}Maven}} - optional; builds these web pages
+ * {{{https://maven.apache.org/}Maven}} - optional; builds these web pages
 
- * {{{https://code.google.com/p/apple-iii-vdrive-driver/}Apple Pascal}} - optional project to build the Apple /// VSDRIVE driver  
+ * {{{https://github.com/david-schmidt/apple-iii-cffa3000-driver}Apple Pascal}} - optional project to build the Apple /// VSDRIVE driver  
 
  []
 
@@ -30,7 +30,7 @@ because that's a step most people wouldn't ever want to do, and if it were there
 they'd need to have Maven installed.  
 
  Everyone has their favorite integrated development environment (IDE).  I happen
-to use {{{http://www.eclipse.org/}Eclipse,}} so I'll provide setup information
+to use {{{https://www.eclipse.org/}Eclipse,}} so I'll provide setup information
 for that.  Other IDEs are similar, and surely address your own pet peeves.
 This page happens to show screenshots of a Windows setup, but there's nothing
 particularly Windows-ey about the build process.  It should run on any platform
@@ -58,11 +58,11 @@ Mac OSX, and SuSE Linux.
  Let's assume you have a clean machine and want to make this thing build.  
 The minimum amount of work you'd go through to do so:
 
- * Download and install Eclipse from {{{http://www.eclipse.org/}http://www.eclipse.org}}
+ * Download and install Eclipse from {{{https://www.eclipse.org/}https://www.eclipse.org/}}
  
- * Download and install a full Java {{{http://www.oracle.com/technetwork/java/index.html}JDK}} if your Eclipse distribution doesn't come with one
+ * Download and install a full Java {{{https://www.oracle.com/technetwork/java/javase/overview/index.html}JDK}} if your Eclipse distribution doesn't come with one
  
- * Download and install the cc65 toolchain from {{{http://www.cc65.org/}http://www.cc65.org}} - you only need the one for your development platform (Windows, OS/2, Linux - not the 8-bit support modules)
+ * Download and install the cc65 toolchain from {{{https://cc65.github.io/}https://cc65.github.io/}} - you only need the one for your development platform (Windows, OS/2, Linux - not the 8-bit support modules)
  
  []
 

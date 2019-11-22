@@ -926,7 +926,7 @@ ADTPro Version 1 Release Full History
  * Turn "cold start" back off again on the client once it's been invoked - to keep
    from saving the cold start state when the user saves the configuration!
 
- * Switched to {{{http://www.cc65.org/}cc65/ca65}} compiler/assembler suite.
+ * Switched to {{https://cc65.github.io/}} compiler/assembler suite.
    ca65 is compatible with lots more platforms than SB-Assembler, though it is slower.
 
  * Refactored the code to make communications routines somewhat more "pluggable."

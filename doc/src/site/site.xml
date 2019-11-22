@@ -37,7 +37,7 @@
     </links>
 <!-- Would be nice if we could use breadcrumbs...
     <breadcrumbs>
-      <item name="ADTPro" href="http://adtpro.com"/>
+      <item name="ADTPro" href="https://adtpro.com"/>
     </breadcrumbs>
 -->
     <menu name="ADTPro">
@@ -48,7 +48,7 @@
 
     <menu name="Connections">
       <item name="Serial" href="connectionsserial.html" collapse="true">
-        <item name="Purchase Cables" href="http://retrofloppy.com/products"/>
+        <item name="Purchase Cables" href="https://retrofloppy.com/products"/>
       </item>
       <item name="Audio" href="connectionsaudio.html"/>
       <item name="Ethernet" href="configethernet.html"/>
@@ -84,11 +84,11 @@
 
     <menu name="Resources">
       <item name="Support Discussion" href="forum.html"/>
-      <item name="Purchase Blank Disks" href="http://retrofloppy.com/products/#BlankDisks"/>
+      <item name="Purchase Blank Disks" href="https://retrofloppy.com/products/#BlankDisks"/>
       <item name="Non-English Resources" href="translations.html"/>
-      <item name="Cleaning a Disk Drive" href="http://www.youtube.com/watch?v=CMF3PL17kqg"/>
-      <item name="Apple as a Terminal" href="http://web.archive.org/web/20100817014158/http://dataswamp.net/apple2eserialterm/index.php"/>
-      <item name="Apple /// Resources" href="http://apple3.org"/>
+      <item name="Cleaning a Disk Drive" href="https://www.youtube.com/watch?v=CMF3PL17kqg"/>
+      <item name="Apple as a Terminal" href="https://web.archive.org/web/20100817014158/http://dataswamp.net/apple2eserialterm/index.php"/>
+      <item name="Apple /// Resources" href="https://apple3.org"/>
       <item name="Juiced.GS Journal" href="https://juiced.gs"/>
       <item name="Apple II WebRing" href="webring.html"/>
     </menu>

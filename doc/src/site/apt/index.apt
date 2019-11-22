@@ -24,7 +24,7 @@ compatible computer with 64k of memory or more.
 
     * {{{./connectionsserial.html}Serial}} ports
 
-    * {{{http://a2retrosystems.com/}Uthernet}} or {{{http://www.reference.com/browse/lancegs+ethernet+card}LANceGS}} {{{./configethernet.html}Ethernet}} cards
+    * {{{http://a2retrosystems.com/}Uthernet}} or LANceGS {{{./configethernet.html}Ethernet}} cards
 
     * The Apple's {{{./connectionsaudio.html}cassette ports}}
 
@@ -58,8 +58,8 @@ from the Github
 * Need Cables or Disks?
 
   If you find yourself in need of serial or USB cables to connect to your Apple II, or just blank disks - commercial partner 
-{{{http://retrofloppy.com/products}RetroFloppy}} has just what you're looking for.
- Visit the store at {{{http://retrofloppy.com/products}retrofloppy.com/products}}.
+{{{https://retrofloppy.com/products}RetroFloppy}} has just what you're looking for.
+ Visit the store at {{{https://retrofloppy.com/products}retrofloppy.com/products}}.
 
 [images/products.png]
 

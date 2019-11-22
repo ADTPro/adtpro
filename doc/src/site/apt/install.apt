@@ -13,7 +13,7 @@ ADTPro Installation
  <<<java -version>>> from a terminal window it ought to produce 
  a Java message and not complaints.
  One place to get a downloadable Java distribution is from Oracle:
- {{{http://www.oracle.com/technetwork/java/javase/downloads/index.html}Java SE JRE download.}}
+ {{{https://www.oracle.com/technetwork/java/javase/downloads/index.htm}Java SE JRE download.}}
  When you get there, look for a Java SE <<JRE>> download button.
  Download for your platform and install it, paying careful attention on Windows 
  to 32-bit or 64-bit versions; letting Oracle pick for you has been known to 

@@ -8,12 +8,12 @@ ADTPro Credits
 
  ADTPro's client code borrowed heavily from the original Apple Disk Transfer (ADT) base code from version 1.23.  
 The original ADT was written by Paul Guertin.
-ADT is currently maintained here: {{http://github.com/david-schmidt/adt}}
+ADT is currently maintained here: {{https://github.com/david-schmidt/adt}}
 
  The server side was very much a direct translation from the ADTWin's C++
 server code to Java.  The Win32 GUI code was written by Sean Gugler.  The
 ADTWin project is hosted here:
-{{http://www.apple2.org.za/gswv/a2zine/Sel/ADTWin.html}}
+{{https://www.apple2.org.za/gswv/a2zine/Sel/ADTWin.html}}
 
  The routine to read a Disk II device much faster than ProDOS comes from 
 Jean-Marc Boutillon (Deckard) and his FASTDSK program: 
@@ -28,44 +28,43 @@ to enable IP transport development for both II and /// machines.
  
  The IP stack is taken from MagerValp's tight and fast ip65 code (now integrated into
 the netboot65 project and maintained by Jonno Downes) at 
-{{http://netboot65.sourceforge.net/}}.
+{{https://sourceforge.net/projects/netboot65/}}.
 It was ported to the Apple II by Glenn Jones.
 It turns out that ip65's checksum algorithm was faulty, so not being smart enough
 to debug it myself, I simply transplanted the one from the Contiki project
-({{http://www.sics.se/contiki/}}).
+({{https://github.com/contiki-os/contiki}}).
 
  The disk abstraction layer of ADTPro's server software as well as the ShrinkIt
 decompression code comes directly from the AppleCommander project:
-{{http://applecommander.sourceforge.net/}}
+{{https://applecommander.github.io/}}
 
  I augmented AppleCommander's understanding of disk formats, byte ordering,
 etc. with concepts and code from the CiderPress project:
-{{http://ciderpress.sourceforge.net/}}
+{{https://a2ciderpress.com/}}
 
  The serial communications layer concepts of ADTPro's server software were borrowed
 from the jSyncManager project: {{http://jsyncmanager.sourceforge.net/}}
 
  Hardware-level serial communications in Java comes from
-the rxtx project: {{http://rxtx.qbang.org}}.
- The RXTX binaries for 64-bit Windows are provided as a courtesy of Cloudhopper:
-{{http://cloudhopper.com/opensource/rxtx}}.
+the rxtx project: {{http://rxtx.qbang.org/wiki/index.php/Main_Page}}.
+ The RXTX binaries for 64-bit Windows are provided as a courtesy of Cloudhopper.
 
  The routine to decide what kind of block device a particular slot/drive 
 combination contains was generously donated by Mark Percival.  It originates
-from his DiskMaker 8 program: {{http://www.markpercival.net/DM8/}}
+from his DiskMaker 8 program.
 
   The ability to read and analyze tracks at the nibble level was generously
 donated by Gerard Putter from his Virtual ][ project:
-{{http://www.virtualii.com}}  This makes it possible to archive some lightly
+{{https://www.virtualii.com/}}  This makes it possible to archive some lightly
 copy-protected disks and put them in .nib format, removing the need to run
 the likes of SST to generate the image.
    
- The Pascal entry point serial communications code was contributed by {{{http://jaoswald.wordpress.com/2006/07/25/apple-ii-disk-transfer/}Joseph Oswald}}.
+ The Pascal entry point serial communications code was contributed by {{{https://jaoswald.wordpress.com/2006/07/25/apple-ii-disk-transfer/}Joseph Oswald}}.
 It supports anything that can communicate using Pascal entry points in slot 2.
 
  The code to interface directly with the IIgs' Serial Communications Controller
 chip was borrowed in part from the "Warp Six BBS" code:
-{{http://www.apple2.org.za/gswv/a2zine/Utils/Z8530_SCCsamples_info.txt}}.
+{{https://www.apple2.org.za/gswv/a2zine/Utils/Z8530_SCCsamples_info.txt}}.
 Note that the current code is not nearly as nice to the system as the BBS code is.
 It <<will>> break AppleTalk if it's running.
 
@@ -75,13 +74,13 @@ format large media and to get rid of a few bugs based on 140k diskette assumptio
 Hyper-FORMAT was originally written by Jerry Hewett and enhanced by Gary Desrochers.
 Their licensing terms dictated that they be credited for their work.
 Their original notice remains in the 
-{{{http://adtpro.cvs.sourceforge.net/viewvc/adtpro/adtpro/client/src/prodos/format.asm?view=markup}source code.}}
+{{{https://github.com/ADTPro/adtpro/blob/master/src/client/prodos/format.asm#L19}source code.}}
 
  I learned a good deal about Java sound capture and playback from Gamelan in an
 introductory article here:
-{{http://www.developer.com/java/other/article.php/1565671}}
-I found some very helpful audio code from the {{{http://www.jbother.org/}JBother}} project:
-{{http://web.archive.org/web/20080705222016/http://www.jbother.org/api/src-html/com/valhalla/jbother/sound/SoundPlayer.html}}
+{{https://www.developer.com/java/other/article.php/1565671}}
+I found some very helpful audio code from the JBother project:
+{{https://web.archive.org/web/20100711075333/http://jbother.org/api/src-html/com/valhalla/jbother/sound/SoundPlayer.html}}
 The audio code in ADTPro is a particularly undisciplined extension of these two sources.
 Marc Ressl came to my aid and cleaned up as much as he dared.
 
@@ -91,21 +90,20 @@ book by Don Worth and Pieter Lechner, published by Quality Software in 1984.
  Invaluable Apple /// hardware and programming information was written by John Jeppson
 in an article titled: "John Jeppson's Guided Tour of Highway III" from
 Softalk Magazine, May 1983, pages 100-112.  One place that it is available online
-is {{{./archive/AppleIIIBits.html}here.}}
+is {{{https://apple3.org/Documents/Magazines/AppleIIIBits.html}here.}}
 
  The Apple /// machine language monitor and ways of accessing it during program execution
 was critical to debugging operations.  Important information on how to accomplish that
-was published in the "/// Cheers!" magazine from {{{http://www.callapple.org/magazines/cheers/}Call-A.P.P.L.E.}}
+was published in the "/// Cheers!" magazine.
 
  The ProDOS loader concepts used to speed up booting (by eliminating the need for Applesoft)
-are from Oliver Schmidt's LOADER.SYSTEM contribution to cc65, available
-{{{http://cc65.oldos.net/contrib/loader-1.4.txt}here}}.
+are from Oliver Schmidt's LOADER.SYSTEM contribution to cc65.
 
  Thanks to ADTPro's {{{./translations.html}translators}}.
  
- Thanks to {{{http://a2central.com/}Sean Fahey}} for lending me his LANceGS cards so I could add support for them. 
+ Thanks to Sean Fahey for lending me his LANceGS cards so I could add support for them. 
 
- Thanks to the {{{http://maven.apache.org}Maven}} project for web page generation.
+ Thanks to the {{{https://maven.apache.org/}Maven}} project for web page generation.
 
 ADT {Lineage}
 
@@ -116,24 +114,24 @@ Super Serial Card in slot 1.  His PC-side program listened to COM1
 for such a data stream, and stored it in a .DSK file, in the format
 expected by the Apple II emulator "apl2em".
 
- Paul Guerton (pg at sff dot net) released Apple Disk Transfer (ADT) on
+ Paul Guerton released Apple Disk Transfer (ADT) on
 December 4th, 1995, and updated it July 14, 1999.  Starting with
 SENDDISK, Paul added a nice screen layout, configuration menus,
 error recovery, data stream compression, and the capability to
 receive .DSK images from the PC and write them back to an
 Apple II floppy disk.
 
- Paul Schlyter (pausch at saaf dot se) released ADTcc on June 13, 2000.
+ Paul Schlyter released ADTcc on June 13, 2000.
 He modified ADT's Apple-side program to work with the older
 Apple Communications Card and compatibles.
 
- Sean Gugler (gugler-sean at cs dot yale dot edu) released ADT Win32 Edition on
+ Sean Gugler released ADT Win32 Edition on
 December 1, 2000.  He replaced the older PC-side DOS program with
 a Windows 32-bit API program of otherwise identical functionality.
 That brought ADT into the world of background multi-tasking, long
 file names, and support for Windows NT and its progeny.
 
- David Schmidt (david__schmidt at users dot sourceforge dot net) released
+ David Schmidt released
  the first prototypical version of ADTPro on June 21, 2006.
 Starting with the ADT base, he rewrote the client to run under ProDOS.
 This allowed the ability to transfer floppy disk, hard disk and ram disk

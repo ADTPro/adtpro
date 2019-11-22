@@ -46,7 +46,7 @@ ADTPro Release History
  * Support added for Uthernet II based on new integrated IP65 library from Oliver
    Schmidt ({{{https://github.com/cc65/ip65}https://github.com/cc65/ip65}})
 
- * Integrated John Brooks' {{{http://www.callapple.org/uncategorized/announcing-prodos-2-4-for-all-apple-ii-computers/}ProDOS 2.4.1}} as base operating system for all ADTPro actions
+ * Integrated John Brooks' {{{https://www.callapple.org/uncategorized/announcing-prodos-2-4-for-all-apple-ii-computers/}ProDOS 2.4.1}} as base operating system for all ADTPro actions
    (Speediboot, text bootstrapping, base disks, etc.)
 
  * [VDrive] Uthernet II virtual Ethernet driver from Oliver Schmidt that occupies the same

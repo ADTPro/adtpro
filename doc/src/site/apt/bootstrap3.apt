@@ -18,7 +18,7 @@ If not... read on.
  {{{./connectionsserial.html#Apple3}Connections}} section.
 
  If you'd rather have a pre-built ADTPro floppy disk for SOS arrive at your door than
-create one yourself, {{{http://retrofloppy.com/products/#ADTPRO}click here.}}
+create one yourself, {{{https://retrofloppy.com/products/#ADTPRO}click here.}}
 
 * Bootstrapping demonstration video
 
@@ -54,7 +54,7 @@ from virtual disk images.
 The first disk you create should, of course, be the ADTPROSOS-v.r.m.DSK disk image
 so you never have to type in the loader program again!
 
- Other public domain Apple /// software is available {{{http://apple3.org}here,}}
+ Other public domain Apple /// software is available {{{https://apple3.org}here,}}
 for example.
 
 * {Detailed steps}
