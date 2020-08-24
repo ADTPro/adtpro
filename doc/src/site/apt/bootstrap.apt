@@ -76,7 +76,7 @@ all the way to making a bootable ADTPro floppy:
       IIgs or IIc will respond with a blinking "<<<?>>>".  At that prompt,
       enter the number in your dialog box and the <<<B>>>
       key with no spaces.  The Super Serial card will require you to hit the <<<Return>>> key, but the IIgs 
-      and IIc will not.)
+      or IIc will not.)
       
     []
 
