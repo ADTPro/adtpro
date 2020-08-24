@@ -72,8 +72,8 @@ all the way to making a bootable ADTPro floppy:
 
     * <<< <ctrl-A>14B>>> (The number will depend on the speed you have chosen from the bootstrapping 
       tab on the serial configuration dialog box.  
-      When you hit <<< <ctrl-A> >>>, the Apple Super Serial card will respond with "<<<APPLE SSC:>>>" and the
-      IIgs and IIc will respond with a blinking "<<<?>>>".  At that prompt, 
+      When you hit <<< <ctrl-A> >>>, the Apple Super Serial card will respond with "<<<APPLE SSC:>>>", while the
+      IIgs or IIc will respond with a blinking "<<<?>>>".  At that prompt,
       enter the number in your dialog box and the <<<B>>>
       key with no spaces.  The Super Serial card will require you to hit the <<<Return>>> key, but the IIgs 
       and IIc will not.)
