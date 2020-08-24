@@ -200,7 +200,7 @@ all the way to making a bootable ADTPro floppy:
       client program.
 
     [[1]] Now that the client is running, you can use it to
-      {{{./receiving.html}tansfer}} more disks (like the bootable ADTPro
+      {{{./receiving.html}transfer}} more disks (like the bootable ADTPro
       distribution diskette - 5.25" or 3.5" versions are included), or
       {{{./misc.html#Format}format}} new diskettes.
 
