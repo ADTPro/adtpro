@@ -19,6 +19,13 @@ ADTPro Installation
  to 32-bit or 64-bit versions; letting Oracle pick for you has been known to 
  result in the incorrect version being installed.
 
+ If the the JRE you install results in a "java.lang.UnsupportedClassVersionError" error,
+ first confirm you downloaded the correct JRE version, and not (for example) the 32-bit
+ version of Java which would not be correct for a 64-bit OS. If the JRE still does not
+ work for you, try try installing the latest JDK version of Java (which sometimes contains a
+ newer version of Java, which hasn't yet made it to the JRE distribution. The main downside of
+ using the JDK is a larger disk requirement on the host.
+
  The ADTPro distribution comes as a single file named something similar to
  <<<ADTPro-v.r.m>>> with an extension particular to the target platform:
  
