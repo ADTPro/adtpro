@@ -72,13 +72,9 @@ all
 	<property name="acJarVersion" value="1.3.5.13-ac" />
 	<property name="acJarPath" value="${builddir}/lib/AppleCommander" />
 	<property name="acJar" value="AppleCommander-${acJarVersion}.jar" />
-	<property name="rxtxVersion" value="rxtx-2.2pre2-local" />
-	<property name="rxtxZip" value="${rxtxVersion}.zip" />
-	<property name="rxtxVersion2" value="rxtx-2.1-7-bins-r2" />
-	<property name="rxtxZip2" value="${rxtxVersion2}.zip" />
-	<property name="rxtxJar" value="${builddir}/lib/rxtx/RXTXcomm.jar" />
-	<property name="rxtxVersionCloudHopperWin64" value="ch-rxtx-2.2-20081207-win-x64" />
-	<property name="rxtxZipCHWin64" value="${rxtxVersionCloudHopperWin64}.zip" />
+	<property name="jsscVersion" value="2.9.2" />
+	<property name="jsscJar" value="jssc-${jsscVersion}.jar" />
+	<property name="jsscJarPath" value="${builddir}/lib/jssc" />
 	<property name="ip65lib" value="${builddir}/lib/ip65/ip65.lib ${builddir}/lib/ip65/a2combo.lib ${builddir}/lib/cc65/apple2.lib" />
 	<property name="ip65u2lib" value="${builddir}/lib/ip65/ip65.lib ${builddir}/lib/ip65/a2uther2.lib ${builddir}/lib/cc65/apple2.lib" />
 	<property name="dmgmegabytes" value="9" />
@@ -112,13 +108,8 @@ all
 		   includes="messages_it.native" ext=".properties" />
 		<native2ascii encoding="ISO-8859-1" src="${srcdir}/org/adtpro/resources" dest="${destdir}/org/adtpro/resources"
 		   includes="messages_pt_BR.native" ext=".properties" />
-		<unzip src="${builddir}/lib/rxtx/${rxtxZip}"
-			dest="${builddir}/${distName}/lib/rxtx"/>
-		<unzip src="${builddir}/lib/rxtx/${rxtxZip2}"
-			dest="${builddir}/${distName}/lib/rxtx"/>
-		<unzip src="${builddir}/lib/rxtx/${rxtxZipCHWin64}"
-			dest="${builddir}/${distName}/lib/rxtx"/>
 		<copy file="${acJarPath}/${acJar}" todir="${builddir}/${distName}/lib/AppleCommander" />
+		<copy file="${jsscJarPath}/${jsscJar}" todir="${builddir}/${distName}/lib/jssc" />
 		<copy file="${builddir}/README" todir="${builddir}/${distName}" />
 		<copy file="${builddir}/LICENSE" todir="${builddir}/${distName}" />
 		<copy file="${builddir}/ADTPro.html" todir="${builddir}/${distName}" />
@@ -136,7 +127,7 @@ all
 			includes="**/*.sh"/>
 	</target>
 	<target name="compile">
-		<javac srcdir="${srcdir}" destdir="${destdir}" classpath="${acJarPath}/${acJar}:${rxtxJar}" includeantruntime="false">
+		<javac srcdir="${srcdir}" destdir="${destdir}" classpath="${acJarPath}/${acJar}:${jsscJarPath}/${jsscJar}" includeantruntime="false">
 			<exclude name="org/adtpro/utilities/AppleDump.java" />
 		</javac>
 	</target>
@@ -197,16 +188,10 @@ all
 		<copy file="${builddir}/acbase.sh" tofile="${builddir}/${distName}/ac.sh" />
 		<copy file="${builddir}/acbase.bat" tofile="${builddir}/${distName}/ac.bat" />
 		<replace file="${builddir}/${distName}/adtpro.bat" token="%ADTPRO_VERSION%" value="${distName}.jar"/>
-		<replace file="${builddir}/${distName}/adtpro.bat" token="%RXTX_VERSION%" value="${rxtxVersion}"/>
-		<replace file="${builddir}/${distName}/adtpro.bat" token="%RXTX_VERSION_OLD%" value="${rxtxVersion2}"/>
-		<replace file="${builddir}/${distName}/adtpro.bat" token="%RXTX_VERSION_WIN64%" value="${rxtxVersionCloudHopperWin64}"/>
 		<replace file="${builddir}/${distName}/adtpro.bat" token="%AC_VERSION%" value="${acJarVersion}"/>
 		<replace file="${builddir}/${distName}/ac.bat" token="%AC_VERSION%" value="${acJarVersion}"/>
 		<replace file="${builddir}/${distName}/adtpro.cmd" token="%ADTPRO_VERSION%" value="${distName}.jar"/>
-		<replace file="${builddir}/${distName}/adtpro.cmd" token="%RXTX_VERSION%" value="${rxtxVersion}"/>
 		<replace file="${builddir}/${distName}/adtpro.sh" token="%ADTPRO_VERSION%" value="${distName}.jar"/>
-		<replace file="${builddir}/${distName}/adtpro.sh" token="%RXTX_VERSION%" value="${rxtxVersion}"/>
-		<replace file="${builddir}/${distName}/adtpro.sh" token="%RXTX_VERSION_OLD%" value="${rxtxVersion2}"/>
 		<replace file="${builddir}/${distName}/adtpro.sh" token="%AC_VERSION%" value="${acJarVersion}"/>
 		<replace file="${builddir}/${distName}/ac.sh" token="%AC_VERSION%" value="${acJarVersion}"/>
 	</target>

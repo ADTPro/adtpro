@@ -1,6 +1,6 @@
 /*
  * ADTPro - Apple Disk Transfer ProDOS
- * Copyright (C) 2006, 2012 by David Schmidt
+ * Copyright (C) 2006 - 2020 by David Schmidt
  * 1110325+david-schmidt@users.noreply.github.com
  *
  * Serial Transport notions derived from the jSyncManager project
@@ -26,23 +26,19 @@ package org.adtpro.transport;
 import java.io.*;
 import java.util.*;
 
+import jssc.SerialPort;
+import jssc.SerialPortException;
+import jssc.SerialPortList;
+
 import org.adtpro.gui.Gui;
 import org.adtpro.resources.Messages;
 import org.adtpro.utilities.Log;
 import org.adtpro.utilities.StringUtilities;
 import org.adtpro.utilities.UnsignedByte;
 
-import gnu.io.*;
-
 public class SerialTransport extends ATransport
 {
-  protected CommPortIdentifier portId;
-
-  protected RXTXPort port;
-
-  protected DataInputStream inputStream;
-
-  protected DataOutputStream outputStream;
+  protected SerialPort port;
 
   protected boolean connected;
 
@@ -106,28 +102,14 @@ public class SerialTransport extends ATransport
     {
       connected = false;
       Log.println(false, "SerialTransport.close() closing port..."); //$NON-NLS-1$
-      port.close();
+      port.closePort();
+      port = null;
       Log.println(false, "SerialTransport.close() closed port."); //$NON-NLS-1$
       Log.println(true, "SerialTransport closed port."); //$NON-NLS-1$
     }
     else
       Log.println(false,
           "SerialTransport.close() didn't think port was connected."); //$NON-NLS-1$
-  }
-
-  /**
-   * Flushes the input buffer of any remaining data.
-   * 
-   * @exception IOException
-   *                thrown when a problem occurs with flushing the stream.
-   */
-
-  public void flush() throws IOException
-  {
-    while (inputStream.available() > 0)
-    {
-      inputStream.read();
-    }
   }
 
   /**
@@ -140,27 +122,19 @@ public class SerialTransport extends ATransport
 
   public static String[] getPortNames()
   {
-    Vector v = new Vector();
-    Enumeration enumeration = null;
+    Vector<String> v = new Vector<String>();
 
-    try
+	System.out.println("getPortNames entry.");
+    String[] portNames = SerialPortList.getPortNames();
+    for(int i = 0; i < portNames.length; i++)
     {
-      enumeration = CommPortIdentifier.getPortIdentifiers();
-    }
-    catch (java.lang.NoClassDefFoundError ex)
-    {
-      Log.println(true, Messages.getString("SerialTransport.2")); //$NON-NLS-1$
-      return null;
-    }
-
-    while (enumeration.hasMoreElements())
-    {
-      v.addElement(((CommPortIdentifier) enumeration.nextElement()).getName());
+    	System.out.println("port name "+i+": "+portNames[i]);
+    	v.addElement(portNames[i]);
     }
 
     String ret[] = new String[v.size()];
     for (int j = 0; j < v.size(); j++)
-      ret[j] = (String) v.elementAt(j);
+      ret[j] = v.elementAt(j);
     return ret;
   }
 
@@ -202,14 +176,16 @@ public class SerialTransport extends ATransport
       Log.println(false, "SerialTransport.open() was connected; closing.");
       close();
     }
-    portId = CommPortIdentifier.getPortIdentifier(portName);
-    port = (RXTXPort) portId.open(Messages.getString("SerialTransport.3"), 100); //$NON-NLS-1$
-    port.setSerialPortParams(portSpeed, 8, 1, 0);
+    //portId = CommPortIdentifier.getPortIdentifier(portName);
+    port = new SerialPort(portName);    
+    port.openPort();
+    port.setParams(portSpeed, 
+            SerialPort.DATABITS_8,
+            SerialPort.STOPBITS_1,
+            SerialPort.PARITY_NONE);
     setHardwareHandshaking(hardware);
-    port.enableReceiveTimeout(250);
-    inputStream = new DataInputStream(port.getInputStream());
+    port.purgePort(SerialPort.PURGE_RXCLEAR | SerialPort.PURGE_TXCLEAR);
     flushReceiveBuffer();
-    outputStream = new DataOutputStream(port.getOutputStream());
     connected = true;
     Log.println(true,"SerialTransport opened port named " + portName + " at speed " + portSpeed + "."); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
     return;
@@ -230,10 +206,10 @@ public class SerialTransport extends ATransport
     {
       try
       {
-        oneByte = inputStream.readByte();
+        oneByte = port.readBytes(1)[0];
         hasData = true;
       }
-      catch (java.io.IOException e)
+      catch (SerialPortException e)
       {
         collectedTimeouts++;
       }
@@ -251,7 +227,7 @@ public class SerialTransport extends ATransport
    * Sets the parameters of the underlying Java COMM API port.
    * 
    * @param port
-   *            The port to set the transport to.
+   *            The port to set the transrxtxPort to.
    * @param speed
    *            The speed to set the transport to.
    * @param hardware
@@ -274,18 +250,22 @@ public class SerialTransport extends ATransport
       setHardwareHandshaking(newHardware);
       if (_currentSpeed != newSpeed)
       {
-        flush();
+        flushReceiveBuffer();
+        flushSendBuffer();
         _currentSpeed = newSpeed;
-        port.setSerialPortParams(newSpeed, 8, 1, 0);
+        port.setParams(newSpeed, 
+                SerialPort.DATABITS_8,
+                SerialPort.STOPBITS_1,
+                SerialPort.PARITY_NONE);
       }
     }
   }
 
   /**
-   * Sets the speed of the underlying Java COMM API port.
+   * Sets the speed of the underlying Java COMM API rxtxPort.
    * 
    * @param speed
-   *            The speed to set the transport to.
+   *            The speed to set the transrxtxPort to.
    * @exception IOException
    *                thrown when a problem occurs with flushing the stream.
    */
@@ -296,9 +276,13 @@ public class SerialTransport extends ATransport
     {
       try
       {
-        flush();
+        flushReceiveBuffer();
+        flushSendBuffer();
         _currentSpeed = speed;
-        port.setSerialPortParams(speed, 8, 1, 0);
+        port.setParams(speed, 
+                SerialPort.DATABITS_8,
+                SerialPort.STOPBITS_1,
+                SerialPort.PARITY_NONE);
       }
       catch (Exception e)
       {
@@ -316,7 +300,7 @@ public class SerialTransport extends ATransport
 
   public void writeBytes(byte data[], String log)
   {
-	// Log.println(false,"SerialTransport.writeBytes() adding "+data.length+" bytes to the stream.");
+	Log.println(false,"SerialTransport.writeBytes() adding "+data.length+" bytes to the stream.");
     if (_outPacketPtr + data.length > _sendBuffer.length)
     {
       Log.println(false, "SerialTransport.writeBytes() Re-allocating the send buffer: "+_sendBuffer.length+" bytes is the new size.");
@@ -335,7 +319,10 @@ public class SerialTransport extends ATransport
       _sendBuffer[_outPacketPtr++] = data[i];
     }
     if (_outPacketPtr > 255)
+    {
+      Log.println(false, "SerialTransport.writeBytes() has "+_outPacketPtr+" bytes to send.");
       pushBuffer();
+    }
   }
 
   public void writeBytes(String str)
@@ -386,7 +373,7 @@ public class SerialTransport extends ATransport
 
   public void pullBuffer()
   {
-  // Serial port is byte-by-byte, no buffering
+  // Serial rxtxPort is byte-by-byte, no buffering
   }
 
   public void pushBuffer()
@@ -402,11 +389,17 @@ public class SerialTransport extends ATransport
 	  }
 	  Log.println(false, "");
 
+	  byte newBuffer[] = new byte[_outPacketPtr];
+      for (int i = 0; i < _outPacketPtr; i++)
+	  {
+	    newBuffer[i] = _sendBuffer[i];
+	  }
+	  
       try
 	  {
-        outputStream.write(_sendBuffer, 0, _outPacketPtr);
+        port.writeBytes(newBuffer);
       }
-	  catch (IOException e)
+	  catch (SerialPortException e)
 	  {
         e.printStackTrace();
       }
@@ -419,12 +412,12 @@ public class SerialTransport extends ATransport
   {
     try
     {
-      flush();
+      port.purgePort(SerialPort.PURGE_RXCLEAR);
     }
-    catch (IOException e)
+    catch (SerialPortException e)
     {
       Log.println(false,
-          "SerialTransport.flushReceiveBuffer() failed to flush the stream.");
+          "SerialTransport.flushReceiveBuffer() failed to purge the port.");
     }
   }
 
@@ -432,12 +425,12 @@ public class SerialTransport extends ATransport
   {
     try
     {
-      outputStream.flush();
+      port.purgePort(SerialPort.PURGE_TXCLEAR);
     }
-    catch (IOException e)
+    catch (SerialPortException e)
     {
       Log.println(false,
-          "SerialTransport.flushSendBuffer() failed to flush the stream.");
+          "SerialTransport.flushSendBuffer() failed to purge the port.");
     }
   }
 
@@ -445,9 +438,12 @@ public class SerialTransport extends ATransport
   {
     try
     {
-      port.setSerialPortParams(_currentSpeed, 8, 1, 0);
+      port.setParams(_currentSpeed, 
+              SerialPort.DATABITS_8,
+              SerialPort.STOPBITS_1,
+              SerialPort.PARITY_NONE);
     }
-    catch (UnsupportedCommOperationException e)
+    catch (SerialPortException e)
     {
       Log.printStackTrace(e);
     }
@@ -457,9 +453,12 @@ public class SerialTransport extends ATransport
   {
     try
     {
-      port.setSerialPortParams(speed, 8, 1, 0);
+      port.setParams(_currentSpeed, 
+              SerialPort.DATABITS_8,
+              SerialPort.STOPBITS_1,
+              SerialPort.PARITY_NONE);
     }
-    catch (UnsupportedCommOperationException e)
+    catch (SerialPortException e)
     {
       Log.printStackTrace(e);
     }
@@ -471,9 +470,12 @@ public class SerialTransport extends ATransport
         + speed);
     try
     {
-      port.setSerialPortParams(speed, 8, 1, 0);
+      port.setParams(speed, 
+              SerialPort.DATABITS_8,
+              SerialPort.STOPBITS_1,
+              SerialPort.PARITY_NONE);
     }
-    catch (UnsupportedCommOperationException e)
+    catch (SerialPortException e)
     {
       Log.printStackTrace(e);
     }
@@ -489,12 +491,12 @@ public class SerialTransport extends ATransport
   // Only necessary for audio transport
   }
 
-  public void setHardwareHandshaking(boolean state)
+  public void setHardwareHandshaking(boolean state) throws SerialPortException
   {
     _hardware = state;
-    if (state) port.setFlowControlMode(SerialPort.FLOWCONTROL_NONE);
+    if (state) port.setFlowControlMode(SerialPort.FLOWCONTROL_RTSCTS_IN | SerialPort.FLOWCONTROL_RTSCTS_OUT);
     else
-      port.setFlowControlMode(SerialPort.FLOWCONTROL_RTSCTS_IN | SerialPort.FLOWCONTROL_RTSCTS_OUT);
+    	port.setFlowControlMode(SerialPort.FLOWCONTROL_NONE);
   }
 
   public String getInstructionsDone(String guiString)

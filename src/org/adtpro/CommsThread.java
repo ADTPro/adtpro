@@ -1,6 +1,6 @@
 /*
 * ADTPro - Apple Disk Transfer ProDOS
- * Copyright (C) 2007 - 2018 by David Schmidt
+ * Copyright (C) 2007 - 2020 by David Schmidt
  * 1110325+david-schmidt@users.noreply.github.com
  *
  * This program is free software; you can redistribute it and/or modify it 
@@ -39,6 +39,8 @@ import org.adtpro.utilities.VDiskPersister;
 
 import com.webcodepro.applecommander.storage.Disk;
 import com.webcodepro.applecommander.storage.physical.NibbleOrder;
+
+import jssc.SerialPortException;
 
 public class CommsThread extends Thread
 {
@@ -88,18 +90,6 @@ public class CommsThread extends Thread
 			Log.printStackTrace(ex1);
 			_parent.cancelCommsThread("Gui.PortInUse");
 			requestStop();
-		}
-		catch (gnu.io.PortInUseException ex1)
-		{
-			Log.printStackTrace(ex1);
-			_parent.cancelCommsThread("Gui.PortInUse");
-			requestStop();
-		}
-		catch (gnu.io.NoSuchPortException ex1)
-		{
-			Log.printStackTrace(ex1);
-			requestStop();
-			_parent.cancelCommsThread("Gui.PortDoesNotExist");
 		}
 		catch (Exception ex)
 		{
@@ -4071,7 +4061,7 @@ public class CommsThread extends Thread
 								_transport.writeByte(0x53); // Send an "S" to trigger the start
 								_transport.pushBuffer();
 								sleep(20); // Give SOS a little time to put up its message
-								length = length - 1; // SOS seems to need this reduced by one...
+								// length = length - 1; // SOS seems to need this reduced by one...
 							}
 							else if (_resource.equals(Messages.getString("Gui.BS.ProDOSRaw")))
 							{
@@ -4256,7 +4246,15 @@ public class CommsThread extends Thread
 	{
 		if (_transport.transportType() == ATransport.TRANSPORT_TYPE_SERIAL)
 		{
-			((SerialTransport) _transport).setHardwareHandshaking(state);
+			try
+			{
+				((SerialTransport) _transport).setHardwareHandshaking(state);
+			}
+			catch (SerialPortException e)
+			{
+				Log.println(true, "Unable to set hardware handshaking.");
+				e.printStackTrace();
+			}
 		}
 	}
 

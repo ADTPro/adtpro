@@ -16,6 +16,6 @@ REM SET MY_JAVA_HOME=E:\Java142\jre\bin\
 SETLOCAL
 
 CD %ADTPRO_HOME%
-%MY_JAVA_HOME%java -Xms128m -Xmx256m -cp %ADTPRO_HOME%lib\%ADTPRO_VERSION%;%ADTPRO_HOME%lib\rxtx\%RXTX_VERSION%\RXTXcomm.jar org.adtpro.ADTPro %*
+%MY_JAVA_HOME%java -Xms128m -Xmx256m -cp %ADTPRO_HOME%lib\%ADTPRO_VERSION% org.adtpro.ADTPro %*
 
 ENDLOCAL
