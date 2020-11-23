@@ -189,10 +189,12 @@ all
 		<copy file="${builddir}/acbase.bat" tofile="${builddir}/${distName}/ac.bat" />
 		<replace file="${builddir}/${distName}/adtpro.bat" token="%ADTPRO_VERSION%" value="${distName}.jar"/>
 		<replace file="${builddir}/${distName}/adtpro.bat" token="%AC_VERSION%" value="${acJarVersion}"/>
+		<replace file="${builddir}/${distName}/adtpro.bat" token="%JSSC_VERSION%" value="${jsscVersion}"/>
 		<replace file="${builddir}/${distName}/ac.bat" token="%AC_VERSION%" value="${acJarVersion}"/>
 		<replace file="${builddir}/${distName}/adtpro.cmd" token="%ADTPRO_VERSION%" value="${distName}.jar"/>
 		<replace file="${builddir}/${distName}/adtpro.sh" token="%ADTPRO_VERSION%" value="${distName}.jar"/>
 		<replace file="${builddir}/${distName}/adtpro.sh" token="%AC_VERSION%" value="${acJarVersion}"/>
+		<replace file="${builddir}/${distName}/adtpro.sh" token="%JSSC_VERSION%" value="${jsscVersion}"/>
 		<replace file="${builddir}/${distName}/ac.sh" token="%AC_VERSION%" value="${acJarVersion}"/>
 	</target>
 

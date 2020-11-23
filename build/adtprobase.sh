@@ -40,4 +40,4 @@ if [ "$1x" = "headlessx" ]; then
   fi
 fi
 
-$HEADLESS"$MY_JAVA_HOME"java -Xms256m -Xmx512m -cp "$ADTPRO_HOME"lib/%ADTPRO_VERSION%:"$ADTPRO_HOME"lib/AppleCommander/AppleCommander-%AC_VERSION%.jar org.adtpro.ADTPro $*
+$HEADLESS"$MY_JAVA_HOME"java -Xms256m -Xmx512m -cp "$ADTPRO_HOME"lib/%ADTPRO_VERSION%:"$ADTPRO_HOME"lib/AppleCommander/AppleCommander-%AC_VERSION%.jar:"$ADTPRO_HOME"lib/jssc/jssc-%JSSC_VERSION%.jar org.adtpro.ADTPro $*
