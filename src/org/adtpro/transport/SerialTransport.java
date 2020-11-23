@@ -124,11 +124,9 @@ public class SerialTransport extends ATransport
   {
     Vector<String> v = new Vector<String>();
 
-	System.out.println("getPortNames entry.");
     String[] portNames = SerialPortList.getPortNames();
     for(int i = 0; i < portNames.length; i++)
     {
-    	System.out.println("port name "+i+": "+portNames[i]);
     	v.addElement(portNames[i]);
     }
 
