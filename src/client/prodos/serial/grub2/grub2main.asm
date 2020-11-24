@@ -1,6 +1,6 @@
 ;
 ; ADTPro - Apple Disk Transfer ProDOS
-; Copyright (C) 2012 - 2014 by David Schmidt
+; Copyright (C) 2012 - 2020 by David Schmidt
 ; 1110325+david-schmidt@users.noreply.github.com
 ;
 ; This program is free software; you can redistribute it and/or modify it 
@@ -107,15 +107,14 @@ ReadMLI:			; We got the magic signature; start reading data
 	sta	(b_p),y		; Save it
 	sta	mliupdateloc	; Print it in the status area
 	iny
-	cpy	size		; Is y equal to the LSB of our target?
-	bne	:+		; No... check for next pageness
-	lda	size+1		; LSB is equal; is MSB?
-	beq	ReadMLIDone	; Yes... so done
-:	cpy	#$00
-	bne	ReadMLI		; Check for page increment
+	cpy	#$00		; Check for page increment
+	bne	:+
 	inc	b_p+1		; Increment another page
 	dec	size+1
-	jmp	ReadMLI		; Go back for more
+:	cpy	size		; Is y equal to the LSB of our target?
+	bne	ReadMLI		; No, loop around for more
+	lda	size+1		; LSB is equal; is MSB?
+	bne	ReadMLI		; No; go back for more
 
 ReadMLIDone:
 	lda	#$01
@@ -163,15 +162,14 @@ ReadClient:			; We got the magic signature; start reading data
 	sta	(b_p),y		; Save it
 	sta	adtproupdateloc	; Print it in the status area
 	iny
-	cpy	size		; Is y equal to the LSB of our target?
-	bne	:+			; No... check for next pageness
-	lda	size+1		; LSB is equal; is MSB?
-	beq	ReadClientDone	; Yes... so done
-:	cpy	#$00
-	bne	ReadClient	; Check for page increment
+	cpy	#$00		; Check for page increment
+	bne	:+
 	inc	b_p+1		; Increment another page
 	dec	size+1
-	jmp	ReadClient	; Go back for more
+:	cpy	size		; Is y equal to the LSB of our target?
+	bne	ReadClient	; No, loop around for more
+	lda	size+1		; LSB is equal; is MSB?
+	bne	ReadClient	; Go back for more
 
 ReadClientDone:
 	lda	#$00

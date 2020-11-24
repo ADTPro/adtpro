@@ -1,6 +1,6 @@
 ;
 ; ADTPro - Apple Disk Transfer ProDOS
-; Copyright (C) 2008 - 2014 by David Schmidt
+; Copyright (C) 2008 - 2020 by David Schmidt
 ; 1110325+david-schmidt@users.noreply.github.com
 ;
 ; This program is free software; you can redistribute it and/or modify it 
@@ -352,8 +352,7 @@ ReadDriver:			; We got the magic signature; start reading data
 :	cpy size		; Is y equal to the LSB of our target?
 	bne ReadDriver
 	lda size+1		; LSB is equal; is MSB?
-	beq ReadDone		; Yes... so done
-	jmp ReadDriver		; Branch always - go back for more
+	bne ReadDriver		; No; go back for more
 ReadDone:
 	jsr RESTORE
 	jmp KRNLReceiveDriverDone

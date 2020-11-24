@@ -650,14 +650,14 @@ ReadInterp:			; We got the magic signature; start reading data
 	sta (b_p),y		; Save it
 	sta $07bd+8		; Print throbber in the status area
 	iny
-	cpy size		; Is y equal to the LSB of our target?
-	bne :+			; No... check for next pageness
-	lda size+1		; LSB is equal; is MSB?
-	beq ReadInterpDone	; Yes... so done
-:	cpy #$00
-	bne ReadInterp		; Check for page incrementness
+	cpy #$00		; Check for page increment
+	bne :+			;
 	inc b_p+1		; Prepare for another page
 	dec size+1
+:	cpy size		; Is y equal to the LSB of our target?
+	bne ReadInterp		; No, loop around for more
+	lda size+1		; LSB is equal; is MSB?
+	beq ReadInterpDone	; Yes... so done
 	jmp ReadInterp		; Go back for more
 
 ReadInterpDone:
