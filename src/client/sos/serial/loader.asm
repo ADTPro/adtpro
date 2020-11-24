@@ -345,14 +345,14 @@ ReadDriver:			; We got the magic signature; start reading data
 	sta (b_p),y		; Save it
 	sta $07c5		; Print throbber in the status area
 	iny
-	cpy size		; Is y equal to the LSB of our target?
-	bne :+			; No... check for next pageness
-	lda size+1		; LSB is equal; is MSB?
-	beq ReadDone		; Yes... so done
-:	cpy #$00		; Check for page increment
-	bne ReadDriver
+	cpy #$00		; Check for page increment
+	bne :+
 	inc b_p+1		; Increment another page
 	dec size+1
+:	cpy size		; Is y equal to the LSB of our target?
+	bne ReadDriver
+	lda size+1		; LSB is equal; is MSB?
+	beq ReadDone		; Yes... so done
 	jmp ReadDriver		; Branch always - go back for more
 ReadDone:
 	jsr RESTORE

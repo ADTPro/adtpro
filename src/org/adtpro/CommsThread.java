@@ -4053,15 +4053,13 @@ public class CommsThread extends Thread
 							int length = buffer.length;
 							// If we're sending binary bootstrap stuff, we need
 							// to prepend the length and stuff
-							// Log.println(true,
-							// "DEBUG: CommsThread.Worker.run() writing length header.");
+							Log.println(false, "CommsThread.Worker.run() writing length header of 0x"+Integer.toHexString(length)+".");
 							if ((_resource.equals(Messages.getString("Gui.BS.SOSINTERP")))
 								|| ((_resource.equals(Messages.getString("Gui.BS.SOSDRIVER")))))
 							{
 								_transport.writeByte(0x53); // Send an "S" to trigger the start
 								_transport.pushBuffer();
 								sleep(20); // Give SOS a little time to put up its message
-								// length = length - 1; // SOS seems to need this reduced by one...
 							}
 							else if (_resource.equals(Messages.getString("Gui.BS.ProDOSRaw")))
 							{
@@ -4078,7 +4076,6 @@ public class CommsThread extends Thread
 							else if (_resource.equals(Messages.getString("Gui.BS.BSpeed")))
 							{
 								_transport.writeByte(0x42); // Send a "B" to trigger the start
-								length = length - 1; // BASIC seems to need this reduced by one...
 							}
 							_transport.writeByte(UnsignedByte.loByte(length)); // Send buffer LSB
 							_transport.writeByte(UnsignedByte.hiByte(length)); // Send buffer MSB
