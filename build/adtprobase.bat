@@ -21,4 +21,4 @@ REM SET MY_JAVA_HOME=C:\Progra~1\IBM\Java142\bin\
 
 :start
 CD "%ADTPRO_HOME%"
-start /min %MY_JAVA_HOME%java -Xms128m -Xmx256m %ADTPRO_EXTRA_JAVA_PARMS% -cp "%ADTPRO_HOME%lib\%ADTPRO_VERSION%";"%ADTPRO_HOME%lib\AppleCommander\AppleCommander-%AC_VERSION%.jar";"%ADTPRO_HOME%lib\jssc\jssc-%JSSC_VERSION%.jar" org.adtpro.ADTPro %*
+start /min %MY_JAVA_HOME%java -Xms128m -Xmx256m %ADTPRO_EXTRA_JAVA_PARMS% -cp "%ADTPRO_HOME%lib\%ADTPRO_VERSION%";"%ADTPRO_HOME%lib\AppleCommander\AppleCommander-%AC_VERSION%.jar";"%ADTPRO_HOME%lib\jssc\jssc-%JSSC_VERSION%.jar";"%ADTPRO_HOME%lib\jssc\slf4j-nop-%SLF4J_VERSION%.jar" org.adtpro.ADTPro %*

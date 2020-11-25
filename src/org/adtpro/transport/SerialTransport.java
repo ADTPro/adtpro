@@ -26,6 +26,7 @@ package org.adtpro.transport;
 import java.io.*;
 import java.util.*;
 
+import jssc.SerialNativeInterface;
 import jssc.SerialPort;
 import jssc.SerialPortException;
 import jssc.SerialPortList;
@@ -407,6 +408,8 @@ public class SerialTransport extends ATransport
 
   public void flushReceiveBuffer()
   {
+    // Actually flushing seems to be harmful; skip it
+    /*
     try
     {
       port.purgePort(SerialPort.PURGE_RXCLEAR);
@@ -415,10 +418,13 @@ public class SerialTransport extends ATransport
     {
       Log.println(false, "SerialTransport.flushReceiveBuffer() failed to purge the port.");
     }
+    */
   }
 
   public void flushSendBuffer()
   {
+    // Actually flushing seems to be harmful; skip it
+    /*
     try
     {
       port.purgePort(SerialPort.PURGE_TXCLEAR);
@@ -427,6 +433,7 @@ public class SerialTransport extends ATransport
     {
       Log.println(false, "SerialTransport.flushSendBuffer() failed to purge the port.");
     }
+    */
   }
 
   public void setFullSpeed()

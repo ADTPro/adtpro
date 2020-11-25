@@ -2763,16 +2763,12 @@ public class CommsThread extends Thread
 			}
 			catch (FileNotFoundException ex)
 			{
-				_transport.writeByte(0x02); // New ADT protocol: HMFIL - unable
-				// to write
-				// file
+				_transport.writeByte(0x02); // New ADT protocol: HMFIL - unable to write file
 				_transport.pushBuffer();
 			}
 			catch (IOException ex2)
 			{
-				_transport.writeByte(0x02); // New ADT protocol: HMFIL - unable
-				// to write
-				// file
+				_transport.writeByte(0x02); // New ADT protocol: HMFIL - unable to write file
 				_transport.pushBuffer();
 			}
 			finally
@@ -3000,16 +2996,12 @@ public class CommsThread extends Thread
 			}
 			catch (FileNotFoundException ex)
 			{
-				_transport.writeByte(0x02); // New ADT protocol: HMFIL - unable
-				// to write
-				// file
+				_transport.writeByte(0x02); // New ADT protocol: HMFIL - unable to write file
 				_transport.pushBuffer();
 			}
 			catch (IOException ex2)
 			{
-				_transport.writeByte(0x02); // New ADT protocol: HMFIL - unable
-				// to write
-				// file
+				_transport.writeByte(0x02); // New ADT protocol: HMFIL - unable to write file
 				_transport.pushBuffer();
 			}
 			finally
@@ -3368,9 +3360,9 @@ public class CommsThread extends Thread
 			}
 			if (rc == 0)
 			{
-				_transport.flushReceiveBuffer();
 				_transport.writeByte(CHR_ACK);
 				_transport.pushBuffer();
+				_transport.flushReceiveBuffer();
 				_transport.flushSendBuffer();
 			}
 			else if (rc == -2)
@@ -3407,9 +3399,9 @@ public class CommsThread extends Thread
 				{
 					Log.println(false, "CommsThread.receivePacket() audio backoff sleep was interrupted.");
 				}
-				_transport.flushReceiveBuffer();
 				_transport.writeByte(CHR_NAK);
 				_transport.pushBuffer();
+				_transport.flushReceiveBuffer();
 				_transport.flushSendBuffer();
 			}
 		} while ((rc != 0) && (_shouldRun == true) && (retries < _maxRetries));
@@ -3571,9 +3563,9 @@ public class CommsThread extends Thread
 			}
 			else
 			{
-				_transport.flushReceiveBuffer();
 				_transport.writeByte(CHR_ACK);
 				_transport.pushBuffer();
+				_transport.flushReceiveBuffer();
 				_transport.flushSendBuffer();
 			}
 		} while ((bytesReceived == 0) && (_shouldRun == true) && (retries < _maxRetries));
