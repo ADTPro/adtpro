@@ -1,6 +1,6 @@
 ;
 ; ADTPro - Apple Disk Transfer ProDOS
-; Copyright (C) 2006 - 2014 by David Schmidt
+; Copyright (C) 2006 - 2020 by David Schmidt
 ; 1110325+david-schmidt@users.noreply.github.com
 ;
 ; This program is free software; you can redistribute it and/or modify it 
@@ -515,7 +515,14 @@ SROK:
 	dex
 	bne @Here
 	clc
-	lda BLKLO
+	cmp #CHR_X
+	bne :+
+	lda COL_SAV  ; Reposition over X so we can re-send
+	sta <CH
+  lda #V_BUF
+  jsr TABV
+  jmp SRCALL  ; Block was not acknowledged, so retry
+:	lda BLKLO
 	adc BAOCNT
 	sta BLKLO
 	bcc SRNOB
@@ -527,9 +534,10 @@ SRNOB:
 	sta SRBCNT
 	beq SRBDONE	; None left?  Done!
 	cmp BAOCNT	; Now, do we still have enough to do our normal count at once?
-	bpl :+		; Yes - go ahead as normal
+	bpl SRFAR		; Yes - go ahead as normal
 	sta BAOCNT	; No - new blocks-at-once is how ever many we have left
-:	jmp SRCALL
+SRFAR:
+	jmp SRCALL
 
 SRBDONE:
 	rts
