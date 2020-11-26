@@ -1,5 +1,5 @@
 /*
-* ADTPro - Apple Disk Transfer ProDOS
+ * ADTPro - Apple Disk Transfer ProDOS
  * Copyright (C) 2007 - 2020 by David Schmidt
  * 1110325+david-schmidt@users.noreply.github.com
  *
@@ -85,18 +85,18 @@ public class CommsThread extends Thread
 		{
 			_transport.open();
 		}
-    catch (java.net.BindException ex1)
-    {
-      Log.printStackTrace(ex1);
-      _parent.cancelCommsThread("Gui.PortInUse");
-      requestStop();
-    }
-    catch (jssc.SerialPortException ex2)
-    {
-      Log.printStackTrace(ex2);
-      _parent.cancelCommsThread("Gui.PortInUse");
-      requestStop();
-    }
+		catch (java.net.BindException ex1)
+		{
+			Log.printStackTrace(ex1);
+			_parent.cancelCommsThread("Gui.PortInUse");
+			requestStop();
+		}
+		catch (jssc.SerialPortException ex2)
+		{
+			Log.printStackTrace(ex2);
+			_parent.cancelCommsThread("Gui.PortInUse");
+			requestStop();
+		}
 		catch (Exception ex)
 		{
 			Log.printStackTrace(ex);
@@ -145,10 +145,10 @@ public class CommsThread extends Thread
 					readYet = true;
 					Log.println(false, "CommsThread.commandLoop() Received data."); //$NON-NLS-1$
 				}
-        catch (TransportTimeoutException e)
-        {
-          // Log.println(false, "CommsThread.commandLoop() Timeout in command..."); //$NON-NLS-1$
-        }
+				catch (TransportTimeoutException e)
+				{
+					// Log.println(false, "CommsThread.commandLoop() Timeout in command..."); //$NON-NLS-1$
+				}
 			if (_shouldRun)
 			{
 				Log.println(false, "CommsThread.commandLoop() Received a byte: " + UnsignedByte.toString(oneByte)); //$NON-NLS-1$
@@ -2296,7 +2296,7 @@ public class CommsThread extends Thread
 				}
 				catch (InterruptedException e)
 				{
-          Log.printStackTrace(e);
+					Log.printStackTrace(e);
 					Log.println(false, "CommsThread.sendPacketWide() backoff sleep was interrupted.");
 				}
 				_transport.flushReceiveBuffer();
@@ -3405,7 +3405,7 @@ public class CommsThread extends Thread
 				}
 				catch (InterruptedException e)
 				{
-          Log.printStackTrace(e);
+					Log.printStackTrace(e);
 					Log.println(false, "CommsThread.receivePacket() audio backoff sleep was interrupted.");
 				}
 				_transport.writeByte(CHR_NAK);
@@ -3563,7 +3563,7 @@ public class CommsThread extends Thread
 				}
 				catch (InterruptedException e)
 				{
-          Log.printStackTrace(e);
+					Log.printStackTrace(e);
 					Log.println(false, "CommsThread.receivePacketWide() audio backoff sleep was interrupted.");
 				}
 				_transport.flushReceiveBuffer();
@@ -4163,7 +4163,7 @@ public class CommsThread extends Thread
 								}
 								catch (InterruptedException e)
 								{
-			            Log.printStackTrace(e);
+									Log.printStackTrace(e);
 									Log.println(false, "CommsThread.Worker.run() interrupted.");
 									if (_shouldRun == false)
 									{

@@ -517,11 +517,11 @@ SROK:
 	clc
 	cmp #CHR_X
 	bne :+
-	lda COL_SAV  ; Reposition over X so we can re-send
+	lda COL_SAV	; Reposition over X so we can re-send
 	sta <CH
-  lda #V_BUF
-  jsr TABV
-  jmp SRCALL  ; Block was not acknowledged, so retry
+	lda #V_BUF
+	jsr TABV
+	jmp SRCALL	; Block was not acknowledged, so retry
 :	lda BLKLO
 	adc BAOCNT
 	sta BLKLO
