@@ -29,6 +29,7 @@ import java.util.*;
 import jssc.SerialPort;
 import jssc.SerialPortException;
 import jssc.SerialPortList;
+import jssc.SerialPortTimeoutException;
 
 import org.adtpro.gui.Gui;
 import org.adtpro.resources.Messages;
@@ -183,6 +184,7 @@ public class SerialTransport extends ATransport
 
   /**
    * Read a single byte from the Java COMM API port.
+   * @throws SerialPortException 
    * 
    * @throws IOException
    */
@@ -196,12 +198,17 @@ public class SerialTransport extends ATransport
     {
       try
       {
-        oneByte = port.readBytes(1)[0];
+        oneByte = port.readBytes(1,seconds*1000)[0];
         hasData = true;
+      }
+      catch (SerialPortTimeoutException e)
+      {
+        collectedTimeouts++;
+        //Log.printStackTrace(e);
       }
       catch (SerialPortException e)
       {
-        collectedTimeouts++;
+        Log.printStackTrace(e);
       }
       if (collectedTimeouts / 4 > seconds)
         throw new TransportTimeoutException();
@@ -382,8 +389,7 @@ public class SerialTransport extends ATransport
 
       try
       {
-        port.isCTS(); // On OSX, if there isn't some sort of interaction with the port, data is sent
-                      // far too fast
+        port.isCTS(); // On OSX, if there isn't some sort of interaction with the port, data is sent far too fast
         if (_outPacketPtr == 1)
         {
           port.writeByte(_sendBuffer[0]);
@@ -398,6 +404,7 @@ public class SerialTransport extends ATransport
       }
       catch (SerialPortException e)
       {
+        Log.printStackTrace(e);
         e.printStackTrace();
       }
       _outPacketPtr = 0;

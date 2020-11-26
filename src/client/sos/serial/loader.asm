@@ -94,18 +94,18 @@ LogoLoop:
 	cpy #PMLOGO6+2	; Stop at MLOGO6 message
 	bne LogoLoop
 
-; Set up our pointers
-	lda	#$1e		; SOS.KERNEL initially occupies $1e00 to $73ff
-	sta	BUF_P+1
-	lda	#$00
-	sta	BUF_P
-
 ; Say we're active
 	ldx	#<message_1
 	jsr	Message
 
 ; Ask for the kernel
 RequestKernel:
+
+; Set up our pointers
+  lda #$1e    ; SOS.KERNEL initially occupies $1e00 to $73ff
+  sta BUF_P+1
+  lda #$00
+  sta BUF_P
 	lda	#$b3		; Send "3", kernel request
 	jsr	SendEnvelope
 

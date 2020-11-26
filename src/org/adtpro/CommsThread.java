@@ -145,10 +145,10 @@ public class CommsThread extends Thread
 					readYet = true;
 					Log.println(false, "CommsThread.commandLoop() Received data."); //$NON-NLS-1$
 				}
-				catch (TransportTimeoutException e)
-				{
-					// Log.println(false, "CommsThread.commandLoop() Timeout in command..."); //$NON-NLS-1$
-				}
+        catch (TransportTimeoutException e)
+        {
+          // Log.println(false, "CommsThread.commandLoop() Timeout in command..."); //$NON-NLS-1$
+        }
 			if (_shouldRun)
 			{
 				Log.println(false, "CommsThread.commandLoop() Received a byte: " + UnsignedByte.toString(oneByte)); //$NON-NLS-1$
@@ -2158,6 +2158,7 @@ public class CommsThread extends Thread
 					}
 					catch (InterruptedException e)
 					{
+					  Log.printStackTrace(e);
 						Log.println(false, "CommsThread.sendPacket() backoff sleep was interrupted.");
 					}
 					_transport.flushReceiveBuffer();
@@ -2295,6 +2296,7 @@ public class CommsThread extends Thread
 				}
 				catch (InterruptedException e)
 				{
+          Log.printStackTrace(e);
 					Log.println(false, "CommsThread.sendPacketWide() backoff sleep was interrupted.");
 				}
 				_transport.flushReceiveBuffer();
@@ -3403,6 +3405,7 @@ public class CommsThread extends Thread
 				}
 				catch (InterruptedException e)
 				{
+          Log.printStackTrace(e);
 					Log.println(false, "CommsThread.receivePacket() audio backoff sleep was interrupted.");
 				}
 				_transport.writeByte(CHR_NAK);
@@ -3560,6 +3563,7 @@ public class CommsThread extends Thread
 				}
 				catch (InterruptedException e)
 				{
+          Log.printStackTrace(e);
 					Log.println(false, "CommsThread.receivePacketWide() audio backoff sleep was interrupted.");
 				}
 				_transport.flushReceiveBuffer();
@@ -4159,6 +4163,7 @@ public class CommsThread extends Thread
 								}
 								catch (InterruptedException e)
 								{
+			            Log.printStackTrace(e);
 									Log.println(false, "CommsThread.Worker.run() interrupted.");
 									if (_shouldRun == false)
 									{
