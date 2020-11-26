@@ -1,6 +1,6 @@
 ;
 ; ADTPro - Apple Disk Transfer ProDOS
-; Copyright (C) 2013 - 2014 by David Schmidt
+; Copyright (C) 2013 - 2020 by David Schmidt
 ; 1110325+david-schmidt@users.noreply.github.com
 ;
 ; This program is free software; you can redistribute it and/or modify it 
@@ -142,15 +142,14 @@ ReadFile:			; We got the magic signature; start reading data
 UpdateLoc:			; Print it in the status area
 	sta	$0600		; (self-modifying)
 	iny
-	cpy	size		; Is y equal to the LSB of our target?
-	bne	:+		; No... check for next pageness
-	lda	size+1		; LSB is equal; is MSB?
-	beq	ReadDone	; Yes... so done
-:	cpy	#$00
-	bne	ReadFile	; Check for page increment
+	cpy	#$00		; Check for page increment
+	bne	:+
 	inc	b_p+1		; Increment another page
 	dec	size+1
-	jmp	ReadFile	; Go back for more
+:	cpy	size		; Is y equal to the LSB of our target?
+	bne	ReadFile	; No, loop around for more
+	lda	size+1		; LSB is equal; is MSB?
+	bne	ReadFile	; No; go back for more
 
 ReadDone:
 	inc	NextTask	; Get ready for the next task when we swing back around

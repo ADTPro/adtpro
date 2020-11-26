@@ -1,6 +1,6 @@
 ;
 ; ADTPro - Apple Disk Transfer ProDOS
-; Copyright (C) 2008 - 2014 by David Schmidt
+; Copyright (C) 2008 - 2020 by David Schmidt
 ; 1110325+david-schmidt@users.noreply.github.com
 ;
 ; This program is free software; you can redistribute it and/or modify it 
@@ -94,18 +94,18 @@ LogoLoop:
 	cpy #PMLOGO6+2	; Stop at MLOGO6 message
 	bne LogoLoop
 
-; Set up our pointers
-	lda	#$1e		; SOS.KERNEL initially occupies $1e00 to $73ff
-	sta	BUF_P+1
-	lda	#$00
-	sta	BUF_P
-
 ; Say we're active
 	ldx	#<message_1
 	jsr	Message
 
 ; Ask for the kernel
 RequestKernel:
+
+; Set up our pointers
+  lda #$1e    ; SOS.KERNEL initially occupies $1e00 to $73ff
+  sta BUF_P+1
+  lda #$00
+  sta BUF_P
 	lda	#$b3		; Send "3", kernel request
 	jsr	SendEnvelope
 
@@ -345,15 +345,14 @@ ReadDriver:			; We got the magic signature; start reading data
 	sta (b_p),y		; Save it
 	sta $07c5		; Print throbber in the status area
 	iny
-	cpy size		; Is y equal to the LSB of our target?
-	bne :+			; No... check for next pageness
-	lda size+1		; LSB is equal; is MSB?
-	beq ReadDone		; Yes... so done
-:	cpy #$00		; Check for page increment
-	bne ReadDriver
+	cpy #$00		; Check for page increment
+	bne :+
 	inc b_p+1		; Increment another page
 	dec size+1
-	jmp ReadDriver		; Branch always - go back for more
+:	cpy size		; Is y equal to the LSB of our target?
+	bne ReadDriver
+	lda size+1		; LSB is equal; is MSB?
+	bne ReadDriver		; No; go back for more
 ReadDone:
 	jsr RESTORE
 	jmp KRNLReceiveDriverDone

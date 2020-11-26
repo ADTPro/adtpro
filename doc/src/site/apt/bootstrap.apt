@@ -415,15 +415,15 @@ all the way to making a bootable ADTPro floppy:
 [images/speedivsdrive.png]
 
     [[1]] Once the transfers complete successfully, You will be left in the
-      BASIC AppleSoft envrionment with ADTPro's Virtual.po image being served
-      as slot 2, drive 1:
+      BASIC AppleSoft environment with ADTPro's Virtual.po image being served
+      as slot 1, drive 1:
 
      *
         
 [images/speedivsbooted.png]   
 
     [[1]] You are now ready to use your Apple, loading and saving programs
-      and files on slot 2, drive 1.  Note that the virtual serial driver 
+      and files on slot 1, drive 1.  Note that the virtual serial driver 
       booted this way takes the place of the Disk II driver, so Disk II drives
       will be unusable in your system if you have them. 
 

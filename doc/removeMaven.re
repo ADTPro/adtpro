@@ -1,4 +1,4 @@
-s@v\.r\.m@2.0.3@ig;
+s@v\.r\.m@2.1.0@ig;
 s@\<a href="http://maven.apache.org/" title="Built by Maven" class="poweredBy"\>@<a href="https://github.com/ADTPro/adtpro"><img src="https://assets-cdn.github.com/images/modules/logos_page/GitHub-Logo.png" /></a>@ig;
 s@\<img class="builtBy" alt="Built by Maven" src="\./images/logos/maven-feather.png" \/\>@@ig;
 s@\</body\>@\<script src\=\"http\:\/\/www.google-analytics.com\/urchin.js\" type\=\"text\/javascript\"\>\<\/script\>\<script type\=\"text\/javascript\"\>_uacct \= \"UA-697468-1\";urchinTracker\(\);\<\/script\>\<\/body\>@ig;
@@ -19,5 +19,4 @@ s@href="http://dreher.net/?s=projects/CFforAppleII&amp;c=projects/CFforAppleII/m
 s@href="http://www.callapple.org/uncategorized/announcing-prodos-2-4-for-all-apple-ii-computers/"@href="http://www.callapple.org/uncategorized/announcing-prodos-2-4-for-all-apple-ii-computers/" target\="_new"@ig;
 s@href="http://oliverschmidt.github.io/ip65/"@href="http://oliverschmidt.github.io/ip65/" target\="_new"@ig;
 s@href="hhttps://github.com/a2retrosystems/uthernet2/wiki/W5100-Shared-Access"@href="https://github.com/a2retrosystems/uthernet2/wiki/W5100-Shared-Access" target\="_new"@ig;
-s@webringreplaced@<script type="text/javascript"src="http://ss.webring.com/navbar?f=j;y=schmidtd;u=adtpro"></script>Powered by <a href="http://dir.webring.com/rw" target=_top>WebRing</a>.@ig;
 s@&amp;#223;@&#223;@ig;

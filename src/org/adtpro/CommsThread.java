@@ -1,6 +1,6 @@
 /*
-* ADTPro - Apple Disk Transfer ProDOS
- * Copyright (C) 2007 - 2018 by David Schmidt
+ * ADTPro - Apple Disk Transfer ProDOS
+ * Copyright (C) 2007 - 2020 by David Schmidt
  * 1110325+david-schmidt@users.noreply.github.com
  *
  * This program is free software; you can redistribute it and/or modify it 
@@ -39,6 +39,8 @@ import org.adtpro.utilities.VDiskPersister;
 
 import com.webcodepro.applecommander.storage.Disk;
 import com.webcodepro.applecommander.storage.physical.NibbleOrder;
+
+import jssc.SerialPortException;
 
 public class CommsThread extends Thread
 {
@@ -89,17 +91,11 @@ public class CommsThread extends Thread
 			_parent.cancelCommsThread("Gui.PortInUse");
 			requestStop();
 		}
-		catch (gnu.io.PortInUseException ex1)
+		catch (jssc.SerialPortException ex2)
 		{
-			Log.printStackTrace(ex1);
+			Log.printStackTrace(ex2);
 			_parent.cancelCommsThread("Gui.PortInUse");
 			requestStop();
-		}
-		catch (gnu.io.NoSuchPortException ex1)
-		{
-			Log.printStackTrace(ex1);
-			requestStop();
-			_parent.cancelCommsThread("Gui.PortDoesNotExist");
 		}
 		catch (Exception ex)
 		{
@@ -2162,6 +2158,7 @@ public class CommsThread extends Thread
 					}
 					catch (InterruptedException e)
 					{
+					  Log.printStackTrace(e);
 						Log.println(false, "CommsThread.sendPacket() backoff sleep was interrupted.");
 					}
 					_transport.flushReceiveBuffer();
@@ -2299,6 +2296,7 @@ public class CommsThread extends Thread
 				}
 				catch (InterruptedException e)
 				{
+					Log.printStackTrace(e);
 					Log.println(false, "CommsThread.sendPacketWide() backoff sleep was interrupted.");
 				}
 				_transport.flushReceiveBuffer();
@@ -2773,16 +2771,12 @@ public class CommsThread extends Thread
 			}
 			catch (FileNotFoundException ex)
 			{
-				_transport.writeByte(0x02); // New ADT protocol: HMFIL - unable
-				// to write
-				// file
+				_transport.writeByte(0x02); // New ADT protocol: HMFIL - unable to write file
 				_transport.pushBuffer();
 			}
 			catch (IOException ex2)
 			{
-				_transport.writeByte(0x02); // New ADT protocol: HMFIL - unable
-				// to write
-				// file
+				_transport.writeByte(0x02); // New ADT protocol: HMFIL - unable to write file
 				_transport.pushBuffer();
 			}
 			finally
@@ -3010,16 +3004,12 @@ public class CommsThread extends Thread
 			}
 			catch (FileNotFoundException ex)
 			{
-				_transport.writeByte(0x02); // New ADT protocol: HMFIL - unable
-				// to write
-				// file
+				_transport.writeByte(0x02); // New ADT protocol: HMFIL - unable to write file
 				_transport.pushBuffer();
 			}
 			catch (IOException ex2)
 			{
-				_transport.writeByte(0x02); // New ADT protocol: HMFIL - unable
-				// to write
-				// file
+				_transport.writeByte(0x02); // New ADT protocol: HMFIL - unable to write file
 				_transport.pushBuffer();
 			}
 			finally
@@ -3378,9 +3368,9 @@ public class CommsThread extends Thread
 			}
 			if (rc == 0)
 			{
-				_transport.flushReceiveBuffer();
 				_transport.writeByte(CHR_ACK);
 				_transport.pushBuffer();
+				_transport.flushReceiveBuffer();
 				_transport.flushSendBuffer();
 			}
 			else if (rc == -2)
@@ -3415,11 +3405,12 @@ public class CommsThread extends Thread
 				}
 				catch (InterruptedException e)
 				{
+					Log.printStackTrace(e);
 					Log.println(false, "CommsThread.receivePacket() audio backoff sleep was interrupted.");
 				}
-				_transport.flushReceiveBuffer();
 				_transport.writeByte(CHR_NAK);
 				_transport.pushBuffer();
+				_transport.flushReceiveBuffer();
 				_transport.flushSendBuffer();
 			}
 		} while ((rc != 0) && (_shouldRun == true) && (retries < _maxRetries));
@@ -3572,6 +3563,7 @@ public class CommsThread extends Thread
 				}
 				catch (InterruptedException e)
 				{
+					Log.printStackTrace(e);
 					Log.println(false, "CommsThread.receivePacketWide() audio backoff sleep was interrupted.");
 				}
 				_transport.flushReceiveBuffer();
@@ -3581,9 +3573,9 @@ public class CommsThread extends Thread
 			}
 			else
 			{
-				_transport.flushReceiveBuffer();
 				_transport.writeByte(CHR_ACK);
 				_transport.pushBuffer();
+				_transport.flushReceiveBuffer();
 				_transport.flushSendBuffer();
 			}
 		} while ((bytesReceived == 0) && (_shouldRun == true) && (retries < _maxRetries));
@@ -4063,15 +4055,13 @@ public class CommsThread extends Thread
 							int length = buffer.length;
 							// If we're sending binary bootstrap stuff, we need
 							// to prepend the length and stuff
-							// Log.println(true,
-							// "DEBUG: CommsThread.Worker.run() writing length header.");
+							Log.println(false, "CommsThread.Worker.run() writing length header of 0x"+Integer.toHexString(length)+".");
 							if ((_resource.equals(Messages.getString("Gui.BS.SOSINTERP")))
 								|| ((_resource.equals(Messages.getString("Gui.BS.SOSDRIVER")))))
 							{
 								_transport.writeByte(0x53); // Send an "S" to trigger the start
 								_transport.pushBuffer();
 								sleep(20); // Give SOS a little time to put up its message
-								length = length - 1; // SOS seems to need this reduced by one...
 							}
 							else if (_resource.equals(Messages.getString("Gui.BS.ProDOSRaw")))
 							{
@@ -4088,7 +4078,6 @@ public class CommsThread extends Thread
 							else if (_resource.equals(Messages.getString("Gui.BS.BSpeed")))
 							{
 								_transport.writeByte(0x42); // Send a "B" to trigger the start
-								length = length - 1; // BASIC seems to need this reduced by one...
 							}
 							_transport.writeByte(UnsignedByte.loByte(length)); // Send buffer LSB
 							_transport.writeByte(UnsignedByte.hiByte(length)); // Send buffer MSB
@@ -4174,6 +4163,7 @@ public class CommsThread extends Thread
 								}
 								catch (InterruptedException e)
 								{
+									Log.printStackTrace(e);
 									Log.println(false, "CommsThread.Worker.run() interrupted.");
 									if (_shouldRun == false)
 									{
@@ -4256,7 +4246,15 @@ public class CommsThread extends Thread
 	{
 		if (_transport.transportType() == ATransport.TRANSPORT_TYPE_SERIAL)
 		{
-			((SerialTransport) _transport).setHardwareHandshaking(state);
+			try
+			{
+				((SerialTransport) _transport).setHardwareHandshaking(state);
+			}
+			catch (SerialPortException e)
+			{
+				Log.println(true, "Unable to set hardware handshaking.");
+				e.printStackTrace();
+			}
 		}
 	}
 

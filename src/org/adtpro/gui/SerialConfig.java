@@ -1,6 +1,6 @@
 /*
  * ADTPro - Apple Disk Transfer ProDOS
- * Copyright (C) 2007 - 2015 by David Schmidt
+ * Copyright (C) 2007 - 2020 by David Schmidt
  * 1110325+david-schmidt@users.noreply.github.com
  *
  * This program is free software; you can redistribute it and/or modify it 
@@ -330,32 +330,22 @@ public class SerialConfig extends JDialog implements ActionListener
     Log.println(false,"SerialConfig.enumeratePorts() entry.");
     String previousSelection = (String) comboComPort.getSelectedItem();
     comboComPort.removeAllItems();
-    try
+    Log.println(false, "SerialConfig.enumeratePorts() about to attempt to instantiate serial ports.");
+    String[] portNames = SerialTransport.getPortNames();
+    for (int i = 0; i < portNames.length; i++)
     {
-      Log.println(false, "SerialConfig.enumeratePorts() about to attempt to instantiate rxtx library.");
-      String[] portNames = SerialTransport.getPortNames();
-      for (int i = 0; i < portNames.length; i++)
-      {
-        String nextName = portNames[i];
-        if (nextName == null) continue;
-        if (!nextName.startsWith("LPT")) // Get rid of LPTx ports, since we're
-                                         // not likely to run on parallel
-                                         // hardware...
-        comboComPort.addItem(nextName);
-      }
-      _parent.setSerialAvailable(true);
-      if (previousSelection != null)
-        comboComPort.setSelectedItem(previousSelection);
-      Log.println(false, "SerialConfig.enumeratePorts() completed instantiating rxtx library.");
+      String nextName = portNames[i];
+      if (nextName == null) continue;
+      if (!nextName.startsWith("LPT")) // Get rid of LPTx ports, since we're
+                                       // not likely to run on parallel
+                                       // hardware...
+      comboComPort.addItem(nextName);
     }
-    catch (Throwable t)
-    {
-      Log.println(true, Messages.getString("Gui.NoRXTX")); //$NON-NLS-1$
-      Log.println(false, "SerialConfig Constructor could not instantiate the rxtx library.");
-      _parent.setSerialAvailable(false);
-    }
-
-    Log.println(false,"SerialConfig.enumeratePorts() exit.");
+    _parent.setSerialAvailable(true);
+    if (previousSelection != null)
+      comboComPort.setSelectedItem(previousSelection);
+    Log.println(false, "SerialConfig.enumeratePorts() completed instantiating serial ports.");
+    Log.println(false, "SerialConfig.enumeratePorts() exit.");
   }
 
   public int getExitStatus()

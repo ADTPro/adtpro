@@ -26,40 +26,6 @@ export ADTPRO_HOME="`pwd`/"
 OS=`uname`
 OS_ARCH=`uname -p`
 
-# For Linux, use this:
-if [ "$OS" = "Linux" ]; then
-  if [ -f /usr/bin/raspi-config ]; then
-    export RXTXLIB=lib/rxtx/%RXTX_VERSION%/arm
-    ADTPRO_EXTRA_JAVA_PARMS="-Dgnu.io.rxtx.SerialPorts=/dev/ttyUSB0:/dev/ttyAMA0"
-  elif [ "$OS_ARCH" = "i686" ]; then
-    export RXTXLIB=lib/rxtx/%RXTX_VERSION%/i686-pc-linux-gnu
-  else
-    if [ "$OS_ARCH" = "i386" ]; then
-      export RXTXLIB=lib/rxtx/%RXTX_VERSION%/i686-pc-linux-gnu
-    else  
-      export RXTXLIB=lib/rxtx/%RXTX_VERSION%/x86_64-unknown-linux-gnu
-    fi
-  fi
-fi
-
-# For OSX, use this:
-if [ "$OS" = "Darwin" ]; then
-  if [ "$OS_ARCH" = "powerpc" ]; then
-    export RXTXLIB=lib/rxtx/%RXTX_VERSION_OLD%/Mac_OS_X
-  else
-    export RXTXLIB=lib/rxtx/%RXTX_VERSION%/mac-10.5
-  fi
-fi
-
-# For Solaris, use this:
-if [ "$OS" = "SunOS" ]; then
-  export RXTXLIB=lib/rxtx/%RXTX_VERSION%/sparc-sun-solaris2.10-32
-fi
-
-# Set up the library location.
-export TWEAK1="-Djava.library.path="
-export TWEAK="$TWEAK1""$ADTPRO_HOME""$RXTXLIB"
-
 if [ "$1x" = "headlessx" ]; then
   shift
   if [ "$1x" = "x" ] || [ ! -f /usr/bin/xvfb-run ]; then
@@ -74,4 +40,4 @@ if [ "$1x" = "headlessx" ]; then
   fi
 fi
 
-$HEADLESS"$MY_JAVA_HOME"java -Xms256m -Xmx512m "$TWEAK" $ADTPRO_EXTRA_JAVA_PARMS -cp "$ADTPRO_HOME"lib/%ADTPRO_VERSION%:"$ADTPRO_HOME""$RXTXLIB"/../RXTXcomm.jar:"$ADTPRO_HOME"lib/AppleCommander/AppleCommander-%AC_VERSION%.jar org.adtpro.ADTPro $*
+$HEADLESS"$MY_JAVA_HOME"java -Xms256m -Xmx512m -cp "$ADTPRO_HOME"lib/%ADTPRO_VERSION%:"$ADTPRO_HOME"lib/AppleCommander/AppleCommander-%AC_VERSION%.jar:"$ADTPRO_HOME"lib/jssc/jssc-%JSSC_VERSION%.jar:"$ADTPRO_HOME"lib/jssc/slf4j-nop-%SLF4J_VERSION%.jar org.adtpro.ADTPro $*

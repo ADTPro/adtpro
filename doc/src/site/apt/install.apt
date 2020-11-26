@@ -29,16 +29,16 @@ ADTPro Installation
  The ADTPro distribution comes as a single file named something similar to
  <<<ADTPro-v.r.m>>> with an extension particular to the target platform:
  
-  * <<<ADTPro-v.r.m.tar.gz>>> - Linux or Solaris
+  * <<<ADTPro-v.r.m.tar.gz>>> - Linux
  
   * <<<ADTPro-v.r.m.dmg>>> - Mac OSX
  
-  * <<<ADTPro-v.r.m.zip>>> - Windows or OS/2
+  * <<<ADTPro-v.r.m.zip>>> - Windows
   
   []
 
  (The <<<"v.r.m">>> part signifies the Version, Release, and Modification
- numbers of the particular distribution you're looking at.)
+ numbers of the particular version of ADTPro you're looking at.)
 
  Installation steps:
 
@@ -60,62 +60,21 @@ ADTPro Installation
 
  Good luck - and have fun!
 
-Unix RXTX {Considerations}
-
- For Unix variants other than Mac OSX, make sure the user that will be running 
- ADTPro is in the group <<<lock>>> or <<<uucp>>> so that lockfiles can work.
-
- For Ubuntu, you will want to add the group <<<dialout>>> to your user with the
- following command from a terminal window:
- <<<sudo usermod -a -G dialout $USER>>>
-
- The <<<adtpro.sh>>> and <<<adtpro.command>>> files can be customized 
- to suit your environment.
- The main thing to do is to choose your platform for RXTX support.
- You may need to tweak the check for what your operating system returns
- from the <<<uname>>> command, and connect that to the appropriate RXTX
- library directory.
-
- If you don't specify the right one, or if your platform is unsupported
- by RXTX, you will get an error similar to the one below on startup:
-
-+-------
-
-java.lang.UnsatisfiedLinkError: Can't find library rxtxSerial (librxtxSerial.so)
-  in sun.boot.library.path or java.library.path
-sun.boot.library.path=/opt/IBMJava2-142/jre/bin
-java.library.path=/opt/IBMJava2-142/jre/bin:
- /opt/IBMJava2-142/jre/bin/classic:/opt/IBMJava2-142/jre/bin:/usr/lib
- thrown while loading gnu.io.RXTXCommDriver
-+-------
-
- Keep working at your startup script or just 
- {{{./forum.html}ask for help.}}
-
-OS/2 RXTX Considerations
-
- OS/2 doesn't have a native RXTX library.  It would be a relatively easy
- thing to snap in the original Sun/IBM serial library, but just hasn't been
- done yet.  Holler if you want it.  Otherwise, the audio and UDP/Ethernet
- versions work fine in OS/2.
-
 Distribution contents
 
  The distribution should contain most of these files, depending on platform:
 
  <<<adtpro.bat>>> - A Windows server startup batch file
 
- <<<adtpro.cmd>>> - An OS/2 server startup command file
-
- <<<ADTPro-v.r.m.app>>> - An OSX server application for OSX 10.3 and above
+ <<<ADTPro-v.r.m.app>>> - An OSX server application for OSX 10.6 and above
 
  <<<ADTPro.command>>> - An OSX server startup command file
 
- <<<adtpro.sh>>> - A Linux/Solaris server startup shell script
+ <<<adtpro.sh>>> - A Linux server startup shell script
 
  <<<ac.bat>>> - A Windows AppleCommander command line invoker batch file
 
- <<<ac.sh>>> - A Linux/Solaris AppleCommander command line invoker script
+ <<<ac.sh>>> - A Linux AppleCommander command line invoker script
 
  <<<LICENSE>>> - The GNU Public License file
 
@@ -137,6 +96,6 @@ Distribution contents
  
  <<<lib/AppleCommander/AppleCommander-v.r.m.p-ac.jar>>> - AppleCommander support software  (a Java .jar file)
                           
- <<<lib/rxtx/...>>> - Java serial library files
+ <<<lib/jssc/...>>> - Java serial library files
 
  []

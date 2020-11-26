@@ -1,6 +1,6 @@
 /*
  * ADTPro - Apple Disk Transfer ProDOS
- * Copyright (C) 2006, 2012 by David Schmidt
+ * Copyright (C) 2006 - 2020 by David Schmidt
  * 1110325+david-schmidt@users.noreply.github.com
  *
  * Serial Transport notions derived from the jSyncManager project
@@ -26,23 +26,20 @@ package org.adtpro.transport;
 import java.io.*;
 import java.util.*;
 
+import jssc.SerialPort;
+import jssc.SerialPortException;
+import jssc.SerialPortList;
+import jssc.SerialPortTimeoutException;
+
 import org.adtpro.gui.Gui;
 import org.adtpro.resources.Messages;
 import org.adtpro.utilities.Log;
 import org.adtpro.utilities.StringUtilities;
 import org.adtpro.utilities.UnsignedByte;
 
-import gnu.io.*;
-
 public class SerialTransport extends ATransport
 {
-  protected CommPortIdentifier portId;
-
-  protected RXTXPort port;
-
-  protected DataInputStream inputStream;
-
-  protected DataOutputStream outputStream;
+  protected SerialPort port;
 
   protected boolean connected;
 
@@ -53,29 +50,28 @@ public class SerialTransport extends ATransport
   protected boolean _hardware = false;
 
   protected Gui _parent = null;
-  
+
   int _outPacketPtr = 0;
 
   byte[] _sendBuffer = null;
-
 
   /**
    * Create a new instance of the Comm API Transport. This constructor creates a
    * new instance of the Comm API Transport.
    * 
    * @param portName
-   *            A string representing the Comm Port to be used.
+   *                   A string representing the Comm Port to be used.
    * @param speed
    * @throws NoSuchPortException
    * @throws PortInUseException
    * @throws UnsupportedCommOperationException
    * @throws IOException
    * @exception Exception
-   *                used to pass any exceptions thrown during initialization.
+   *                        used to pass any exceptions thrown during
+   *                        initialization.
    */
 
-  public SerialTransport(Gui parent, String portName, String speed, boolean hardware)
-      throws Exception
+  public SerialTransport(Gui parent, String portName, String speed, boolean hardware) throws Exception
   {
     Log.getSingleton();
     Log.println(false, "SerialTransport constructor entry.");
@@ -97,7 +93,7 @@ public class SerialTransport extends ATransport
    * Closes the Java COMM API port.
    * 
    * @exception Exception
-   *                any exception encountered is rethrown.
+   *                        any exception encountered is rethrown.
    */
 
   public synchronized void close() throws Exception
@@ -106,71 +102,45 @@ public class SerialTransport extends ATransport
     {
       connected = false;
       Log.println(false, "SerialTransport.close() closing port..."); //$NON-NLS-1$
-      port.close();
+      port.closePort();
+      port = null;
       Log.println(false, "SerialTransport.close() closed port."); //$NON-NLS-1$
       Log.println(true, "SerialTransport closed port."); //$NON-NLS-1$
     }
     else
-      Log.println(false,
-          "SerialTransport.close() didn't think port was connected."); //$NON-NLS-1$
-  }
-
-  /**
-   * Flushes the input buffer of any remaining data.
-   * 
-   * @exception IOException
-   *                thrown when a problem occurs with flushing the stream.
-   */
-
-  public void flush() throws IOException
-  {
-    while (inputStream.available() > 0)
-    {
-      inputStream.read();
-    }
+      Log.println(false, "SerialTransport.close() didn't think port was connected."); //$NON-NLS-1$
   }
 
   /**
    * Returns an array of Strings representing the names of available ports. This
-   * method will return to the caller an array of strings representing the
-   * serial ports available on this system.
+   * method will return to the caller an array of strings representing the serial
+   * ports available on this system.
    * 
    * @return an array of String representing the names of the available ports.
    */
 
   public static String[] getPortNames()
   {
-    Vector v = new Vector();
-    Enumeration enumeration = null;
+    Vector<String> v = new Vector<String>();
 
-    try
+    String[] portNames = SerialPortList.getPortNames();
+    for (int i = 0; i < portNames.length; i++)
     {
-      enumeration = CommPortIdentifier.getPortIdentifiers();
-    }
-    catch (java.lang.NoClassDefFoundError ex)
-    {
-      Log.println(true, Messages.getString("SerialTransport.2")); //$NON-NLS-1$
-      return null;
-    }
-
-    while (enumeration.hasMoreElements())
-    {
-      v.addElement(((CommPortIdentifier) enumeration.nextElement()).getName());
+      v.addElement(portNames[i]);
     }
 
     String ret[] = new String[v.size()];
     for (int j = 0; j < v.size(); j++)
-      ret[j] = (String) v.elementAt(j);
+      ret[j] = v.elementAt(j);
     return ret;
   }
 
   /**
    * Opens a read/write connection to the implemented transport. This method
-   * should open the transport device being implemented using default
-   * parameters.
+   * should open the transport device being implemented using default parameters.
    * 
    * @exception IOException
-   *                thrown when a problem occurs opening the stream.
+   *                          thrown when a problem occurs opening the stream.
    */
 
   public void open() throws Exception
@@ -187,14 +157,13 @@ public class SerialTransport extends ATransport
 
   /**
    * Opens a read/write connection to the implemented transport. This method
-   * should open the transport device being implemented using default
-   * parameters.
+   * should open the transport device being implemented using default parameters.
    * 
    * @exception IOException
-   *                thrown when a problem occurs with opening the stream.
+   *                          thrown when a problem occurs with opening the
+   *                          stream.
    */
-  public void open(String portName, int portSpeed, boolean hardware)
-      throws Exception
+  public void open(String portName, int portSpeed, boolean hardware) throws Exception
   {
     Log.println(false, "SerialTransport.open() entry.");
     if (connected)
@@ -202,21 +171,20 @@ public class SerialTransport extends ATransport
       Log.println(false, "SerialTransport.open() was connected; closing.");
       close();
     }
-    portId = CommPortIdentifier.getPortIdentifier(portName);
-    port = (RXTXPort) portId.open(Messages.getString("SerialTransport.3"), 100); //$NON-NLS-1$
-    port.setSerialPortParams(portSpeed, 8, 1, 0);
+    port = new SerialPort(portName);
+    port.openPort();
+    port.setParams(portSpeed, SerialPort.DATABITS_8, SerialPort.STOPBITS_1, SerialPort.PARITY_NONE);
     setHardwareHandshaking(hardware);
-    port.enableReceiveTimeout(250);
-    inputStream = new DataInputStream(port.getInputStream());
+    port.purgePort(SerialPort.PURGE_RXCLEAR | SerialPort.PURGE_TXCLEAR);
     flushReceiveBuffer();
-    outputStream = new DataOutputStream(port.getOutputStream());
     connected = true;
-    Log.println(true,"SerialTransport opened port named " + portName + " at speed " + portSpeed + "."); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+    Log.println(true, "SerialTransport opened port named " + portName + " at speed " + portSpeed + "."); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
     return;
   }
 
   /**
    * Read a single byte from the Java COMM API port.
+   * @throws SerialPortException 
    * 
    * @throws IOException
    */
@@ -230,14 +198,20 @@ public class SerialTransport extends ATransport
     {
       try
       {
-        oneByte = inputStream.readByte();
+        oneByte = port.readBytes(1,seconds*1000)[0];
         hasData = true;
       }
-      catch (java.io.IOException e)
+      catch (SerialPortTimeoutException e)
       {
         collectedTimeouts++;
+        //Log.printStackTrace(e);
       }
-      if (collectedTimeouts / 4 > seconds) throw new TransportTimeoutException();
+      catch (SerialPortException e)
+      {
+        Log.printStackTrace(e);
+      }
+      if (collectedTimeouts / 4 > seconds)
+        throw new TransportTimeoutException();
     }
     /*
      * if (hasData) Log.println(false, "SerialTransport.readByte() exit, byte: " +
@@ -251,17 +225,17 @@ public class SerialTransport extends ATransport
    * Sets the parameters of the underlying Java COMM API port.
    * 
    * @param port
-   *            The port to set the transport to.
+   *                   The port to set the parameters to.
    * @param speed
-   *            The speed to set the transport to.
+   *                   The speed to set the transport to.
    * @param hardware
-   *            Boolean to say if hardware handshaking should be used
+   *                   Boolean to say if hardware handshaking should be used.
    * @exception IOException
-   *                thrown when a problem occurs with flushing the stream.
+   *                          thrown when a problem occurs with flushing the
+   *                          stream.
    */
 
-  public void setParms(String newPort, int newSpeed, boolean newHardware)
-      throws Exception
+  public void setParms(String newPort, int newSpeed, boolean newHardware) throws Exception
   {
     if (!newPort.equals(_portName))
     {
@@ -274,20 +248,22 @@ public class SerialTransport extends ATransport
       setHardwareHandshaking(newHardware);
       if (_currentSpeed != newSpeed)
       {
-        flush();
+        flushReceiveBuffer();
+        flushSendBuffer();
         _currentSpeed = newSpeed;
-        port.setSerialPortParams(newSpeed, 8, 1, 0);
+        port.setParams(newSpeed, SerialPort.DATABITS_8, SerialPort.STOPBITS_1, SerialPort.PARITY_NONE);
       }
     }
   }
 
   /**
-   * Sets the speed of the underlying Java COMM API port.
+   * Sets the speed of the underlying Java COMM API rxtxPort.
    * 
    * @param speed
-   *            The speed to set the transport to.
+   *                The speed to set the transrxtxPort to.
    * @exception IOException
-   *                thrown when a problem occurs with flushing the stream.
+   *                          thrown when a problem occurs with flushing the
+   *                          stream.
    */
 
   public void setSpeed(int speed)
@@ -296,9 +272,10 @@ public class SerialTransport extends ATransport
     {
       try
       {
-        flush();
+        flushReceiveBuffer();
+        flushSendBuffer();
         _currentSpeed = speed;
-        port.setSerialPortParams(speed, 8, 1, 0);
+        port.setParams(speed, SerialPort.DATABITS_8, SerialPort.STOPBITS_1, SerialPort.PARITY_NONE);
       }
       catch (Exception e)
       {
@@ -311,16 +288,17 @@ public class SerialTransport extends ATransport
    * Writes an array of bytes to the Java COMM API port.
    * 
    * @param data
-   *            the bytes to be written to the serial port.
+   *               the bytes to be written to the serial port.
    */
 
   public void writeBytes(byte data[], String log)
   {
-	// Log.println(false,"SerialTransport.writeBytes() adding "+data.length+" bytes to the stream.");
+    Log.println(false, "SerialTransport.writeBytes() adding " + data.length + " bytes to the stream.");
     if (_outPacketPtr + data.length > _sendBuffer.length)
     {
-      Log.println(false, "SerialTransport.writeBytes() Re-allocating the send buffer: "+_sendBuffer.length+" bytes is the new size.");
-      byte newBuffer[] = new byte[_sendBuffer.length+data.length];
+      Log.println(false, "SerialTransport.writeBytes() Re-allocating the send buffer: " + _sendBuffer.length
+          + " bytes is the new size.");
+      byte newBuffer[] = new byte[_sendBuffer.length + data.length];
       for (int i = 0; i < _sendBuffer.length; i++)
         newBuffer[i] = _sendBuffer[i];
       _sendBuffer = new byte[newBuffer.length * 2];
@@ -335,7 +313,10 @@ public class SerialTransport extends ATransport
       _sendBuffer[_outPacketPtr++] = data[i];
     }
     if (_outPacketPtr > 255)
+    {
+      Log.println(false, "SerialTransport.writeBytes() has " + _outPacketPtr + " bytes to send.");
       pushBuffer();
+    }
   }
 
   public void writeBytes(String str)
@@ -386,7 +367,7 @@ public class SerialTransport extends ATransport
 
   public void pullBuffer()
   {
-  // Serial port is byte-by-byte, no buffering
+    // Serial rxtxPort is byte-by-byte, no buffering
   }
 
   public void pushBuffer()
@@ -394,60 +375,80 @@ public class SerialTransport extends ATransport
     Log.println(false, "SerialTransport.pushBuffer() entry, pushing " + _outPacketPtr + " bytes.");
     if (_outPacketPtr > 0)
     {
-      Log.println(false, "SerialTransport.pushBuffer() pushing data:");
-      for (int i = 0; i < _outPacketPtr; i++)
-	  {
-	    if (((i % 32) == 0) && (i != 0)) Log.println(false, "");
-	    Log.print(false, UnsignedByte.toString(_sendBuffer[i]) + " ");
-	  }
-	  Log.println(false, "");
+      if (Log.getSingleton().isLogging())
+      {
+        Log.println(false, "SerialTransport.pushBuffer() pushing data:");
+        for (int i = 0; i < _outPacketPtr; i++)
+        {
+          if (((i % 32) == 0) && (i != 0))
+            Log.println(false, "");
+          Log.print(false, UnsignedByte.toString(_sendBuffer[i]) + " ");
+        }
+        Log.println(false, "");
+      }
 
       try
-	  {
-        outputStream.write(_sendBuffer, 0, _outPacketPtr);
+      {
+        while (port.getOutputBufferBytesCount() > 1) {} // Moderate buffer speed
+        if (_outPacketPtr == 1)
+        {
+          port.writeByte(_sendBuffer[0]);
+        }
+        else
+        {
+          byte newBuffer[] = new byte[_outPacketPtr];
+          for (int i = 0; i < _outPacketPtr; i++)
+            newBuffer[i] = _sendBuffer[i];
+          port.writeBytes(newBuffer);
+        }
       }
-	  catch (IOException e)
-	  {
+      catch (SerialPortException e)
+      {
+        Log.printStackTrace(e);
         e.printStackTrace();
       }
-	  _outPacketPtr = 0;
+      _outPacketPtr = 0;
     }
-	Log.println(false, "SerialTransport.pushBuffer() exit.");
+    Log.println(false, "SerialTransport.pushBuffer() exit.");
   }
 
   public void flushReceiveBuffer()
   {
+    // Actually flushing seems to be harmful; skip it
+    /*
     try
     {
-      flush();
+      port.purgePort(SerialPort.PURGE_RXCLEAR);
     }
-    catch (IOException e)
+    catch (SerialPortException e)
     {
-      Log.println(false,
-          "SerialTransport.flushReceiveBuffer() failed to flush the stream.");
+      Log.println(false, "SerialTransport.flushReceiveBuffer() failed to purge the port.");
     }
+    */
   }
 
   public void flushSendBuffer()
   {
+    // Actually flushing seems to be harmful; skip it
+    /*
     try
     {
-      outputStream.flush();
+      port.purgePort(SerialPort.PURGE_TXCLEAR);
     }
-    catch (IOException e)
+    catch (SerialPortException e)
     {
-      Log.println(false,
-          "SerialTransport.flushSendBuffer() failed to flush the stream.");
+      Log.println(false, "SerialTransport.flushSendBuffer() failed to purge the port.");
     }
+    */
   }
 
   public void setFullSpeed()
   {
     try
     {
-      port.setSerialPortParams(_currentSpeed, 8, 1, 0);
+      port.setParams(_currentSpeed, SerialPort.DATABITS_8, SerialPort.STOPBITS_1, SerialPort.PARITY_NONE);
     }
-    catch (UnsupportedCommOperationException e)
+    catch (SerialPortException e)
     {
       Log.printStackTrace(e);
     }
@@ -457,9 +458,9 @@ public class SerialTransport extends ATransport
   {
     try
     {
-      port.setSerialPortParams(speed, 8, 1, 0);
+      port.setParams(_currentSpeed, SerialPort.DATABITS_8, SerialPort.STOPBITS_1, SerialPort.PARITY_NONE);
     }
-    catch (UnsupportedCommOperationException e)
+    catch (SerialPortException e)
     {
       Log.printStackTrace(e);
     }
@@ -467,13 +468,12 @@ public class SerialTransport extends ATransport
 
   public void setSlowSpeed(int speed)
   {
-    Log.println(false, "SerialTransport.setSlowSpeed() setting speed to "
-        + speed);
+    Log.println(false, "SerialTransport.setSlowSpeed() setting speed to " + speed);
     try
     {
-      port.setSerialPortParams(speed, 8, 1, 0);
+      port.setParams(speed, SerialPort.DATABITS_8, SerialPort.STOPBITS_1, SerialPort.PARITY_NONE);
     }
-    catch (UnsupportedCommOperationException e)
+    catch (SerialPortException e)
     {
       Log.printStackTrace(e);
     }
@@ -486,47 +486,49 @@ public class SerialTransport extends ATransport
 
   public void pauseIncorrectCRC()
   {
-  // Only necessary for audio transport
+    // Only necessary for audio transport
   }
 
-  public void setHardwareHandshaking(boolean state)
+  public void setHardwareHandshaking(boolean state) throws SerialPortException
   {
     _hardware = state;
-    if (state) port.setFlowControlMode(SerialPort.FLOWCONTROL_NONE);
-    else
+    if (state)
       port.setFlowControlMode(SerialPort.FLOWCONTROL_RTSCTS_IN | SerialPort.FLOWCONTROL_RTSCTS_OUT);
+    else
+      port.setFlowControlMode(SerialPort.FLOWCONTROL_NONE);
   }
 
   public String getInstructionsDone(String guiString)
   {
-    Log.println(false,"SerialTransport.getInstructionsDone() getting instructions for: " + guiString);
+    Log.println(false, "SerialTransport.getInstructionsDone() getting instructions for: " + guiString);
     String ret = "";
-    if ((guiString.equals(Messages.getString("Gui.BS.ProDOSFast"))) || (guiString.equals(Messages.getString("Gui.BS.ProDOSVSDrive"))))
+    if ((guiString.equals(Messages.getString("Gui.BS.ProDOSFast")))
+        || (guiString.equals(Messages.getString("Gui.BS.ProDOSVSDrive"))))
     {
       _parent.setSerialSpeed(115200);
       // ret = Messages.getString("Gui.BS.DumpProDOSFastInstructionsDone");
     }
     else
       if (guiString.equals(Messages.getString("Gui.BS.ProDOS")))
-    {
-      ret = Messages.getString("Gui.BS.DumpProDOSInstructionsDone");
-    }
-    else
-      if (guiString.equals(Messages.getString("Gui.BS.ProDOS2")))
       {
-        ret = Messages.getString("Gui.BS.DumpProDOSInstructions2Done");
+        ret = Messages.getString("Gui.BS.DumpProDOSInstructionsDone");
       }
       else
-        if (guiString.equals(Messages.getString("Gui.BS.DOS")))
+        if (guiString.equals(Messages.getString("Gui.BS.ProDOS2")))
         {
-          ret = Messages.getString("Gui.BS.DumpDOSInstructionsDone");
+          ret = Messages.getString("Gui.BS.DumpProDOSInstructions2Done");
         }
         else
-          if (guiString.equals(Messages.getString("Gui.BS.SOS")))
+          if (guiString.equals(Messages.getString("Gui.BS.DOS")))
           {
-            //_parent.setSerialSpeed(9600);
-            /* ret = Messages.getString("Gui.BS.DumpSOSInstructionsDone"); */
+            ret = Messages.getString("Gui.BS.DumpDOSInstructionsDone");
           }
+          else
+            if (guiString.equals(Messages.getString("Gui.BS.SOS")))
+            {
+              // _parent.setSerialSpeed(9600);
+              /* ret = Messages.getString("Gui.BS.DumpSOSInstructionsDone"); */
+            }
     Log.println(false, "SerialTransport.getInstructionsDone() returning: " + ret);
     return ret;
   }
@@ -534,36 +536,35 @@ public class SerialTransport extends ATransport
   public String getInstructions(String guiString, int fileSize, int speed)
   {
     String ret = "'SerialTransport.getInstructions() - returned null!'";
-    if (guiString.equals(Messages.getString("Gui.BS.ProDOSFast"))) ret = Messages
-    .getString("Gui.BS.DumpProDOSFastInstructions");
+    if (guiString.equals(Messages.getString("Gui.BS.ProDOSFast")))
+      ret = Messages.getString("Gui.BS.DumpProDOSFastInstructions");
     else
-    if (guiString.equals(Messages.getString("Gui.BS.ProDOSVSDrive"))) ret = Messages
-        .getString("Gui.BS.DumpProDOSVSDriveInstructions");
-    else
-    if (guiString.equals(Messages.getString("Gui.BS.ProDOS"))) ret = Messages
-        .getString("Gui.BS.DumpProDOSInstructions");
-    else
-      if (guiString.equals(Messages.getString("Gui.BS.ProDOS2"))) ret = Messages
-          .getString("Gui.BS.DumpProDOSInstructions2");
+      if (guiString.equals(Messages.getString("Gui.BS.ProDOSVSDrive")))
+        ret = Messages.getString("Gui.BS.DumpProDOSVSDriveInstructions");
       else
-        if (guiString.equals(Messages.getString("Gui.BS.DOS"))) ret = Messages
-            .getString("Gui.BS.DumpDOSInstructions");
+        if (guiString.equals(Messages.getString("Gui.BS.ProDOS")))
+          ret = Messages.getString("Gui.BS.DumpProDOSInstructions");
         else
-          if (guiString.equals(Messages.getString("Gui.BS.SOS")))
-            ret = Messages.getString("Gui.BS.DumpSOSInstructions");
+          if (guiString.equals(Messages.getString("Gui.BS.ProDOS2")))
+            ret = Messages.getString("Gui.BS.DumpProDOSInstructions2");
           else
-            if (guiString.equals(Messages.getString("Gui.BS.ADT"))) ret = Messages
-                .getString("Gui.BS.DumpADTInstructions");
+            if (guiString.equals(Messages.getString("Gui.BS.DOS")))
+              ret = Messages.getString("Gui.BS.DumpDOSInstructions");
             else
-              if (guiString.equals(Messages.getString("Gui.BS.ADTPro"))) ret = Messages
-                  .getString("Gui.BS.DumpProInstructions");
+              if (guiString.equals(Messages.getString("Gui.BS.SOS")))
+                ret = Messages.getString("Gui.BS.DumpSOSInstructions");
               else
-                if (guiString.equals(Messages.getString("Gui.BS.ADTProAudio"))) ret = Messages
-                    .getString("Gui.BS.DumpProAudioSerialInstructions");
+                if (guiString.equals(Messages.getString("Gui.BS.ADT")))
+                  ret = Messages.getString("Gui.BS.DumpADTInstructions");
                 else
-                  if (guiString.equals(Messages
-                      .getString("Gui.BS.ADTProEthernet"))) ret = Messages
-                      .getString("Gui.BS.DumpProEthernetInstructions");
+                  if (guiString.equals(Messages.getString("Gui.BS.ADTPro")))
+                    ret = Messages.getString("Gui.BS.DumpProInstructions");
+                  else
+                    if (guiString.equals(Messages.getString("Gui.BS.ADTProAudio")))
+                      ret = Messages.getString("Gui.BS.DumpProAudioSerialInstructions");
+                    else
+                      if (guiString.equals(Messages.getString("Gui.BS.ADTProEthernet")))
+                        ret = Messages.getString("Gui.BS.DumpProEthernetInstructions");
     String baudCommand;
     switch (speed)
     {

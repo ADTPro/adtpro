@@ -19,22 +19,6 @@ REM
 REM SET ADTPRO_HOME=C:\src\workspace\35\adtpro\build\
 REM SET MY_JAVA_HOME=C:\Progra~1\IBM\Java142\bin\
 
-set RXTX_PATH=%RXTX_VERSION_OLD%
-set RXTX_ARCH=%RXTX_PATH%\Windows\i368-mingw32
-
-IF "%PROCESSOR_ARCHITECTURE%"=="x86" goto add_classpath
-
-:bit64
-REM Assume 64 bit Windows if not x86
-set RXTX_PATH=%RXTX_VERSION_WIN64%
-set RXTX_ARCH=%RXTX_PATH%
-
-:add_classpath
-SET CWD=%CD%
-if "%ADTPRO_CLASSPATH_SET%" == "1" goto start
-set ADTPRO_CLASSPATH_SET=1
-PATH=%PATH%;%ADTPRO_HOME%lib\rxtx\%RXTX_ARCH%
-
 :start
 CD "%ADTPRO_HOME%"
-start /min %MY_JAVA_HOME%java -Xms128m -Xmx256m %ADTPRO_EXTRA_JAVA_PARMS% -cp "%ADTPRO_HOME%lib\%ADTPRO_VERSION%";"%ADTPRO_HOME%lib\rxtx\%RXTX_PATH%\RXTXcomm.jar";"%ADTPRO_HOME%lib\AppleCommander\AppleCommander-%AC_VERSION%.jar" org.adtpro.ADTPro %*
+start /min %MY_JAVA_HOME%java -Xms128m -Xmx256m %ADTPRO_EXTRA_JAVA_PARMS% -cp "%ADTPRO_HOME%lib\%ADTPRO_VERSION%";"%ADTPRO_HOME%lib\AppleCommander\AppleCommander-%AC_VERSION%.jar";"%ADTPRO_HOME%lib\jssc\jssc-%JSSC_VERSION%.jar";"%ADTPRO_HOME%lib\jssc\slf4j-nop-%SLF4J_VERSION%.jar" org.adtpro.ADTPro %*

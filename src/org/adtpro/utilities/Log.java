@@ -1,6 +1,6 @@
 /*
  * ADTPro - Apple Disk Transfer ProDOS
- * Copyright (C) 2007 by David Schmidt
+ * Copyright (C) 2007 - 2020 by David Schmidt
  * 1110325+david-schmidt@users.noreply.github.com
  *
  * This program is free software; you can redistribute it and/or modify it 
@@ -132,6 +132,11 @@ public class Log
   private synchronized static void allocateSingleton()
   {
     if (null == _theSingleton) _theSingleton = new Log();
+  }
+
+  public boolean isLogging()
+  {
+    return _trace;
   }
 
 }
