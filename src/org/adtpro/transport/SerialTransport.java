@@ -389,7 +389,7 @@ public class SerialTransport extends ATransport
 
       try
       {
-        port.isCTS(); // On OSX, if there isn't some sort of interaction with the port, data is sent far too fast
+        while (port.getOutputBufferBytesCount() > 1) {} // Moderate buffer speed
         if (_outPacketPtr == 1)
         {
           port.writeByte(_sendBuffer[0]);
