@@ -85,12 +85,18 @@ public class CommsThread extends Thread
 		{
 			_transport.open();
 		}
-		catch (java.net.BindException ex1)
-		{
-			Log.printStackTrace(ex1);
-			_parent.cancelCommsThread("Gui.PortInUse");
-			requestStop();
-		}
+    catch (java.net.BindException ex1)
+    {
+      Log.printStackTrace(ex1);
+      _parent.cancelCommsThread("Gui.PortInUse");
+      requestStop();
+    }
+    catch (jssc.SerialPortException ex2)
+    {
+      Log.printStackTrace(ex2);
+      _parent.cancelCommsThread("Gui.PortInUse");
+      requestStop();
+    }
 		catch (Exception ex)
 		{
 			Log.printStackTrace(ex);
