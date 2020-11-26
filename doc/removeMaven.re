@@ -1,4 +1,4 @@
-s@v\.r\.m@2.0.3@ig;
+s@v\.r\.m@2.1.0@ig;
 s@\<a href="http://maven.apache.org/" title="Built by Maven" class="poweredBy"\>@<a href="https://github.com/ADTPro/adtpro"><img src="https://assets-cdn.github.com/images/modules/logos_page/GitHub-Logo.png" /></a>@ig;
 s@\<img class="builtBy" alt="Built by Maven" src="\./images/logos/maven-feather.png" \/\>@@ig;
 s@\</body\>@\<script src\=\"http\:\/\/www.google-analytics.com\/urchin.js\" type\=\"text\/javascript\"\>\<\/script\>\<script type\=\"text\/javascript\"\>_uacct \= \"UA-697468-1\";urchinTracker\(\);\<\/script\>\<\/body\>@ig;

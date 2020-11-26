@@ -1,5 +1,5 @@
 For detailed build instructions, see:
-http://adtpro.com/developing.html
+https://adtpro.com/developing.html
 
 The ADTPro project is using the ca65 macro assembler from
 the cc65 project (http://www.cc65.org/).  The file
