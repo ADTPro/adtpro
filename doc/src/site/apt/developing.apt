@@ -11,19 +11,19 @@ that are not readily visible.  The full list looks like this:
 
  * {{{https://ant.apache.org/}Apache Ant}} - orchestrates the build process
 
- * {{{https://www.oracle.com/technetwork/java/javase/downloads/index.html}Java SDK}} - compiles Java-based server
+ * {{{https://jdk.java.net/}Java JDK}} - compiles Java-based server
 
  * {{{https://cc65.github.io/}cc65}} - a multiplatform toolchain with a nice 6502 macro assembler
 
- * {{{http://rxtx.qbang.org/wiki/index.php/Main_Page}rxtx}} - multiplatform Java serial library
+ * {{{https://github.com/java-native/jssc}jssc}} - multiplatform Java serial library
 
  * {{{https://maven.apache.org/}Maven}} - optional; builds these web pages
 
- * {{{https://github.com/david-schmidt/apple-iii-cffa3000-driver}Apple Pascal}} - optional project to build the Apple /// VSDRIVE driver  
+ * {{{https://github.com/robjustice/a3driverutil}A3Driverutil}} - Rob Justice's project to assist in building the Apple /// VSDRIVE driver  
 
  []
 
- The main Ant build.xml script in ADTPro's CVS repository calls upon these
+ The main Ant build.xml script in ADTPro's build tree calls upon these
 tools to go from source files to distributable packages.  Well, with the exception
 of the Maven website stuff - that's not part of the main build script, mostly
 because that's a step most people wouldn't ever want to do, and if it were there -
@@ -60,40 +60,66 @@ The minimum amount of work you'd go through to do so:
 
  * Download and install Eclipse from {{{https://www.eclipse.org/}https://www.eclipse.org/}}
  
- * Download and install a full Java {{{https://www.oracle.com/technetwork/java/javase/overview/index.html}JDK}} if your Eclipse distribution doesn't come with one
+ * Download and install a full Java {{{https://jdk.java.net/}JDK}} if your Eclipse distribution doesn't come with one
  
- * Download and install the cc65 toolchain from {{{https://cc65.github.io/}https://cc65.github.io/}} - you only need the one for your development platform (Windows, OS/2, Linux - not the 8-bit support modules)
+ * Download and install the cc65 toolchain from {{{https://cc65.github.io/}https://cc65.github.io/}} - you only need the one for your development platform (Windows, OSX, Linux - not the 8-bit support modules)
  
+ * Download a recent version of Apache ant from {{{http://ant.apache.org/}http://ant.apache.org/}}
+
  []
 
 * {Downloading}/Importing the ADTPro Project
 
- Connect Eclipse to the ADTPro repository in GitHub by going through
+ Clone the ADTPro repository from GitHub by going through
 the next few configuration dialogs in Eclipse.
  
  * From the Eclipse IDE: <<<File->Import->Project,>>> then: <<<Import Projects from Git:>>>
 
  ** 
 
-[images/eclipse1.png]
+[images/eclipse-import1.png]
+   
+ * Click on <<<Clone URI>>>:
+ 
+ **
+
+[images/eclipse-import2.png]
    
  * Fill in the Git repository info:
 
  **
  
-[images/eclipse2.png]
+[images/eclipse-import3.png]
 
- * Pick, or type in, <<<adtpro>>> for the module name:
+ * Pick at least the <<<master>>> branch to check out:
 
  **
  
-[images/eclipse3.png]
+[images/eclipse-import4.png]
 
  * Check it out to the workspace:
 
  **
  
-[images/eclipse4.png]
+[images/eclipse-import5.png]
+
+ * The clone operation will proceed:
+
+ **
+ 
+[images/eclipse-import6.png]
+
+ * Choose to import existing Eclipse projects:
+
+ **
+ 
+[images/eclipse-import7.png]
+
+ * Search for nested projects, and hit <<<Finish>>>:
+
+ **
+ 
+[images/eclipse-import8.png]
 
  []
 
@@ -208,7 +234,7 @@ the complete distribution package.
 
  If you would like to build ADTPro without the aid of an IDE at all, there are a few
 environmental things you will need to do by hand that they typically do for you automatically.
-You will still need the toolsets listed at the top of the page (except Maven and the Apple /// build). 
+You will still need the toolsets listed at the top of the page (except Maven and the Apple /// driver build). 
 
  Ant will marshal the tools and produce the build for you.  In order to just type <<<ant>>>
 in the <<<build>>> directory, though, there are a few things it needs to know:  
@@ -220,7 +246,7 @@ directory installed. The full line should look something like this, assuming you
  <<<\<property name="assemblerPath" value="/usr/local/cc65/bin" /> >>>
 
  The value you specify in <<<ADTProBuild.properties>>> will override all others,
-and is not checked in to CVS; so you can keep this local file to tailor your local build and
+and is not checked in to GitHub; so you can keep this local file to tailor your local build and
 not affect other developers.
 
  * Your CLASSPATH environment variable must be configured to point to an <<<ant.jar>>>

@@ -28,7 +28,6 @@ perl -i.orig -p ..\..\removeMaven.re receiving.html
 perl -i.orig -p ..\..\removeMaven.re sending.html
 perl -i.orig -p ..\..\removeMaven.re starting.html
 perl -i.orig -p ..\..\removeMaven.re translations.html
-perl -i.orig -p ..\..\removeMaven.re webring.html
 perl -i.orig -p ..\..\removeMaven.re vdrive.html
 erase *.orig
 cd ..\..

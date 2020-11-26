@@ -26,7 +26,6 @@ package org.adtpro.transport;
 import java.io.*;
 import java.util.*;
 
-import jssc.SerialNativeInterface;
 import jssc.SerialPort;
 import jssc.SerialPortException;
 import jssc.SerialPortList;

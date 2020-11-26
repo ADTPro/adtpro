@@ -46,8 +46,7 @@ etc. with concepts and code from the CiderPress project:
 from the jSyncManager project: {{http://jsyncmanager.sourceforge.net/}}
 
  Hardware-level serial communications in Java comes from
-the rxtx project: {{http://rxtx.qbang.org/wiki/index.php/Main_Page}}.
- The RXTX binaries for 64-bit Windows are provided as a courtesy of Cloudhopper.
+the jssc project: {{https://github.com/java-native/jssc}}.
 
  The routine to decide what kind of block device a particular slot/drive 
 combination contains was generously donated by Mark Percival.  It originates
