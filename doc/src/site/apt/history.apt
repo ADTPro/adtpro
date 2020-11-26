@@ -6,10 +6,14 @@
 
 ADTPro Release History
 
-* Prelease, in GitHub now:
+* 2.1.0 - November 26, 2020
 
  Bug fixes/changes:
- 
+
+ * [Server] Switched out rxtx in favor of jssc for hardware serial port access
+
+ * [Server] Better "change working directory" behavior on Windows
+
  * [Client] Special characters and too-long filenames confused the file picker - addresses issue {{{https://github.com/ADTPro/adtpro/issues/53}#53}}
 
  * [SOS Client] Using Steve Nickolas' font loading technique, reduce the size of bootstrapping drivers by several K
