@@ -539,48 +539,66 @@ all
 		<exec dir="${projdir}/src/client/sos/serial/drive" executable="${assemblerPath}/ld65" failonerror="true">
 			<arg line="vsdrivesos.o -o vsdrivesos.o65 -C ${builddir}/Apple3_o65.cfg" />
 		</exec>
+		<exec executable="${python27Path}/python">
+			<arg value="${builddir}/lib/A3Driverutil/A3Driverutil.py"/>
+			<arg value="bin"/>
+			<arg value="${projdir}/src/client/sos/serial/drive/vsdrivesos.o65"/>
+			<arg value="${builddir}/VSDRIVE.A3DRVR"/>
+		</exec>
 		<echo message="Linking SOS Virtual Serial Printer driver..."/>
 		<exec dir="${projdir}/src/client/sos/serial/printer" executable="${assemblerPath}/ld65" failonerror="true">
 			<arg line="vsprintersos.o -o vsprintersos.o65 -C ${builddir}/Apple3_o65.cfg" />
 		</exec>
-<!--
+		<exec executable="${python27Path}/python">
+			<arg value="${builddir}/lib/A3Driverutil/A3Driverutil.py"/>
+			<arg value="bin"/>
+			<arg value="${projdir}/src/client/sos/serial/printer/vsprintersos.o65"/>
+			<arg value="${builddir}/VSPRINTER.A3DRVR"/>
+		</exec>
 		<echo message="Extracting SOS.DRIVER..."/>
-		<appleCommander command="g" imagename="${projdir}/out/${sysUtilDiskImage}" filename="SOS.DRIVER" output="${projdir}/out/SOS.DRIVER#0c0000" />
-		<echo message="Deleting CFFA driver from SOS.DRIVER..."/>		
-		<exec executable="${python27Path}python">
+		<appleCommander command="g" imagename="${builddir}/${distName}/disks/${vdriveDiskName}.DSK" filename="SOS.DRIVER" output="${builddir}/SOS.DRIVER#0c0000" />
+		<echo message="Deleting drivers from SOS.DRIVER..."/>		
+		<exec executable="${python27Path}/python">
 			<arg value="${builddir}/lib/A3Driverutil/A3Driverutil.py"/>
 			<arg value="delete"/>
-			<arg value=".CFFA3000D1"/>
-			<arg value="${projdir}/out/SOS.DRIVER#0c0000"/>
+			<arg value=".VSDRIVE"/>
+			<arg value="${builddir}/SOS.DRIVER#0c0000" />
+		</exec>
+		<exec executable="${python27Path}/python">
+			<arg value="${builddir}/lib/A3Driverutil/A3Driverutil.py"/>
+			<arg value="delete"/>
+			<arg value=".VSPRINTER"/>
+			<arg value="${builddir}/SOS.DRIVER#0c0000" />
 		</exec>
 		<echo message="Adding built driver to SOS.DRIVER..."/>		
-		<exec executable="${python27Path}python">
+		<exec executable="${python27Path}/python">
 			<arg value="${builddir}/lib/A3Driverutil/A3Driverutil.py"/>
 			<arg value="add"/>
-			<arg value="${projdir}/out/focus3.o65"/>
-			<arg value="${projdir}/out/SOS.DRIVER#0c0000"/>
+			<arg value="${projdir}/src/client/sos/serial/drive/vsdrivesos.o65"/>
+			<arg value="${builddir}/SOS.DRIVER#0c0000" />
 		</exec>
-		<echo message="Deleting SOS.DRIVER from disk images..."/>
-		<appleCommander command="d" imagename="${projdir}/out/${sysUtilDiskImage}" filename="SOS.DRIVER" failonerror="false"/>
-		<appleCommander command="d" imagename="${projdir}/out/${basicDiskImage}" filename="SOS.DRIVER" failonerror="false"/>
-		<echo message="Putting updated SOS.DRIVER back on disk images..."/>
-		<appleCommander command="p" input="${projdir}/out/SOS.DRIVER#0c0000" imagename="${projdir}/out/${sysUtilDiskImage}" filename="SOS.DRIVER" type="SOS" />
-		<appleCommander command="p" input="${projdir}/out/SOS.DRIVER#0c0000" imagename="${projdir}/out/${basicDiskImage}" filename="SOS.DRIVER" type="SOS" />
--->
-		
+		<exec executable="${python27Path}/python">
+			<arg value="${builddir}/lib/A3Driverutil/A3Driverutil.py"/>
+			<arg value="add"/>
+			<arg value="${projdir}/src/client/sos/serial/printer/vsprintersos.o65"/>
+			<arg value="${builddir}/SOS.DRIVER#0c0000" />
+		</exec>
+		<echo message="Deleting SOS.DRIVER from driver disk image..."/>
+		<appleCommander command="d" imagename="${builddir}/${distName}/disks/${vdriveDiskName}.DSK" filename="SOS.DRIVER" failonerror="false"/>
+		<echo message="Putting updated SOS.DRIVER back on driver disk image..."/>
+		<appleCommander command="p" input="${builddir}/SOS.DRIVER#0c0000" imagename="${builddir}/${distName}/disks/${vdriveDiskName}.DSK" filename="SOS.DRIVER" type="SOS" />
+		<delete file="${builddir}/SOS.DRIVER#0c0000" />
 		<!--
 		Copy out the Apple /// Virtual Serial Drive river
 		-->
 		<echo message="Copying Virtual Serial Drive components..." />
-		<appleCommander command="g" imagename="${a3sysutils-vs}" filename="VSDRIVE.A3DRVR" output="${builddir}/VSDRIVE.A3DRVR" />
 		<appleCommander command="p" input="${builddir}/VSDRIVE.A3DRVR" imagename="${builddir}/${distName}/disks/${vdriveDiskName}.DSK" filename="VSDRIVE.A3DRVR" type="pcd" />
 		<delete file="${builddir}/VSDRIVE.A3DRVR" />
 		<!--
 		Copy out the Apple /// Virtual Serial Printer driver
 		-->
 		<echo message="Copying Virtual Serial Printer components..." />
-		<appleCommander command="g" imagename="${a3sysutils-vs}" filename="VSPRINTER.A3DRVR" output="${builddir}/VSPRINTER.A3DRVR" />
-		<appleCommander command="p" input="${builddir}/VSPRINTER.A3DRVR" imagename="${builddir}/${distName}/disks/${vdriveDiskName}.DSK" filename="VSPRINTER.A3DRVR" type="pcd" />
+		<appleCommander command="p" input="${builddir}/VSPRINTER.A3DRVR" imagename="${builddir}/${distName}/disks/${vdriveDiskName}.DSK" filename="VSPRINTER.A3DRV" type="pcd" />
 		<delete file="${builddir}/VSPRINTER.A3DRVR" />
 	</target>
 	<target name="sos-image-prep" description="Start Empty SOS Disk Image" >

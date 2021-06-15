@@ -6,6 +6,7 @@
 ;         names, clean up module name, synchronize version number with ADTPro release 
 ; 1.28  - Use newer time-transporting protocol, add second drive as .VSDRIVE2
 ; 1.31  - Add null interrupt handler for ACIA
+; 2.11  - Build with a3driverutil
 
 ;         .TITLE "Apple /// Virtual Serial Drive Driver"
           .PROC  VSDRIVE
@@ -14,7 +15,7 @@
                 .setcpu "6502"
                 .reloc
 
-DriverVersion   :=   $1310            ; Version number
+DriverVersion   :=   $2110            ; Version number
 DriverMfgr      :=   $4453            ; Driver Manufacturer - DS
 
 ;
@@ -122,6 +123,8 @@ XNORESET  :=   $33                   ; Device reset failed
           .WORD  COMMENT_END - COMMENT ; Length of comment field
 COMMENT:  .BYTE "Apple /// Virtual Serial Drive Driver by David Schmidt 2012 - 2014"
 COMMENT_END:
+
+          .SEGMENT "DATA"
 
 ;------------------------------------
 ;

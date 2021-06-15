@@ -118,6 +118,8 @@ XNORESET  :=   $33                   ; Device reset failed
 COMMENT:  .BYTE "Apple /// Virtual Serial Printer Driver by David Schmidt 2021"
 COMMENT_END:
 
+          .SEGMENT "DATA"
+
 ;------------------------------------
 ;
 ; Device identification Block (DIB) - VSPRINTER
@@ -127,7 +129,7 @@ COMMENT_END:
 DIB_0:
           .WORD     $0000            ; Link pointer
           .WORD     Entry            ; Entry pointer
-          .BYTE     $08              ; Name length byte
+          .BYTE     $0a              ; Name length byte
           .BYTE     ".VSPRINTER     "; Device name
           .BYTE     $80              ; Active, no page alignment
           .BYTE     $00              ; Slot number
