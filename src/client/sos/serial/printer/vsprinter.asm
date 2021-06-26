@@ -1,371 +1,591 @@
-; VSPrinter
+;.TITLE "Apple /// Virtual Serial Printer Driver by David Schmidt 2021"
 
-; 0.01A - Initial release
-
-;         .TITLE "Apple /// Virtual Serial Printer Driver"
-          .PROC  VSPRINTER
-
-                .setcpu "6502"
-                .reloc
-
-DriverVersion   :=   $0010           ; Version number
-DriverMfgr      :=   $4453           ; Driver Manufacturer - DS
-
+;-----------------------------------------------------------------------
 ;
-; SOS Equates
+; SOS Virtual Serial Printer Driver
 ;
-ExtPG     :=   $1401                 ; Driver extended bank address offset
-AllocSIR  :=   $1913                 ; Allocate system internal resource
-SysErr    :=   $1928                 ; Report error to system
-EReg      :=   $FFDF                 ; Environment register
-ReqCode   :=   $C0                   ; Request code
-SOS_Unit  :=   $C1                   ; Unit number
-SosBuf    :=   $C2                   ; SOS buffer pointer (2 bytes)
-ReqCnt    :=   $C4                   ; Requested byte count
-CtlStat   :=   $C2                   ; Control/status code
-CSList    :=   $C3                   ; Control/status list pointer
-SosBlk    :=   $C6                   ; Starting block number
-QtyRead   :=   $C8                   ; Pointer to bytes read returned by D_READ
+; Copyright (C) 2021 by David Schmidt
+; Released to the public domain
+;
+;
+; Revisions:
+;
+; 0.01 - Initial release
+;
+;-----------------------------------------------------------------------
 
-;
-; Our temps in zero page
-;
-Count     :=   $CE                   ; 2 bytes
-Timer     :=   $D0                   ; 2 bytes
-NumBlks   :=   $D2                   ; 2 bytes lb,hb
-DataBuf   :=   $D4                   ; 2 bytes
-EnvCmd    :=   $D6                   ; 1 byte envelope command
-Checksum  :=   $D7                   ; 1 byte checksum calc
+DEVTYPE		= $41
+SUBTYPE		= $04
+DriverMfgr	= $4453	; Driver Manufacturer - David Schmidt (DS)
+RELEASE		= $0010	; Version number
 
+;-----------------------------------------------------------------------
 ;
-; Communications hardware constants
+; The macro SWITCH performs an N way branch based on a switch index. The
+; maximum value of the switch index is 127 with bounds checking provided
+; as an option. The macro uses the A and Y registers and alters the C,
+; Z, and N flags of the status register, but the X register is unchanged.
 ;
-ACIADR    :=   $c0f0                 ; ACIA Data register
-ACIASR    :=   $c0f1                 ; ACIA Status register
-ACIACMD   :=   $c0f2                 ; ACIA Command mode register
-ACIACTL   :=   $c0f3                 ; ACIA Control register
+; SWITCH [index], [bounds], adrs_table, [*]
+;
+; index This is the variable that is to be used as the switch index.
+; If omitted, the value in the accumulator is used.
+;
+; bounds This is the maximum allowable value for index. If index
+; exceeds this value, the carry bit will be set and execution
+; will continue following the macro. If bounds is omitted,
+; no bounds checking will be performed.
+;
+; adrs_table This is a table of addresses (low byte first) used by the
+; switch. The first entry corresponds to index zero.
+;
+; * If an asterisk is supplied as the fourth parameter, the
+; macro will push the switch address but will not exit to
+; it; execution will continue following the macro. The
+; program may then load registers or set the status before
+; exiting to the switch address.
+;
+;-----------------------------------------------------------------------
+;
+.MACRO		SWITCH	index,bounds,adrs_table,noexec      ;See SOS Reference
+.IFNBLANK	index										;If PARM1 is present,
+	LDA		index										; load A with switch index
+.ENDIF
+.IFNBLANK	bounds										;If PARM2 is present,
+	CMP		#bounds+1									; perform bounds checking
+	BCS		@110										; on switch index
+.ENDIF
+	ASL		A											;Multiply by 2 for table index
+	TAY
+	LDA		adrs_table+1,Y								;Get switch address from table
+	PHA													; and push onto Stack
+	LDA		adrs_table,Y
+	PHA
+.IFBLANK	noexec
+	RTS													; exit to code
+.ENDIF
+@110:
+.ENDMACRO
 
+.SEGMENT "TEXT"
+;.PROC SERPRNT
+.WORD $FFFF
+.WORD COMMENT_END - COMMENT ; Length of comment field
+COMMENT:
+.BYTE "Apple /// Virtual Serial Printer Driver by David Schmidt 2021"
+COMMENT_END:
+
+.SEGMENT "DATA"
+
+;----------------------------------------------------------------------
+;
+; Device Handler Identification Block
+;
+;----------------------------------------------------------------------
+
+IDBLK:
+.WORD $0000 ;Link to next device handler
+.WORD SP_MAIN ;Entry point address
+.BYTE $0a ;Length of device name
+.BYTE ".VSPRINTER     "
+.BYTE $80,$00,$00 ;Device, Slot & Unit numbers
+.BYTE DEVTYPE
+.BYTE SUBTYPE
+.BYTE $00
+.WORD $0000
+.WORD DriverMfgr
+.WORD RELEASE
+
+;----------------------------------------------------------------------
+;
+; Device Handler Configuration Block
+;
+;----------------------------------------------------------------------
+
+.WORD $05				;Configuration block length
+DRATE:		.BYTE $0e	;Data Rate
+DFORMAT:	.BYTE $00	;Data Format
+CRDELAY:	.BYTE $00	;Carriage return delay
+LFDELAY:	.BYTE $00	;Line feed delay
+FFDELAY:	.BYTE $00	;Form feed delay
+
+;----------------------------------------------------------------------
+;
+; SOS Global Data & Subroutines
+;
+;----------------------------------------------------------------------
+
+ALLOCSIR	= $1913
+DEALCSIR	= $1916
+SYSERR		= $1928
+
+;----------------------------------------------------------------------
 ;
 ; SOS Error Codes
 ;
-XDNFERR   :=   $10                   ; Device not found
-XBADDNUM  :=   $11                   ; Invalid device number
-XREQCODE  :=   $20                   ; Invalid request code
-XCTLCODE  :=   $21                   ; Invalid control/status code
-XCTLPARAM :=   $22                   ; Invalid control/status parameter
-XNOTOPEN  :=   $23                   ; Device not open
-XNORESRC  :=   $25                   ; Resources not available
-XBADOP    :=   $26                   ; Invalid operation
-XIOERROR  :=   $27                   ; I/O error
-XNODRIVE  :=   $28                   ; Drive not connected
-XBYTECNT  :=   $2C                   ; Byte count not a multiple of 512
-XBLKNUM   :=   $2D                   ; Block number to large
-XDISKSW   :=   $2E                   ; Disk switched
-XNORESET  :=   $33                   ; Device reset failed
+;----------------------------------------------------------------------
 
-;
-; Switch Macro
-;
-                 .MACRO  SWITCH index,bounds,adrs_table,noexec      ;See SOS Reference
-                 .IFNBLANK index        ;If PARM1 is present,
-                 LDA     index          ; load A with switch index
-                 .ENDIF
-                 .IFNBLANK bounds       ;If PARM2 is present,
-                 CMP     #bounds+1      ; perform bounds checking
-                 BCS     @110           ; on switch index
-                 .ENDIF
-                 ASL     A              ;Multiply by 2 for table index
-                 TAY
-                 LDA     adrs_table+1,Y ;Get switch address from table
-                 PHA                    ; and push onto Stack
-                 LDA     adrs_table,Y
-                 PHA
-                 .IFBLANK noexec
-                 RTS                    ; exit to code
-                 .ENDIF
-@110:
-                 .ENDMACRO
-
-;
-; GoSlow macro - slow down via E-Register
-;
-          .MACRO GoSlow
-          PHA
-          LDA EReg
-          ORA #$80                   ; Set 1MHz switch
-          STA EReg
-          PLA
-          .ENDMACRO
-
-;
-; GoFast macro - speed up via E-Register
-;
-          .MACRO GoFast
-          PHA
-          LDA EReg
-          AND #$7f
-          STA EReg                   ; Whatever it was - set it back
-          PLA
-          .ENDMACRO
-
-          .SEGMENT "TEXT"
-
-;
-; Comment Field of driver
-;
-          .WORD  $FFFF ; Signal that we have a comment
-          .WORD  COMMENT_END - COMMENT ; Length of comment field
-COMMENT:  .BYTE "Apple /// Virtual Serial Printer Driver by David Schmidt 2021"
-COMMENT_END:
-
-          .SEGMENT "DATA"
-
-;------------------------------------
-;
-; Device identification Block (DIB) - VSPRINTER
-;
-;------------------------------------
-
-DIB_0:
-          .WORD     $0000            ; Link pointer
-          .WORD     Entry            ; Entry pointer
-          .BYTE     $0a              ; Name length byte
-          .BYTE     ".VSPRINTER     "; Device name
-          .BYTE     $80              ; Active, no page alignment
-          .BYTE     $00              ; Slot number
-          .BYTE     $00              ; Unit number
-          .BYTE     $41              ; Type
-          .BYTE     $04              ; Subtype
-          .BYTE     $00              ; Filler
-DIB0_Blks:
-          .WORD     $0000            ; # Blocks (none, character device)
-          .WORD     DriverMfgr       ; Manufacturer
-          .WORD     DriverVersion    ; Driver version
-          .WORD     $0000            ; DCB length followed by DCB
-
-;------------------------------------
-;
-; Local storage locations
-;
-;------------------------------------
-
-SIRAddr:  .WORD     SIRTbl
-SIRTbl:   .BYTE     $01              ; ACIA resource
-          .BYTE     $00
-          .WORD     $FEC4            ; Do-nothing interrupt vector
-          .BYTE     $00              ; Bank register
-SIRLen    :=        *-SIRTbl
-StackPtr: .BYTE     $00
-DCB_Idx:  .BYTE     $00                  ; DCB 0's blocks
-OPENFLG:  .BYTE     $00
-
-;------------------------------------
-;
-; Driver request handlers
-;
-;------------------------------------
-
-Entry:
-          JSR Dispatch               ; Call the dispatcher
-          LDX SOS_Unit               ; Get drive number for this unit
-          LDA ReqCode                ; Keep request around for D_REPEAT
-          LDA #$00
-          RTS
-;
-; The Dispatcher.  Note that if we came in on a D_INIT call,
-; we do a branch to Dispatch normally.  
-; Dispatch is called as a subroutine!
-;
-DoTable:
-          .WORD     DRead-1          ; 0 Read request
-          .WORD     DWrite-1         ; 1 Write request
-          .WORD     DStatus-1        ; 2 Status request
-          .WORD     DControl-1       ; 3 Control request
-          .WORD     BadReq-1         ; 4 Unused
-          .WORD     BadReq-1         ; 5 Unused
-          .WORD     DOpen-1          ; 6 Open
-          .WORD     DClose-1         ; 7 Close
-          .WORD     DInit-1          ; 8 Init request
-Dispatch: SWITCH    ReqCode,9,DoTable ; Serve the request
-
-;
-; Dispatch errors
-;
-BadReq:   LDA #XREQCODE              ; Bad request code!
-          JSR SysErr                 ; Return to SOS with error in A
-BadOp:    LDA #XBADOP                ; Invalid operation!
-          JSR SysErr                 ; Return to SOS with error in A
-NotOpen:  LDA #XNOTOPEN              ; Device not open
-          JSR SysErr                 ; Return to SOS with error in A
-NoDevice: LDA #XDNFERR               ; Device not found
-          JSR SysErr                 ; Return to SOS with error in A
-
-;
-; D_READ call processing
-;
-DRead:
-          BIT OPENFLG
-          BMI :+
-          JMP NotOpen
-:         LDA #XBADOP
-          JSR SysErr
-
-ReadExit: RTS                        ; Exit read routines
-
-;
-; D_WRITE call processing
-;
-DWrite:
-          RTS
-
-;
-; D_STATUS call processing
-;
-DStatus:
-          LDA CtlStat                ; Which status code to run?
-          BNE DSWhat
-          LDY #$00                   ; $00 - Driver status, return zero
-          STA (CSList),Y
-          CLC
-          RTS
-DSWhat:   LDA #XCTLCODE              ; Control/status code no good
-          JSR SysErr                 ; Return to SOS with error in A
-
-;
-; D_CONTROL call processing
-;  $00 = Reset device
-;  $FE = Perform media formatting
-;
-DControl:
-          LDA CtlStat                ; Control command
-          BEQ CReset
-          JMP DCWhat                 ; Control code no good!
-CReset:   GoSlow
-          BIT ACIADR                 ; Clear ACIA Data register
-          GoFast
-DCDone:   RTS          
-DCNoReset:
-          LDA #XNORESET              ; Things went bad after reset
-          JSR SysErr                 ; Return to SOS with error in A
-DCWhat:   LDA #XCTLCODE              ; Control/status code no good
-          JSR SysErr                 ; Return to SOS with error in A
-
-DClose:
-DOpen:
-          CLC
-          RTS
-;
-; D_INIT call processing - called at initialization
-;
-DInit:
-          LDA #SIRLen
-          LDX SIRAddr
-          LDY SIRAddr+1
-          JSR AllocSIR               ; Allocate the ACIA
-          BCS NoACIA
-
-          PHP
-          SEI                        ; Disable system interrupts
-          GoSlow                     ; Set up the communications environment
-          LDA #$0b                   ; No parity, no interrupts
-          STA ACIACMD                ; Store via ACIA command register
-          LDA #$10                   ; $16=300, $1e=9600, $1f=19200, $10=115k
-          STA ACIACTL                ; Store via ACIA control register
-          LDA ACIASR                 ; Clear any prior ACIA interrupts
-          GoFast
-          PLP                        ; Re-enable system interrupt state
-
-DInitDone:
-          CLC
-          RTS
-NoACIA:
-          LDA #XNORESRC
-          JSR SysErr                 ; Return to SOS with error in A
-
-;------------------------------------
-;
-; Utility routines
-;
-;------------------------------------
+XREQCODE	= $20 ;Invalid request code
+XCTLCODE	= $21 ;Invalid control/status code
+XNOTOPEN	= $23 ;Device not open
+XNOTAVIL	= $24 ;Device not available
+XNORESRC	= $25 ;Resource not available
+XBADOP		= $26 ;Invalid operation for device
 
 
+;----------------------------------------------------------------------
 ;
-; SendEnvelope - send the command envelope
+; Hardware I/O Addresses
 ;
-SendEnvelope:                        ; Send a command envelope
-          LDA #$00
-          STA Checksum 
-          LDA #$c5                   ; "E"
-          JSR PUTCC                  ; Envelope
-          LDA EnvCmd
-          JSR PUTCC                  ; Send command
-          LDA SosBlk
-          JSR PUTCC                  ; Send LSB of requested block
-          LDA SosBlk+1
-          JSR PUTCC                  ; Send MSB of requested block
-          LDA Checksum
-          JSR PUTC                   ; Send envelope Checksum
-          RTS                        ; Carry is clear, return
+;----------------------------------------------------------------------
+
+ACIADATA	= $C0F0 ;ACIA data register
+ACIASTAT	= $C0F1 ;ACIA status register
+ACIACMD		= $C0F2 ;ACIA command register
+ACIACTL		= $C0F3 ;ACIA control register
+E_REG		= $FFDF ;Environment register
+B_REG		= $FFEF ;Bank register
 
 
+;----------------------------------------------------------------------
 ;
-; PUTCC - Put a byte to the ACIA, adding to the checksum
+; Miscellaneous Equates
 ;
-PUTCC:    PHA
-          EOR Checksum
-          STA Checksum
-          JMP PUTC0
-;
-; PUTC - Put a byte to the ACIA
-;
-PUTC:
-          PHA                        ; Push 'character to send' onto the stack
-PUTC0:    LDA #$00
-          STA Timer
-          STA Timer+1
-          GoSlow
-PUTC1:
-          LDA ACIASR                 ; Check status bits
-          AND #$70
-          CMP #$10
-          BNE PUTC1                  ; Output register is full, no timeout; so loop
-          PLA                        ; Pull 'character to send' back off the stack
-          STA ACIADR                 ; Put character
-          GoFast
-          RTS
+;----------------------------------------------------------------------
 
-; Fix up the buffer pointer to correct for addressing
-; anomalies.  We just need to do the initial checking
-; for two cases:
-; 00xx bank N -> 80xx bank N-1
-; 20xx bank 8F if N was 0
-; FDxx bank N -> 7Dxx bank N+1
-; If pointer is adjusted, return with carry set
+TRUE	= $80
+FALSE	= $00
+ASC_LF	= $0A
+ASC_FF	= $0C
+ASC_CR	= $0D
+BITON4	= $10
+BITON7	= $80
+
+;-----------------------------------------------------------------------
 ;
-FixUp:    LDA DataBuf+1              ; Look at msb
-          BEQ @1                     ; That's one!
-          CMP #$FD                   ; Is it the other one?
-          BCS @2                     ; Yep. fix it!
-          RTS                        ; Pointer unchanged, return carry clear.
-@1:       LDA #$80                   ; 00xx -> 80xx
-          STA DataBuf+1
-          DEC DataBuf+ExtPG          ; Bank N -> band N-1
-          LDA DataBuf+ExtPG          ; See if it was bank 0
-          CMP #$7F                   ; (80) before the DEC.
-          BNE @3                     ; Nope! all fixed.
-          LDA #$20                   ; If it was, change both
-          STA DataBuf+1              ; Msb of address and
-          LDA #$8F
-          STA DataBuf+ExtPG          ; Bank number for bank 8F
-          RTS                        ; Return carry set
-@2:       AND #$7F                   ; Strip off high bit
-          STA DataBuf+1              ; FDxx ->7Dxx
-          INC DataBuf+ExtPG          ; Bank N -> bank N+1
-@3:       RTS                        ; Return carry set
+; SOS Device Handler Interface
+;
+;-----------------------------------------------------------------------
 
-CkUnit:
-          CLC
-          RTS
+SOSINT	= $C0
+REQCODE	= SOSINT+0 ;SOS request code
+BUFFER	= SOSINT+2 ;Buffer pointer
+REQCNT	= SOSINT+4 ;Requested count
+CTLSTAT	= SOSINT+2 ;Control/status code
+CSLIST	= SOSINT+3 ;Control/status list pointer
 
-         .ENDPROC
-         .END
+;-----------------------------------------------------------------------
+;
+; Zero Page Storage
+;
+;-----------------------------------------------------------------------
+
+ZPGSAVE	= SOSINT+$0A ;Saved zero page storage
+ZPGTEMP	= ZPGSAVE+$00 ;Temporary zero page storage
+MOVCNT	= ZPGTEMP+$00
+
+;-----------------------------------------------------------------------
+;
+; Private Variable Storage
+;
+;-----------------------------------------------------------------------
+
+SIRADDR:
+.WORD SIRTABLE
+SIRTABLE:
+.BYTE $01,$00 ;ACIA resource
+.WORD ACIAMIH
+MIHBANK:
+.BYTE $00
+SIRCOUNT = *-SIRTABLE
+OPENFLG: .BYTE FALSE ;Device open flag
+XMIT: .BYTE FALSE ;XMIT in progress flag
+DLYCNT: .BYTE $00 ;Delay count for MIH
+BUFCNT: .BYTE $00 ;Local buffer byte count
+BUFHEAD: .BYTE $00 ;Local buffer head index
+BUFTAIL: .BYTE $00 ;Local buffer tail index
+BUFSIZE = $6e ;110. ;Local buffer size
+LOCBUF: ;Local buffer
+.BYTE "Copyright (C) 2021 by David Schmidt."
+CPYRGHTSIZ = *-LOCBUF
+.RES BUFSIZE-CPYRGHTSIZ,0
+
+;-----------------------------------------------------------------------
+;
+; Serial Printer Driver -- Main entry point
+;
+;-----------------------------------------------------------------------
+
+SP_MAIN:
+SWITCH REQCODE,8,SP_REQSW
+
+BADREQ: LDA #XREQCODE	;Invalid request code
+JSR SYSERR
+
+
+NOTOPEN: LDA #XNOTOPEN	;Device not open
+JSR SYSERR
+
+SP_REQSW:				;Serial Printer request switch
+.WORD SP_READ-1
+.WORD SP_WRITE-1
+.WORD SP_STAT-1
+.WORD SP_CNTL-1
+.WORD BADREQ-1
+.WORD BADREQ-1
+.WORD SP_OPEN-1
+.WORD SP_CLOSE-1
+.WORD SP_INIT-1
+
+;----------------------------------------------------------------------
+;
+; Serial Printer Driver -- Initialization Request
+;
+;----------------------------------------------------------------------
+
+SP_INIT:
+LDA #FALSE
+STA OPENFLG
+LDA DRATE	;Validate data rate
+AND #$0F
+STA DRATE
+TAX
+LDA DFORMAT	;Validate data format
+AND #$EE
+ORA #$10
+CPX #$03	;If data rate is 110 baud
+BNE @010
+ORA #$80	; force two stop bits
+@010: STA DFORMAT
+CLC
+RTS
+
+;----------------------------------------------------------------------
+;
+; Serial Printer Driver -- Open Request
+;
+;----------------------------------------------------------------------
+
+SP_OPEN:
+BIT OPENFLG		;Serial Printer open?
+BPL @010		; No
+LDA #XNOTAVIL
+JSR SYSERR
+
+@010:
+LDA B_REG
+AND #$0F
+STA MIHBANK		;Set interrupt handler bank
+LDA #SIRCOUNT
+LDX SIRADDR
+LDY SIRADDR+1
+JSR ALLOCSIR	;Allocate the ACIA
+BCS @020
+
+LDA #FALSE
+STA XMIT
+JSR CNTL00		;Set up ACIA
+LDA #TRUE
+STA OPENFLG		;Set serial printer open
+RTS
+
+@020:
+LDA #XNORESRC
+JSR SYSERR
+
+;----------------------------------------------------------------------
+;
+; Serial Printer Driver -- Close Request
+;
+;----------------------------------------------------------------------
+
+SP_CLOSE:
+ASL OPENFLG		;Serial Printer open?
+BCS @010		; Yes
+JMP NOTOPEN
+@010:
+BIT XMIT		;Wait for write completion
+BMI @010
+PHP
+SEI
+LDA E_REG
+TAX
+ORA #BITON7
+STA E_REG		;Switch to 1 MHz
+STA ACIASTAT	;Reset the ACIA
+STX E_REG
+PLP
+LDA #SIRCOUNT
+LDX SIRADDR
+LDY SIRADDR+1
+JSR DEALCSIR	;Deallocate the ACIA
+RTS
+
+;-----------------------------------------------------------------------
+;
+; Serial Printer Driver -- Read Request
+;
+;-----------------------------------------------------------------------
+
+SP_READ:
+BIT OPENFLG	;Serial Printer open?
+BMI @010
+JMP NOTOPEN
+@010:
+LDA #XBADOP
+JSR SYSERR
+
+;-----------------------------------------------------------------------
+;
+; Serial Printer Driver -- Write Request
+;
+;-----------------------------------------------------------------------
+
+SP_WRITE:
+BIT OPENFLG
+BMI @010
+JMP NOTOPEN
+@010:
+LDA #BUFSIZE/2		;Set MOVCNT to the lesser
+LDY REQCNT+1		; of BUFSIZE/2 and REQCNT.
+BNE @020
+CMP REQCNT
+BCC @020
+LDA REQCNT
+BNE @020
+RTS					;Count = zero -- all done!
+@020:
+STA MOVCNT
+
+LDA BUFFER+1		;Check for buffer
+CMP #$FF			; address overflow
+BCC @030
+SBC #$80
+STA BUFFER+1
+INC $1401+BUFFER
+
+@030: SEC
+LDA #BUFSIZE
+SBC MOVCNT
+@040: CMP BUFCNT	;Wait for room in buffer
+BCC @040
+
+LDY #$00
+LDX BUFTAIL
+@050:
+LDA (BUFFER),Y		;Move data to local buffer
+STA LOCBUF,X
+INX
+CPX #BUFSIZE
+BCC @060
+LDX #$00
+@060:
+INY
+CPY MOVCNT
+BCC @050
+STX BUFTAIL
+
+PHP
+SEI					;Shut down interrupts
+CLC
+LDA BUFCNT
+ADC MOVCNT			;Bump buffer count
+STA BUFCNT
+
+BIT XMIT			;Already transmitting?
+BVS @070			; Yes
+LDA #$C0
+STA XMIT			;Set transmitting flag
+LDA E_REG
+PHA
+ORA #BITON7			;Switch to 1 MHz
+STA E_REG
+LDY ACIASTAT		;Fake an interrupt to start
+JSR ACIAMIH			; the interrupt handler.
+PLA
+STA E_REG			;Switch back to 2 MHz
+@070: PLP
+
+CLC
+LDA BUFFER
+ADC MOVCNT			;Fix up buffer pointer
+STA BUFFER
+BCC @080
+INC BUFFER+1
+
+@080:
+SEC
+LDA REQCNT
+SBC MOVCNT			;Fix up requested count
+STA REQCNT
+BCS @010
+DEC REQCNT+1
+JMP @010			;Loop back for more
+
+;-----------------------------------------------------------------------
+;
+; ACIA Master Interrupt Handler
+;
+;-----------------------------------------------------------------------
+
+ACIAMIH:
+LDA E_REG
+ORA #BITON7		;Set 1 MHz mode
+STA E_REG
+
+TYA				;Check DSR and DCD status
+AND #$60		; bits for printer hand shake
+BNE @080
+
+TYA				;Check transmit register
+AND #BITON4		; empty status bit
+BEQ @060
+
+LDA DLYCNT		;Any transmit delay in progress?
+BEQ @010		; no
+DEC DLYCNT
+JMP @060
+
+@010:
+LDA BUFCNT		;Any data to transmit?
+BEQ @070		; no -- wait for completion
+LDX BUFHEAD
+LDA LOCBUF,X
+STA ACIADATA	;Transmit one character
+INX
+CPX #BUFSIZE
+BCC @020
+LDX #$00
+@020:
+STX BUFHEAD		;Update buffer index
+DEC BUFCNT		; and count
+
+CMP #ASC_CR		;Check for any delay
+BEQ @040
+BCS @060
+CMP #ASC_LF
+BNE @030
+LDA LFDELAY
+BCS @050
+@030:
+CMP #ASC_FF
+BNE @060
+LDA FFDELAY
+BCS @050
+@040:
+LDA CRDELAY
+@050:
+STA DLYCNT
+@060:
+LDA ACIACMD
+AND #$E0		;Enable transmit interrupt
+ORA #$07
+STA ACIACMD
+RTS
+
+@070:
+ASL XMIT
+BMI @060		;Still not done
+
+@080:
+LDA ACIACMD
+AND #$E0		;Disable transmit interrupt
+ORA #$0B
+STA ACIACMD
+RTS
+
+;----------------------------------------------------------------------
+;
+; Serial Printer Driver -- Status Request
+;
+;----------------------------------------------------------------------
+
+SP_STAT:
+BIT OPENFLG		;Serial Printer open?
+BMI @010
+JMP NOTOPEN
+@010:
+SWITCH CTLSTAT,2,STATSW
+
+
+BADCTL:
+LDA #XCTLCODE	;Invalid control code
+JSR SYSERR
+
+
+STATSW:
+.WORD STAT00-1
+.WORD STAT01-1
+.WORD STAT02-1
+
+
+STAT00:
+RTS				;0 -- NOP
+
+
+STAT01:
+LDY #0			;1 -- Status Table
+LDA #0
+STA (CSLIST),Y
+RTS
+
+
+STAT02:
+LDY #0			;2 -- New Line
+LDA #FALSE
+STA (CSLIST),Y
+RTS
+
+;----------------------------------------------------------------------
+;
+; Serial Printer Driver -- Control Request
+;
+;----------------------------------------------------------------------
+
+SP_CNTL:
+BIT OPENFLG		;Serial Printer open?
+BMI @010		; Ok
+JMP NOTOPEN
+@010:
+SWITCH CTLSTAT,2,CNTLSW
+JMP BADCTL
+
+CNTLSW:
+.WORD CNTL00-1
+.WORD CNTL01-1
+.WORD CNTL02-1
+
+CNTL00:			;0 -- Reset
+@010:
+BIT XMIT		;Wait for write completion
+BMI @010
+LDA #$00
+STA BUFHEAD
+STA BUFTAIL
+PHP
+SEI
+LDA E_REG
+TAX
+ORA #BITON7
+STA E_REG		;Switch to 1 MHz
+STA ACIASTAT	;Reset ACIA
+LDA DFORMAT
+AND #$F0
+ORA DRATE
+STA ACIACTL		;Set up ACIA control register
+LDA DFORMAT
+ASL A
+ASL A
+ASL A
+ASL A
+ORA #$0B
+STA ACIACMD		;Set up ACIA command register
+STX E_REG		;Switch back to 2 MHz
+PLP
+RTS
+
+CNTL01:			;1 -- Serial Printer Status Table
+RTS
+
+CNTL02:			;2 -- New Line
+RTS
