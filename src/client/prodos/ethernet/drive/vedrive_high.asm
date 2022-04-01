@@ -53,7 +53,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 .include "ip65/inc/commonprint.i"
 .include "ip65/inc/net.i"
 
-.import a2_set_slot
 .import dns_hostname_is_dotted_quad
 .import dns_ip
 .import dns_resolve
@@ -116,7 +115,6 @@ install_vedrive:
 ; check for Uthernet II
   lda #$01                      ; start with slot 1
 : pha
-  jsr a2_set_slot
   jsr ip65_init
   pla
   bcc :+
@@ -127,8 +125,15 @@ install_vedrive:
   ldx #>dev_not_found_msg
   jmp error_exit
 
+; derive I/O base from slot no.
+: asl
+  asl
+  asl
+  asl
+  sta io_base
+
 ; print 'uthernet'
-: adc #'0'                      ; carry is clear
+  adc #'0'                      ; carry is clear
   pha
   lda #<uthernet_msg
   ldx #>uthernet_msg
@@ -365,7 +370,7 @@ install_vedrive:
   ldx #$FF
   ldy #$00
 : lda (ptr1),y
-  ora eth_driver_io_base
+  ora io_base
   sta (ptr1),y
   inx
   cpx #fixup_size
@@ -996,9 +1001,9 @@ retry:
 .segment "DRIVER"
 
 ; fixed up at runtime
-w5100_mode := $C000
-w5100_addr := $C001
-w5100_data := $C003
+w5100_mode := $C080
+w5100_addr := $C081
+w5100_data := $C083
 
 
 udp_check:
@@ -1579,6 +1584,9 @@ load_buffer:
 online_buffer:
   .res $0010
 
+io_base:
+  .res $01
+  
 ;------------------------------------------------------------------------------
 
 .segment "DRIVER"
