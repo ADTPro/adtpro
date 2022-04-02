@@ -1,6 +1,6 @@
 ;
 ; ADTPro - Apple Disk Transfer ProDOS
-; Copyright (C) 2016 by David Schmidt
+; Copyright (C) 2016-2022 by David Schmidt
 ; 1110325+david-schmidt@users.noreply.github.com
 ;
 ; This program is free software; you can redistribute it and/or modify it 
@@ -22,7 +22,7 @@
 
 /******************************************************************************
 
-Copyright (c) 2015, Oliver Schmidt
+Copyright (c) 2015-2022, Oliver Schmidt
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -49,11 +49,11 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 ******************************************************************************/
 
-.include "ip65/inc/common.i"
-.include "ip65/inc/commonprint.i"
-.include "ip65/inc/net.i"
+.include "../../build/lib/ip65/inc/common.inc"
+.include "../../build/lib/ip65/inc/commonprint.inc"
+.include "../../build/lib/ip65/inc/net.inc"
+.include "../../build/lib/ip65/inc/error.inc"
 
-.import a2_set_slot
 .import dns_hostname_is_dotted_quad
 .import dns_ip
 .import dns_resolve
@@ -116,7 +116,6 @@ install_vedrive:
 ; check for Uthernet II
   lda #$01                      ; start with slot 1
 : pha
-  jsr a2_set_slot
   jsr ip65_init
   pla
   bcc :+
@@ -127,8 +126,15 @@ install_vedrive:
   ldx #>dev_not_found_msg
   jmp error_exit
 
+; derive I/O base from slot no.
+: asl
+  asl
+  asl
+  asl
+  sta io_base
+
 ; print 'uthernet'
-: adc #'0'                      ; carry is clear
+  adc #'0'                      ; carry is clear
   pha
   lda #<uthernet_msg
   ldx #>uthernet_msg
@@ -365,7 +371,7 @@ install_vedrive:
   ldx #$FF
   ldy #$00
 : lda (ptr1),y
-  ora eth_driver_io_base
+  ora io_base
   sta (ptr1),y
   inx
   cpx #fixup_size
@@ -630,12 +636,12 @@ online:
 ; print ip65 'code' and exit
 ip65_exit:
   lda ip65_error
-  cmp #KPR_ERROR_ABORTED_BY_USER
+  cmp #IP65_ERROR_ABORTED_BY_USER
   bne :+
   lda #<abort_msg
   ldx #>abort_msg
   bne error_exit                ; always
-: cmp #KPR_ERROR_TIMEOUT_ON_RECEIVE
+: cmp #IP65_ERROR_TIMEOUT_ON_RECEIVE
   bne code_exit
   lda #<timeout_msg
   ldx #>timeout_msg
@@ -996,9 +1002,9 @@ retry:
 .segment "DRIVER"
 
 ; fixed up at runtime
-w5100_mode := $C000
-w5100_addr := $C001
-w5100_data := $C003
+w5100_mode := $C084
+w5100_addr := $C085
+w5100_data := $C087
 
 
 udp_check:
@@ -1579,6 +1585,9 @@ load_buffer:
 online_buffer:
   .res $0010
 
+io_base:
+  .res $01
+  
 ;------------------------------------------------------------------------------
 
 .segment "DRIVER"

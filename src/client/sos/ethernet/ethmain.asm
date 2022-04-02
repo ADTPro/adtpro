@@ -23,7 +23,7 @@
 	.include "sos/sosconst.i"	; OS equates, characters, etc.
 	.include "sos/sosvars.asm"	; DATA segment
 	.include "sos/ethernet/ethmessages.asm"	; Messages - DATA segment
-	.include "ip65/inc/common.i"	; More macros - ldax, for example
+	.include "../../build/lib/ip65/inc/common.inc"	; More macros - ldax, for example
 
 	.include "main.asm"	; STARTUP segment
 

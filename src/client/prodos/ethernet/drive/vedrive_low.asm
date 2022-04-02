@@ -21,7 +21,7 @@
 
 	.include "prodos/prodosmacros.i"		; OS macros
 	.include "prodos/prodosconst.i"			; OS equates, characters, etc.
-	.include "ip65/inc/common.i"
+	.include "../../build/lib/ip65/inc/common.inc"
 
 .segment "INSTALL"
 	.include "prodos/ethernet/drive/vedriveinstall.asm"

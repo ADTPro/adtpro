@@ -21,7 +21,7 @@
 	.include "prodos/interp.asm"			; Interpreter header
 	.include "prodos/prodosmacros.i"		; OS macros
 	.include "prodos/prodosconst.i"			; OS equates, characters, etc.
-	.include "ip65/inc/common.i"
+	.include "../../build/lib/ip65/inc/common.inc"
 	.include "diskii.asm"					; Contains positionally dependent format code
 
 ;---------------------------------------------------------

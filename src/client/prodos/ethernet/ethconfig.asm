@@ -360,7 +360,6 @@ FindSlotLoop:
 	txa
 	jsr DisqualifyCards
 	bcs Bump
-	jsr a2_set_slot
 	jsr ip65_init
 	ldx TempSlot
 	bcc FoundSlot

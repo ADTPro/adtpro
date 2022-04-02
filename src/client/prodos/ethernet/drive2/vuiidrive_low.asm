@@ -21,7 +21,7 @@
 
 	.include "prodos/prodosmacros.i"		; OS macros
 	.include "prodos/prodosconst.i"			; OS equates, characters, etc.
-	.include "ip65/inc/common.i"
+	.include "ip65/inc/common.inc"
 	.include "prodos/ethernet/drive2/w5100const.i"
 
 .segment "INSTALLER"
