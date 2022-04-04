@@ -350,9 +350,8 @@ FindSlot:
 	ldx #$00	; Slot number - start at min and work up
 FindSlotLoop:
 	stx TempSlot
-	inx		; One-indexed slot number for a2_set_slot
+	inx		; One-indexed slot number
 	txa
-	jsr a2_set_slot
 	jsr ip65_init
 	ldx TempSlot
 	bcc FoundSlot

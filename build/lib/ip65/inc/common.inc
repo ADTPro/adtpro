@@ -1,7 +1,3 @@
-.ifndef COMMON__I__
-
-COMMON__I__ = 1
-
 ; load A/X macro
 .macro ldax arg
 .if (.match (.left (1, arg), #))      ; immediate mode
@@ -42,11 +38,9 @@ COMMON__I__ = 1
   pla
 .endmacro
 
-.endif
 
 
-
-; -- LICENSE FOR common.i --
+; -- LICENSE FOR common.inc --
 ; The contents of this file are subject to the Mozilla Public License
 ; Version 1.1 (the "License"); you may not use this file except in
 ; compliance with the License. You may obtain a copy of the License at

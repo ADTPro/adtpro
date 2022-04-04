@@ -23,7 +23,7 @@
 	.include "sos/sosconst.i"	; OS equates, characters, etc.
 	.include "sos/sosvars.asm"
 	.include "sos/serial/sermessages.asm"	; Messages
-	.include "ip65/inc/common.i"	; More macros - ldax, for example
+	.include "../../build/lib/ip65/inc/common.inc"	; More macros - ldax, for example
 
 	.include "main.asm"
 

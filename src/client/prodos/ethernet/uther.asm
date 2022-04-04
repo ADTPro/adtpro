@@ -22,8 +22,6 @@
 	.import ip65_process
 	.import dhcp_init
 
-	.import a2_set_slot
-
 	.import udp_add_listener
 	.import udp_callback
 	.import udp_send
@@ -54,7 +52,6 @@ INITUTHER:
 	ldx COMMSLOT
 	inx
 	txa
-	jsr a2_set_slot
 	jsr ip65_init
 	bcc @UTHEROK
 	jsr PATCHNULL

@@ -11,15 +11,12 @@
 .import dhcp_init
 .import dhcp_server
 
-.ifdef A2_SLOT_SCAN
-.import a2_set_slot
-.endif
+.importzp eth_init_default
 
 .macro init_ip_via_dhcp
 .ifdef A2_SLOT_SCAN
   lda #1
 : pha
-  jsr a2_set_slot
   jsr ip65_init
   pla
   bcc :+
@@ -28,6 +25,7 @@
   bcc :-
 :
 .else
+  lda #eth_init_default
   jsr ip65_init
 .endif
   php
@@ -51,7 +49,7 @@
 
 
 
-; -- LICENSE FOR net.i --
+; -- LICENSE FOR net.inc --
 ; The contents of this file are subject to the Mozilla Public License
 ; Version 1.1 (the "License"); you may not use this file except in
 ; compliance with the License. You may obtain a copy of the License at

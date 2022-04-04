@@ -2,11 +2,7 @@
   SCREEN_WIDTH = 40
 .endif
 
-.ifndef KPR_API_VERSION_NUMBER
-  .define EQU =
-  .include "zeropage.inc"
-  .include "../inc/kipper_constants.i"
-.endif
+.include "zeropage.inc"
 
 .export print_hex
 .export print_ip_config
@@ -30,8 +26,7 @@
 
 .import ascii_to_native
 
-.import eth_driver_name
-.import eth_driver_io_base
+.import eth_name
 .importzp copy_src
 .import cfg_mac
 .import cfg_ip
@@ -61,18 +56,8 @@ temp_ptr: .res 2
 .endmacro
 
 .macro print_driver_init
-  ldax #eth_driver_name
+  ldax #eth_name
   jsr print_ascii_as_native
-  lda #'('
-  jsr print_a
-  lda #'$'
-  jsr print_a
-  lda eth_driver_io_base+1
-  jsr print_hex
-  lda eth_driver_io_base
-  jsr print_hex
-  lda #')'
-  jsr print_a
   ldax #init_msg
   jsr print_ascii_as_native
 .endmacro
@@ -101,13 +86,13 @@ temp_ptr: .res 2
 
 .import print_a
 .import print_cr
-.import eth_driver_name
+.import eth_name
 
 print_ip_config:
   ldax #interface_type
   jsr print_ascii_as_native
 
-  ldax #eth_driver_name
+  ldax #eth_name
   jsr print_ascii_as_native
   jsr print_cr
 
@@ -388,7 +373,7 @@ press_a_key_to_continue:
 
 
 
-; -- LICENSE FOR commonprint.i --
+; -- LICENSE FOR commonprint.inc --
 ; The contents of this file are subject to the Mozilla Public License
 ; Version 1.1 (the "License"); you may not use this file except in
 ; compliance with the License. You may obtain a copy of the License at
