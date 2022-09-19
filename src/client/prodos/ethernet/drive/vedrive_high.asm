@@ -126,16 +126,18 @@ install_vedrive:
   ldx #>dev_not_found_msg
   jmp error_exit
 
+; calculate and save character to print for slot #
+: adc #'0'
+  pha
+
 ; derive I/O base from slot no.
-: asl
+  asl
   asl
   asl
   asl
   sta io_base
 
 ; print 'uthernet'
-  adc #'0'                      ; carry is clear
-  pha
   lda #<uthernet_msg
   ldx #>uthernet_msg
   jsr print_ascii_as_native
