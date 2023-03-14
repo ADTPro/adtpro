@@ -1,4 +1,4 @@
-; Copyright (C) 2007 - 2011 by David Schmidt
+; Copyright (C) 2007 - 2023 by David Schmidt
 ; 1110325+david-schmidt@users.noreply.github.com
 ;
 ; This program is free software; you can redistribute it and/or modify it 
@@ -1003,7 +1003,7 @@ SlotF:	.res 2			; Slot/Drive of device to FORMAT
 TRKcur:	.res 2			; Current track position
 TRKdes:	.res 2 			; Destination track position
 TRKbeg:	.byte 00		; Starting track number
-TRKend:	.byte 35		; Ending track number
+TRKend:	.byte 34		; Ending track number
 FullPages:
 	.byte 00		; Number of BAM pages to fill
 DevIndex:
