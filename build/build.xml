@@ -412,6 +412,14 @@ all
 		<exec dir="${projdir}/src/client" executable="${assemblerPath}/ld65" failonerror="true">
 			<arg line="-o GRUB2 -m grub2.map -C prodos/serial/grub2/grub2.cfg prodos/serial/grub2/grub2.o" />
 		</exec>
+		<echo message="Assembling ProDOS serial TLC Grub source..."/>
+		<exec dir="${projdir}/src/client/prodos/serial/grub2" executable="${assemblerPath}/ca65" failonerror="true">
+			<arg line="-t none -l grub2.lst grub2tlc.asm" />
+		</exec>
+		<echo message="Linking grub2tlc..."/>
+		<exec dir="${projdir}/src/client" executable="${assemblerPath}/ld65" failonerror="true">
+			<arg line="-o GRUB2TLC -m grub2tlc.map -C prodos/serial/grub2/grub2.cfg prodos/serial/grub2/grub2tlc.o" />
+		</exec>
 		<echo message="Assembling ProDOS serial Grub (vsdrive) source..."/>
 		<exec dir="${projdir}/src/client/prodos/serial/grub2" executable="${assemblerPath}/ca65" failonerror="true">
 			<arg line="-t none -l grub_vsdrive.lst grub_vsdrive.asm" />
