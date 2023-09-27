@@ -22,6 +22,9 @@ all
 				prodos-audio
 					prodos-adtpro-image-prep
 					common
+				prodos-audjoy
+					prodos-adtpro-image-prep
+					common
 				prodos-ethernet
 					prodos-adtpro-image-prep
 					common
@@ -207,7 +210,7 @@ all
 	ProDOS section
 	============================================================================================
 	-->
-	<target name="prodos" depends="prepare,prodos-serial, prodos-audio, prodos-ethernet, prodos-bootstrap, prodos-vsdrive, prodos-vedrive" description="Orchestrate Overall Client Build for ProDOS" >
+	<target name="prodos" depends="prepare,prodos-serial, prodos-audio, prodos-audjoy, prodos-ethernet, prodos-bootstrap, prodos-vsdrive, prodos-vedrive" description="Orchestrate Overall Client Build for ProDOS" >
 	</target>
 
 	<target name="prodos-serial" depends="tasks,prodos-adtpro-image-prep, common" description="Build the ADTPro Serial Client (ProDOS)">
@@ -244,6 +247,23 @@ all
 		<echo message="Adding ADTPROAUD to 3.5 disk image..."/>
 		<appleCommander command="p" input="${projdir}/src/client/ADTPROAUD.BIN" imagename="${builddir}/${distName}/disks/${diskName}.PO" filename="ADTPROAUD.BIN" type="bin" address="2048"/>
 		<delete file="${projdir}/src/client/ADTPROAUD.BIN" />
+	</target>
+	<target name="prodos-audjoy" depends="prodos-adtpro-image-prep, common" description="Build the ADTPro Audio/Joystick Client (ProDOS)">
+		<echo message="Assembling prodos-audjoy client..."/>
+		<exec dir="${projdir}/src/client" executable="${assemblerPath}/ca65" failonerror="true">
+			<arg line="-t none -I . -l prodos/audjoy/audjoy.lst prodos/audjoy/audjoymain.asm" />
+		</exec>
+		<echo message="Linking ADTPROAJOY..."/>
+		<exec dir="${projdir}/src/client" executable="${assemblerPath}/ld65" failonerror="true">
+			<arg line="-o ADTPROAJOY.BIN -m adtproaudjoy.map -C prodos/audjoy/adtpro.cfg prodos/audjoy/audjoymain.o tail.o" />
+		</exec>
+		<appleDump infilename="${projdir}/src/client/ADTPROAJOY.BIN" outfilename="${destdir}/org/adtpro/resources/adtproaudjoy.dmp" applename="ADTPROAJOY.BIN" startaddrhex="800" numbyteswide="22" decoration="begin" finalline="800G"/>
+		<copy file="${projdir}/src/client/ADTPROAJOY.BIN" tofile="${destdir}/org/adtpro/resources/adtproaudjoy.raw" />
+		<echo message="Adding ADTPROAJOY to 5.25 disk image..."/>
+		<appleCommander command="p" input="${projdir}/src/client/ADTPROAJOY.BIN" imagename="${builddir}/${distName}/disks/${diskName}.DSK" filename="ADTPROAJOY.BIN" type="bin" address="2048"/>
+		<echo message="Adding ADTPROAJOY to 3.5 disk image..."/>
+		<appleCommander command="p" input="${projdir}/src/client/ADTPROAJOY.BIN" imagename="${builddir}/${distName}/disks/${diskName}.PO" filename="ADTPROAJOY.BIN" type="bin" address="2048"/>
+		<delete file="${projdir}/src/client/ADTPROAJOY.BIN" />
 	</target>
 	<target name="prodos-ethernet" depends="prodos-adtpro-image-prep, common" description="Build the ADTPro Ethernet Client (ProDOS)">
 		<echo message="Assembling ADTPROETH source..."/>
@@ -292,10 +312,12 @@ all
 		<appleCommander command="p" input="${projdir}/src/client/ADTPRO" imagename="${builddir}/${distName}/disks/${diskName}.DSK" filename="ADTPRO" type="sys" address="8192"/>
 		<appleCommander command="p" input="${projdir}/src/client/ADTPRO" imagename="${builddir}/${distName}/disks/${diskName}.DSK" filename="ADTPROAUD" type="sys" address="8192"/>
 		<appleCommander command="p" input="${projdir}/src/client/ADTPRO" imagename="${builddir}/${distName}/disks/${diskName}.DSK" filename="ADTPROETH" type="sys" address="8192"/>
+		<appleCommander command="p" input="${projdir}/src/client/ADTPRO" imagename="${builddir}/${distName}/disks/${diskName}.DSK" filename="ADTPROAJOY" type="sys" address="8192"/>
 		<echo message="Adding startup files to 3.5 disk image..."/>
 		<appleCommander command="p" input="${projdir}/src/client/STARTUP.SYSTEM" imagename="${builddir}/${distName}/disks/${diskName}.PO" filename="STARTUP.SYSTEM" type="sys" address="8192"/>
 		<appleCommander command="p" input="${projdir}/src/client/ADTPRO" imagename="${builddir}/${distName}/disks/${diskName}.PO" filename="ADTPRO" type="sys" address="8192"/>
 		<appleCommander command="p" input="${projdir}/src/client/ADTPRO" imagename="${builddir}/${distName}/disks/${diskName}.PO" filename="ADTPROAUD" type="sys" address="8192"/>
+		<appleCommander command="p" input="${projdir}/src/client/ADTPRO" imagename="${builddir}/${distName}/disks/${diskName}.PO" filename="ADTPROAJOY" type="sys" address="8192"/>
 		<appleCommander command="p" input="${projdir}/src/client/ADTPRO" imagename="${builddir}/${distName}/disks/${diskName}.PO" filename="ADTPROETH" type="sys" address="8192"/>
 		<delete file="${projdir}/src/client/STARTUP.SYSTEM" />
 		<delete file="${projdir}/src/client/ADTPRO" />
