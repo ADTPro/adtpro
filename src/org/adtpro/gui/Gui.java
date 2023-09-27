@@ -160,8 +160,10 @@ public final class Gui extends JFrame implements ActionListener
 		menuBootstrapDOS.add(adtAction);
 		MenuAction adtProAction = new MenuAction(Messages.getString("Gui.BS.ADTPro")); //$NON-NLS-1$
 		menuBootstrapProDOS.add(adtProAction);
-		MenuAction adtProAudioAction = new MenuAction(Messages.getString("Gui.BS.ADTProAudio")); //$NON-NLS-1$
-		menuBootstrapProDOS.add(adtProAudioAction);
+    MenuAction adtProAudioAction = new MenuAction(Messages.getString("Gui.BS.ADTProAudio")); //$NON-NLS-1$
+    menuBootstrapProDOS.add(adtProAudioAction);
+    MenuAction adtProAudJoyAction = new MenuAction(Messages.getString("Gui.BS.ADTProAudJoy")); //$NON-NLS-1$
+    menuBootstrapProDOS.add(adtProAudJoyAction);
 		MenuAction adtProEthernetAction = new MenuAction(Messages.getString("Gui.BS.ADTProEthernet")); //$NON-NLS-1$
 		menuBootstrapProDOS.add(adtProEthernetAction);
 		menuBar.add(menuBootstrap);
@@ -735,7 +737,7 @@ public final class Gui extends JFrame implements ActionListener
 					(e.getActionCommand().equals(Messages.getString("Gui.BS.ProDOSVSDrive"))) || //$NON-NLS-1
 					(e.getActionCommand().equals(Messages.getString("Gui.BS.ADT"))) || //$NON-NLS-1$
 					(e.getActionCommand().equals(Messages.getString("Gui.BS.ADTPro"))) || //$NON-NLS-1$
-					(e.getActionCommand().equals(Messages.getString("Gui.BS.ADTProAudio"))) || //$NON-NLS-1$
+          (e.getActionCommand().equals(Messages.getString("Gui.BS.ADTProAudio"))) || //$NON-NLS-1$
 					(e.getActionCommand().equals(Messages.getString("Gui.BS.ADTProEthernet")))) //$NON-NLS-1$
 			{
 				int size = _commsThread.requestSend(e.getActionCommand());
@@ -780,7 +782,23 @@ public final class Gui extends JFrame implements ActionListener
 					_commsThread.requestSend(e.getActionCommand(), true, pacing, speed);
 				}
 			}
-			else if (e.getActionCommand().equals(Messages.getString("Gui.AudioConfig")))
+      else if (e.getActionCommand().equals(Messages.getString("Gui.BS.ADTProAudJoy"))) //$NON-NLS-1$
+      {
+        int size = _commsThread.requestSend(e.getActionCommand());
+        int speed = 9600;
+        int pacing = 100;
+        Log.println(false, "Gui.actionPerformed getting instructions with speed = " + speed + " pacing = " + pacing);
+        message = _commsThread.getInstructions(e.getActionCommand(), size, speed);
+        /* Ask the user if she is sure */
+        int ret = JOptionPane.showOptionDialog(_parent, message, Messages.getString("Gui.Name"), JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE, null, buttons, buttons[0]);
+        if (ret == JOptionPane.YES_OPTION)
+        {
+          _commsThread.requestSend(e.getActionCommand(), true, pacing, speed);
+        }
+      }
+
+
+      else if (e.getActionCommand().equals(Messages.getString("Gui.AudioConfig")))
 			{
 				audioConfigGui();
 				if (AudioConfig.getSingleton(_parent, _properties).getExitStatus() == AudioConfig.OK)

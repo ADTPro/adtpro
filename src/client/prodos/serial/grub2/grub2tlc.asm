@@ -41,16 +41,16 @@
           PB0 = $C061   ; Paddle 0 PushButton: HIGH/ON if > 127, LOW/OFF if < 128.
 
 ; Zero page variables (all unused by DOS, BASIC and Monitor)
-          UTILPTR = $06
-          BUF_P   = $08
+          PAGES = $06
+          BUF_P = $08
 
 Entry:
 ; Set up our pointers
           lda #$00
           tay           ; Clean out Y reg
           sta BUF_P
-          lda #$20
-          sta BUF_P+1   ; Code goes into $2000
+          lda #$08
+          sta BUF_P+1   ; Code goes into $0800
 
 ; Say we're active in the upper-right hand corner
           ldx #$C8      ; "H"
@@ -65,19 +65,25 @@ Poll:
           bne Poll
 
 ; We got the magic signature; start reading data
-          ldx #$03      ; Three pages total
+          ldx #$46      ; Page total
+          stx PAGES
 Read:	
           jsr pb0_recv  ; Pull a byte
+          bcc Forget_it ; We know we have a framing error
           sta (BUF_P),y ; Save it
           sta $0427     ; Print it in the status area
           iny
           bne Read      ; Pull in a full page
           inc BUF_P+1   ; Bump pointer for next page
-          dex
+          dec PAGES
           bne Read      ; Go back for another page
 
 ; Call bootstrap entry point
-          jmp $2000     ; Payload entry point
+          rts ; for now
+          jmp $0800     ; Payload entry point
+
+Forget_it:
+          brk
 
 pb0_recv:
 ; State is currently unknown
@@ -142,6 +148,5 @@ byte_complete:
           ; Carry now holds stop bit (clear/0 indicates framing error, because we end with set/1)
           lda ring      ; Exit with the assembled byte in A
           rts
-
-ring:     .byte $55
 bits:     .byte $00
+ring:     .byte $55
