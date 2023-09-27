@@ -67,7 +67,7 @@ public class AppleDump extends Task
 				int currentBpl = 0, nextBpl = 0, currentLine = 1;
 				String address = null;
 				// Our little welcome message
-				ps.print("25:0 N 7D0:1 4 14 10 12 F A0 N 25:0\r\n");
+				ps.print("FC58G N 25:0 N 7D0:1 4 14 10 12 F A0 N 25:0\r\n");
 				for (int j = 0; j < max; j++)
 				{
 					datum = (byte) fis.read();

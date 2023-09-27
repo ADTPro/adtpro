@@ -117,9 +117,8 @@ poll_for_0:
 ; Wait 1.5 bit times (104.2 + 52.1 = 156.3us at 9600 bps) to get into the middle of the first bit
 ; Approximately 152.8 ($99) CPU cycles
 ; When falling through to here, the above branch was not taken - consuming 2 cycles to get here
-          ldx #$15      ; 2  loop count
-:         nop           ; 2 \
-          dex           ; 2  |-- 7 * loop count - 1
+          ldx #$1D      ; 2  loop count
+:         dex           ; 2 \  = 5 * loop count - 1
           bne :-        ; 3 /  final exit of the loop only adds 2, branch not taken
 ;                       $94 cycles to get here
           bit $00       ; 3 don't care about results
@@ -142,9 +141,8 @@ push_bit: ; We now have a bit in the carry
 ;                       $1D cycles to get here (since center of bit time)
 ; We are now done with processing that bit; we need to cool our heels for the rest ($66 - $1D = $49) of the
 ; bit time in order to get into the middle of the next bit
-          ldx #$0A      ; 2  loop count
-:         nop           ; 2 \
-          dex           ; 2  |-- 7 * loop count - 1
+          ldx #$0E      ; 2  loop count
+:         dex           ; 2 \  = 5 * loop count - 1
           bne :-        ; 3 /  final exit of the loop only adds 2, branch not taken
 ;                       $47 cycles to get here
           jmp pull_byte ; 3 Loop around for another bit - we actually burn $4A cycles
