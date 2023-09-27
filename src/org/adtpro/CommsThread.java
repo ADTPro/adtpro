@@ -1,6 +1,6 @@
 /*
  * ADTPro - Apple Disk Transfer ProDOS
- * Copyright (C) 2007 - 2020 by David Schmidt
+ * Copyright (C) 2007 - 2023 by David Schmidt
  * 1110325+david-schmidt@users.noreply.github.com
  *
  * This program is free software; you can redistribute it and/or modify it 
@@ -3899,19 +3899,19 @@ public class CommsThread extends Thread
 				slowLastLines = 0;
 				isBinary = true;
 			}
-      else if (resource.equals(Messages.getString("Gui.BS.ADTProAudio")))
-      {
-        resourceName = "org/adtpro/resources/adtproaud.dmp";
-        slowFirstLines = 5;
-        slowLastLines = 4;
-      }
-      else if (resource.equals(Messages.getString("Gui.BS.ADTProAudJoy")))
-      {
-        resourceName = "org/adtpro/resources/adtproaudjoy.raw";
-        slowFirstLines = 0;
-        slowLastLines = 0;
-        isBinary = true;
-      }
+			else if (resource.equals(Messages.getString("Gui.BS.ADTProAudio")))
+			{
+				resourceName = "org/adtpro/resources/adtproaud.dmp";
+				slowFirstLines = 5;
+				slowLastLines = 4;
+			}
+			else if (resource.equals(Messages.getString("Gui.BS.ADTProAudJoy")))
+			{
+				resourceName = "org/adtpro/resources/adtproaudjoy.raw";
+				slowFirstLines = 0;
+			slowLastLines = 0;
+			isBinary = true;
+			}
 			else if (resource.equals(Messages.getString("Gui.BS.ADTProEthernet")))
 			{
 				resourceName = "org/adtpro/resources/adtproeth.dmp";
@@ -4074,17 +4074,17 @@ public class CommsThread extends Thread
 							{
 								_transport.writeByte(0x50); // Send a "P" to trigger the start
 							}
-              else if (_resource.equals(Messages.getString("Gui.BS.ADTProRaw")))
-              {
-                _transport.writeByte(0x41); // Send an "A" to trigger the start
-              }
-              else if (_resource.equals(Messages.getString("Gui.BS.ADTProAudJoy")))
-              {
-                Log.println(false, "CommsThread.Worker.run() sending ADTProAudJoy trigger byte of 'T'.");
-                _transport.writeByte(0x54); // Send an "T" to trigger the start
-                _transport.pushBuffer();
-                sleep(20);
-              }
+							else if (_resource.equals(Messages.getString("Gui.BS.ADTProRaw")))
+							{
+								_transport.writeByte(0x41); // Send an "A" to trigger the start
+							}
+							else if (_resource.equals(Messages.getString("Gui.BS.ADTProAudJoy")))
+							{
+								Log.println(false, "CommsThread.Worker.run() sending ADTProAudJoy trigger byte of 'T'.");
+								_transport.writeByte(0x54); // Send an "T" to trigger the start
+								_transport.pushBuffer();
+								sleep(20);
+							}
 							else if (_resource.equals(Messages.getString("Gui.BS.VSDriveRaw")))
 							{
 								_transport.writeByte(0x56); // Send a "V" to trigger the start
@@ -4093,12 +4093,8 @@ public class CommsThread extends Thread
 							{
 								_transport.writeByte(0x42); // Send a "B" to trigger the start
 							}
-							if (!_resource.equals(Messages.getString("Gui.BS.ADTProAudJoy")))
-							{
-							  // Don't do this for AudJoy yet...
 							_transport.writeByte(UnsignedByte.loByte(length)); // Send buffer LSB
 							_transport.writeByte(UnsignedByte.hiByte(length)); // Send buffer MSB
-							}
 						}
 						for (int i = 0; i < buffer.length; i++)
 						{
@@ -4108,14 +4104,14 @@ public class CommsThread extends Thread
 								break;
 							}
 							_transport.writeByte(buffer[i]);
-              _transport.pushBuffer();
-              if (((_resource.equals(Messages.getString("Gui.BS.SOSKERNEL"))) || (_resource.equals(Messages.getString("Gui.BS.SOSINTERP"))) || (_resource.equals(Messages.getString("Gui.BS.SOSDRIVER")))) && (i < 2))
-                sleep(1); // Letting this run unthrottled seemed to miss the first byte...
-              else if (_resource.equals(Messages.getString("Gui.BS.ADTProAudJoy")))
-              {
-                Log.println(false, "CommsThread.Worker.run() sleeping for 2.");
-                sleep(2);
-              }
+							_transport.pushBuffer();
+							if (((_resource.equals(Messages.getString("Gui.BS.SOSKERNEL"))) || (_resource.equals(Messages.getString("Gui.BS.SOSINTERP"))) || (_resource.equals(Messages.getString("Gui.BS.SOSDRIVER")))) && (i < 2))
+								sleep(1); // Letting this run unthrottled seemed to miss the first byte...
+							else if (_resource.equals(Messages.getString("Gui.BS.ADTProAudJoy")))
+							{
+								Log.println(false, "CommsThread.Worker.run() sleeping for 2.");
+								sleep(2);
+							}
 							if (_shouldRun)
 							{
 								_parent.setProgressValue(i + 1);

@@ -18,29 +18,35 @@
 ; 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 ;
 
-; Tiger Learning Computer bootstrapper grub
+; Tiger Learning Computer (Joystick serial bitbanger) bootstrapper grub
 ;
 ; This is the stripped-bare, minimal grub to read data from the joystick port.
-; The idea is to get just enough started to read in a bigger, more robust
-; bootstrap loader.  Custom serial-to-joystick cable is required.  RS-232
-; settings are 9600 bps, no parity, 8 data bits, 1 stop bit.
+; Custom serial-to-joystick cable is required.  RS-232 settings are 9600 bps,
+; no parity, 8 data bits, 1 stop bit; 1ms pacing seems to be required.
 
 ;
 ; Process:
 ;  * Put up a little prompt to show we're alive
 ;  * Poll the joystick port for data
-;  * Once we see a "T" on the port, start reading $100 byte blocks into $2000
-;  * After reading $300 bytes, jump to $2000 (we don't count the initial "T")
+;  * Once we see a "T" on the port, pull two more bytes (MSB, LSB) of length
+;    and start reading that many bytes into $0800
+;  * After reading, jump to $0800
 ;
 
 ; This would need to be typed into the monitor (boot the TLC, go to BASIC,
-; CALL -151, type it in) and then run (300G).
+; CALL -151, type it in) and then run (300G).  If it bails out (back) to the
+; monitor, it's becaus of noise on the line and a framing error occurred.
+; Restarting with 300G and re-sending will effectively retry.  If it gets stuck
+; (i.e. an undetected error slips in... there is no other error checking) then
+; unplug the cable and hit ctrl-reset.  If the cable is still plugged in, it
+; will have the effect of holding the open-apple key down and you'll reboot 
+; (rather than just break) if you do a ctrl-reset.
 
           .org $300
 
           PB0 = $C061   ; Paddle 0 PushButton: HIGH/ON if > 127, LOW/OFF if < 128.
 
-; Zero page variables (all unused by DOS, BASIC and Monitor)
+; Zero page variables (unused by DOS, BASIC and Monitor)
           PAGES = $06
           BUF_P = $08
 
@@ -65,25 +71,28 @@ Poll:
           bne Poll
 
 ; We got the magic signature; start reading data
-          ldx #$46      ; Page total
-          stx PAGES
-Read:	
           jsr pb0_recv  ; Pull a byte
-          bcc Forget_it ; We know we have a framing error
+          sta size      ;   payload LSB
+          jsr pb0_recv  ; Pull a byte
+          sta size+1    ;   payload MSB
+
+Read:
+          jsr pb0_recv  ; Pull a byte
+          bcc Entry+1   ; We know we have a framing error so branch to a $00 somewhere
           sta (BUF_P),y ; Save it
           sta $0427     ; Print it in the status area
           iny
-          bne Read      ; Pull in a full page
+          bne :+
           inc BUF_P+1   ; Bump pointer for next page
-          dec PAGES
-          bne Read      ; Go back for another page
+          dec size+1    ; 
+:         cpy size      ; Is LSB of progress the same as requested?
+          bne Read      ; No, swing around for more
+          lda size+1    ; LSB is the same; is MSB zero?
+          bne Read      ; No, swing around for more
 
 ; Call bootstrap entry point
           rts ; for now
           jmp $0800     ; Payload entry point
-
-Forget_it:
-          brk
 
 pb0_recv:
 ; State is currently unknown
@@ -105,21 +114,19 @@ poll_for_0:
 
 ; State just became 0 (start bit)
 
-; Wait 1.5 bit times (104.2 + 52.1 = 156.3us at 9600 baud) to get into the middle of the first bit
+; Wait 1.5 bit times (104.2 + 52.1 = 156.3us at 9600 bps) to get into the middle of the first bit
 ; Approximately 152.8 ($99) CPU cycles
 ; When falling through to here, the above branch was not taken - consuming 2 cycles to get here
-          ldx #$14      ; 2  loop count
+          ldx #$15      ; 2  loop count
 :         nop           ; 2 \
           dex           ; 2  |-- 7 * loop count - 1
-          bne :-        ; 3 /  final exit of the loop adds 2, branch not taken
-;                       $8F cycles to get here
-          beq :+        ; 3 burn
-:         beq :+        ; 3 baby
-:         nop           ; 2 burn
+          bne :-        ; 3 /  final exit of the loop only adds 2, branch not taken
+;                       $94 cycles to get here
+          bit $00       ; 3 don't care about results
 ;                       $97 cycles to get here; final 2 will be consumed by clc below 
 pull_byte:
-; We now have one bit time (104.2us at 9600 baud) to process this bit
-; Approximately 106.6 ($6B) CPU cycles
+; We now have one bit time (104.2us at 9600 bps) to process this bit
+; Approximately 101.8 ($66) CPU cycles
           clc           ; 2
           lda PB0       ; 4
           bmi :+        ; 2 if positive, 3 if negative
@@ -133,20 +140,21 @@ push_bit: ; We now have a bit in the carry
           ror           ; 2
           sta ring      ; 4
 ;                       $1D cycles to get here (since center of bit time)
-; We are now done with processing that bit; we need to cool our heels for the rest ($6B - $1D = $4E) of the
+; We are now done with processing that bit; we need to cool our heels for the rest ($66 - $1D = $49) of the
 ; bit time in order to get into the middle of the next bit
           ldx #$0A      ; 2  loop count
 :         nop           ; 2 \
           dex           ; 2  |-- 7 * loop count - 1
-          bne :-        ; 3 /  final exit of the loop adds 2, branch not taken
-;                         $47 cycles to get here, burn $07 more (includes our jump back to top of loop)
-          nop           ; 2
-          nop           ; 2
-          jmp pull_byte ; 3 Loop around for another bit - we burned $4E cycles
-;                         $6A
+          bne :-        ; 3 /  final exit of the loop only adds 2, branch not taken
+;                       $47 cycles to get here
+          jmp pull_byte ; 3 Loop around for another bit - we actually burn $4A cycles
+;                       $67
 byte_complete:
           ; Carry now holds stop bit (clear/0 indicates framing error, because we end with set/1)
           lda ring      ; Exit with the assembled byte in A
           rts
+
+; Variable space that doesn't need to be initialized (or typed in, for that matter)
 bits:     .byte $00
-ring:     .byte $55
+ring:     .byte $00
+size:     .word $0000
