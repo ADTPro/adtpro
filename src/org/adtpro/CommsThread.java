@@ -4109,8 +4109,8 @@ public class CommsThread extends Thread
 								sleep(1); // Letting this run unthrottled seemed to miss the first byte...
 							else if (_resource.equals(Messages.getString("Gui.BS.ADTProAudJoy")))
 							{
-								Log.println(false, "CommsThread.Worker.run() sleeping for 2.");
-								sleep(2);
+								Log.println(false, "CommsThread.Worker.run() sleeping for 1.");
+								sleep(1);
 							}
 							if (_shouldRun)
 							{
