@@ -102,29 +102,9 @@ public class CaptureThread extends Thread
   /* kTransMinDelta happens over this range */
   public final float kTransDeltaBase = 45.35f;       // usec (1 sample at 22.05KHz)
 
-
-  
-  int byteRegisterData = 0;
-
-  int byteRegisterBits = 0;
-
-  boolean isTraining = true;
-
-  int transitionHysteresis = 3; // Was 18 in Marc's original implementation; seems to need to be (much) lower now.
-
-  int transitionValue = 0;
-
-  int transitionPeriod = 0;
-
-  int transitionState = 0;
-
-  int lastBit = -1;
-
   int _hardwareMixerIndex = 0;
 
   int bitAcc = 1;
-
-  static int buffnum = 0;
 
   public CaptureThread(int hardwareMixerIndex)
   {
