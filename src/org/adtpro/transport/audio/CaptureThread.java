@@ -1,5 +1,4 @@
 /*
- * ADTPro - Apple Disk Transfer ProDOS
  * Copyright (C) 2007 - 2023 by David Schmidt
  * 1110325+david-schmidt@users.noreply.github.com
  *
@@ -32,7 +31,7 @@ import org.adtpro.utilities.UnsignedByte;
 // Inner class to capture audio data
 public class CaptureThread extends Thread
 {
-  // An arbitrarily-size temporary holding buffer
+  // An arbitrarily-sized temporary holding buffer
   final int BUFF_SIZE = 8192;
   byte buffer[] = new byte[BUFF_SIZE];
 
@@ -123,10 +122,17 @@ public class CaptureThread extends Thread
 
   int _hardwareMixerIndex = 0;
 
+  int bitAcc = 1;
+
   static int buffnum = 0;
 
   public CaptureThread(int hardwareMixerIndex)
   {
+    // Set state to initial values
+    scanState_phase = kPhaseScanFor770Start;
+    scanState_mode = kModeInitial0;
+    bitAcc = 1;
+
     _hardwareMixerIndex = hardwareMixerIndex;
   }
 
@@ -169,7 +175,7 @@ public class CaptureThread extends Thread
       Log.printStackTrace(e);
     }// end catch
     outputStream = new ByteArrayOutputStream();
-    // Log.println(false,"Training(0)...");
+
     try
     {
       /*
@@ -177,13 +183,35 @@ public class CaptureThread extends Thread
        */
       while (!stopCapture)
       {
-        // Read data from the internal
-        // buffer of the data line.
+        // Read data from the internal buffer of the data line.
         int cnt = targetDataLine.read(buffer, 0, buffer.length);
         if (cnt > 0)
         {
-          interpretStream(buffer);
+          System.out.println("Processing a chunk of length "+cnt);
+
+          // Get a floating representation of the captured data so far
+          float sampleBuf[] = new float[buffer.length]; // kSampleChunkSize/bytesPerSample
+          int chunkLen = buffer.length;
+          for (int i = 0; i < chunkLen; i++)
+            sampleBuf[i] = (float) (UnsignedByte.intValue(buffer[i]) - 128) / 128.0f;
+          for (int i = 0; i < chunkLen; i++)
+          {
+            if (processSample(buffer[i], i))
+            {
+              /* output a bit, shifting until bit 8 shows up */
+              bitAcc = ((bitAcc << 1) | bitVal);
+              if (bitAcc > 255 /* 0xff, but Java is funny about bytes */)
+              {
+                System.out.println("Writing byte 0x"+Integer.toHexString((bitAcc & 0xff))+" at index "+Integer.toHexString(i));
+                outputStream.write((byte)(bitAcc & 0xff));
+                bitAcc = 1;
+              }
+            }
+          }
         }// end if
+        // We need to keep a "relative" index of the last zero crossing - which 
+        // will be negative when we start processing a new chunk
+        scanState_lastZeroIndex = scanState_lastZeroIndex - cnt;
       }// end while
       outputStream.close();
     }
@@ -196,48 +224,6 @@ public class CaptureThread extends Thread
     Log.println(true, "CaptureThread.run() exit.");
   }// end run
 
-  void interpretStream(byte buffer[])
-  {
-    float sampleBuf[] = new float[BUFF_SIZE]; // kSampleChunkSize/bytesPerSample
-    int chunkLen = buffer.length;
-    int bitAcc = 1;
-    // Set state to initial values
-    scanState_phase = kPhaseScanFor770Start;
-    scanState_mode = kModeInitial0;
-
-    // System.out.println("Buffering...");
-
-    // ConvertSamplesToReal: *sampleBuf++ = (*buf - 128) / 128.0f;
-    for (int i = 0; i < chunkLen; i++)
-    {
-      sampleBuf[i] = (float) (UnsignedByte.intValue(buffer[i]) - 128) / 128.0f;
-      // if (i < 2000) System.out.println("real sample "+i+": "+sampleBuf[i]+" byte value: 0x"+toString(buffer[i]));
-    }
-    for (int i = 0; i < chunkLen; i++)
-    {
-      if (processSample(sampleBuf[i], i))
-      {
-        // System.out.println("processSample: true");
-        /* output a bit, shifting until bit 8 shows up */
-        bitAcc = ((bitAcc << 1) | bitVal);
-        if (bitAcc > 255 /* 0xff, but Java is funny about bytes */)
-        {
-          outputStream.write((byte)(bitAcc & 0xff));
-          bitAcc = 1;
-        }
-      }
-    }
-    byte returnValue[] = outputStream.toByteArray();
-    String a = "";
-    for (int i = 0; i < returnValue.length; i++)
-    {
-      if ((returnValue[i] & 0xff) < 16) a = a + "0";
-      a = a + Integer.toHexString(returnValue[i] & 0xff);
-    }
-    System.out.println("retrieveReceiveBuffer: " + a);
-
-  }
-  
   public boolean processSample(float sample, int sampleIndex)
   {
     long timeDelta;
@@ -284,21 +270,21 @@ public class CaptureThread extends Thread
 
       /* delta time for zero-to-zero (half cycle) */
       timeDelta = (sampleIndex + bias) - scanState_lastZeroIndex;
-      // System.out.println("index delta = "+timeDelta);
+      // System.out.println("index delta = "+scanState_timeDelta);
       
       halfCycleUsec = timeDelta * scanState_usecPerSample;
       // System.out.println("halfCycleUsec = "+halfCycleUsec);
 
       emitBit = updatePhase(sampleIndex + bias, halfCycleUsec);
-      // System.out.println("Emitted bit from updatePhase, sample index 0x"+Integer.toHexString(sampleIndex)+"? "+emitBit);
+      // System.out.println("Emitted bit from updatePhase, sample index 0x"+Integer.toHexString(sampleIndex)+"? "+scanState_emitBit);
 
       scanState_lastZeroIndex = sampleIndex + bias;
       // System.out.println("scanState_lastZeroIndex = "+(sampleIndex + bias));
     }
 
     /* record this sample for the next go-round */
+    crossedZero = false;
     scanState_prevSample = sample;
-
     return emitBit;
   }
 
@@ -414,7 +400,7 @@ public class CaptureThread extends Thread
             /* bad cycle, assume end reached */
             // System.out.println("  Bad full cycle time "+fullCycleUsec+" in data at 0x"+Integer.toHexString(sampleIndex)+", bailing");
             scanState_dataEnd = sampleIndex;
-            scanState_phase = kPhaseEndReached;
+            scanState_phase = kPhaseScanFor770Start; // kPhaseEndReached;
           }
         }
         break;
@@ -470,30 +456,16 @@ public class CaptureThread extends Thread
     return returnValue;
   }
 
-  public void pushBit(int bit)
-  {
-    byteRegisterData = ((byteRegisterData << 1) | bit) & 0xff;
-    byteRegisterBits++;
-    if (byteRegisterBits == 8)
-    {
-      outputStream.write(byteRegisterData);
-      byteRegisterBits = 0;
-
-      String a = "";
-      if (byteRegisterData < 16) a = a + "0";
-      a = Integer.toHexString(byteRegisterData);
-      // System.out.println("pushBit: " + a);
-    }
-  }
-
   public void flushReceiveBuffer()
   {
     if (receiveBufferSize() > 0)
     //if (receiveBufferSize() > 128)  I'm confused... why would we not just flush if > 0?
     {
-      // System.out.println("flushReceiveBuffer");
+      System.out.println("CaptureThread().flushReceiveBuffer.");
       synchronized (outputStream)
       {
+        scanState_phase = kPhaseScanFor770Start;
+        scanState_mode = kModeInitial0;
         outputStream.reset();
       }
     }
@@ -501,6 +473,8 @@ public class CaptureThread extends Thread
 
   public void requestStop()
   {
+    scanState_phase = kPhaseScanFor770Start;
+    scanState_mode = kModeInitial0;
     stopCapture = true;
   }
 

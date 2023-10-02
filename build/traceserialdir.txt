@@ -1,0 +1,259 @@
+9/30/23, 3:09:17 PM Gui.getWorkingDirectory(): C:\Users\David\git\adtpro-tlc\build\ADTPro-v.r.m\disks\
+9/30/23, 3:09:17 PM Gui.actionPerformed() exit.
+9/30/23, 3:09:20 PM CommsThread.commandLoop() Received data.
+9/30/23, 3:09:20 PM CommsThread.commandLoop() Received a byte: C1
+9/30/23, 3:09:20 PM CommsThread.commandLoop() Received wide protocol request.
+9/30/23, 3:09:20 PM CommsThread.pullEnvelopeWide() entry.
+9/30/23, 3:09:20 PM Waiting for byteslo...
+9/30/23, 3:09:20 PM  received byteslo: 02
+9/30/23, 3:09:20 PM Waiting for byteshi...
+9/30/23, 3:09:20 PM  received byteshi: 00
+9/30/23, 3:09:20 PM Waiting for command...
+9/30/23, 3:09:20 PM  received envelope command: C4
+9/30/23, 3:09:20 PM Waiting for check byte...
+9/30/23, 3:09:20 PM  received checkbyte: 07
+9/30/23, 3:09:20 PM  calculated checkbyte: 07
+9/30/23, 3:09:20 PM CommsThread.pullEnvelopeWide() exit.
+9/30/23, 3:09:20 PM CommsThread.dispatchCommand() entry.
+9/30/23, 3:09:20 PM Gui.getWorkingDirectory(): C:\Users\David\git\adtpro-tlc\build\ADTPro-v.r.m\disks\
+9/30/23, 3:09:20 PM CommsThread.dispatchCommand() Received DIR command.
+9/30/23, 3:09:20 PM CommsThread.sendDirectoryWide() entry.
+9/30/23, 3:09:20 PM CommsThread.pullPayloadWide() entry.
+9/30/23, 3:09:20 PM CommsThread.pullPayloadWide() payload byte [0]: 00
+9/30/23, 3:09:20 PM CommsThread.pullPayloadWide() payload byte [1]: 00
+9/30/23, 3:09:20 PM CommsThread.pullPayloadWide() received   checkbyte: 00
+9/30/23, 3:09:20 PM CommsThread.pullPayloadWide() calculated checkbyte: 00
+9/30/23, 3:09:20 PM CommsThread.pullPayloadWide() checkbyte on payload matched.
+9/30/23, 3:09:20 PM CommsThread.sendDirectoryWide() value: 
+9/30/23, 3:09:20 PM Gui.getWorkingDirectory(): C:\Users\David\git\adtpro-tlc\build\ADTPro-v.r.m\disks\
+9/30/23, 3:09:20 PM CommsThread.sendDirectoryWide() Seeking directory of: C:\Users\David\git\adtpro-tlc\build\ADTPro-v.r.m\disks\
+9/30/23, 3:09:20 PM Gui.getWorkingDirectory(): C:\Users\David\git\adtpro-tlc\build\ADTPro-v.r.m\disks\
+9/30/23, 3:09:20 PM Gui.getWorkingDirectory(): C:\Users\David\git\adtpro-tlc\build\ADTPro-v.r.m\disks\
+9/30/23, 3:09:20 PM Gui.getWorkingDirectory(): C:\Users\David\git\adtpro-tlc\build\ADTPro-v.r.m\disks\
+9/30/23, 3:09:20 PM CommsThread.sendDirectoryWide() sending name[0]: ADTPRO-v.r.m.DSK
+9/30/23, 3:09:20 PM CommsThread.sendDirectoryWide() sending name[1]: ADTPRO-v.r.m.PO
+9/30/23, 3:09:20 PM CommsThread.sendDirectoryWide() sending name[2]: ADTPROSOS-v.r.m.DSK
+9/30/23, 3:09:20 PM CommsThread.sendDirectoryWide() sending name[3]: VDRIVE-v.r.m.DSK
+9/30/23, 3:09:20 PM CommsThread.sendDirectoryWide() sending name[4]: Virtual.po
+9/30/23, 3:09:20 PM CommsThread.sendDirectoryWide() sending name[5]: Virtual2.po
+9/30/23, 3:09:20 PM CommsThread.sendPacketWide() entry; block to send: 0000
+9/30/23, 3:09:20 PM CommsThread.sendPacketWide() looping until successful to send block: 0000
+9/30/23, 3:09:20 PM SerialTransport.writeBytes() adding 1 bytes to the stream.
+9/30/23, 3:09:20 PM SerialTransport.writeBytes() adding 1 bytes to the stream.
+9/30/23, 3:09:20 PM SerialTransport.writeBytes() adding 1 bytes to the stream.
+9/30/23, 3:09:20 PM SerialTransport.writeBytes() adding 1 bytes to the stream.
+9/30/23, 3:09:20 PM SerialTransport.writeBytes() adding 1 bytes to the stream.
+9/30/23, 3:09:20 PM SerialTransport.writeBytes() adding 1 bytes to the stream.
+9/30/23, 3:09:20 PM SerialTransport.writeBytes() adding 1 bytes to the stream.
+9/30/23, 3:09:20 PM SerialTransport.writeBytes() adding 1 bytes to the stream.
+9/30/23, 3:09:20 PM SerialTransport.writeBytes() adding 1 bytes to the stream.
+9/30/23, 3:09:20 PM SerialTransport.writeBytes() adding 1 bytes to the stream.
+9/30/23, 3:09:20 PM SerialTransport.writeBytes() adding 1 bytes to the stream.
+9/30/23, 3:09:20 PM SerialTransport.writeBytes() adding 1 bytes to the stream.
+9/30/23, 3:09:20 PM SerialTransport.writeBytes() adding 1 bytes to the stream.
+9/30/23, 3:09:20 PM SerialTransport.writeBytes() adding 1 bytes to the stream.
+9/30/23, 3:09:20 PM SerialTransport.writeBytes() adding 1 bytes to the stream.
+9/30/23, 3:09:20 PM SerialTransport.writeBytes() adding 1 bytes to the stream.
+9/30/23, 3:09:20 PM SerialTransport.writeBytes() adding 1 bytes to the stream.
+9/30/23, 3:09:20 PM SerialTransport.writeBytes() adding 1 bytes to the stream.
+9/30/23, 3:09:20 PM SerialTransport.writeBytes() adding 1 bytes to the stream.
+9/30/23, 3:09:20 PM SerialTransport.writeBytes() adding 1 bytes to the stream.
+9/30/23, 3:09:20 PM SerialTransport.writeBytes() adding 1 bytes to the stream.
+9/30/23, 3:09:20 PM SerialTransport.writeBytes() adding 1 bytes to the stream.
+9/30/23, 3:09:20 PM SerialTransport.writeBytes() adding 1 bytes to the stream.
+9/30/23, 3:09:20 PM SerialTransport.writeBytes() adding 1 bytes to the stream.
+9/30/23, 3:09:20 PM SerialTransport.writeBytes() adding 1 bytes to the stream.
+9/30/23, 3:09:20 PM SerialTransport.writeBytes() adding 1 bytes to the stream.
+9/30/23, 3:09:20 PM SerialTransport.writeBytes() adding 1 bytes to the stream.
+9/30/23, 3:09:20 PM SerialTransport.writeBytes() adding 1 bytes to the stream.
+9/30/23, 3:09:20 PM SerialTransport.writeBytes() adding 1 bytes to the stream.
+9/30/23, 3:09:20 PM SerialTransport.writeBytes() adding 1 bytes to the stream.
+9/30/23, 3:09:20 PM SerialTransport.writeBytes() adding 1 bytes to the stream.
+9/30/23, 3:09:20 PM SerialTransport.writeBytes() adding 1 bytes to the stream.
+9/30/23, 3:09:20 PM SerialTransport.writeBytes() adding 1 bytes to the stream.
+9/30/23, 3:09:20 PM SerialTransport.writeBytes() adding 1 bytes to the stream.
+9/30/23, 3:09:20 PM SerialTransport.writeBytes() adding 1 bytes to the stream.
+9/30/23, 3:09:20 PM SerialTransport.writeBytes() adding 1 bytes to the stream.
+9/30/23, 3:09:20 PM SerialTransport.writeBytes() adding 1 bytes to the stream.
+9/30/23, 3:09:20 PM SerialTransport.writeBytes() adding 1 bytes to the stream.
+9/30/23, 3:09:20 PM SerialTransport.writeBytes() adding 1 bytes to the stream.
+9/30/23, 3:09:20 PM SerialTransport.writeBytes() adding 1 bytes to the stream.
+9/30/23, 3:09:20 PM SerialTransport.writeBytes() adding 1 bytes to the stream.
+9/30/23, 3:09:20 PM SerialTransport.writeBytes() adding 1 bytes to the stream.
+9/30/23, 3:09:20 PM SerialTransport.writeBytes() adding 1 bytes to the stream.
+9/30/23, 3:09:20 PM SerialTransport.writeBytes() adding 1 bytes to the stream.
+9/30/23, 3:09:20 PM SerialTransport.writeBytes() adding 1 bytes to the stream.
+9/30/23, 3:09:20 PM SerialTransport.writeBytes() adding 1 bytes to the stream.
+9/30/23, 3:09:20 PM SerialTransport.writeBytes() adding 1 bytes to the stream.
+9/30/23, 3:09:20 PM SerialTransport.writeBytes() adding 1 bytes to the stream.
+9/30/23, 3:09:20 PM SerialTransport.writeBytes() adding 1 bytes to the stream.
+9/30/23, 3:09:20 PM SerialTransport.writeBytes() adding 1 bytes to the stream.
+9/30/23, 3:09:20 PM SerialTransport.writeBytes() adding 1 bytes to the stream.
+9/30/23, 3:09:20 PM SerialTransport.writeBytes() adding 1 bytes to the stream.
+9/30/23, 3:09:20 PM SerialTransport.writeBytes() adding 1 bytes to the stream.
+9/30/23, 3:09:20 PM SerialTransport.writeBytes() adding 1 bytes to the stream.
+9/30/23, 3:09:20 PM SerialTransport.writeBytes() adding 1 bytes to the stream.
+9/30/23, 3:09:20 PM SerialTransport.writeBytes() adding 1 bytes to the stream.
+9/30/23, 3:09:20 PM SerialTransport.writeBytes() adding 1 bytes to the stream.
+9/30/23, 3:09:20 PM SerialTransport.writeBytes() adding 1 bytes to the stream.
+9/30/23, 3:09:20 PM SerialTransport.writeBytes() adding 1 bytes to the stream.
+9/30/23, 3:09:20 PM SerialTransport.writeBytes() adding 1 bytes to the stream.
+9/30/23, 3:09:20 PM SerialTransport.writeBytes() adding 1 bytes to the stream.
+9/30/23, 3:09:20 PM SerialTransport.writeBytes() adding 1 bytes to the stream.
+9/30/23, 3:09:20 PM SerialTransport.writeBytes() adding 1 bytes to the stream.
+9/30/23, 3:09:20 PM SerialTransport.writeBytes() adding 1 bytes to the stream.
+9/30/23, 3:09:20 PM SerialTransport.writeBytes() adding 1 bytes to the stream.
+9/30/23, 3:09:20 PM SerialTransport.writeBytes() adding 1 bytes to the stream.
+9/30/23, 3:09:20 PM SerialTransport.writeBytes() adding 1 bytes to the stream.
+9/30/23, 3:09:20 PM SerialTransport.writeBytes() adding 1 bytes to the stream.
+9/30/23, 3:09:20 PM SerialTransport.writeBytes() adding 1 bytes to the stream.
+9/30/23, 3:09:20 PM SerialTransport.writeBytes() adding 1 bytes to the stream.
+9/30/23, 3:09:20 PM SerialTransport.writeBytes() adding 1 bytes to the stream.
+9/30/23, 3:09:20 PM SerialTransport.writeBytes() adding 1 bytes to the stream.
+9/30/23, 3:09:20 PM SerialTransport.writeBytes() adding 1 bytes to the stream.
+9/30/23, 3:09:20 PM SerialTransport.writeBytes() adding 1 bytes to the stream.
+9/30/23, 3:09:20 PM SerialTransport.writeBytes() adding 1 bytes to the stream.
+9/30/23, 3:09:20 PM SerialTransport.writeBytes() adding 1 bytes to the stream.
+9/30/23, 3:09:20 PM SerialTransport.writeBytes() adding 1 bytes to the stream.
+9/30/23, 3:09:20 PM SerialTransport.writeBytes() adding 1 bytes to the stream.
+9/30/23, 3:09:20 PM SerialTransport.writeBytes() adding 1 bytes to the stream.
+9/30/23, 3:09:20 PM SerialTransport.writeBytes() adding 1 bytes to the stream.
+9/30/23, 3:09:20 PM SerialTransport.writeBytes() adding 1 bytes to the stream.
+9/30/23, 3:09:20 PM SerialTransport.writeBytes() adding 1 bytes to the stream.
+9/30/23, 3:09:20 PM SerialTransport.writeBytes() adding 1 bytes to the stream.
+9/30/23, 3:09:20 PM SerialTransport.writeBytes() adding 1 bytes to the stream.
+9/30/23, 3:09:20 PM SerialTransport.writeBytes() adding 1 bytes to the stream.
+9/30/23, 3:09:20 PM SerialTransport.writeBytes() adding 1 bytes to the stream.
+9/30/23, 3:09:20 PM SerialTransport.writeBytes() adding 1 bytes to the stream.
+9/30/23, 3:09:20 PM SerialTransport.writeBytes() adding 1 bytes to the stream.
+9/30/23, 3:09:20 PM SerialTransport.writeBytes() adding 1 bytes to the stream.
+9/30/23, 3:09:20 PM SerialTransport.writeBytes() adding 1 bytes to the stream.
+9/30/23, 3:09:20 PM SerialTransport.writeBytes() adding 1 bytes to the stream.
+9/30/23, 3:09:20 PM SerialTransport.writeBytes() adding 1 bytes to the stream.
+9/30/23, 3:09:20 PM SerialTransport.writeBytes() adding 1 bytes to the stream.
+9/30/23, 3:09:20 PM SerialTransport.writeBytes() adding 1 bytes to the stream.
+9/30/23, 3:09:20 PM SerialTransport.writeBytes() adding 1 bytes to the stream.
+9/30/23, 3:09:20 PM SerialTransport.writeBytes() adding 1 bytes to the stream.
+9/30/23, 3:09:20 PM SerialTransport.writeBytes() adding 1 bytes to the stream.
+9/30/23, 3:09:20 PM SerialTransport.writeBytes() adding 1 bytes to the stream.
+9/30/23, 3:09:20 PM SerialTransport.writeBytes() adding 1 bytes to the stream.
+9/30/23, 3:09:20 PM SerialTransport.writeBytes() adding 1 bytes to the stream.
+9/30/23, 3:09:20 PM SerialTransport.writeBytes() adding 1 bytes to the stream.
+9/30/23, 3:09:20 PM SerialTransport.writeBytes() adding 1 bytes to the stream.
+9/30/23, 3:09:20 PM SerialTransport.writeBytes() adding 1 bytes to the stream.
+9/30/23, 3:09:20 PM SerialTransport.writeBytes() adding 1 bytes to the stream.
+9/30/23, 3:09:20 PM SerialTransport.writeBytes() adding 1 bytes to the stream.
+9/30/23, 3:09:20 PM SerialTransport.writeBytes() adding 1 bytes to the stream.
+9/30/23, 3:09:20 PM SerialTransport.writeBytes() adding 1 bytes to the stream.
+9/30/23, 3:09:20 PM SerialTransport.writeBytes() adding 1 bytes to the stream.
+9/30/23, 3:09:20 PM SerialTransport.writeBytes() adding 1 bytes to the stream.
+9/30/23, 3:09:20 PM SerialTransport.writeBytes() adding 1 bytes to the stream.
+9/30/23, 3:09:20 PM SerialTransport.writeBytes() adding 1 bytes to the stream.
+9/30/23, 3:09:20 PM SerialTransport.writeBytes() adding 1 bytes to the stream.
+9/30/23, 3:09:20 PM SerialTransport.writeBytes() adding 1 bytes to the stream.
+9/30/23, 3:09:20 PM SerialTransport.writeBytes() adding 1 bytes to the stream.
+9/30/23, 3:09:20 PM SerialTransport.writeBytes() adding 1 bytes to the stream.
+9/30/23, 3:09:20 PM SerialTransport.writeBytes() adding 1 bytes to the stream.
+9/30/23, 3:09:20 PM SerialTransport.writeBytes() adding 1 bytes to the stream.
+9/30/23, 3:09:20 PM SerialTransport.writeBytes() adding 1 bytes to the stream.
+9/30/23, 3:09:20 PM SerialTransport.writeBytes() adding 1 bytes to the stream.
+9/30/23, 3:09:20 PM SerialTransport.writeBytes() adding 1 bytes to the stream.
+9/30/23, 3:09:20 PM SerialTransport.writeBytes() adding 1 bytes to the stream.
+9/30/23, 3:09:20 PM SerialTransport.writeBytes() adding 1 bytes to the stream.
+9/30/23, 3:09:20 PM SerialTransport.writeBytes() adding 1 bytes to the stream.
+9/30/23, 3:09:20 PM SerialTransport.writeBytes() adding 1 bytes to the stream.
+9/30/23, 3:09:20 PM SerialTransport.writeBytes() adding 1 bytes to the stream.
+9/30/23, 3:09:20 PM SerialTransport.writeBytes() adding 1 bytes to the stream.
+9/30/23, 3:09:20 PM SerialTransport.writeBytes() adding 1 bytes to the stream.
+9/30/23, 3:09:20 PM SerialTransport.writeBytes() adding 1 bytes to the stream.
+9/30/23, 3:09:20 PM SerialTransport.writeBytes() adding 1 bytes to the stream.
+9/30/23, 3:09:20 PM SerialTransport.writeBytes() adding 1 bytes to the stream.
+9/30/23, 3:09:20 PM SerialTransport.writeBytes() adding 1 bytes to the stream.
+9/30/23, 3:09:20 PM SerialTransport.writeBytes() adding 1 bytes to the stream.
+9/30/23, 3:09:20 PM SerialTransport.writeBytes() adding 1 bytes to the stream.
+9/30/23, 3:09:20 PM SerialTransport.writeBytes() adding 1 bytes to the stream.
+9/30/23, 3:09:20 PM SerialTransport.writeBytes() adding 1 bytes to the stream.
+9/30/23, 3:09:20 PM SerialTransport.writeBytes() adding 1 bytes to the stream.
+9/30/23, 3:09:20 PM SerialTransport.writeBytes() adding 1 bytes to the stream.
+9/30/23, 3:09:20 PM SerialTransport.writeBytes() adding 1 bytes to the stream.
+9/30/23, 3:09:20 PM SerialTransport.writeBytes() adding 1 bytes to the stream.
+9/30/23, 3:09:20 PM SerialTransport.writeBytes() adding 1 bytes to the stream.
+9/30/23, 3:09:20 PM SerialTransport.writeBytes() adding 1 bytes to the stream.
+9/30/23, 3:09:20 PM SerialTransport.writeBytes() adding 1 bytes to the stream.
+9/30/23, 3:09:20 PM SerialTransport.writeBytes() adding 1 bytes to the stream.
+9/30/23, 3:09:20 PM SerialTransport.writeBytes() adding 1 bytes to the stream.
+9/30/23, 3:09:20 PM SerialTransport.writeBytes() adding 1 bytes to the stream.
+9/30/23, 3:09:20 PM SerialTransport.writeBytes() adding 1 bytes to the stream.
+9/30/23, 3:09:20 PM SerialTransport.writeBytes() adding 1 bytes to the stream.
+9/30/23, 3:09:20 PM SerialTransport.writeBytes() adding 1 bytes to the stream.
+9/30/23, 3:09:20 PM SerialTransport.writeBytes() adding 1 bytes to the stream.
+9/30/23, 3:09:20 PM SerialTransport.writeBytes() adding 1 bytes to the stream.
+9/30/23, 3:09:20 PM SerialTransport.writeBytes() adding 1 bytes to the stream.
+9/30/23, 3:09:20 PM SerialTransport.writeBytes() adding 1 bytes to the stream.
+9/30/23, 3:09:20 PM SerialTransport.writeBytes() adding 1 bytes to the stream.
+9/30/23, 3:09:20 PM SerialTransport.writeBytes() adding 1 bytes to the stream.
+9/30/23, 3:09:20 PM SerialTransport.writeBytes() adding 1 bytes to the stream.
+9/30/23, 3:09:20 PM SerialTransport.writeBytes() adding 1 bytes to the stream.
+9/30/23, 3:09:20 PM SerialTransport.writeBytes() adding 1 bytes to the stream.
+9/30/23, 3:09:20 PM SerialTransport.writeBytes() adding 1 bytes to the stream.
+9/30/23, 3:09:20 PM SerialTransport.writeBytes() adding 1 bytes to the stream.
+9/30/23, 3:09:20 PM SerialTransport.writeBytes() adding 1 bytes to the stream.
+9/30/23, 3:09:20 PM SerialTransport.writeBytes() adding 1 bytes to the stream.
+9/30/23, 3:09:20 PM SerialTransport.writeBytes() adding 1 bytes to the stream.
+9/30/23, 3:09:20 PM SerialTransport.writeBytes() adding 1 bytes to the stream.
+9/30/23, 3:09:20 PM SerialTransport.writeBytes() adding 1 bytes to the stream.
+9/30/23, 3:09:20 PM SerialTransport.writeBytes() adding 1 bytes to the stream.
+9/30/23, 3:09:20 PM SerialTransport.writeBytes() adding 1 bytes to the stream.
+9/30/23, 3:09:20 PM SerialTransport.writeBytes() adding 1 bytes to the stream.
+9/30/23, 3:09:20 PM SerialTransport.writeBytes() adding 1 bytes to the stream.
+9/30/23, 3:09:20 PM SerialTransport.writeBytes() adding 1 bytes to the stream.
+9/30/23, 3:09:20 PM SerialTransport.writeBytes() adding 1 bytes to the stream.
+9/30/23, 3:09:20 PM SerialTransport.writeBytes() adding 1 bytes to the stream.
+9/30/23, 3:09:20 PM SerialTransport.writeBytes() adding 1 bytes to the stream.
+9/30/23, 3:09:20 PM SerialTransport.writeBytes() adding 1 bytes to the stream.
+9/30/23, 3:09:20 PM SerialTransport.writeBytes() adding 1 bytes to the stream.
+9/30/23, 3:09:20 PM SerialTransport.writeBytes() adding 1 bytes to the stream.
+9/30/23, 3:09:20 PM SerialTransport.writeBytes() adding 1 bytes to the stream.
+9/30/23, 3:09:20 PM SerialTransport.writeBytes() adding 1 bytes to the stream.
+9/30/23, 3:09:20 PM SerialTransport.writeBytes() adding 1 bytes to the stream.
+9/30/23, 3:09:20 PM SerialTransport.writeBytes() adding 1 bytes to the stream.
+9/30/23, 3:09:20 PM SerialTransport.writeBytes() adding 1 bytes to the stream.
+9/30/23, 3:09:20 PM SerialTransport.writeBytes() adding 1 bytes to the stream.
+9/30/23, 3:09:20 PM SerialTransport.writeBytes() adding 1 bytes to the stream.
+9/30/23, 3:09:20 PM SerialTransport.writeBytes() adding 1 bytes to the stream.
+9/30/23, 3:09:20 PM SerialTransport.writeBytes() adding 1 bytes to the stream.
+9/30/23, 3:09:20 PM SerialTransport.pushBuffer() entry, pushing 184 bytes.
+9/30/23, 3:09:20 PM SerialTransport.pushBuffer() pushing data:
+C1 00 04 D3 16 00 00 44 05 09 F3 FE 11 FB 03 07 C7 2F F7 F4 E6 23 F7 22 F9 1E F2 0D 01 E9 E8 1D 
+15 F3 FB F8 0B 02 0B E8 05 03 10 FC 02 FD BE 47 F8 F7 F9 06 13 F4 03 F8 F8 E5 03 10 FC 22 FD BE 
+49 B8 44 BC 3F EF 08 05 0A F8 08 E9 B1 20 00 6E 14 03 10 FC 02 FD DE 49 B8 44 BC 3F C1 16 0F F8 
+C2 34 03 10 FC 02 FD DE 49 B8 44 BC 3F C1 22 FF BE 34 03 10 FC 02 FD 04 FC 04 DA 49 B8 44 BC 3F 
+C1 16 0F F8 C2 49 EE 0E F7 0D EF E8 49 B8 44 BC 3F C1 16 0F F8 C2 49 13 09 02 01 EC 0B C2 42 FF 
+9E 49 13 09 02 01 EC 0B C6 FC 42 FF 9E F3 00 00 00 00 00 00 00 00 C1 6C 
+9/30/23, 3:09:20 PM SerialTransport.pushBuffer() exit.
+9/30/23, 3:09:20 PM CommsThread.sendPacketWide() calculated CRC: 27841
+9/30/23, 3:09:20 PM CommsThread.pullEnvelopeWide() entry.
+9/30/23, 3:09:20 PM Waiting for byteslo...
+9/30/23, 3:09:20 PM  received byteslo: 03
+9/30/23, 3:09:20 PM Waiting for byteshi...
+9/30/23, 3:09:20 PM  received byteshi: 00
+9/30/23, 3:09:20 PM Waiting for command...
+9/30/23, 3:09:20 PM  received envelope command: CB
+9/30/23, 3:09:20 PM Waiting for check byte...
+9/30/23, 3:09:20 PM  received checkbyte: 09
+9/30/23, 3:09:20 PM  calculated checkbyte: 09
+9/30/23, 3:09:20 PM CommsThread.pullEnvelopeWide() exit.
+9/30/23, 3:09:20 PM CommsThread.pullPayloadWide() entry.
+9/30/23, 3:09:20 PM CommsThread.pullPayloadWide() payload byte [0]: 06
+9/30/23, 3:09:20 PM CommsThread.pullPayloadWide() payload byte [1]: 02
+9/30/23, 3:09:20 PM CommsThread.pullPayloadWide() payload byte [2]: 00
+9/30/23, 3:09:20 PM CommsThread.pullPayloadWide() received   checkbyte: 04
+9/30/23, 3:09:20 PM CommsThread.pullPayloadWide() calculated checkbyte: 04
+9/30/23, 3:09:20 PM CommsThread.pullPayloadWide() checkbyte on payload matched.
+9/30/23, 3:09:20 PM CommsThread.sendPacketWide() Ack received; next block should be 2.
+9/30/23, 3:09:20 PM CommsThread.sendPacketWide() ACK from client: 06
+9/30/23, 3:09:20 PM CommsThread.sendPacketWide() exit, rc = true
+9/30/23, 3:09:20 PM Gui.getWorkingDirectory(): C:\Users\David\git\adtpro-tlc\build\ADTPro-v.r.m\disks\
+9/30/23, 3:09:20 PM CommsThread.dispatchCommand() exit.
+9/30/23, 3:09:20 PM CommsThread.commandLoop() Waiting for command from Apple.
+9/30/23, 3:09:24 PM Gui.actionPerformed() entry, responding to Activate Trace; previous button is Serial

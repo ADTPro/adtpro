@@ -1,6 +1,6 @@
 /*
  * ADTPro - Apple Disk Transfer ProDOS
- * Copyright (C) 2006 - 2016 by David Schmidt
+ * Copyright (C) 2006 - 2023 by David Schmidt
  * 1110325+david-schmidt@users.noreply.github.com
  *
  * This program is free software; you can redistribute it and/or modify it 
@@ -33,13 +33,13 @@ import java.io.FilenameFilter;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.util.Arrays;
-import java.util.Properties;
 
 import javax.swing.*;
 
 import org.adtpro.resources.Messages;
 import org.adtpro.transport.ATransport;
 import org.adtpro.transport.AudioTransport;
+import org.adtpro.transport.AudJoyTransport;
 import org.adtpro.transport.SerialTransport;
 import org.adtpro.transport.SerialIPTransport;
 import org.adtpro.transport.UDPTransport;
@@ -325,30 +325,60 @@ public final class Gui extends JFrame implements ActionListener
 			{
 				_audioButton.doClick();
 			}
-			else if ((arg0.equalsIgnoreCase(Messages.getString("Gui.SerialIPButton"))) || (arg0.equalsIgnoreCase("localhost")))
-			{
-				Log.println(false, "Gui constructor starting the Serial-IP client.");
-				try
-				{
-					boolean success = startComms(new SerialIPTransport(_properties.getProperty("SerialIPHost", "localhost"), _properties.getProperty("SerialIPPort", "1977")));
-					if (success)
-					{
-						String msg = Messages.getString("Gui.ServingSerialIPTitle");
-						msg = StringUtilities.replaceSubstring(msg, "%1", _properties.getProperty("SerialIPPort", "1977"));
-						msg = StringUtilities.replaceSubstring(msg, "%2", _properties.getProperty("SerialIPHost", "localhost"));
-						setTitle(msg);
-						_properties.setProperty("SerialIPPort", _properties.getProperty("SerialIPPort", "1977"));
-						_properties.setProperty("SerialIPHost", _properties.getProperty("SerialIPHost", "localhost"));
-						Log.println(false, "Gui constructor started Serial-IP client.");
-					}
-				}
-				catch (Exception e1)
-				{
-					Log.printStackTrace(e1);
-					setTitle(Messages.getString("Gui.Title") + " " + Messages.getString("Version.Number")); //$NON-NLS-1$ //$NON-NLS-2$
-					Log.println(false, "Gui constructor can't start the localhost client.");
-				}
-			}
+      else if ((arg0.equalsIgnoreCase(Messages.getString("Gui.SerialIPButton"))) || (arg0.equalsIgnoreCase("localhost")))
+      {
+        Log.println(false, "Gui constructor starting the Serial-IP client.");
+        try
+        {
+          boolean success = startComms(new SerialIPTransport(_properties.getProperty("SerialIPHost", "localhost"), _properties.getProperty("SerialIPPort", "1977")));
+          if (success)
+          {
+            String msg = Messages.getString("Gui.ServingSerialIPTitle");
+            msg = StringUtilities.replaceSubstring(msg, "%1", _properties.getProperty("SerialIPPort", "1977"));
+            msg = StringUtilities.replaceSubstring(msg, "%2", _properties.getProperty("SerialIPHost", "localhost"));
+            setTitle(msg);
+            _properties.setProperty("SerialIPPort", _properties.getProperty("SerialIPPort", "1977"));
+            _properties.setProperty("SerialIPHost", _properties.getProperty("SerialIPHost", "localhost"));
+            Log.println(false, "Gui constructor started Serial-IP client.");
+          }
+        }
+        catch (Exception e1)
+        {
+          Log.printStackTrace(e1);
+          setTitle(Messages.getString("Gui.Title") + " " + Messages.getString("Version.Number")); //$NON-NLS-1$ //$NON-NLS-2$
+          Log.println(false, "Gui constructor can't start the localhost client.");
+        }
+      }
+      else if ((arg0.equalsIgnoreCase(Messages.getString("Gui.AudJoyButton"))) || (arg0.equalsIgnoreCase("audjoy")))
+      {
+        Log.println(false, "Gui constructor starting the Audio/Joystick client.");
+        try
+        {
+          if (_isSerialAvailable)
+          {
+            if (startComms(null)) // Can we successfully disconnect if something was already running?
+            {
+              if ((_properties.getProperty("CommPortSpeed") == null) || (_properties.getProperty("CommPort") == null))
+              {
+                serialConfigGui(0);
+              }
+            }
+          }
+          boolean success = startComms(new AudJoyTransport(this, _properties.getProperty("CommPort"), _properties.getProperty("CommPortBootstrapSpeed"), _properties.getProperty("HardwareHandshaking", "false").compareTo("true") == 0, _properties));
+          if (success)
+          {
+            String msg = Messages.getString("Gui.ServingAudJoyTitle");
+            setTitle(msg);
+            Log.println(false, "Gui constructor started Audio/Joystick client.");
+          }
+        }
+        catch (Exception e1)
+        {
+          Log.printStackTrace(e1);
+          setTitle(Messages.getString("Gui.Title") + " " + Messages.getString("Version.Number")); //$NON-NLS-1$ //$NON-NLS-2$
+          Log.println(false, "Gui constructor can't start the localhost client.");
+        }
+      }
 		}
 		Log.println(false, "Gui Constructor exit.");
 	}

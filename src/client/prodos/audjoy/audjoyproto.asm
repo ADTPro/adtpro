@@ -25,7 +25,6 @@ TIMEY   = $8a
 DONE    = $1a
 NXTA1   = $FCBA
 LASTIN  = $2f
-TAPEIN  = $C060
 TAPEOUT = $C030 ; Co-opting the speaker output
 
 
@@ -97,17 +96,19 @@ DIRREQUEST:
 
 
 ;---------------------------------------------------------
-; DIRREPLY - Reply to current directory contents
+; DIRREPLY - Incoming reply to current directory contents
 ; NIBPCNT contains the page number that was requested - which is 1k-worth of transmission (4 256byte pages, 2 blocks, 2BAO)
 ; Returns carry set on CRC failure (should retry - nak sent)
 ; Returns TMOT > 0 on timeout (should not retry)
 ;---------------------------------------------------------
 DIRREPLY:
+
     ldy #$00
     sty TMOT    ; Clear timeout processing
     sty PAGECNT
     LDA_BIGBUF_ADDR_LO  ; Connect the block pointer to the
-    sta BLKPTR      ; Big Buffer(TM), 1k * NIBPCNT
+    sta Buffer      ; Big Buffer(TM), 1k * NIBPCNT
+    sta BLKPTR
     lda #$04
     sta PAGECNT+1
     LDA_BIGBUF_ADDR_HI
@@ -116,6 +117,7 @@ DIRREPLY:
     adc NIBPCNT
     adc NIBPCNT
     adc NIBPCNT
+    sta Buffer+1
     sta BLKPTR+1
 
     jsr RECVWIDE
@@ -137,16 +139,16 @@ DIRREPLY:
     ldx #CHR_ACK
     jsr PUTACKBLK
     LDA_BIGBUF_ADDR_LO  ; Re-connect the block pointer to the
-    sta BLKPTR      ; Big Buffer(TM), 1k * NIBPCNT again
+    sta Buffer      ; Big Buffer(TM), 1k * NIBPCNT again
     LDA_BIGBUF_ADDR_HI
     clc
     adc NIBPCNT
     adc NIBPCNT
     adc NIBPCNT
     adc NIBPCNT
-;   sta Buffer+1
+    sta Buffer+1
     sta BLKPTR+1
-    clc     ; Indicate success
+    clc         ; Indicate success
     rts
 
 @DirRetry:
@@ -177,18 +179,18 @@ QUERYFNREQUEST:
 ; QUERYFNREPLY -
 ;---------------------------------------------------------
 QUERYFNREPLY:
-    ldax #AUD_BUFFER
-    stax BLKPTR
-    stax A1L
-    stx A2H
-    jsr aud_receive
-    lda AUD_BUFFER  ; File size lsb
+    jsr GETC    ; Get response from host: file size
+    bcs @QFNTimeout
     sta HOSTBLX
-    lda AUD_BUFFER+1    ; File size msb
+    jsr GETC
+    bcs @QFNTimeout
     sta HOSTBLX+1
-    lda AUD_BUFFER+2    ; Return code/message
-    sta QUERYRC ; Just some temp storage
+    jsr GETC    ; Get response from host: return code/message
+    bcs @QFNTimeout
     rts
+@QFNTimeout:
+    jsr HOSTTIMEOUT
+    jmp BABORT
 
 
 ;---------------------------------------------------------
@@ -467,93 +469,84 @@ SENDBLKS:
 ; BLKPTR - in - points at buffer to save to
 ; PAGECNT is used as 2-byte value of length to ultimately receive
 ; CRC is computed and stored
+; Returns carry set on error (timeout or garbage received)
 ;---------------------------------------------------------
+RWERR:
+    sec
+    rts
+
 RECVWIDE:
-    ldy #$00
-    sty TMOT    ; Clear timeout processing
-    ldax #AUD_BUFFER
-    stax A1L
-    stax UTILPTR
-
-    jsr aud_receive
-
-    ldax #AUD_BUFFER
-    stax A1L
-    ldx #$00
-    lda (A1L,X)
-    cmp #CHR_A  ; Get protocol - must be an 'A'
-    bne RWERR
-    jsr BumpA1
-    lda (A1L,X) ; Get payload length, LSB
-    sta PAGECNT
-    sta XFERLEN
-    jsr BumpA1
-    lda (A1L,X) ; Get payload length, MSB
-    sta PAGECNT+1
-    sta XFERLEN+1
-    jsr BumpA1
-    lda (A1L,X) ; Get protocol - must be an 'S'
-    cmp #CHR_S
-    beq @RWOK
-    cmp #CHR_X  ; Told to go home?
-    bne RWERR   ; No - generic error
-    jmp ABORT   ; Yes - go home!
-@RWOK:  jsr BumpA1
-    lda (A1L,X) ; Get protocol - check byte (discarded for the moment)
-    jsr BumpA1  ; Block number, LSB
-    lda (A1L,X)
-    sta HOSTBLX
-    jsr BumpA1  ; Block number, MSB
-    lda (A1L,X)
-    sta HOSTBLX+1
-    lda BLKPTR
+    lda BLKPTR  ; Hang on to the pointer to the beginning of this chunk
     sta BUFPTR
     lda BLKPTR+1
     sta BUFPTR+1
-    ldy #$00
-
+    ldy #00     ; Start at beginning of buffer
+    jsr GETC    ; Get protocol - must be an 'A'
+    bcs RWERR   ; Timeout - bail
+    cmp #CHR_A  ;
+    bne RWERR
+    jsr GETC    ; Get payload length, LSB
+    bcs RWERR   ; Timeout - bail
+    sta PAGECNT ; Store length
+    sta XFERLEN
+    jsr GETC    ; Get payload length, MSB
+    bcs RWERR   ; Timeout - bail
+    sta PAGECNT+1   ; Store length
+    sta XFERLEN+1
+    jsr GETC    ; Get protocol - must be an 'S'
+    bcs RWERR   ; Timeout - bail
+    cmp #CHR_X  ; Told to go home?
+    beq RWABORT ; Do it!
+    cmp #CHR_S  ; Otherwise - need an 'S'
+    bne RWERR
+    jsr GETC    ; Get protocol - check byte (discarded for the moment)
+    bcs RWERR   ; Timeout - bail
+    jsr GETC    ; Get block number, LSB
+    bcs RWERR   ; Timeout - bail
+    sta HOSTBLX
+    jsr GETC    ; Get block number, MSB
+    bcs RWERR   ; Timeout - bail
+    sta HOSTBLX+1
+            ; TODO - probably should save/check the block number is the one we need...
 RW1:
-    jsr BumpA1  ; Increment the pointer to data we're reading
-    lda (A1L,X) ; Get difference
+    jsr GETC    ; Get difference
+    bcs RWERR   ; Timeout - bail
     beq RW2     ; If zero, get new index
     sta (BLKPTR),Y  ; else put char in buffer
-    iny     ; ...and increment index to data we're writing
+    iny     ; ...and increment index
     bne RW1     ; Loop if not at end of buffer
     beq RWNext  ; Branch always
 
 RW2:
-    jsr BumpA1  ; Increment the pointer to data we're reading
-    lda (A1L,X) ; Get new index ...
+    jsr GETC    ; Get new index ...
+    bcs RWERR   ; Timeout - bail
     tay     ; ... in the Y register
     bne RW1     ; Loop if index <> 0
             ; ...else check for more or return
 
 RWNext: dec PAGECNT+1
-    beq RWDone  ; Done?
+    beq @Done   ; Done?
     inc BLKPTR+1    ; Get ready for another page
     lda BLKPTR+1
     cmp #$c0
     beq RWERR   ; Protect ourselves from buffer overrun
     jmp RW1
-RWERR:
-    sec
-    rts
-RWDone:
-    jsr BumpA1  ; Increment the pointer to data we're reading
-    lda (A1L,X) ; Done - get CRC
+@Done:  jsr GETC    ; Done - get CRC
     sta PCCRC
-    jsr BumpA1  ; Increment the pointer to data we're reading
-    lda (A1L,X) ; Done - get CRC
+    jsr GETC
     sta PCCRC+1
     lda XFERLEN+1
     sta PAGECNT+1
-    lda BUFPTR
+    lda BUFPTR  ; Restore the pointer to the beginning of this chunk
     sta BLKPTR
     lda BUFPTR+1
     sta BLKPTR+1
     jsr UNDIFFWide
     clc
     rts
+
+RWABORT:
+    jmp BABORT
 
 
 ;---------------------------------------------------------
@@ -670,17 +663,6 @@ PUTC:
     rts
 
 ;---------------------------------------------------------
-; GETC - Receive a packet and get the first byte from it
-;---------------------------------------------------------
-GETC:
-    ldax #AUD_BUFFER
-    stax A1L
-    jsr aud_receive
-    lda AUD_BUFFER  ; Send back whatever we received
-    rts
-
-
-;---------------------------------------------------------
 ; aud_send - Send a packet out the cassette port
 ; Note - this timing-sensitive routine can't cross a page boundary.
 ;---------------------------------------------------------
@@ -761,80 +743,6 @@ BUFBYTE:
     rts
 
 
-;---------------------------------------------------------
-; aud_receive - Receive a packet from the cassette port
-; Note - this timing-sensitive routine can't cross a page boundary.
-;---------------------------------------------------------
-aud_receive:
-    lda #$01
-    sta DONE    ; Done indicator
-    jsr RD2BIT_NO_TIMEOUT   ; Find tapein edge
-    lda #$02    ; Training duration
-    jsr HEADR
-    jsr RD2BIT_NO_TIMEOUT   ; Find tapein edge
-RD2:
-    ldy #$10    ; Look for sync bit
-    jsr RDBIT_NO_TIMEOUT    ;   (Short zero)
-    bcs RD2     ;   Loop until found
-    jsr RDBIT_NO_TIMEOUT    ; Skip second sync half cycle
-    ldy #$1a ; 21   ; Index for 0/1 test
-RD3:    jsr RDBYTE  ; Read a byte
-    sta (A1L,X) ; Store at (A1)
-    jsr BumpA1  ; Bump A1
-    ldy #$17 ; 1f   ; Compensate 0/1 index
-    lda DONE
-    bne RD3     ; Loop until done
-    rts
-
-RDBYTE: ldx #$08    ; 8 bits to read
-RDBYT2: pha     ; Read two transitions
-    lda #$ff    ; Init timeout counter
-    sta TIMEY   ;   max timeout
-    lda DONE
-    beq RDBYTDONE
-    jsr RD2BIT  ; Find edge
-    pla
-    rol a       ; Next bit
-    ldy #$19 ;21    ; Count for samples
-    dex
-    bne RDBYT2
-    rts
-RDBYTDONE:
-    pla
-    lda #$00
-    ldx #$00
-    rts
-RD2BIT: jsr RDBIT
-RDBIT:
-    dec TIMEY
-    beq TAPTMOT
-    lda $C000
-    cmp #CHR_ESC    ; Escape = abort
-    beq TAPABORT
-    dey     ; Decrement Y until
-    lda TAPEIN  ;   tape transition
-    eor LASTIN
-    bpl RDBIT
-    eor LASTIN
-    sta LASTIN
-    cpy #$80    ; Set carry on Y-register
-    rts
-
-RD2BIT_NO_TIMEOUT:
-    jsr RDBIT_NO_TIMEOUT
-RDBIT_NO_TIMEOUT:
-    lda $C000
-    cmp #CHR_ESC    ; Escape = abort
-    beq TAPABORT
-    dey     ; Decrement Y until
-    lda TAPEIN  ;   tape transition
-    eor LASTIN
-    bpl RDBIT_NO_TIMEOUT
-    eor LASTIN
-    sta LASTIN
-    cpy #$80    ; Set carry on Y-register
-    rts
-
 TAPTMOT:
     lda #$01
     sta TIMEY   ; In case we come around once more, we'll still get decremented to zero
@@ -845,7 +753,6 @@ TAPTMOT:
 
 TAPABORT:
     jmp ABORT
-
 
 ;---------------------------------------------------------
 ; Variables

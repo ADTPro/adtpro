@@ -29,26 +29,25 @@
 ;  * Put up a little prompt to show we're alive
 ;  * Poll the joystick port for data
 ;  * Once we see a "T" on the port, pull two more bytes (MSB, LSB) of length
-;    and start reading that many bytes into $0800
+;    and start reading that many bytes starting at $0800
 ;  * After reading, jump to $0800
 ;
 
 ; This would need to be typed into the monitor (boot the TLC, go to BASIC,
 ; CALL -151, type it in) and then run (300G).  If it bails out (back) to the
-; monitor, it's becaus of noise on the line and a framing error occurred.
+; monitor, it's because of noise on the line and a framing error occurred.
 ; Restarting with 300G and re-sending will effectively retry.  If it gets stuck
 ; (i.e. an undetected error slips in... there is no other error checking) then
-; unplug the cable and hit ctrl-reset.  If the cable is still plugged in, it
-; will have the effect of holding the open-apple key down and you'll reboot 
-; (rather than just break) if you do a ctrl-reset.
+; unplug the cable and hit ctrl-reset and retry.  If the cable is still plugged
+; in, it will have the effect of holding the open-apple key down and you'll
+; reboot (rather than just break) if you do a ctrl-reset.
 
-          .org $300
+.org $300
 
-          PB0 = $C061   ; Paddle 0 PushButton: HIGH/ON if > 127, LOW/OFF if < 128.
+PB0 = $C061   ; Paddle 0 PushButton: HIGH/ON if > 127, LOW/OFF if < 128.
 
 ; Zero page variables (unused by DOS, BASIC and Monitor)
-          PAGES = $06
-          BUF_P = $08
+BUF_P = $08
 
 Entry:
 ; Set up our pointers
@@ -78,7 +77,7 @@ Poll:
 
 Read:
           jsr pb0_recv  ; Pull a byte
-          bcc Entry+1   ; We know we have a framing error so branch to a $00 somewhere
+          bcc Entry+1   ; We know we have a framing error so branch to a BRK somewhere
           sta (BUF_P),y ; Save it
           sta $0427     ; Print it in the status area
           iny
@@ -90,8 +89,7 @@ Read:
           lda size+1    ; LSB is the same; is MSB zero?
           bne Read      ; No, swing around for more
 
-; Call bootstrap entry point
-          rts ; for now
+; We read all the bytes; call the payload entry point
           jmp $0800     ; Payload entry point
 
 pb0_recv:
@@ -112,7 +110,7 @@ poll_for_0:
           lda PB0
           bmi poll_for_0 ; if negative, branch to poll_for_0
 
-; State just became 0 (start bit)
+; State just became 0 (start bit) sometime in the last 4 or so clock cycles
 
 ; Wait 1.5 bit times (104.2 + 52.1 = 156.3us at 9600 bps) to get into the middle of the first bit
 ; Approximately 152.8 ($99) CPU cycles
@@ -148,7 +146,7 @@ push_bit: ; We now have a bit in the carry
           jmp pull_byte ; 3 Loop around for another bit - we actually burn $4A cycles
 ;                       $67
 byte_complete:
-          ; Carry now holds stop bit (clear/0 indicates framing error, because we end with set/1)
+          ; Carry now holds stop bit (clear/0 indicates framing error, because we should end with set/1)
           lda ring      ; Exit with the assembled byte in A
           rts
 

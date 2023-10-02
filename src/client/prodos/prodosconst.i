@@ -1,6 +1,6 @@
 ;
 ; ADTPro - Apple Disk Transfer ProDOS
-; Copyright (C) 2008 - 2016 by David Schmidt
+; Copyright (C) 2008 - 2023 by David Schmidt
 ; 1110325+david-schmidt@users.noreply.github.com
 ;
 ; This program is free software; you can redistribute it and/or modify it 
@@ -118,6 +118,7 @@ PRDEC	= $ED24	; Print pointer as decimal
 DELAY	= $FCA8 ; Monitor delay: # cycles = (5*A*A + 27*A + 26)/2
 MEMMOVE	= $FE2C	; Perform memory move: A1-A2 TO A4
 VERSION	= $FBB3 ; Version byte 
+PB0     = $C061 ; Paddle 0 PushButton: HIGH/ON if > 127, LOW/OFF if < 128.
 ROM		= $C082 ; Enables rom
 
 ;---------------------------------------------------------
@@ -133,5 +134,3 @@ LAST     = $BF30		; Last device accessed by ProDOS
 CLRLN    = $FC9C		; Clear Line routine
 PRBYTE   = $FDDA		; Print Byte routine (HEX value)
 COUT     = $FDED		; Character output routine (print to screen)
-
-CASSLOT		= $08	; Selection number for cassette transport

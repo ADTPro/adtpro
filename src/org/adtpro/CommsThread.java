@@ -360,7 +360,8 @@ public class CommsThread extends Thread
 			break;
 		case (byte) 216: // "X": Go Home
 			Log.println(false, "CommsThread.dispatchCommand() Received Home command.  How charming."); //$NON-NLS-1$
-			if (_transport.transportType() == ATransport.TRANSPORT_TYPE_AUDIO)
+			if ((_transport.transportType() == ATransport.TRANSPORT_TYPE_AUDIO) ||
+			    (_transport.transportType() == ATransport.TRANSPORT_TYPE_AUDJOY))
 			{
 				_parent.setSecondaryText("Heard audio signal #"+_lastAudioPacket++); //$NON-NLS-1$
 			}
@@ -1027,7 +1028,7 @@ public class CommsThread extends Thread
 		byte[] payload = null;
 		byte checkByte = 0x00, oneByte;
 		int length = envelope[0] + (envelope[1] * 256);
-		Log.println(false, "CommsThread.pullPayloadWide() entry.");
+		Log.println(false, "CommsThread.pullPayloadWide() entry, expecting "+length+" bytes.");
 		if (length > 0)
 		{
 			payload = new byte[length];
@@ -2147,7 +2148,8 @@ public class CommsThread extends Thread
 					// What's that called - progressive backoff/fallback?
 					int pauseMS = 250;
 					// Slow down a little faster for Audio...
-					if (_transport.transportType() == ATransport.TRANSPORT_TYPE_AUDIO)
+					if ((_transport.transportType() == ATransport.TRANSPORT_TYPE_AUDIO) ||
+					    (_transport.transportType() == ATransport.TRANSPORT_TYPE_AUDJOY))
 						pauseMS = 2000;
 					try
 					{
@@ -2285,7 +2287,8 @@ public class CommsThread extends Thread
 				// What's that called - progressive backoff/fallback?
 				int pauseMS = 250;
 				// Slow down a little faster for Audio...
-				if (_transport.transportType() == ATransport.TRANSPORT_TYPE_AUDIO)
+				if ((_transport.transportType() == ATransport.TRANSPORT_TYPE_AUDIO) ||
+            (_transport.transportType() == ATransport.TRANSPORT_TYPE_AUDJOY))
 					pauseMS = 2000;
 				try
 				{
@@ -3218,7 +3221,7 @@ public class CommsThread extends Thread
 			rc = 0;
 			prev = 0;
 			restarting = false;
-			if ((preambleStyle == 2 || ((preambleStyle == 1) && (_client01xCompatibleProtocol == false)) || (_transport.transportType() == ATransport.TRANSPORT_TYPE_UDP) || (_transport.transportType() == ATransport.TRANSPORT_TYPE_AUDIO)))
+			if ((preambleStyle == 2 || ((preambleStyle == 1) && (_client01xCompatibleProtocol == false)) || (_transport.transportType() == ATransport.TRANSPORT_TYPE_UDP) || (_transport.transportType() == ATransport.TRANSPORT_TYPE_AUDIO) || (_transport.transportType() == ATransport.TRANSPORT_TYPE_AUDJOY)))
 			/*
 			 * Remember, UDP and Audio originally had a preamble from the beginning.
 			 */
@@ -3394,7 +3397,7 @@ public class CommsThread extends Thread
 				// What's that called - progressive backoff/fallback?
 				int pauseMS = 500;
 				// Slow down a little faster for Audio...
-				if (_transport.transportType() == ATransport.TRANSPORT_TYPE_AUDIO)
+				if ((_transport.transportType() == ATransport.TRANSPORT_TYPE_AUDIO) || (_transport.transportType() == ATransport.TRANSPORT_TYPE_AUDJOY))
 					pauseMS = 2000;
 				try
 				{
@@ -3533,7 +3536,7 @@ public class CommsThread extends Thread
 				catch (TransportTimeoutException tte)
 				{
 					bytesReceived = 0;
-					Log.println(true, "CommsThread.receivePacket() TransportTimeoutException! (location 2)");
+					Log.println(true, "CommsThread.receivePacket() TransportTimeoutException! (location 3)");
 					break;
 				}
 			}
@@ -3552,7 +3555,7 @@ public class CommsThread extends Thread
 				// What's that called - progressive backoff/fallback?
 				int pauseMS = 500;
 				// Slow down a little faster for Audio...
-				if (_transport.transportType() == ATransport.TRANSPORT_TYPE_AUDIO)
+				if ((_transport.transportType() == ATransport.TRANSPORT_TYPE_AUDIO) || (_transport.transportType() == ATransport.TRANSPORT_TYPE_AUDJOY))
 					pauseMS = 2000;
 				try
 				{
@@ -3590,7 +3593,7 @@ public class CommsThread extends Thread
 	{
 		Log.println(false, "CommsThread.waitForData(two bytes) entry, expecting " + expectedByte1 + " or " + expectedByte2);
 		byte currentByte;
-		if (_transport.transportType() == ATransport.TRANSPORT_TYPE_AUDIO)
+		if ((_transport.transportType() == ATransport.TRANSPORT_TYPE_AUDIO) || (_transport.transportType() == ATransport.TRANSPORT_TYPE_AUDJOY))
 		{
 			int retryCount = 0;
 			// Skip over leading bytes when they don't match what we expect.
@@ -3612,7 +3615,7 @@ public class CommsThread extends Thread
 	{
 		Log.println(false, "CommsThread.waitForData(one byte) entry, expecting " + expectedByte);
 		byte currentByte;
-		if (_transport.transportType() == ATransport.TRANSPORT_TYPE_AUDIO)
+		if ((_transport.transportType() == ATransport.TRANSPORT_TYPE_AUDIO) || (_transport.transportType() == ATransport.TRANSPORT_TYPE_AUDJOY))
 		{
 			// Skip over leading bytes when they don't match what we expect.
 			// Important for audio - which seems to be picking up random leader junk.
@@ -3634,8 +3637,7 @@ public class CommsThread extends Thread
 		/*
 		 * FIXME: This needs to figure out a better way to set timeouts - not once per byte read, but only when different timing transitions are needed.
 		 */
-		// Log.println(false, "CommsThread.waitForData() entry, timeout: " +
-		// timeout);
+		Log.println(false, "CommsThread.waitForData() entry, timeout: " + timeout);
 		byte oneByte = 0;
 		boolean readYet = false;
 		while ((readYet == false) && (_shouldRun == true))
@@ -3654,7 +3656,7 @@ public class CommsThread extends Thread
 			}
 			catch (TransportTimeoutException tte)
 			{
-				// Log.println(false, "CommsThread.waitForData.TransportTimeoutException! (location 0)");
+				Log.println(false, "CommsThread.waitForData.TransportTimeoutException! (location 0)");
 				throw tte;
 				// _shouldRun = false;
 			}
@@ -3663,6 +3665,7 @@ public class CommsThread extends Thread
 				Log.printStackTrace(e);
 			}
 		}
+		Log.println(false, "CommsThread.waitForData() exit, returning byte: 0x" + Integer.toHexString(oneByte & 0xff));
 		return oneByte;
 	}
 
@@ -3908,9 +3911,9 @@ public class CommsThread extends Thread
 			else if (resource.equals(Messages.getString("Gui.BS.ADTProAudJoy")))
 			{
 				resourceName = "org/adtpro/resources/adtproaudjoy.raw";
-				slowFirstLines = 0;
-			slowLastLines = 0;
-			isBinary = true;
+        slowFirstLines = 0;
+				slowLastLines = 0;
+			  isBinary = true;
 			}
 			else if (resource.equals(Messages.getString("Gui.BS.ADTProEthernet")))
 			{
@@ -4093,6 +4096,7 @@ public class CommsThread extends Thread
 							{
 								_transport.writeByte(0x42); // Send a "B" to trigger the start
 							}
+							// Everyone then sends their expected length
 							_transport.writeByte(UnsignedByte.loByte(length)); // Send buffer LSB
 							_transport.writeByte(UnsignedByte.hiByte(length)); // Send buffer MSB
 						}

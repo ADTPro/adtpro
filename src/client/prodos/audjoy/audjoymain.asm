@@ -33,6 +33,7 @@
 	.include "prodos/serial/sermessages.asm"	; Messages
 	.include "prodos/conio.asm"		; Console I/O
 	.include "print.asm"
+	.include "prodos/audjoy/joybanger.asm"
 	.include "prodos/audjoy/audjoyproto.asm"
 	.include "prodos/online.asm"
 	.include "prodos/rw.asm"

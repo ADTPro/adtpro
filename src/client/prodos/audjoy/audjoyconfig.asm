@@ -285,10 +285,10 @@ CONFIG_FILE_NAME:	.byte 13
 PARMS:
 COMMSLOT:		; Need a reference; not really used in audio/joystick version
 PBAO:	.byte 3		; Blocks at once (4)
-PSOUND:	.byte 0		; Sounds? (YES)
+PSOUND:	.byte 1		; Sounds? (NO)
 PSAVE:	.byte 1		; Save parms? (NO)
 
-DEFAULT:	.byte 3,0,1	; Default parm indices
+DEFAULT:	.byte 3,1,1	; Default parm indices
 PARMSEND:
 PNIBBL:	.byte 1			; Enable nibbles (NO - and not exposed to the user or saved)
 BAOTbl:		.byte 1,2,3,4,5
