@@ -22,7 +22,6 @@
 	.include "prodos/prodosmacros.i"		; OS macros
 	.include "prodos/prodosconst.i"			; OS equates, characters, etc.
 	.include "../../build/lib/ip65/inc/common.inc"
-	.include "diskii.asm"					; Contains positionally dependent format code
 
 ;---------------------------------------------------------
 ; Pull in all the rest of the code
@@ -36,21 +35,24 @@
 	.include "prodos/audjoy/joybanger.asm"
 	.include "prodos/audjoy/audjoyproto.asm"
 	.include "prodos/online.asm"
-	.include "prodos/rw.asm"
-	.include "sr.asm"
+	.include "prodos/audjoy/rw.asm"
+	.include "prodos/audjoy/sr.asm"
 	.include "prodos/audjoy/audjoy.asm"
 	.include "crc.asm"
 	.include "pickvol.asm"
 	.include "input.asm"
 	.include "prodos/audjoy/audjoyconfig.asm"
 	.include "hostfns.asm"
-	.include "prodos/format.asm"
+	.include "prodos/audjoy/format.asm"
 	.include "bsave.asm"
 
 ; Stubs from nibble-related stuff
 ReceiveNib:
 sendnib:
 	rts
+
+motoroff:
+    rts
 
 PEND:
 	.segment "DATA"

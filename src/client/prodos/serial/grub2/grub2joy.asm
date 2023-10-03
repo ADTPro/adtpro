@@ -50,6 +50,7 @@ PB0 = $C061   ; Paddle 0 PushButton: HIGH/ON if > 127, LOW/OFF if < 128.
 BUF_P = $08
 
 Entry:
+          jsr $FC58     ; HOME
 ; Set up our pointers
           lda #$00
           tay           ; Clean out Y reg
