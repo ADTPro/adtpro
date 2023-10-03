@@ -1,7 +1,7 @@
 s@v\.r\.m@2.1.0@ig;
 s@\<a href="http://maven.apache.org/" title="Built by Maven" class="poweredBy"\>@<a href="https://github.com/ADTPro/adtpro"><img src="https://assets-cdn.github.com/images/modules/logos_page/GitHub-Logo.png" /></a>@ig;
 s@\<img class="builtBy" alt="Built by Maven" src="\./images/logos/maven-feather.png" \/\>@@ig;
-s@\</body\>@\<script src\=\"http\:\/\/www.google-analytics.com\/urchin.js\" type\=\"text\/javascript\"\>\<\/script\>\<script type\=\"text\/javascript\"\>_uacct \= \"UA-697468-1\";urchinTracker\(\);\<\/script\>\<\/body\>@ig;
+s@<head>@\<head\>\<script async src\=\"https\:\/\/www.googletagmanager.com\/gtag\/js\?id\=UA-697468-1\"\>\<\/script\>\<script\>window\.dataLayer \= window\.dataLayer \|\| \[\]\; function gtag\(\)\{dataLayer\.push\(arguments\)\;\}gtag\(\'js\', new Date\(\)\)\; gtag\(\'config\'\, \'UA-697468-1\'\)\;\<\/script\>@ig;
 s@(href="http://www.youtube.com/watch\?v=CMF3PL17kqg)(.*)"@\1\2" target\="_new"@ig;
 s@href="http://dataswamp.net/apple2eserialterm/index.php"@href="http://dataswamp.net/apple2eserialterm/index.php" target\="_new"@ig;
 s@href="http://ressources-apple2.voila.net/adtpro/adtpro.html"@href="http://ressources-apple2.voila.net/adtpro/adtpro.html" target\="_new"@ig;

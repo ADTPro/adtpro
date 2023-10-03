@@ -27,9 +27,9 @@ all
 					common
 				prodos-bootstrap
 				prodos-vsdrive
-					vdrive-image-prep
+					drivers-image-prep
 				prodos-vedrive
-					vdrive-image-prep
+					drivers-image-prep
 			sos
 				sos-serial
 					sos-image-prep
@@ -37,8 +37,8 @@ all
 				sos-ethernet
 					sos-image-prep
 					common
-				sos-vsdrive
-					vdrive-image-prep
+				sos-drivers
+					drivers-image-prep
 				sos-bootstrap
 		server
 			zip
@@ -300,7 +300,7 @@ all
 		<delete file="${projdir}/src/client/STARTUP.SYSTEM" />
 		<delete file="${projdir}/src/client/ADTPRO" />
 	</target>
-	<target name="vdrive-image-prep" description="Start Empty VDrive Disk Image">
+	<target name="drivers-image-prep" description="Start Empty Drivers Disk Image">
 		<!--
 		Start Empty VDrive Disk Image
 		-->
@@ -308,7 +308,7 @@ all
 		<copy file="${builddir}/VDriveBase.dsk" tofile="${builddir}/${distName}/disks/${vdriveDiskName}.DSK" />
 		<appleCommander command="n" imagename="${builddir}/${distName}/disks/${vdriveDiskName}.DSK" volname="${vdriveVolName}"/>
 	</target>
-	<target name="prodos-vsdrive" depends="vdrive-image-prep" description="Builds the Virtual Serial Drive Driver (ProDOS)">
+	<target name="prodos-vsdrive" depends="drivers-image-prep" description="Builds the Virtual Serial Drive Driver (ProDOS)">
 		<appleCommander command="pro800" imagename="${builddir}/${distName}/disks/Virtual.po" volname="${vdriveVolName1}"/>
 		<appleCommander command="pro800" imagename="${builddir}/${distName}/disks/Virtual2.po" volname="${vdriveVolName2}"/>
 		<echo message="Assembling ProDOS virtual serial drive source..."/>
@@ -344,7 +344,7 @@ all
 		<delete file="${projdir}/src/client/VSDRIVE_HIGH" />
 	</target>
 
-	<target name="prodos-vedrive" depends="vdrive-image-prep" description="Builds the Virtual Ethernet Drive Driver (ProDOS)">
+	<target name="prodos-vedrive" depends="drivers-image-prep" description="Builds the Virtual Ethernet Drive Driver (ProDOS)">
 		<appleCommander command="pro800" imagename="${builddir}/${distName}/disks/Virtual.po" volname="${vdriveVolName1}"/>
 		<appleCommander command="pro800" imagename="${builddir}/${distName}/disks/Virtual2.po" volname="${vdriveVolName2}"/>
 		<echo message="Assembling ProDOS virtual ethernet drive source..."/>
@@ -372,7 +372,7 @@ all
 		<appleCommander command="p" input="${builddir}/lib/cc65/loader.system" imagename="${builddir}/${distName}/disks/${vdriveDiskName}.DSK" filename="VEDRIVE.SYSTEM" type="SYS" address="8192"/>
 	</target>
 
-	<target name="prodos-vedrive2" depends="vdrive-image-prep" description="Builds the Uthernet II Virtual Ethernet Drive Driver (ProDOS)">
+	<target name="prodos-vedrive2" depends="drivers-image-prep" description="Builds the Uthernet II Virtual Ethernet Drive Driver (ProDOS)">
 		<appleCommander command="pro800" imagename="${builddir}/${distName}/disks/Virtual.po" volname="${vdriveVolName1}"/>
 		<appleCommander command="pro800" imagename="${builddir}/${distName}/disks/Virtual2.po" volname="${vdriveVolName2}"/>
 		<echo message="Assembling ProDOS virtual Uthernet II drive source..."/>
@@ -442,7 +442,7 @@ all
 	SOS section
 	============================================================================================
 	-->
-	<target name="sos" depends="prepare, sos-serial, sos-ethernet, sos-vsdrive, sos-bootstrap" description="Orchestrate Overall Client Build for SOS" />
+	<target name="sos" depends="prepare, sos-serial, sos-ethernet, sos-drivers, sos-bootstrap" description="Orchestrate Overall Client Build for SOS" />
 	<target name="sos-serial" depends="sos-image-prep, common" description="Build the ADTPro Serial Client (SOS)">
 		<echo message="Assembling sos-serial client..."/>
 		<!--
@@ -521,28 +521,86 @@ all
 		<!-- Note: keep this binary GRUB if you want to write it out to sector zero of a disk image for SOS bootstrap testing. --> 
 		<delete file="${projdir}/src/client/GRUB" />
 	</target>
-	<target name="sos-vsdrive" depends="vdrive-image-prep" description="Copy Virtual Serial Drive Driver (SOS)">
+	<target name="sos-drivers" depends="drivers-image-prep" description="Copy Virtual Serial Drivers (SOS)">
 		<!--
 		Assemble the driver source
 		-->
-		<echo message="Assembling sos-driver..."/>
+		<echo message="Assembling SOS Virtual Serial Drive driver..."/>
 		<exec dir="${projdir}/src/client/sos/serial/drive" executable="${assemblerPath}/ca65" failonerror="true">
 			<arg line=" -l vsdrivesos.lst vsdrive.asm -o vsdrivesos.o" />
+		</exec>
+		<echo message="Assembling SOS Virtual Serial Printer driver..."/>
+		<exec dir="${projdir}/src/client/sos/serial/printer" executable="${assemblerPath}/ca65" failonerror="true">
+			<arg line=" -l vsprintersos.lst vsprinter.asm -o vsprintersos.o" />
 		</exec>
 		<!--
 		Link the driver object code
 		-->
-		<echo message="Linking sos-driver..."/>
+		<echo message="Linking SOS Virtual Serial Drive driver..."/>
 		<exec dir="${projdir}/src/client/sos/serial/drive" executable="${assemblerPath}/ld65" failonerror="true">
-			<arg line=" vsdrivesos.o -o vsdrivesos.o65 -C ${builddir}/Apple3_o65.cfg" />
+			<arg line="vsdrivesos.o -o vsdrivesos.o65 -C ${builddir}/Apple3_o65.cfg" />
 		</exec>
+		<exec executable="${python27Path}/python">
+			<arg value="${builddir}/lib/A3Driverutil/A3Driverutil.py"/>
+			<arg value="bin"/>
+			<arg value="${projdir}/src/client/sos/serial/drive/vsdrivesos.o65"/>
+			<arg value="${builddir}/VSDRIVE.A3DRVR"/>
+		</exec>
+		<echo message="Linking SOS Virtual Serial Printer driver..."/>
+		<exec dir="${projdir}/src/client/sos/serial/printer" executable="${assemblerPath}/ld65" failonerror="true">
+			<arg line="vsprintersos.o -o vsprintersos.o65 -C ${builddir}/Apple3_o65.cfg" />
+		</exec>
+		<exec executable="${python27Path}/python">
+			<arg value="${builddir}/lib/A3Driverutil/A3Driverutil.py"/>
+			<arg value="bin"/>
+			<arg value="${projdir}/src/client/sos/serial/printer/vsprintersos.o65"/>
+			<arg value="${builddir}/VSPRINTER.A3DRVR"/>
+		</exec>
+		<echo message="Extracting SOS.DRIVER..."/>
+		<appleCommander command="g" imagename="${builddir}/${distName}/disks/${vdriveDiskName}.DSK" filename="SOS.DRIVER" output="${builddir}/SOS.DRIVER#0c0000" />
+		<echo message="Deleting drivers from SOS.DRIVER..."/>		
+		<exec executable="${python27Path}/python">
+			<arg value="${builddir}/lib/A3Driverutil/A3Driverutil.py"/>
+			<arg value="delete"/>
+			<arg value=".VSDRIVE"/>
+			<arg value="${builddir}/SOS.DRIVER#0c0000" />
+		</exec>
+		<exec executable="${python27Path}/python">
+			<arg value="${builddir}/lib/A3Driverutil/A3Driverutil.py"/>
+			<arg value="delete"/>
+			<arg value=".VSPRINTER"/>
+			<arg value="${builddir}/SOS.DRIVER#0c0000" />
+		</exec>
+		<echo message="Adding built driver to SOS.DRIVER..."/>		
+		<exec executable="${python27Path}/python">
+			<arg value="${builddir}/lib/A3Driverutil/A3Driverutil.py"/>
+			<arg value="add"/>
+			<arg value="${projdir}/src/client/sos/serial/drive/vsdrivesos.o65"/>
+			<arg value="${builddir}/SOS.DRIVER#0c0000" />
+		</exec>
+		<exec executable="${python27Path}/python">
+			<arg value="${builddir}/lib/A3Driverutil/A3Driverutil.py"/>
+			<arg value="add"/>
+			<arg value="${projdir}/src/client/sos/serial/printer/vsprintersos.o65"/>
+			<arg value="${builddir}/SOS.DRIVER#0c0000" />
+		</exec>
+		<echo message="Deleting SOS.DRIVER from driver disk image..."/>
+		<appleCommander command="d" imagename="${builddir}/${distName}/disks/${vdriveDiskName}.DSK" filename="SOS.DRIVER" failonerror="false"/>
+		<echo message="Putting updated SOS.DRIVER back on driver disk image..."/>
+		<appleCommander command="p" input="${builddir}/SOS.DRIVER#0c0000" imagename="${builddir}/${distName}/disks/${vdriveDiskName}.DSK" filename="SOS.DRIVER" type="SOS" />
+		<delete file="${builddir}/SOS.DRIVER#0c0000" />
 		<!--
-		Copy out the Apple /// virtual serial drive driver
+		Copy out the Apple /// Virtual Serial Drive river
 		-->
-		<echo message="Copying sos-driver components..." />
-		<appleCommander command="g" imagename="${a3sysutils-vs}" filename="VSDRIVE.A3DRVR" output="${builddir}/VSDRIVE.A3DRVR" />
+		<echo message="Copying Virtual Serial Drive components..." />
 		<appleCommander command="p" input="${builddir}/VSDRIVE.A3DRVR" imagename="${builddir}/${distName}/disks/${vdriveDiskName}.DSK" filename="VSDRIVE.A3DRVR" type="pcd" />
 		<delete file="${builddir}/VSDRIVE.A3DRVR" />
+		<!--
+		Copy out the Apple /// Virtual Serial Printer driver
+		-->
+		<echo message="Copying Virtual Serial Printer components..." />
+		<appleCommander command="p" input="${builddir}/VSPRINTER.A3DRVR" imagename="${builddir}/${distName}/disks/${vdriveDiskName}.DSK" filename="VSPRINTER.A3DRV" type="pcd" />
+		<delete file="${builddir}/VSPRINTER.A3DRVR" />
 	</target>
 	<target name="sos-image-prep" description="Start Empty SOS Disk Image" >
 		<echo message="Prepping SOS disk images..." />
