@@ -330,18 +330,6 @@ public class AudJoyTransport extends ATransport
         {
           Log.println(false, "AudJoyTransport.pushBuffer sending 0x"+UnsignedByte.toString(_sendBuffer[i])+".");
           port.writeByte(_sendBuffer[i]);
-          try
-          {
-            Log.println(false, "AudJoyTransport.pushBuffer sleeping.");
-            // Need to pace a bit for our joystick bitbanger
-            // It's proven to work ok with sleep (1), but we've also added
-            // keyboard (escape key) polling, which takes time too
-            Thread.sleep(2);
-          }
-          catch (InterruptedException e)
-          {
-            e.printStackTrace();
-          }
         }
       }
       catch (SerialPortException e)

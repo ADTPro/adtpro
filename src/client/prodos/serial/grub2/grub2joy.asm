@@ -1,6 +1,6 @@
 ;
 ; ADTPro - Apple Disk Transfer ProDOS
-; Copyright (C) 2023 by David Schmidt
+; Copyright (C) 2023 by ADTPro contributors
 ; 1110325+david-schmidt@users.noreply.github.com
 ;
 ; This program is free software; you can redistribute it and/or modify it 
@@ -42,116 +42,90 @@
 ; in, it will have the effect of holding the open-apple key down and you'll
 ; reboot (rather than just break) if you do a ctrl-reset.
 
-.org $300
+PB0  =  $c061
 
-PB0 = $C061   ; Paddle 0 PushButton: HIGH/ON if > 127, LOW/OFF if < 128.
+RCVBYTE  =  $06
+size     =  $07 ; and $08
 
-; Zero page variables (unused by DOS, BASIC and Monitor)
-BUF_P = $08
-
+    .org    $300
 Entry:
-          jsr $FC58     ; HOME
-; Set up our pointers
-          lda #$00
-          tay           ; Clean out Y reg
-          sta BUF_P
-          lda #$08
-          sta BUF_P+1   ; Code goes into $0800
+    jsr $fc58   ; HOME
 
-; Say we're active in the upper-right hand corner
-          ldx #$C8      ; "H"
-          stx $0424
-          inx           ; "I"
-          stx $0425
+    ldx #$c8
+    stx $424
+    inx
 
-; Poll the port until we get a magic incantation
-Poll:
-          jsr pb0_recv  ; Pull a byte from PB0
-          cmp #$54      ; First character of payload will be "T"
-          bne Poll
+    stx $425
 
-; We got the magic signature; start reading data
-          jsr pb0_recv  ; Pull a byte
-          sta size      ;   payload LSB
-          jsr pb0_recv  ; Pull a byte
-          sta size+1    ;   payload MSB
+poll:
+    jsr get_byte
+    cmp #$54
+    bne poll
 
-Read:
-          jsr pb0_recv  ; Pull a byte
-          bcc Entry+1   ; We know we have a framing error so branch to a BRK somewhere
-          sta (BUF_P),y ; Save it
-          sta $0427     ; Print it in the status area
-          iny
-          bne :+
-          inc BUF_P+1   ; Bump pointer for next page
-          dec size+1    ; 
-:         cpy size      ; Is LSB of progress the same as requested?
-          bne Read      ; No, swing around for more
-          lda size+1    ; LSB is the same; is MSB zero?
-          bne Read      ; No, swing around for more
+; Got signature, read data
+    jsr get_byte
+    sta size
+    jsr get_byte
+    sta size+1
+    ldy #0
 
-; We read all the bytes; call the payload entry point
-          jmp $0800     ; Payload entry point
+read:
+    jsr get_byte
+read_patch:
+    sta $800,y
+    sta $427
+    iny
+    bne skip_inc
+    inc read_patch+2
+    dec size+1
+skip_inc:
+    lda size+1
+    bne read
+    cpy size
+    bcc read
+    jmp $800
 
-pb0_recv:
-; State is currently unknown
-          lda #$09      ; We'll be watching for 8 bits plus one stop bit
-          sta bits
-          clc
 
-poll_for_1:
-; Sample PB0's state
-          lda PB0
-          bpl poll_for_1 ; if not negative, branch to poll_for_1
+get_byte:
+; The serial line must be idle (PB0 must have it high bit set)
+; We simply must wait for the beginning of the start bit (PB0 high bit clear)
+    lda #$80
+    sta RCVBYTE
+wait_for_start:
+    bit PB0 ; 4
+    bmi wait_for_start  ; 2
 
-; State is now 1
+; We got the start sometime in the last 3-10 clocks.  Wait 1.5 bit times so
+; grab the bits in the middle of the bit times.  There are $6a CPU cycles in
+; one bit time.  So 1.5 bit times = $9f cycles.
+    ldx #$1d        ; 2
+    bne read_bit2   ; 3
 
-poll_for_0:
-; Sample PB0's state
-          lda PB0
-          bmi poll_for_0 ; if negative, branch to poll_for_0
+read_bit:
+    ldx #$12    ; 2
+read_bit2:
+    dex     ; 2
+    bne read_bit2   ; Total cycles: X*5 - 1 = $90 (for first bit)
+    lda PB0 ; 4
+    asl     ; 2
+    ror RCVBYTE ; 5
+    bcc read_bit ; 3
+; Above overhead, not counting read_bit2 loop, is 2+4+2+5+3=$10 clocks
+; We need the wait to take $5a clocks (so $5a+$10=$6a), but we actually wait $59.
+; We'll just slip one cycle, it's fine
+; Delay from wait_for_start to lda PB0 in read_bit2 is: 4+2+2+3+$90=$9b
 
-; State just became 0 (start bit) sometime in the last 4 or so clock cycles
+; If we get here, we have the byte in RCVBYTE.  We are 2+2+5+2 cycles past
+; the middle of the last bit, and we want to wait about $5a clocks total
+; before returning.
+    ldx #$0d        ;2
+wait_stop:
+    dex             ; 2
+    bne wait_stop   ; $40: Total = X*5 - 1
+    lda RCVBYTE  ; 2
+    nop          ; 2
+    rts
 
-; Wait 1.5 bit times (104.2 + 52.1 = 156.3us at 9600 bps) to get into the middle of the first bit
-; Approximately 152.8 ($99) CPU cycles
-; When falling through to here, the above branch was not taken - consuming 2 cycles to get here
-          ldx #$1D      ; 2  loop count
-:         dex           ; 2 \  = 5 * loop count - 1
-          bne :-        ; 3 /  final exit of the loop only adds 2, branch not taken
-;                       $94 cycles to get here
-          bit $00       ; 3 don't care about results
-;                       $97 cycles to get here; final 2 will be consumed by clc below 
-pull_byte:
-; We now have one bit time (104.2us at 9600 bps) to process this bit
-; Approximately 101.8 ($66) CPU cycles
-          clc           ; 2
-          lda PB0       ; 4
-          bmi :+        ; 2 if positive, 3 if negative
-          jmp push_bit  ; 3
-:         sec           ; 2 bit was low/negative
-push_bit: ; We now have a bit in the carry
-          dec bits      ; 6
-          beq byte_complete ; Have we read all 8 bits?  Then this bit is the stop bit; leave with carry set
-                        ; 2 (in the case we care about, i.e. more bits to read)
-          lda ring      ; 4
-          ror           ; 2
-          sta ring      ; 4
-;                       $1D cycles to get here (since center of bit time)
-; We are now done with processing that bit; we need to cool our heels for the rest ($66 - $1D = $49) of the
-; bit time in order to get into the middle of the next bit
-          ldx #$0E      ; 2  loop count
-:         dex           ; 2 \  = 5 * loop count - 1
-          bne :-        ; 3 /  final exit of the loop only adds 2, branch not taken
-;                       $47 cycles to get here
-          jmp pull_byte ; 3 Loop around for another bit - we actually burn $4A cycles
-;                       $67
-byte_complete:
-          ; Carry now holds stop bit (clear/0 indicates framing error, because we should end with set/1)
-          lda ring      ; Exit with the assembled byte in A
-          rts
-
-; Variable space that doesn't need to be initialized (or typed in, for that matter)
-bits:     .byte $00
-ring:     .byte $00
-size:     .word $0000
+; from last lda PB0 to the fastest call back (count just the jsr):
+; 2+5+2 + 2+$40+2+2+6+6=$5e.  We are solidly in the middle of the stop bit.
+; Code should call back get_byte within $3c clocks.
