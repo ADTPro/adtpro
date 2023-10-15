@@ -106,8 +106,7 @@ read_bit:
 read_bit2:
     dex     ; 2
     bne read_bit2   ; Total cycles: X*5 - 1 = $90 (for first bit)
-    lda PB0 ; 4
-    asl     ; 2
+    asl PB0 ; 6
     ror RCVBYTE ; 5
     bcc read_bit ; 3
 ; Above overhead, not counting read_bit2 loop, is 2+4+2+5+3=$10 clocks
@@ -122,8 +121,7 @@ read_bit2:
 wait_stop:
     dex             ; 2
     bne wait_stop   ; $40: Total = X*5 - 1
-    lda RCVBYTE  ; 2
-    nop          ; 2
+    lda RCVBYTE     ; 2
     rts
 
 ; from last lda PB0 to the fastest call back (count just the jsr):
