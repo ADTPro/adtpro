@@ -22,7 +22,7 @@
 ;
 ; This is the stripped-bare, minimal grub to read data from the joystick port.
 ; Custom serial-to-joystick cable is required.  RS-232 settings are 9600 bps,
-; no parity, 8 data bits, 1 stop bit; 1ms pacing seems to be required.
+; no parity, 8 data bits, 1 stop bit.
 
 ;
 ; Process:
@@ -43,45 +43,43 @@
 ; reboot (rather than just break) if you do a ctrl-reset.
 
 PB0  =  $c061
+size =  $07 ; and $08
 
-RCVBYTE  =  $06
-size     =  $07 ; and $08
-
-    .org    $300
+    .org $300
 Entry:
     jsr $fc58   ; HOME
 
     ldx #$c8
     stx $424
     inx
-
     stx $425
 
 poll:
     jsr get_byte
     cmp #$54
-    bne poll
+    bne read_patch+1    ; Hit a BRK
 
 ; Got signature, read data
+    ldx #$fe
+get_size:
     jsr get_byte
-    sta size
-    jsr get_byte
-    sta size+1
-    ldy #0
+    sta size+2,x
+    inx
+    bne get_size
 
 read:
     jsr get_byte
 read_patch:
-    sta $800,y
+    sta $800,x
     sta $427
-    iny
+    inx
     bne skip_inc
     inc read_patch+2
     dec size+1
 skip_inc:
     lda size+1
     bne read
-    cpy size
+    cpx size
     bcc read
     jmp $800
 
@@ -89,41 +87,39 @@ skip_inc:
 get_byte:
 ; The serial line must be idle (PB0 must have it high bit set)
 ; We simply must wait for the beginning of the start bit (PB0 high bit clear)
-    lda #$80
-    sta RCVBYTE
 wait_for_start:
-    bit PB0 ; 4
+    lda PB0
     bmi wait_for_start  ; 2
 
 ; We got the start sometime in the last 3-10 clocks.  Wait 1.5 bit times so
-; grab the bits in the middle of the bit times.  There are $6a CPU cycles in
-; one bit time.  So 1.5 bit times = $9f cycles.
-    ldx #$1d        ; 2
-    bne read_bit2   ; 3
+; grab the bits in the middle of the bit times.  There are 106 CPU cycles in
+; one bit time.  So 1.5 bit times = 159 cycles
+    ldy #29     ; 2
+    lda #$80        ; 2
+    .byte  $2c     ; 4 (and skip ldx #19)
 
 read_bit:
-    ldx #$12    ; 2
+    ldy #19 ; 2
 read_bit2:
-    dex     ; 2
-    bne read_bit2   ; Total cycles: X*5 - 1 = $90 (for first bit)
-    asl PB0 ; 6
-    ror RCVBYTE ; 5
+    dey     
+    bne read_bit2   ; Total cycles: X*5 - 1 = 89
+    asl PB0 ; 6 (4 cycles to the read, 2 more cycle to shift and wr)
+    ror     ; 2
     bcc read_bit ; 3
-; Above overhead, not counting read_bit2 loop, is 2+4+2+5+3=$10 clocks
-; We need the wait to take $5a clocks (so $5a+$10=$6a), but we actually wait $59.
+; Above overhead, not counting read_bit2 loop, is 2+6+2+3=13 clocks
+; We need the wait to take 93 clocks (so 93+13=106), but we actually wait 94.
 ; We'll just slip one cycle, it's fine
-; Delay from wait_for_start to lda PB0 in read_bit2 is: 4+2+2+3+$90=$9b
+; Delay from wait_for_start to lda PB0 in read_bit2 is: 4+2+2+2+4+144=158
 
-; If we get here, we have the byte in RCVBYTE.  We are 2+2+5+2 cycles past
-; the middle of the last bit, and we want to wait about $5a clocks total
+; If we get here, we have the byte in acc.  We are 2+2+2+2 cycles past
+; the middle of the last bit, and we want to wait about 90 clocks total
 ; before returning.
-    ldx #$0d        ;2
+    ldy #13     ;2
 wait_stop:
-    dex             ; 2
-    bne wait_stop   ; $40: Total = X*5 - 1
-    lda RCVBYTE     ; 2
+    dey
+    bne wait_stop   ; 64: Total = X*5 - 1
     rts
 
 ; from last lda PB0 to the fastest call back (count just the jsr):
-; 2+5+2 + 2+$40+2+2+6+6=$5e.  We are solidly in the middle of the stop bit.
-; Code should call back get_byte within $3c clocks.
+; 2+2+2 + 2+64+6+6=84.  We are solidly in the middle of the stop bit.
+; Code should call back get_byte within 60 clocks.
