@@ -42,70 +42,36 @@
 ; in, it will have the effect of holding the open-apple key down and you'll
 ; reboot (rather than just break) if you do a ctrl-reset.
 
-PB0  =  $c061
-size =  $07 ; and $08
+PB0	 = 	$c061
 
-    .org $300
+	.org	$300
 Entry:
-    jsr $fc58   ; HOME
+	jsr	$fc58	; HOME
 
-    ldx #$c8
-    stx $424
-    inx
-    stx $425
-
-poll:
-    jsr get_byte
-    cmp #$54
-    bne read_patch+1    ; Hit a BRK
-
-; Got signature, read data
-    ldx #$fe
-get_size:
-    jsr get_byte
-    sta size+2,x
-    inx
-    bne get_size
-
-read:
-    jsr get_byte
-read_patch:
-    sta $800,x
-    sta $427
-    inx
-    bne skip_inc
-    inc read_patch+2
-    dec size+1
-skip_inc:
-    lda size+1
-    bne read
-    cpx size
-    bcc read
-    jmp $800
-
+	ldx	#$11	; $1000 bytes of payload (with $28 byte header)
 
 get_byte:
 ; The serial line must be idle (PB0 must have it high bit set)
 ; We simply must wait for the beginning of the start bit (PB0 high bit clear)
 wait_for_start:
-    lda PB0
-    bmi wait_for_start  ; 2
+	lda	PB0
+	bmi	wait_for_start	; 2
 
 ; We got the start sometime in the last 3-10 clocks.  Wait 1.5 bit times so
 ; grab the bits in the middle of the bit times.  There are 106 CPU cycles in
 ; one bit time.  So 1.5 bit times = 159 cycles
-    ldy #29     ; 2
-    lda #$80        ; 2
-    .byte  $2c     ; 4 (and skip ldx #19)
+	ldy	#29		; 2
+	lda	#$80		; 2
+	.byte	$2c		; 4 (and skip ldx #19)
 
 read_bit:
-    ldy #19 ; 2
+	ldy	#19	; 2
 read_bit2:
-    dey     
-    bne read_bit2   ; Total cycles: X*5 - 1 = 89
-    asl PB0 ; 6 (4 cycles to the read, 2 more cycle to shift and wr)
-    ror     ; 2
-    bcc read_bit ; 3
+	dey		
+	bne	read_bit2	; Total cycles: Y*5 - 1 = 94
+	asl	PB0	; 6 (4 cycles to the read, 2 more cycle to shift and wr)
+	ror		; 2
+	bcc	read_bit ; 3
 ; Above overhead, not counting read_bit2 loop, is 2+6+2+3=13 clocks
 ; We need the wait to take 93 clocks (so 93+13=106), but we actually wait 94.
 ; We'll just slip one cycle, it's fine
@@ -114,12 +80,21 @@ read_bit2:
 ; If we get here, we have the byte in acc.  We are 2+2+2+2 cycles past
 ; the middle of the last bit, and we want to wait about 90 clocks total
 ; before returning.
-    ldy #13     ;2
+	ldy	#13		;2
 wait_stop:
-    dey
-    bne wait_stop   ; 64: Total = X*5 - 1
-    rts
+	dey
+	bne	wait_stop	; 64: Total = Y*5 - 1
 
 ; from last lda PB0 to the fastest call back (count just the jsr):
 ; 2+2+2 + 2+64+6+6=84.  We are solidly in the middle of the stop bit.
 ; Code should call back get_byte within 60 clocks.
+
+data_patch:
+	sta	$7d0
+	sta	$427
+	inc	data_patch+1
+	bne	get_byte
+	inc	data_patch+2
+	dex
+	bne	get_byte
+	jmp	$800

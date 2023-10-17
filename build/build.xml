@@ -250,15 +250,23 @@ all
 	</target>
 	<target name="prodos-audjoy" depends="prodos-adtpro-image-prep, common" description="Build the ADTPro Audio/Joystick Client (ProDOS)">
 		<echo message="Assembling prodos-audjoy client..."/>
+		<echo message="Assembling audjoy preamble..."/>
+		<exec dir="${projdir}/src/client" executable="${assemblerPath}/ca65" failonerror="true">
+			<arg line="-t none -l prodos/audjoy/audjoypreamble.lst prodos/audjoy/audjoypreamble.asm" />
+		</exec>
 		<exec dir="${projdir}/src/client" executable="${assemblerPath}/ca65" failonerror="true">
 			<arg line="-t none -I . -l prodos/audjoy/audjoy.lst prodos/audjoy/audjoymain.asm" />
 		</exec>
-		<echo message="Linking ADTPROAJOY..."/>
+		<echo message="Linking regular ADTPROAJOY..."/>
 		<exec dir="${projdir}/src/client" executable="${assemblerPath}/ld65" failonerror="true">
 			<arg line="-o ADTPROAJOY.BIN -m adtproaudjoy.map -C prodos/audjoy/adtpro.cfg prodos/audjoy/audjoymain.o tail.o" />
 		</exec>
+		<echo message="Linking preambled ADTPROAJOY..."/>
+		<exec dir="${projdir}/src/client" executable="${assemblerPath}/ld65" failonerror="true">
+			<arg line="-o ADTPROAJOYPREAMBLE.BIN -C prodos/audjoy/adtpropreamble.cfg prodos/audjoy/audjoypreamble.o prodos/audjoy/audjoymain.o tail.o" />
+		</exec>
 		<appleDump infilename="${projdir}/src/client/ADTPROAJOY.BIN" outfilename="${destdir}/org/adtpro/resources/adtproaudjoy.dmp" applename="ADTPROAJOY.BIN" startaddrhex="800" numbyteswide="22" decoration="begin" finalline="800G"/>
-		<copy file="${projdir}/src/client/ADTPROAJOY.BIN" tofile="${destdir}/org/adtpro/resources/adtproaudjoy.raw" />
+		<copy file="${projdir}/src/client/ADTPROAJOYPREAMBLE.BIN" tofile="${destdir}/org/adtpro/resources/adtproaudjoy.raw" />
 		<echo message="Adding ADTPROAJOY to 5.25 disk image..."/>
 		<appleCommander command="p" input="${projdir}/src/client/ADTPROAJOY.BIN" imagename="${builddir}/${distName}/disks/${diskName}.DSK" filename="ADTPROAJOY.BIN" type="bin" address="2048"/>
 		<echo message="Adding ADTPROAJOY to 3.5 disk image..."/>

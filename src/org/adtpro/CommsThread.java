@@ -3910,10 +3910,10 @@ public class CommsThread extends Thread
 			}
 			else if (resource.equals(Messages.getString("Gui.BS.ADTProAudJoy")))
 			{
-				resourceName = "org/adtpro/resources/adtproaudjoy.raw";
-        slowFirstLines = 0;
+				resourceName = "org/adtpro/resources/adtproaudjoypreamble.raw";
+				slowFirstLines = 0;
 				slowLastLines = 0;
-			  isBinary = true;
+				isBinary = true;
 			}
 			else if (resource.equals(Messages.getString("Gui.BS.ADTProEthernet")))
 			{
@@ -4083,10 +4083,7 @@ public class CommsThread extends Thread
 							}
 							else if (_resource.equals(Messages.getString("Gui.BS.ADTProAudJoy")))
 							{
-								Log.println(false, "CommsThread.Worker.run() sending ADTProAudJoy trigger byte of 'T'.");
-								_transport.writeByte(0x54); // Send an "T" to trigger the start
-								_transport.pushBuffer();
-								sleep(20);
+								Log.println(false, "CommsThread.Worker.run() sending ADTProAudJoy.");
 							}
 							else if (_resource.equals(Messages.getString("Gui.BS.VSDriveRaw")))
 							{
@@ -4096,9 +4093,12 @@ public class CommsThread extends Thread
 							{
 								_transport.writeByte(0x42); // Send a "B" to trigger the start
 							}
-							// Everyone then sends their expected length
-							_transport.writeByte(UnsignedByte.loByte(length)); // Send buffer LSB
-							_transport.writeByte(UnsignedByte.hiByte(length)); // Send buffer MSB
+							// Everyone except Gui.BS.ADTProAudJoy then sends their expected length
+							if (!_resource.equals(Messages.getString("Gui.BS.ADTProAudJoy")))
+							{
+								_transport.writeByte(UnsignedByte.loByte(length)); // Send buffer LSB
+								_transport.writeByte(UnsignedByte.hiByte(length)); // Send buffer MSB
+							}
 						}
 						for (int i = 0; i < buffer.length; i++)
 						{
@@ -4111,11 +4111,6 @@ public class CommsThread extends Thread
 							_transport.pushBuffer();
 							if (((_resource.equals(Messages.getString("Gui.BS.SOSKERNEL"))) || (_resource.equals(Messages.getString("Gui.BS.SOSINTERP"))) || (_resource.equals(Messages.getString("Gui.BS.SOSDRIVER")))) && (i < 2))
 								sleep(1); // Letting this run unthrottled seemed to miss the first byte...
-							else if (_resource.equals(Messages.getString("Gui.BS.ADTProAudJoy")))
-							{
-								Log.println(false, "CommsThread.Worker.run() sleeping for 1.");
-								sleep(1);
-							}
 							if (_shouldRun)
 							{
 								_parent.setProgressValue(i + 1);
