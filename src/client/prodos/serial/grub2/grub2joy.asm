@@ -48,7 +48,28 @@ PB0	 = 	$c061
 Entry:
 	jsr	$fc58	; HOME
 
-	ldx	#$11	; $1000 bytes of payload (with $28 byte header)
+	ldx	#$3B	; $3B00 bytes of payload (with $30 byte header)
+
+wait_byte:
+	jsr	get_byte
+	cmp	#$54
+	bne	wait_byte
+
+read_payload:
+	jsr	get_byte
+; from last lda PB0 to the fastest call back (count just the jsr):
+; 2+2+2 + 2+64+6+6=84.  We are solidly in the middle of the stop bit.
+; Code should call back get_byte within 60 clocks.
+
+data_patch:
+	sta	$7d0
+	sta	$427
+	inc	data_patch+1
+	bne	read_payload
+	inc	data_patch+2
+	dex
+	bne	read_payload
+	jmp	$800
 
 get_byte:
 ; The serial line must be idle (PB0 must have it high bit set)
@@ -62,15 +83,14 @@ wait_for_start:
 ; one bit time.  So 1.5 bit times = 159 cycles
 	ldy	#29		; 2
 	lda	#$80		; 2
-	.byte	$2c		; 4 (and skip ldx #19)
 
 read_bit:
-	ldy	#19	; 2
 read_bit2:
 	dey		
 	bne	read_bit2	; Total cycles: Y*5 - 1 = 94
+	ldy	#19	; 2
 	asl	PB0	; 6 (4 cycles to the read, 2 more cycle to shift and wr)
-	ror		; 2
+	ror		; 2		
 	bcc	read_bit ; 3
 ; Above overhead, not counting read_bit2 loop, is 2+6+2+3=13 clocks
 ; We need the wait to take 93 clocks (so 93+13=106), but we actually wait 94.
@@ -84,17 +104,4 @@ read_bit2:
 wait_stop:
 	dey
 	bne	wait_stop	; 64: Total = Y*5 - 1
-
-; from last lda PB0 to the fastest call back (count just the jsr):
-; 2+2+2 + 2+64+6+6=84.  We are solidly in the middle of the stop bit.
-; Code should call back get_byte within 60 clocks.
-
-data_patch:
-	sta	$7d0
-	sta	$427
-	inc	data_patch+1
-	bne	get_byte
-	inc	data_patch+2
-	dex
-	bne	get_byte
-	jmp	$800
+	rts

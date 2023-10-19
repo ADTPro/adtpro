@@ -22,4 +22,9 @@
 ; audjoypreamble - preamble for audio/joystick bootstrap
 ;---------------------------------------------------------
 	.segment "PREAMBLE"
-	.res $30
+    .include "../../applechr.i"
+; Message, $28 bytes at $7d0.$7f7
+;        ........................................    
+    asc "BANG v1 K. Dickey, P. Ferrie, D. Schmidt"
+; TLC observed screen holes: $7f8.$7ff
+	.byte $00, $7f, $7f, $bd, $e6, $fe, $fd, $ff

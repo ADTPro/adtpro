@@ -3910,7 +3910,7 @@ public class CommsThread extends Thread
 			}
 			else if (resource.equals(Messages.getString("Gui.BS.ADTProAudJoy")))
 			{
-				resourceName = "org/adtpro/resources/adtproaudjoypreamble.raw";
+				resourceName = "org/adtpro/resources/adtproaudjoy.raw";
 				slowFirstLines = 0;
 				slowLastLines = 0;
 				isBinary = true;
@@ -4084,6 +4084,7 @@ public class CommsThread extends Thread
 							else if (_resource.equals(Messages.getString("Gui.BS.ADTProAudJoy")))
 							{
 								Log.println(false, "CommsThread.Worker.run() sending ADTProAudJoy.");
+                _transport.writeByte(0x54); // Send a "T" to trigger the start
 							}
 							else if (_resource.equals(Messages.getString("Gui.BS.VSDriveRaw")))
 							{
