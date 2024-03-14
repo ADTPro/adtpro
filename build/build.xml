@@ -72,7 +72,7 @@ all
 	<property name="acJarVersion" value="ant-1.8.0-SNAPSHOT" />
 	<property name="acJarPath" value="${builddir}/lib/AppleCommander" />
 	<property name="acJar" value="AppleCommander-${acJarVersion}.jar" />
-	<property name="jsscVersion" value="2.9.4" />
+	<property name="jsscVersion" value="2.9.6" />
 	<property name="jsscJar" value="jssc-${jsscVersion}.jar" />
 	<property name="jsscJarPath" value="${builddir}/lib/jssc" />
 	<property name="slf4jVersion" value="1.7.36" />
