@@ -30,6 +30,8 @@ all
 					vdrive-image-prep
 				prodos-vedrive
 					vdrive-image-prep
+				prodos-vedrive2
+					vdrive-image-prep
 			sos
 				sos-serial
 					sos-image-prep
@@ -207,7 +209,7 @@ all
 	ProDOS section
 	============================================================================================
 	-->
-	<target name="prodos" depends="prepare,prodos-serial, prodos-audio, prodos-ethernet, prodos-bootstrap, prodos-vsdrive, prodos-vedrive" description="Orchestrate Overall Client Build for ProDOS" >
+	<target name="prodos" depends="prepare,prodos-serial, prodos-audio, prodos-ethernet, prodos-bootstrap, prodos-vsdrive, prodos-vedrive, prodos-vedrive2" description="Orchestrate Overall Client Build for ProDOS" >
 	</target>
 
 	<target name="prodos-serial" depends="tasks,prodos-adtpro-image-prep, common" description="Build the ADTPro Serial Client (ProDOS)">
@@ -377,10 +379,10 @@ all
 		<appleCommander command="pro800" imagename="${builddir}/${distName}/disks/Virtual2.po" volname="${vdriveVolName2}"/>
 		<echo message="Assembling ProDOS virtual Uthernet II drive source..."/>
 		<exec dir="${projdir}/src/client" executable="${assemblerPath}/ca65" failonerror="true">
-			<arg line="-t none -I . -l prodos/ethernet/drive2/vuiidrive_low.lst prodos/ethernet/drive2/vuiidrive_low.asm" />
+			<arg line="-t none -I . -I ${builddir}/lib -l prodos/ethernet/drive2/vuiidrive_low.lst prodos/ethernet/drive2/vuiidrive_low.asm" />
 		</exec>
 		<exec dir="${projdir}/src/client" executable="${assemblerPath}/ca65" failonerror="true">
-			<arg line="-t none -I . -l prodos/ethernet/drive2/vuiidrive_high.lst prodos/ethernet/drive2/vuiidrive_high.asm" />
+			<arg line="-t none -I . -I ${builddir}/lib -l prodos/ethernet/drive2/vuiidrive_high.lst prodos/ethernet/drive2/vuiidrive_high.asm" />
 		</exec>
 		<echo message="Linking Uthernet II drive..."/>
 		<exec dir="${projdir}/src/client" executable="${assemblerPath}/ld65" failonerror="true">
@@ -389,8 +391,6 @@ all
 		<exec dir="${projdir}/src/client" executable="${assemblerPath}/ld65" failonerror="true">
 			<arg line="-o VEDRIVE2H -m vuiidrive.map -C prodos/ethernet/drive2/vuiidrive.cfg prodos/ethernet/drive2/vuiidrive_high.o ${ip65lib}" />
 		</exec>
-		<move file="${projdir}/src/client/VEDRIVE2L" tofile="${projdir}/src/client/VEDRIVE2L" />
-		<move file="${projdir}/src/client/VEDRIVE2H" tofile="${projdir}/src/client/VEDRIVE2H" />
 		<echo message="Adding VEDrive2 to 5.25 disk image..."/>
 		<appleCommander command="d" imagename="${builddir}/${distName}/disks/${vdriveDiskName}.DSK" filename="VEDRIVE2L" failonerror="false"/>
 		<appleCommander command="d" imagename="${builddir}/${distName}/disks/${vdriveDiskName}.DSK" filename="VEDRIVE2H" failonerror="false"/>
