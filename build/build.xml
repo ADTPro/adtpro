@@ -75,7 +75,7 @@ all
 	<property name="jsscVersion" value="2.10.2" />
 	<property name="jsscJar" value="jssc-${jsscVersion}.jar" />
 	<property name="jsscJarPath" value="${builddir}/lib/jssc" />
-	<property name="slf4jVersion" value="1.7.36" />
+	<property name="slf4jVersion" value="2.0.17" />
 	<property name="slf4jJar" value="slf4j-nop-${slf4jVersion}.jar" />
 	<property name="slf4jJarPath" value="${builddir}/lib/jssc" />
 	<property name="ip65lib" value="${builddir}/lib/ip65/ip65.lib ${builddir}/lib/ip65/a2combo.lib ${builddir}/lib/cc65/apple2.lib" />
