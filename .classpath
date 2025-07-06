@@ -9,6 +9,6 @@
 	</classpathentry>
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/ANT_JAR"/>
 	<classpathentry kind="lib" path="build/lib/AppleCommander/AppleCommander-ant-1.9.0.jar"/>
-	<classpathentry kind="lib" path="build/lib/jssc/jssc-2.9.4.jar"/>
+	<classpathentry kind="lib" path="build/lib/jssc/jssc-2.10.2.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
