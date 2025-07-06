@@ -50,12 +50,14 @@ all
 -->
 
 <project name="ADTPro" default="all" basedir="..">
-	<property name="versionString" value="v.r.m" />
 	<property name="projdir" value="${basedir}" />
 	<property name="srcdir" value="${basedir}/src" />
 	<property name="destdir" value="${basedir}/dest" />
 	<property name="tasks" value="${basedir}/tasks" />
 	<property name="builddir" value="${basedir}/build" />
+	<property file="${builddir}/ADTProBuild.properties"/>
+	<property file="${builddir}/ADTProBuild-default.properties"/>
+	<property name="versionString" value="v.r.m" />
 	<property name="distName" value="ADTPro-${versionString}" />
 	<property name="diskName" value="ADTPRO-${versionString}" />
 	<property name="disk3Name" value="ADTPROSOS-${versionString}" />
@@ -67,8 +69,6 @@ all
 	<property name="vdriveVolName" value="VDrive.${versionString}" />
 	<property name="vdriveVolName1" value="Hosted.VDrive1" />
 	<property name="vdriveVolName2" value="Hosted.VDrive2" />
-	<property file="${builddir}/ADTProBuild.properties"/>
-	<property file="${builddir}/ADTProBuild-default.properties"/>
 	<property name="acJarVersion" value="ant-1.8.0-SNAPSHOT" />
 	<property name="acJarPath" value="${builddir}/lib/AppleCommander" />
 	<property name="acJar" value="AppleCommander-${acJarVersion}.jar" />
