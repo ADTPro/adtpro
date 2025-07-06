@@ -69,9 +69,9 @@ all
 	<property name="vdriveVolName" value="VDrive.${versionString}" />
 	<property name="vdriveVolName1" value="Hosted.VDrive1" />
 	<property name="vdriveVolName2" value="Hosted.VDrive2" />
-	<property name="acJarVersion" value="ant-1.8.0-SNAPSHOT" />
+	<property name="acVersion" value="1.9.0" />
+	<property name="acJar" value="AppleCommander-ant-${acVersion}.jar" />
 	<property name="acJarPath" value="${builddir}/lib/AppleCommander" />
-	<property name="acJar" value="AppleCommander-${acJarVersion}.jar" />
 	<property name="jsscVersion" value="2.9.4" />
 	<property name="jsscJar" value="jssc-${jsscVersion}.jar" />
 	<property name="jsscJarPath" value="${builddir}/lib/jssc" />

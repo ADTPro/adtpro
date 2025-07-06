@@ -41,7 +41,7 @@ Your distribution should contain most of these, depending on platform:
  * lib/ADTPro-v.r.m.jar   - ADTPro server-side software
                             (a Java .jar file)
  * lib/jssc/...           - Java serial library files
- * lib/AppleCommander/AppleCommander-v.r.m.p-ac.jar
+ * lib/AppleCommander/AppleCommander-ant-v.r.m.jar
                           - AppleCommander support Jar
 
 In all cases above, v.r.m is replaced with the version, release 

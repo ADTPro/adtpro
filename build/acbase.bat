@@ -16,4 +16,4 @@ REM
 REM SET ADTPRO_HOME=C:\src\workspace\35\adtpro\build\
 REM SET MY_JAVA_HOME=C:\Progra~1\IBM\Java142\bin\
 
-%MY_JAVA_HOME%java -Xms128m -Xmx256m -jar "%ADTPRO_HOME%lib\AppleCommander\AppleCommander-%AC_VERSION%.jar" %*
+%MY_JAVA_HOME%java -Xms128m -Xmx256m -jar "%ADTPRO_HOME%lib\AppleCommander\AppleCommander-ant-%AC_VERSION%.jar" %*
