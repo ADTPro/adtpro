@@ -21,6 +21,7 @@
 package org.adtpro.gui;
 
 import java.awt.BorderLayout;
+import java.awt.Desktop;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
@@ -32,6 +33,7 @@ import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.net.InetAddress;
+import java.net.URI;
 import java.util.Arrays;
 import java.util.Properties;
 
@@ -43,7 +45,6 @@ import org.adtpro.transport.AudioTransport;
 import org.adtpro.transport.SerialTransport;
 import org.adtpro.transport.SerialIPTransport;
 import org.adtpro.transport.UDPTransport;
-import org.adtpro.utilities.BareBonesBrowserLaunch;
 import org.adtpro.utilities.Log;
 import org.adtpro.utilities.StringUtilities;
 import org.adtpro.ADTProperties;
@@ -703,7 +704,14 @@ public final class Gui extends JFrame implements ActionListener
 			}
 			else if (e.getActionCommand().equals(Messages.getString("Gui.Website"))) //$NON-NLS-1$
 			{
-				BareBonesBrowserLaunch.openURL("http://adtpro.com");
+				try
+				{
+					Desktop.getDesktop().browse(new URI("http://adtpro.com"));
+				}
+				catch (Exception ex)
+				{
+					ex.printStackTrace();
+				}
 			}
 			else if (e.getActionCommand().equals(Messages.getString("Gui.CD"))) //$NON-NLS-1$
 			{
