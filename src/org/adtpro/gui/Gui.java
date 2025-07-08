@@ -401,7 +401,7 @@ public final class Gui extends JFrame implements ActionListener
 			}
 			else
 			{
-				JOptionPane.showMessageDialog(this, Messages.getString("Gui.NoRXTXDialogText"), Messages.getString("Gui.NoRXTXDialogTitle"), JOptionPane.OK_OPTION);
+				JOptionPane.showMessageDialog(this, Messages.getString("Gui.NoSerialLibDialogText"), Messages.getString("Gui.NoSerialLibDialogTitle"), JOptionPane.OK_OPTION);
 				_disconnectButton.doClick();
 			}
 		}
