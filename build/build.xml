@@ -46,9 +46,11 @@ all
 			zip
 				jar
 					scripts
-			dmg
+			macos-app
 				jar
 					scripts
+			macos-dmg
+				macos-app
 -->
 
 <project name="ADTPro" default="all" basedir="..">
@@ -82,13 +84,23 @@ all
 	<property name="slf4jJarPath" value="${builddir}/lib/jssc" />
 	<property name="ip65lib" value="${builddir}/lib/ip65/ip65.lib ${builddir}/lib/ip65/a2combo.lib ${builddir}/lib/cc65/apple2.lib" />
 	<property name="ip65u2lib" value="${builddir}/lib/ip65/ip65.lib ${builddir}/lib/ip65/a2uther2.lib ${builddir}/lib/cc65/apple2.lib" />
-	<property name="dmgmegabytes" value="9" />
 	<!-- classes.com.webcodepro.applecommander.ui.AntTask -->
 	<!-- com.webcodepro.applecommander.ui.AntTask -->
 	<taskdef name="appleCommander" classname="com.webcodepro.applecommander.ui.AntTask" classpath="${projdir}/src;${acJarPath}/${acJar}"/>
 	<echo message="${distName} building on ${os.name}."/>
-	<condition property="isOSX">
+	<condition property="isMacOS">
 		<os name="Mac OS X"/>
+	</condition>
+	<condition property="isIntelMac">
+		<and>
+			<os name="Mac OS X"/>
+			<not>
+				<matches string="${os.arch}" pattern="aarch64"/>
+			</not>
+		</and>
+	</condition>
+	<condition property="dmgFileName" value="${distName}_legacy_intel.dmg" else="${distName}.dmg">
+		<isset property="isIntelMac"/>
 	</condition>
 
 	<target name="all" depends="wipe, clean, package" description="Scorched-Earth Build From Source" />
@@ -97,7 +109,7 @@ all
 
 	<target name="client" depends="prodos, sos" description="Build Client Resources" />
 
-	<target name="server" depends="prepare,compile,zip, dmg" description="Build Server Resources" >
+	<target name="server" depends="prepare,compile,zip,macos-app,macos-dmg" description="Build Server Resources" >
 	</target>
 
 	<target name="jar" depends="scripts" description="Gather Java Resources for Executable Server" >
@@ -120,7 +132,6 @@ all
 		<copy file="${builddir}/README" todir="${builddir}/${distName}" />
 		<copy file="${builddir}/LICENSE" todir="${builddir}/${distName}" />
 		<copy file="${builddir}/ADTPro.html" todir="${builddir}/${distName}" />
-		<copy file="${srcdir}/org/adtpro/resources/ADTPro.ico" todir="${builddir}/${distName}/lib" />
 		<!-- copy all of the static files to the dest dir (to have them in the jar) -->
 		<copy todir="${destdir}" >
 			<fileset dir="${srcdir}" excludes="**/*.java"/>
@@ -134,11 +145,11 @@ all
 			includes="**/*.sh"/>
 	</target>
 	<target name="compile">
-		<javac srcdir="${srcdir}" destdir="${destdir}" classpath="${acJarPath}/${acJar}:${jsscJarPath}/${jsscJar}" includeantruntime="false">
+		<javac srcdir="${srcdir}" destdir="${destdir}" classpath="${acJarPath}/${acJar}:${jsscJarPath}/${jsscJar}" includeantruntime="false" release="17">
 			<exclude name="org/adtpro/utilities/AppleDump.java" />
 		</javac>
 	</target>
-	<target name="zip" depends="jar" description="Zip Up the Downloadable Packcage">
+	<target name="zip" depends="jar" description="Zip Up the Downloadable Package">
 		<!-- zip up the whole sheebang -->
 		<zip destfile="${builddir}/${distName}.zip"
 			basedir="${builddir}"
@@ -153,38 +164,107 @@ all
 			</tarfileset>
 		</tar>
 	</target>
-	<target name="dmg" depends="jar" if="isOSX" description="Build OSX DMG Installable Package" >
-		<!-- Add an empty directory in the .app for each languge we translate into -->
-		<mkdir dir="${builddir}/${distName}/${distName}.app/Contents/Resources/English.lproj"/>
-		<mkdir dir="${builddir}/${distName}/${distName}.app/Contents/Resources/French.lproj"/>
-		<mkdir dir="${builddir}/${distName}/${distName}.app/Contents/Resources/Korean.lproj"/>
-		<mkdir dir="${builddir}/${distName}/${distName}.app/Contents/Resources/Spanish.lproj"/>
-		<mkdir dir="${builddir}/${distName}/${distName}.app/Contents/Resources/Italian.lproj"/>
-		<mkdir dir="${builddir}/${distName}/${distName}.app/Contents/Resources/pt.lproj"/>
+	<target name="macos-app" depends="jar" if="isMacOS" description="Build OSX App Bundle using jpackage">
+		<!-- verify jpackage and jlink exist -->
+		<condition property="jdk.tools.present" value="true" else="false">
+			<and>
+				<available file="${java.home}/bin/jpackage" type="file"/>
+				<available file="${java.home}/bin/jlink" type="file"/>
+			</and>
+		</condition>
+		<fail message="Error: jpackage or jlink not found in ${java.home}/bin. Ensure JDK 17 or higher is used." unless="jdk.tools.present"/>
+
+		<!-- ensure all jars are present -->
+		<condition property="jars.present" value="true" else="false">
+			<and>
+				<available file="${builddir}/${distName}/lib/${distName}.jar"/>
+				<available file="${builddir}/${distName}/lib/AppleCommander/${acJar}"/>
+				<available file="${builddir}/${distName}/lib/jssc/${jsscJar}"/>
+				<available file="${builddir}/${distName}/lib/jssc/${slf4jJar}"/>
+			</and>
+		</condition>
+		<fail message="Error: Missing required JAR files" unless="jars.present"/>
+
+		<!-- create minimal jre with jlink in temp directory -->
+		<tempfile property="temp.jre.dir" destDir="${java.io.tmpdir}" prefix="adtpro-jre-" deleteOnExit="true"/>
+		<exec executable="${java.home}/bin/jlink" failonerror="true">
+			<arg value="--add-modules"/>
+			<arg value="java.base,java.desktop,java.logging,jdk.crypto.ec,java.prefs,java.sql"/>
+			<arg value="--output"/>
+			<arg value="${temp.jre.dir}"/>
+			<arg value="--no-header-files"/>
+			<arg value="--no-man-pages"/>
+			<arg value="--strip-debug"/>
+			<arg value="--compress=zip-9"/>
+		</exec>
+
+		<!-- verify jre structure -->
+		<condition property="jre.valid" value="true" else="false">
+			<available file="${temp.jre.dir}/bin/java" type="file"/>
+		</condition>
+		<fail message="Error: Invalid JRE structure in ${temp.jre.dir}. Missing bin/java." unless="jre.valid"/>
+
+		<!-- run jpackage to create .app bundle -->
+		<exec executable="${java.home}/bin/jpackage" failonerror="true">
+			<arg value="--input"/>
+			<arg value="${builddir}/${distName}/lib"/>
+			<arg value="--name"/>
+			<arg value="${distName}"/>
+			<arg value="--main-jar"/>
+			<arg value="${distName}.jar"/>
+			<arg value="--main-class"/>
+			<arg value="org.adtpro.ADTPro"/>
+			<arg value="--type"/>
+			<arg value="app-image"/>
+			<arg value="--mac-package-name"/>
+			<arg value="${distName}"/>
+			<arg value="--mac-package-identifier"/>
+			<arg value="org.adtpro"/>
+			<arg value="--icon"/>
+			<arg value="${builddir}/macos/ADTPro.icns"/>
+			<arg value="--java-options"/>
+			<arg value="--enable-native-access=ALL-UNNAMED -Duser.dir=$ROOTDIR/.."/>
+			<arg value="--runtime-image"/>
+			<arg value="${temp.jre.dir}"/>
+			<arg value="--dest"/>
+			<arg value="${builddir}/${distName}"/>
+			<arg value="--app-version"/>
+			<arg value="${versionString}"/>
+		</exec>
+
+		<!-- verify the generated .app exists -->
+		<condition property="app.created" value="true" else="false">
+			<available file="${builddir}/${distName}/${distName}.app" type="dir"/>
+		</condition>
+		<fail message="Error: ${distName}/${distName}.app was not created" unless="app.created"/>
+
+		<!-- add an empty directory in the .app for each languge we translate into -->
+		<mkdir dir="${builddir}/${distName}/${distName}.app/Contents/Resources/en.lproj"/>
+		<mkdir dir="${builddir}/${distName}/${distName}.app/Contents/Resources/fr.lproj"/>
+		<mkdir dir="${builddir}/${distName}/${distName}.app/Contents/Resources/ko.lproj"/>
+		<mkdir dir="${builddir}/${distName}/${distName}.app/Contents/Resources/es.lproj"/>
+		<mkdir dir="${builddir}/${distName}/${distName}.app/Contents/Resources/it.lproj"/>
+		<mkdir dir="${builddir}/${distName}/${distName}.app/Contents/Resources/pt-BR.lproj"/>
 
 		<!-- Get rid of stuff the Apple crowd doesn't need -->
 		<move file="${builddir}/${distName}/ADTPro.sh" tofile="${builddir}/${distName}/ADTPro.command"/>
 		<delete file="${builddir}/${distName}/ADTPro.bat" />
 		<delete file="${builddir}/${distName}/ac.bat" />
 
-		<!-- Copy the app starter stub -->
-		<mkdir dir="${builddir}/${distName}/${distName}.app/Contents/MacOS"/>
-		<copy file="${builddir}/ADTPro.macapp" tofile="${builddir}/${distName}/${distName}.app/Contents/MacOS/${distName}"/>
-		<replace file="${builddir}/${distName}/${distName}.app/Contents/MacOS/${distName}" token="%ADTPRO_VERSION%" value="${versionString}"/>
-		<chmod file="${builddir}/${distName}/${distName}.app/Contents/MacOS/${distName}" perm="755"/>
-
-		<!-- Push the "ADTPro-v.r.m" directory one level deeper.  I couldn't seem to get Ant to do what I wanted, so I just dumped in the simple shell commands I needed. -->
-		<tempfile property="tempFile"/>
-		<echo message="Pushing package contents one level deeper."/>
-		<exec dir="${builddir}" os="Mac OS X" executable="/bin/sh">
-			<arg value="-c"/>
-			<arg value="mkdir ${tempFile};mv ${distName} ${tempFile};mv ${tempFile} ${distName}"/>
-		</exec>
-
-		<!-- Package up a pretty .dmg -->
-		<exec dir="${builddir}" os="Mac OS X" executable="/bin/sh">
-			<arg value="-c"/>
-			<arg value="${builddir}/mkdmg.sh ${builddir} ${distName} ${distName} ${distName} ${dmgmegabytes}"/>
+		<!-- copy additional resources -->
+		<copy todir="${builddir}/${distName}/${distName}.app/Contents/Resources">
+			<fileset dir="${builddir}/${distName}" includes="README,LICENSE,ADTPro.html"/>
+		</copy>
+	</target>
+	<target name="macos-dmg" depends="macos-app" if="isMacOS" description="Build OSX DMG Installable Package">
+		<exec executable="sh" failonerror="true">
+			<arg value="${builddir}/macos/mkdmg.sh"/>
+			<arg value="${builddir}/${distName}"/>
+			<arg value="${builddir}/macos/ADTProFolder.icns"/>
+			<arg value="${builddir}/${dmgFileName}"/>
+			<arg value="${builddir}/macos/ADTProDMG.icns"/>
+			<arg value="${builddir}/macos/ADTProMacInstallBackground.png"/>
+			<arg value="${distName}"/>
 		</exec>
 	</target>
 	<target name="scripts" description="Tailor Server Scripts" >
@@ -193,15 +273,15 @@ all
 		<copy file="${builddir}/acbase.sh" tofile="${builddir}/${distName}/ac.sh" />
 		<copy file="${builddir}/acbase.bat" tofile="${builddir}/${distName}/ac.bat" />
 		<replace file="${builddir}/${distName}/adtpro.bat" token="%ADTPRO_VERSION%" value="${distName}.jar"/>
-		<replace file="${builddir}/${distName}/adtpro.bat" token="%AC_VERSION%" value="${acJarVersion}"/>
+		<replace file="${builddir}/${distName}/adtpro.bat" token="%AC_VERSION%" value="${acVersion}"/>
 		<replace file="${builddir}/${distName}/adtpro.bat" token="%JSSC_VERSION%" value="${jsscVersion}"/>
 		<replace file="${builddir}/${distName}/adtpro.bat" token="%SLF4J_VERSION%" value="${slf4jVersion}"/>
-		<replace file="${builddir}/${distName}/ac.bat" token="%AC_VERSION%" value="${acJarVersion}"/>
+		<replace file="${builddir}/${distName}/ac.bat" token="%AC_VERSION%" value="${acVersion}"/>
 		<replace file="${builddir}/${distName}/adtpro.sh" token="%ADTPRO_VERSION%" value="${distName}.jar"/>
-		<replace file="${builddir}/${distName}/adtpro.sh" token="%AC_VERSION%" value="${acJarVersion}"/>
+		<replace file="${builddir}/${distName}/adtpro.sh" token="%AC_VERSION%" value="${acVersion}"/>
 		<replace file="${builddir}/${distName}/adtpro.sh" token="%JSSC_VERSION%" value="${jsscVersion}"/>
 		<replace file="${builddir}/${distName}/adtpro.sh" token="%SLF4J_VERSION%" value="${slf4jVersion}"/>
-		<replace file="${builddir}/${distName}/ac.sh" token="%AC_VERSION%" value="${acJarVersion}"/>
+		<replace file="${builddir}/${distName}/ac.sh" token="%AC_VERSION%" value="${acVersion}"/>
 	</target>
 
 	<!--
@@ -345,7 +425,6 @@ all
 		<appleCommander command="p" input="${projdir}/src/client/VSDRIVE_HIGH" imagename="${builddir}/${distName}/disks/${vdriveDiskName}.DSK" filename="VSDRIVE" type="sys" address="8192"/>
 		<delete file="${projdir}/src/client/VSDRIVE_HIGH" />
 	</target>
-
 	<target name="prodos-vedrive" depends="vdrive-image-prep" description="Builds the Virtual Ethernet Drive Driver (ProDOS)">
 		<appleCommander command="pro800" imagename="${builddir}/${distName}/disks/Virtual.po" volname="${vdriveVolName1}"/>
 		<appleCommander command="pro800" imagename="${builddir}/${distName}/disks/Virtual2.po" volname="${vdriveVolName2}"/>
@@ -373,7 +452,6 @@ all
 		<appleCommander command="d" imagename="${builddir}/${distName}/disks/${vdriveDiskName}.DSK" filename="VEDRIVE.SYSTEM" failonerror="false"/>
 		<appleCommander command="p" input="${builddir}/lib/cc65/loader.system" imagename="${builddir}/${distName}/disks/${vdriveDiskName}.DSK" filename="VEDRIVE.SYSTEM" type="SYS" address="8192"/>
 	</target>
-
 	<target name="prodos-vedrive2" depends="vdrive-image-prep" description="Builds the Uthernet II Virtual Ethernet Drive Driver (ProDOS)">
 		<appleCommander command="pro800" imagename="${builddir}/${distName}/disks/Virtual.po" volname="${vdriveVolName1}"/>
 		<appleCommander command="pro800" imagename="${builddir}/${distName}/disks/Virtual2.po" volname="${vdriveVolName2}"/>
@@ -567,7 +645,7 @@ all
 
 	<target name="tasks" description="Compile tasks">
 		<mkdir dir="${tasks}" />
-		<javac srcdir="${srcdir}" destdir="${tasks}" includeantruntime="true" >
+		<javac srcdir="${srcdir}" destdir="${tasks}" includeantruntime="true">
 			<include name="org/adtpro/utilities/AppleDump.java" />
 		</javac>
 	</target>
@@ -591,7 +669,8 @@ all
 		<delete file="${projdir}/src/client/messages.asm" />
 		<delete file="${builddir}/${distName}.tar.gz" />
 		<delete file="${builddir}/${distName}.zip" />
-		<delete file="${builddir}/${distName}.dmg" />
+		<delete dir="${builddir}/${distName}/${distName}.app" />
+		<delete file="${builddir}/${dmgFileName}" />
 		<delete file="${builddir}/${distName}/disks/${diskName}.DSK" />
 		<delete file="${builddir}/${distName}/disks/${disk3Name}.DSK" />
 		<delete file="${builddir}/${distName}/disks/${vdriveDiskName}.DSK" />
