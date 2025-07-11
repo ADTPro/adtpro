@@ -20,8 +20,10 @@
 
 package org.adtpro.utilities;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.PrintStream;
 import java.text.DateFormat;
 import java.util.Date;
@@ -31,20 +33,49 @@ public class Log
 {
   private static Log _theSingleton = null;
 
-  private static String _traceFileName = Messages.getString("TraceFileName");
+  private static String _traceFileName = null;
 
   private static boolean _trace = false;
 
   private static PrintStream _out = null;
 
   /**
-   * 
    * Private constructor - use the <code>getSingleton</code> to instantiate.
-   * 
    */
   private Log()
   {
     _out = System.out;
+    // determine log file path
+    String logDir = getLogDirectory();
+    _traceFileName = logDir + Messages.getString("TraceFileName");
+  }
+
+  /**
+   * Get a writable directory for the log file, falling back to user.home if needed.
+   */
+  private String getLogDirectory()
+  {
+    String logDir;
+    String userDirPath = System.getProperty("user.dir");
+    File userDir = new File(userDirPath);
+
+    if (userDir.canWrite()) {
+      try {
+        logDir = userDir.getCanonicalPath();
+      } catch (IOException e) {
+        logDir = System.getProperty("user.home");
+        println(false, "Log.getLogDirectory(): Failed to resolve user.dir, using user.home: " + logDir);
+      }
+    } else {
+      logDir = System.getProperty("user.home");
+      println(false, "Log.getLogDirectory(): Current directory is read-only, using user.home: " + logDir);
+    }
+
+    // Ensure trailing separator
+    if (!logDir.endsWith(File.separator)) {
+      logDir += File.separator;
+    }
+    return logDir;
   }
 
   public static void printStackTrace(Throwable e)
@@ -138,5 +169,4 @@ public class Log
   {
     return _trace;
   }
-
 }
