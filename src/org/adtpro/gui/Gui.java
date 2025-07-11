@@ -58,8 +58,8 @@ import org.adtpro.CommsThread;
 public final class Gui extends JFrame implements ActionListener
 {
 	/**
-   * 
-   */
+	 *
+	 */
 	private static final long serialVersionUID = 1L;
 
 	Gui _parent;
@@ -72,7 +72,7 @@ public final class Gui extends JFrame implements ActionListener
 
 	private JLabel labelMainProgress, labelSubProgress;
 
-	public ADTProperties _properties = new ADTProperties(Messages.getString("PropertiesFileName"));
+	public ADTProperties _properties = null;
 
 	boolean _isSerialAvailable = false;
 
@@ -104,6 +104,10 @@ public final class Gui extends JFrame implements ActionListener
 
 	public Gui(java.lang.String[] args)
 	{
+		// store properties file in $HOME/.adtpro_properties
+		String propFile = System.getProperty("user.home") + File.separator + Messages.getString("PropertiesFileName");
+		_properties = new ADTProperties(propFile);
+
 		Log.getSingleton().setTrace(_properties.getProperty("TraceEnabled", "false").compareTo("true") == 0);
 		Log.println(false, "Gui Constructor entry.");
 

@@ -18,7 +18,7 @@
  * 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-PropertiesFileName=ADTPro.properties
+PropertiesFileName=.adtpro_properties
 PropertiesDescription=ADTPro properties file
 Gui.Yes=예
 Gui.No=아니오
