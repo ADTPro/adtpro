@@ -51,6 +51,9 @@ all
 					scripts
 			macos-dmg
 				macos-app
+			win-msi
+				jar
+					scripts
 -->
 
 <project name="ADTPro" default="all" basedir="..">
@@ -102,6 +105,9 @@ all
 	<condition property="dmgFileName" value="${distName}_legacy_intel.dmg" else="${distName}.dmg">
 		<isset property="isIntelMac"/>
 	</condition>
+	<condition property="isWindows">
+		<os family="windows"/>
+	</condition>
 
 	<target name="all" depends="wipe, clean, package" description="Scorched-Earth Build From Source" />
 
@@ -109,7 +115,7 @@ all
 
 	<target name="client" depends="prodos, sos" description="Build Client Resources" />
 
-	<target name="server" depends="prepare,compile,zip,macos-app,macos-dmg" description="Build Server Resources" >
+	<target name="server" depends="prepare,compile,zip,macos-app,macos-dmg,win-msi" description="Build Server Resources" >
 	</target>
 
 	<target name="jar" depends="scripts" description="Gather Java Resources for Executable Server" >
@@ -266,6 +272,81 @@ all
 			<arg value="${builddir}/macos/ADTProMacInstallBackground.png"/>
 			<arg value="${distName}"/>
 		</exec>
+	</target>
+	<target name="win-msi" depends="jar" if="isWindows" description="Build Windows MSI Installer using jpackage">
+		<!-- verify jpackage and jlink exist -->
+		<condition property="jdk.tools.present" value="true" else="false">
+			<and>
+				<available file="${java.home}/bin/jpackage" type="file"/>
+				<available file="${java.home}/bin/jlink" type="file"/>
+			</and>
+		</condition>
+		<fail message="Error: jpackage or jlink not found in ${java.home}/bin. Ensure JDK 17 or higher is used." unless="jdk.tools.present"/>
+
+		<!-- ensure all jars are present -->
+		<condition property="jars.present" value="true" else="false">
+			<and>
+				<available file="${builddir}/${distName}/lib/${distName}.jar"/>
+				<available file="${builddir}/${distName}/lib/AppleCommander/${acJar}"/>
+				<available file="${builddir}/${distName}/lib/jssc/${jsscJar}"/>
+				<available file="${builddir}/${distName}/lib/jssc/${slf4jJar}"/>
+			</and>
+		</condition>
+		<fail message="Error: Missing required JAR files" unless="jars.present"/>
+
+		<!-- create minimal jre with jlink in temp directory -->
+		<tempfile property="temp.jre.dir" destDir="${java.io.tmpdir}" prefix="adtpro-jre-" deleteOnExit="true"/>
+		<exec executable="${java.home}/bin/jlink" failonerror="true">
+			<arg value="--add-modules"/>
+			<arg value="java.base,java.desktop,java.logging,jdk.crypto.ec,java.prefs,java.sql"/>
+			<arg value="--output"/>
+			<arg value="${temp.jre.dir}"/>
+			<arg value="--no-header-files"/>
+			<arg value="--no-man-pages"/>
+			<arg value="--strip-debug"/>
+			<arg value="--compress=zip-9"/>
+		</exec>
+
+		<!-- verify jre structure -->
+		<condition property="jre.valid" value="true" else="false">
+			<available file="${temp.jre.dir}/bin/java" type="file"/>
+		</condition>
+		<fail message="Error: Invalid JRE structure in ${temp.jre.dir}. Missing bin/java." unless="jre.valid"/>
+
+		<!-- run jpackage to create .msi installer -->
+		<delete file="${builddir}/${distName}.msi"/>
+		<exec executable="${java.home}/bin/jpackage" failonerror="true">
+			<arg value="--input"/>
+			<arg value="${builddir}/${distName}/lib"/>
+			<arg value="--app-content"/>
+			<arg value="${builddir}/${distName}/."/>
+			<arg value="--name"/>
+			<arg value="${distName}"/>
+			<arg value="--main-jar"/>
+			<arg value="${distName}.jar"/>
+			<arg value="--main-class"/>
+			<arg value="org.adtpro.ADTPro"/>
+			<arg value="--type"/>
+			<arg value="msi"/>
+			<arg value="--icon"/>
+			<arg value="${srcdir}/org/adtpro/resources/ADTPro.ico"/>
+			<arg value="--java-options"/>
+			<arg value="--enable-native-access=ALL-UNNAMED"/>
+			<arg value="--runtime-image"/>
+			<arg value="${temp.jre.dir}"/>
+			<arg value="--dest"/>
+			<arg value="${builddir}"/>
+			<arg value="--app-version"/>
+			<arg value="${versionString}"/>
+			<arg value="--win-dir-chooser"/>
+		</exec>
+		<move file="${builddir}/${distName}-${versionString}.msi" tofile="${builddir}/${distName}.msi"/>
+
+		<!-- verify msi creation -->
+		<condition property="msi.created" value="true" else="false">
+			<available file="${builddir}/${distName}.msi" type="file"/>
+		</condition>
+		<fail message="Error: ${distName}.msi was not created" unless="msi.created"/>
 	</target>
 	<target name="scripts" description="Tailor Server Scripts" >
 		<copy file="${builddir}/adtprobase.bat" tofile="${builddir}/${distName}/adtpro.bat" />
@@ -667,15 +748,11 @@ all
 		<delete dir="${destdir}" />
 		<delete dir="${tasks}" />
 		<delete file="${projdir}/src/client/messages.asm" />
+		<delete file="${projdir}/src/client/sos/bootsector.raw" />
+		<delete file="${builddir}/${distName}.dmg" />
+		<delete file="${builddir}/${distName}.msi" />
 		<delete file="${builddir}/${distName}.tar.gz" />
 		<delete file="${builddir}/${distName}.zip" />
-		<delete dir="${builddir}/${distName}/${distName}.app" />
-		<delete file="${builddir}/${dmgFileName}" />
-		<delete file="${builddir}/${distName}/disks/${diskName}.DSK" />
-		<delete file="${builddir}/${distName}/disks/${disk3Name}.DSK" />
-		<delete file="${builddir}/${distName}/disks/${vdriveDiskName}.DSK" />
-		<delete file="${builddir}/${distName}/disks/${diskName}.PO" />
-		<delete file="${projdir}/src/client/sos/bootsector.raw" />
 		<delete>
 			<fileset dir="${projdir}/src/client" includes="**/*.o"/>
 			<fileset dir="${projdir}/src/client" includes="**/*.map"/>
