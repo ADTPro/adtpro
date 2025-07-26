@@ -1,10 +1,7 @@
 *.dsk
 *.po
 *.hdv
-ADTPro-*.zip
-ADTPro-*.jar
-ADTPro-*.tar
-ADTPro-*.gz
+ADTPro-*
 ADT
 ADTPRO
 ADTPROAUD
