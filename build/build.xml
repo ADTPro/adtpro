@@ -30,6 +30,8 @@ all
 					vdrive-image-prep
 				prodos-vedrive
 					vdrive-image-prep
+				prodos-vedrive2
+					vdrive-image-prep
 			sos
 				sos-serial
 					sos-image-prep
@@ -50,12 +52,14 @@ all
 -->
 
 <project name="ADTPro" default="all" basedir="..">
-	<property name="versionString" value="v.r.m" />
 	<property name="projdir" value="${basedir}" />
 	<property name="srcdir" value="${basedir}/src" />
 	<property name="destdir" value="${basedir}/dest" />
 	<property name="tasks" value="${basedir}/tasks" />
 	<property name="builddir" value="${basedir}/build" />
+	<property file="${builddir}/ADTProBuild.properties"/>
+	<property file="${builddir}/ADTProBuild-default.properties"/>
+	<property name="versionString" value="v.r.m" />
 	<property name="distName" value="ADTPro-${versionString}" />
 	<property name="diskName" value="ADTPRO-${versionString}" />
 	<property name="disk3Name" value="ADTPROSOS-${versionString}" />
@@ -67,15 +71,13 @@ all
 	<property name="vdriveVolName" value="VDrive.${versionString}" />
 	<property name="vdriveVolName1" value="Hosted.VDrive1" />
 	<property name="vdriveVolName2" value="Hosted.VDrive2" />
-	<property file="${builddir}/ADTProBuild.properties"/>
-	<property file="${builddir}/ADTProBuild-default.properties"/>
-	<property name="acJarVersion" value="ant-1.8.0-SNAPSHOT" />
+	<property name="acVersion" value="1.9.0" />
+	<property name="acJar" value="AppleCommander-ant-${acVersion}.jar" />
 	<property name="acJarPath" value="${builddir}/lib/AppleCommander" />
-	<property name="acJar" value="AppleCommander-${acJarVersion}.jar" />
-	<property name="jsscVersion" value="2.9.4" />
+	<property name="jsscVersion" value="2.10.2" />
 	<property name="jsscJar" value="jssc-${jsscVersion}.jar" />
 	<property name="jsscJarPath" value="${builddir}/lib/jssc" />
-	<property name="slf4jVersion" value="1.7.36" />
+	<property name="slf4jVersion" value="2.0.17" />
 	<property name="slf4jJar" value="slf4j-nop-${slf4jVersion}.jar" />
 	<property name="slf4jJarPath" value="${builddir}/lib/jssc" />
 	<property name="ip65lib" value="${builddir}/lib/ip65/ip65.lib ${builddir}/lib/ip65/a2combo.lib ${builddir}/lib/cc65/apple2.lib" />
@@ -207,7 +209,7 @@ all
 	ProDOS section
 	============================================================================================
 	-->
-	<target name="prodos" depends="prepare,prodos-serial, prodos-audio, prodos-ethernet, prodos-bootstrap, prodos-vsdrive, prodos-vedrive" description="Orchestrate Overall Client Build for ProDOS" >
+	<target name="prodos" depends="prepare,prodos-serial, prodos-audio, prodos-ethernet, prodos-bootstrap, prodos-vsdrive, prodos-vedrive, prodos-vedrive2" description="Orchestrate Overall Client Build for ProDOS" >
 	</target>
 
 	<target name="prodos-serial" depends="tasks,prodos-adtpro-image-prep, common" description="Build the ADTPro Serial Client (ProDOS)">
@@ -377,10 +379,10 @@ all
 		<appleCommander command="pro800" imagename="${builddir}/${distName}/disks/Virtual2.po" volname="${vdriveVolName2}"/>
 		<echo message="Assembling ProDOS virtual Uthernet II drive source..."/>
 		<exec dir="${projdir}/src/client" executable="${assemblerPath}/ca65" failonerror="true">
-			<arg line="-t none -I . -l prodos/ethernet/drive2/vuiidrive_low.lst prodos/ethernet/drive2/vuiidrive_low.asm" />
+			<arg line="-t none -I . -I ${builddir}/lib -l prodos/ethernet/drive2/vuiidrive_low.lst prodos/ethernet/drive2/vuiidrive_low.asm" />
 		</exec>
 		<exec dir="${projdir}/src/client" executable="${assemblerPath}/ca65" failonerror="true">
-			<arg line="-t none -I . -l prodos/ethernet/drive2/vuiidrive_high.lst prodos/ethernet/drive2/vuiidrive_high.asm" />
+			<arg line="-t none -I . -I ${builddir}/lib -l prodos/ethernet/drive2/vuiidrive_high.lst prodos/ethernet/drive2/vuiidrive_high.asm" />
 		</exec>
 		<echo message="Linking Uthernet II drive..."/>
 		<exec dir="${projdir}/src/client" executable="${assemblerPath}/ld65" failonerror="true">
@@ -389,8 +391,6 @@ all
 		<exec dir="${projdir}/src/client" executable="${assemblerPath}/ld65" failonerror="true">
 			<arg line="-o VEDRIVE2H -m vuiidrive.map -C prodos/ethernet/drive2/vuiidrive.cfg prodos/ethernet/drive2/vuiidrive_high.o ${ip65lib}" />
 		</exec>
-		<move file="${projdir}/src/client/VEDRIVE2L" tofile="${projdir}/src/client/VEDRIVE2L" />
-		<move file="${projdir}/src/client/VEDRIVE2H" tofile="${projdir}/src/client/VEDRIVE2H" />
 		<echo message="Adding VEDrive2 to 5.25 disk image..."/>
 		<appleCommander command="d" imagename="${builddir}/${distName}/disks/${vdriveDiskName}.DSK" filename="VEDRIVE2L" failonerror="false"/>
 		<appleCommander command="d" imagename="${builddir}/${distName}/disks/${vdriveDiskName}.DSK" filename="VEDRIVE2H" failonerror="false"/>

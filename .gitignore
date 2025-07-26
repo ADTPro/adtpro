@@ -5,4 +5,5 @@ ADTProTrace.txt
 dest/
 tasks/
 /bin/
+/*.patch
 .DS_Store
