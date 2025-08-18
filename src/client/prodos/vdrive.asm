@@ -84,24 +84,6 @@ GETSTAT:
 	clc
 	rts
 
-CALC_CHECKSUM:			; Calculate the checksum of the block at BUFLO/BUFHI
-	lda	#$00		; Clean everyone out
-	tax
-	tay
-CC_LOOP:
-	eor	(BUFLO),Y	; Exclusive-or accumulator with what's at (BUFLO),Y
-	sta	CHECKSUM	; Save that tally in CHECKSUM as we go
-	iny
-	bne	CC_LOOP
-	inc	BUFHI		; Y just turned over to zero; bump MSB of buffer
-	inx			; Keep track of trips through the loop - we need two of them
-	cpx	#$02		; The second time X is incremented, this will signfiy twice through the loop
-	bne	CC_LOOP
-
-	dec	BUFHI		; BUFHI got bumped twice, so back it back down
-	dec	BUFHI
-	rts
-
 ;---------------------------------------------------------
 ; abort - stop everything
 ;---------------------------------------------------------

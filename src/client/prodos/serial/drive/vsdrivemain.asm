@@ -46,22 +46,16 @@ READBLK:
 	jsr	GETC		; MSB of requested block
 	cmp	BLKHI
 	bne	READFAIL
-	jsr	GETC		; LSB of time
-	sta	TEMPDT
+
+	ldx	#$00
+:	jsr	GETC		; Four bytes of date/time
+	sta	TEMPDT,x
 	eor	CHECKSUM
 	sta	CHECKSUM
-	jsr	GETC		; MSB of time
-	sta	TEMPDT+1
-	eor	CHECKSUM
-	sta	CHECKSUM
-	jsr	GETC		; LSB of date
-	sta	TEMPDT+2
-	eor	CHECKSUM
-	sta	CHECKSUM
-	jsr	GETC		; MSB of date
-	sta	TEMPDT+3
-	eor	CHECKSUM
-	sta	CHECKSUM
+	inx
+	cpx	#$04
+	bcc	:-
+
 	jsr	GETC		; Checksum of command envelope
 	cmp	CHECKSUM
 	bne	WRITEFAIL	; Just need a nearby failure
@@ -80,10 +74,13 @@ READBLK:
 	ldx	#$00
 	ldy	#$00
 	stx	SCRN_THROB
+	stx	CHECKSUM
 RDLOOP:
 	jsr	GETC
 	bcs	WRITEFAIL
 	sta	(BUFLO),Y
+	eor	CHECKSUM
+	sta	CHECKSUM
 	iny
 	bne	RDLOOP
 
@@ -101,10 +98,6 @@ RDLOOP:
 
 	jsr	GETC	; Checksum
 	bcs	WRITEFAIL
-	pha		; Push checksum for now
-	ldx	#$00
-	jsr	CALC_CHECKSUM
-	pla	
 	cmp	CHECKSUM
 	bne	WRITEFAIL	; Just need a failure exit nearby
 
@@ -135,6 +128,8 @@ WRBKLOOP:
 WRLOOP:
 	lda	(BUFLO),Y
 	jsr	PUTC
+	eor	CHECKSUM
+	sta	CHECKSUM
 	iny
 	bne	WRLOOP
 
@@ -146,7 +141,6 @@ WRLOOP:
 	dec	BUFHI
 	dec	BUFHI
 
-	jsr	CALC_CHECKSUM
 	lda	CHECKSUM	; Checksum
 	jsr	PUTC
 

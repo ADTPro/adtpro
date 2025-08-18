@@ -180,9 +180,12 @@ READBLK:
 	ldx	#$00
 	ldy	#$00
 	stx	SCRN_THROB
+	stx	CHECKSUM
 RDLOOP:
 	lda	(UTILPTR),Y
 	sta	(BUFLO),Y
+	eor	CHECKSUM
+	sta	CHECKSUM
 	iny
 	bne	RDLOOP
 
@@ -200,9 +203,6 @@ RDLOOP:
 	sta	SCRN_THROB
 
 	lda	(UTILPTR),Y	; Checksum
-	pha		; Push checksum for now
-	jsr	CALC_CHECKSUM
-	pla	
 	cmp	CHECKSUM
 	bne	READFAIL
 	lda	#$00
@@ -271,9 +271,12 @@ COMMAND_ENVELOPE:
 ; Copy in the block to write
 	ldx	#$00
 	ldy	#$00
+	stx	CHECKSUM
 WRLOOP:
 	lda	(BUFLO),Y
 	sta	(UTILPTR),Y
+	eor	CHECKSUM
+	sta	CHECKSUM
 	iny
 	bne	WRLOOP
 
@@ -290,7 +293,7 @@ WRLOOP:
 	dec	BUFHI
 	dec	BUFHI	; Bring BUFHI back down to where it belongs
 
-	jsr	CALC_CHECKSUM
+	lda	CHECKSUM
 	jsr	BUFBYTE			; Send the checksum byte
 
 ENV_DONE:
