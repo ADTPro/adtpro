@@ -58,22 +58,15 @@ READBLK:
 	jsr	recv_byte	; MSB of requested block
 	cmp	BLKHI
 	bne	recv_retry
-	jsr	recv_byte	; LSB of time
-	sta	TEMPDT
+
+	ldx	#$00
+:	jsr	recv_byte	; Four bytes of date/time
+	sta	TEMPDT,x
 	eor	CHECKSUM
 	sta	CHECKSUM
-	jsr	recv_byte	; MSB of time
-	sta	TEMPDT+1
-	eor	CHECKSUM
-	sta	CHECKSUM
-	jsr	recv_byte	; LSB of date
-	sta	TEMPDT+2
-	eor	CHECKSUM
-	sta	CHECKSUM
-	jsr	recv_byte	; MSB of date
-	sta	TEMPDT+3
-	eor	CHECKSUM
-	sta	CHECKSUM
+	inx
+	cpx	#$04
+	bcc	:-
 	jsr	recv_byte	; Checksum of command envelope
  	cmp	CHECKSUM
  	beq	:+
@@ -93,9 +86,12 @@ READBLK:
 	ldy	#$00
 	sty	SCRN_THROB
 	sty	x_counter
+	sty	CHECKSUM
 RDLOOP:
 	jsr	recv_byte
 	sta	(BUFLO),Y
+	eor	CHECKSUM
+	sta	CHECKSUM
 	iny
 	bne	RDLOOP
 
@@ -113,10 +109,6 @@ RDLOOP:
 	sta	SCRN_THROB
 
 	jsr	recv_byte	; Checksum
-	pha			; Push checksum for now
-	ldx	#$00
-	jsr	CALC_CHECKSUM
-	pla
 	cmp	CHECKSUM
 	beq	:+
 	jmp	recv_retry
@@ -171,6 +163,8 @@ WRBKLOOP:
 WRLOOP:
 	lda	(BUFLO),Y
 	jsr	send_byte
+	eor	CHECKSUM
+	sta	CHECKSUM
 	iny
 	bne	WRLOOP
 
@@ -183,7 +177,6 @@ WRLOOP:
 	dec	BUFHI
 	dec	BUFHI
 
-	jsr	CALC_CHECKSUM
 	lda	CHECKSUM	; Checksum
 	jsr	send_byte
 	jsr	send_done	; Do it!
