@@ -956,31 +956,9 @@ RECEIVE_LOOP_WARM:
 	rts
 
 RECEIVE_LOOP_PAUSE:
-	lda #$5a
-	sta $c05a
-	sta $c05a
-	sta $c05a
-	sta $c05a	; Unlock ZipChip
-
-	lda #$00
-	sta $c05a	; Disable ZipChip	
-
-	lda #$01
-	sta $C074	; Disable TransWarp
-
 PauseValue:
 	lda #$7f
 	jsr DELAY	; Wait!
-
-	lda #$00
-	sta $c05b	; Enable ZipChip
-
-	lda #$a5
-	sta $c05a	; Lock ZipChip
-
-	lda #$00	; Enable TransWarp
-	sta $C074
-
 	jmp RECEIVE_LOOP_WARM
 
 
