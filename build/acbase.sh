@@ -21,4 +21,4 @@ export ADTPRO_HOME=`pwd`
 # export MY_JAVA_HOME=/usr/local/java/bin/
 # export ADTPRO_HOME=~/myuser/adtpro
 
-"$MY_JAVA_HOME"java -Xms256m -Xmx512m -jar lib/AppleCommander/AppleCommander-%AC_VERSION%.jar $*
+"$MY_JAVA_HOME"java -Xms256m -Xmx512m -jar lib/AppleCommander/AppleCommander-ant-%AC_VERSION%.jar $*
