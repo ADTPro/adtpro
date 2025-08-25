@@ -48,6 +48,7 @@ scanslots:
 	ldx	DEVCNT
 checkdev:
 	lda	DEVLST,X	; Grab an active device number
+    and #$f0        ; Ignore low nibble as suggested by ProDOS TN#21
 	cmp	VE_SLOT_DEV1	; Slot x, drive 1?
 	beq	scanslots	; Yes, someone already home - go to next slot
 	cmp	VE_SLOT_DEV2	; Slot x, drive 2?
