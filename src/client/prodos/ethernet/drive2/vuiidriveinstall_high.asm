@@ -76,6 +76,7 @@ init:
 	ldx	DEVCNT
 checkdev:
 	lda	DEVLST,X	; Grab an active device number
+	and	#$f0		; Ignore low nibble as suggested by ProDOS TN#21
 	cmp	#$20		; Slot 2, drive 1?
 	beq	present		; Yes, check if it's our driver
 	dex
