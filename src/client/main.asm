@@ -43,6 +43,8 @@ entrypoint:
 
 	jsr INIT_SCREEN	; Sets up the screen for behaviors we expect
 	jsr MAKETBL	; Prepare our CRC tables
+        jsr DETECT_CPU  ; Try to figure out if we're running an accelerator
+        jsr ACCEL_DISABLE ; disable accelerators (if present)
 	JSR_GET_PREFIX	; Get our current prefix (ProDOS only)
 	jsr BLOAD	; Load up user parameters, if any
 	jsr PARMDFT	; Set up parameters
@@ -170,6 +172,7 @@ KQUIT:
 KQUITENTRY:
 	lda #MENU_QUIT
 	jsr HILIGHT_MENU
+        jsr ACCEL_ENABLE
 	jmp QUIT	; Head into OS oblivion
 
 KLEFT:
@@ -354,6 +357,81 @@ BumpA1:
 BumpA1Done:
 	rts
 
+;---------------------------------------------------------
+; ACCEL_* - disable/enable accelerators (if present)
+;---------------------------------------------------------
+ACCEL_DISABLE:
+        lda $FE1F       ; ][ and //e have $60, GS has detect routine
+        cmp #$60
+        bne AD_65C02    ; if GS, do Zip/TransWarp
+        lda CPU_TYPE
+        beq AD_EXIT     ; NMOS 6502 isn't accelerated, skip
+        cmp #2          ; non-GS 65816 is UltraWarp
+        beq AD_65816
+AD_65C02:
+        lda #$5a        ; Unlock ZipChip
+        sta $c05a
+        sta $c05a
+        sta $c05a
+        sta $c05a       ; Unlock finished
+ 
+        lda #$00
+        sta $c05a       ; Disable ZipChip       
+        lda #$01
+        sta $C074       ; Disable TransWarp
+        bne AD_EXIT
+AD_65816: 
+        lda #$01
+        sta $C05D       ; Slow down UltraWarp
+AD_EXIT:
+        rts
+
+ACCEL_ENABLE:
+        lda $FE1F       ; ][ and //e have $60, GS has detect routine
+        cmp #$60
+        bne AE_65C02    ; if GS, do Zip/TransWarp
+        lda CPU_TYPE
+        beq AE_EXIT     ; NMOS 6502 isn't accelerated, skip
+        cmp #2          ; non-GS 65816 is UltraWarp
+        beq AE_65816
+AE_65C02:
+        lda #$00
+        sta $c05b       ; Enable ZipChip
+ 
+        lda #$a5
+        sta $c05a       ; Lock ZipChip
+ 
+        lda #$00        ; Enable TransWarp
+        sta $C074
+        beq AE_EXIT
+AE_65816:
+        lda #$01
+        sta $C05C       ; Speed up UltraWarp
+AE_EXIT:
+        rts
+
+;---------------------------------------------------------
+;DETECT_CPU - identify CPU, to try to logic our way through
+;             accelerator detection
+;---------------------------------------------------------
+CPU_TYPE:       .byte 0 ; default to NMOS 6502
+DETECT_CPU:
+.setcpu "6502"
+         lda #0
+.setcpu "65C02"
+         bra :+         ; undocumented two-byte NOP on NMOS
+.setcpu "6502"
+         beq CT_OUT     ; we have an NMOS 6502
+:        inc CPU_TYPE   ; we have a CMOS 65C02/65C816 ...
+.setcpu "65816"
+         lda CPU_TYPE
+         xba            ; exchange B and A (65C816 only)
+         dec            ; A=0 (65C02), A=1 (65C816, via B)
+         xba            ; swap back (again, 65C816 only)
+         inc            ; A=1 (65C02), A=2 (65C816, via B)
+         sta CPU_TYPE
+.setcpu "6502"
+CT_OUT:        rts
 
 ;---------------------------------------------------------
 ; Table of menu highlighting coordinates
