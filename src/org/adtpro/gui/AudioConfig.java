@@ -130,10 +130,12 @@ public class AudioConfig extends JDialog implements ActionListener
         */
       }
     }
-/*
-    Log.println(true, Messages.getString("Gui.NoAudio")); //$NON-NLS-1$
-    Log.println(false, "AudioConfig Constructor could not instantiate the rxtx library.");
-*/
+
+    if (comboAudioDevice.getItemCount() <= 1) // only default mixer present
+    {
+      Log.println(true, Messages.getString("Gui.NoAudio"));
+      Log.println(false, "AudioConfig Constructor could not initialize audio devices.");
+    }
     labelAudioDevice = new JLabel(Messages.getString("Gui.AudioConfigMixer"), SwingConstants.LEFT); //$NON-NLS-1$
 
     GridBagUtil.constrain(configPanel, labelAudioDevice, 1, 1, // X, Y Coordinates

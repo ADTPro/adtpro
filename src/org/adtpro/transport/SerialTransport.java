@@ -257,10 +257,10 @@ public class SerialTransport extends ATransport
   }
 
   /**
-   * Sets the speed of the underlying Java COMM API rxtxPort.
+   * Sets the speed of the underlying serial port.
    * 
    * @param speed
-   *                The speed to set the transrxtxPort to.
+   *                The speed to set the serial port to.
    * @exception IOException
    *                          thrown when a problem occurs with flushing the
    *                          stream.
@@ -367,7 +367,7 @@ public class SerialTransport extends ATransport
 
   public void pullBuffer()
   {
-    // Serial rxtxPort is byte-by-byte, no buffering
+    // Serial port is byte-by-byte, no buffering
   }
 
   public void pushBuffer()
