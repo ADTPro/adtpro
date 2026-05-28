@@ -1,6 +1,6 @@
 ;
 ; ADTPro - Apple Disk Transfer ProDOS
-; Copyright (C) 2012 - 2018 by David Schmidt
+; Copyright (C) 2012 - 2026 by David Schmidt
 ; 1110325+david-schmidt@users.noreply.github.com
 ;
 ; This program is free software; you can redistribute it and/or modify it 
@@ -42,8 +42,7 @@ scanslots:
 	asl
 	asl
 	sta	VE_SLOT_DEV1
-	clc
-	adc	#$80
+	ora	#$80
 	sta	VE_SLOT_DEV2
 	ldx	DEVCNT
 checkdev:
@@ -55,7 +54,7 @@ checkdev:
 	beq	scanslots	; Yes, someone already home - go to next slot
 	dex
 	bpl	checkdev	; Swing around until no more in list
-	jmp	instdev
+	bmi	instdev
 full:
 	jsr	msg
 	.byte	"NO SLOT AVAILALBE FOR DRIVER.",$00
